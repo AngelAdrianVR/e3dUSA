@@ -114,18 +114,22 @@ class PayrollController extends Controller
         $user = User::find($request->user_id);
         $ep = $user->employee_properties;
 
-        if ($request->incident_id == 3 && $ep['vacations']['available_days'] >= 1) { //vacations?
-            $ep['vacations']['available_days'] = $ep['vacations']['available_days'] - 1;
-            $user->update(['employee_properties' => $ep]);
+        if ($request->incident_id == 3) { //vacations?
+            if ($ep['vacations']['available_days'] >= 1) {
+                $ep['vacations']['available_days'] = $ep['vacations']['available_days'] - 1;
+                $user->update(['employee_properties' => $ep]);
+
+                $payroll_user->justification_event_id = $request->incident_id;
+                $payroll_user->save();
+                return response()->json(['message' => 'Incidencia cambiada', 'title' => 'Éxito', 'type' => 'success', 'item' => PayrollUserResource::make($payroll_user)]);
+            } else {
+                return response()->json(['message' => 'El colaborador no tiene vacaiones disponibles suficientes', 'title' => 'Error', 'type' => 'error', 'item' => PayrollUserResource::make($payroll_user)]);
+            }
         } else {
-            return response()->json(['message' => 'El colaborador no tiene vacaiones disponibles suficientes', 'title' => 'Error', 'type' => 'error', 'item' => PayrollUserResource::make($payroll_user)]);
+            $payroll_user->justification_event_id = $request->incident_id;
+            $payroll_user->save();
+            return response()->json(['message' => 'Incidencia cambiada', 'title' => 'Éxito', 'type' => 'success', 'item' => PayrollUserResource::make($payroll_user)]);
         }
-
-        $payroll_user->justification_event_id = $request->incident_id;
-
-        $payroll_user->save();
-
-        return response()->json(['message' => 'Incidencia cambiada', 'title' => 'Éxito', 'type' => 'success', 'item' => PayrollUserResource::make($payroll_user)]);
     }
 
     public function handleAttendance(Request $request)
