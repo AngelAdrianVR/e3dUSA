@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('quotes', function (Blueprint $table) {
             $table->id();
+            $table->string('reciever');
             $table->timestamps();
         });
     }

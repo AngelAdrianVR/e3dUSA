@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('company_products', function (Blueprint $table) {
             $table->id();
+            $table->date('old_date');
+            $table->date('new_date');
+            $table->unsignedMediumInteger('old_price');
+            $table->unsignedMediumInteger('new_price');
+            $table->string('old_currency');
+            $table->string('new_currency');
+            $table->foreignId('catalog_product_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

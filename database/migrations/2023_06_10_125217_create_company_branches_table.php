@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('company_branches', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('address');
+            $table->string('post_code');
+            $table->string('sat_method');
+            $table->string('sat_type');
+            $table->string('sat_way');
+            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

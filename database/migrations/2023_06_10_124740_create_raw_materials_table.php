@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('raw_materials', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('part_number');
+            $table->text('description');
+            $table->string('meaure_unit');
+            $table->unsignedMediumInteger('min_quantity');
+            $table->unsignedMediumInteger('max_quantity');
+            $table->unsignedMediumInteger('cost');
+            $table->json('features')->nullable();
             $table->timestamps();
         });
     }
