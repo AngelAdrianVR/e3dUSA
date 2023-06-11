@@ -16,10 +16,10 @@ return new class extends Migration
             $table->unsignedTinyInteger('status');
             $table->text('notes')->nullable();
             $table->string('authorized_user_name');
-            $table->timestamp('authorized_at');
+            $table->timestamp('authorized_at')->nullable();
             $table->date('expected_delivery_date');
-            $table->timestamp('emited_at');
-            $table->timestamp('recieved_at');
+            $table->timestamp('emited_at')->nullable();
+            $table->timestamp('recieved_at')->nullable();
             $table->boolean('is_iva_included')->default(false);
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('supplier_id')->constrained()->cascadeOnDelete();
