@@ -14,6 +14,18 @@ return new class extends Migration
         Schema::create('quotes', function (Blueprint $table) {
             $table->id();
             $table->string('reciever');
+            $table->string('department');
+            $table->unsignedMediumInteger('tooling_cost');
+            $table->unsignedMediumInteger('freight_cost');
+            $table->string('first_production_days');
+            $table->text('notes')->nullable();
+            $table->string('currency');
+            $table->string('authorized_user_name');
+            $table->timestamp('authorized_at');
+            $table->boolean('is_spanish_template')->default(true);
+            $table->foreignId('company_branch_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('sale_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

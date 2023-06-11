@@ -29,6 +29,9 @@ class RawMaterial extends Model
 
     public function catalogProducts(): BelongsToMany
     {
-        return $this->belongsToMany(CatalogProduct::class)->using(CatalogProductRawMaterial::class);
+        return $this->belongsToMany(CatalogProduct::class)->using(CatalogProductRawMaterial::class)
+                ->withPivot([
+                    'quantity',
+                ])->withTimestamps();
     }
 }

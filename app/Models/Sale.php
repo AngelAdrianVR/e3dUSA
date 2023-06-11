@@ -52,8 +52,14 @@ class Sale extends Model
         return $this->belongsTo(CompanyBranch::class);
     }
 
-    public function companyPtoducts(): BelongsToMany
+    public function companyProducts(): BelongsToMany
     {
-        return $this->belongsToMany(CompanyProduct::class);
+        return $this->belongsToMany(CompanyProduct::class)->using(CompanyProductSale::class)
+                ->withPivot([
+                    'quantity',
+                    'notes',
+                    'status',
+                    'assinged_jobs'
+                ])->withTimestamps();
     }
 }

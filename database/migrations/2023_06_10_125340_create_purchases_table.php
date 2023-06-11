@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
             $table->unsignedTinyInteger('status');
-            $table->text('notes');
+            $table->text('notes')->nullable();
             $table->string('authorized_user_name');
             $table->timestamp('authorized_at');
             $table->date('expected_delivery_date');
