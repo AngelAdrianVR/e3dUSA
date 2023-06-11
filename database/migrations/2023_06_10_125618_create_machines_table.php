@@ -13,6 +13,16 @@ return new class extends Migration
     {
         Schema::create('machines', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('serial_number')->nullable();
+            $table->unsignedFloat('weight');
+            $table->unsignedFloat('width');
+            $table->unsignedFloat('large');
+            $table->unsignedFloat('height');
+            $table->unsignedFloat('cost');
+            $table->string('supplier');
+            $table->date('aquisition_date');
+            $table->unsignedSmallInteger('days_next_maintenance');
             $table->timestamps();
         });
     }

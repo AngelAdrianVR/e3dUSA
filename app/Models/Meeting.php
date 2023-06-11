@@ -9,7 +9,21 @@ class Meeting extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    protected $fillable = [
+        'subject',
+        'location',
+        'url',
+        'status',
+        'description',
+        'date',
+        'start',
+        'end',
+        'user_id',
+    ];
+
+    protected $casts = [
+        'date' => 'date'
+    ];
 
     // relationships
     public function users()
