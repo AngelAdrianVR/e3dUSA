@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->string('currency');
             $table->string('authorized_user_name');
-            $table->timestamp('authorized_at');
+            $table->timestamp('authorized_at')->nullable();
             $table->boolean('is_spanish_template')->default(true);
             $table->foreignId('company_branch_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
