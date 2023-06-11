@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('spare_parts', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->unsignedMediumInteger('quantity');
+            $table->string('supplier');
+            $table->unsignedFloat('cost');
+            $table->text('description');
+            $table->string('location');
+            $table->foreignId('machine_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

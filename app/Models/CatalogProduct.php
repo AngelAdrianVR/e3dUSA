@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class CatalogProduct extends Model
 {
     use HasFactory;
-
-    protected $fillable = [
+  
+  protected $fillable = [
         'name',
         'description',
         'part_number',
@@ -25,7 +26,15 @@ class CatalogProduct extends Model
         'features' => 'array',
     ];
 
-    //relationships
+    // relationships
+
+    /**
+     * Get the CatalogProduct's storage in warehouse.
+     */
+    public function storage(): MorphOne
+    {
+        return $this->morphOne(Storage::class, 'storageable');
+    }
 
     public function rawMaterials(): BelongsToMany
     {
@@ -36,14 +45,13 @@ class CatalogProduct extends Model
     }
 
     public function quotes(): BelongsToMany
-{
-    return $this->belongsToMany(Quote::class)
+    {
+      return $this->belongsToMany(Quote::class)
             ->withPivot([
                 'quantity',
                 'price',
                 'show_image',
                 'notes',
             ])->withTimestamps();
-}
-
+    }
 }

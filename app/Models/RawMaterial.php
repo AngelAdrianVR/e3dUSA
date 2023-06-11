@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class RawMaterial extends Model
 {
     use HasFactory;
-
-    protected $fillable = [
+  
+  protected $fillable = [
         'name',
         'part_number',
         'description',
@@ -25,7 +26,15 @@ class RawMaterial extends Model
         'features' => 'array'
     ];
 
-    //relationships
+    // relationships
+
+    /**
+     * Get the RawMaterial's sorage in warehose.
+     */
+    public function storage(): MorphOne
+    {
+        return $this->morphOne(Storage::class, 'storageable');
+    }
 
     public function catalogProducts(): BelongsToMany
     {

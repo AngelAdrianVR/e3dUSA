@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('meetings', function (Blueprint $table) {
             $table->id();
+            $table->string('subject');
+            $table->string('location')->nullable();
+            $table->string('url')->nullable();
+            $table->unsignedTinyInteger('status');
+            $table->text('description')->nullable();
+            $table->date('date');
+            $table->string('start');
+            $table->string('end');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

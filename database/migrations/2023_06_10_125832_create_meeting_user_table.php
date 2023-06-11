@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('meeting_user', function (Blueprint $table) {
             $table->id();
+            $table->text('comments')->nullable();
+            $table->enum('attendance_confirmation', ['Revisando', 'Rechazado', 'Confirmado'])->default('Revisando');
+            $table->foreignId('meeting_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

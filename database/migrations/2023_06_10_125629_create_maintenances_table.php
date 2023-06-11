@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Maintenance;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,6 +14,12 @@ return new class extends Migration
     {
         Schema::create('maintenances', function (Blueprint $table) {
             $table->id();
+            $table->text('problems');
+            $table->text('actions');
+            $table->unsignedFloat('cost');
+            $table->enum('manteinance_type_id', [Maintenance::PREVENTIVE, Maintenance::CORRECTIVE]);
+            $table->string('responsible');
+            $table->foreignId('machine_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
