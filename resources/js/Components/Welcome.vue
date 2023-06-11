@@ -1,6 +1,4 @@
-<script setup>
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-</script>
+
 
 <template>
     <div>
@@ -8,8 +6,9 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
             <ApplicationLogo class="block h-12 w-auto" />
 
             <h1 class="mt-8 text-2xl font-medium text-gray-900">
-                Welcome to your Jetstream application!
+                Welcome to your Jetstream application!asdsd
             </h1>
+
 
             <p class="mt-6 text-gray-500 leading-relaxed">
                 Laravel Jetstream provides a beautiful, robust starting point for your next Laravel application. Laravel is designed
@@ -19,6 +18,7 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
             </p>
         </div>
 
+            <MettingCard />
         <div class="bg-gray-200 bg-opacity-25 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 p-6 lg:p-8">
             <div>
                 <div class="flex items-center">
@@ -102,3 +102,20 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
         </div>
     </div>
 </template>
+
+<script>
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import MeetingCard from '@/Components/MeetingCard.vue';
+
+export default {
+    data(){
+        return{
+
+        }
+    }, 
+    components:{
+        MeetingCard,
+
+    }
+}
+</script>
