@@ -11,16 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('company_products', function (Blueprint $table) {
+        Schema::create('catalog_product_quote', function (Blueprint $table) {
             $table->id();
-            $table->date('old_date');
-            $table->date('new_date');
-            $table->unsignedMediumInteger('old_price');
-            $table->unsignedMediumInteger('new_price');
-            $table->string('old_currency');
-            $table->string('new_currency');
+            $table->unsignedMediumInteger('quantity');
+            $table->unsignedMediumInteger('price');
+            $table->boolean('show_image')->default(true);
+            $table->text('notes');
+            $table->foreignId('quote_id')->constrained()->cascadeOnDelete();
             $table->foreignId('catalog_product_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('company_products');
+        Schema::dropIfExists('catalog_product_quote');
     }
 };
