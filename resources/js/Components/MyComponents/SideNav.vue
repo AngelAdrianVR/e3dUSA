@@ -10,22 +10,17 @@
                     </div>
                     <template v-for="(menu, index) in menus" :key="index">
                         <SideNavLink :href="menu.route" :active="menu.active" :dropdown="menu.dropdown">
-                        <template #trigger>
-                            <span v-html="menu.icon"></span>
-                            <span class="text-xs font-normal text-center">
-                                {{ menu.label }}
-                            </span>
-                        </template>
-                        <template #content>
-                            <!-- menu options -->
-                            <div class="block px-4 py-2 text-xs text-secondary">
-                                {{ menu.label }}
-                            </div>
-
-                            <DropdownNavLink v-for="option in menu.options" :key="option" :href="route(option.route)">
-                                {{ option.label }}
-                            </DropdownNavLink>
-                        </template>
+                            <template #trigger>
+                                <span v-html="menu.icon"></span>
+                                <span class="text-xs font-normal text-center">
+                                    {{ menu.label }}
+                                </span>
+                            </template>
+                            <template #content>
+                                <DropdownNavLink v-for="option in menu.options" :key="option" :href="route(option.route)">
+                                    {{ option.label }}
+                                </DropdownNavLink>
+                            </template>
                         </SideNavLink>
                     </template>
                 </div>
@@ -48,6 +43,7 @@ export default {
                     icon: '<i class="fa-solid fa-house text-sm"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboard'),
+                    options: [],
                     dropdown: false,
                     // show: this.$page.props.auth.user.is_admin
                 },
@@ -56,22 +52,8 @@ export default {
                     icon: '<i class="fa-solid fa-book-open text-sm"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboar'),
-                    options: [
-                        {
-                        label:'Materia Prima',
-                        route: 'dashboard'
-                        },
-                        {
-                        label:'Producto terminado',
-                        route: 'dashboard'
-                        },
-                        {
-                        label:'Inventario',
-                        route: 'dashboard'
-                        },
-                        
-                    ],
-                    dropdown: true,
+                    options: [],
+                    dropdown: false,
                     // show: this.$page.props.auth.user.is_admin
                 },
                 {
@@ -81,18 +63,18 @@ export default {
                     active: route().current('dashboar'),
                     options: [
                         {
-                        label:'Cotizaciones',
-                        route: 'dashboard'
+                            label: 'Cotizaciones',
+                            route: 'dashboard'
                         },
                         {
-                        label:'Clientes',
-                        route: 'dashboard'
+                            label: 'Clientes',
+                            route: 'dashboard'
                         },
                         {
-                        label:'Órdenes de ventas',
-                        route: 'dashboard'
+                            label: 'Órdenes de venta',
+                            route: 'dashboard'
                         },
-                        
+
                     ],
                     dropdown: true,
                     // show: this.$page.props.auth.user.is_admin
@@ -104,14 +86,14 @@ export default {
                     active: route().current('dashboar'),
                     options: [
                         {
-                        label:'Proveedores',
-                        route: 'dashboard'
+                            label: 'Proveedores',
+                            route: 'dashboard'
                         },
                         {
-                        label:'Órdenes de compra',
-                        route: 'dashboard'
+                            label: 'Órdenes de compra',
+                            route: 'dashboard'
                         },
-                        
+
                     ],
                     dropdown: true,
                     // show: this.$page.props.auth.user.is_admin
@@ -121,6 +103,25 @@ export default {
                     icon: '<i class="fa-solid fa-warehouse text-sm"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboar'),
+                    options: [
+                        {
+                            label: 'Materia prima',
+                            route: 'dashboard'
+                        },
+                        {
+                            label: 'Insumos',
+                            route: 'dashboard'
+                        },
+                        {
+                            label: 'Producto terminado',
+                            route: 'dashboard'
+                        },
+                        {
+                            label: 'Scrap',
+                            route: 'dashboard'
+                        },
+                    ],
+                    dropdown: true
                     // show: this.$page.props.auth.user.is_admin
                 },
                 {
@@ -128,6 +129,21 @@ export default {
                     icon: '<i class="fa-solid fa-user-group text-sm"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboar'),
+                    options: [
+                        {
+                            label: 'Nóminas',
+                            route: 'dashboard'
+                        },
+                        {
+                            label: 'Solicitudes de tiempo adicional',
+                            route: 'dashboard'
+                        },
+                        {
+                            label: 'Personal',
+                            route: 'dashboard'
+                        },
+                    ],
+                    dropdown: true
                     // show: this.$page.props.auth.user.is_admin
                 },
                 {
@@ -156,6 +172,25 @@ export default {
                     icon: '<i class="fa-solid fa-ellipsis text-sm"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboar'),
+                    options: [
+                        {
+                            label: 'Máquinas',
+                            route: 'dashboard'
+                        },
+                        {
+                            label: 'Solicitudes de tiempo adicional',
+                            route: 'dashboard'
+                        },
+                        {
+                            label: 'Reuniones',
+                            route: 'dashboard'
+                        },
+                        {
+                            label: 'Biblioteca de medios',
+                            route: 'dashboard'
+                        },
+                    ],
+                    dropdown: true
                     // show: this.$page.props.auth.user.is_admin
                 },
                 {
