@@ -1,8 +1,15 @@
-
-
 <template>
     <div>
         <div class="p-6 lg:p-8 bg-white border-b border-gray-200">
+        <div class="my-5 flex flex-col space-y-3">
+            <MeetingCard />
+            <DashboardCard />
+            <ProductionPerformanceCard />
+            <BirthdateCard />
+            <PrimaryButton>Boton pimario</PrimaryButton>
+            <SecondaryButton>Boton secundario</SecondaryButton>
+        </div>
+
             <ApplicationLogo class="block h-12 w-auto" />
 
             <h1 class="mt-8 text-2xl font-medium text-gray-900">
@@ -18,7 +25,6 @@
             </p>
         </div>
 
-            <MettingCard />
         <div class="bg-gray-200 bg-opacity-25 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 p-6 lg:p-8">
             <div>
                 <div class="flex items-center">
@@ -105,7 +111,12 @@
 
 <script>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import MeetingCard from '@/Components/MeetingCard.vue';
+import MeetingCard from '@/Components/MyComponents/MeetingCard.vue';
+import DashboardCard from '@/Components/MyComponents/DashboardCard.vue';
+import ProductionPerformanceCard from '@/Components/MyComponents/ProductionPerformanceCard.vue';
+import BirthdateCard from '@/Components/MyComponents/BirthdateCard.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 
 export default {
     data(){
@@ -114,8 +125,13 @@ export default {
         }
     }, 
     components:{
+        ApplicationLogo,
         MeetingCard,
-
+        DashboardCard,
+        PrimaryButton,
+        SecondaryButton,
+        ProductionPerformanceCard,
+        BirthdateCard,
     }
 }
 </script>
