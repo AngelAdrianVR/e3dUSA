@@ -5,3 +5,50 @@
 [x-cloak] {
     display: none;
 }
+
+@layer utilities{
+    .bg-primary {
+        background-color: #D90537;
+    }
+    .bg-primary-light {
+        background-color: #e2355d;
+    }
+
+    .text-primary {
+        color: #D90537;
+    }
+
+    .bg-secondary{
+        background-color: #0355B5;
+    }
+    .bg-secondary-light{
+        background-color: #136bcf;
+    }
+
+    .text-secondary{
+        color: #0355B5;
+    }
+
+    .bg-primary-gray{
+        background-color: #9a9a9a;
+    }
+
+    .bg-secondary-gray{
+        background-color: #cccccc;
+    }
+}
+
+*::-webkit-scrollbar {
+	width: 3px;
+	background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+	background: #9a9a9a;
+	border-radius: 2px;
+}
+
+*::-webkit-scrollbar-thumb:horizontal {
+	background: #9a9a9a;
+	border-radius: 2px;
+}
