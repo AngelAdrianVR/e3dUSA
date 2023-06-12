@@ -9,11 +9,23 @@
                         <span>01:37:27</span>
                     </div>
                     <template v-for="(menu, index) in menus" :key="index">
-                        <SideNavLink :href="menu.route" :active="menu.active">
+                        <SideNavLink :href="menu.route" :active="menu.active" :dropdown="menu.dropdown">
+                        <template #trigger>
                             <span v-html="menu.icon"></span>
                             <span class="text-xs font-normal text-center">
                                 {{ menu.label }}
                             </span>
+                        </template>
+                        <template #content>
+                            <!-- menu options -->
+                            <div class="block px-4 py-2 text-xs text-secondary">
+                                {{ menu.label }}
+                            </div>
+
+                            <DropdownNavLink v-for="option in menu.options" :key="option" :href="route(option.route)">
+                                {{ option.label }}
+                            </DropdownNavLink>
+                        </template>
                         </SideNavLink>
                     </template>
                 </div>
@@ -25,6 +37,7 @@
 <script>
 
 import SideNavLink from "@/Components/MyComponents/SideNavLink.vue";
+import DropdownNavLink from "@/Components/MyComponents/DropdownNavLink.vue";
 
 export default {
     data() {
@@ -35,6 +48,7 @@ export default {
                     icon: '<i class="fa-solid fa-house text-sm"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboard'),
+                    dropdown: false,
                     // show: this.$page.props.auth.user.is_admin
                 },
                 {
@@ -42,6 +56,22 @@ export default {
                     icon: '<i class="fa-solid fa-book-open text-sm"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboar'),
+                    options: [
+                        {
+                        label:'Materia Prima',
+                        route: 'dashboard'
+                        },
+                        {
+                        label:'Producto terminado',
+                        route: 'dashboard'
+                        },
+                        {
+                        label:'Inventario',
+                        route: 'dashboard'
+                        },
+                        
+                    ],
+                    dropdown: true,
                     // show: this.$page.props.auth.user.is_admin
                 },
                 {
@@ -49,6 +79,22 @@ export default {
                     icon: '<i class="fa-solid fa-shop text-sm"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboar'),
+                    options: [
+                        {
+                        label:'Cotizaciones',
+                        route: 'dashboard'
+                        },
+                        {
+                        label:'Clientes',
+                        route: 'dashboard'
+                        },
+                        {
+                        label:'Órdenes de ventas',
+                        route: 'dashboard'
+                        },
+                        
+                    ],
+                    dropdown: true,
                     // show: this.$page.props.auth.user.is_admin
                 },
                 {
@@ -56,6 +102,18 @@ export default {
                     icon: '<i class="fa-solid fa-cart-shopping text-sm"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboar'),
+                    options: [
+                        {
+                        label:'Proveedores',
+                        route: 'dashboard'
+                        },
+                        {
+                        label:'Órdenes de compra',
+                        route: 'dashboard'
+                        },
+                        
+                    ],
+                    dropdown: true,
                     // show: this.$page.props.auth.user.is_admin
                 },
                 {
@@ -112,6 +170,7 @@ export default {
     },
     components: {
         SideNavLink,
+        DropdownNavLink
     }
 }
 </script>
