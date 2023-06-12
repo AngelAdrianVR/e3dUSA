@@ -42,7 +42,7 @@ const logout = () => {
             </aside>
 
             <main class="col-span-11">
-                <nav class="bg-[#F2F2F2] border-b border-[#9A9A9A]">
+                <nav class="bg-[#F2F2F2] border-b border-[#D9D9D9]">
                     <!-- Primary Navigation Menu -->
                     <div class="w-11/12 mx-auto">
                         <div class="flex justify-between h-14">
@@ -50,7 +50,7 @@ const logout = () => {
                                 <!-- Logo -->
                                 <div class="shrink-0 flex items-center">
                                     <Link :href="route('dashboard')">
-                                    <ApplicationMark class="block h-9 w-auto" />
+                                    <ApplicationMark class="w-1/3" />
                                     </Link>
                                 </div>
                             </div>
@@ -128,6 +128,14 @@ const logout = () => {
                                         </template>
                                     </Dropdown>
                                 </div>
+
+                                <i class="fa-solid fa-bell text-[#9A9A9A] mr-8"></i>
+
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-alarm-fill text-[#9A9A9A] mr-3" viewBox="0 0 16 16">
+                                    <path
+                                        d="M6 .5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1H9v1.07a7.001 7.001 0 0 1 3.274 12.474l.601.602a.5.5 0 0 1-.707.708l-.746-.746A6.97 6.97 0 0 1 8 16a6.97 6.97 0 0 1-3.422-.892l-.746.746a.5.5 0 0 1-.707-.708l.602-.602A7.001 7.001 0 0 1 7 2.07V1h-.5A.5.5 0 0 1 6 .5zm2.5 5a.5.5 0 0 0-1 0v3.362l-1.429 2.38a.5.5 0 1 0 .858.515l1.5-2.5A.5.5 0 0 0 8.5 9V5.5zM.86 5.387A2.5 2.5 0 1 1 4.387 1.86 8.035 8.035 0 0 0 .86 5.387zM11.613 1.86a2.5 2.5 0 1 1 3.527 3.527 8.035 8.035 0 0 0-3.527-3.527z" />
+                                </svg>
 
                                 <!-- Settings Dropdown -->
                                 <div class="ml-3 relative">
@@ -284,17 +292,17 @@ const logout = () => {
                                                             viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
-                                                    <div>{{ team.name }}</div>
-                                                </div>
-                                            </ResponsiveNavLink>
-                                        </form>
+                                                        </svg>
+                                                        <div>{{ team.name }}</div>
+                                                    </div>
+                                                </ResponsiveNavLink>
+                                            </form>
+                                        </template>
                                     </template>
                                 </template>
-                            </template>
+                            </div>
                         </div>
                     </div>
-                </div>
                 </nav>
 
                 <div class="overflow-y-auto h-[calc(100vh-3rem)] bg-[#F2F2F2]">
@@ -302,5 +310,4 @@ const logout = () => {
                 </div>
             </main>
         </div>
-    </div>
-</template>
+    </div></template>
