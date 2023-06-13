@@ -18,7 +18,7 @@ const props = defineProps({
     },
     contentClasses: {
         type: Array,
-        default: () => ['py-1', 'bg-[#CCCCCC]'],
+        default: () => ['py-1', 'bg-[#D9D9D9]'],
     },
 });
 
@@ -35,64 +35,55 @@ onUnmounted(() => document.removeEventListener('keydown', closeOnEscape));
 
 const widthClass = computed(() => {
     return {
-        '56': 'w-56',
+        '48': 'w-48',
     }[props.width.toString()];
 });
 
 const alignmentClasses = computed(() => {
     if (props.align === 'left') {
-        return 'origin-top-left left-0';
+        return 'origin-top-left';
     }
 
     if (props.align === 'right') {
-        return 'origin-top-right right-0';
+        return 'origin-top-right';
     }
 
-    return 'origin-top-right right-0';
+    return 'origin-top-right';
 });
 
 const classes = computed(() => {
     return props.active
         ? 'flex flex-col items-center py-2 px-2 bg-[#CCCCCC] font-semibold text-sm leading-5 w-full'
-        : 'flex flex-col items-center text-sm font-medium py-2 px-2 hover:bg-[#CCCCCC] w-full cursor-pointer';
+        : 'flex flex-col items-center text-sm font-medium py-2 px-2 hover:bg-[#CCCCCC] focus:bg-[#CCCCCC] outline-none w-full cursor-pointer';
 });
 </script>
 
 <template>
     <div v-if="props.dropdown">
-        <div class="">
-        <div @click="open = ! open" :class="classes">
-            <slot name="trigger" />
-        <i class="fa-solid fa-angle-right absolute mt-3 right-2 text-gray-600"></i>
-        </div>
-
-        <!-- Full Screen Dropdown Overlay -->
-        <div v-show="open" class="fixed inset-0 z-40" @click="open = false" />
-
-        <transition
-            enter-active-class="transition ease-out duration-300"
-            enter-from-class="transform opacity-0 scale-95"
-            enter-to-class="transform opacity-100 scale-100"
-            leave-active-class="transition ease-in duration-75"
-            leave-from-class="transform opacity-100 scale-100"
-            leave-to-class="transform opacity-0 scale-95"
-        >
-            <div
-                v-show="open"
-                class="absolute z-50 mt-2 rounded-md shadow-lg"
-                :class="[widthClass, alignmentClasses]"
-                style="display: none;"
-                @click="open = false"
-            >
-                <div class="rounded-md ring-1 ring-gray-800 ring-opacity-20" :class="contentClasses">
-                    <slot name="content" />
-                </div>
+        <div>
+            <div @click="open = !open" :class="classes">
+                <slot name="trigger" />
+                <i class="fa-solid fa-angle-right absolute mt-3 right-2 text-gray-600"></i>
             </div>
-        </transition>
-    </div>
+
+            <!-- Full Screen Dropdown Overlay -->
+            <div v-show="open" class="fixed inset-0 z-40" @click="open = false" />
+
+            <transition enter-active-class="transition ease-out duration-300"
+                enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100"
+                leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100"
+                leave-to-class="transform opacity-0 scale-95">
+                <div v-show="open" class="absolute z-50 rounded-tr-xl rounded-br-xl origin-top-right -right-[192px] translate-y-[-53px]" :class="[widthClass, alignmentClasses]"
+                    style="display: none;" @click="open = false">
+                    <div class="rounded-tr-xl rounded-br-xl" :class="contentClasses">
+                        <slot name="content" />
+                    </div>
+                </div>
+            </transition>
+        </div>
     </div>
 
     <Link v-else :href="href" :class="classes">
-        <slot name="trigger"/>
+    <slot name="trigger" />
     </Link>
 </template>

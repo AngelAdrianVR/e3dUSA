@@ -218,6 +218,9 @@ const logout = () => {
                             <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                 Panel de Inicio
                             </ResponsiveNavLink>
+                            <!-- <ResponsiveNavLink :href="route('catalog-products')" :active="route().current('catalog-products.*')">
+                                Catálogo de productos
+                            </ResponsiveNavLink> -->
                         </div>
 
                         <!-- Responsive Settings Options -->
@@ -304,7 +307,11 @@ const logout = () => {
                         </div>
                     </div>
                 </nav>
-
+                    <header v-if="$slots.header" class="bg-[#D9D9D9] border-t-2 border-gray-400">
+                        <div class="mx-auto py-4 px-4 sm:px-6 lg:px-8">
+                            <slot name="header" />
+                        </div>
+                    </header>
                 <div class="overflow-y-auto h-[calc(100vh-3rem)] bg-[#F2F2F2]">
                     <slot />
                 </div>
