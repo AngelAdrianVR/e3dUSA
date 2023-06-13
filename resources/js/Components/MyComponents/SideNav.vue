@@ -64,7 +64,7 @@ export default {
                     options: [
                         {
                             label: 'Cotizaciones',
-                            route: 'dashboard'
+                            route: 'quotes.index'
                         },
                         {
                             label: 'Clientes',
