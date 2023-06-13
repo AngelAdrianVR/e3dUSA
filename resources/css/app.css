@@ -52,3 +52,17 @@
 	background: #9a9a9a;
 	border-radius: 2px;
 }
+
+@layer components{
+    .input{
+        @apply h-8 bg-[#CCCCCC] border border-transparent text-gray-700 text-sm rounded-lg focus:ring-[#0355B5] focus:border-[#0355B5] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-[#0355B5] dark:focus:border-[#0355B5];
+    }
+
+    .textarea{
+        @apply bg-[#CCCCCC] border border-transparent text-gray-700 text-sm rounded-lg focus:ring-[#0355B5] focus:border-[#0355B5] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-[#0355B5] dark:focus:border-[#0355B5];
+    }
+
+    .label{
+        @apply block mb-2 text-sm font-medium text-gray-600 dark:text-white;
+    }
+}

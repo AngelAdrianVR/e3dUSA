@@ -50,8 +50,8 @@ export default {
                 {
                     label: 'Catálogo de productos',
                     icon: '<i class="fa-solid fa-book-open text-sm"></i>',
-                    route: route('catalog-product.index'),
-                    active: route().current('catalog-product.*'),
+                    route: route('catalog-products.index'),
+                    active: route().current('catalog-products.*'),
                     options: [],
                     dropdown: false,
                     // show: this.$page.props.auth.user.is_admin
