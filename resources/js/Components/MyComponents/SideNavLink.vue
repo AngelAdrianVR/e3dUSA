@@ -53,7 +53,7 @@ const alignmentClasses = computed(() => {
 
 const classes = computed(() => {
     return props.active
-        ? 'flex flex-col items-center py-2 px-2 bg-[#CCCCCC] font-semibold text-sm leading-5 w-full'
+        ? 'flex flex-col items-center py-2 px-2 bg-[#CCCCCC] font-semibold text-sm leading-5 w-full text-[#D90537]'
         : 'flex flex-col items-center text-sm font-medium py-2 px-2 hover:bg-[#CCCCCC] focus:bg-[#CCCCCC] outline-none w-full cursor-pointer';
 });
 </script>
@@ -63,7 +63,7 @@ const classes = computed(() => {
         <div>
             <div @click="open = !open" :class="classes">
                 <slot name="trigger" />
-                <i class="fa-solid fa-angle-right absolute mt-3 right-2 text-gray-600"></i>
+                <i class="fa-solid fa-angle-right absolute mt-3 right-2 text-gray-600" :class="props.active ? 'text-[#D90537]' : ''"></i>
             </div>
 
             <!-- Full Screen Dropdown Overlay -->

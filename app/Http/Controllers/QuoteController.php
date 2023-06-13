@@ -9,7 +9,9 @@ class QuoteController extends Controller
 {
     public function index()
     {
-        //
+        $quotes = Quote::all();
+
+        return inertia('Quote/Index');
     }
 
     public function create()

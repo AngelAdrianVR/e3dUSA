@@ -60,7 +60,7 @@ export default {
                     label: 'Ventas',
                     icon: '<i class="fa-solid fa-shop text-sm"></i>',
                     route: route('dashboard'),
-                    active: route().current('dashboar'),
+                    active: route().current('quotes.*'),
                     options: [
                         {
                             label: 'Cotizaciones',
