@@ -59,7 +59,7 @@ export default {
                 {
                     label: 'Ventas',
                     icon: '<i class="fa-solid fa-shop text-sm"></i>',
-                    active: route().current('quotes.*') || route().current('companies.*'),
+                    active: route().current('quotes.*') || route().current('companies.*') || route().current('sales.*'),
                     options: [
                         {
                             label: 'Cotizaciones',
@@ -71,7 +71,7 @@ export default {
                         },
                         {
                             label: 'Órdenes de venta',
-                            route: 'dashboard'
+                            route: 'sales.index'
                         },
 
                     ],
@@ -81,16 +81,15 @@ export default {
                 {
                     label: 'Compras',
                     icon: '<i class="fa-solid fa-cart-shopping text-sm"></i>',
-                    route: route('dashboard'),
-                    active: route().current('dashboar'),
+                    active: route().current('suppliers.*') || route().current('purchases.*'),
                     options: [
                         {
                             label: 'Proveedores',
-                            route: 'dashboard'
+                            route: 'suppliers.index'
                         },
                         {
                             label: 'Órdenes de compra',
-                            route: 'dashboard'
+                            route: 'purchases.index'
                         },
 
                     ],

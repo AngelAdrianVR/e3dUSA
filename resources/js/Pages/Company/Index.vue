@@ -3,7 +3,7 @@
         <AppLayout title="Cartera de clientes">
         <template #header>
         <div class="flex justify-between">
-            <div class="flex items-center space-x-2 text-gray-600">
+            <div class="flex items-center space-x-2 text-gray-800">
                 <h2 class="font-semibold text-xl leading-tight">Cartera de Clientes</h2>
             </div>
             <div>
@@ -24,9 +24,10 @@
                     </template>
                 </el-popconfirm>
             </div>
-        <el-table :data="filteredTableData" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
+        <el-table :data="companies" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
                 ref="multipleTableRef" :row-class-name="tableRowClassName">
                 <el-table-column type="selection" width="45" />
+                <el-table-column prop="id" label="ID" width="45" />
                 <el-table-column prop="business_name" label="Nombre" width="120" />
                 <el-table-column prop="phone" label="Teléfono" width="120" />
                 <el-table-column prop="rfc" label="RFC" width="100" />
@@ -78,7 +79,7 @@ export default {
     TextInput,
   },
   props: {
-
+    companies: Array
   },
   methods:{
     handleSelectionChange(val) {
@@ -136,8 +137,8 @@ export default {
                 console.log(err);
             }
         },
-        edit(index, catalog_product) {
-            this.$inertia.get(route('catalog-products.edit', catalog_product));
+        edit(index, company) {
+            this.$inertia.get(route('companies.edit', company));
         }
   },
 
