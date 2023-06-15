@@ -3,6 +3,12 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Company;
+use App\Models\CompanyBranch;
+use App\Models\Contact;
+use App\Models\RawMaterial;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -12,11 +18,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        //RawMaterial::factory(10)->create();
+        Company::factory(6)->create();
+        CompanyBranch::factory(18)->create();
+        Contact::factory(54)->create();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        User::create([
+            'name' => 'Super admin',
+            'email' => 'admin@e3dusa.com',
+            'password' => bcrypt('123123123'),
+        ]);
     }
 }
