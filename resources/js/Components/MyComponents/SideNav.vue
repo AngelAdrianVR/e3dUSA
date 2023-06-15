@@ -59,16 +59,15 @@ export default {
                 {
                     label: 'Ventas',
                     icon: '<i class="fa-solid fa-shop text-sm"></i>',
-                    route: route('dashboard'),
-                    active: route().current('dashboar'),
+                    active: route().current('quotes.*') || route().current('companies.*'),
                     options: [
                         {
                             label: 'Cotizaciones',
-                            route: 'dashboard'
+                            route: 'quotes.index'
                         },
                         {
                             label: 'Clientes',
-                            route: 'dashboard'
+                            route: 'companies.index'
                         },
                         {
                             label: 'Órdenes de venta',

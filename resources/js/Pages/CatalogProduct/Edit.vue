@@ -16,7 +16,7 @@
 
 
         <!-- Form -->
-            <form @submit.prevent="store"> 
+            <form @submit.prevent="update"> 
                 <div class="md:w-2/3 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
                     <div class="grid gap-6 mb-6 md:grid-cols-2">
                         <div>
@@ -65,7 +65,7 @@
                         
                     </div>
                         <div class="mt-2 mx-3 md:text-right">
-                            <PrimaryButton :disabled="form.processing"> Crear producto </PrimaryButton>
+                            <PrimaryButton :disabled="form.processing"> Actualizar </PrimaryButton>
                     </div>
                 </div> 
             </form>
@@ -84,13 +84,13 @@ import { ref } from 'vue';
 export default {
   data() {
     const form = useForm({
-        name: null,
-        part_number: null,
-        measure_unit: null,
-        cost: null,
-        min_quantity: null,
-        max_quantity: null,
-        description: null
+        name: this.catalog_product.name,
+        part_number: this.catalog_product.part_number,
+        measure_unit: this.catalog_product.measure_unit,
+        cost: this.catalog_product.cost,
+        min_quantity: this.catalog_product.min_quantity,
+        max_quantity: this.catalog_product.max_quantity,
+        description: this.catalog_product.description
     });
 
     return {
@@ -105,11 +105,11 @@ export default {
     IconInput,
   },
   props: {
-
+    catalog_product: Object
   },
 methods:{
-    store(){
-        this.form.post(route('catalog-products.store'));
+    update(){
+        this.form.put(route('catalog-products.update', this.catalog_product));
     }
 },
 };

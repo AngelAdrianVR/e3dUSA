@@ -36,7 +36,7 @@ const logout = () => {
 
         <Banner />
 
-        <div class="overflow-y-hidden h-screen bg-[#F2F2F2] lg:grid lg:grid-cols-12 darkk:bg-gray-900">
+        <div class="overflow-y-hidden h-screen bg-[#F2F2F2] lg:grid lg:grid-cols-12 darkk::bg-gray-900">
             <aside>
                 <SideNav />
             </aside>
