@@ -35,4 +35,4 @@ Route::middleware([
     })->name('dashboard');
 });
 
-Route::resource('catalog-product', CatalogProductController::class)->middleware('auth');
+Route::resource('catalog-products', CatalogProductController::class)->middleware('auth');
