@@ -7,7 +7,7 @@
           <i class="fa-solid fa-chevron-left"></i>
         </Link>
             <div class="flex items-center space-x-2 text-gray-600">
-                <h2 class="font-semibold text-xl leading-tight mr-24">Crear órden de venta</h2>
+                <h2 class="font-semibold text-xl leading-tight">Crear órden de venta</h2>
             </div>
         </div>
         </template>

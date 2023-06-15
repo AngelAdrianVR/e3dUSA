@@ -7,7 +7,6 @@
           <i class="fa-solid fa-chevron-left"></i>
         </Link>
             <div class="flex items-center space-x-2 text-gray-600">
-                <!-- <i class="fa-brands fa-product-hunt text-xl"></i> -->
                 <h2 class="font-semibold text-xl leading-tight">Editar cliente {{ company.business_name }}</h2>
             </div>
         </div>

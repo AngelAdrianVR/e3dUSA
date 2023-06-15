@@ -19,31 +19,31 @@
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
                     <div class="grid gap-6 mb-6 md:grid-cols-2">
                         <div>
-                            <IconInput v-model="form.business_name" inputPlaceholder="Nombre" inputType="text">
+                            <IconInput v-model="form.business_name" inputPlaceholder="Nombre *" inputType="text">
                                 A
                             </IconInput>
                             <InputError :message="form.errors.business_name" class="mb-3" />
                         </div>
                         <div>
-                            <IconInput v-model="form.phone" inputPlaceholder="Teléfono" inputType="text">
+                            <IconInput v-model="form.phone" inputPlaceholder="Teléfono *" inputType="text">
                                 <i class="fa-solid fa-phone"></i>
                             </IconInput>
                             <InputError :message="form.errors.phone" class="mb-3" />
                         </div>
                         <div>
-                            <IconInput v-model="form.rfc" inputPlaceholder="RFC" inputType="text">
+                            <IconInput v-model="form.rfc" inputPlaceholder="RFC *" inputType="text">
                                 <i class="fa-solid fa-sheet-plastic"></i>
                             </IconInput>
                             <InputError :message="form.errors.rfc" class="mb-3" />
                         </div>
                         <div>
-                            <IconInput v-model="form.post_code" inputPlaceholder="Código postal" inputType="text">
+                            <IconInput v-model="form.post_code" inputPlaceholder="C.P. *" inputType="text">
                                 <i class="fa-solid fa-envelopes-bulk"></i>
                             </IconInput>
                             <InputError :message="form.errors.post_code" class="mb-3" />
                         </div>
                         <div>
-                            <IconInput v-model="form.fiscal_address" inputPlaceholder="Domicilio fiscal">
+                            <IconInput v-model="form.fiscal_address" inputPlaceholder="Domicilio fiscal *">
                                 <i class="fa-solid fa-building"></i>
                             </IconInput>
                             <InputError :message="form.errors.fiscal_address" class="mb-3" />

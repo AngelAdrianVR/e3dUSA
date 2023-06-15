@@ -54,7 +54,7 @@ class CompanyController extends Controller
     {
         $request->validate([
             'business_name' => 'required|string|unique:companies,business_name',
-            'phone' => 'required|min:10|max:12',
+            'phone' => 'required|min:10|max:13',
             'rfc' => 'required|string|unique:companies,rfc',
             'post_code' => 'required',
             'fiscal_address' => 'required',
