@@ -1,6 +1,6 @@
 <template>
     <div>
-        <AppLayout title="Clientes - Crear">
+        <AppLayout title="Clientes - Editar">
         <template #header>
         <div class="flex justify-between">
         <Link :href="route('companies.index')" class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center">
@@ -8,7 +8,7 @@
         </Link>
             <div class="flex items-center space-x-2 text-gray-600">
                 <!-- <i class="fa-brands fa-product-hunt text-xl"></i> -->
-                <h2 class="font-semibold text-xl leading-tight">Agregar nuevo cliente</h2>
+                <h2 class="font-semibold text-xl leading-tight">Editar cliente {{ company.business_name }}</h2>
             </div>
         </div>
         </template>
@@ -16,7 +16,7 @@
 
 
         <!-- Form -->
-            <form @submit.prevent="store"> 
+            <form @submit.prevent="update"> 
                 <div class="md:w-2/3 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
                     <div class="grid gap-6 mb-6 md:grid-cols-2">
                         <div>
@@ -51,7 +51,7 @@
                         </div>
                     </div>
                         <div class="mt-2 mx-3 md:text-right">
-                            <PrimaryButton :disabled="form.processing"> Agregar Cliente </PrimaryButton>
+                            <PrimaryButton :disabled="form.processing"> Actualizar Cliente </PrimaryButton>
                 </div> 
             </div> 
             </form>
@@ -70,11 +70,11 @@ import { ref } from 'vue';
 export default {
   data() {
     const form = useForm({
-        business_name: null,
-        phone: null,
-        rfc: null,
-        post_code: null,
-        fiscal_address: null,
+        business_name: this.company.business_name,
+        phone: this.company.phone,
+        rfc: this.company.rfc,
+        post_code: this.company.post_code,
+        fiscal_address: this.company.fiscal_address,
 
     });
 
@@ -90,11 +90,11 @@ export default {
     IconInput,
   },
   props: {
-
+    company: Object
   },
 methods:{
     store(){
-        this.form.post(route('companies.store'));
+        this.form.put(route('companies.update', this.company));
     }
 },
 };

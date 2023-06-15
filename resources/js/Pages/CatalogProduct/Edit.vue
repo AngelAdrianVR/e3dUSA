@@ -1,6 +1,6 @@
 <template>
     <div>
-        <AppLayout title="Catalogo de productos - Crear">
+        <AppLayout title="Catalogo de productos - Editar">
         <template #header>
         <div class="flex justify-between">
         <Link :href="route('catalog-products.index')" class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center">
@@ -8,7 +8,7 @@
         </Link>
             <div class="flex items-center space-x-2 text-gray-600">
                 <!-- <i class="fa-brands fa-product-hunt text-xl"></i> -->
-                <h2 class="font-semibold text-xl leading-tight">Agregar nuevo producto a catálogo</h2>
+                <h2 class="font-semibold text-xl leading-tight">Editar producto "{{ catalog_product.name }}"</h2>
             </div>
         </div>
         </template>
