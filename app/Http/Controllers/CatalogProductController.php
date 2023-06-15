@@ -10,7 +10,8 @@ class CatalogProductController extends Controller
     
     public function index()
     {
-        return inertia('CatalogProduct/Index');
+        $catalog_products = CatalogProduct::all();
+        return inertia('CatalogProduct/Index', compact('catalog_products'));
     }
 
     
