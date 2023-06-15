@@ -1,7 +1,7 @@
 <template>
     <AppLayout title="Cotizaciones">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-600 leading-tight">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Cotizaciones
             </h2>
         </template>

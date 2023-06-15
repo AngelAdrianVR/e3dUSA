@@ -17,7 +17,7 @@
 
         <!-- Form -->
             <form @submit.prevent="store"> 
-                <div class="md:w-2/3 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
+                <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
                     <div class="grid gap-6 mb-6 md:grid-cols-2">
                         <div>
                             <IconInput v-model="form.name" inputPlaceholder="Nombre" inputType="text">

@@ -3,7 +3,7 @@
         <AppLayout title="Cartera de clientes">
         <template #header>
         <div class="flex justify-between">
-            <div class="flex items-center space-x-2 text-gray-600">
+            <div class="flex items-center space-x-2 text-gray-800">
                 <h2 class="font-semibold text-xl leading-tight">Cartera de Clientes</h2>
             </div>
             <div>
@@ -27,6 +27,7 @@
         <el-table :data="companies" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
                 ref="multipleTableRef" :row-class-name="tableRowClassName">
                 <el-table-column type="selection" width="45" />
+                <el-table-column prop="id" label="ID" width="45" />
                 <el-table-column prop="business_name" label="Nombre" width="120" />
                 <el-table-column prop="phone" label="Teléfono" width="120" />
                 <el-table-column prop="rfc" label="RFC" width="100" />

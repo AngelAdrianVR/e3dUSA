@@ -1,13 +1,13 @@
 <template>
     <div>
-        <AppLayout title="Catalogo de productos">
+        <AppLayout title="Órdenes de venta">
         <template #header>
         <div class="flex justify-between">
             <div class="flex items-center space-x-2 text-gray-800">
-                <h2 class="font-semibold text-xl leading-tight">Catálogo de productos</h2>
+                <h2 class="font-semibold text-xl leading-tight">Órdenes de venta</h2>
             </div>
             <div>
-            <Link :href="route('catalog-products.create')">
+            <Link :href="route('sales.create')">
                 <SecondaryButton>+ Nuevo</SecondaryButton>
             </Link>
             </div>
@@ -24,17 +24,14 @@
                     </template>
                 </el-popconfirm>
             </div>
-        <el-table :data="filteredTableData" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
+        <el-table :data="companies" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
                 ref="multipleTableRef" :row-class-name="tableRowClassName">
                 <el-table-column type="selection" width="45" />
-                <el-table-column prop="" label="Imagen" width="80" />
-                <el-table-column prop="name" label="Nombre" width="150" />
-                <el-table-column prop="part_number" label="Num de parte" width="130" />
-                <el-table-column prop="measure_unit" label="Unidad de medida" width="150" />
-                <el-table-column prop="min_quantity" label="Cant. min" width="100" />
-                <el-table-column prop="max_quantity" label="Cant. max" width="100" />
-                <el-table-column prop="cost" label="Costo $" width="75" />
-                <el-table-column prop="description" label="Descripción" />
+                <el-table-column prop="id" label="ID" width="45" />
+                <el-table-column prop="user_id" label="Creador" width="120" />
+                <el-table-column prop="company_branch_id" label="Cliente" width="120" />
+                <el-table-column prop="created_at" label="Creado el" width="100" />
+                <el-table-column prop="status" label="Estatus" width="120" />
                 <el-table-column align="right" fixed="right">
                     <template #header>
                         <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
@@ -81,7 +78,7 @@ export default {
     TextInput,
   },
   props: {
-    catalog_products: Array
+    companies: Array
   },
   methods:{
     handleSelectionChange(val) {
@@ -139,22 +136,22 @@ export default {
                 console.log(err);
             }
         },
-        edit(index, catalog_product) {
-            this.$inertia.get(route('catalog-products.edit', catalog_product));
+        edit(index, company) {
+            this.$inertia.get(route('companies.edit', company));
         }
   },
 
-  computed: {
-        filteredTableData() {
-            return this.catalog_products.filter(
-                (catalog_product) =>
-                    !this.search ||
-                    catalog_product.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                    catalog_product.part_number.toLowerCase().includes(this.search.toLowerCase()) ||
-                    catalog_product.measure_unit.toLowerCase().includes(this.search.toLowerCase()) ||
-                    catalog_product.description.name.toLowerCase().includes(this.search.toLowerCase())
-            )
-        }
-    },
+//   computed: {
+//         filteredTableData() {
+//             return this.catalog_products.filter(
+//                 (catalog_product) =>
+//                     !this.search ||
+//                     catalog_product.name.toLowerCase().includes(this.search.toLowerCase()) ||
+//                     catalog_product.part_number.toLowerCase().includes(this.search.toLowerCase()) ||
+//                     catalog_product.measure_unit.toLowerCase().includes(this.search.toLowerCase()) ||
+//                     catalog_product.description.name.toLowerCase().includes(this.search.toLowerCase())
+//             )
+//         }
+//     },
 };
 </script>

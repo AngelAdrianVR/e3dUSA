@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\SaleController;
 use App\Models\CatalogProduct;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -44,4 +45,8 @@ Route::post('catalog-prosucts/massive-delete', [CatalogProduct::class, 'massiveD
 
 
 // ------- Ventas(Clients Routes)  ---------
-Route::resource('companies', CompanyController::class);
+Route::resource('companies', CompanyController::class)->middleware('auth');
+
+
+// ------- Ventas(sale orders Routes)  ---------
+Route::resource('sales', SaleController::class)->middleware('auth');
