@@ -13,6 +13,17 @@ return new class extends Migration
     {
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
+            $table->unsignedTinyInteger('status');
+            $table->text('notes')->nullable();
+            $table->string('authorized_user_name');
+            $table->timestamp('authorized_at')->nullable();
+            $table->date('expected_delivery_date');
+            $table->timestamp('emited_at')->nullable();
+            $table->timestamp('recieved_at')->nullable();
+            $table->boolean('is_iva_included')->default(false);
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('supplier_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('contact_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

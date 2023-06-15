@@ -13,6 +13,16 @@ return new class extends Migration
     {
         Schema::create('organizations', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('business_name');
+            $table->string('rfc');
+            $table->string('fiscal_address');
+            $table->string('post_code', 5);
+            $table->string('phone_one', 13);
+            $table->string('phone_two', 13)->nullable();
+            $table->string('logo');
+            $table->string('shield');
+            $table->string('website');
             $table->timestamps();
         });
     }

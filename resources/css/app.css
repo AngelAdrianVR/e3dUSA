@@ -5,3 +5,64 @@
 [x-cloak] {
     display: none;
 }
+
+@layer utilities{
+    .bg-primary {
+        background-color: #D90537;
+    }
+    .bg-primary-light {
+        background-color: #e2355d;
+    }
+
+    .text-primary {
+        color: #D90537;
+    }
+
+    .bg-secondary{
+        background-color: #0355B5;
+    }
+    .bg-secondary-light{
+        background-color: #136bcf;
+    }
+
+    .text-secondary{
+        color: #0355B5;
+    }
+
+    .bg-primary-gray{
+        background-color: #9a9a9a;
+    }
+
+    .bg-secondary-gray{
+        background-color: #cccccc;
+    }
+}
+
+*::-webkit-scrollbar {
+	width: 3px;
+	background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+	background: #9a9a9a;
+	border-radius: 2px;
+}
+
+*::-webkit-scrollbar-thumb:horizontal {
+	background: #9a9a9a;
+	border-radius: 2px;
+}
+
+@layer components{
+    .input{
+        @apply h-8 bg-[#CCCCCC] border border-transparent text-gray-700 text-sm rounded-lg focus:ring-[#0355B5] focus:border-[#0355B5] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-[#0355B5] dark:focus:border-[#0355B5];
+    }
+
+    .textarea{
+        @apply bg-[#CCCCCC] border border-transparent text-gray-700 text-sm rounded-lg focus:ring-[#0355B5] focus:border-[#0355B5] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-[#0355B5] dark:focus:border-[#0355B5];
+    }
+
+    .label{
+        @apply block mb-2 text-sm font-medium text-gray-600 dark:text-white;
+    }
+}

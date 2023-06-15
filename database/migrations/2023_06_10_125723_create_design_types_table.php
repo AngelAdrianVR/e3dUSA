@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('design_types', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->unsignedFloat('min_time');
+            $table->unsignedFloat('max_time');
             $table->timestamps();
         });
     }
