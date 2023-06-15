@@ -56,7 +56,7 @@
                             <InputError :message="form.errors.max_quantity" class="mb-3" />
                         </div>
                         <div class="flex">
-                            <span class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                            <span class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
                                 ...
                             </span>
                             <textarea v-model="form.description" id="description" class="textarea" autocomplete="off" placeholder="Descripción" required></textarea>

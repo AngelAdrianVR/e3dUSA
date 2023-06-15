@@ -8,16 +8,16 @@
 
         <div class="lg:w-5/6 mx-auto mt-6">
             <div class="flex space-x-2 justify-end">
-                <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
-                    title="Continuar con la eliminacion?" @confirm="deleteSelections">
+                <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+                    @confirm="deleteSelections">
                     <template #reference>
                         <el-button type="danger" plain class="mb-3" :disabled="disableMassiveActions">Eliminar</el-button>
                     </template>
                 </el-popconfirm>
             </div>
 
-            <el-table :data="filteredTableData" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
-                ref="multipleTableRef" :row-class-name="tableRowClassName">
+            <el-table :data="filteredTableData" max-height="450" style="width: 100%"
+                @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                 <el-table-column type="selection" width="45" />
                 <el-table-column prop="folio" label="Folio" width="85" />
                 <el-table-column prop="user.name" label="Creado por" />
@@ -42,6 +42,7 @@
 
 import AppLayout from '@/Layouts/AppLayout.vue';
 import TextInput from '@/Components/TextInput.vue';
+import axios from 'axios';
 
 export default {
     components: {
@@ -59,6 +60,7 @@ export default {
             type: Array,
             default: [
                 {
+                    id: '1',
                     folio: 'COT-001',
                     receiver: 'Alexis Llanos',
                     department: 'Mercadotecnia',
@@ -91,6 +93,7 @@ export default {
                     ],
                 },
                 {
+                    id: '2',
                     folio: 'COT-002',
                     receiver: 'Anguel Vazquez',
                     department: 'Ventas',
@@ -126,29 +129,6 @@ export default {
         },
     },
     methods: {
-        /*  async markAsDispatched() {
-             try {
-                 const response = await axios.post(route('messages.mark-as-dispatched', {
-                     messages: this.$refs.multipleTableRef.value
-                 }));
- 
-                 if (response.status == 200) {
-                     this.toast.success(response.data.message);
- 
-                     // change status to selected items
-                     this.$refs.multipleTableRef.value.forEach(element => {
-                         element.status = 1;
-                     });
- 
-                 } else {
-                     this.toast.error(response.data.message);
-                 }
- 
-             } catch (err) {
-                 this.toast.error(err);
-                 console.log(err);
-             }
-         }, */
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
 
@@ -160,18 +140,21 @@ export default {
         },
         async deleteSelections() {
             try {
-                const response = await axios.post(route('messages.massive-delete', {
-                    messages: this.$refs.multipleTableRef.value
+                const response = await axios.post(route('quotes.massive-delete', {
+                    quotes: this.$refs.multipleTableRef.value
                 }));
 
                 if (response.status == 200) {
-                    // let indexes = [];
-                    this.toast.success(response.data.message);
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
 
-                    // update list of messages
+                    // update list of quotes
                     let deletedIndexes = [];
-                    this.messages.forEach((message, index) => {
-                        if (this.$refs.multipleTableRef.value.includes(message)) {
+                    this.quotes.forEach((quote, index) => {
+                        if (this.$refs.multipleTableRef.value.includes(quote)) {
                             deletedIndexes.push(index);
                         }
                     });
@@ -179,17 +162,25 @@ export default {
                     // Ordenar los índices de forma descendente para evitar problemas de desplazamiento al eliminar elementos
                     deletedIndexes.sort((a, b) => b - a);
 
-                    // Eliminar mensajes por índice
+                    // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.messages.splice(index, 1);
+                        this.quotes.splice(index, 1);
                     }
 
                 } else {
-                    this.toast.error(response.data.message);
+                    this.$notify({
+                        title: 'Algo salió mal',
+                        message: response.data.message,
+                        type: 'error'
+                    });
                 }
 
             } catch (err) {
-                this.toast.error(err);
+                this.$notify({
+                        title: 'Algo salió mal',
+                        message: err.message,
+                        type: 'error'
+                    });
                 console.log(err);
             }
         },

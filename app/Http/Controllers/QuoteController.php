@@ -43,4 +43,14 @@ class QuoteController extends Controller
     {
         //
     }
+
+    public function massiveDelete(Request $request)
+    {
+        foreach ($request->quotes as $quote) {
+            $quote = Quote::find($quote['id']);
+            $quote?->delete();
+        }
+
+        return response()->json(['message' => 'Cotización(es) eliminada(s)']);
+    }
 }

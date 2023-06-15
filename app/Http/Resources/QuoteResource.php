@@ -15,6 +15,7 @@ class QuoteResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'folio' => 'COT-' . str_pad($this->id, 3, "0", STR_PAD_LEFT),
             'receiver' => $this->receiver,
             'department' => $this->department,
