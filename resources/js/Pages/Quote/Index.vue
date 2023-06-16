@@ -1,9 +1,14 @@
 <template>
     <AppLayout title="Cotizaciones">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Cotizaciones
-            </h2>
+            <div class="flex justify-between">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    Cotizaciones
+                </h2>
+                <Link :href="route('quotes.create')">
+                    <SecondaryButton>+ Nuevo</SecondaryButton>
+                </Link>
+            </div>
         </template>
 
         <div class="lg:w-5/6 mx-auto mt-6">
@@ -43,11 +48,15 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import TextInput from '@/Components/TextInput.vue';
 import axios from 'axios';
+import SecondaryButton from "@/Components/SecondaryButton.vue";
+import { Link } from "@inertiajs/vue3";
 
 export default {
     components: {
         AppLayout,
         TextInput,
+        SecondaryButton,
+        Link,
     },
     data() {
         return {
