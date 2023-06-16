@@ -65,4 +65,20 @@
     .label{
         @apply block mb-2 text-sm font-medium text-gray-600;
     }
+    
+    /* element+ el-radio-button */
+    .el-radio-button__original-radio:checked+.el-radio-button__inner {
+        background-color: #0355B5 !important;
+    }
+    
+    .el-radio-button > span.el-radio-button__inner{
+        background-color: transparent !important;
+        border: solid 1px #cccccc !important;
+    }
+    
+    .el-radio-button:not(.is-active) > span.el-radio-button__inner:hover{
+        color: #0355B5 !important;
+    }
+
+    
 }

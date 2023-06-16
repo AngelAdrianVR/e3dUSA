@@ -16,7 +16,7 @@ class QuoteController extends Controller
 
     public function create()
     {
-        //
+        return inertia('Quote/Create');
     }
 
     public function store(Request $request)

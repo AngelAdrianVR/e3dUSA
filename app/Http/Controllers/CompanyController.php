@@ -70,4 +70,14 @@ class CompanyController extends Controller
     {
         //
     }
+
+    public function massiveDelete(Request $request)
+    {
+        foreach ($request->companies as $company) {
+            $company = Company::find($company['id']);
+            $company?->delete();
+        }
+
+        return response()->json(['message' => 'Cliente(s) eliminado(s)']);
+    }
 }

@@ -28,14 +28,11 @@
                 ref="multipleTableRef" :row-class-name="tableRowClassName">
                 <el-table-column type="selection" width="45" />
                 <el-table-column prop="" label="Imagen" width="80" />
-                <el-table-column prop="name" label="Nombre" width="150" />
-                <el-table-column prop="part_number" label="Num de parte" width="130" />
-                <el-table-column prop="measure_unit" label="Unidad de medida" width="150" />
-                <el-table-column prop="min_quantity" label="Cant. min" width="100" />
-                <el-table-column prop="max_quantity" label="Cant. max" width="100" />
-                <el-table-column prop="cost" label="Costo $" width="75" />
+                <el-table-column prop="part_number" label="Num de parte" width="200" />
+                <el-table-column prop="name" label="Nombre" width="200" />
+                <el-table-column prop="cost" label="Costo $" width="150" />
                 <el-table-column prop="description" label="Descripción" />
-                <el-table-column align="right" fixed="right">
+                <el-table-column align="right" fixed="right" width="200">
                     <template #header>
                         <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
                     </template>
@@ -151,8 +148,7 @@ export default {
                     !this.search ||
                     catalog_product.name.toLowerCase().includes(this.search.toLowerCase()) ||
                     catalog_product.part_number.toLowerCase().includes(this.search.toLowerCase()) ||
-                    catalog_product.measure_unit.toLowerCase().includes(this.search.toLowerCase()) ||
-                    catalog_product.description.name.toLowerCase().includes(this.search.toLowerCase())
+                    catalog_product.measure_unit.toLowerCase().includes(this.search.toLowerCase())
             )
         }
     },
