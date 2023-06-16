@@ -12,7 +12,7 @@ class Quote extends Model
     use HasFactory;
 
     protected $fillable = [
-        'reciever',
+        'receiver',
         'department',
         'tooling_cost',
         'freight_cost',
