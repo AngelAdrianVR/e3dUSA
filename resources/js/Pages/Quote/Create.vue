@@ -146,6 +146,7 @@
                             <el-select v-model="product.id" clearable filterable placeholder="Busca el producto"
                                 no-data-text="No hay productos registrados" no-match-text="No se encontraron coincidencias">
                                 <el-option v-for="item in catalog_products" :key="item.id" :label="item.name"
+
                                     :value="item.id" />
                             </el-select>
                         </div>
@@ -155,6 +156,7 @@
                                 <i class="fa-solid fa-eye"></i>
                             </span>
                             <el-switch v-model="product.show_image" inline-prompt size="large"
+
                                 style="--el-switch-on-color: #0355B5; --el-switch-off-color: #CCCCCC"
                                 active-text="Mostrar imagen en cotización"
                                 inactive-text="No mostrar imagen en cotización" />
