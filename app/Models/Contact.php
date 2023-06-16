@@ -11,12 +11,13 @@ class Contact extends Model
     use HasFactory;
 
     protected $fillable = [
-        'contactable',
+        'contactable_id',
+        'contactable_type',
         'name',
         'email',
         'phone',
         'birthdate',
-        'charge'
+        'charge',
     ];
 
     //relationships
