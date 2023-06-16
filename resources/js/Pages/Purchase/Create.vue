@@ -27,13 +27,13 @@
                     <div class="grid gap-6 mb-6 md:grid-cols-2">
                         <div>
                             <IconInput v-model="form.address" inputPlaceholder="Paquetería" inputType="text">
-                                <i class="fa-solid fa-map-location-dot"></i>
+                                <i class="fa-solid fa-truck-fast"></i>
                             </IconInput>
                             <InputError :message="form.errors.address" class="mb-3" />
                         </div>
                         <div>
                             <IconInput v-model="form.post_code" inputPlaceholder="Guía" inputType="text">
-                                <i class="fa-solid fa-envelopes-bulk"></i>
+                                <i class="fa-solid fa-magnifying-glass-location"></i>
                             </IconInput>
                             <InputError :message="form.errors.post_code" class="mb-3" />
                         </div>
