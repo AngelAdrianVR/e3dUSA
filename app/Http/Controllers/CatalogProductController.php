@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CatalogProduct;
+use App\Models\RawMaterial;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -18,7 +19,9 @@ class CatalogProductController extends Controller
     
     public function create()
     {
-        return inertia('CatalogProduct/Create');
+        $raw_materials = RawMaterial::all();
+        
+        return inertia('CatalogProduct/Create', compact('raw_materials'));
     }
 
     

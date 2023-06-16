@@ -28,5 +28,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@e3dusa.com',
             'password' => bcrypt('123123123'),
         ]);
+        
+        $this->call(ProductionCostSeeder::class);
     }
 }

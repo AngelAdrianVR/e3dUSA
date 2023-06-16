@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CatalogProductController;
+use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SaleController;
@@ -43,15 +44,21 @@ Route::middleware([
 
 // ------- Catalog Products Routes ---------
 Route::resource('catalog-products', CatalogProductController::class)->middleware('auth');
-Route::post('catalog-prosucts/massive-delete', [CatalogProduct::class, 'massiveDelete'])->name('catalog-products.massive-delete');
+Route::post('catalog-products/massive-delete', [CatalogProductController::class, 'massiveDelete'])->name('catalog-products.massive-delete');
 
 
 // ------- Ventas(Clients Routes)  ---------
 Route::resource('companies', CompanyController::class)->middleware('auth');
+Route::post('companies/massive-delete', [CompanyController::class, 'massiveDelete'])->name('companies.massive-delete');
+
 
 
 // ------- Ventas(sale orders Routes)  ---------
 Route::resource('sales', SaleController::class)->middleware('auth');
+
+
+// ------- Ventas(Companybranches sucursales Routes)  ---------
+Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');
 
 
 // ------- Compras(Suppliers Routes)  ---------
@@ -60,3 +67,4 @@ Route::resource('suppliers', SupplierController::class)->middleware('auth');
 
 // ------- Compras(purchases Routes)  ---------
 Route::resource('purchases', PurchaseController::class)->middleware('auth');
+
