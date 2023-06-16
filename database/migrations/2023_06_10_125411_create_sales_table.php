@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->string('shopping_company');
+            $table->string('shipping_company')->nullable();
             $table->unsignedMediumInteger('freight_cost');
             $table->unsignedTinyInteger('status');
             $table->string('oce_name');
