@@ -1,6 +1,11 @@
 <?php
 
 use App\Http\Controllers\CatalogProductController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\SaleController;
+use App\Http\Controllers\SupplierController;
+use App\Models\CatalogProduct;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -35,4 +40,23 @@ Route::middleware([
     })->name('dashboard');
 });
 
+
+// ------- Catalog Products Routes ---------
 Route::resource('catalog-products', CatalogProductController::class)->middleware('auth');
+Route::post('catalog-prosucts/massive-delete', [CatalogProduct::class, 'massiveDelete'])->name('catalog-products.massive-delete');
+
+
+// ------- Ventas(Clients Routes)  ---------
+Route::resource('companies', CompanyController::class)->middleware('auth');
+
+
+// ------- Ventas(sale orders Routes)  ---------
+Route::resource('sales', SaleController::class)->middleware('auth');
+
+
+// ------- Compras(Suppliers Routes)  ---------
+Route::resource('suppliers', SupplierController::class)->middleware('auth');
+
+
+// ------- Compras(purchases Routes)  ---------
+Route::resource('purchases', PurchaseController::class)->middleware('auth');

@@ -1,13 +1,13 @@
 <template>
     <div>
-        <AppLayout title="Catalogo de productos - Crear">
+        <AppLayout title="Catalogo de productos - Editar">
         <template #header>
         <div class="flex justify-between">
         <Link :href="route('catalog-products.index')" class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center">
           <i class="fa-solid fa-chevron-left"></i>
         </Link>
             <div class="flex items-center space-x-2 text-gray-600">
-                <h2 class="font-semibold text-xl leading-tight">Agregar nuevo producto a catálogo</h2>
+                <h2 class="font-semibold text-xl leading-tight">Editar producto "{{ catalog_product.name }}"</h2>
             </div>
         </div>
         </template>
@@ -15,23 +15,23 @@
 
 
         <!-- Form -->
-            <form @submit.prevent="store"> 
-                <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
+            <form @submit.prevent="update"> 
+                <div class="md:w-2/3 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
                     <div class="grid gap-6 mb-6 md:grid-cols-2">
                         <div>
-                            <IconInput v-model="form.name" inputPlaceholder="Nombre *" inputType="text">
+                            <IconInput v-model="form.name" inputPlaceholder="Nombre" inputType="text">
                                 A
                             </IconInput>
                             <InputError :message="form.errors.name" class="mb-3" />
                         </div>
                         <div>
-                            <IconInput v-model="form.part_number" inputPlaceholder="Número de parte *" inputType="text">
+                            <IconInput v-model="form.part_number" inputPlaceholder="Número de parte" inputType="text">
                                 #
                             </IconInput>
                             <InputError :message="form.errors.part_number" class="mb-3" />
                         </div>
                         <div>
-                            <IconInput v-model="form.measure_unit" inputPlaceholder="Unidad de medida *" inputType="text">
+                            <IconInput v-model="form.measure_unit" inputPlaceholder="Unidad de medida" inputType="text">
                                 <i class="fa-solid fa-ruler-vertical"></i>
                             </IconInput>
                             <InputError :message="form.errors.measure_unit" class="mb-3" />
@@ -58,13 +58,13 @@
                             <span class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
                                 ...
                             </span>
-                            <textarea v-model="form.description" class="textarea" autocomplete="off" placeholder="Descripción *" required></textarea>
+                            <textarea v-model="form.description" id="description" class="textarea" autocomplete="off" placeholder="Descripción" required></textarea>
                             <InputError :message="form.errors.description" class="mb-3" />
                         </div>
                         
                     </div>
                         <div class="mt-2 mx-3 md:text-right">
-                            <PrimaryButton :disabled="form.processing"> Crear producto </PrimaryButton>
+                            <PrimaryButton :disabled="form.processing"> Actualizar </PrimaryButton>
                     </div>
                 </div> 
             </form>
@@ -83,13 +83,13 @@ import { ref } from 'vue';
 export default {
   data() {
     const form = useForm({
-        name: null,
-        part_number: null,
-        measure_unit: null,
-        cost: null,
-        min_quantity: null,
-        max_quantity: null,
-        description: null
+        name: this.catalog_product.name,
+        part_number: this.catalog_product.part_number,
+        measure_unit: this.catalog_product.measure_unit,
+        cost: this.catalog_product.cost,
+        min_quantity: this.catalog_product.min_quantity,
+        max_quantity: this.catalog_product.max_quantity,
+        description: this.catalog_product.description
     });
 
     return {
@@ -104,11 +104,11 @@ export default {
     IconInput,
   },
   props: {
-
+    catalog_product: Object
   },
 methods:{
-    store(){
-        this.form.post(route('catalog-products.store'));
+    update(){
+        this.form.put(route('catalog-products.update', this.catalog_product));
     }
 },
 };
