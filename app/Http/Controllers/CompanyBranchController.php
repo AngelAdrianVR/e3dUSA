@@ -7,57 +7,60 @@ use Illuminate\Http\Request;
 
 class CompanyBranchController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string',
+            'address' => 'required|string',
+            'post_code_branch' => 'required|string',
+            'sat_method' => 'required|string',
+            'sat_type' => 'required|string',
+            'sat_way' => 'required|string',
+        ]);
+
+        CompanyBranch::create([
+            'name' => $request->name,
+            'address' => $request->address,
+            'post_code' => $request->post_code_branch,
+            'sat_method' => $request->sat_method,
+            'sat_type' => $request->sat_type,
+            'sat_way' => $request->sat_way
+        ]);
+
     }
 
-    /**
-     * Display the specified resource.
-     */
+    
     public function show(CompanyBranch $companyBranch)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    
     public function edit(CompanyBranch $companyBranch)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    
     public function update(Request $request, CompanyBranch $companyBranch)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    
     public function destroy(CompanyBranch $companyBranch)
     {
         //
