@@ -25,12 +25,14 @@ class QuoteResource extends JsonResource
             'notes' => $this->notes ?? '--',
             'currency' => $this->currency,
             'authorized_user_name' => $this->authorized_user_name,
-            'authorized_at' => $this->authorized_at->isoFormat('DD MMM, YYYY h:i A'),
+            'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:i A'),
             'is_spanish_template' => boolval($this->is_spanish_template),
-            'company_branch' => $this->companyBranch,
+            'companyBranch' => $this->companyBranch,
             'user' => $this->user,
             'sale' => $this->sale,
             'products' => $this->catalogProducts,
+            'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:m A'),
+            'total' => 3000,
         ];
     }
 }
