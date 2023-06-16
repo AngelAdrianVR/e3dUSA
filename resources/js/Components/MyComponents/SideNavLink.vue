@@ -53,8 +53,8 @@ const alignmentClasses = computed(() => {
 
 const classes = computed(() => {
     return props.active
-        ? 'flex flex-col items-center py-2 px-2 bg-[#CCCCCC] font-semibold text-sm leading-5 w-full text-[#D90537]'
-        : 'flex flex-col items-center text-sm font-medium py-2 px-2 hover:bg-[#CCCCCC] focus:bg-[#CCCCCC] outline-none w-full cursor-pointer';
+        ? 'flex flex-col items-center py-2 px-2 bg-[#CCCCCC] font-semibold text-sm leading-5 w-full text-[#D90537] relative'
+        : 'flex flex-col items-center text-sm font-medium py-2 px-2 hover:bg-[#CCCCCC] focus:bg-[#CCCCCC] outline-none w-full cursor-pointer relative';
 });
 </script>
 

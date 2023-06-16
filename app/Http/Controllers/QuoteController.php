@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CatalogProduct;
 use App\Models\Quote;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,9 @@ class QuoteController extends Controller
 
     public function create()
     {
-        //
+        $catalog_products = CatalogProduct::all();
+
+        return inertia('Quote/Create', compact('catalog_products'));
     }
 
     public function store(Request $request)
