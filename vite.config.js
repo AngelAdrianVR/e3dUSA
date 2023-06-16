@@ -7,7 +7,6 @@ import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 export default defineConfig({
-
     plugins: [
         laravel({
             input: 'resources/js/app.js',
@@ -23,9 +22,9 @@ export default defineConfig({
         }),
         AutoImport({
             resolvers: [ElementPlusResolver()],
-          }),
-          Components({
+        }),
+        Components({
             resolvers: [ElementPlusResolver()],
-          }),
+        }),
     ],
 });
