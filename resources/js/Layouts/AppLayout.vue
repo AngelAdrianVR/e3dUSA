@@ -312,7 +312,7 @@ const logout = () => {
                             <slot name="header" />
                         </div>
                     </header>
-                <div class="overflow-y-auto h-[calc(100vh-3rem)] bg-[#F2F2F2]">
+                <div class="overflow-y-auto h-[calc(100vh-8rem)] bg-[#F2F2F2]">
                     <slot />
                 </div>
             </main>
