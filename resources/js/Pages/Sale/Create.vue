@@ -6,7 +6,7 @@
         <Link :href="route('sales.index')" class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center">
           <i class="fa-solid fa-chevron-left"></i>
         </Link>
-            <div class="flex items-center space-x-2 text-gray-600">
+            <div class="flex items-center space-x-2">
                 <h2 class="font-semibold text-xl leading-tight">Crear órden de venta</h2>
             </div>
         </div>
@@ -18,72 +18,109 @@
             <form @submit.prevent="store"> 
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
                     <div>
-                        <IconInput v-model="form.business_name" inputPlaceholder="Cliente" inputType="text">
-                            A
-                        </IconInput>
-                        <InputError :message="form.errors.business_name" class="mb-3" />
+                    <el-select v-model="form.company_branch_id" class="mt-2" placeholder="Selecciona un cliente">
+                                    <el-option
+                                    v-for="item in companies"
+                                    :key="item.id"
+                                    :label="item.business_name"
+                                    :value="item.id"
+                                    />
+                    </el-select>
                     </div>
-                        <h3 class="text-lg text-secondary text-center font-bold my-2">Logistica</h3>
-                    <div class="grid gap-6 mb-6 md:grid-cols-3">
+
+                    <el-divider content-position="left">Logistica</el-divider>
+
+
+                    <div class="md:grid gap-6 mb-6 grid-cols-3">
                         <div>
-                            <IconInput v-model="form.business_name" inputPlaceholder="Paquetería" inputType="text">
-                                A
+                            <IconInput v-model="form.shipping_company" inputPlaceholder="Paquetería" inputType="text">
+                                <i class="fa-solid fa-truck-fast"></i>
                             </IconInput>
-                            <InputError :message="form.errors.business_name" class="mb-3" />
+                            <InputError :message="form.errors.shipping_company" />
                         </div>
                         <div>
-                            <IconInput v-model="form.phone" inputPlaceholder="Costo logística" inputType="text">
-                                <i class="fa-solid fa-phone"></i>
+                            <IconInput v-model="form.freight_cost" inputPlaceholder="Costo logística" inputType="text">
+                                <i class="fa-solid fa-file-invoice-dollar"></i>
                             </IconInput>
-                            <InputError :message="form.errors.phone" class="mb-3" />
+                            <InputError :message="form.errors.freight_cost" />
                         </div>
                         <div>
-                            <IconInput v-model="form.rfc" inputPlaceholder="Moneda" inputType="text">
-                                <i class="fa-solid fa-sheet-plastic"></i>
+                            <IconInput v-model="form.currency" inputPlaceholder="Moneda" inputType="text">
+                                <i class="fa-solid fa-coins"></i>
                             </IconInput>
-                            <InputError :message="form.errors.rfc" class="mb-3" />
+                            <InputError :message="form.errors.currency" />
                         </div>
                         <div>
-                            <IconInput v-model="form.post_code" inputPlaceholder="Guía" inputType="text">
-                                <i class="fa-solid fa-envelopes-bulk"></i>
+                            <IconInput v-model="form.tracking_guide" inputPlaceholder="Guía" inputType="text">
+                                <i class="fa-solid fa-magnifying-glass-location"></i>
                             </IconInput>
-                            <InputError :message="form.errors.post_code" class="mb-3" />
+                            <InputError :message="form.errors.tracking_guide" />
                         </div>
                     </div>
-                        <h3 class="text-lg text-secondary text-center font-bold my-2">Datos de la órden</h3>
+
+                        <el-divider content-position="left">Datos de la órden</el-divider>
                         <div class="grid gap-6 mb-6 md:grid-cols-3">
                             <div>
-                                <IconInput v-model="form.fiscal_address" inputPlaceholder="Prioridad">
-                                    <i class="fa-solid fa-building"></i>
+                                <IconInput v-model="form.order_via" inputPlaceholder="Medio de petición">
+                                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
                                 </IconInput>
-                                <InputError :message="form.errors.fiscal_address" class="mb-3" />
+                                <InputError :message="form.errors.order_via" />
                             </div>
                             <div>
-                                <IconInput v-model="form.fiscal_address" inputPlaceholder="Medio de petición">
-                                    <i class="fa-solid fa-building"></i>
+                                <IconInput v-model="form.invoice" inputPlaceholder="Factura">
+                                    <i class="fa-solid fa-money-check-dollar"></i>
                                 </IconInput>
-                                <InputError :message="form.errors.fiscal_address" class="mb-3" />
-                            </div>
-                            <div>
-                                <IconInput v-model="form.fiscal_address" inputPlaceholder="Factura">
-                                    <i class="fa-solid fa-building"></i>
-                                </IconInput>
-                                <InputError :message="form.errors.fiscal_address" class="mb-3" />
+                                <InputError :message="form.errors.invoice" />
                             </div>
                             <div class="md:col-span-3">
-                                <IconInput v-model="form.fiscal_address" inputPlaceholder="Nombre/folio OCE">
-                                    <i class="fa-solid fa-building"></i>
+                                <IconInput v-model="form.oce_name" inputPlaceholder="Nombre/folio OCE">
+                                    <i class="fa-solid fa-file-invoice"></i>
                                 </IconInput>
-                                <InputError :message="form.errors.fiscal_address" class="mb-3" />
+                                <InputError :message="form.errors.oce_name" />
                             </div>
                             <div>
                                 <label for="">Archivo OCE</label>
                                 <input type="file" name="" id="">
                             </div>
                         </div>
-                        <div class="mt-2 mx-3 md:text-right">
+
+                        <!-- products -->
+                        <el-divider content-position="left">Agregar productos</el-divider>
+                        <div v-if="form.company_branch_id" class="md:grid gap-6 mb-6 grid-cols-4 rounded-lg bg-[#b8b7b7] px-5 py-3 col-span-full space-y-1 my-7">
+                            <div class="col-span-3">
+                                <el-select v-model="form.company_branch_id" class="mt-2" placeholder="Selecciona un cliente">
+                                    <el-option
+                                    v-for="item in companies"
+                                    :key="item.id"
+                                    :label="item.business_name"
+                                    :value="item.id"
+                                    />
+                                </el-select>
+                            </div>
+                            <div class="col-span-1">
+                                <IconInput v-model="form.fiscal_address" inputPlaceholder="cantidad" inputType="number">
+                                </IconInput>
+                                <InputError :message="form.errors.fiscal_address" />
+                            </div>
+                        <div class="flex col-span-4">
+                            <span class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                ...
+                            </span>
+                            <textarea v-model="form.notes" class="textarea" autocomplete="off" placeholder="Notas" required></textarea>
+                            <InputError :message="form.errors.notes" />
+                        </div>
+                        <SecondaryButton class="col-span-2 col-start-2 mx-auto" :disabled="form.processing"> Agregar Producto </SecondaryButton>
+                        </div>
+                        <div class="flex">
+                            <span class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                ...
+                            </span>
+                            <textarea v-model="form.notes" class="textarea" autocomplete="off" placeholder="Notas" required></textarea>
+                            <InputError :message="form.errors.notes" />
+                        </div>
+                        <div class="mt-7 mx-3 md:text-right">
                             <PrimaryButton :disabled="form.processing"> Crear órden de venta </PrimaryButton>
-                </div> 
+                        </div> 
             </div> 
             </form>
         </AppLayout>
@@ -93,6 +130,7 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
@@ -101,8 +139,11 @@ import { ref } from 'vue';
 export default {
   data() {
     const form = useForm({
-        shopping_company: null,
+        company_branch_id: null,
+        contact_id: null,
+        shipping_company: null,
         freight_cost: null,
+        invoice: null,
         status: null,
         oce_name: null,
         order_via: null,
@@ -118,13 +159,14 @@ export default {
   },
   components: {
     AppLayout,
+    SecondaryButton,
     PrimaryButton,
     Link,
     InputError,
     IconInput,
   },
   props: {
-
+    companies: Array
   },
 methods:{
     store(){

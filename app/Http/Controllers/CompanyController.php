@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CatalogProduct;
 use App\Models\Company;
+use App\Models\RawMaterial;
 use Illuminate\Http\Request;
 
 class CompanyController extends Controller
@@ -18,7 +20,10 @@ class CompanyController extends Controller
     
     public function create()
     {
-        return inertia('Company/Create');
+        $catalog_products = CatalogProduct::all();
+        $raw_materials = RawMaterial::all();
+
+        return inertia('Company/Create', compact('catalog_products', 'raw_materials'));
     }
 
     

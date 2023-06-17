@@ -99,12 +99,11 @@ export default {
                 {
                     label: 'Almacén',
                     icon: '<i class="fa-solid fa-warehouse text-sm"></i>',
-                    route: route('dashboard'),
-                    active: route().current('dashboar'),
+                    active: route().current('storages.*'),
                     options: [
                         {
                             label: 'Materia prima',
-                            route: 'dashboard'
+                            route: 'storages.raw-materials.index'
                         },
                         {
                             label: 'Insumos',

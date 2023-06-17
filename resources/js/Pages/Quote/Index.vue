@@ -2,7 +2,7 @@
     <AppLayout title="Cotizaciones">
         <template #header>
             <div class="flex justify-between">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl leading-tight">
                     Cotizaciones
                 </h2>
                 <Link :href="route('quotes.create')">

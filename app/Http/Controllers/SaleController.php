@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use App\Models\Sale;
 use Illuminate\Http\Request;
 
@@ -10,13 +11,16 @@ class SaleController extends Controller
     
     public function index()
     {
+        
         return inertia('Sale/Index');
     }
 
     
     public function create()
     {
-        return inertia('Sale/Create');
+        $companies = Company::all();
+
+        return inertia('Sale/Create', compact('companies'));
     }
 
     
