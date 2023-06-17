@@ -36,12 +36,12 @@ const logout = () => {
 
         <Banner />
 
-        <div class="overflow-y-hidden h-screen bg-[#F2F2F2] lg:grid lg:grid-cols-12 darkk::bg-gray-900">
+        <div class="overflow-hidden h-screen bg-[#F2F2F2] lg:grid lg:grid-cols-12">
             <aside>
                 <SideNav />
             </aside>
 
-            <main class="col-span-11">
+            <main class="lg:col-span-11">
                 <nav class="bg-[#F2F2F2] border-b border-[#D9D9D9]">
                     <!-- Primary Navigation Menu -->
                     <div class="w-11/12 mx-auto">
@@ -218,9 +218,9 @@ const logout = () => {
                             <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                 Panel de Inicio
                             </ResponsiveNavLink>
-                            <!-- <ResponsiveNavLink :href="route('catalog-products')" :active="route().current('catalog-products.*')">
+                            <ResponsiveNavLink :href="route('catalog-products.index')" :active="route().current('catalog-products.*')">
                                 Catálogo de productos
-                            </ResponsiveNavLink> -->
+                            </ResponsiveNavLink>
                         </div>
 
                         <!-- Responsive Settings Options -->

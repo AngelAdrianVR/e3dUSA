@@ -33,7 +33,7 @@
                     <th class="px-2 py-1">Notas</th>
                     <th class="px-2 py-1">$ unitario</th>
                     <th class="px-2 py-1">Unidades</th>
-                    <th class="px-2 py-1">Total sin IVA</th>
+                    <th class="px-2 py-1 text-right">Total sin IVA</th>
                 </tr>
             </thead>
             <tbody>
@@ -42,13 +42,13 @@
                     <td class="px-2 py-px">{{ item.pivot.notes ?? '--' }}</td>
                     <td class="px-2 py-px">{{ item.pivot.price }} {{ quote.data.currency }}</td>
                     <td class="px-2 py-px">{{ item.pivot.quantity }} {{ item.measure_unit }}</td>
-                    <td class="px-2 py-px">{{ item.pivot.quantity * item.pivot.price }} {{ quote.data.currency }}</td>
+                    <td class="px-2 py-px text-right">{{ item.pivot.quantity * item.pivot.price }} {{ quote.data.currency }}</td>
                 </tr>
             </tbody>
             <tfoot>
                 <tr>
                     <td class="text-center border-t-2 border-gray-400 py-1 font-bold" colspan="6">
-                        TOTAL SIN IVA: {{ quote.data.total }} {{ quote.data.currency }}
+                        TOTAL SIN IVA: {{ quote.data.total.number_format }} {{ quote.data.currency }}
                     </td>
                 </tr>
             </tfoot>
@@ -78,7 +78,7 @@
             <h2 class="text-center font-extrabold">IMPORTANTE <i class="fas fa-exclamation-circle text-amber-500"></i>
             </h2>
             <ol class="list-decimal mx-2 mb-2">
-                <li v-if="quote.data.notes !== '--'" class="font-bold text-blue-500">{{ $quote.data.notes }}</li>
+                <li v-if="quote.data.notes !== '--'" class="font-bold text-blue-500">{{ quote.data.notes }}</li>
                 <li>PRECIOS ANTES DE IVA</li>
                 <li>COSTO DE HERRAMENTAL: <span class="font-bold text-blue-500">{{ quote.data.tooling_cost }} {{ quote.data.currency }}</span></li>
                 <li>TIEMPO DE ENTREGA PARA LA PRIMER PRODUCCIÓN <span class="font-bold text-blue-500">{{ quote.data.first_production_days }}</span>.
