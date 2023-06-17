@@ -6,7 +6,7 @@
                     Cotizaciones
                 </h2>
                 <Link :href="route('quotes.create')">
-                    <SecondaryButton>+ Nuevo</SecondaryButton>
+                <SecondaryButton>+ Nuevo</SecondaryButton>
                 </Link>
             </div>
         </template>
@@ -20,21 +20,22 @@
                     </template>
                 </el-popconfirm>
             </div>
-
             <el-table :data="filteredTableData" max-height="450" style="width: 100%"
                 @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                 <el-table-column type="selection" width="45" />
                 <el-table-column prop="folio" label="Folio" width="85" />
                 <el-table-column prop="user.name" label="Creado por" />
                 <el-table-column prop="receiver" label="Receptor" />
-                <el-table-column prop="company_branch.name" label="Cliente" />
+                <el-table-column prop="companyBranch.name" label="Cliente" />
                 <el-table-column prop="authorized_user_name" label="Autorizado por" />
-                <el-table-column prop="created_at" label="Enviado el" />
+                <el-table-column prop="created_at" label="Creado el" />
                 <el-table-column align="right" fixed="right">
                     <template #header>
                         <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
                     </template>
                     <template #default="scope">
+                        <el-button size="small" type="primary"
+                            @click="$inertia.get(route('quotes.show', scope.row.id))">Ver</el-button>
                         <el-button size="small" type="primary"
                             @click="createQuote(scope.$index, scope.row)">Clonar</el-button>
                     </template>
@@ -66,75 +67,8 @@ export default {
     },
     props: {
         quotes: {
-            type: Array,
-            default: [
-                {
-                    id: '1',
-                    folio: 'COT-001',
-                    receiver: 'Alexis Llanos',
-                    department: 'Mercadotecnia',
-                    tooling_cost: 800.00,
-                    freight_cost: 350.00,
-                    first_production_days: '12 días laborales',
-                    notes: 'Notas adicionales para la cotización en general',
-                    currency: '$MXN',
-                    authorized_user_name: 'Maribel Ortíz',
-                    authorized_at: '11 Jun., 2023 05:16 pm.',
-                    is_spanish_template: true,
-                    company_branch: {
-                        name: 'Dalton Honda'
-                    },
-                    user: {
-                        name: 'Miguel Vázquez'
-                    },
-                    created_at: '11 Jun., 2023 01:11 pm.',
-                    sale: null,
-                    products: [
-                        {
-                            name: 'Dalton honda diseño 2',
-                            cost: 21.55,
-                            features:
-                            {
-                                family: 'Porta placas',
-                                material: 'ABS',
-                            },
-                        },
-                    ],
-                },
-                {
-                    id: '2',
-                    folio: 'COT-002',
-                    receiver: 'Anguel Vazquez',
-                    department: 'Ventas',
-                    tooling_cost: 700.00,
-                    freight_cost: 350.00,
-                    first_production_days: '10 días laborales',
-                    notes: 'Notas adicionales para la cotización en general',
-                    currency: '$MXN',
-                    authorized_user_name: 'Maribel Ortíz',
-                    authorized_at: '11 Jun., 2023 05:16 pm.',
-                    is_spanish_template: true,
-                    company_branch: {
-                        name: 'Tesla Nuevo León'
-                    },
-                    user: {
-                        name: 'Miguel Vázquez'
-                    },
-                    created_at: '11 Jun., 2023 01:11 pm.',
-                    sale: null,
-                    products: [
-                        {
-                            name: 'Metalico tesla',
-                            cost: 41.55,
-                            features:
-                            {
-                                family: 'Llavero',
-                                material: 'Metal cromado',
-                            },
-                        },
-                    ],
-                },
-            ]
+            type: Object,
+            default: []
         },
     },
     methods: {
@@ -162,7 +96,7 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.quotes.forEach((quote, index) => {
+                    this.quotes.data.forEach((quote, index) => {
                         if (this.$refs.multipleTableRef.value.includes(quote)) {
                             deletedIndexes.push(index);
                         }
@@ -173,7 +107,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.quotes.splice(index, 1);
+                        this.quotes.data.splice(index, 1);
                     }
 
                 } else {
@@ -186,10 +120,10 @@ export default {
 
             } catch (err) {
                 this.$notify({
-                        title: 'Algo salió mal',
-                        message: err.message,
-                        type: 'error'
-                    });
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
                 console.log(err);
             }
         },
@@ -206,7 +140,7 @@ export default {
     },
     computed: {
         filteredTableData() {
-            return this.quotes.filter(
+            return this.quotes.data.filter(
                 (quote) =>
                     !this.search ||
                     quote.folio.toLowerCase().includes(this.search.toLowerCase()) ||

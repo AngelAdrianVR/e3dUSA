@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedMediumInteger('quantity');
             $table->unsignedMediumInteger('price');
             $table->boolean('show_image')->default(true);
-            $table->text('notes');
+            $table->text('notes')->nullable();
             $table->foreignId('quote_id')->constrained()->cascadeOnDelete();
             $table->foreignId('catalog_product_id')->constrained()->cascadeOnDelete();
             $table->timestamps();

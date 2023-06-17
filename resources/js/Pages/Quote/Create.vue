@@ -16,7 +16,7 @@
             <!-- Form -->
             <form @submit.prevent="store">
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg px-9 py-5 shadow-md">
-                    <div class="grid gap-6 mb-6 md:grid-cols-2">
+                    <div class="md:grid gap-6 mb-6 grid-cols-2">
                         <div class="col-span-2">
                             <el-radio-group v-model="form.is_spanish_template" size="small">
                                 <el-radio-button :label="1">Plantilla en español</el-radio-button>
@@ -25,7 +25,9 @@
                         </div>
                         <div>
                             <div class="flex items-center">
-                                <el-tooltip content="La moneda que se elija se usará para productos y costos de flete y herramental" placement="top">
+                                <el-tooltip
+                                    content="La moneda que se elija se usará para productos y costos de flete y herramental"
+                                    placement="top">
                                     <span
                                         class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
                                         <i class="fa-solid fa-dollar-sign"></i>
@@ -46,10 +48,29 @@
                             <InputError :message="form.errors.currency" />
                         </div>
                         <div>
-                            <IconInput v-model="form.reciever" inputPlaceholder="Nombre de quien recibe *" inputType="text">
+                            <div class="flex items-center">
+                                <el-tooltip
+                                    content="Para poder cotizar, los clientes (sucursales) deben de estar registrados"
+                                    placement="top">
+                                    <span
+                                        class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                    </span>
+                                </el-tooltip>
+                                <el-select v-model="form.company_branch_id" clearable filterable
+                                    placeholder="Busca el cliente" no-data-text="No hay clientes registrados"
+                                    no-match-text="No se encontraron coincidencias">
+                                    <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
+                                        :value="item.id" />
+                                </el-select>
+                            </div>
+                            <InputError :message="form.errors.company_branch_id" />
+                        </div>
+                        <div>
+                            <IconInput v-model="form.receiver" inputPlaceholder="Nombre de quien recibe *" inputType="text">
                                 A
                             </IconInput>
-                            <InputError :message="form.errors.reciever" />
+                            <InputError :message="form.errors.receiver" />
                         </div>
                         <div>
                             <IconInput v-model="form.department" inputPlaceholder="Departamento o puesto *"
@@ -91,6 +112,7 @@
                         <el-divider content-position="left" class="col-span-full">Productos</el-divider>
 
                         <!-- products -->
+                        <InputError :message="form.errors.products" class="col-span-full" />
                         <ol v-if="form.products.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
                             <template v-for="(item, index) in form.products" :key="index">
                                 <li class="flex justify-between items-center">
@@ -121,9 +143,10 @@
                                 class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
-                            <el-select v-model="product.id" filterable placeholder="Busca el producto"
-                                no-data-text="No se encontraron productos" no-match-text="No se encontraron coincidencias">
-                                <el-option v-for="item in catalog_products" :key="item.value" :label="item.name"
+                            <el-select v-model="product.id" clearable filterable placeholder="Busca el producto"
+                                no-data-text="No hay productos registrados" no-match-text="No se encontraron coincidencias">
+                                <el-option v-for="item in catalog_products" :key="item.id" :label="item.name"
+
                                     :value="item.id" />
                             </el-select>
                         </div>
@@ -132,7 +155,8 @@
                                 class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
                                 <i class="fa-solid fa-eye"></i>
                             </span>
-                            <el-switch v-model="product.showImage" inline-prompt size="large"
+                            <el-switch v-model="product.show_image" inline-prompt size="large"
+
                                 style="--el-switch-on-color: #0355B5; --el-switch-off-color: #CCCCCC"
                                 active-text="Mostrar imagen en cotización"
                                 inactive-text="No mostrar imagen en cotización" />
@@ -142,15 +166,13 @@
                                 inputType="number">
                                 #
                             </IconInput>
-                            <!-- <InputError :message="form.errors.tooling_cost" /> -->
                         </div>
 
                         <div>
-                            <IconInput v-model="product.price" inputPlaceholder="Costo unitario *" inputType="number"
+                            <IconInput v-model="product.price" inputPlaceholder="Precio unitario *" inputType="number"
                                 inputStep="0.1">
                                 <i class="fa-solid fa-dollar-sign"></i>
                             </IconInput>
-                            <!-- <InputError :message="form.errors.tooling_cost" /> -->
                         </div>
 
                         <div class="flex col-span-full">
@@ -163,9 +185,12 @@
                             <InputError :message="form.errors.notes" />
                         </div>
                         <div>
-                            <SecondaryButton @click="addProduct" :disabled="form.processing" type="button">
-                                {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
-                            </SecondaryButton>
+                            <div>
+                                <SecondaryButton @click="addProduct" type="button"
+                                    :disabled="!product.id || !product.quantity || !product.price || form.processing">
+                                    {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
+                                </SecondaryButton>
+                            </div>
                         </div>
                     </div>
                     <el-divider />
@@ -191,7 +216,7 @@ import { Delete, Edit } from '@element-plus/icons-vue';
 export default {
     data() {
         const form = useForm({
-            reciever: null,
+            receiver: null,
             department: null,
             tooling_cost: null,
             freight_cost: null,
@@ -210,7 +235,7 @@ export default {
                 id: null,
                 quantity: null,
                 price: null,
-                showImage: true,
+                show_image: true,
                 notes: null,
             },
             currencies: [
@@ -237,6 +262,7 @@ export default {
     },
     props: {
         catalog_products: Array,
+        company_branches: Array,
     },
     methods: {
         store() {
@@ -247,6 +273,8 @@ export default {
                         message: 'Cotización creada',
                         type: 'success'
                     });
+
+                    this.form.reset();
                 }
             });
         },
@@ -275,7 +303,7 @@ export default {
             this.product.quantity = null;
             this.product.notes = null;
             this.product.price = null;
-            this.product.showImage = true;
+            this.product.show_image = true;
         }
     },
 };
