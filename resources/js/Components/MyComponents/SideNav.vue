@@ -12,7 +12,7 @@
                         <SideNavLink :href="menu.route" :active="menu.active" :dropdown="menu.dropdown">
                             <template #trigger>
                                 <span v-html="menu.icon"></span>
-                                <span class="text-xs font-normal text-center">
+                                <span class="leading-none font-normal text-center">
                                     {{ menu.label }}
                                 </span>
                             </template>
@@ -40,7 +40,7 @@ export default {
             menus: [
                 {
                     label: 'Inicio',
-                    icon: '<i class="fa-solid fa-house text-sm"></i>',
+                    icon: '<i class="fa-solid fa-house text-xs"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboard'),
                     options: [],
@@ -49,7 +49,7 @@ export default {
                 },
                 {
                     label: 'Catálogo de productos',
-                    icon: '<i class="fa-solid fa-book-open text-sm"></i>',
+                    icon: '<i class="fa-solid fa-book-open text-xs"></i>',
                     route: route('catalog-products.index'),
                     active: route().current('catalog-products.*'),
                     options: [],
@@ -58,7 +58,7 @@ export default {
                 },
                 {
                     label: 'Ventas',
-                    icon: '<i class="fa-solid fa-shop text-sm"></i>',
+                    icon: '<i class="fa-solid fa-shop text-xs"></i>',
                     active: route().current('quotes.*') || route().current('companies.*') || route().current('sales.*'),
                     options: [
                         {
@@ -80,7 +80,7 @@ export default {
                 },
                 {
                     label: 'Compras',
-                    icon: '<i class="fa-solid fa-cart-shopping text-sm"></i>',
+                    icon: '<i class="fa-solid fa-cart-shopping text-xs"></i>',
                     active: route().current('suppliers.*') || route().current('purchases.*'),
                     options: [
                         {
@@ -98,7 +98,7 @@ export default {
                 },
                 {
                     label: 'Almacén',
-                    icon: '<i class="fa-solid fa-warehouse text-sm"></i>',
+                    icon: '<i class="fa-solid fa-warehouse text-xs"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboar'),
                     options: [
@@ -124,7 +124,7 @@ export default {
                 },
                 {
                     label: 'Recursos Humanos',
-                    icon: '<i class="fa-solid fa-user-group text-sm"></i>',
+                    icon: '<i class="fa-solid fa-user-group text-xs"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboar'),
                     options: [
@@ -146,28 +146,28 @@ export default {
                 },
                 {
                     label: 'Diseño',
-                    icon: '<i class="fa-solid fa-pen-ruler text-sm"></i>',
+                    icon: '<i class="fa-solid fa-pen-ruler text-xs"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboar'),
                     // show: this.$page.props.auth.user.is_admin
                 },
                 {
                     label: 'Producción',
-                    icon: '<i class="fa-solid fa-helmet-safety text-sm"></i>',
+                    icon: '<i class="fa-solid fa-helmet-safety text-xs"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboar'),
                     // show: this.$page.props.auth.user.is_admin
                 },
                 {
                     label: 'Mercadotecnia',
-                    icon: '<i class="fa-solid fa-lightbulb text-sm"></i>',
+                    icon: '<i class="fa-solid fa-lightbulb text-xs"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboar'),
                     // show: this.$page.props.auth.user.is_admin
                 },
                 {
                     label: 'Más',
-                    icon: '<i class="fa-solid fa-ellipsis text-sm"></i>',
+                    icon: '<i class="fa-solid fa-ellipsis text-xs"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboar'),
                     options: [

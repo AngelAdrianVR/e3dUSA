@@ -14,6 +14,10 @@ class QuoteResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $total_without_taxes = $this->catalogProducts->sum(function($item) {
+            return $item->pivot->quantity * $item->pivot->price;
+        });
+
         return [
             'id' => $this->id,
             'folio' => 'COT-' . str_pad($this->id, 3, "0", STR_PAD_LEFT),
@@ -24,7 +28,7 @@ class QuoteResource extends JsonResource
             'first_production_days' => $this->first_production_days,
             'notes' => $this->notes ?? '--',
             'currency' => $this->currency,
-            'authorized_user_name' => $this->authorized_user_name,
+            'authorized_user_name' => $this->authorized_user_name ?? 'No autorizado',
             'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:i A'),
             'is_spanish_template' => boolval($this->is_spanish_template),
             'companyBranch' => $this->companyBranch,
@@ -32,7 +36,10 @@ class QuoteResource extends JsonResource
             'sale' => $this->sale,
             'products' => $this->catalogProducts,
             'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:m A'),
-            'total' => 3000,
+            'total' => [
+               'raw' => $total_without_taxes,
+               'number_format' => number_format($total_without_taxes, 2),
+            ],
         ];
     }
 }

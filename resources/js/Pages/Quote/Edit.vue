@@ -1,6 +1,6 @@
 <template>
     <div>
-        <AppLayout title="Crear cotización">
+        <AppLayout title="Editar cotización">
             <template #header>
                 <div class="flex justify-between">
                     <Link :href="route('quotes.index')"
@@ -8,13 +8,13 @@
                     <i class="fa-solid fa-chevron-left"></i>
                     </Link>
                     <div class="flex items-center space-x-2 text-gray-600">
-                        <h2 class="font-semibold text-xl leading-tight">Crear cotización</h2>
+                        <h2 class="font-semibold text-xl leading-tight">Editar cotización</h2>
                     </div>
                 </div>
             </template>
 
             <!-- Form -->
-            <form @submit.prevent="store">
+            <form @submit.prevent="edit">
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg px-9 py-5 shadow-md">
                     <div class="md:grid gap-6 mb-6 grid-cols-2">
                         <div class="col-span-2">
@@ -113,12 +113,12 @@
 
                         <!-- products -->
                         <InputError :message="form.errors.products" class="col-span-full" />
-                        <ol v-if="form.products.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
+                        <ol v-if="form.products?.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
                             <template v-for="(item, index) in form.products" :key="index">
                                 <li class="flex justify-between items-center">
                                     <p class="text-sm">
                                         <span class="text-primary">{{ index + 1 }}.</span>
-                                        {{ catalog_products.find(prd => prd.id === item.id)?.name }}
+                                        {{ catalog_products.find(prd => prd.id === item.catalog_product_id)?.name }}
                                         (x{{ item.quantity }} unidades)
                                     </p>
                                     <div class="flex space-x-2 items-center">
@@ -143,8 +143,9 @@
                                 class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
-                            <el-select v-model="product.id" clearable filterable placeholder="Busca el producto"
-                                no-data-text="No hay productos registrados" no-match-text="No se encontraron coincidencias">
+                            <el-select v-model="product.catalog_product_id" clearable filterable
+                                placeholder="Busca el producto" no-data-text="No hay productos registrados"
+                                no-match-text="No se encontraron coincidencias">
                                 <el-option v-for="item in catalog_products" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
@@ -185,7 +186,7 @@
                         <div>
                             <div>
                                 <SecondaryButton @click="addProduct" type="button"
-                                    :disabled="!product.id || !product.quantity || !product.price || form.processing">
+                                    :disabled="!product.catalog_product_id || !product.quantity || !product.price || form.processing">
                                     {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
                                 </SecondaryButton>
                             </div>
@@ -194,7 +195,7 @@
                     <el-divider />
                     <!-- buttons -->
                     <div class="md:text-right">
-                        <PrimaryButton :disabled="form.processing"> Crear </PrimaryButton>
+                        <PrimaryButton :disabled="form.processing"> Actualizar </PrimaryButton>
                     </div>
                 </div>
             </form>
@@ -213,15 +214,15 @@ import IconInput from "@/Components/MyComponents/IconInput.vue";
 export default {
     data() {
         const form = useForm({
-            receiver: null,
-            department: null,
-            tooling_cost: null,
-            freight_cost: null,
-            first_production_days: null,
-            notes: null,
-            currency: null,
-            is_spanish_template: 1,
-            company_branch_id: null,
+            receiver: this.quote.receiver,
+            department: this.quote.department,
+            tooling_cost: this.quote.tooling_cost,
+            freight_cost: this.quote.freight_cost,
+            first_production_days: this.quote.first_production_days,
+            notes: this.quote.notes,
+            currency: this.quote.currency,
+            is_spanish_template: this.quote.is_spanish_template,
+            company_branch_id: this.quote.company_branch_id,
             products: [],
         });
 
@@ -229,7 +230,7 @@ export default {
             form,
             editIndex: null,
             product: {
-                id: null,
+                catalog_product_id: null,
                 quantity: null,
                 price: null,
                 show_image: true,
@@ -258,18 +259,17 @@ export default {
     props: {
         catalog_products: Array,
         company_branches: Array,
+        quote: Object,
     },
     methods: {
-        store() {
-            this.form.post(route('quotes.store'), {
+        edit() {
+            this.form.put(route('quotes.update', this.quote), {
                 onSuccess: () => {
                     this.$notify({
                         title: 'Éxito',
-                        message: 'Cotización creada',
+                        message: 'Cotización actualizada',
                         type: 'success'
                     });
-
-                    this.form.reset();
                 }
             });
         },
@@ -294,12 +294,25 @@ export default {
             this.editIndex = index;
         },
         resetProductForm() {
-            this.product.id = null;
+            this.product.catalog_product_id = null;
             this.product.quantity = null;
             this.product.notes = null;
             this.product.price = null;
             this.product.show_image = true;
         }
     },
+    mounted() {
+        this.quote.catalog_products.forEach(element => {
+            const product = {
+                catalog_product_id: element.pivot.catalog_product_id,
+                quantity: element.pivot.quantity,
+                notes: element.pivot.notes,
+                price: element.pivot.price,
+                show_image: element.pivot.show_image,
+            }
+
+            this.form.products.push(product);
+        });
+    }
 };
 </script>
