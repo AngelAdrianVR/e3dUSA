@@ -1,13 +1,13 @@
 <template>
     <div>
-        <AppLayout title="Cartera de clientes">
+        <AppLayout title="Materia prima">
         <template #header>
         <div class="flex justify-between">
             <div class="flex items-center space-x-2">
-                <h2 class="font-semibold text-xl leading-tight">Cartera de Clientes</h2>
+                <h2 class="font-semibold text-xl leading-tight">Materia prima</h2>
             </div>
             <div>
-            <Link :href="route('companies.create')">
+            <Link :href="route('raw-materials.create')">
                 <SecondaryButton>+ Nuevo</SecondaryButton>
             </Link>
             </div>
@@ -28,12 +28,10 @@
                 ref="multipleTableRef" :row-class-name="tableRowClassName">
                 <el-table-column type="selection" width="45" />
                 <el-table-column prop="id" label="ID" width="45" />
-                <el-table-column prop="business_name" label="Nombre" width="120" />
-                <el-table-column prop="phone" label="Teléfono" width="120" />
-                <el-table-column prop="rfc" label="RFC" width="100" />
-                <el-table-column prop="post_code" label="Código postal" width="120" />
-                <el-table-column prop="fiscal_address" label="Domicilio Fiscal" width="200" />
-                <el-table-column align="right" fixed="right" width="200">
+                <el-table-column prop="name" label="Nombre" width="250" />
+                <el-table-column prop="part_number" label="N° parte" width="120" />
+                <el-table-column prop="description" label="Descripción" width="350" />
+                <el-table-column align="right" fixed="right">
                     <template #header>
                         <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
                     </template>
@@ -79,7 +77,7 @@ export default {
     TextInput,
   },
   props: {
-    companies: Array
+    raw_materials: Array
   },
   methods:{
     handleSelectionChange(val) {
@@ -93,8 +91,8 @@ export default {
             },
             async deleteSelections() {
             try {
-                const response = await axios.post(route('companies.massive-delete', {
-                    companies: this.$refs.multipleTableRef.value
+                const response = await axios.post(route('raw-materials.massive-delete', {
+                    raw_materials: this.$refs.multipleTableRef.value
                 }));
 
                 if (response.status == 200) {
@@ -106,8 +104,8 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.companies.forEach((company, index) => {
-                        if (this.$refs.multipleTableRef.value.includes(company)) {
+                    this.raw_materials.forEach((raw_material, index) => {
+                        if (this.$refs.multipleTableRef.value.includes(raw_material)) {
                             deletedIndexes.push(index);
                         }
                     });
@@ -117,7 +115,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.companies.splice(index, 1);
+                        this.raw_materials.splice(index, 1);
                     }
 
                 } else {
@@ -137,18 +135,19 @@ export default {
                 console.log(err);
             }
         },
-        edit(index, company) {
-            this.$inertia.get(route('companies.edit', company));
+        edit(index, raw_material) {
+            this.$inertia.get(route('raw-materials.edit', raw_material));
         }
   },
 
   computed: {
         filteredTableData() {
-            return this.companies.filter(
-                (company) =>
+            return this.raw_materials.filter(
+                (raw_material) =>
                     !this.search ||
-                    company.business_name.toLowerCase().includes(this.search.toLowerCase()) ||
-                    company.rfc.toLowerCase().includes(this.search.toLowerCase()) 
+                    raw_material.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                    raw_material.part_number.toLowerCase().includes(this.search.toLowerCase()) ||
+                    raw_material.description.toLowerCase().includes(this.search.toLowerCase())
             )
         }
     },

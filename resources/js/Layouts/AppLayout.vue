@@ -307,8 +307,8 @@ const logout = () => {
                         </div>
                     </div>
                 </nav>
-                    <header v-if="$slots.header" class="bg-[#D9D9D9] border-t-2 border-gray-400">
-                        <div class="mx-auto py-4 px-4 sm:px-6 lg:px-8">
+                    <header v-if="$slots.header" class="bg-gray-800 border-t-2 border-gray-400">
+                        <div class="mx-auto py-2 px-4 sm:px-6 lg:px-8 text-white">
                             <slot name="header" />
                         </div>
                     </header>

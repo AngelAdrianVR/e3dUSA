@@ -3,7 +3,7 @@
         <AppLayout title="Órdenes de venta">
         <template #header>
         <div class="flex justify-between">
-            <div class="flex items-center space-x-2 text-gray-800">
+            <div class="flex items-center space-x-2">
                 <h2 class="font-semibold text-xl leading-tight">Órdenes de venta</h2>
             </div>
             <div>
@@ -32,7 +32,7 @@
                 <el-table-column prop="company_branch_id" label="Cliente" width="120" />
                 <el-table-column prop="created_at" label="Creado el" width="100" />
                 <el-table-column prop="status" label="Estatus" width="120" />
-                <el-table-column align="right" fixed="right" width="200">
+                <el-table-column align="right" fixed="right">
                     <template #header>
                         <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
                     </template>

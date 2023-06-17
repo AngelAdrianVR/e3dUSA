@@ -104,7 +104,7 @@ export default {
                     options: [
                         {
                             label: 'Materia prima',
-                            route: 'dashboard'
+                            route: 'storages.raw-materials.index'
                         },
                         {
                             label: 'Insumos',

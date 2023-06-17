@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Purchase;
+use App\Models\RawMaterial;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 
@@ -19,7 +20,9 @@ class PurchaseController extends Controller
     public function create()
     {
         $suppliers = Supplier::all();
-        return inertia('Purchase/Create', compact('suppliers'));
+        $raw_materials = RawMaterial::all();
+
+        return inertia('Purchase/Create', compact('suppliers', 'raw_materials'));
     }
 
     

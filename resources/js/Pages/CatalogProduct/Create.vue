@@ -6,7 +6,7 @@
         <Link :href="route('catalog-products.index')" class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center">
           <i class="fa-solid fa-chevron-left"></i>
         </Link>
-            <div class="flex items-center space-x-2 text-gray-600">
+            <div class="flex items-center space-x-2">
                 <h2 class="font-semibold text-xl leading-tight">Agregar nuevo producto a catálogo</h2>
             </div>
         </div>
@@ -17,7 +17,7 @@
         <!-- Form -->
             <form @submit.prevent="store"> 
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
-                    <div class="grid gap-6 mb-6 md:grid-cols-2">
+                    <div class="md:grid gap-6 mb-6 grid-cols-2">
                         <div>
                             <el-select-v2
                             v-model="value"

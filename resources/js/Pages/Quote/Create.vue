@@ -7,7 +7,7 @@
                         class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center">
                     <i class="fa-solid fa-chevron-left"></i>
                     </Link>
-                    <div class="flex items-center space-x-2 text-gray-600">
+                    <div class="flex items-center space-x-2">
                         <h2 class="font-semibold text-xl leading-tight">Crear cotización</h2>
                     </div>
                 </div>
