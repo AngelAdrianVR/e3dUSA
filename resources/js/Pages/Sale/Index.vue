@@ -3,7 +3,7 @@
         <AppLayout title="Órdenes de venta">
         <template #header>
         <div class="flex justify-between">
-            <div class="flex items-center space-x-2 text-gray-800">
+            <div class="flex items-center space-x-2">
                 <h2 class="font-semibold text-xl leading-tight">Órdenes de venta</h2>
             </div>
             <div>

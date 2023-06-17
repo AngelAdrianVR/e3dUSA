@@ -4,7 +4,9 @@ use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
 use App\Models\CatalogProduct;
 use Illuminate\Foundation\Application;
@@ -67,4 +69,16 @@ Route::resource('suppliers', SupplierController::class)->middleware('auth');
 
 // ------- Compras(purchases Routes)  ---------
 Route::resource('purchases', PurchaseController::class)->middleware('auth');
+
+
+// ------- Raw Material routes  ---------
+Route::resource('raw-materials', RawMaterialController::class)->middleware('auth');
+Route::post('raw-materials/massive-delete', [RawMaterialController::class, 'massiveDelete'])->name('raw-materials.massive-delete');
+
+
+// ------- Almacen(raw materials Routes)  ---------
+Route::get('/storage-raw-materials', [StorageController::class, 'index'])->middleware('auth')->name('storages.raw-materials.index');
+Route::get('/storage-consumables', [StorageController::class, 'index'])->middleware('auth')->name('storages.consumables.index');
+Route::get('/storage-finished-products', [StorageController::class, 'index'])->middleware('auth')->name('storages.finished-products.index');
+Route::get('/storage-scraps', [StorageController::class, 'index'])->middleware('auth')->name('storages.scraps.index');
 

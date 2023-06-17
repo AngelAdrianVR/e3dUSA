@@ -6,7 +6,7 @@
         <Link :href="route('suppliers.index')" class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center">
           <i class="fa-solid fa-chevron-left"></i>
         </Link>
-            <div class="flex items-center space-x-2 text-gray-600">
+            <div class="flex items-center space-x-2">
                 <h2 class="font-semibold text-xl leading-tight">Agregar proveedor</h2>
             </div>
         </div>
@@ -23,20 +23,20 @@
                         </IconInput>
                         <InputError :message="form.errors.name" />
                     </div>
-                    <div class="grid gap-6 mb-6 md:grid-cols-3">
-                        <div class="md:col-span-2">
+                    <div class="md:grid gap-6 mb-6 grid-cols-3">
+                        <div class="col-span-2">
                             <IconInput v-model="form.address" inputPlaceholder="Dirección" inputType="text">
                                 <i class="fa-solid fa-map-location-dot"></i>
                             </IconInput>
                             <InputError :message="form.errors.address" />
                         </div>
-                        <div class="md:col-span-1">
+                        <div class="col-span-1">
                             <IconInput v-model="form.post_code" inputPlaceholder="C.P." inputType="text">
                                 <i class="fa-solid fa-envelopes-bulk"></i>
                             </IconInput>
                             <InputError :message="form.errors.post_code" />
                         </div>
-                        <div class="md:col-span-2">
+                        <div class="col-span-2">
                             <IconInput v-model="form.phone" inputPlaceholder="Teléfono *" inputType="text">
                                 <i class="fa-solid fa-phone"></i>
                             </IconInput>
@@ -47,7 +47,7 @@
                             <!-- ---------------- Datos bancarios starts ----------------- -->
                             <el-divider content-position="left">Datos bancarios</el-divider>
                             <div class="bg-[#b8b7b7] rounded-lg p-5">
-                            <div class="grid gap-6 mb-6 md:grid-cols-2">
+                            <div class="md:grid gap-6 mb-6 grid-cols-2">
                                 <div>
                                     <IconInput v-model="form.phone" inputPlaceholder="Nombre del beneficiario *" inputType="text">
                                         A
@@ -80,8 +80,8 @@
                             <!-- ---------------- contacts starts ----------------- -->
                             <el-divider content-position="left">Contactos</el-divider> 
                             <div class="bg-[#b8b7b7] rounded-lg p-5">
-                                <div class="grid gap-6 mb-6 md:grid-cols-2">
-                                <div class="md:col-span-2">
+                                <div class="md:grid gap-6 mb-6 grid-cols-2">
+                                <div class="col-span-2">
                                     <IconInput v-model="form.phone" inputPlaceholder="Nombre *" inputType="text">
                                         A
                                     </IconInput>

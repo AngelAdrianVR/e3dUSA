@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('part_number');
             $table->text('description');
-            $table->string('meaure_unit');
+            $table->string('measure_unit');
             $table->unsignedMediumInteger('min_quantity');
             $table->unsignedMediumInteger('max_quantity');
             $table->unsignedMediumInteger('cost');

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('oce_name');
             $table->string('order_via');
             $table->string('tracking_guide');
+            $table->string('invoice')->nullable();
             $table->text('notes')->nullable();
             $table->string('authorized_user_name');
             $table->timestamp('authorized_at')->nullable();

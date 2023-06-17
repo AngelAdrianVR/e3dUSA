@@ -15,7 +15,7 @@ class RawMaterial extends Model
         'name',
         'part_number',
         'description',
-        'meaure_unit',
+        'measure_unit',
         'min_quantity',
         'max_quantity',
         'cost',

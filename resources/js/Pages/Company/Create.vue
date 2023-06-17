@@ -9,7 +9,7 @@
           >
             <i class="fa-solid fa-chevron-left"></i>
           </Link>
-          <div class="flex items-center space-x-2 text-gray-600">
+          <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">Agregar nuevo cliente</h2>
           </div>
         </div>
@@ -19,7 +19,7 @@
       <form @submit.prevent="store">
         <!-- ---------------- Company starts ----------------- -->
         <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
-          <div class="grid gap-6 mb-6 md:grid-cols-2 pb-4">
+          <div class="md:grid gap-6 mb-6 grid-cols-2 pb-4">
             <div>
               <IconInput
                 v-model="form.business_name"
@@ -70,7 +70,7 @@
 
           <!-- ---------------- Company Branch starts ----------------- -->
           <el-divider content-position="left">Sucursales</el-divider>
-          <div class="space-y-3 w-[92%] mx-auto bg-[#b8b7b7] rounded-lg p-5">
+          <div class="space-y-3 md:w-[92%] mx-auto bg-[#b8b7b7] rounded-lg p-5">
             <div>
               <IconInput
                 v-model="form.name"
@@ -101,7 +101,7 @@
               </IconInput>
               <InputError :message="form.errors.post_code_branch" />
             </div>
-            <div class="md:col-span-2">
+            <div>
               <el-select
                 v-model="form.sat_method"
                 class="my-2"
@@ -114,8 +114,9 @@
                   :value="item.value"
                 />
               </el-select>
+              <InputError :message="form.errors.sat_method" />
             </div>
-            <div class="md:col-span-2">
+            <div>
               <el-select v-model="form.sat_way" class="my-2" placeholder="Medio de pago">
                 <el-option
                   v-for="item in sat_ways"
@@ -124,8 +125,9 @@
                   :value="item.label"
                 />
               </el-select>
+              <InputError :message="form.errors.sat_way" />
             </div>
-            <div class="md:col-span-3">
+            <div>
               <el-select
                 v-model="form.sat_type"
                 class="mt-2"
@@ -138,6 +140,7 @@
                   :value="item.value"
                 />
               </el-select>
+              <InputError :message="form.errors.sat_types" />
             </div>
             <div class="flex flex-col text-red-400 text-sm font-bold space-y-1">
               <div
@@ -150,7 +153,7 @@
               </div>
             </div>
             <div class="pb-7">
-              <SecondaryButton @click="addCompanyBranch">
+              <SecondaryButton :disabled="!company_contacts.length" @click="addCompanyBranch">
                 Agregar Sucursal
               </SecondaryButton>
             </div>
@@ -158,7 +161,7 @@
 
             <!-- ---------------- Company Contacts starts ----------------- -->
             <el-divider content-position="left">Contactos</el-divider>
-            <div class="w-[92%] mx-auto pt-3 space-y-3 bg-[#acabab] rounded-lg p-5">
+            <div class="md:w-[92%] mx-auto pt-3 space-y-3 bg-[#acabab] rounded-lg p-5">
               <div>
                 <IconInput
                   v-model="form.name_contact"
@@ -169,7 +172,7 @@
                 </IconInput>
                 <InputError :message="form.errors.name_contact" />
               </div>
-              <div class="grid gap-6 mb-6 md:grid-cols-2">
+              <div class="md:grid gap-6 mb-6 grid-cols-2">
                 <div>
                   <IconInput
                     v-model="form.email"
@@ -248,7 +251,7 @@
                 />
               </el-select>
             </div>
-            <div class="grid gap-6 mb-6 md:grid-cols-3">
+            <div class="md:grid gap-6 mb-6 grid-cols-3">
                 <div>
                   <IconInput
                     v-model="form.old_price"
@@ -319,9 +322,7 @@
             </div>
                 <SecondaryButton
               @click="addCompanyProduct"
-              :disabled="
-                !this.form.name_contact || !this.form.email || !this.form.phone_contact
-              "
+              :disabled="!company_branches.length"
             >
               Agregar Producto
             </SecondaryButton>

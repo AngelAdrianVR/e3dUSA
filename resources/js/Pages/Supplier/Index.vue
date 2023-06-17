@@ -3,7 +3,7 @@
         <AppLayout title="Proveedores">
         <template #header>
         <div class="flex justify-between">
-            <div class="flex items-center space-x-2 text-gray-800">
+            <div class="flex items-center space-x-2">
                 <h2 class="font-semibold text-xl leading-tight">Proveedores</h2>
             </div>
             <div>
