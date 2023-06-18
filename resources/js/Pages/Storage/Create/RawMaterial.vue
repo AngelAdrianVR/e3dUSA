@@ -65,6 +65,16 @@
             </div>
             <div>
               <IconInput
+                v-model="form.initial_stock"
+                inputPlaceholder="Stock de apertura"
+                inputType="number"
+              >
+                123
+              </IconInput>
+              <InputError :message="form.errors.initial_stock" />
+            </div>
+            <div>
+              <IconInput
                 v-model="form.measure_unit"
                 inputPlaceholder="Unidad de medida"
                 inputType="text"
@@ -100,6 +110,23 @@
             ></textarea>
             <InputError :message="form.errors.description" />
           </div>
+          <div>
+            <el-upload
+              v-model:file-list="fileList"
+              class="upload-demo"
+              :action="route('upload-image')"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              list-type="picture"
+            >
+              <el-button type="primary">Click to upload</el-button>
+              <template #tip>
+                <div class="el-upload__tip">
+                  jpg/png files with a size less than 500kb
+                </div>
+              </template>
+            </el-upload>
+          </div>
 
           <div class="mt-2 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing"> Agregar </PrimaryButton>
@@ -129,6 +156,8 @@ export default {
       max_quantity: null,
       cost: null,
       description: null,
+      initial_stock: null,
+      type: 'materia-prima',
       features: null,
     });
 
@@ -151,12 +180,20 @@ export default {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: 'Materia prima agregada',
+            message: "Materia prima agregada",
             type: "success",
           });
         },
       });
     },
+    handleRemove(uploadFile, uploadFiles) {
+     UploadProps['onRemove'] = 1;
+    //  console.log(uploadFile, uploadFiles);
+    },
+  },
+  handlePreview() {
+     UploadProps['onPreview'] = 2;
+    //  console.log(file);
   },
 };
 </script>

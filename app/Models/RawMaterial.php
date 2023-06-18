@@ -4,12 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-class RawMaterial extends Model
+class RawMaterial extends Model implements HasMedia
 {
     use HasFactory;
+    use InteractsWithMedia;
   
   protected $fillable = [
         'name',
@@ -31,9 +34,9 @@ class RawMaterial extends Model
     /**
      * Get the RawMaterial's sorage in warehose.
      */
-    public function storage(): MorphOne
+    public function storages(): MorphMany
     {
-        return $this->morphOne(Storage::class, 'storageable');
+        return $this->morphMany(Storage::class, 'storageable');
     }
 
     public function catalogProducts(): BelongsToMany

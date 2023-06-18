@@ -13,12 +13,17 @@ class StorageController extends Controller
     public function index()
     {
         if(Route::currentRouteName() == 'storages.raw-materials.index'){
-            $raw_materials = Storage::where('type', 'materia-prima')->get();
+            $raw_materials = Storage::with('storageable')->where('type', 'materia-prima')->get();
             return inertia('Storage/Index/RawMaterial', compact('raw_materials'));
+
         }elseif(Route::currentRouteName() == 'storages.consumables.index'){
-            return inertia('Storage/Index/Consumable');
+            $raw_materials = Storage::with('storageable')->where('type', 'consumible')->get();
+            return inertia('Storage/Index/Consumable', compact('raw_materials'));
+
         }elseif(Route::currentRouteName() == 'storages.finished-products.index'){
-            return inertia('Storage/Index/FinishedProduct');
+            $finished_products = Storage::with('storageable')->where('type', 'producto-terminado')->get();
+            return inertia('Storage/Index/FinishedProduct',compact('finished_products'));
+
         }else
         return inertia('Storage/Index/Scrap');
     }
@@ -57,5 +62,17 @@ class StorageController extends Controller
     public function destroy(Storage $storage)
     {
         //
+    }
+
+    public function massiveDelete(Request $request)
+    {
+        foreach ($request->raw_materials as $raw_material) {
+            $raw_material = Storage::find($raw_material['id']);
+            $raw_material?->delete();
+            $raw_material = RawMaterial::find($raw_material['storageable_id']);
+            $raw_material?->delete();
+        }
+
+        return response()->json(['message' => 'Producto(s) eliminado(s)']);
     }
 }

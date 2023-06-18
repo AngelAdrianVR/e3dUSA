@@ -1,6 +1,6 @@
 <template>
     <!-- sidebar -->
-    <div class="h-screen hidden lg:block shadow-lg relative">
+    <div class="h-screen hidden md:block shadow-lg relative">
         <div class="bg-[#D9D9D9] h-full overflow-auto">
             <nav class="pt-2">
                 <div>
@@ -99,8 +99,7 @@ export default {
                 {
                     label: 'Almacén',
                     icon: '<i class="fa-solid fa-warehouse text-xs"></i>',
-                    route: route('dashboard'),
-                    active: route().current('dashboar'),
+                    active: route().current('storages.*'),
                     options: [
                         {
                             label: 'Materia prima',
@@ -108,15 +107,15 @@ export default {
                         },
                         {
                             label: 'Insumos',
-                            route: 'dashboard'
+                            route: 'storages.consumables.index'
                         },
                         {
                             label: 'Producto terminado',
-                            route: 'dashboard'
+                            route: 'storages.finished-products.index'
                         },
                         {
                             label: 'Scrap',
-                            route: 'dashboard'
+                            route: 'storages.scraps.index'
                         },
                     ],
                     dropdown: true
