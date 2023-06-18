@@ -36,12 +36,12 @@ const logout = () => {
 
         <Banner />
 
-        <div class="overflow-hidden h-screen bg-[#F2F2F2] lg:grid lg:grid-cols-12">
+        <div class="overflow-hidden h-screen bg-[#F2F2F2] md:grid md:grid-cols-12">
             <aside>
                 <SideNav />
             </aside>
 
-            <main class="lg:col-span-11">
+            <main class="md:col-span-11">
                 <nav class="bg-[#F2F2F2] border-b border-[#D9D9D9]">
                     <!-- Primary Navigation Menu -->
                     <div class="w-11/12 mx-auto">
