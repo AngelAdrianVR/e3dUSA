@@ -1,10 +1,10 @@
 <template>
     <div>
-        <AppLayout title="Materia prima">
+        <AppLayout title="Almacén materia prima">
         <template #header>
         <div class="flex justify-between">
             <div class="flex items-center space-x-2">
-                <h2 class="font-semibold text-xl leading-tight">Materia prima</h2>
+                <h2 class="font-semibold text-xl leading-tight">Almacén de materia prima</h2>
             </div>
             <div>
             <Link :href="route('raw-materials.create')">
@@ -27,11 +27,12 @@
         <el-table :data="filteredTableData" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
                 ref="multipleTableRef" :row-class-name="tableRowClassName">
                 <el-table-column type="selection" width="45" />
-                <el-table-column prop="id" label="ID" width="45" />
-                <el-table-column prop="name" label="Nombre" width="250" />
-                <el-table-column prop="part_number" label="N° parte" width="120" />
-                <el-table-column prop="description" label="Descripción" width="350" />
-                <el-table-column align="right" fixed="right">
+                <el-table-column prop="storageable.name" label="Nombre" width="250" />
+                <el-table-column prop="storageable.part_number" label="N° parte" width="120" />
+                <el-table-column prop="storageable.min_quantity" label="Min. Stock" width="100" />
+                <el-table-column prop="storageable.max_quantity" label="Max. Stock" width="100" />
+                <el-table-column prop="quantity" label="Stock" width="100" />
+                <el-table-column align="right" fixed="right" width="200">
                     <template #header>
                         <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
                     </template>
@@ -80,6 +81,15 @@ export default {
     raw_materials: Array
   },
   methods:{
+    tableRowClassName({row, rowIndex}){
+        if(row.quantity <= row.storageable.min_quantity){
+            return 'text-red-600';
+        }
+        else if(row.quantity >= row.storageable.max_quantity){
+            return 'text-amber-600';
+        }
+
+  },
     handleSelectionChange(val) {
                 this.$refs.multipleTableRef.value = val;
 
@@ -91,7 +101,7 @@ export default {
             },
             async deleteSelections() {
             try {
-                const response = await axios.post(route('raw-materials.massive-delete', {
+                const response = await axios.post(route('storages.massive-delete', {
                     raw_materials: this.$refs.multipleTableRef.value
                 }));
 
@@ -136,7 +146,8 @@ export default {
             }
         },
         edit(index, raw_material) {
-            this.$inertia.get(route('raw-materials.edit', raw_material));
+            console.log(raw_material);
+            this.$inertia.get(route('raw-materials.edit', raw_material.storageable));
         }
   },
 
@@ -145,9 +156,8 @@ export default {
             return this.raw_materials.filter(
                 (raw_material) =>
                     !this.search ||
-                    raw_material.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                    raw_material.part_number.toLowerCase().includes(this.search.toLowerCase()) ||
-                    raw_material.description.toLowerCase().includes(this.search.toLowerCase())
+                    raw_material.storageable.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                    raw_material.storageable.part_number.toLowerCase().includes(this.search.toLowerCase())
             )
         }
     },

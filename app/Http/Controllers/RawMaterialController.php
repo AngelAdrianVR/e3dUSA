@@ -3,23 +3,32 @@
 namespace App\Http\Controllers;
 
 use App\Models\RawMaterial;
+use App\Models\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 class RawMaterialController extends Controller
 {
-    
+
     public function index()
     {
-
     }
 
-    
+
     public function create()
-    {
-        return inertia('Storage/Create/RawMaterial');
+    {        
+        if(Route::currentRouteName() == 'raw-materials.create'){
+           
+            return inertia('Storage/Create/RawMaterial');
+
+        }elseif(Route::currentRouteName() == 'consumables.create'){
+           
+            return inertia('Storage/Create/Consumable');
+
+        }
     }
 
-    
+
     public function store(Request $request)
     {
         $request->validate([
@@ -32,24 +41,40 @@ class RawMaterialController extends Controller
             'description' => 'required|string',
         ]);
 
-        RawMaterial::create($request->all());
+        $raw_material = RawMaterial::create($request->all());
+        $raw_material->storages()->create([
+            'quantity' => $request->initial_stock,
+            'type' => $request->type,
+        ]);
 
+        if($request->type == 'materia-prima')
         return to_route('storages.raw-materials.index');
+        else
+        return to_route('storages.consumables.index');
     }
 
-    
+
     public function show(RawMaterial $rawMaterial)
     {
         //
     }
 
-    
+
     public function edit(RawMaterial $raw_material)
     {
-        return inertia('Storage/Edit/RawMaterial', compact('raw_material'));
+           
+         return inertia('Storage/Edit/RawMaterial',compact('raw_material'));
+
     }
 
-    
+    public function editConsumable(RawMaterial $raw_material)
+    {
+           
+         return inertia('Storage/Edit/Consumable',compact('raw_material'));
+
+    }
+
+
     public function update(Request $request, RawMaterial $raw_material)
     {
         $request->validate([
@@ -63,11 +88,17 @@ class RawMaterialController extends Controller
         ]);
 
         $raw_material->update($request->all());
+        $raw_material->storages()->update([
+            'quantity' => $request->initial_stock,
+        ]);
 
+        if($request->type == 'materia-prima')
         return to_route('storages.raw-materials.index');
+        else
+        return to_route('storages.consumables.index');
     }
 
-    
+
     public function destroy(RawMaterial $raw_material)
     {
         //
@@ -76,7 +107,7 @@ class RawMaterialController extends Controller
     public function massiveDelete(Request $request)
     {
         foreach ($request->raw_materials as $raw_material) {
-            $raw_material = RawMaterial::find($raw_material['id']);
+            $raw_material = RawMaterial::find($raw_material['storageable_id']);
             $raw_material?->delete();
         }
 
