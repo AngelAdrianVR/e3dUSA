@@ -32,10 +32,10 @@
                 <el-table-column prop="phone" label="Teléfono" width="120" />
                 <el-table-column prop="rfc" label="RFC" width="100" />
                 <el-table-column prop="post_code" label="Código postal" width="120" />
-                <el-table-column prop="fiscal_address" label="Domicilio Fiscal" width="200" />
+                <el-table-column prop="fiscal_address" label="Domicilio Fiscal" />
                 <el-table-column align="right" fixed="right" width="200">
                     <template #header>
-                        <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
+                        <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
                     </template>
                     <template #default="scope">
                         <el-button size="small" type="primary"

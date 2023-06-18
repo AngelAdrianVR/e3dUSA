@@ -63,7 +63,7 @@ const classes = computed(() => {
         <div>
             <div @click="open = !open" :class="classes">
                 <slot name="trigger" />
-                <i class="fa-solid fa-angle-right absolute mt-3 right-2 text-gray-600" :class="props.active ? 'text-[#D90537]' : ''"></i>
+                <i class="fa-solid fa-angle-right absolute mt-2 right-2 text-gray-600" :class="props.active ? 'text-[#D90537]' : ''"></i>
             </div>
 
             <!-- Full Screen Dropdown Overlay -->
