@@ -15,7 +15,7 @@
             <div class="flex justify-between">
                 <!-- pagination -->
                 <div>
-                    <el-pagination layout="prev, pager, next" :total="1000" />
+                    <el-pagination @current-change="handlePagination" layout="prev, pager, next" :total="quotes.data.length" />
                 </div>
 
                 <!-- buttons -->
@@ -39,7 +39,7 @@
                 <el-table-column prop="created_at" label="Creado el" />
                 <el-table-column align="right" fixed="right" width="200">
                     <template #header>
-                        <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
+                        <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
                     </template>
                     <template #default="scope">
                         <el-dropdown trigger="click" @command="handleCommand">
@@ -84,6 +84,10 @@ export default {
         return {
             disableMassiveActions: true,
             search: '',
+            // pagination
+            itemsPerPage: 10,
+            start: 0,
+            end: 10,
         };
     },
     props: {
@@ -101,6 +105,10 @@ export default {
             } else {
                 this.disableMassiveActions = false;
             }
+        },
+        handlePagination(val) {
+            this.start = (val - 1) * this.itemsPerPage;
+            this.end = val * this.itemsPerPage;
         },
         async deleteSelections() {
             try {
@@ -155,9 +163,6 @@ export default {
 
             return '';
         },
-        createQuote(index, message) {
-            console.log(message)
-        },
         async clone(quote_id) {
             try {
                 const response = await axios.post(route('quotes.clone', {
@@ -205,15 +210,17 @@ export default {
     },
     computed: {
         filteredTableData() {
-            return this.quotes.data.filter(
-                (quote) =>
-                    !this.search ||
-                    quote.folio.toLowerCase().includes(this.search.toLowerCase()) ||
-                    quote.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                    quote.receiver.toLowerCase().includes(this.search.toLowerCase()) ||
-                    quote.companyBranch.name.toLowerCase().includes(this.search.toLowerCase())
-
-            )
+            if (!this.search) {
+                return this.quotes.data.filter((item, index) => index >= this.start && index < this.end);
+            } else {
+                return this.quotes.data.filter(
+                    (quote) =>
+                        quote.folio.toLowerCase().includes(this.search.toLowerCase()) ||
+                        quote.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                        quote.receiver.toLowerCase().includes(this.search.toLowerCase()) ||
+                        quote.companyBranch.name.toLowerCase().includes(this.search.toLowerCase())
+                );
+            }
         }
     },
 }

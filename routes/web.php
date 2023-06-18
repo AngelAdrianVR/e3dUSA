@@ -48,6 +48,7 @@ Route::middleware([
 // ------- Catalog Products Routes ---------
 Route::resource('catalog-products', CatalogProductController::class)->middleware('auth');
 Route::post('catalog-products/massive-delete', [CatalogProductController::class, 'massiveDelete'])->name('catalog-products.massive-delete');
+Route::post('catalog-products/clone', [CatalogProductController::class, 'clone'])->name('catalog-products.clone');
 
 
 // ------- Ventas(Clients Routes)  ---------

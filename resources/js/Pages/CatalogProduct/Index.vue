@@ -1,50 +1,74 @@
 <template>
     <div>
         <AppLayout title="Catalogo de productos">
-        <template #header>
-        <div class="flex justify-between">
-            <div class="flex items-center space-x-2">
-                <h2 class="font-semibold text-xl leading-tight">Catálogo de productos</h2>
-            </div>
-            <div>
-            <Link :href="route('catalog-products.create')">
-                <SecondaryButton>+ Nuevo</SecondaryButton>
-            </Link>
-            </div>
-        </div>
-        </template>
+            <template #header>
+                <div class="flex justify-between">
+                    <div class="flex items-center space-x-2">
+                        <h2 class="font-semibold text-xl leading-tight">Catálogo de productos</h2>
+                    </div>
+                    <div>
+                        <Link :href="route('catalog-products.create')">
+                        <SecondaryButton>+ Nuevo</SecondaryButton>
+                        </Link>
+                    </div>
+                </div>
+            </template>
 
-    <!-- tabla -->
-    <div class="lg:w-5/6 mx-auto mt-6">
-            <div class="flex space-x-2 justify-end">
-                <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
-                    title="Continuar con la eliminacion?" @confirm="deleteSelections">
-                    <template #reference>
-                        <el-button type="danger" plain class="mb-3" :disabled="disableMassiveActions">Eliminar</el-button>
-                    </template>
-                </el-popconfirm>
+            <!-- tabla -->
+            <div class="lg:w-5/6 mx-auto mt-6">
+                <div class="flex justify-between">
+                    <!-- pagination -->
+                    <div>
+                        <el-pagination @current-change="handlePagination" layout="prev, pager, next"
+                            :total="catalog_products.data.length" />
+                    </div>
+
+                    <!-- buttons -->
+                    <div>
+                        <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                            title="¿Continuar?" @confirm="deleteSelections">
+                            <template #reference>
+                                <el-button type="danger" plain class="mb-3"
+                                    :disabled="disableMassiveActions">Eliminar</el-button>
+                            </template>
+                        </el-popconfirm>
+                    </div>
+                </div>
+                <el-table :data="filteredTableData" max-height="450" style="width: 100%"
+                    @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
+                    <el-table-column type="selection" width="45" />
+                    <el-table-column prop="" label="Imagen" width="80" />
+                    <el-table-column prop="part_number" label="Num de parte" width="200" />
+                    <el-table-column prop="name" label="Nombre" width="200" />
+                    <el-table-column prop="cost" label="Costo $" width="150" />
+                    <el-table-column prop="description" label="Descripción" />
+                    <el-table-column align="right" fixed="right" width="200">
+                        <template #header>
+                            <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                        </template>
+                        <template #default="scope">
+                            <el-dropdown trigger="click" @command="handleCommand">
+                                <span class="el-dropdown-link mr-3">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </span>
+                                <template #dropdown>
+                                    <el-dropdown-menu>
+                                        <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
+                                            Ver</el-dropdown-item>
+                                        <el-dropdown-item :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                            Editar</el-dropdown-item>
+                                        <el-dropdown-item :command="'clone-' + scope.row.id"><i
+                                                class="fa-solid fa-clone"></i>
+                                            Clonar</el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </template>
+                            </el-dropdown>
+                        </template>
+                    </el-table-column>
+                </el-table>
             </div>
-        <el-table :data="filteredTableData" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
-                ref="multipleTableRef" :row-class-name="tableRowClassName">
-                <el-table-column type="selection" width="45" />
-                <el-table-column prop="" label="Imagen" width="80" />
-                <el-table-column prop="part_number" label="Num de parte" width="200" />
-                <el-table-column prop="name" label="Nombre" width="200" />
-                <el-table-column prop="cost" label="Costo $" width="150" />
-                <el-table-column prop="description" label="Descripción" />
-                <el-table-column align="right" fixed="right" width="200">
-                    <template #header>
-                        <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
-                    </template>
-                    <template #default="scope">
-                        <el-button size="small" type="primary"
-                            @click="edit(scope.$index, scope.row)">Editar</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-    </div>
-    <!-- tabla -->
-    
+            <!-- tabla -->
+
 
         </AppLayout>
     </div>
@@ -56,41 +80,81 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import EmptyTable from "@/Components/MyComponents/EmptyTable.vue";
 import Table from "@/Components/MyComponents/Table.vue";
 import TextInput from '@/Components/TextInput.vue';
-import { Link, useForm } from "@inertiajs/vue3";
+import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 
 
 export default {
-  data() {
+    data() {
 
 
-    return {
-       disableMassiveActions: true,
-        search: '',
-    };
-  },
-  components: {
-    AppLayout,
-    Table,
-    EmptyTable,
-    SecondaryButton,
-    Link,
-    TextInput,
-  },
-  props: {
-    catalog_products: Array
-  },
-  methods:{
-    handleSelectionChange(val) {
-                this.$refs.multipleTableRef.value = val;
+        return {
+            disableMassiveActions: true,
+            search: '',
+            // pagination
+            itemsPerPage: 10,
+            start: 0,
+            end: 10,
+        };
+    },
+    components: {
+        AppLayout,
+        Table,
+        EmptyTable,
+        SecondaryButton,
+        Link,
+        TextInput,
+    },
+    props: {
+        catalog_products: Object
+    },
+    methods: {
+        handleSelectionChange(val) {
+            this.$refs.multipleTableRef.value = val;
 
-                if (!this.$refs.multipleTableRef.value.length) {
-                    this.disableMassiveActions = true;
+            if (!this.$refs.multipleTableRef.value.length) {
+                this.disableMassiveActions = true;
+            } else {
+                this.disableMassiveActions = false;
+            }
+        },
+        handlePagination(val) {
+            this.start = (val - 1) * this.itemsPerPage;
+            this.end = val * this.itemsPerPage;
+        },
+        async clone(catalog_product_id) {
+            try {
+                const response = await axios.post(route('catalog_products.clone', {
+                    catalog_product_id: catalog_product_id
+                }));
+
+                if (response.status == 200) {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+
+                    this.catalog_products.data.unshift(response.data.newItem);
+
                 } else {
-                    this.disableMassiveActions = false;
+                    this.$notify({
+                        title: 'Algo salió mal',
+                        message: response.data.message,
+                        type: 'error'
+                    });
                 }
-            },
-            async deleteSelections() {
+
+            } catch (err) {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
+                console.log(err);
+            }
+        },
+        async deleteSelections() {
             try {
                 const response = await axios.post(route('catalog-products.massive-delete', {
                     catalog_products: this.$refs.multipleTableRef.value
@@ -129,27 +193,45 @@ export default {
 
             } catch (err) {
                 this.$notify({
-                        title: 'Algo salió mal',
-                        message: err.message,
-                        type: 'error'
-                    });
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
                 console.log(err);
             }
         },
-        edit(index, catalog_product) {
-            this.$inertia.get(route('catalog-products.edit', catalog_product));
-        }
-  },
+        tableRowClassName({ row, rowIndex }) {
+            if (row.status === 1) {
+                return 'text-green-600';
+            }
 
-  computed: {
+            return '';
+        },
+        handleCommand(command) {
+            const commandName = command.split('-')[0];
+            const rowId = command.split('-')[1];
+
+            if (commandName == 'clone') {
+                this.clone(rowId);
+            } else if (commandName == 'make_so') {
+                console.log('SO');
+            } else {
+                this.$inertia.get(route('catalog-products.' + commandName, rowId));
+            }
+        },
+    },
+    computed: {
         filteredTableData() {
-            return this.catalog_products.filter(
-                (catalog_product) =>
-                    !this.search ||
-                    catalog_product.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                    catalog_product.part_number.toLowerCase().includes(this.search.toLowerCase()) ||
-                    catalog_product.measure_unit.toLowerCase().includes(this.search.toLowerCase())
-            )
+            if (!this.search) {
+                return this.catalog_products.data.filter((item, index) => index >= this.start && index < this.end);
+            } else {
+                return this.catalog_products.data.filter(
+                    (catalog_product) =>
+                        catalog_product.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                        catalog_product.part_number.toLowerCase().includes(this.search.toLowerCase()) ||
+                        catalog_product.measure_unit.toLowerCase().includes(this.search.toLowerCase())
+                )
+            }
         }
     },
 };
