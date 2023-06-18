@@ -163,9 +163,6 @@ export default {
 
             return '';
         },
-        createQuote(index, message) {
-            console.log(message)
-        },
         async clone(quote_id) {
             try {
                 const response = await axios.post(route('quotes.clone', {

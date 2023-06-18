@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CatalogProductResource;
 use App\Models\CatalogProduct;
+use App\Models\ProductionCost;
 use App\Models\RawMaterial;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -12,7 +14,7 @@ class CatalogProductController extends Controller
     
     public function index()
     {
-        $catalog_products = CatalogProduct::all();
+        $catalog_products = CatalogProductResource::collection(CatalogProduct::latest()->get());
         return inertia('CatalogProduct/Index', compact('catalog_products'));
     }
 
@@ -20,8 +22,9 @@ class CatalogProductController extends Controller
     public function create()
     {
         $raw_materials = RawMaterial::all();
-        
-        return inertia('CatalogProduct/Create', compact('raw_materials'));
+        $production_costs = ProductionCost::all();
+
+        return inertia('CatalogProduct/Create', compact('raw_materials', 'production_costs'));
     }
 
     
@@ -45,7 +48,7 @@ class CatalogProductController extends Controller
     
     public function show(CatalogProduct $catalogProduct)
     {
-        //
+        return inertia('CatalogProduct/Show');
     }
 
     
@@ -86,5 +89,33 @@ class CatalogProductController extends Controller
         }
 
         return response()->json(['message' => 'Producto(s) eliminado(s)']);
+    }
+
+    public function clone(Request $request)
+    {
+        $catalog_product = CatalogProduct::find($request->catalog_product_id);
+
+        $clone = $catalog_product->replicate()->fill([
+            'authorized_user_name' => null,
+            'authorized_at' => null,
+            'user_id' => auth()->id(),
+            'sale_id' => null,
+        ]);
+
+        $clone->save();
+
+        // foreach ($catalog_product->catalogProducts as $product) {
+        //     $pivot = [
+        //         'quantity' => $product->pivot->quantity,
+        //         'price' => $product->pivot->price, 
+        //         'notes' => $product->pivot->notes, 
+        //         'show_image' => $product->pivot->show_image,
+        //     ];
+
+        //     $clone->catalogProducts()->attach($product->pivot->catalog_product_id, $pivot);
+        //     $new_item_folio = 'COT-' . str_pad($clone->id, 3, "0", STR_PAD_LEFT);
+        // }
+
+        // return response()->json(['message' => "Cotización clonada: $new_item_folio", 'newItem' => catalog_productResource::make($clone)]);
     }
 }
