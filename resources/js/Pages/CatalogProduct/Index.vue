@@ -40,7 +40,7 @@
                     <el-table-column prop="" label="Imagen" width="80" />
                     <el-table-column prop="part_number" label="Num de parte" width="200" />
                     <el-table-column prop="name" label="Nombre" width="200" />
-                    <el-table-column prop="cost" label="Costo $" width="150" />
+                    <el-table-column prop="cost.number_format" label="Costo $" width="150" />
                     <el-table-column prop="description" label="Descripción" />
                     <el-table-column align="right" fixed="right" width="200">
                         <template #header>
@@ -169,7 +169,7 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.catalog_products.forEach((catalog_product, index) => {
+                    this.catalog_products.data.forEach((catalog_product, index) => {
                         if (this.$refs.multipleTableRef.value.includes(catalog_product)) {
                             deletedIndexes.push(index);
                         }
@@ -180,7 +180,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.catalog_products.splice(index, 1);
+                        this.catalog_products.data.splice(index, 1);
                     }
 
                 } else {
@@ -210,6 +210,8 @@ export default {
         handleCommand(command) {
             const commandName = command.split('-')[0];
             const rowId = command.split('-')[1];
+
+            console.log(command);
 
             if (commandName == 'clone') {
                 this.clone(rowId);

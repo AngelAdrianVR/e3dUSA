@@ -11,14 +11,14 @@ use Illuminate\Validation\Rule;
 
 class CatalogProductController extends Controller
 {
-    
+
     public function index()
     {
         $catalog_products = CatalogProductResource::collection(CatalogProduct::latest()->get());
         return inertia('CatalogProduct/Index', compact('catalog_products'));
     }
 
-    
+
     public function create()
     {
         $raw_materials = RawMaterial::all();
@@ -27,37 +27,54 @@ class CatalogProductController extends Controller
         return inertia('CatalogProduct/Create', compact('raw_materials', 'production_costs'));
     }
 
-    
+
     public function store(Request $request)
     {
+        // total production cost
+        $total_cost = 0;
+
         $request->validate([
             'name' => 'required',
             'part_number' => 'required|string|unique:catalog_products,part_number',
             'measure_unit' => 'required|string',
-            'cost' => 'required|numeric|min:0',
             'min_quantity' => 'required|min:0',
             'max_quantity' => 'required|min:0',
-            'description' => 'required'
+            'description' => 'nullable'
         ]);
 
-        CatalogProduct::create($request->all());
+        $catalog_product = CatalogProduct::create($request->all());
+
+        foreach ($request->raw_materials as $product) {
+            $total_cost += RawMaterial::find($product['raw_material_id'])?->cost * $product['quantity'];
+            
+            foreach ($product['production_costs'] as $process_id) {
+                $total_cost += ProductionCost::find($process_id)->cost * $product['quantity'];
+            }
+
+            $catalog_product->rawMaterials()->attach($product['raw_material_id'], $product);
+        }
+
+        $catalog_product->update(['cost' => $total_cost]);
 
         return to_route('catalog-products.index');
     }
 
-    
+
     public function show(CatalogProduct $catalogProduct)
     {
         return inertia('CatalogProduct/Show');
     }
 
-    
+
     public function edit(CatalogProduct $catalog_product)
     {
-        return inertia('CatalogProduct/Edit', compact('catalog_product'));
+        $catalog_product = CatalogProduct::with('rawMaterials')->find($catalog_product->id);
+        $production_costs = ProductionCost::all();
+
+        return inertia('CatalogProduct/Edit', compact('catalog_product', 'production_costs'));
     }
 
-    
+
     public function update(Request $request, CatalogProduct $catalog_product)
     {
         $request->validate([
@@ -75,7 +92,7 @@ class CatalogProductController extends Controller
         return to_route('catalog-products.index');
     }
 
-    
+
     public function destroy(CatalogProduct $catalogProduct)
     {
         //
