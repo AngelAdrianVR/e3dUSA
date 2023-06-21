@@ -3,11 +3,9 @@
     <AppLayout title="Clientes - Crear">
       <template #header>
         <div class="flex justify-between">
-          <Link
-            :href="route('companies.index')"
-            class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center"
-          >
-            <i class="fa-solid fa-chevron-left"></i>
+          <Link :href="route('companies.index')"
+            class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center">
+          <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">Agregar nuevo cliente</h2>
@@ -21,21 +19,13 @@
         <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
           <div class="md:grid gap-6 mb-6 grid-cols-2 pb-4">
             <div>
-              <IconInput
-                v-model="form.business_name"
-                inputPlaceholder="Nombre *"
-                inputType="text"
-              >
+              <IconInput v-model="form.business_name" inputPlaceholder="Nombre *" inputType="text">
                 A
               </IconInput>
               <InputError :message="form.errors.business_name" />
             </div>
             <div>
-              <IconInput
-                v-model="form.phone"
-                inputPlaceholder="Teléfono *"
-                inputType="text"
-              >
+              <IconInput v-model="form.phone" inputPlaceholder="Teléfono *" inputType="text">
                 <i class="fa-solid fa-phone"></i>
               </IconInput>
               <InputError :message="form.errors.phone" />
@@ -47,20 +37,13 @@
               <InputError :message="form.errors.rfc" />
             </div>
             <div>
-              <IconInput
-                v-model="form.post_code"
-                inputPlaceholder="C.P. *"
-                inputType="text"
-              >
+              <IconInput v-model="form.post_code" inputPlaceholder="C.P. *" inputType="text">
                 <i class="fa-solid fa-envelopes-bulk"></i>
               </IconInput>
               <InputError :message="form.errors.post_code" />
             </div>
             <div>
-              <IconInput
-                v-model="form.fiscal_address"
-                inputPlaceholder="Domicilio fiscal *"
-              >
+              <IconInput v-model="form.fiscal_address" inputPlaceholder="Domicilio fiscal *">
                 <i class="fa-solid fa-building"></i>
               </IconInput>
               <InputError :message="form.errors.fiscal_address" />
@@ -70,159 +53,152 @@
 
           <!-- ---------------- Company Branch starts ----------------- -->
           <el-divider content-position="left">Sucursales</el-divider>
-          <div class="space-y-3 md:w-[92%] mx-auto bg-[#b8b7b7] rounded-lg p-5">
+          <ol v-if="form.company_branches.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1 mb-2">
+            <template v-for="(item, index) in form.company_branches" :key="index">
+              <li class="flex justify-between items-center">
+                <p class="text-sm">
+                  <span class="text-primary">{{ index + 1 }}.</span>
+                  {{ item.name }}
+                </p>
+                <div class="flex space-x-2 items-center">
+                  <el-tag v-if="editBranchIndex == index">En edición</el-tag>
+                  <el-button @click="editBranch(index)" type="primary" circle>
+                    <i class="fa-sharp fa-solid fa-pen-to-square"></i>
+                  </el-button>
+                  <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+                    @confirm="deleteBranch(index)">
+                    <template #reference>
+                      <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>
+                    </template>
+                  </el-popconfirm>
+                </div>
+              </li>
+            </template>
+          </ol>
+          <div class="space-y-3 md:w-[92%] mx-auto border-2 border-[#b8b7b7] rounded-lg p-5">
             <div>
-              <IconInput
-                v-model="form.name"
-                inputPlaceholder="Nombre de sucursal *"
-                inputType="text"
-              >
+              <IconInput v-model="branch.name" inputPlaceholder="Nombre de sucursal *" inputType="text">
                 A
               </IconInput>
-              <InputError :message="form.errors.name" />
+              <!-- <InputError :message="branch.errors.name" /> -->
             </div>
             <div class="md:col-span-2">
-              <IconInput
-                v-model="form.address"
-                inputPlaceholder="Dirección *"
-                inputType="text"
-              >
+              <IconInput v-model="branch.address" inputPlaceholder="Dirección *" inputType="text">
                 <i class="fa-solid fa-map-location-dot"></i>
               </IconInput>
-              <InputError :message="form.errors.address" />
+              <!-- <InputError :message="branch.errors.address" /> -->
             </div>
             <div>
-              <IconInput
-                v-model="form.post_code_branch"
-                inputPlaceholder="C.P. *"
-                inputType="text"
-              >
+              <IconInput v-model="branch.post_code" inputPlaceholder="C.P. *" inputType="text">
                 <i class="fa-solid fa-envelopes-bulk"></i>
               </IconInput>
-              <InputError :message="form.errors.post_code_branch" />
+              <!-- <InputError :message="branch.errors.post_code" /> -->
             </div>
-            <div>
-              <el-select
-                v-model="form.sat_method"
-                class="my-2"
-                placeholder="Método de pago"
-              >
-                <el-option
-                  v-for="item in sat_method"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
+            <div class="flex items-center">
+              <span
+                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                sat
+              </span>
+              <el-select v-model="branch.sat_method" clearable placeholder="Método de pago">
+                <el-option v-for="item in sat_method" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
-              <InputError :message="form.errors.sat_method" />
+              <!-- <InputError :message="branch.errors.sat_method" /> -->
             </div>
-            <div>
-              <el-select v-model="form.sat_way" class="my-2" placeholder="Medio de pago">
-                <el-option
-                  v-for="item in sat_ways"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.label"
-                />
+            <div class="flex items-center">
+              <span
+                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                sat
+              </span>
+              <el-select v-model="branch.sat_way" clearable placeholder="Medio de pago">
+                <el-option v-for="item in sat_ways" :key="item.value" :label="item.label" :value="item.label" />
               </el-select>
-              <InputError :message="form.errors.sat_way" />
+              <!-- <InputError :message="branch.errors.sat_way" /> -->
             </div>
-            <div>
-              <el-select
-                v-model="form.sat_type"
-                class="mt-2"
-                placeholder="Uso de factura"
-              >
-                <el-option
-                  v-for="item in sat_types"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
+            <div class="flex items-center">
+              <span
+                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                sat
+              </span>
+              <el-select v-model="branch.sat_type" clearable placeholder="Uso de factura">
+                <el-option v-for="item in sat_types" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
-              <InputError :message="form.errors.sat_types" />
-            </div>
-            <div class="flex flex-col text-red-400 text-sm font-bold space-y-1">
-              <div
-                class="flex justify-center items-center space-x-2"
-                v-for="branch in company_branches"
-                :key="branch"
-              >
-                <i class="fa-solid fa-building mr-1"></i> {{ branch.name }}
-                <i class="fa-solid fa-map-location-dot mr-1"></i> {{ branch.address }}
-              </div>
+              <!-- <InputError :message="form.errors.sat_types" /> -->
             </div>
             <div class="pb-7">
-              <SecondaryButton :disabled="!company_contacts.length" @click="addCompanyBranch">
-                Agregar Sucursal
+              <SecondaryButton @click="addBranch"
+                :disabled="contacts.length == 0 || !branch.name || !branch.address || !branch.post_code || !branch.sat_method || !branch.sat_type || !branch.sat_way">
+                {{ editBranchIndex !== null ? 'Actualizar sucursal' : 'Agregar sucursal a lista' }}
               </SecondaryButton>
             </div>
             <!-- ---------------- Company Branch ends ----------------- -->
 
             <!-- ---------------- Company Contacts starts ----------------- -->
             <el-divider content-position="left">Contactos</el-divider>
-            <div class="md:w-[92%] mx-auto pt-3 space-y-3 bg-[#acabab] rounded-lg p-5">
+            <ol v-if="contacts.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
+              <template v-for="(item, index) in contacts" :key="index">
+                <li class="flex justify-between items-center">
+                  <p class="text-sm">
+                    <span class="text-primary">{{ index + 1 }}.</span>
+                    {{ item.name }} | {{ item.email }}
+                  </p>
+                  <div class="flex space-x-2 items-center">
+                    <el-tag v-if="editContactIndex == index">En edición</el-tag>
+                    <el-button @click="editContact(index)" type="primary" circle>
+                      <i class="fa-sharp fa-solid fa-pen-to-square"></i>
+                    </el-button>
+                    <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                      title="¿Continuar?" @confirm="deleteContact(index)">
+                      <template #reference>
+                        <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>
+                      </template>
+                    </el-popconfirm>
+                  </div>
+                </li>
+              </template>
+            </ol>
+            <div class="md:w-[92%] mx-auto pt-3 space-y-3 rounded-lg p-5">
               <div>
-                <IconInput
-                  v-model="form.name_contact"
-                  inputPlaceholder="Nombre de contacto *"
-                  inputType="text"
-                >
+                <IconInput v-model="contact.name" inputPlaceholder="Nombre de contacto *" inputType="text">
                   A
                 </IconInput>
                 <InputError :message="form.errors.name_contact" />
               </div>
               <div class="md:grid gap-6 mb-6 grid-cols-2">
                 <div>
-                  <IconInput
-                    v-model="form.email"
-                    inputPlaceholder="Correo electrónico *"
-                    inputType="email"
-                  >
+                  <IconInput v-model="contact.email" inputPlaceholder="Correo electrónico *" inputType="email">
                     <i class="fa-solid fa-envelope"></i>
                   </IconInput>
                   <InputError :message="form.errors.email" />
                 </div>
                 <div>
-                  <IconInput
-                    v-model="form.phone_contact"
-                    inputPlaceholder="Teléfono *"
-                    inputType="text"
-                  >
+                  <IconInput v-model="contact.phone" inputPlaceholder="Teléfono *" inputType="text">
                     <i class="fa-solid fa-phone"></i>
                   </IconInput>
-                  <InputError :message="form.errors.phone_contact" />
+                  <InputError :message="form.errors.phone" />
                 </div>
               </div>
               <div>
-                <IconInput
-                  v-model="form.birthdate"
-                  inputPlaceholder="Cumpleaños"
-                  inputType="date"
-                >
-                  <i class="fa-solid fa-cake"></i>
-                </IconInput>
+                <div class="flex items-center">
+                  <span
+                    class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                    <i class="fa-solid fa-cake"></i>
+                  </span>
+                  <div class="grid grid-cols-2 gap-2">
+                    <el-select v-model="contact.birthdate_day" clearable placeholder="Dia">
+                      <el-option v-for="day in 31" :key="day" :label="day" :value="day" />
+                    </el-select>
+                    <el-select v-model="contact.birthdate_month" clearable placeholder="Mes">
+                      <el-option v-for="(month, index) in months" :key="index" :label="month" :value="index" />
+                    </el-select>
+                  </div>
+                  <InputError :message="form.errors.sat_way" />
+                </div>
                 <InputError :message="form.errors.birthdate" />
               </div>
             </div>
-            <div class="flex flex-col text-blue-400 text-sm font-bold space-y-1">
-              <div
-                class="flex justify-center items-center space-x-2"
-                v-for="contact in company_contacts"
-                :key="contact"
-              >
-                <i class="fa-solid fa-user mr-1"></i> {{ contact.name }}
-                <i class="fa-solid fa-envelope mr-1"></i> {{ contact.email }}
-                <i class="fa-solid fa-phone mr-1"></i> {{ contact.phone }}
-              </div>
-            </div>
-            <SecondaryButton
-              @click="addCompanyContact"
-              :disabled="
-                !this.form.name_contact || !this.form.email || !this.form.phone_contact
-              "
-            >
-              Agregar Contacto
+            <SecondaryButton @click="addContact" :disabled="!this.contact.name || !this.contact.email || !this.contact.phone
+              ">
+              {{ editContactIndex !== null ? 'Actualizar contacto' : 'Agregar Contacto a lista' }}
             </SecondaryButton>
           </div>
           <!-- ---------------- Company Contacts ends ----------------- -->
@@ -230,106 +206,104 @@
 
           <!-- ---------------- Company Products starts ----------------- -->
           <el-divider content-position="left">Productos del cliente</el-divider>
-          <div class="space-y-3 bg-[#b8b7b7] rounded-lg p-5">
-            <div style="margin-top: 20px">
-                <el-radio-group v-model=form.radio size="small">
-                <el-radio-button label="Producto terminado" />
-                <el-radio-button label="Materia prima" />
-                </el-radio-group>
-            </div>
-            <div>
-                <el-select
-                v-model="form.catalog_product_id"
-                class="mt-2"
-                placeholder="Buscar producto"
-              >
-                <el-option
-                  v-for="item in form.radio == 'Producto terminado' ? catalog_products : raw_materials"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                />
+          <ol v-if="form.products.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
+            <template v-for="(item, index) in form.products" :key="index">
+              <li class="flex justify-between items-center">
+                <p class="text-sm">
+                  <span class="text-primary">{{ index + 1 }}.</span>
+                  {{ catalog_products.find(prd => prd.id === item.catalog_product_id)?.name }}
+                  ({{ item.new_price }} {{ item.new_currency }} / unidad)
+                </p>
+                <div class="flex space-x-2 items-center">
+                  <el-tag v-if="editProductIndex == index">En edición</el-tag>
+                  <el-button @click="editProduct(index)" type="primary" circle>
+                    <i class="fa-sharp fa-solid fa-pen-to-square"></i>
+                  </el-button>
+                  <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+                    @confirm="deleteProduct(index)">
+                    <template #reference>
+                      <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>
+                    </template>
+                  </el-popconfirm>
+                </div>
+              </li>
+            </template>
+          </ol>
+
+          <div class="space-y-3 rounded-lg p-5">
+            <div class="flex items-center">
+              <span
+                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </span>
+              <el-select v-model="product.catalog_product_id" clearable placeholder="Buscar producto">
+                <el-option v-for="item in catalog_products" :key="item.id" :label="item.name" :value="item.id" />
               </el-select>
             </div>
             <div class="md:grid gap-6 mb-6 grid-cols-3">
-                <div>
-                  <IconInput
-                    v-model="form.old_price"
-                    inputPlaceholder="Precio anterior *"
-                    inputType="number"
-                  >
-                    <i class="fa-solid fa-money-bill"></i>
-                  </IconInput>
-                  <InputError :message="form.errors.old_price" />
-                </div>
-                <div>
-                  <el-select
-                    v-model="form.old_currency"
-                    class="mt-2"
-                    placeholder="Moneda"
-                >
-                    <el-option
-                    v-for="item in currencies"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                    />
-              </el-select>
-                </div>
-                <div>
-                  <IconInput
-                    v-model="form.old_date"
-                    inputPlaceholder="Precio anterior *"
-                    inputType="date"
-                  >
-                    <i class="fa-solid fa-calendar"></i>
-                  </IconInput>
-                  <InputError :message="form.errors.old_price" />
-                </div>
-                <div>
-                  <IconInput
-                    v-model="form.new_price"
-                    inputPlaceholder="Precio nuevo *"
-                    inputType="number"
-                  >
-                    <i class="fa-solid fa-money-bill"></i>
-                  </IconInput>
-                  <InputError :message="form.errors.new_price" />
-                </div>
-                <div>
-                  <el-select
-                    v-model="form.new_currency"
-                    class="mt-2"
-                    placeholder="Moneda"
-                >
-                    <el-option
-                    v-for="item in currencies"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                    />
-              </el-select>
-                </div>
-                <div>
-                  <IconInput
-                    v-model="form.new_date"
-                    inputType="date"
-                  >
-                    <i class="fa-solid fa-calendar"></i>
-                  </IconInput>
-                  <InputError :message="form.errors.old_price" />
-                </div>
+              <div>
+                <IconInput v-model="product.old_price" inputPlaceholder="Precio anterior *" inputType="number">
+                  <i class="fa-solid fa-money-bill"></i>
+                </IconInput>
+                <!-- <InputError :message="form.errors.old_price" /> -->
+              </div>
+              <div class="flex items-center">
+                <span
+                  class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                  <i class="fa-solid fa-dollar-sign"></i>
+                </span>
+                <el-select v-model="product.old_currency" placeholder="Moneda *" :fit-input-width="true">
+                  <el-option v-for="item in currencies" :key="item.value" :label="item.label" :value="item.value">
+                    <span style="float: left">{{ item.label }}</span>
+                    <span style="
+                                            float: right;
+                                            color: #cccccc;
+                                            font-size: 13px;
+                                            ">{{ item.value }}</span>
+                  </el-option>
+                </el-select>
+              </div>
+              <div class="flex items-center">
+                <el-date-picker v-model="product.old_date" type="date" placeholder="Fecha" format="YYYY/MM/DD"
+                  value-format="YYYY-MM-DD" />
+                <!-- <InputError :message="form.errors.branches.old_date" /> -->
+              </div>
+              <div>
+                <IconInput v-model="product.new_price" inputPlaceholder="Precio nuevo *" inputType="number">
+                  <i class="fa-solid fa-money-bill"></i>
+                </IconInput>
+                <!-- <InputError :message="form.errors.new_price" /> -->
+              </div>
+              <div class="flex items-center">
+                <span
+                  class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                  <i class="fa-solid fa-dollar-sign"></i>
+                </span>
+                <el-select v-model="product.new_currency" placeholder="Moneda *" :fit-input-width="true">
+                  <el-option v-for="item in currencies" :key="item.value" :label="item.label" :value="item.value">
+                    <span style="float: left">{{ item.label }}</span>
+                    <span style="
+                                            float: right;
+                                            color: #cccccc;
+                                            font-size: 13px;
+                                            ">{{ item.value }}</span>
+                  </el-option>
+                </el-select>
+              </div>
+              <div class="flex items-center">
+                <el-date-picker v-model="product.new_date" type="date" placeholder="Fecha" format="YYYY/MM/DD"
+                  value-format="YYYY-MM-DD" />
+                <!-- <InputError :message="form.errors.branches.old_date" /> -->
+              </div>
             </div>
-                <SecondaryButton
-              @click="addCompanyProduct"
-              :disabled="!company_branches.length"
-            >
-              Agregar Producto
+            <SecondaryButton @click="addProduct"
+              :disabled="!product.catalog_product_id || !product.new_date || !product.new_currency || !product.new_price">
+              {{ editProductIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
             </SecondaryButton>
           </div>
           <!-- ---------------- Company Products ends ----------------- -->
-          <div class="mt-4 mx-3 md:text-right">
-            <el-divider />
+          <el-divider />
+          <div class="md:text-right">
             <PrimaryButton :disabled="form.processing"> Agregar Cliente </PrimaryButton>
           </div>
         </div>
@@ -354,41 +328,58 @@ export default {
       rfc: null,
       post_code: null,
       fiscal_address: null,
-      // --- company_branch ---
-      name: null,
-      address: null,
-      post_code_branch: null,
-      sat_method: null,
-      sat_type: null,
-      sat_way: null,
-      // --- company_contact ---
-      name_contact: null,
-      email: null,
-      phone_contact: null,
-      birthdate: null,
-      // --- company_product ---
-      radio:'Producto terminado',
-      old_date: null,
-      new_date: null,
-      old_currency: null,
-      new_currency: null,
-      old_price: null,
-      new_price: null,
-      catalog_product_id: null,
-      company_id: null,
+      company_branches: [],
+      products: [],
     });
 
     return {
       form,
-      company_contacts: [],
-      company_branches: [],
-      company_products: [],
-
+      contacts: [],
+      editContactIndex: null,
+      editProductIndex: null,
+      editBranchIndex: null,
+      contact: {
+        name: null,
+        email: null,
+        phone: null,
+        birthdate_day: null,
+        birthdate_month: null,
+      },
+      branch: {
+        name: null,
+        address: null,
+        post_code: null,
+        sat_method: null,
+        sat_type: null,
+        sat_way: null,
+      },
+      product: {
+        catalog_product_id: null,
+        old_date: null,
+        new_date: null,
+        old_currency: null,
+        new_currency: null,
+        old_price: null,
+        new_price: null,
+      },
       currencies: [
-        {value: "MXN", label:"MXN"},
-        {value: "USD", label:"USD"},
+        { value: "$MXN", label: "MXN" },
+        { value: "$USD", label: "USD" },
       ],
-
+      months: [
+        'Enero',
+        'Febrero',
+        'Marzo',
+        'Abril',
+        'Mayo',
+        'Junio',
+        'Julio',
+        'Agosto',
+        'Septiembre',
+        'Octubre',
+        'Noviembre',
+        'Diciembre',
+      ],
       sat_method: [
         { value: "PUE", label: "PUE: Pago en una sola exhibición" },
         { value: "PPD", label: "PPD: Pago en parcialidades o diferido" },
@@ -464,35 +455,113 @@ export default {
   },
   methods: {
     store() {
-      this.form.post(route("companies.store"));
-    },
-    addCompanyBranch() {
-      this.company_branches.push({
-        name: this.form.name,
-        address: this.form.address,
-        post_code: this.form.post_code_branch,
-        sat_method: this.form.sat_method,
-        sat_type: this.form.sat_type,
-        sat_way: this.form.sat_way,
+      this.form.post(route("companies.store"), {
+        onSuccess: () => {
+          this.$notify({
+            title: 'Éxito',
+            message: 'Cliente creado',
+            type: 'success'
+          });
+
+          this.form.reset();
+        }
       });
-      this.form.name = null;
-      this.form.address = null;
-      this.form.post_code_branch = null;
-      this.form.sat_method = null;
-      this.form.sat_type = null;
-      this.form.sat_way = null;
     },
-    addCompanyContact() {
-      this.company_contacts.push({
-        name: this.form.name_contact,
-        email: this.form.email,
-        phone: this.form.phone_contact,
-        birthdate: this.form.birthdate,
+    // contacts
+    addContact() {
+      const contact = { ...this.contact };
+
+      if (this.editContactIndex !== null) {
+        this.contacts[this.editContactIndex] = contact;
+        this.editContactIndex = null;
+      } else {
+        this.contacts.push(contact);
+      }
+
+      this.contact.name = null;
+      this.contact.email = null;
+      this.contact.phone = null;
+      this.contact.birthdate_day = null;
+      this.contact.birthdate_month = null;
+    },
+    deleteContact(index) {
+      this.contacts.splice(index, 1);
+    },
+    editContact(index) {
+      const contact = { ...this.contacts[index] };
+      this.contact = contact;
+      this.editContactIndex = index;
+    },
+    // branches
+    addBranch() {
+      let branch = { ...this.branch };
+      branch.contacts = this.contacts;
+
+      if (this.editBranchIndex !== null) {
+        this.form.company_branches[this.editBranchIndex] = branch;
+        this.editBranchIndex = null;
+      } else {
+        this.form.company_branches.push(branch);
+      }
+
+      // reser branch form & list of contacts
+      this.branch.name = null;
+      this.branch.address = null;
+      this.branch.post_code = null;
+      this.branch.sat_method = null;
+      this.branch.sat_type = null;
+      this.branch.sat_way = null;
+      this.contacts = [];
+    },
+    deleteBranch(index) {
+      this.form.company_branches.splice(index, 1);
+    },
+    editBranch(index) {
+      const branch = { ...this.form.company_branches[index] };
+
+      this.form.company_branches[index].contacts.forEach(element => {
+        const contact = {
+          name: element.name,
+          email: element.email,
+          phone: element.phone,
+          birthdate_day: element.birthdate_day,
+          birthdate_month: element.birthdate_month,
+        }
+
+        this.contacts.push(contact);
       });
-      this.form.name_contact = null;
-      this.form.email = null;
-      this.form.phone_contact = null;
-      this.form.birthdate = null;
+
+      this.branch = branch;
+      this.editBranchIndex = index;
+    },
+    // products
+    addProduct() {
+      let product = { ...this.product };
+
+      if (this.editProductIndex !== null) {
+        this.form.products[this.editProductIndex] = product;
+        this.editProductIndex = null;
+      } else {
+        this.form.products.push(product);
+      }
+
+      // reser product form
+      this.product.catalog_product_id = null;
+      this.product.old_date = null;
+      this.product.new_date = null;
+      this.product.old_currency = null;
+      this.product.new_currency = null;
+      this.product.old_price = null;
+      this.product.new_price = null;
+    },
+    deleteProduct(index) {
+      this.form.products.splice(index, 1);
+    },
+    editProduct(index) {
+      const product = { ...this.form.products[index] };
+
+      this.product = product;
+      this.editProductIndex = index;
     },
   },
 };

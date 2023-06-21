@@ -27,6 +27,7 @@
         <el-table :data="filteredTableData" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
                 ref="multipleTableRef" :row-class-name="tableRowClassName">
                 <el-table-column type="selection" width="45" />
+
                 <el-table-column prop="storageable.name" label="Nombre" width="250" />
                 <el-table-column prop="storageable.part_number" label="N° parte" width="120" />
                 <el-table-column prop="location" label="Ubicación" width="120" />

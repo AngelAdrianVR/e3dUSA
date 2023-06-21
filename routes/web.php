@@ -54,7 +54,7 @@ Route::post('catalog-products/clone', [CatalogProductController::class, 'clone']
 // ------- Ventas(Clients Routes)  ---------
 Route::resource('companies', CompanyController::class)->middleware('auth');
 Route::post('companies/massive-delete', [CompanyController::class, 'massiveDelete'])->name('companies.massive-delete');
-
+Route::post('catalog-products/clone', [CompanyController::class, 'clone'])->name('companies.clone');
 
 
 // ------- Ventas(sale orders Routes)  ---------
