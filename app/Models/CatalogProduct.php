@@ -56,4 +56,18 @@ class CatalogProduct extends Model
                 'notes',
             ])->withTimestamps();
     }
+
+    public function companies(): BelongsToMany
+    {
+      return $this->belongsToMany(Quote::class)
+            ->withPivot([
+                'old_price',
+                'old_date',
+                'old_currency',
+                'new_price',
+                'new_date',
+                'new_currency',
+            ])->withTimestamps()
+            ->using(CatalogProductCompany::class);
+    }
 }

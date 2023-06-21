@@ -1,50 +1,73 @@
 <template>
     <div>
         <AppLayout title="Órdenes de venta">
-        <template #header>
-        <div class="flex justify-between">
-            <div class="flex items-center space-x-2">
-                <h2 class="font-semibold text-xl leading-tight">Órdenes de venta</h2>
-            </div>
-            <div>
-            <Link :href="route('sales.create')">
-                <SecondaryButton>+ Nuevo</SecondaryButton>
-            </Link>
-            </div>
-        </div>
-        </template>
+            <template #header>
+                <div class="flex justify-between">
+                    <div class="flex items-center space-x-2">
+                        <h2 class="font-semibold text-xl leading-tight">Órdenes de venta</h2>
+                    </div>
+                    <div>
+                        <Link :href="route('sales.create')">
+                        <SecondaryButton>+ Nuevo</SecondaryButton>
+                        </Link>
+                    </div>
+                </div>
+            </template>
 
-    <!-- tabla -->
-    <div class="lg:w-5/6 mx-auto mt-6">
-            <div class="flex space-x-2 justify-end">
-                <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
-                    title="Continuar con la eliminacion?" @confirm="deleteSelections">
-                    <template #reference>
-                        <el-button type="danger" plain class="mb-3" :disabled="disableMassiveActions">Eliminar</el-button>
-                    </template>
-                </el-popconfirm>
+            <!-- tabla -->
+            <div class="lg:w-5/6 mx-auto mt-6">
+                <div class="flex justify-between">
+                    <!-- pagination -->
+                    <div>
+                        <el-pagination @current-change="handlePagination" layout="prev, pager, next"
+                            :total="sales.data.length" />
+                    </div>
+
+                    <!-- buttons -->
+                    <div>
+                        <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                            title="¿Continuar?" @confirm="deleteSelections">
+                            <template #reference>
+                                <el-button type="danger" plain class="mb-3"
+                                    :disabled="disableMassiveActions">Eliminar</el-button>
+                            </template>
+                        </el-popconfirm>
+                    </div>
+                </div>
+                <el-table :data="companies" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
+                    ref="multipleTableRef" :row-class-name="tableRowClassName">
+                    <el-table-column type="selection" width="45" />
+                    <el-table-column prop="id" label="ID" width="45" />
+                    <el-table-column prop="user_id" label="Creado por" />
+                    <el-table-column prop="created_at" label="Creado el" />
+                    <el-table-column prop="company_branch.name" label="Cliente" />
+                    <el-table-column prop="status" label="Estatus" />
+                    <el-table-column align="right" fixed="right" width="200">
+                        <template #header>
+                            <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                        </template>
+                        <template #default="scope">
+                            <el-dropdown trigger="click" @command="handleCommand">
+                                <span class="el-dropdown-link mr-3">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </span>
+                                <template #dropdown>
+                                    <el-dropdown-menu>
+                                        <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
+                                            Ver</el-dropdown-item>
+                                        <el-dropdown-item :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                            Editar</el-dropdown-item>
+                                        <el-dropdown-item :command="'clone-' + scope.row.id"><i
+                                                class="fa-solid fa-clone"></i>
+                                            Clonar</el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </template>
+                            </el-dropdown>
+                        </template>
+                    </el-table-column>
+                </el-table>
             </div>
-        <el-table :data="companies" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
-                ref="multipleTableRef" :row-class-name="tableRowClassName">
-                <el-table-column type="selection" width="45" />
-                <el-table-column prop="id" label="ID" width="45" />
-                <el-table-column prop="user_id" label="Creador" width="120" />
-                <el-table-column prop="company_branch_id" label="Cliente" width="120" />
-                <el-table-column prop="created_at" label="Creado el" width="100" />
-                <el-table-column prop="status" label="Estatus" width="120" />
-                <el-table-column align="right" fixed="right">
-                    <template #header>
-                        <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
-                    </template>
-                    <template #default="scope">
-                        <el-button size="small" type="primary"
-                            @click="edit(scope.$index, scope.row)">Editar</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-    </div>
-    <!-- tabla -->
-    
+            <!-- tabla -->
 
         </AppLayout>
     </div>
@@ -61,39 +84,46 @@ import axios from 'axios';
 
 
 export default {
-  data() {
+    data() {
+        return {
+            disableMassiveActions: true,
+            search: '',
+            // pagination
+            itemsPerPage: 10,
+            start: 0,
+            end: 10,
+        };
+    },
+    components: {
+        AppLayout,
+        Table,
+        EmptyTable,
+        SecondaryButton,
+        Link,
+        TextInput,
+    },
+    props: {
+        sales: Object,
+        company_branches: Array
+    },
+    methods: {
+        handleSelectionChange(val) {
+            this.$refs.multipleTableRef.value = val;
 
-
-    return {
-       disableMassiveActions: true,
-        search: '',
-    };
-  },
-  components: {
-    AppLayout,
-    Table,
-    EmptyTable,
-    SecondaryButton,
-    Link,
-    TextInput,
-  },
-  props: {
-    companies: Array
-  },
-  methods:{
-    handleSelectionChange(val) {
-                this.$refs.multipleTableRef.value = val;
-
-                if (!this.$refs.multipleTableRef.value.length) {
-                    this.disableMassiveActions = true;
-                } else {
-                    this.disableMassiveActions = false;
-                }
-            },
-            async deleteSelections() {
+            if (!this.$refs.multipleTableRef.value.length) {
+                this.disableMassiveActions = true;
+            } else {
+                this.disableMassiveActions = false;
+            }
+        },
+        handlePagination(val) {
+            this.start = (val - 1) * this.itemsPerPage;
+            this.end = val * this.itemsPerPage;
+        },
+        async deleteSelections() {
             try {
-                const response = await axios.post(route('catalog-products.massive-delete', {
-                    catalog_products: this.$refs.multipleTableRef.value
+                const response = await axios.post(route('sales.massive-delete', {
+                    sales: this.$refs.multipleTableRef.value
                 }));
 
                 if (response.status == 200) {
@@ -103,10 +133,10 @@ export default {
                         type: 'success'
                     });
 
-                    // update list of quotes
+                    // update list of sales
                     let deletedIndexes = [];
-                    this.catalog_products.forEach((catalog_product, index) => {
-                        if (this.$refs.multipleTableRef.value.includes(catalog_product)) {
+                    this.sales.data.forEach((sale, index) => {
+                        if (this.$refs.multipleTableRef.value.includes(sale)) {
                             deletedIndexes.push(index);
                         }
                     });
@@ -114,9 +144,9 @@ export default {
                     // Ordenar los índices de forma descendente para evitar problemas de desplazamiento al eliminar elementos
                     deletedIndexes.sort((a, b) => b - a);
 
-                    // Eliminar cotizaciones por índice
+                    // Eliminar OV por índice
                     for (const index of deletedIndexes) {
-                        this.catalog_products.splice(index, 1);
+                        this.sales.data.splice(index, 1);
                     }
 
                 } else {
@@ -129,29 +159,78 @@ export default {
 
             } catch (err) {
                 this.$notify({
-                        title: 'Algo salió mal',
-                        message: err.message,
-                        type: 'error'
-                    });
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
                 console.log(err);
             }
         },
-        edit(index, company) {
-            this.$inertia.get(route('companies.edit', company));
-        }
-  },
+        tableRowClassName({ row, rowIndex }) {
+            if (row.status === 1000) {
+                return 'text-green-600';
+            }
 
-//   computed: {
-//         filteredTableData() {
-//             return this.catalog_products.filter(
-//                 (catalog_product) =>
-//                     !this.search ||
-//                     catalog_product.name.toLowerCase().includes(this.search.toLowerCase()) ||
-//                     catalog_product.part_number.toLowerCase().includes(this.search.toLowerCase()) ||
-//                     catalog_product.measure_unit.toLowerCase().includes(this.search.toLowerCase()) ||
-//                     catalog_product.description.name.toLowerCase().includes(this.search.toLowerCase())
-//             )
-//         }
-//     },
+            return '';
+        },
+        async clone(sale_id) {
+            try {
+                const response = await axios.post(route('sales.clone', {
+                    sale_id: sale_id
+                }));
+
+                if (response.status == 200) {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+
+                    this.sales.data.unshift(response.data.newItem);
+
+                } else {
+                    this.$notify({
+                        title: 'Algo salió mal',
+                        message: response.data.message,
+                        type: 'error'
+                    });
+                }
+
+            } catch (err) {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
+                console.log(err);
+            }
+        },
+        handleCommand(command) {
+            const commandName = command.split('-')[0];
+            const rowId = command.split('-')[1];
+
+            if (commandName == 'clone') {
+                this.clone(rowId);
+            } else if (commandName == 'make_so') {
+                console.log('SO');
+            } else {
+                this.$inertia.get(route('sales.' + commandName, rowId));
+            }
+        },
+    },
+    computed: {
+        filteredTableData() {
+            if (!this.search) {
+                return this.sales.data.filter((item, index) => index >= this.start && index < this.end);
+            } else {
+                return this.sales.data.filter(
+                    (sale) =>
+                        // sale.id.toLowerCase().includes(this.search.toLowerCase()) ||
+                        sale.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                        sale.company_branch.name.toLowerCase().includes(this.search.toLowerCase())
+                );
+            }
+        }
+    },
 };
 </script>

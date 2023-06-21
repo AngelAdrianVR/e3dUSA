@@ -2,54 +2,97 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\SaleResource;
 use App\Models\Company;
+use App\Models\CompanyBranch;
 use App\Models\Sale;
 use Illuminate\Http\Request;
 
 class SaleController extends Controller
 {
-    
+
     public function index()
     {
-        
-        return inertia('Sale/Index');
+        $sales = SaleResource::collection(Sale::with('companyBranch')->latest()->get());
+
+        return inertia('Sale/Index', compact('sales'));
     }
 
-    
+
     public function create()
     {
-        $companies = Company::all();
+        $company_branches = CompanyBranch::all();
 
-        return inertia('Sale/Create', compact('companies'));
+        return inertia('Sale/Create', compact('company_branches'));
     }
 
-    
+
     public function store(Request $request)
     {
         //
     }
 
-    
+
     public function show(Sale $sale)
     {
         //
     }
 
-    
+
     public function edit(Sale $sale)
     {
         //
     }
 
-    
+
     public function update(Request $request, Sale $sale)
     {
         //
     }
 
-    
+
     public function destroy(Sale $sale)
     {
         //
+    }
+
+    public function massiveDelete(Request $request)
+    {
+        foreach ($request->sales as $sale) {
+            $sale = Sale::find($sale['id']);
+            $sale?->delete();
+        }
+
+        return response()->json(['message' => 'OV(s) eliminada(s)']);
+    }
+
+    public function clone(Request $request)
+    {
+        $sale = Sale::find($request->sale_id);
+
+        $clone = $sale->replicate()->fill([
+            'status' => 0,
+            'oce_name' => null,
+            'tracking_guide' => null,
+            'authorized_user_name' => null,
+            'authorized_at' => null,
+            'recieved_at' => null,
+            'user_id' => auth()->id(),
+        ]);
+
+        $clone->save();
+
+        foreach ($sale->catalogProductsCompany as $product) {
+            $pivot = [
+                'quantity' => $product->pivot->quantity,
+                'notes' => $product->pivot->notes,
+                'status' => null,
+                'assigned_jobs' => null,
+            ];
+
+            $clone->catalogProductsCompany()->attach($product->pivot->catalog_product_company_id, $pivot);
+        }
+
+        return response()->json(['message' => "OV clonada: {$clone->id}", 'newItem' => saleResource::make($clone)]);
     }
 }

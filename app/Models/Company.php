@@ -35,6 +35,7 @@ class Company extends Model
                 'new_price',
                 'old_currency',
                 'new_currency',
-            ])->withTimestamps();
+            ])->withTimestamps()
+            ->using(CatalogProductCompany::class);
     }
 }
