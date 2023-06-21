@@ -40,7 +40,7 @@
                     <el-table-column prop="" label="Imagen" width="80" />
                     <el-table-column prop="part_number" label="Num de parte" width="200" />
                     <el-table-column prop="name" label="Nombre" width="200" />
-                    <el-table-column prop="cost" label="Costo $" width="150" />
+                    <el-table-column prop="cost.number_format" label="Costo $" width="150" />
                     <el-table-column prop="description" label="Descripción" />
                     <el-table-column align="right" fixed="right" width="200">
                         <template #header>
@@ -68,7 +68,6 @@
                 </el-table>
             </div>
             <!-- tabla -->
-
 
         </AppLayout>
     </div>
@@ -124,7 +123,7 @@ export default {
         },
         async clone(catalog_product_id) {
             try {
-                const response = await axios.post(route('catalog_products.clone', {
+                const response = await axios.post(route('catalog-products.clone', {
                     catalog_product_id: catalog_product_id
                 }));
 
@@ -169,7 +168,7 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.catalog_products.forEach((catalog_product, index) => {
+                    this.catalog_products.data.forEach((catalog_product, index) => {
                         if (this.$refs.multipleTableRef.value.includes(catalog_product)) {
                             deletedIndexes.push(index);
                         }
@@ -180,7 +179,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.catalog_products.splice(index, 1);
+                        this.catalog_products.data.splice(index, 1);
                     }
 
                 } else {

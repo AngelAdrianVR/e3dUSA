@@ -22,7 +22,6 @@ class CompanyBranch extends Model
     ];
 
     //relationships
-
     public function company():BelongsTo
     {
         return $this->belongsTo(Company::class);

@@ -41,6 +41,7 @@ class CatalogProduct extends Model
         return $this->belongsToMany(RawMaterial::class)->using(CatalogProductRawMaterial::class)
                 ->withPivot([
                     'quantity',
+                    'production_costs',
                 ])->withTimestamps();
     }
 
