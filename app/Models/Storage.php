@@ -13,6 +13,7 @@ class Storage extends Model
     protected $fillable = [
         'storageable',
         'quantity',
+        'location',
         'type',
     ];
 
