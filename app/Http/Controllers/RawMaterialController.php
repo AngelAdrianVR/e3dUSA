@@ -39,12 +39,14 @@ class RawMaterialController extends Controller
             'max_quantity' => 'required|numeric|min:0',
             'cost' => 'required|numeric|min:0',
             'description' => 'required|string',
+            'location' => 'required|string',
         ]);
 
         $raw_material = RawMaterial::create($request->all());
         $raw_material->storages()->create([
             'quantity' => $request->initial_stock,
             'type' => $request->type,
+            'location' => $request->location,
         ]);
 
         if($request->type == 'materia-prima')
@@ -85,11 +87,13 @@ class RawMaterialController extends Controller
             'max_quantity' => 'required|numeric|min:0',
             'cost' => 'required|numeric|min:0',
             'description' => 'required|string',
+            'location' => 'required|string',
         ]);
 
         $raw_material->update($request->all());
         $raw_material->storages()->update([
             'quantity' => $request->initial_stock,
+            'location' => $request->location,
         ]);
 
         if($request->type == 'materia-prima')
@@ -107,6 +111,8 @@ class RawMaterialController extends Controller
     public function massiveDelete(Request $request)
     {
         foreach ($request->raw_materials as $raw_material) {
+            $raw_material = Storage::find($raw_material['id']);
+            $raw_material?->delete();
             $raw_material = RawMaterial::find($raw_material['storageable_id']);
             $raw_material?->delete();
         }

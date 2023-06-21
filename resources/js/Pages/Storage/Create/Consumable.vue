@@ -88,10 +88,21 @@
                 v-model="form.cost"
                 inputPlaceholder="Costo *"
                 inputType="number"
+                inputStep="0.1"
               >
                 <i class="fa-solid fa-dollar"></i>
               </IconInput>
               <InputError :message="form.errors.cost" />
+            </div>
+            <div>
+              <IconInput
+                v-model="form.location"
+                inputPlaceholder="Ubicaión *"
+                inputType="text"
+              >
+                <i class="fa-solid fa-box"></i>
+              </IconInput>
+              <InputError :message="form.errors.location" />
             </div>
           </div>
 
@@ -157,6 +168,7 @@ export default {
       cost: null,
       description: null,
       initial_stock: null,
+      location: null,
       type: 'consumible',
       features: null,
     });

@@ -27,8 +27,10 @@
         <el-table :data="filteredTableData" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
                 ref="multipleTableRef" :row-class-name="tableRowClassName">
                 <el-table-column type="selection" width="45" />
-                <el-table-column prop="storageable.name" label="Nombre" />
-                <el-table-column prop="storageable.part_number" label="N° parte" width="150" />
+
+                <el-table-column prop="storageable.name" label="Nombre" width="250" />
+                <el-table-column prop="storageable.part_number" label="N° parte" width="120" />
+                <el-table-column prop="location" label="Ubicación" width="120" />
                 <el-table-column prop="storageable.min_quantity" label="Min. Stock" width="100" />
                 <el-table-column prop="storageable.max_quantity" label="Max. Stock" width="100" />
                 <el-table-column prop="quantity" label="Stock" width="100" />
@@ -56,7 +58,7 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import EmptyTable from "@/Components/MyComponents/EmptyTable.vue";
 import Table from "@/Components/MyComponents/Table.vue";
 import TextInput from '@/Components/TextInput.vue';
-import { Link, useForm } from "@inertiajs/vue3";
+import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 
 
@@ -101,7 +103,7 @@ export default {
             },
             async deleteSelections() {
             try {
-                const response = await axios.post(route('storages.massive-delete', {
+                const response = await axios.post(route('raw-materials.massive-delete', {
                     raw_materials: this.$refs.multipleTableRef.value
                 }));
 

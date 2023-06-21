@@ -16,6 +16,7 @@ return new class extends Migration
             $table->morphs('storageable');
             $table->mediumInteger('quantity');
             $table->string('type');
+            $table->string('location');
             $table->timestamps();
         });
     }

@@ -95,6 +95,16 @@
               <InputError :message="form.errors.cost" />
             </div>
           </div>
+          <div>
+              <IconInput
+                v-model="form.location"
+                inputPlaceholder="Ubicaión *"
+                inputType="text"
+              >
+                <i class="fa-solid fa-box"></i>
+              </IconInput>
+              <InputError :message="form.errors.location" />
+            </div>
 
           <div class="flex">
             <span
@@ -158,6 +168,7 @@ export default {
       cost: null,
       description: null,
       initial_stock: null,
+      location: null,
       type: 'materia-prima',
       features: null,
     });

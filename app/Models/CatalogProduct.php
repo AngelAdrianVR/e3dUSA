@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class CatalogProduct extends Model
 {
@@ -31,9 +32,9 @@ class CatalogProduct extends Model
     /**
      * Get the CatalogProduct's storage in warehouse.
      */
-    public function storage(): MorphOne
+    public function storages(): MorphMany
     {
-        return $this->morphOne(Storage::class, 'storageable');
+        return $this->morphMany(Storage::class, 'storageable');
     }
 
     public function rawMaterials(): BelongsToMany
