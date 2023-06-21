@@ -94,6 +94,16 @@
               <InputError :message="form.errors.cost" />
             </div>
           </div>
+          <div>
+              <IconInput
+                v-model="form.location"
+                inputPlaceholder="Ubicaión *"
+                inputType="text"
+              >
+                <i class="fa-solid fa-box"></i>
+              </IconInput>
+              <InputError :message="form.errors.location" />
+            </div>
 
           <div class="flex">
             <span
@@ -143,6 +153,7 @@ export default {
       initial_stock: null,
       type: 'consumible',
       description: this.raw_material.description,
+      location: null,
       features: this.raw_material.features,
     });
 
