@@ -69,7 +69,6 @@
             </div>
             <!-- tabla -->
 
-
         </AppLayout>
     </div>
 </template>
@@ -124,7 +123,7 @@ export default {
         },
         async clone(catalog_product_id) {
             try {
-                const response = await axios.post(route('catalog_products.clone', {
+                const response = await axios.post(route('catalog-products.clone', {
                     catalog_product_id: catalog_product_id
                 }));
 
@@ -210,8 +209,6 @@ export default {
         handleCommand(command) {
             const commandName = command.split('-')[0];
             const rowId = command.split('-')[1];
-
-            console.log(command);
 
             if (commandName == 'clone') {
                 this.clone(rowId);

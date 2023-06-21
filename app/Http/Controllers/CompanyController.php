@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CompanyResource;
 use App\Models\CatalogProduct;
 use App\Models\Company;
+use App\Models\CompanyBranch;
 use App\Models\RawMaterial;
 use Illuminate\Http\Request;
 
@@ -12,7 +14,7 @@ class CompanyController extends Controller
     
     public function index()
     {
-        $companies = Company::all();
+        $companies = CompanyResource::collection(Company::latest()->get());
 
         return inertia('Company/Index', compact('companies'));
     }
@@ -35,9 +37,15 @@ class CompanyController extends Controller
             'rfc' => 'required|string|unique:companies,rfc',
             'post_code' => 'required',
             'fiscal_address' => 'required',
+            'company_branches' => 'array|min:1',
+            'products' => 'nullable|array|min:1',
         ]);
 
-        Company::create($request->all());
+        $company = Company::create($request->except(['company_branches', 'products']));
+         foreach ($request->company_branches as $branch) {
+            $branch['company_id'] = $company->id;
+            CompanyBranch::create($branch);
+         }
 
         return to_route('companies.index');
     }
@@ -45,7 +53,7 @@ class CompanyController extends Controller
     
     public function show(Company $company)
     {
-        //
+        return inertia('Company/Show');
     }
 
     
@@ -84,5 +92,32 @@ class CompanyController extends Controller
         }
 
         return response()->json(['message' => 'Cliente(s) eliminado(s)']);
+    }
+
+    public function clone(Request $request)
+    {
+        $company = CatalogProduct::find($request->company_id);
+
+        // $clone = $company->replicate()->fill([
+        //     'authorized_user_name' => null,
+        //     'authorized_at' => null,
+        //     'name' => $company->name . ' (Copia)',
+        //     'part_number' => $company->part_number . '-Copia',
+        //     'user_id' => auth()->id(),
+        //     'sale_id' => null,
+        // ]);
+
+        // $clone->save();
+
+        // foreach ($company->rawMaterials as $product) {
+        //     $pivot = [
+        //         'quantity' => $product->pivot->quantity,
+        //         'production_costs' => $product->pivot->production_costs, 
+        //     ];
+
+        //     $clone->rawMaterials()->attach($product->pivot->raw_material_id, $pivot);
+        // }
+
+        // return response()->json(['message' => "Producto clonado: {$clone->part_number}", 'newItem' => catalogProductResource::make($clone)]);
     }
 }

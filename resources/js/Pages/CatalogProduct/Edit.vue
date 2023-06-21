@@ -13,7 +13,7 @@
         </template>
 
         <!-- Form -->
-        <form @submit.prevent="store">
+        <form @submit.prevent="update">
             <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
                 <div class="md:grid gap-6 mb-6 grid-cols-2">
                     <div>
@@ -181,10 +181,19 @@ export default {
     props: {
         catalog_product: Object,
         production_costs: Array,
+        raw_materials: Array,
     },
     methods: {
         update() {
-            this.form.put(route('catalog-products.update', this.catalog_product));
+            this.form.put(route('catalog-products.update', this.catalog_product), {
+                onSuccess: () => {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: 'Producto actualizado',
+                        type: 'success'
+                    });
+                }
+            });
         },
         addProduct() {
             const product = { ...this.rawMaterial };
@@ -213,7 +222,7 @@ export default {
         }
     },
     mounted() {
-        this.catalog_product.rawMaterials.forEach(element => {
+        this.catalog_product.raw_materials.forEach(element => {
             const product = {
                 raw_material_id: element.pivot.raw_material_id,
                 quantity: element.pivot.quantity,
