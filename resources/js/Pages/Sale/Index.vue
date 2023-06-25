@@ -34,11 +34,11 @@
                         </el-popconfirm>
                     </div>
                 </div>
-                <el-table :data="companies" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
+                <el-table :data="filteredTableData" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
                     ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="id" label="ID" width="45" />
-                    <el-table-column prop="user_id" label="Creado por" />
+                    <el-table-column prop="user.name" label="Creado por" />
                     <el-table-column prop="created_at" label="Creado el" />
                     <el-table-column prop="company_branch.name" label="Cliente" />
                     <el-table-column prop="status" label="Estatus" />
@@ -79,7 +79,7 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import EmptyTable from "@/Components/MyComponents/EmptyTable.vue";
 import Table from "@/Components/MyComponents/Table.vue";
 import TextInput from '@/Components/TextInput.vue';
-import { Link, useForm } from "@inertiajs/vue3";
+import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 
 

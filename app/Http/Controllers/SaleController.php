@@ -13,7 +13,7 @@ class SaleController extends Controller
 
     public function index()
     {
-        $sales = SaleResource::collection(Sale::with('companyBranch')->latest()->get());
+        $sales = SaleResource::collection(Sale::with('companyBranch', 'user')->latest()->get());
 
         return inertia('Sale/Index', compact('sales'));
     }
@@ -21,7 +21,7 @@ class SaleController extends Controller
 
     public function create()
     {
-        $company_branches = CompanyBranch::all();
+        $company_branches = CompanyBranch::with('company.catalogProducts')->get();
 
         return inertia('Sale/Create', compact('company_branches'));
     }
