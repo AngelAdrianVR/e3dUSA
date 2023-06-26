@@ -70,6 +70,7 @@
           <div class="bg-gray-300 h-48 w-1/2 rounded-lg">
                 imagen
          </div>
+         
             <ul>
               <li>
                 <label class="text-primary">Nombre: </label>
@@ -82,6 +83,11 @@
               <li>
                 <label class="text-primary">Descripción: </label>
                 {{ storage_selected?.storageable.description }}
+              </li>
+              <li>
+                <label class="text-primary">Tipo: </label> {{
+                  storage_selected?.type
+                }}
               </li>
               <li>
                 <label class="text-primary">Stock: </label>

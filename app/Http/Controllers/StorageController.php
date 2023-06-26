@@ -53,15 +53,17 @@ class StorageController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'storageable_id' => 'required|unique:storages,storageable_id',
+            'storageable_id' => 'required',
             'quantity' => 'required|numeric|min:1',
             'type' => 'required|string',
+            'location' => 'required|string',
 
         ]);
 
         $finished_products = CatalogProduct::find($request->storageable_id);
         $finished_products->storages()->create([
             'quantity' => $request->quantity,
+            'location' => $request->location,
             'type' => $request->type,
         ]);
         
@@ -71,33 +73,32 @@ class StorageController extends Controller
     public function scrapStore(Request $request)
     {
         $storage = Storage::find($request->storage_id);
-
         $request->validate([
             'storage_id' => 'required',
             'quantity' => 'required|numeric|min:1|max:' . $storage->quantity,
             'location' => 'required|string',
             'type' => 'required|string',
-
+            
         ]);
-
+        
         if($storage->type == 'materia-prima' || $storage->type == 'consumible' ){
-
+            
             $raw_material = RawMaterial::find($storage->storageable_id);
             $raw_material->storages()->create([
                 'quantity' => $request->quantity,
                 'location' => $request->location,
                 'type' => $request->type,
             ]);
-
+            
         }else{
-
-            $finished_products = CatalogProduct::find($request->storageable_id);
+            
+            $finished_products = CatalogProduct::find($storage->storageable_id);
             $finished_products->storages()->create([
                 'quantity' => $request->quantity,
                 'location' => $request->location,
                 'type' => $request->type,
             ]);
-
+            
         }
 
         $storage->quantity -= $request->quantity;
@@ -115,7 +116,6 @@ class StorageController extends Controller
     
     public function edit(Storage $storage)
     {
-        // $finished_product = CatalogProduct::find($storage->storageable_id);
         return inertia('Storage/Edit/FinishedProduct');
     }
 
@@ -145,7 +145,18 @@ class StorageController extends Controller
     {
         foreach ($request->scraps as $scrap) {
             $scrap = Storage::find($scrap['id']);
-            $scrap_restored = Storage::where('storageable_id', $scrap->storageable_id)->where('type', '!=', 'scrap')->first();
+            if($scrap->storageable_type == 'App\Models\RawMaterial'){
+                $scrap_restored = Storage::where('storageable_id', $scrap->storageable_id)
+                ->where('type', '!=', 'scrap')
+                ->where('type', '!=', 'producto-terminado')
+                ->first();
+            }else{
+                $scrap_restored = Storage::where('storageable_id', $scrap->storageable_id)
+                ->where('type', '!=', 'scrap')
+                ->where('type', '!=', 'consumible')
+                ->where('type', '!=', 'materia-prima')
+                ->first();
+            }
             $scrap_restored->increment('quantity', $scrap->quantity);
             $scrap?->delete();
         }

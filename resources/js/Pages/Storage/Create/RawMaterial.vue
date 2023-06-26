@@ -88,7 +88,7 @@
                 v-model="form.cost"
                 inputPlaceholder="Costo *"
                 inputType="number"
-                inputStep="0.1"
+                inputStep="0.01"
               >
                 <i class="fa-solid fa-dollar"></i>
               </IconInput>
