@@ -1,13 +1,13 @@
 <template>
     <div>
-        <AppLayout title="Almacén de scrap">
+        <AppLayout title="Nóminas">
         <template #header>
         <div class="flex justify-between">
             <div class="flex items-center space-x-2">
-                <h2 class="font-semibold text-xl leading-tight">Almacén de scrap</h2>
+                <h2 class="font-semibold text-xl leading-tight">Nóminas</h2>
             </div>
             <div>
-            <Link :href="route('storages.scraps.create')">
+            <Link :href="route('raw-materials.create')">
                 <SecondaryButton>+ Nuevo</SecondaryButton>
             </Link>
             </div>
@@ -24,21 +24,17 @@
                     </template>
                 </el-popconfirm>
             </div>
-        <el-table :data="filteredTableData" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
+        <el-table :data="payrolls" max-height="450" style="width: 100%" class="cursor-pointer" @selection-change="handleSelectionChange"
                 ref="multipleTableRef" :row-class-name="tableRowClassName">
                 <el-table-column type="selection" width="45" />
-                <el-table-column prop="storageable.name" label="Nombre" width="250" />
-                <el-table-column prop="storageable.part_number" label="N° parte" width="120" />
-                <el-table-column prop="location" label="Ubicación" width="120" />
-                <el-table-column prop="quantity" label="Cantidad" width="100" />
-                <el-table-column align="right" fixed="right" width="200">
+                <el-table-column prop="id" label="ID" width="70" />
+                <el-table-column prop="week" label="Semana" width="120" />
+                <el-table-column prop="start_date" label="Inicio" width="250" />
+                <el-table-column prop="start_date" label="Fin" width="250" />
+                <el-table-column align="right" fixed="right" >
                     <template #header>
                         <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
                     </template>
-                    <!-- <template #default="scope">
-                        <el-button size="small" type="primary"
-                            @click="edit(scope.$index, scope.row)">Editar</el-button>
-                    </template> -->
                 </el-table-column>
             </el-table>
     </div>
@@ -77,11 +73,16 @@ export default {
     TextInput,
   },
   props: {
-    scraps: Array
+    payrolls: Array
   },
   methods:{
     tableRowClassName({row, rowIndex}){
-            return 'text-red-600';
+
+            if(row.is_active == true ){
+            return 'text-blue-600';
+        }
+
+
   },
     handleSelectionChange(val) {
                 this.$refs.multipleTableRef.value = val;
@@ -94,8 +95,8 @@ export default {
             },
             async deleteSelections() {
             try {
-                const response = await axios.post(route('storages.scraps.massive-delete', {
-                    scraps: this.$refs.multipleTableRef.value
+                const response = await axios.post(route('raw-materials.massive-delete', {
+                    raw_materials: this.$refs.multipleTableRef.value
                 }));
 
                 if (response.status == 200) {
@@ -107,8 +108,8 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.scraps.forEach((scrap, index) => {
-                        if (this.$refs.multipleTableRef.value.includes(scrap)) {
+                    this.raw_materials.forEach((raw_material, index) => {
+                        if (this.$refs.multipleTableRef.value.includes(raw_material)) {
                             deletedIndexes.push(index);
                         }
                     });
@@ -118,7 +119,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.scraps.splice(index, 1);
+                        this.raw_materials.splice(index, 1);
                     }
 
                 } else {
@@ -138,21 +139,21 @@ export default {
                 console.log(err);
             }
         },
-        edit(index, scrap) {
-            console.log(scrap);
-            this.$inertia.get(route('storages.finished-products.edit', scrap.storageable));
+        edit(index, raw_material) {
+            console.log(raw_material);
+            this.$inertia.get(route('raw-materials.edit', raw_material.storageable));
         }
   },
 
-  computed: {
-        filteredTableData() {
-            return this.scraps.filter(
-                (scrap) =>
-                    !this.search ||
-                    scrap.storageable.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                    scrap.storageable.part_number.toLowerCase().includes(this.search.toLowerCase())
-            )
-        }
-    },
+//   computed: {
+//         filteredTableData() {
+//             return this.raw_materials.filter(
+//                 (raw_material) =>
+//                     !this.search ||
+//                     raw_material.storageable.name.toLowerCase().includes(this.search.toLowerCase()) ||
+//                     raw_material.storageable.part_number.toLowerCase().includes(this.search.toLowerCase())
+//             )
+//         }
+//     },
 };
 </script>
