@@ -29,7 +29,24 @@ class SaleController extends Controller
 
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'shopping_company' => 'nullable',
+            'freight_cost' => 'required',
+            'order_via' => 'required',
+            'tracking_guide' => 'nullable',
+            'notes' => 'nullable',
+            'company_branch_id' => 'required|numeric|min:1',
+            'contact_id' => 'required|numeric|min:1',
+            'products' => 'array|min:1'
+        ]);
+
+        $sale = Sale::create($request->except('products') + ['user_id' => auth()->id()]);
+
+        foreach ($request->products as $product) {
+            $sale->catalogProductsCompany()->attach($product['catalog_product_company_id'], $product);
+        }
+
+        return to_route('sales.index');
     }
 
 

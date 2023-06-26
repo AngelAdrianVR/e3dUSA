@@ -296,6 +296,7 @@
                 <!-- <InputError :message="form.errors.branches.old_date" /> -->
               </div>
             </div>
+
             <SecondaryButton @click="addProduct"
               :disabled="!product.catalog_product_id || !product.new_date || !product.new_currency || !product.new_price">
               {{ editProductIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}

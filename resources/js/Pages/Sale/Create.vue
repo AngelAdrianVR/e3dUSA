@@ -28,6 +28,14 @@
                                 :value="item.id" />
                         </el-select>
                     </div>
+                    <div v-if="form.company_branch_id">
+                        <el-radio-group v-model="form.contact_id" size="small">
+                            <el-radio-button v-for="contact in company_branches.find(cb => cb.id ==
+                                form.company_branch_id)?.contacts" :key="index" :label="contact.id">
+                                {{ contact.name }}
+                            </el-radio-button>
+                        </el-radio-group>
+                    </div>
 
                     <el-divider content-position="left">Logistica</el-divider>
 
@@ -44,12 +52,6 @@
                                 <i class="fa-solid fa-file-invoice-dollar"></i>
                             </IconInput>
                             <InputError :message="form.errors.freight_cost" />
-                        </div>
-                        <div>
-                            <IconInput v-model="form.currency" inputPlaceholder="Moneda" inputType="text">
-                                <i class="fa-solid fa-coins"></i>
-                            </IconInput>
-                            <InputError :message="form.errors.currency" />
                         </div>
                         <div>
                             <IconInput v-model="form.tracking_guide" inputPlaceholder="Guía" inputType="text">
@@ -89,34 +91,65 @@
                             class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
                             ...
                         </span>
-                        <textarea v-model="form.notes" class="textarea" autocomplete="off" placeholder="Notas"
-                            required></textarea>
+                        <textarea v-model="form.notes" class="textarea" autocomplete="off" placeholder="Notas"></textarea>
                         <InputError :message="form.errors.notes" />
                     </div>
                     <!-- products -->
                     <el-divider v-if="form.company_branch_id" content-position="left">Agregar productos</el-divider>
+
+                    <InputError :message="form.errors.products" class="col-span-full" />
+                    <ol v-if="form.products.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
+                        <template v-for="(item, index) in form.products" :key="index">
+                            <li class="flex justify-between items-center">
+                                <p class="text-sm">
+                                    <span class="text-primary">{{ index + 1 }}.</span>
+                                    {{ company_branches.find(cb => cb.id ==
+                                        form.company_branch_id)?.company.catalog_products.find(prd => prd.id ===
+                                            item.catalog_product_company_id)?.name
+                                    }}
+                                    (x{{ item.quantity }} unidades)
+                                </p>
+                                <div class="flex space-x-2 items-center">
+                                    <el-tag v-if="editIndex == index">En edición</el-tag>
+                                    <el-button @click="editProduct(index)" type="primary" circle>
+                                        <i class="fa-sharp fa-solid fa-pen-to-square"></i>
+                                    </el-button>
+                                    <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                                        title="¿Continuar?" @confirm="deleteProduct(index)">
+                                        <template #reference>
+                                            <el-button type="danger" circle><i
+                                                    class="fa-sharp fa-solid fa-trash"></i></el-button>
+                                        </template>
+                                    </el-popconfirm>
+                                </div>
+                            </li>
+                        </template>
+                    </ol>
                     <div v-if="form.company_branch_id"
-                        class="md:grid gap-6 mb-6 grid-cols-4 rounded-lg border-2 border-[#b8b7b7] px-5 py-3 col-span-full space-y-1 my-7">
-                        <div class="col-span-3 flex items-center">
-                            <el-tooltip content="Producto: Seleccione entre los productos registrados para este cliente" placement="top">
+                        class="md:grid gap-6 mb-6 grid-cols-3 rounded-lg border-2 border-[#b8b7b7] px-5 py-3 col-span-full space-y-1 my-7">
+                        <div class="flex items-center col-span-2">
+                            <el-tooltip content="Producto: Seleccione entre los productos registrados para este cliente"
+                                placement="top">
                                 <span
                                     class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
                                     <i class="fa-solid fa-magnifying-glass"></i>
                                 </span>
                             </el-tooltip>
                             <el-select v-model="product.catalog_product_company_id"
+                                no-data-text="No hay productos registrados a este cliente" clearable
                                 placeholder="Selecciona un producto *">
                                 <el-option
                                     v-for="item in company_branches.find(cb => cb.id == form.company_branch_id)?.company.catalog_products"
                                     :key="item.id" :label="item.name" :value="item.id" />
                             </el-select>
                         </div>
-                        <div class="col-span-1">
+                        <div>
                             <IconInput v-model="product.quantity" inputPlaceholder="Cantidad *" inputType="number">
+                                #
                             </IconInput>
                             <!-- <InputError :message="form.errors.fiscal_address" /> -->
                         </div>
-                        <div class="flex col-span-4">
+                        <div class="flex col-span-full">
                             <span
                                 class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
                                 ...
@@ -125,11 +158,11 @@
                                 placeholder="Notas"></textarea>
                             <!-- <InputError :message="form.errors.notes" /> -->
                         </div>
-                        <div class="col-span-full">
-                            <SecondaryButton class=""
+                        <div class="col-span-full" @click="addProduct">
+                            <SecondaryButton
                                 :disabled="form.processing || !product.catalog_product_company_id || !product.quantity">
-                                Agregar
-                                Producto </SecondaryButton>
+                                {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
+                            </SecondaryButton>
                         </div>
                     </div>
                     <div class="mt-7 mx-3 md:text-right">
@@ -173,7 +206,8 @@ export default {
                 catalog_product_company_id: null,
                 quantity: null,
                 notes: null,
-            }
+            },
+            editIndex: null,
         };
     },
     components: {
@@ -190,6 +224,31 @@ export default {
     methods: {
         store() {
             this.form.post(route('sales.store'));
+        },
+        addProduct() {
+            const product = { ...this.product };
+
+            if (this.editIndex !== null) {
+                this.form.products[this.editIndex] = product;
+                this.editIndex = null;
+            } else {
+                this.form.products.push(product);
+            }
+
+            this.resetProductForm();
+        },
+        deleteProduct(index) {
+            this.form.products.splice(index, 1);
+        },
+        editProduct(index) {
+            const product = { ...this.form.products[index] };
+            this.product = product;
+            this.editIndex = index;
+        },
+        resetProductForm() {
+            this.product.catalog_product_company_id = null;
+            this.product.quantity = null;
+            this.product.notes = null;
         }
     },
 };
