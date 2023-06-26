@@ -59,7 +59,7 @@
     }
 
     .textarea{
-        @apply bg-[#CCCCCC] border border-transparent text-gray-700 text-sm rounded-lg focus:ring-[#0355B5] focus:border-[#0355B5] block w-full p-2.5;
+        @apply bg-[#CCCCCC] placeholder:text-gray-400 border border-transparent text-gray-700 text-sm rounded-lg focus:ring-[#0355B5] focus:border-[#0355B5] block w-full p-2.5;
     }
 
     .label{

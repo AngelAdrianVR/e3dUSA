@@ -76,8 +76,6 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
-import SecondaryButton from "@/Components/SecondaryButton.vue";
-import EmptyTable from "@/Components/MyComponents/EmptyTable.vue";
 import Table from "@/Components/MyComponents/Table.vue";
 import TextInput from '@/Components/TextInput.vue';
 import { Link } from "@inertiajs/vue3";
@@ -107,9 +105,18 @@ export default {
         sales: Object,
         company_branches: Array
     },
-    methods: {
-        handleSelectionChange(val) {
-            this.$refs.multipleTableRef.value = val;
+
+  methods:{
+    handleSelectionChange(val) {
+                this.$refs.multipleTableRef.value = val;
+
+                if (!this.$refs.multipleTableRef.value.length) {
+                    this.disableMassiveActions = true;
+                } else {
+                    this.disableMassiveActions = false;
+                }
+            },
+            async deleteSelections() {
 
             if (!this.$refs.multipleTableRef.value.length) {
                 this.disableMassiveActions = true;
@@ -122,6 +129,7 @@ export default {
             this.end = val * this.itemsPerPage;
         },
         async deleteSelections() {
+
             try {
                 const response = await axios.post(route('sales.massive-delete', {
                     sales: this.$refs.multipleTableRef.value
