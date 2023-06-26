@@ -52,8 +52,6 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
-import EmptyTable from "@/Components/MyComponents/EmptyTable.vue";
-import Table from "@/Components/MyComponents/Table.vue";
 import TextInput from '@/Components/TextInput.vue';
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
@@ -70,8 +68,6 @@ export default {
   },
   components: {
     AppLayout,
-    Table,
-    EmptyTable,
     SecondaryButton,
     Link,
     TextInput,
