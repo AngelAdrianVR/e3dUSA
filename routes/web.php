@@ -4,6 +4,7 @@ use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\SaleController;
@@ -94,6 +95,9 @@ Route::post('/storage-scraps/store', [StorageController::class, 'scrapStore'])->
 Route::post('storages/scrap/massive-delete', [StorageController::class, 'scrapMassiveDelete'])->name('storages.scraps.massive-delete');
 Route::post('storages/massive-delete', [StorageController::class, 'massiveDelete'])->name('storages.massive-delete');
 
+
+// ------- Recursos humanos(Payrolls Routes)  ---------
+Route::resource('payrolls', PayrollController::class)->middleware('auth');
 
 
 
