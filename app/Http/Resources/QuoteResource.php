@@ -20,7 +20,7 @@ class QuoteResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'folio' => 'COT-' . str_pad($this->id, 3, "0", STR_PAD_LEFT),
+            'folio' => 'COT-' . str_pad($this->id, 4, "0", STR_PAD_LEFT),
             'receiver' => $this->receiver,
             'department' => $this->department,
             'tooling_cost' => $this->tooling_cost,
@@ -29,13 +29,13 @@ class QuoteResource extends JsonResource
             'notes' => $this->notes ?? '--',
             'currency' => $this->currency,
             'authorized_user_name' => $this->authorized_user_name ?? 'No autorizado',
-            'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:i A'),
+            'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'is_spanish_template' => boolval($this->is_spanish_template),
             'companyBranch' => $this->companyBranch,
             'user' => $this->user,
             'sale' => $this->sale,
             'products' => $this->catalogProducts,
-            'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:m A'),
+            'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'total' => [
                'raw' => $total_without_taxes,
                'number_format' => number_format($total_without_taxes, 2),

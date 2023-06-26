@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\SaleResource;
+use App\Models\CatalogProductCompanySale;
 use App\Models\Company;
 use App\Models\CompanyBranch;
 use App\Models\Sale;
@@ -21,7 +22,7 @@ class SaleController extends Controller
 
     public function create()
     {
-        $company_branches = CompanyBranch::with('company.catalogProducts')->get();
+        $company_branches = CompanyBranch::with('company.catalogProducts', 'contacts')->get();
 
         return inertia('Sale/Create', compact('company_branches'));
     }
@@ -30,8 +31,8 @@ class SaleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'shopping_company' => 'nullable',
-            'freight_cost' => 'required',
+            'shipping_company' => 'nullable',
+            'freight_cost' => 'required|numeric|min:0',
             'order_via' => 'required',
             'tracking_guide' => 'nullable',
             'notes' => 'nullable',
@@ -43,7 +44,7 @@ class SaleController extends Controller
         $sale = Sale::create($request->except('products') + ['user_id' => auth()->id()]);
 
         foreach ($request->products as $product) {
-            $sale->catalogProductsCompany()->attach($product['catalog_product_company_id'], $product);
+            CatalogProductCompanySale::create($product + ['sale_id' => $sale->id]);
         }
 
         return to_route('sales.index');
@@ -58,13 +59,37 @@ class SaleController extends Controller
 
     public function edit(Sale $sale)
     {
-        //
+        $sale = Sale::find($sale->id);
+        $catalog_products_company_sale = CatalogProductCompanySale::where('sale_id', $sale->id)->get();
+
+        $company_branches = CompanyBranch::with('company.catalogProducts', 'contacts')->get();
+
+        return inertia('Sale/Edit', compact('company_branches', 'sale', 'catalog_products_company_sale'));
     }
 
 
     public function update(Request $request, Sale $sale)
     {
-        //
+        $request->validate([
+            'shipping_company' => 'nullable',
+            'freight_cost' => 'required|numeric|min:0',
+            'order_via' => 'required',
+            'tracking_guide' => 'nullable',
+            'invoice' => 'nullable',
+            'notes' => 'nullable',
+            'company_branch_id' => 'required|numeric|min:1',
+            'contact_id' => 'required|numeric|min:1',
+            'products' => 'array|min:1'
+        ]);
+
+        $sale->update($request->except('products'));
+        $sale->catalogProductsCompany()->detach();
+
+        foreach ($request->products as $product) {
+            CatalogProductCompanySale::create($product + ['sale_id' => $sale->id]);
+        }
+
+        return to_route('sales.index');
     }
 
 
@@ -99,17 +124,24 @@ class SaleController extends Controller
 
         $clone->save();
 
-        foreach ($sale->catalogProductsCompany as $product) {
+        $catalog_products_company_sale = CatalogProductCompanySale::where('sale_id', $request->sale_id)->get();
+        foreach ($catalog_products_company_sale as $product) {
             $pivot = [
-                'quantity' => $product->pivot->quantity,
-                'notes' => $product->pivot->notes,
+                'catalog_product_company_id' => $product->catalog_product_company_id,
+                'quantity' => $product->quantity,
+                'notes' => $product->notes,
                 'status' => null,
                 'assigned_jobs' => null,
             ];
 
-            $clone->catalogProductsCompany()->attach($product->pivot->catalog_product_company_id, $pivot);
+            CatalogProductCompanySale::create($pivot + ['sale_id' => $clone->id]);
         }
 
-        return response()->json(['message' => "OV clonada: {$clone->id}", 'newItem' => saleResource::make($clone)]);
+        $new_item_folio = 'OV-' . str_pad($clone->id, 4, "0", STR_PAD_LEFT);
+
+        return response()
+            ->json([
+                'message' => "Orden de venta clonada: $new_item_folio", 'newItem' => saleResource::make(Sale::with('companyBranch', 'user')->find($clone->id))
+            ]);
     }
 }

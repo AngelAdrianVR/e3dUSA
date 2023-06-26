@@ -13,12 +13,13 @@ class Sale extends Model
     use HasFactory;
 
     protected $fillable = [
-        'shopping_company',
+        'shipping_company',
         'freight_cost',
         'status',
         'oce_name',
         'order_via',
         'tracking_guide',
+        'invoice',
         'notes',
         'authorized_user_name',
         'authorized_at',
@@ -54,6 +55,7 @@ class Sale extends Model
     {
         return $this->belongsToMany(CatalogProductCompany::class)
             ->withPivot('quantity', 'notes', 'status', 'assigned_jobs')
-            ->withTimestamps();
+            ->withTimestamps()
+            ->using(CatalogProductCompanySale::class);
     }
 }

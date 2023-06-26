@@ -13,23 +13,21 @@ class CatalogProductCompany extends Pivot
     public $incrementing = true;
 
     protected $fillable = [
-        'quantity',
-        'notes',
-        'status',
-        'assigned_jobs',
-        'sale_id',
-        'catalog_product_company_id',
-    ];
-
-    protected $casts = [
-        'assigned_jobs' => 'array'
+        'old_date',
+        'new_date',
+        'old_price',
+        'new_price',
+        'old_currency',
+        'new_currency',
+        'catalog_product_id',
+        'company_id',
     ];
 
     public function sales(): BelongsToMany
     {
         return $this->belongsToMany(Sale::class)
             ->withPivot('quantity', 'notes', 'status', 'assigned_jobs')
-            ->withTimestamps();
+            ->withTimestamps()
+            ->using(CatalogProductCompanySale::class);
     }
-
 }
