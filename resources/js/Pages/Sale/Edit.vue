@@ -1,21 +1,21 @@
 <template>
     <div>
-        <AppLayout title="Crear órden de venta">
+        <AppLayout title="Editar órden de venta">
             <template #header>
                 <div class="flex justify-between">
                     <Link :href="route('sales.index')"
                         class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center">
                     <i class="fa-solid fa-chevron-left"></i>
                     </Link>
-                    <div class="flex items-center space-x-2">
-                        <h2 class="font-semibold text-xl leading-tight">Crear órden de venta</h2>
+                    <div class="flex items-center space-x-2 text-white">
+                        <h2 class="font-semibold text-xl leading-tight">Editar órden de venta {{ sale.id }}</h2>
                     </div>
                 </div>
             </template>
 
             <!-- Form -->
-            <form @submit.prevent="store">
-                <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
+            <form @submit.prevent="edit">
+                <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg px-9 py-5 shadow-md">
                     <div class="flex items-center">
                         <el-tooltip content="Cliente: Seleccione para poder habilitar sus productos" placement="top">
                             <span
@@ -131,6 +131,7 @@
                             </li>
                         </template>
                     </ol>
+
                     <div v-if="form.company_branch_id"
                         class="md:grid gap-6 mb-6 grid-cols-3 rounded-lg border-2 border-[#b8b7b7] px-5 py-3 col-span-full space-y-1 my-7">
                         <div class="flex items-center col-span-2">
@@ -172,7 +173,7 @@
                         </div>
                     </div>
                     <div class="mt-7 mx-3 md:text-right">
-                        <PrimaryButton :disabled="form.processing"> Crear órden de venta </PrimaryButton>
+                        <PrimaryButton :disabled="form.processing"> Actualizar órden de venta </PrimaryButton>
                     </div>
                 </div>
             </form>
@@ -191,15 +192,15 @@ import IconInput from "@/Components/MyComponents/IconInput.vue";
 export default {
     data() {
         const form = useForm({
-            company_branch_id: null,
-            contact_id: null,
-            shipping_company: null,
-            freight_cost: null,
-            invoice: null,
-            oce_name: null,
-            order_via: null,
-            tracking_guide: null,
-            notes: null,
+            company_branch_id: this.sale.company_branch_id,
+            contact_id: this.sale.contact_id,
+            shipping_company: this.sale.shipping_company,
+            freight_cost: this.sale.freight_cost,
+            invoice: this.sale.invoice,
+            oce_name: this.sale.oce_name,
+            order_via: this.sale.order_via,
+            tracking_guide: this.sale.tracking_guide,
+            notes: this.sale.notes,
             products: [],
         });
 
@@ -215,26 +216,26 @@ export default {
     },
     components: {
         AppLayout,
-        SecondaryButton,
         PrimaryButton,
+        SecondaryButton,
         Link,
         InputError,
         IconInput,
     },
     props: {
-        company_branches: Array
+        company_branches: Array,
+        catalog_products_company_sale: Array,
+        sale: Array,
     },
     methods: {
-        store() {
-            this.form.post(route('sales.store'), {
+        edit() {
+            this.form.put(route('sales.update', this.sale), {
                 onSuccess: () => {
                     this.$notify({
                         title: 'Éxito',
-                        message: 'Orden de venta creada',
+                        message: 'órden de venta actualizada',
                         type: 'success'
                     });
-
-                    this.form.reset();
                 }
             });
         },
@@ -264,5 +265,16 @@ export default {
             this.product.notes = null;
         }
     },
+    mounted() {
+        this.catalog_products_company_sale.forEach(element => {
+            const product = {
+                catalog_product_company_id: element.catalog_product_company_id,
+                quantity: element.quantity,
+                notes: element.notes,
+            }
+
+            this.form.products.push(product);
+        });
+    }
 };
 </script>

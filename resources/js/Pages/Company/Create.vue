@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppLayout title="Clientes - Crear">
+    <AppLayout title="Crear cliente">
       <template #header>
         <div class="flex justify-between">
           <Link :href="route('companies.index')"
@@ -19,7 +19,7 @@
         <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
           <div class="md:grid gap-6 mb-6 grid-cols-2 pb-4">
             <div>
-              <IconInput v-model="form.business_name" inputPlaceholder="Nombre *" inputType="text">
+              <IconInput v-model="form.business_name" inputPlaceholder="Razon social *" inputType="text">
                 A
               </IconInput>
               <InputError :message="form.errors.business_name" />
@@ -161,20 +161,20 @@
                 <IconInput v-model="contact.name" inputPlaceholder="Nombre de contacto *" inputType="text">
                   A
                 </IconInput>
-                <InputError :message="form.errors.name_contact" />
+                <!-- <InputError :message="form.errors.name_contact" /> -->
               </div>
               <div class="md:grid gap-6 mb-6 grid-cols-2">
                 <div>
                   <IconInput v-model="contact.email" inputPlaceholder="Correo electrónico *" inputType="email">
                     <i class="fa-solid fa-envelope"></i>
                   </IconInput>
-                  <InputError :message="form.errors.email" />
+                  <!-- <InputError :message="form.errors.email" /> -->
                 </div>
                 <div>
                   <IconInput v-model="contact.phone" inputPlaceholder="Teléfono *" inputType="text">
                     <i class="fa-solid fa-phone"></i>
                   </IconInput>
-                  <InputError :message="form.errors.phone" />
+                  <!-- <InputError :message="form.errors.phone" /> -->
                 </div>
               </div>
               <div>
@@ -191,9 +191,9 @@
                       <el-option v-for="(month, index) in months" :key="index" :label="month" :value="index" />
                     </el-select>
                   </div>
-                  <InputError :message="form.errors.sat_way" />
+                  <!-- <InputError :message="form.errors.sat_way" /> -->
                 </div>
-                <InputError :message="form.errors.birthdate" />
+                <!-- <InputError :message="form.errors.birthdate" /> -->
               </div>
             </div>
             <SecondaryButton @click="addContact" :disabled="!this.contact.name || !this.contact.email || !this.contact.phone
@@ -296,6 +296,7 @@
                 <!-- <InputError :message="form.errors.branches.old_date" /> -->
               </div>
             </div>
+
             <SecondaryButton @click="addProduct"
               :disabled="!product.catalog_product_id || !product.new_date || !product.new_currency || !product.new_price">
               {{ editProductIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}

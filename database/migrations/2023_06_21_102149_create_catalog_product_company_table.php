@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('company_products', function (Blueprint $table) {
+        Schema::create('catalog_product_company', function (Blueprint $table) {
             $table->id();
             $table->date('old_date')->nullable();
             $table->date('new_date');
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('company_products');
+        Schema::dropIfExists('catalog_product_company');
     }
 };
