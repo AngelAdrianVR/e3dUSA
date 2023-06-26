@@ -15,13 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('shipping_company')->nullable();
             $table->unsignedMediumInteger('freight_cost');
-            $table->unsignedTinyInteger('status');
-            $table->string('oce_name');
+            $table->unsignedTinyInteger('status')->nullable()->default(0);
+            $table->string('oce_name')->nullable();
             $table->string('order_via');
-            $table->string('tracking_guide');
+            $table->string('tracking_guide')->nullable();
             $table->string('invoice')->nullable();
             $table->text('notes')->nullable();
-            $table->string('authorized_user_name');
+            $table->string('authorized_user_name')->nullable();
             $table->timestamp('authorized_at')->nullable();
             $table->timestamp('recieved_at')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();

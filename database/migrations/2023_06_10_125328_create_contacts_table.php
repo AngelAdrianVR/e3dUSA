@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('email');
             $table->string('phone');
-            $table->date('birthdate')->nullable();
+            $table->unsignedTinyInteger('birthdate_day')->nullable();
+            $table->unsignedTinyInteger('birthdate_month')->nullable();
             $table->string('charge')->nullable();
             $table->timestamps();
         });

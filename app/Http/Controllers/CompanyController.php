@@ -8,6 +8,7 @@ use App\Models\Company;
 use App\Models\CompanyBranch;
 use App\Models\RawMaterial;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CompanyController extends Controller
 {
@@ -38,13 +39,20 @@ class CompanyController extends Controller
             'post_code' => 'required',
             'fiscal_address' => 'required',
             'company_branches' => 'array|min:1',
-            'products' => 'nullable|array|min:1',
+            'products' => 'array|min:0',
         ]);
 
         $company = Company::create($request->except(['company_branches', 'products']));
          foreach ($request->company_branches as $branch) {
             $branch['company_id'] = $company->id;
-            CompanyBranch::create($branch);
+            $compay_branch = CompanyBranch::create($branch);
+            foreach ($branch['contacts'] as $contact) {
+                $compay_branch->contacts()->create($contact);
+            }
+
+            foreach ($request->products as $product) {
+                $company->catalogProducts()->attach($product['catalog_product_id'], $product);
+            }
          }
 
         return to_route('companies.index');
@@ -59,21 +67,42 @@ class CompanyController extends Controller
     
     public function edit(Company $company)
     {
-        return inertia('Company/Edit', compact('company'));
+        $company = Company::with('catalogProducts', 'companyBranches.contacts')->find($company->id);
+        // return $company;
+        $catalog_products = CatalogProduct::all();
+        $raw_materials = RawMaterial::all();
+
+        return inertia('Company/Edit', compact('company', 'catalog_products', 'raw_materials'));
     }
 
     
     public function update(Request $request, Company $company)
     {
         $request->validate([
-            'business_name' => 'required|string|unique:companies,business_name',
-            'phone' => 'required|min:10|max:13',
-            'rfc' => 'required|string|unique:companies,rfc',
+            'business_name' => ['required', 'string', Rule::unique('companies')->ignore($company->id)],
+            'phone' => 'required|min:10|max:12',
+            'rfc' => ['required', 'string', Rule::unique('companies')->ignore($company->id)],
             'post_code' => 'required',
             'fiscal_address' => 'required',
+            'company_branches' => 'array|min:1',
+            'products' => 'array|min:0',
         ]);
 
-        $company->update($request->all());
+        $company->update($request->except(['company_branches', 'products']));
+        $company->companyBranches()->delete();
+        $company->catalogProducts()->detach();
+        
+        foreach ($request->company_branches as $branch) {
+            $branch['company_id'] = $company->id;
+            $compay_branch = CompanyBranch::create($branch);
+            foreach ($branch['contacts'] as $contact) {
+                $compay_branch->contacts()->create($contact);
+            }
+        }
+
+        foreach ($request->products as $product) {
+            $company->catalogProducts()->attach($product['catalog_product_id'], $product);
+        }
 
         return to_route('companies.index');
     }
@@ -96,28 +125,41 @@ class CompanyController extends Controller
 
     public function clone(Request $request)
     {
-        $company = CatalogProduct::find($request->company_id);
+        $company = Company::find($request->company_id);
 
-        // $clone = $company->replicate()->fill([
-        //     'authorized_user_name' => null,
-        //     'authorized_at' => null,
-        //     'name' => $company->name . ' (Copia)',
-        //     'part_number' => $company->part_number . '-Copia',
-        //     'user_id' => auth()->id(),
-        //     'sale_id' => null,
-        // ]);
+        $clone = $company->replicate()->fill([
+            'business_name' => $company->business_name . ' (Copia)',
+        ]);
 
-        // $clone->save();
+        $clone->save();
 
-        // foreach ($company->rawMaterials as $product) {
-        //     $pivot = [
-        //         'quantity' => $product->pivot->quantity,
-        //         'production_costs' => $product->pivot->production_costs, 
-        //     ];
+        foreach ($company->companyBranches as $branch) {
+            $branch = CompanyBranch::find($branch->id);
+            $branch_clone = $branch->replicate()->fill([
+                'company_id' => $clone->id
+            ]);
 
-        //     $clone->rawMaterials()->attach($product->pivot->raw_material_id, $pivot);
-        // }
+            $branch_clone->save();
 
-        // return response()->json(['message' => "Producto clonado: {$clone->part_number}", 'newItem' => catalogProductResource::make($clone)]);
+            foreach ($branch->contacts as $contact) {
+                $branch_clone->contacts()->create($contact->toArray());
+            }
+
+        }
+
+        foreach ($company->catalogProducts as $product) {
+            $pivot = [
+                'old_date' => $product->pivot->old_date,
+                'new_date' => $product->pivot->new_date,
+                'old_price' => $product->pivot->old_price,
+                'new_price' => $product->pivot->new_price,
+                'old_currency' => $product->pivot->old_currency,
+                'new_currency' => $product->pivot->new_currency,
+            ];
+
+            $clone->catalogProducts()->attach($product->pivot->catalog_product_id, $pivot);
+        }
+
+        return response()->json(['message' => "Cliente clonado: {$clone->business_name}", 'newItem' => CompanyResource::make($clone)]);
     }
 }

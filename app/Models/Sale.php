@@ -13,12 +13,13 @@ class Sale extends Model
     use HasFactory;
 
     protected $fillable = [
-        'shopping_company',
+        'shipping_company',
         'freight_cost',
         'status',
         'oce_name',
         'order_via',
         'tracking_guide',
+        'invoice',
         'notes',
         'authorized_user_name',
         'authorized_at',
@@ -34,9 +35,7 @@ class Sale extends Model
 
     ];
 
-
     //relationships
-    
     public function contact(): MorphMany
     {
         return $this->morphMany(Contact::class, 'contactable');
@@ -52,14 +51,11 @@ class Sale extends Model
         return $this->belongsTo(CompanyBranch::class);
     }
 
-    public function companyProducts(): BelongsToMany
+    public function catalogProductsCompany(): BelongsToMany
     {
-        return $this->belongsToMany(CompanyProduct::class)->using(CompanyProductSale::class)
-                ->withPivot([
-                    'quantity',
-                    'notes',
-                    'status',
-                    'assinged_jobs'
-                ])->withTimestamps();
+        return $this->belongsToMany(CatalogProductCompany::class)
+            ->withPivot('quantity', 'notes', 'status', 'assigned_jobs')
+            ->withTimestamps()
+            ->using(CatalogProductCompanySale::class);
     }
 }

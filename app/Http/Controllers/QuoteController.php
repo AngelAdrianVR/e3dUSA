@@ -128,7 +128,7 @@ class QuoteController extends Controller
             ];
 
             $clone->catalogProducts()->attach($product->pivot->catalog_product_id, $pivot);
-            $new_item_folio = 'COT-' . str_pad($clone->id, 3, "0", STR_PAD_LEFT);
+            $new_item_folio = 'COT-' . str_pad($clone->id, 4, "0", STR_PAD_LEFT);
         }
 
         return response()->json(['message' => "Cotización clonada: $new_item_folio", 'newItem' => QuoteResource::make($clone)]);
