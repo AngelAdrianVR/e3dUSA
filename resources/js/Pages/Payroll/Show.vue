@@ -54,34 +54,69 @@
             <ThirthButton @click="incidentModal = true" class="ml-9">
               Registrar incidencia
             </ThirthButton>
-            <i
-              class="fa-solid fa-trash text-red-600 ml-2 cursor-pointer hover:text-red-500"
-            ></i>
+            <el-popconfirm
+              confirm-button-text="Si"
+              cancel-button-text="No"
+              icon-color="#FF0000"
+              title="Seguro que deseas eliminar?"
+              @confirm="deleteIncident"
+            >
+              <template #reference>
+                <i
+                  class="fa-regular fa-trash-can text-red-600 hover:text-red-500 ml-3 cursor-pointer"
+                ></i>
+              </template>
+            </el-popconfirm>
           </div>
         </div>
       </div>
 
-      <div class="border-y-2 border-[#cccccc] flex items-center py-2">
-        <p
-          @click="incidentsTab = false"
-          :class="
-            !incidentsTab ? 'bg-secondary-gray rounded-md text-primary' : ''
-          "
-          class="h-10 p-2 cursor-pointer ml-5"
-        >
-          Imprimir nóminas
-        </p>
-        <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
-        <p
-          @click="incidentsTab = true"
-          :class="
-            incidentsTab ? 'bg-secondary-gray rounded-md text-primary' : ''
-          "
-          class="ml-3 h-10 p-2 cursor-pointer"
-        >
-          Ver incidencias
-        </p>
+      <!-- ------------- tabs section starts ------------- -->
+      <div
+        class="border-y-2 border-[#cccccc] flex justify-between items-center py-2"
+      >
+        <div class="flex">
+          <p
+            @click="incidentsTab = false"
+            :class="
+              !incidentsTab ? 'bg-secondary-gray rounded-md text-primary' : ''
+            "
+            class="h-10 p-2 cursor-pointer ml-5"
+          >
+            Imprimir nóminas
+          </p>
+          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p
+            @click="incidentsTab = true"
+            :class="
+              incidentsTab ? 'bg-secondary-gray rounded-md text-primary' : ''
+            "
+            class="ml-3 h-10 p-2 cursor-pointer"
+          >
+            Ver incidencias
+          </p>
+        </div>
+        <div v-if="!incidentsTab" class="text-right mr-9 flex items-center">
+          <PrimaryButton>Imprimir</PrimaryButton>
+          <Dropdown align="right" width="60">
+            <template #trigger>
+              <i class="fa-solid fa-filter text-gray-600 text-lg ml-5"></i>
+            </template>
+            <template #content>
+              <div class="block px-4 py-2 text-xs text-gray-400 text-center">
+                Por colaborador
+              </div>
+              <div class="flex flex-col">
+                <div v-for="user in users" :key="user.id" class="flex items-center space-x-2 mx-3">
+                    <Checkbox v-model:checked="users_payroll_filtered" :name="user.name" />
+                    <label class="text-gray-600 text-sm" :for="user.name">{{ user.name }}</label>
+                </div>
+              </div>
+            </template>
+          </Dropdown>
+        </div>
       </div>
+      <!-- ------------- tabs section ends ------------- -->
 
       <!-- -------------- Incidents starts----------------------- -->
       <div v-if="incidentsTab" class="md:mx-9 md:my-7 space-y-3 m-1 h-48">
@@ -101,7 +136,7 @@
 
       <!-- -------------- IncidentModal starts----------------------- -->
       <Modal :show="incidentModal" @close="incidentModal = false">
-        <div class="mx-7 my-4 space-y-3">
+        <div class="mx-7 my-4 space-y-4">
           <div class="flex justify-center mb-7">
             <h2 class="font-bold text-center mr-2">Registrar incidencias</h2>
             <i
@@ -182,7 +217,7 @@
           </div>
           <div class="flex space-x-3 pt-3">
             <PrimaryButton>Guardar</PrimaryButton>
-            <CancelButton>Cancelar</CancelButton>
+            <CancelButton @click="incidentModal = false">Cancelar</CancelButton>
           </div>
         </div>
       </Modal>
@@ -197,6 +232,8 @@ import ThirthButton from "@/Components/MyComponents/ThirthButton.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import Modal from "@/Components/Modal.vue";
+import Checkbox from "@/Components/Checkbox.vue";
+import Dropdown from "@/Components/Dropdown.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 
@@ -214,27 +251,28 @@ export default {
       user_selected: null,
       incidentsTab: true,
       incidentModal: false,
+      users_payroll_filtered: [],
 
       incidents: [
         {
           label: "Permiso sin goce",
-          value: "Permiso sin goce",
+          value: "PSG",
         },
         {
           label: "Permiso con goce",
-          value: "Permiso con goce",
+          value: "PCG",
         },
         {
           label: "Vacaciones",
-          value: "Vacaciones",
+          value: "V",
         },
         {
           label: "Falta justificada",
-          value: "Falta justificada",
+          value: "FJ",
         },
         {
           label: "Falta injustificada",
-          value: "Falta injustificada",
+          value: "FI",
         },
       ],
     };
@@ -244,15 +282,21 @@ export default {
     PrimaryButton,
     CancelButton,
     ThirthButton,
+    Dropdown,
     Modal,
     Link,
     IconInput,
+    Checkbox,
   },
   props: {
     payroll: Object,
     users: Array,
   },
-  methods: {},
+  methods: {
+    deleteIncident() {
+      console.log("Elimidado");
+    },
+  },
 
   computed: {},
 };

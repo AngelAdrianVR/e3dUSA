@@ -18,6 +18,12 @@ const props = defineProps({
 
 let open = ref(false);
 
+const dropdownRef = ref(null);
+
+const stopPropagation = (event) => {
+  event.stopPropagation();
+};
+
 const closeOnEscape = (e) => {
     if (open.value && e.key === 'Escape') {
         open.value = false;
@@ -30,6 +36,7 @@ onUnmounted(() => document.removeEventListener('keydown', closeOnEscape));
 const widthClass = computed(() => {
     return {
         '48': 'w-48',
+        '60': 'w-60',
     }[props.width.toString()];
 });
 
@@ -68,7 +75,7 @@ const alignmentClasses = computed(() => {
                 class="absolute z-50 mt-2 rounded-md shadow-lg"
                 :class="[widthClass, alignmentClasses]"
                 style="display: none;"
-                @click="open = false"
+                @click.stop="stopPropagation"
             >
                 <div class="rounded-md ring-1 ring-black ring-opacity-5" :class="contentClasses">
                     <slot name="content" />
