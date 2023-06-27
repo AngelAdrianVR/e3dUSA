@@ -49,8 +49,7 @@ const togglePasswordVisibility = () => {
     </template>
 
     <div class="border-b border-gray-300 mb-12 mt-9 text-center w-[80%] mx-auto">
-
-       <span class="border-b-2 border-[#D90537] px-3 text-gray-600">Iniciar sesión</span>
+       <span class="inline-block border-b-2 border-[#D90537] px-3 text-gray-600">Iniciar sesión</span>
     </div>
 
     <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
@@ -72,7 +71,7 @@ const togglePasswordVisibility = () => {
         <InputError class="mt-2" :message="form.errors.email" />
       </div>
 
-      <div class="mt-4">
+      <div class="mt-4 relative">
         <div class="flex justify-center items-center">
           <TextInput
             id="password"
@@ -85,12 +84,14 @@ const togglePasswordVisibility = () => {
           />
           <i
             :class="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"
-            class="text-gray-400 ml-2 cursor-pointer"
+            class="text-gray-400 ml-2 cursor-pointer absolute right-3 top-4"
             @click="togglePasswordVisibility"
           ></i>
         </div>
         <InputError class="mt-2" :message="form.errors.password" />
       </div>
+
+
       <div class="block mt-4">
         <label class="flex items-center">
           <Checkbox v-model:checked="form.remember" name="remember" />
