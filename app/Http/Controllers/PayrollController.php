@@ -34,7 +34,10 @@ class PayrollController extends Controller
     {
         $payroll = PayrollResource::make(Payroll::find($payroll_id));
         $users = User::all();
-        return inertia('Payroll/Show', compact('payroll', 'users'));
+        $payrolls = PayrollResource::collection(Payroll::all());
+
+        return $payrolls;
+        return inertia('Payroll/Show', compact('payroll', 'users', 'payrolls'));
     }
 
    
