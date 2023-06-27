@@ -1,73 +1,84 @@
 <template>
     <div>
-        <AppLayout title="Catalogo de productos - Editar">
-        <template #header>
-        <div class="flex justify-between">
-        <Link :href="route('catalog-products.index')" class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center">
-          <i class="fa-solid fa-chevron-left"></i>
-        </Link>
-            <div class="flex items-center space-x-2">
-                <h2 class="font-semibold text-xl leading-tight">Editar producto "{{ catalog_product.name }}"</h2>
+        <AppLayout title="Ver catalogo de productos">
+            <div class="flex justify-between text-lg mx-14 mt-11">
+                <span>Catálogo de productos</span>
+                <i class="fa-solid fa-xmark cursor-pointer"></i>
             </div>
-        </div>
-        </template>
 
-
-
-        <!-- Form -->
-            <form @submit.prevent="update"> 
-                <div class="md:w-2/3 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
-                    <div class="grid gap-6 mb-6 md:grid-cols-2">
-                        <div>
-                            <IconInput v-model="form.name" inputPlaceholder="Nombre" inputType="text">
-                                A
-                            </IconInput>
-                            <InputError :message="form.errors.name" class="mb-3" />
+            <div class="flex justify-between mt-5 mx-14">
+                <div class="w-1/3">
+                    <el-select v-model="item_search" clearable filterable placeholder="Buscar producto"
+                        no-data-text="No hay productos en el catalogo" no-match-text="No se encontraron coincidencias">
+                        <el-option v-for="item in catalog_products" :key="item.id" :label="item.name" :value="item.id" />
+                    </el-select>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <el-tooltip content="Editar" placement="top">
+                        <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]"><i class="fa-solid fa-pen text-sm"></i></button>
+                    </el-tooltip>
+                    <PrimaryButton class="rounded-lg">Ajustar existencias</PrimaryButton>
+                    <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">Más <i
+                            class="fa-solid fa-chevron-down text-[11px] ml-2"></i></button>
+                </div>
+            </div>
+            <div class="lg:grid grid-cols-3 mt-12 border-b-2">
+                <div class="px-14">
+                    <h2 class="text-xl font-bold text-center mb-6">{{ catalog_product.name }}</h2>
+                    <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
+                        class="w-full h-60 bg-[#D9D9D9] rounded-lg relative">
+                        <div v-if="imageHovered"
+                            class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
+                            <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
                         </div>
-                        <div>
-                            <IconInput v-model="form.part_number" inputPlaceholder="Número de parte" inputType="text">
-                                #
-                            </IconInput>
-                            <InputError :message="form.errors.part_number" class="mb-3" />
+                    </figure>
+                    <div class="mt-8 ml-6">
+                        <div class="flex mb-2">
+                            <p class="w-1/3 text-primary">Existencias</p>
+                            <p>250</p>
                         </div>
-                        <div>
-                            <IconInput v-model="form.measure_unit" inputPlaceholder="Unidad de medida" inputType="text">
-                                <i class="fa-solid fa-ruler-vertical"></i>
-                            </IconInput>
-                            <InputError :message="form.errors.measure_unit" class="mb-3" />
+                        <div class="flex mb-3">
+                            <p class="w-1/3 text-primary">Ubicación</p>
+                            <p>Almacén</p>
                         </div>
-                        <div>
-                            <IconInput v-model="form.cost" inputPlaceholder="Costo" inputType="number" inputStep="0.1">
-                                <i class="fa-solid fa-dollar-sign"></i>
-                            </IconInput>
-                            <InputError :message="form.errors.cost" class="mb-3" />
+                    </div>
+                </div>
+                <div class="col-span-2 border-2">
+                    <div class="border border-b-2 px-7 py-3">
+                        Información general
+                    </div>
+                    <div class="px-7 py-7 text-sm">
+                        <div class="flex mb-3">
+                            <p class="w-1/3 text-[#9A9A9A]">Fecha de Alta</p>
+                            <p>05 enero 2020</p>
                         </div>
-                        <div>
-                            <IconInput v-model="form.min_quantity" inputPlaceholder="Cantidad mínima" inputType="number">
-                                <i class="fa-solid fa-minus"></i>
-                            </IconInput>
-                            <InputError :message="form.errors.min_quantity" class="mb-3" />
+                        <div class="flex mb-3">
+                            <p class="w-1/3 text-[#9A9A9A]">ID del producto</p>
+                            <p>001</p>
                         </div>
-                        <div>
-                            <IconInput v-model="form.max_quantity" inputPlaceholder="Cantidad máxima" inputType="number">
-                                <i class="fa-solid fa-plus"></i>
-                            </IconInput>
-                            <InputError :message="form.errors.max_quantity" class="mb-3" />
+                        <div class="flex mb-3">
+                            <p class="w-1/3 text-[#9A9A9A]">Características</p>
+                            <p>Llavero MG DV UK, metálico, grabado DALTON Patria, color rojo</p>
+                        </div>
+                        <div class="flex mb-3">
+                            <p class="w-1/3 text-[#9A9A9A]">Número parte</p>
+                            <p>DP35</p>
+                        </div>
+                        <div class="flex mb-10">
+                            <p class="w-1/3 text-[#9A9A9A]">Unidad de medida</p>
+                            <p>Piezas</p>
+                        </div>
+                        <div class="flex mb-3">
+                            <p class="w-1/3 text-[#9A9A9A]">Cantidad miníma permitida en almacén</p>
+                            <p>0</p>
                         </div>
                         <div class="flex">
-                            <span class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                                ...
-                            </span>
-                            <textarea v-model="form.description" id="description" class="textarea" autocomplete="off" placeholder="Descripción" required></textarea>
-                            <InputError :message="form.errors.description" class="mb-3" />
+                            <p class="w-1/3 text-[#9A9A9A]">Cantidad máxima permitida en almacén</p>
+                            <p>300</p>
                         </div>
-                        
                     </div>
-                        <div class="mt-2 mx-3 md:text-right">
-                            <PrimaryButton :disabled="form.processing"> Actualizar </PrimaryButton>
-                    </div>
-                </div> 
-            </form>
+                </div>
+            </div>
         </AppLayout>
     </div>
 </template>
@@ -75,41 +86,31 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import { Link, useForm } from "@inertiajs/vue3";
-import InputError from "@/Components/InputError.vue";
-import IconInput from "@/Components/MyComponents/IconInput.vue";
-import { ref } from 'vue';
+import { Link } from "@inertiajs/vue3";
 
 export default {
-  data() {
-    const form = useForm({
-        name: this.catalog_product.name,
-        part_number: this.catalog_product.part_number,
-        measure_unit: this.catalog_product.measure_unit,
-        cost: this.catalog_product.cost,
-        min_quantity: this.catalog_product.min_quantity,
-        max_quantity: this.catalog_product.max_quantity,
-        description: this.catalog_product.description
-    });
-
-    return {
-       form,
-    };
-  },
-  components: {
-    AppLayout,
-    PrimaryButton,
-    Link,
-    InputError,
-    IconInput,
-  },
-  props: {
-    catalog_product: Object
-  },
-methods:{
-    update(){
-        this.form.put(route('catalog-products.update', this.catalog_product));
-    }
-},
+    data() {
+        return {
+            item_search: '',
+            imageHovered: false,
+        };
+    },
+    components: {
+        AppLayout,
+        PrimaryButton,
+        Link,
+    },
+    props: {
+        catalog_product: Object,
+        catalog_products: Array,
+    },
+    methods: {
+        showOverlay() {
+            this.imageHovered = true;
+        },
+        hideOverlay() {
+            this.imageHovered = false;
+        }
+    },
 };
 </script>

@@ -60,9 +60,11 @@ class CatalogProductController extends Controller
     }
 
 
-    public function show(CatalogProduct $catalogProduct)
+    public function show(CatalogProduct $catalog_product)
     {
-        return inertia('CatalogProduct/Show');
+        $catalog_products = CatalogProduct::all();
+
+        return inertia('CatalogProduct/Show', compact('catalog_products', 'catalog_product'));
     }
 
 
