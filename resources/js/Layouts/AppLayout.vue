@@ -221,6 +221,36 @@ const logout = () => {
                             <ResponsiveNavLink :href="route('catalog-products.index')" :active="route().current('catalog-products.*')">
                                 Catálogo de productos
                             </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('quotes.index')" :active="route().current('quotes.*')">
+                                Cotizaciones
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('companies.index')" :active="route().current('companies.*')">
+                                Clientes
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('sales.index')" :active="route().current('sales.*')">
+                                Órdenes de venta
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('suppliers.index')" :active="route().current('suppliers.*')">
+                                Proveedores
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('purchases.index')" :active="route().current('purchases.*')">
+                                Órdenes de compra
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('storages.raw-materials.index')" :active="route().current('storages.raw-materials.*')">
+                                Materia prima
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('storages.consumables.index')" :active="route().current('storages.consumables.*')">
+                                Insumos
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('storages.finished-products.index')" :active="route().current('storages.finished-products.*')">
+                                Producto terminado
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('storages.scraps.index')" :active="route().current('storages.scraps.*')">
+                                Scrap
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('payrolls.index')" :active="route().current('payrolls.*')">
+                                Nóminas
+                            </ResponsiveNavLink>
                         </div>
 
                         <!-- Responsive Settings Options -->

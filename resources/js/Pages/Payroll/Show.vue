@@ -28,7 +28,7 @@
         </div>
         <div>
           <el-select
-            v-model="value"
+            v-model="payroll_selected_id"
             multiple
             filterable
             allow-create
@@ -96,11 +96,12 @@
             Ver incidencias
           </p>
         </div>
+
         <div v-if="!incidentsTab" class="text-right mr-9 flex items-center">
           <PrimaryButton>Imprimir</PrimaryButton>
           <Dropdown align="right" width="60">
             <template #trigger>
-              <i class="fa-solid fa-filter text-gray-600 text-lg ml-5"></i>
+              <i class="fa-solid fa-filter text-gray-600 text-lg ml-5 cursor-pointer"></i>
             </template>
             <template #content>
               <div class="block px-4 py-2 text-xs text-gray-400 text-center">
@@ -108,9 +109,13 @@
               </div>
               <div class="flex flex-col">
                 <div v-for="user in users" :key="user.id" class="flex items-center space-x-2 mx-3">
-                    <Checkbox v-model:checked="users_payroll_filtered" :name="user.name" />
+                    <Checkbox v-model:checked="users_payroll_filtered_id" :name="user.name" :value="user.id" />
                     <label class="text-gray-600 text-sm" :for="user.name">{{ user.name }}</label>
                 </div>
+                <footer class="grid grid-cols-2 border-t-2 border-[#cccccc] mt-2 py-1">
+                      <span @click="console.log('Aplicar filtro')" class="text-primary text-center border-r-2 border-[#cccccc] cursor-pointer">Aplicar</span>
+                        <span class="text-center cursor-pointer">cancelar</span>
+                </footer>
               </div>
             </template>
           </Dropdown>
@@ -130,6 +135,9 @@
               :value="item.id"
             />
           </el-select>
+        </div>
+        <div v-if="user_selected" class="mt-5">
+          <IncidentTable @closeIncidentTable="console.log('sdoifh')" />
         </div>
       </div>
       <!-- -------------- Incidents ends----------------------- -->
@@ -189,22 +197,22 @@
           </div>
           <div class="flex justify-center">
             <IconInput
-              v-model="value"
-              inputPlaceholder="Cantidad máxima"
-              inputType="number"
+              v-model="form.days"
+              inputPlaceholder="Total"
+              inputType="text"
             >
-              <i class="fa-solid fa-plus"></i>
+              .
             </IconInput>
-            <InputError :message="form.errors.max_quantity" />
+            <InputError :message="form.errors.days" />
 
             <IconInput
-              v-model="value"
-              inputPlaceholder="Cantidad máxima"
-              inputType="number"
+              v-model="form.hours"
+              inputPlaceholder="Horas"
+              inputType="text"
             >
-              <i class="fa-solid fa-plus"></i>
+              .
             </IconInput>
-            <InputError :message="form.errors.max_quantity" />
+            <InputError :message="form.errors.hours" />
           </div>
           <div class="flex">
             <label class="text-gray-600">Descripción</label>
@@ -230,6 +238,7 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import ThirthButton from "@/Components/MyComponents/ThirthButton.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+import IncidentTable from "@/Components/MyComponents/IncidentTable.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import Modal from "@/Components/Modal.vue";
 import Checkbox from "@/Components/Checkbox.vue";
@@ -244,6 +253,8 @@ export default {
       incident: null,
       rangeDate: null,
       description: null,
+      days: null,
+      hours: null,
     });
 
     return {
@@ -251,7 +262,8 @@ export default {
       user_selected: null,
       incidentsTab: true,
       incidentModal: false,
-      users_payroll_filtered: [],
+      payroll_selected_id: null,
+      users_payroll_filtered_id: [],
 
       incidents: [
         {
@@ -287,9 +299,11 @@ export default {
     Link,
     IconInput,
     Checkbox,
+    IncidentTable,
   },
   props: {
     payroll: Object,
+    payrolls: Array,
     users: Array,
   },
   methods: {

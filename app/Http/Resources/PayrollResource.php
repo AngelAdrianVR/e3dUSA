@@ -20,6 +20,7 @@ class PayrollResource extends JsonResource
             'end_date' => $this->start_date?->addDays(7)->isoFormat('YYYY MMM DD'),
             'week' => $this->week,
             'is_active' => $this->is_active,
+            // 'users' => $this->whenLoaded('users'),
             'created_at' => $this->created_at?->isoFormat('YYYY MMM DD'),
             'updated_at' => $this->updated_at?->isoFormat('YYYY MMM DD'),
         ];
