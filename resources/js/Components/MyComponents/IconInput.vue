@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <span
-      class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
+      class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
     >
       <slot />
     </span>

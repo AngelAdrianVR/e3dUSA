@@ -1,9 +1,12 @@
 <template>
     <div>
-        <AppLayout title="Ver catalogo de productos">
+        <AppLayoutNoHeader title="Ver catalogo de productos">
             <div class="flex justify-between text-lg mx-14 mt-11">
                 <span>Catálogo de productos</span>
-                <i class="fa-solid fa-xmark cursor-pointer"></i>
+                <Link :href="route('catalog-products.index')"
+                    class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+                </Link>
             </div>
 
             <div class="flex justify-between mt-5 mx-14">
@@ -15,7 +18,9 @@
                 </div>
                 <div class="flex items-center space-x-2">
                     <el-tooltip content="Editar" placement="top">
+                        <Link :href="route('catalog-products.edit', catalog_product)">
                         <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]"><i class="fa-solid fa-pen text-sm"></i></button>
+                        </Link>
                     </el-tooltip>
                     <PrimaryButton class="rounded-lg">Ajustar existencias</PrimaryButton>
                     <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">Más <i
@@ -44,47 +49,47 @@
                     </div>
                 </div>
                 <div class="col-span-2 border-2">
-                    <div class="border border-b-2 px-7 py-3">
+                    <div class="border-b-2 px-7 py-3">
                         Información general
                     </div>
                     <div class="px-7 py-7 text-sm">
                         <div class="flex mb-3">
                             <p class="w-1/3 text-[#9A9A9A]">Fecha de Alta</p>
-                            <p>05 enero 2020</p>
+                            <p>{{ catalog_product.created_at }}</p>
                         </div>
                         <div class="flex mb-3">
                             <p class="w-1/3 text-[#9A9A9A]">ID del producto</p>
-                            <p>001</p>
+                            <p>{{ catalog_product.id }}</p>
                         </div>
-                        <div class="flex mb-3">
+                        <div v-if="catalog_product.features !== null" class="flex mb-3">
                             <p class="w-1/3 text-[#9A9A9A]">Características</p>
-                            <p>Llavero MG DV UK, metálico, grabado DALTON Patria, color rojo</p>
+                            <p>{{ catalog_product.features }}</p>
                         </div>
                         <div class="flex mb-3">
                             <p class="w-1/3 text-[#9A9A9A]">Número parte</p>
-                            <p>DP35</p>
+                            <p>{{ catalog_product.part_number }}</p>
                         </div>
                         <div class="flex mb-10">
                             <p class="w-1/3 text-[#9A9A9A]">Unidad de medida</p>
-                            <p>Piezas</p>
+                            <p>{{ catalog_product.measure_unit }}</p>
                         </div>
                         <div class="flex mb-3">
                             <p class="w-1/3 text-[#9A9A9A]">Cantidad miníma permitida en almacén</p>
-                            <p>0</p>
+                            <p>{{ catalog_product.min_quantity }}</p>
                         </div>
                         <div class="flex">
                             <p class="w-1/3 text-[#9A9A9A]">Cantidad máxima permitida en almacén</p>
-                            <p>300</p>
+                            <p>{{ catalog_product.max_quantity }}</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </AppLayout>
+        </AppLayoutNoHeader>
     </div>
 </template>
 
 <script>
-import AppLayout from "@/Layouts/AppLayout.vue";
+import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link } from "@inertiajs/vue3";
 
@@ -96,7 +101,7 @@ export default {
         };
     },
     components: {
-        AppLayout,
+        AppLayoutNoHeader,
         PrimaryButton,
         Link,
     },
