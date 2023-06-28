@@ -55,11 +55,11 @@
                             placeholder="Descripción "></textarea>
                         <InputError :message="form.errors.description" />
                     </div>
-                    <div>
+                    <div class="col-span-full">
                         <label class="label" for="file_input">Subir una imagen</label>
-                        <input class="input h-12 rounded-lg cursor-pointer" aria-describedby="file_input_help"
+                        <input @input="form.media = $event.target.files[0]" class="input h-12 rounded-lg cursor-pointer" aria-describedby="file_input_help"
                             id="file_input" type="file">
-                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">SVG, PNG, JPG or
+                        <p class="mt-1 text-sm text-gray-500" id="file_input_help">SVG, PNG, JPG or
                             GIF (MAX. 800x400px).</p>
                     </div>
 
@@ -156,7 +156,8 @@ export default {
             min_quantity: null,
             max_quantity: null,
             description: null,
-            raw_materials: []
+            raw_materials: [],
+            media: null,
         });
 
         return {

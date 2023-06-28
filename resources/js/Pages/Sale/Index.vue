@@ -34,8 +34,9 @@
                         </el-popconfirm>
                     </div>
                 </div>
-                <el-table :data="filteredTableData" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
-                    ref="multipleTableRef" :row-class-name="tableRowClassName">
+                <el-table :data="filteredTableData" max-height="450" style="width: 100%"
+                    @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName"
+                    @row-click="handleRowClic" class="cursor-pointer">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="folio" label="folio" width="85" />
                     <el-table-column prop="user.name" label="Creado por" />
@@ -76,8 +77,8 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
-import Table from "@/Components/MyComponents/Table.vue";
 import TextInput from '@/Components/TextInput.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 
@@ -92,11 +93,10 @@ export default {
             start: 0,
             end: 10,
         };
+
     },
     components: {
         AppLayout,
-        Table,
-        EmptyTable,
         SecondaryButton,
         Link,
         TextInput,
@@ -106,17 +106,17 @@ export default {
         company_branches: Array
     },
 
-  methods:{
-    handleSelectionChange(val) {
-                this.$refs.multipleTableRef.value = val;
+    methods: {
+        handleSelectionChange(val) {
+            this.$refs.multipleTableRef.value = val;
 
-                if (!this.$refs.multipleTableRef.value.length) {
-                    this.disableMassiveActions = true;
-                } else {
-                    this.disableMassiveActions = false;
-                }
-            },
-            async deleteSelections() {
+            if (!this.$refs.multipleTableRef.value.length) {
+                this.disableMassiveActions = true;
+            } else {
+                this.disableMassiveActions = false;
+            }
+        },
+        async deleteSelections() {
 
             if (!this.$refs.multipleTableRef.value.length) {
                 this.disableMassiveActions = true;
@@ -181,6 +181,9 @@ export default {
             }
 
             return '';
+        },
+        handleRowClick(row) {
+            this.$inertia.get(route('sales.show', row));
         },
         async clone(sale_id) {
             try {

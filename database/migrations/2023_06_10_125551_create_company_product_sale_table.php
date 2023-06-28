@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('status');
             $table->json('assinged_jobs')->nullable();
             $table->foreignId('sale_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('company_product_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('company_product_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

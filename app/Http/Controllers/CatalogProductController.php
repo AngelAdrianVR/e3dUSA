@@ -43,6 +43,7 @@ class CatalogProductController extends Controller
         ]);
 
         $catalog_product = CatalogProduct::create($request->all());
+        $catalog_product->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
 
         foreach ($request->raw_materials as $product) {
             $total_cost += RawMaterial::find($product['raw_material_id'])?->cost * $product['quantity'];
@@ -60,9 +61,11 @@ class CatalogProductController extends Controller
     }
 
 
-    public function show(CatalogProduct $catalogProduct)
+    public function show(CatalogProduct $catalog_product)
     {
-        return inertia('CatalogProduct/Show');
+        $catalog_products = CatalogProductResource::collection(CatalogProduct::with('storages')->get());
+
+        return inertia('CatalogProduct/Show', compact('catalog_products', 'catalog_product'));
     }
 
 

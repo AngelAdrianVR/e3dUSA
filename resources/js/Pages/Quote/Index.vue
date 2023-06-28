@@ -15,7 +15,8 @@
             <div class="flex justify-between">
                 <!-- pagination -->
                 <div>
-                    <el-pagination @current-change="handlePagination" layout="prev, pager, next" :total="quotes.data.length" />
+                    <el-pagination @current-change="handlePagination" layout="prev, pager, next"
+                        :total="quotes.data.length" />
                 </div>
 
                 <!-- buttons -->
@@ -23,13 +24,15 @@
                     <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
                         @confirm="deleteSelections">
                         <template #reference>
-                            <el-button type="danger" plain class="mb-3" :disabled="disableMassiveActions">Eliminar</el-button>
+                            <el-button type="danger" plain class="mb-3"
+                                :disabled="disableMassiveActions">Eliminar</el-button>
                         </template>
                     </el-popconfirm>
                 </div>
             </div>
             <el-table :data="filteredTableData" max-height="450" style="width: 100%"
-                @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
+                @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName"
+                @row-click="handleRowClick" class="cursor-pointer">
                 <el-table-column type="selection" width="45" />
                 <el-table-column prop="folio" label="Folio" width="85" />
                 <el-table-column prop="user.name" label="Creado por" />
@@ -155,6 +158,9 @@ export default {
                 });
                 console.log(err);
             }
+        },
+        handleRowClick(row) {
+            this.$inertia.get(route('quotes.show', row));
         },
         tableRowClassName({ row, rowIndex }) {
             if (row.status === 1) {

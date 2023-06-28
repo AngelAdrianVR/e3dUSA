@@ -20,14 +20,18 @@ class CatalogProductResource extends JsonResource
             'description' => $this->description ?? '--',
             'part_number' => $this->part_number,
             'measure_unit' => $this->measure_unit,
+            'media' => $this->getMedia()->all(),
             'cost' => [
                'raw' => $this->cost,
                'number_format' => number_format($this->cost, 2) . ' ' . '$MXN'
             ],
             'min_quantity' => $this->min_quantity,
             'max_quantity' => $this->max_quantity,
-            'features' => $this->features,
+            'features' => $this->features ?? '--',
             'rawMaterials' => $this->rawMaterials,
+            'storages' => $this->whenLoaded('storages'),
+            'created_at' => $this->created_at?->isoFormat('YYYY MMM DD'),
+            'updated_at' => $this->updated_at?->isoFormat('YYYY MMM DD'),
         ];
     }
 }

@@ -36,7 +36,8 @@
                 </div>
 
                 <el-table :data="filteredTableData" max-height="450" style="width: 100%"
-                    @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
+                    @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName"
+                    @row-click="handleRowClick" class="cursor-pointer">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="id" label="ID" width="45" />
                     <el-table-column prop="business_name" label="Nombre" width="120" />
@@ -202,6 +203,9 @@ export default {
                 });
                 console.log(err);
             }
+        },
+        handleRowClick(row) {
+            this.$inertia.get(route('companies.show', row));
         },
         handleCommand(command) {
             const commandName = command.split('-')[0];
