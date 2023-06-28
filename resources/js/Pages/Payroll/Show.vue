@@ -79,9 +79,9 @@
           <p
             @click="incidentsTab = false"
             :class="
-              !incidentsTab ? 'bg-secondary-gray rounded-md text-primary' : ''
+              !incidentsTab ? 'bg-secondary-gray rounded-xl text-primary' : ''
             "
-            class="h-10 p-2 cursor-pointer ml-5"
+            class="h-10 p-2 cursor-pointer ml-5 transition duration-300 ease-in-out"
           >
             Imprimir nóminas
           </p>
@@ -89,9 +89,9 @@
           <p
             @click="incidentsTab = true"
             :class="
-              incidentsTab ? 'bg-secondary-gray rounded-md text-primary' : ''
+              incidentsTab ? 'bg-secondary-gray rounded-xl text-primary' : ''
             "
-            class="ml-3 h-10 p-2 cursor-pointer"
+            class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out"
           >
             Ver incidencias
           </p>
