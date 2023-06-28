@@ -36,7 +36,7 @@ class PayrollController extends Controller
         $users = User::all();
         $payrolls = PayrollResource::collection(Payroll::all());
 
-        return $payrolls;
+        // return $payrolls;
         return inertia('Payroll/Show', compact('payroll', 'users', 'payrolls'));
     }
 

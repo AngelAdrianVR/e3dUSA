@@ -62,7 +62,7 @@ const togglePasswordVisibility = () => {
           id="email"
           v-model="form.email"
           type="email"
-          class="mt-1 block w-full"
+          class="mt-1 block w-full bg-transparent placeholder:text-[#9A9A9A]"
           required
           autofocus
           autocomplete="username"
@@ -77,7 +77,7 @@ const togglePasswordVisibility = () => {
             id="password"
             v-model="form.password"
             :type="showPassword ? 'text' : 'password'"
-            class="mt-1 block w-full"
+            class="mt-1 block w-full bg-transparent placeholder:text-[#9A9A9A]"
             required
             autocomplete="current-password"
             placeholder="Contraseña"
@@ -94,8 +94,8 @@ const togglePasswordVisibility = () => {
 
       <div class="block mt-4">
         <label class="flex items-center">
-          <Checkbox v-model:checked="form.remember" name="remember" />
-          <span class="ml-2 text-sm text-gray-600">No cerrar sesión</span>
+          <Checkbox v-model:checked="form.remember" name="remember" class="bg-transparent"/>
+          <span class="ml-2 text-sm text-[#9A9A9A]">No cerrar sesión</span>
         </label>
       </div>
 
@@ -103,7 +103,7 @@ const togglePasswordVisibility = () => {
         <Link
           v-if="canResetPassword"
           :href="route('password.request')"
-          class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          class="underline text-sm text-[#9A9A9A] hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
           Olvidé mi contraseña
         </Link>
