@@ -50,6 +50,7 @@ Route::middleware([
 Route::resource('catalog-products', CatalogProductController::class)->middleware('auth');
 Route::post('catalog-products/massive-delete', [CatalogProductController::class, 'massiveDelete'])->name('catalog-products.massive-delete');
 Route::post('catalog-products/clone', [CatalogProductController::class, 'clone'])->name('catalog-products.clone');
+Route::post('catalog-products/update-with-media/{catalog_product}', [CatalogProductController::class, 'updateWithMedia'])->name('catalog-products.update-with-media');
 
 
 // ------- Ventas(Clients Routes)  ---------

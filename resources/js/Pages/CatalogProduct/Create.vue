@@ -55,12 +55,20 @@
                             placeholder="Descripción "></textarea>
                         <InputError :message="form.errors.description" />
                     </div>
+                    <div>
+                        <el-input v-model="newFeature" placeholder="Ingresa una caracteristica"></el-input>
+                        <el-button @click="addFeature" type="primary">Agregar</el-button>
+                        <el-select v-model="selectedFeatures" multiple placeholder="Caracteristicas">
+                            <el-option v-for="feature in features" :key="feature" :label="feature"
+                                :value="feature"></el-option>
+                        </el-select>
+                    </div>
                     <div class="col-span-full">
                         <label class="label" for="file_input">Subir una imagen</label>
-                        <input @input="form.media = $event.target.files[0]" class="input h-12 rounded-lg cursor-pointer" aria-describedby="file_input_help"
-                            id="file_input" type="file">
-                        <p class="mt-1 text-sm text-gray-500" id="file_input_help">SVG, PNG, JPG or
-                            GIF (MAX. 800x400px).</p>
+                        <input @input="form.media = $event.target.files[0]" class="input h-12 rounded-lg cursor-pointer"
+                            aria-describedby="file_input_help" id="file_input" type="file">
+                        <p class="mt-1 text-sm text-gray-500" id="file_input_help">SVG, PNG, JPG o
+                            GIF (MAX. 4 MB).</p>
                     </div>
 
                     <el-divider content-position="left" class="col-span-full">Componentes de este producto</el-divider>
@@ -168,6 +176,9 @@ export default {
                 quantity: null,
                 production_costs: [],
             },
+            newFeature: null,
+            features: [],
+            selectedFeatures: [],
         };
 
     },
@@ -221,6 +232,13 @@ export default {
             this.rawMaterial.raw_material_id = null;
             this.rawMaterial.quantity = null;
             this.rawMaterial.production_costs = [];
+        },
+        addFeature() {
+            if (this.newFeature.trim() !== '') {
+                this.features.push(this.newFeature);
+                this.selectedFeatures.push(this.newFeature);
+                this.newFeature = '';
+            }
         }
     },
 };

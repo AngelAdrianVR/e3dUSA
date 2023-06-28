@@ -8,7 +8,6 @@
                 <i class="fa-solid fa-xmark"></i>
                 </Link>
             </div>
-
             <div class="flex justify-between mt-5 mx-14">
                 <div class="w-1/3">
                     <el-select v-model="selectedCatalogProduct" clearable filterable placeholder="Buscar producto"
@@ -23,20 +22,23 @@
                         <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]"><i class="fa-solid fa-pen text-sm"></i></button>
                         </Link>
                     </el-tooltip>
-                    <PrimaryButton class="rounded-lg">Ajustar existencias</PrimaryButton>
+                    <!-- <PrimaryButton class="rounded-lg">Ajustar existencias</PrimaryButton> -->
                     <Dropdown align="right" width="48">
                         <template #trigger>
                             <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">Más <i
                                     class="fa-solid fa-chevron-down text-[11px] ml-2"></i></button>
                         </template>
                         <template #content>
-                            <DropdownLink as="button">
+                            <DropdownLink :href="route('catalog-products.create')">
+                                Crear nuevo artículo
+                            </DropdownLink>
+                            <DropdownLink @click="clone" as="button">
                                 Clonar artículo
                             </DropdownLink>
-                            <DropdownLink as="button">
+                            <!-- <DropdownLink as="button">
                                 Marcar como inactivo
-                            </DropdownLink>
-                            <DropdownLink as="button">
+                            </DropdownLink> -->
+                            <DropdownLink @click="showConfirmModal = true" as="button">
                                 Eliminar
                             </DropdownLink>
                         </template>
@@ -47,9 +49,17 @@
                 <div class="px-14">
                     <h2 class="text-xl font-bold text-center mb-6">{{ currentCatalogProduct?.name }}</h2>
                     <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
-                        class="w-full h-60 bg-[#D9D9D9] rounded-lg relative">
-                        <img :src="currentCatalogProduct?.media[0].original_url" :alt="currentCatalogProduct?.name" class="object-contain w-full h-full rounded-lg">
-                        <div v-if="imageHovered"
+                        class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center">
+                        <el-image style="width: 100%; height: auto" :src="currentCatalogProduct?.media[0]?.original_url" fit="contain">
+                            <template #error>
+                                <div class="flex justify-center items-center text-[#ababab]">
+                                    <i class="fa-solid fa-image text-6xl"></i>
+                                </div>
+                            </template>
+                        </el-image>
+                        <!-- <img :src="currentCatalogProduct?.media[0]?.original_url" :alt="currentCatalogProduct?.name"
+                            class="object-contain w-full h-full rounded-lg"> -->
+                        <div v-if="imageHovered" @click="openImage(currentCatalogProduct?.media[0]?.original_url)"
                             class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
                             <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
                         </div>
@@ -57,11 +67,11 @@
                     <div class="mt-8 ml-6 text-sm">
                         <div class="flex mb-2">
                             <p class="w-1/3 text-primary">Existencias</p>
-                            <p>{{ currentCatalogProduct?.storages[0].quantity }}</p>
+                            <p>{{ currentCatalogProduct?.storages[0]?.quantity ?? '0' }}</p>
                         </div>
                         <div class="flex mb-3">
                             <p class="w-1/3 text-primary">Ubicación</p>
-                            <p>{{ currentCatalogProduct?.storages[0].location }}</p>
+                            <p>{{ currentCatalogProduct?.storages[0]?.location ?? '--' }}</p>
                         </div>
                     </div>
                 </div>
@@ -105,6 +115,20 @@
                     </div>
                 </div>
             </div>
+            <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
+                <template #title>
+                    Eliminar producto de catálogo
+                </template>
+                <template #content>
+                    Continuar con la eliminación?
+                </template>
+                <template #footer>
+                    <div class="">
+                        <CancelButton @click="showConfirmModal = false" class="mr-2">Cancelar</CancelButton>
+                        <PrimaryButton @click="deleteItem">Eliminar</PrimaryButton>
+                    </div>
+                </template>
+            </ConfirmationModal>
         </AppLayoutNoHeader>
     </div>
 </template>
@@ -112,8 +136,10 @@
 <script>
 import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
+import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import { Link } from "@inertiajs/vue3";
 
 export default {
@@ -122,14 +148,17 @@ export default {
             selectedCatalogProduct: '',
             currentCatalogProduct: null,
             imageHovered: false,
+            showConfirmModal: false,
         };
     },
     components: {
         AppLayoutNoHeader,
         PrimaryButton,
+        CancelButton,
         Link,
         DropdownLink,
         Dropdown,
+        ConfirmationModal,
     },
     props: {
         catalog_product: Object,
@@ -141,7 +170,80 @@ export default {
         },
         hideOverlay() {
             this.imageHovered = false;
-        }
+        },
+        openImage(url) {
+            window.open(url, '_blank');
+        },
+        async clone() {
+            try {
+                const response = await axios.post(route('catalog-products.clone', {
+                    catalog_product_id: this.currentCatalogProduct?.id
+                }));
+
+                if (response.status == 200) {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+                    console.log(response.data.newItem);
+                    this.catalog_products.data.push(response.data.newItem);
+                    this.selectedCatalogProduct = response.data.newItem.id;
+                    this.currentCatalogProduct = response.data.newItem
+
+                } else {
+                    this.$notify({
+                        title: 'Algo salió mal',
+                        message: response.data.message,
+                        type: 'error'
+                    });
+                }
+
+            } catch (err) {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
+                console.log(err);
+            }
+        },
+        async deleteItem() {
+            try {
+                const response = await axios.delete(route('catalog-products.destroy', this.currentCatalogProduct?.id));
+
+                if (response.status == 200) {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+
+                    const index = this.catalog_products.data.findIndex(item => item.id === this.currentCatalogProduct.id);
+                    if (index !== -1) {
+                        this.catalog_products.data.splice(index, 1);
+                        this.selectedCatalogProduct = '';
+                    }
+
+                } else {
+                    this.$notify({
+                        title: 'Algo salió mal',
+                        message: response.data.message,
+                        type: 'error'
+                    });
+                }
+
+            } catch (err) {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
+                console.log(err);
+            } finally {
+                this.showConfirmModal = false;
+            }
+        },
     },
     watch: {
         selectedCatalogProduct(newVal) {

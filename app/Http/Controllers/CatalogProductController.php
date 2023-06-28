@@ -47,7 +47,7 @@ class CatalogProductController extends Controller
 
         foreach ($request->raw_materials as $product) {
             $total_cost += RawMaterial::find($product['raw_material_id'])?->cost * $product['quantity'];
-            
+
             foreach ($product['production_costs'] as $process_id) {
                 $total_cost += ProductionCost::find($process_id)->cost * $product['quantity'];
             }
@@ -74,15 +74,16 @@ class CatalogProductController extends Controller
         $catalog_product = CatalogProduct::with('rawMaterials')->find($catalog_product->id);
         $production_costs = ProductionCost::all();
         $raw_materials = RawMaterial::all();
+        $media = $catalog_product->getFirstMedia();
 
-        return inertia('CatalogProduct/Edit', compact('catalog_product', 'production_costs', 'raw_materials'));
+        return inertia('CatalogProduct/Edit', compact('catalog_product', 'production_costs', 'raw_materials', 'media'));
     }
 
 
     public function update(Request $request, CatalogProduct $catalog_product)
     {
         $total_cost = 0;
-
+        dd($request->all());
         $request->validate([
             'name' => 'required',
             'part_number' => 'required|string',
@@ -97,7 +98,7 @@ class CatalogProductController extends Controller
 
         foreach ($request->raw_materials as $product) {
             $total_cost += RawMaterial::find($product['raw_material_id'])?->cost * $product['quantity'];
-            
+
             foreach ($product['production_costs'] as $process_id) {
                 $total_cost += ProductionCost::find($process_id)->cost * $product['quantity'];
             }
@@ -110,10 +111,48 @@ class CatalogProductController extends Controller
         return to_route('catalog-products.index');
     }
 
-
-    public function destroy(CatalogProduct $catalogProduct)
+    public function updateWithMedia(Request $request, CatalogProduct $catalog_product)
     {
-        //
+        $total_cost = 0;
+        $request->validate([
+            'name' => 'required',
+            'part_number' => 'required|string',
+            'measure_unit' => 'required|string',
+            'min_quantity' => 'required|min:0',
+            'max_quantity' => 'required|min:0',
+            'description' => 'nullable'
+        ]);
+
+        $catalog_product->update($request->all());
+        $catalog_product->rawMaterials()->detach();
+
+        foreach ($request->raw_materials as $product) {
+            $total_cost += RawMaterial::find($product['raw_material_id'])?->cost * $product['quantity'];
+
+            foreach ($product['production_costs'] as $process_id) {
+                $total_cost += ProductionCost::find($process_id)->cost * $product['quantity'];
+            }
+
+            $catalog_product->rawMaterials()->attach($product['raw_material_id'], $product);
+        }
+
+        // update image
+        $catalog_product->clearMediaCollection();
+        $catalog_product->addMediaFromRequest('media')->toMediaCollection();
+        $catalog_product->save();
+
+        $catalog_product->update(['cost' => $total_cost]);
+
+        return to_route('catalog-products.index');
+    }
+
+
+    public function destroy(CatalogProduct $catalog_product)
+    {
+        $catalog_product_name = $catalog_product->name;
+        $catalog_product->delete();
+
+        return response()->json(['message' => "Producto eliminado: $catalog_product_name"]);
     }
 
     public function massiveDelete(Request $request)
@@ -144,12 +183,21 @@ class CatalogProductController extends Controller
         foreach ($catalog_product->rawMaterials as $product) {
             $pivot = [
                 'quantity' => $product->pivot->quantity,
-                'production_costs' => $product->pivot->production_costs, 
+                'production_costs' => $product->pivot->production_costs,
             ];
 
             $clone->rawMaterials()->attach($product->pivot->raw_material_id, $pivot);
         }
 
-        return response()->json(['message' => "Producto clonado: {$clone->part_number}", 'newItem' => catalogProductResource::make($clone)]);
+        // cloning files
+        $original_files = $catalog_product->getMedia();
+
+        foreach ($original_files as $file) {
+            $copy_file = $file->copy($clone); // Copy file to cloned item
+        }
+
+        $clone->save();
+
+        return response()->json(['message' => "Producto clonado: {$clone->part_number}", 'newItem' => catalogProductResource::make(CatalogProduct::with('storages')->find($clone->id))]);
     }
 }

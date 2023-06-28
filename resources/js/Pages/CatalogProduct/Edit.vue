@@ -7,7 +7,7 @@
                 <i class="fa-solid fa-chevron-left"></i>
                 </Link>
                 <div class="flex items-center space-x-2">
-                    <h2 class="font-semibold text-xl leading-tight">Editar producto {{ catalog_product.name }}</h2>
+                    <h2 class="font-semibold text-xl leading-tight">Editar producto "{{ catalog_product.name }}"</h2>
                 </div>
             </div>
         </template>
@@ -55,12 +55,17 @@
                             placeholder="Descripción "></textarea>
                         <InputError :message="form.errors.description" />
                     </div>
-                    <div>
+                    <div class="col-span-full">
                         <label class="label" for="file_input">Subir una imagen</label>
-                        <input class="input h-12 rounded-lg cursor-pointer" aria-describedby="file_input_help"
-                            id="file_input" type="file">
-                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">SVG, PNG, JPG or
-                            GIF (MAX. 800x400px).</p>
+                        <span>
+                            Actual: 
+                            <a v-if="media !== null" :href="media.original_url" target="_blank"
+                                class="text-primary cursor-pointer hover:underline">{{ media.file_name }}</a>
+                        </span>
+                        <input @input="form.media = $event.target.files[0]" class="input h-12 rounded-lg cursor-pointer"
+                            aria-describedby="file_input_help" id="file_input" type="file">
+                        <p class="mt-1 text-sm text-gray-500" id="file_input_help">SVG, PNG, JPG o
+                            GIF (MAX. 4 MB).</p>
                     </div>
 
                     <el-divider content-position="left" class="col-span-full">Componentes de este producto</el-divider>
@@ -158,6 +163,7 @@ export default {
             max_quantity: this.catalog_product.max_quantity,
             description: this.catalog_product.description,
             raw_materials: [],
+            media: null,
         });
 
         return {
@@ -182,18 +188,31 @@ export default {
         catalog_product: Object,
         production_costs: Array,
         raw_materials: Array,
+        media: Object,
     },
     methods: {
         update() {
-            this.form.put(route('catalog-products.update', this.catalog_product), {
-                onSuccess: () => {
-                    this.$notify({
-                        title: 'Éxito',
-                        message: 'Producto actualizado',
-                        type: 'success'
-                    });
-                }
-            });
+            if (this.form.media) {
+                this.form.post(route('catalog-products.update-with-media', this.catalog_product.id), {
+                    onSuccess: () => {
+                        this.$notify({
+                            title: 'Éxito',
+                            message: 'Producto actualizado',
+                            type: 'success'
+                        });
+                    }
+                });
+            } else {
+                this.form.put(route('catalog-products.update', this.catalog_product.id), {
+                    onSuccess: () => {
+                        this.$notify({
+                            title: 'Éxito',
+                            message: 'Producto actualizado',
+                            type: 'success'
+                        });
+                    }
+                });
+            }
         },
         addProduct() {
             const product = { ...this.rawMaterial };
