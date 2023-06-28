@@ -4,10 +4,10 @@
         <div class="bg-[#D9D9D9] h-full overflow-auto">
             <nav class="pt-2">
                 <div>
-                    <div class="mb-4 items-center font-semibold text-[#0355B5] flex flex-col">
+                    <!-- <div class="mb-4 items-center font-semibold text-[#0355B5] flex flex-col">
                         <span>Work</span>
                         <span>01:37:27</span>
-                    </div>
+                    </div> -->
                     <template v-for="(menu, index) in menus" :key="index">
                         <SideNavLink :href="menu.route" :active="menu.active" :dropdown="menu.dropdown">
                             <template #trigger>
