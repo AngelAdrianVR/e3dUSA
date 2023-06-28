@@ -18,56 +18,92 @@
                 <div class="md:grid gap-6 mb-6 grid-cols-2">
                     <div>
                         <IconInput v-model="form.name" inputPlaceholder="Nombre *" inputType="text">
-                            A
+                            <el-tooltip content="Nombre" placement="top">
+                                A
+                            </el-tooltip>
                         </IconInput>
                         <InputError :message="form.errors.name" />
                     </div>
                     <div>
                         <IconInput v-model="form.part_number" inputPlaceholder="Número de parte *" inputType="text">
-                            #
+                            <el-tooltip content="Número de parte" placement="top">
+                                #
+                            </el-tooltip>
                         </IconInput>
                         <InputError :message="form.errors.part_number" />
                     </div>
                     <div>
                         <IconInput v-model="form.measure_unit" inputPlaceholder="Unidad de medida *" inputType="text">
-                            <i class="fa-solid fa-ruler-vertical"></i>
+                            <el-tooltip content="Unidad de medida" placement="top">
+                                <i class="fa-solid fa-ruler-vertical"></i>
+                            </el-tooltip>
                         </IconInput>
                         <InputError :message="form.errors.measure_unit" />
                     </div>
                     <div>
                         <IconInput v-model="form.min_quantity" inputPlaceholder="Cantidad mínima" inputType="number">
-                            <i class="fa-solid fa-minus"></i>
+                            <el-tooltip content="Cantidad mínima" placement="top">
+                                <i class="fa-solid fa-minus"></i>
+                            </el-tooltip>
                         </IconInput>
                         <InputError :message="form.errors.min_quantity" />
                     </div>
                     <div>
                         <IconInput v-model="form.max_quantity" inputPlaceholder="Cantidad máxima" inputType="number">
-                            <i class="fa-solid fa-plus"></i>
+                            <el-tooltip content="Cantidad máxima" placement="top">
+                                <i class="fa-solid fa-plus"></i>
+                            </el-tooltip>
                         </IconInput>
                         <InputError :message="form.errors.max_quantity" />
                     </div>
                     <div class="flex col-span-full">
-                        <span
-                            class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                            ...
-                        </span>
+                        <el-tooltip content="Descripción" placement="top">
+                            <span
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                ...
+                            </span>
+                        </el-tooltip>
                         <textarea v-model="form.description" class="textarea" autocomplete="off"
-                            placeholder="Descripción "></textarea>
+                            placeholder="Descripción"></textarea>
                         <InputError :message="form.errors.description" />
                     </div>
-                    <div>
-                        <el-input v-model="newFeature" placeholder="Ingresa una caracteristica"></el-input>
-                        <el-button @click="addFeature" type="primary">Agregar</el-button>
-                        <el-select v-model="selectedFeatures" multiple placeholder="Caracteristicas">
+                    <div class="col-span-full">
+                        <div class="flex space-x-2 mb-1">
+                            <IconInput v-model="newFeature" inputPlaceholder="Ingresa una caracteristica" inputType="text"
+                                class="w-full">
+                                <el-tooltip content="Caracteristicas" placement="top">
+                                    <i class="fa-solid fa-palette"></i>
+                                </el-tooltip>
+                            </IconInput>
+                            <SecondaryButton @click="addFeature" type="button">
+                                Agregar
+                                <i class="fa-solid fa-arrow-down ml-2"></i>
+                            </SecondaryButton>
+                        </div>
+                        <el-select v-model="form.features" multiple clearable placeholder="Caracteristicas"
+                            no-data-text="Agrega primero una caracteristica">
                             <el-option v-for="feature in features" :key="feature" :label="feature"
                                 :value="feature"></el-option>
                         </el-select>
                     </div>
                     <div class="col-span-full">
-                        <label class="label" for="file_input">Subir una imagen</label>
-                        <input @input="form.media = $event.target.files[0]" class="input h-12 rounded-lg cursor-pointer"
+                        <div class="flex items-center">
+                            <span
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                <el-tooltip content="Imagen del producto" placement="top">
+                                    <i class="fa-solid fa-images"></i>
+                                </el-tooltip>
+                            </span>
+                            <input @input="form.media = $event.target.files[0]" class="input h-12 rounded-lg
+                            file:mr-4 file:py-1 file:px-2
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-primary file:text-white
+                            file:cursor-pointer
+                            hover:file:bg-red-600" 
                             aria-describedby="file_input_help" id="file_input" type="file">
-                        <p class="mt-1 text-sm text-gray-500" id="file_input_help">SVG, PNG, JPG o
+                        </div>
+                        <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">SVG, PNG, JPG o
                             GIF (MAX. 4 MB).</p>
                     </div>
 
@@ -100,10 +136,12 @@
                         </template>
                     </ol>
                     <div class="flex items-center">
-                        <span
-                            class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </span>
+                        <el-tooltip content="Materias primas" placement="top">
+                            <span
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                        </el-tooltip>
                         <el-select v-model="rawMaterial.raw_material_id" clearable filterable
                             placeholder="Busca en materias primas" no-data-text="No hay materias primas registradas"
                             no-match-text="No se encontraron coincidencias">
@@ -111,10 +149,12 @@
                         </el-select>
                     </div>
                     <div class="flex items-center">
-                        <span
-                            class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </span>
+                        <el-tooltip content="proceso(s) de produccion" placement="top">
+                            <span
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                        </el-tooltip>
                         <el-select v-model="rawMaterial.production_costs" multiple clearable filterable
                             placeholder="Selecciona proceso(s) de produccion" no-data-text="No hay procesos registradas"
                             no-match-text="No se encontraron coincidencias">
@@ -125,7 +165,9 @@
                     <div>
                         <IconInput v-model="rawMaterial.quantity" inputPlaceholder="Cantidad necesaria *" inputType="number"
                             inputStep="0.1">
-                            #
+                            <el-tooltip content="Cantidad necesaria de materia prima seleccionada" placement="top">
+                                #
+                            </el-tooltip>
                         </IconInput>
                     </div>
                     <div calss="col-span-full">
@@ -165,6 +207,7 @@ export default {
             max_quantity: null,
             description: null,
             raw_materials: [],
+            features: [],
             media: null,
         });
 
@@ -178,7 +221,6 @@ export default {
             },
             newFeature: null,
             features: [],
-            selectedFeatures: [],
         };
 
     },
@@ -235,8 +277,8 @@ export default {
         },
         addFeature() {
             if (this.newFeature.trim() !== '') {
+                this.form.features.push(this.newFeature);
                 this.features.push(this.newFeature);
-                this.selectedFeatures.push(this.newFeature);
                 this.newFeature = '';
             }
         }
