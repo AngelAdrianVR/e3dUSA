@@ -10,7 +10,7 @@
         <!-- header -->
         <div>
             <p class="flex justify-end ml-auto font-bold mr-6 text-xs text-gray-700">
-                San Antonio TX, {{ quote.data.created_at }}
+                San Antonio TX
             </p>
             <p class="w-11/12 text-lg mx-auto font-bold text-gray-700">
                 {{ quote.data.companyBranch.name }}
@@ -56,12 +56,11 @@
 
         <!-- Images -->
         <div class="w-11/12 mx-auto my-3 grid grid-cols-3 gap-4 ">
-           
-            <template v-for="item in quote.products" ::key="item.id">
-                <div v-if="item.show_product" class="bg-gray-200 rounded-t-xl rounded-b-md border" style="font-size: 8px;">
-                    <img class="rounded-t-xl max-h-52 mx-auto" :src="item.image_url">
+            <template v-for="item in quote.data.products" ::key="item.id">
+                <div class="bg-gray-200 rounded-t-xl rounded-b-md border" style="font-size: 8px;">
+                    <img class="rounded-t-xl max-h-52 mx-auto" :src="item.media[0].original_url">
                     <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
-                </div>                    
+                </div>
             </template>
         </div>
 

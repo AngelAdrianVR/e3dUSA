@@ -29,7 +29,7 @@
                                     content="La moneda que se elija se usará para productos y costos de flete y herramental"
                                     placement="top">
                                     <span
-                                        class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                        class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
                                         <i class="fa-solid fa-dollar-sign"></i>
                                     </span>
                                 </el-tooltip>
@@ -53,7 +53,7 @@
                                     content="Para poder cotizar, los clientes (sucursales) deben de estar registrados"
                                     placement="top">
                                     <span
-                                        class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                        class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
                                         <i class="fa-solid fa-magnifying-glass"></i>
                                     </span>
                                 </el-tooltip>
@@ -68,7 +68,11 @@
                         </div>
                         <div>
                             <IconInput v-model="form.receiver" inputPlaceholder="Nombre de quien recibe *" inputType="text">
-                                A
+                                <el-tooltip
+                                    content="Nombre de quien recibe"
+                                    placement="top">
+                                    A
+                                </el-tooltip>
                             </IconInput>
                             <InputError :message="form.errors.receiver" />
                         </div>
@@ -101,7 +105,7 @@
                         </div>
                         <div class="flex col-span-full">
                             <span
-                                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
                                 ...
                             </span>
                             <textarea v-model="form.notes" class="textarea" autocomplete="off"
@@ -140,23 +144,21 @@
 
                         <div class="flex items-center">
                             <span
-                                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
                             <el-select v-model="product.id" clearable filterable placeholder="Busca el producto"
                                 no-data-text="No hay productos registrados" no-match-text="No se encontraron coincidencias">
                                 <el-option v-for="item in catalog_products" :key="item.id" :label="item.name"
-
                                     :value="item.id" />
                             </el-select>
                         </div>
                         <div class="flex items-center">
                             <span
-                                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
                                 <i class="fa-solid fa-eye"></i>
                             </span>
                             <el-switch v-model="product.show_image" inline-prompt size="large"
-
                                 style="--el-switch-on-color: #0355B5; --el-switch-off-color: #CCCCCC"
                                 active-text="Mostrar imagen en cotización"
                                 inactive-text="No mostrar imagen en cotización" />
@@ -177,7 +179,7 @@
 
                         <div class="flex col-span-full">
                             <span
-                                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
                                 ...
                             </span>
                             <textarea v-model="product.notes" class="textarea" autocomplete="off"
