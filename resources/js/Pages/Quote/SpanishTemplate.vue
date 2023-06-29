@@ -55,11 +55,11 @@
         </table>
 
         <!-- Images -->
-            <div class="w-11/12 mx-auto my-3 grid grid-cols-3 gap-4 ">
-                <template v-for="item in quote.data.products" ::key="item.id">
-                    <div v-if="item.show_product" class="bg-gray-200 rounded-t-xl rounded-b-md border" style="font-size: 8px;">
-                        <img class="rounded-t-xl max-h-52 mx-auto" :src="item.data.media[0].original_url">
-                        <p class="py-px px-1 uppercase text-gray-600">{{ item.data.name }}</p>
+        <div class="w-11/12 mx-auto my-3 grid grid-cols-3 gap-4 ">
+            <template v-for="item in quote.data.products" ::key="item.id">
+                    <div class="bg-gray-200 rounded-t-xl rounded-b-md border" style="font-size: 8px;">
+                        <img class="rounded-t-xl max-h-52 mx-auto" :src="item.media[0].original_url">
+                        <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
                     </div>                    
                 </template>
             </div>
