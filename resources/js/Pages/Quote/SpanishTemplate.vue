@@ -55,15 +55,14 @@
         </table>
 
         <!-- Images -->
-        <div class="w-11/12 mx-auto my-3 grid grid-cols-3 gap-4 ">
-           
-            <template v-for="item in quote.products" ::key="item.id">
-                <div v-if="item.show_product" class="bg-gray-200 rounded-t-xl rounded-b-md border" style="font-size: 8px;">
-                    <img class="rounded-t-xl max-h-52 mx-auto" :src="item.image_url">
-                    <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
-                </div>                    
-            </template>
-        </div>
+            <div class="w-11/12 mx-auto my-3 grid grid-cols-3 gap-4 ">
+                <template v-for="item in quote.data.products" ::key="item.id">
+                    <div v-if="item.show_product" class="bg-gray-200 rounded-t-xl rounded-b-md border" style="font-size: 8px;">
+                        <img class="rounded-t-xl max-h-52 mx-auto" :src="item.data.media[0].original_url">
+                        <p class="py-px px-1 uppercase text-gray-600">{{ item.data.name }}</p>
+                    </div>                    
+                </template>
+            </div>
 
         <!-- goodbyes -->
         <p class="w-11/12 mx-auto my-2 pb-2 text-gray-700">

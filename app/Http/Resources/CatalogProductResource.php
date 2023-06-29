@@ -27,7 +27,10 @@ class CatalogProductResource extends JsonResource
             ],
             'min_quantity' => $this->min_quantity,
             'max_quantity' => $this->max_quantity,
-            'features' => $this->features ?? '--',
+            'features' => [
+                'raw' => $this->features ?? '--',
+                'string' => implode(',',$this->features) ?? '--',
+            ],
             'rawMaterials' => $this->rawMaterials,
             'storages' => $this->whenLoaded('storages'),
             'created_at' => $this->created_at?->isoFormat('YYYY MMM DD'),

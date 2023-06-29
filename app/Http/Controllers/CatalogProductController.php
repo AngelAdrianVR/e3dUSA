@@ -83,7 +83,6 @@ class CatalogProductController extends Controller
     public function update(Request $request, CatalogProduct $catalog_product)
     {
         $total_cost = 0;
-        dd($request->all());
         $request->validate([
             'name' => 'required',
             'part_number' => 'required|string',

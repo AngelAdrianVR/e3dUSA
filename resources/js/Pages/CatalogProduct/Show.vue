@@ -50,7 +50,7 @@
                     <h2 class="text-xl font-bold text-center mb-6">{{ currentCatalogProduct?.name }}</h2>
                     <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
                         class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center">
-                        <el-image style="width: 100%; height: auto" :src="currentCatalogProduct?.media[0]?.original_url" fit="contain">
+                        <el-image style="height: 100%; " :src="currentCatalogProduct?.media[0]?.original_url" fit="fit">
                             <template #error>
                                 <div class="flex justify-center items-center text-[#ababab]">
                                     <i class="fa-solid fa-image text-6xl"></i>
@@ -90,7 +90,7 @@
                         </div>
                         <div class="flex mb-6 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Características</p>
-                            <p>{{ currentCatalogProduct?.features }}</p>
+                            <p>{{ currentCatalogProduct?.features.string }}</p>
                         </div>
                         <div class="flex mb-2 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Número parte</p>
