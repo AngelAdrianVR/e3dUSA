@@ -129,6 +129,12 @@ const logout = () => {
                                     </Dropdown>
                                 </div>
 
+                                <el-tooltip content="Chat" placement="bottom">
+                                    <a :href="route('chatify')" target="_blank" class="mr-8">
+                                        <i class="fa-solid fa-comments text-[#9A9A9A]"></i>
+                                    </a>
+                                </el-tooltip>
+
                                 <i class="fa-solid fa-bell text-[#9A9A9A] mr-8"></i>
 
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"

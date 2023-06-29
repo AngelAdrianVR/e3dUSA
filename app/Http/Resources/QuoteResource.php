@@ -34,7 +34,7 @@ class QuoteResource extends JsonResource
             'companyBranch' => $this->companyBranch,
             'user' => $this->user,
             'sale' => $this->sale,
-            'products' => $this->catalogProducts,
+            'products' => CatalogProductResource::collection($this->whenLoaded('catalogProducts')),
             'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'total' => [
                'raw' => $total_without_taxes,

@@ -50,7 +50,7 @@ class QuoteController extends Controller
 
     public function show(Quote $quote)
     {
-        $quote = QuoteResource::make(Quote::findOrFail($quote->id));
+        $quote = QuoteResource::make(Quote::with('catalogProducts')->findOrFail($quote->id));
 
         if ($quote->is_spanish_template)
             return inertia('Quote/SpanishTemplate', compact('quote'));

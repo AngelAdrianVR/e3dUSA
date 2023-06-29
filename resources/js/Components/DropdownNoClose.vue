@@ -12,13 +12,17 @@ const props = defineProps({
     },
     contentClasses: {
         type: Array,
-        default: () => ['py-1', 'bg-[#D9D9D9]', 'px-2', 'space-y-1'],
+        default: () => ['py-1', 'bg-[#D9D9D9]', 'px-2'],
     },
 });
 
 let open = ref(false);
 
 const dropdownRef = ref(null);
+
+const stopPropagation = (event) => {
+  event.stopPropagation();
+};
 
 const closeOnEscape = (e) => {
     if (open.value && e.key === 'Escape') {
@@ -71,7 +75,7 @@ const alignmentClasses = computed(() => {
                 class="absolute z-50 mt-2 rounded-md shadow-lg"
                 :class="[widthClass, alignmentClasses]"
                 style="display: none;"
-                @click="open = false"
+                @click.stop="stopPropagation"
             >
                 <div class="rounded-lg ring-1 ring-black ring-opacity-5" :class="contentClasses">
                     <slot name="content" />

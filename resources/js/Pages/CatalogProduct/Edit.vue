@@ -7,7 +7,7 @@
                 <i class="fa-solid fa-chevron-left"></i>
                 </Link>
                 <div class="flex items-center space-x-2">
-                    <h2 class="font-semibold text-xl leading-tight">Editar producto {{ catalog_product.name }}</h2>
+                    <h2 class="font-semibold text-xl leading-tight">Editar producto "{{ catalog_product.name }}"</h2>
                 </div>
             </div>
         </template>
@@ -55,12 +55,44 @@
                             placeholder="Descripción "></textarea>
                         <InputError :message="form.errors.description" />
                     </div>
-                    <div>
-                        <label class="label" for="file_input">Subir una imagen</label>
-                        <input class="input h-12 rounded-lg cursor-pointer" aria-describedby="file_input_help"
-                            id="file_input" type="file">
-                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">SVG, PNG, JPG or
-                            GIF (MAX. 800x400px).</p>
+                    <div class="col-span-full">
+                        <div class="flex space-x-2 mb-1">
+                            <IconInput v-model="newFeature" inputPlaceholder="Ingresa una caracteristica" inputType="text"
+                                class="w-full">
+                                <el-tooltip content="Caracteristicas" placement="top">
+                                    <i class="fa-solid fa-palette"></i>
+                                </el-tooltip>
+                            </IconInput>
+                            <SecondaryButton @click="addFeature" type="button">
+                                Agregar
+                                <i class="fa-solid fa-arrow-down ml-2"></i>
+                            </SecondaryButton>
+                        </div>
+                        <el-select v-model="form.features" multiple clearable placeholder="Caracteristicas"
+                            no-data-text="Agrega primero una caracteristica">
+                            <el-option v-for="feature in features" :key="feature" :label="feature"
+                                :value="feature"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-span-full">
+                        <div class="flex items-center">
+                            <span
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                <el-tooltip content="Imagen del producto" placement="top">
+                                    <i class="fa-solid fa-images"></i>
+                                </el-tooltip>
+                            </span>
+                            <input @input="form.media = $event.target.files[0]" class="input h-12 rounded-lg
+                            file:mr-4 file:py-1 file:px-2
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-primary file:text-white
+                            file:cursor-pointer
+                            hover:file:bg-red-600" 
+                            aria-describedby="file_input_help" id="file_input" type="file">
+                        </div>
+                        <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">SVG, PNG, JPG o
+                            GIF (MAX. 4 MB).</p>
                     </div>
 
                     <el-divider content-position="left" class="col-span-full">Componentes de este producto</el-divider>
@@ -158,6 +190,8 @@ export default {
             max_quantity: this.catalog_product.max_quantity,
             description: this.catalog_product.description,
             raw_materials: [],
+            media: null,
+            features: this.catalog_product.features,
         });
 
         return {
@@ -168,6 +202,8 @@ export default {
                 quantity: null,
                 production_costs: [],
             },
+            features: [],
+            newFeature: null,
         };
     },
     components: {
@@ -182,18 +218,31 @@ export default {
         catalog_product: Object,
         production_costs: Array,
         raw_materials: Array,
+        media: Object,
     },
     methods: {
         update() {
-            this.form.put(route('catalog-products.update', this.catalog_product), {
-                onSuccess: () => {
-                    this.$notify({
-                        title: 'Éxito',
-                        message: 'Producto actualizado',
-                        type: 'success'
-                    });
-                }
-            });
+            if (this.form.media) {
+                this.form.post(route('catalog-products.update-with-media', this.catalog_product.id), {
+                    onSuccess: () => {
+                        this.$notify({
+                            title: 'Éxito',
+                            message: 'Producto actualizado',
+                            type: 'success'
+                        });
+                    }
+                });
+            } else {
+                this.form.put(route('catalog-products.update', this.catalog_product.id), {
+                    onSuccess: () => {
+                        this.$notify({
+                            title: 'Éxito',
+                            message: 'Producto actualizado',
+                            type: 'success'
+                        });
+                    }
+                });
+            }
         },
         addProduct() {
             const product = { ...this.rawMaterial };
@@ -219,6 +268,13 @@ export default {
             this.rawMaterial.raw_material_id = null;
             this.rawMaterial.quantity = null;
             this.rawMaterial.production_costs = [];
+        },
+        addFeature() {
+            if (this.newFeature.trim() !== '') {
+                this.form.features.push(this.newFeature);
+                this.features.push(this.newFeature);
+                this.newFeature = '';
+            }
         }
     },
     mounted() {
