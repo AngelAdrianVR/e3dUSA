@@ -68,9 +68,7 @@
                         </div>
                         <div>
                             <IconInput v-model="form.receiver" inputPlaceholder="Nombre de quien recibe *" inputType="text">
-                                <el-tooltip
-                                    content="Nombre de quien recibe"
-                                    placement="top">
+                                <el-tooltip content="Nombre de quien recibe" placement="top">
                                     A
                                 </el-tooltip>
                             </IconInput>
@@ -79,35 +77,45 @@
                         <div>
                             <IconInput v-model="form.department" inputPlaceholder="Departamento o puesto *"
                                 inputType="text">
-                                A
+                                <el-tooltip content="Departamento o puesto" placement="top">
+                                    A
+                                </el-tooltip>
                             </IconInput>
                             <InputError :message="form.errors.department" />
                         </div>
                         <div>
                             <IconInput v-model="form.tooling_cost" inputPlaceholder="Costo de herramental *"
                                 inputType="number">
-                                <i class="fa-solid fa-hammer"></i>
+                                <el-tooltip content="Costo de herramental" placement="top">
+                                    <i class="fa-solid fa-hammer"></i>
+                                </el-tooltip>
                             </IconInput>
                             <InputError :message="form.errors.tooling_cost" />
                         </div>
                         <div>
                             <IconInput v-model="form.freight_cost" inputPlaceholder="Costo de flete *" inputType="number">
-                                <i class="fa-solid fa-truck-fast"></i>
+                                <el-tooltip content="Costo de flete" placement="top">
+                                    <i class="fa-solid fa-truck-fast"></i>
+                                </el-tooltip>
                             </IconInput>
                             <InputError :message="form.errors.freight_cost" />
                         </div>
                         <div>
                             <IconInput v-model="form.first_production_days"
                                 inputPlaceholder="Dias para primera producción *" inputType="text">
-                                <i class="fa-solid fa-info"></i>
+                                <el-tooltip content="Dias para primera producción" placement="top">
+                                    <i class="fa-solid fa-info"></i>
+                                </el-tooltip>
                             </IconInput>
                             <InputError :message="form.errors.first_production_days" />
                         </div>
                         <div class="flex col-span-full">
-                            <span
-                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                                ...
-                            </span>
+                            <el-tooltip content="Notas" placement="top">
+                                <span
+                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                    ...
+                                </span>
+                            </el-tooltip>
                             <textarea v-model="form.notes" class="textarea" autocomplete="off"
                                 placeholder="Notas"></textarea>
                             <InputError :message="form.errors.notes" />
@@ -143,10 +151,12 @@
                         </ol>
 
                         <div class="flex items-center">
-                            <span
-                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                            </span>
+                            <el-tooltip content="Producto de catálogo" placement="top">
+                                <span
+                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </span>
+                            </el-tooltip>
                             <el-select v-model="product.id" clearable filterable placeholder="Busca el producto"
                                 no-data-text="No hay productos registrados" no-match-text="No se encontraron coincidencias">
                                 <el-option v-for="item in catalog_products" :key="item.id" :label="item.name"
@@ -154,10 +164,12 @@
                             </el-select>
                         </div>
                         <div class="flex items-center">
-                            <span
-                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
-                                <i class="fa-solid fa-eye"></i>
-                            </span>
+                            <el-tooltip content="¿Mostrar imagen en cotización?" placement="top">
+                                <span
+                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                    <i class="fa-solid fa-eye"></i>
+                                </span>
+                            </el-tooltip>
                             <el-switch v-model="product.show_image" inline-prompt size="large"
                                 style="--el-switch-on-color: #0355B5; --el-switch-off-color: #CCCCCC"
                                 active-text="Mostrar imagen en cotización"
@@ -166,22 +178,28 @@
                         <div>
                             <IconInput v-model="product.quantity" inputPlaceholder="Cantidad a cotizar *"
                                 inputType="number">
-                                #
+                                <el-tooltip content="Cantidad a cotizar" placement="top">
+                                    #
+                                </el-tooltip>
                             </IconInput>
                         </div>
 
                         <div>
                             <IconInput v-model="product.price" inputPlaceholder="Precio unitario *" inputType="number"
                                 inputStep="0.1">
-                                <i class="fa-solid fa-dollar-sign"></i>
+                                <el-tooltip content="Precio unitario" placement="top">
+                                    <i class="fa-solid fa-dollar-sign"></i>
+                                </el-tooltip>
                             </IconInput>
                         </div>
 
                         <div class="flex col-span-full">
-                            <span
-                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                                ...
-                            </span>
+                            <el-tooltip content="Notas del producto a cotizar" placement="top">
+                                <span
+                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                    ...
+                                </span>
+                            </el-tooltip>
                             <textarea v-model="product.notes" class="textarea" autocomplete="off"
                                 placeholder="Notas"></textarea>
                             <InputError :message="form.errors.notes" />
