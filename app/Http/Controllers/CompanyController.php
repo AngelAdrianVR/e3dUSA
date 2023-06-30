@@ -63,17 +63,16 @@ class CompanyController extends Controller
     public function show($company_id)
     {
         $company = Company::with('companyBranches.contacts')->find($company_id);
+        $companies = Company::with('companyBranches.contacts')->get();
         $company_products = CompanyProduct::with('company','catalogProduct')->get(); // retorna todos, hay que filtrarlos y que nomas regrese los registrados en el cliente
 
-
-        return inertia('Company/Show', compact('company', 'company_products'));
+        return inertia('Company/Show', compact('company', 'companies' , 'company_products'));
     }
 
     
     public function edit(Company $company)
     {
         $company = Company::with('catalogProducts', 'companyBranches.contacts')->find($company->id);
-        // return $company;
         $catalog_products = CatalogProduct::all();
         $raw_materials = RawMaterial::all();
 
@@ -115,7 +114,10 @@ class CompanyController extends Controller
     
     public function destroy(Company $company)
     {
-        //
+        $company_name = $company->business_name;
+        $company->delete();
+
+        return response()->json(['message' => "Producto eliminado: $company_name"]);
     }
 
     public function massiveDelete(Request $request)
