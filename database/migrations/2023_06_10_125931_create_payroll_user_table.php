@@ -14,17 +14,17 @@ return new class extends Migration
         Schema::create('payroll_user', function (Blueprint $table) {
             $table->id();
             $table->date('date');
-            $table->time('check_in');
-            $table->time('start_break');
-            $table->time('end_break');
-            $table->time('check_out');
+            $table->time('check_in')->nullable();
+            $table->time('start_break')->nullable();
+            $table->time('end_break')->nullable();
+            $table->time('check_out')->nullable();
             $table->unsignedSmallInteger('late')->default(0);
             $table->boolean('extras_enabled')->default(0);
             $table->unsignedTinyInteger('extra_hours')->nullable();
             $table->unsignedTinyInteger('extra_minutes')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('payroll_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('justification_event_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('justification_event_id')->nullable()->constrained()->cascadeOnDelete();
             $table->json('additionals')->nullable();
             $table->timestamps();
         });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\PayrollResource;
+use App\Models\JustificationEvent;
 use App\Models\Payroll;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -35,9 +36,10 @@ class PayrollController extends Controller
         $payroll = PayrollResource::make(Payroll::find($payroll_id));
         $users = User::all();
         $payrolls = PayrollResource::collection(Payroll::all());
+        $justifications = JustificationEvent::all();
 
         // return $payrolls;
-        return inertia('Payroll/Show', compact('payroll', 'users', 'payrolls'));
+        return inertia('Payroll/Show', compact('payroll', 'users', 'payrolls', 'justifications'));
     }
 
    
