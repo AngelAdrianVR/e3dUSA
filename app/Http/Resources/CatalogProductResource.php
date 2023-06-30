@@ -30,7 +30,7 @@ class CatalogProductResource extends JsonResource
             'max_quantity' => $this->max_quantity,
             'features' => [
                 'raw' => $this->features ?? '--',
-                'string' => implode(',',$this->features) ?? '--',
+                'string' => implode(',',$this->features ?? []) ?? '--',
             ],
             'rawMaterials' => $this->rawMaterials,
             'storages' => $this->whenLoaded('storages'),
