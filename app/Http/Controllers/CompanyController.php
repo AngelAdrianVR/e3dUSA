@@ -6,6 +6,7 @@ use App\Http\Resources\CompanyResource;
 use App\Models\CatalogProduct;
 use App\Models\Company;
 use App\Models\CompanyBranch;
+use App\Models\CompanyProduct;
 use App\Models\RawMaterial;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -59,9 +60,13 @@ class CompanyController extends Controller
     }
 
     
-    public function show(Company $company)
+    public function show($company_id)
     {
-        return inertia('Company/Show');
+        $company = Company::with('companyBranches.contacts')->find($company_id);
+        $company_products = CompanyProduct::with('company','catalogProduct')->get(); // retorna todos, hay que filtrarlos y que nomas regrese los registrados en el cliente
+
+
+        return inertia('Company/Show', compact('company', 'company_products'));
     }
 
     
