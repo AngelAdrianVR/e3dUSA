@@ -42,6 +42,9 @@ class SaleController extends Controller
         ]);
 
         $sale = Sale::create($request->except('products') + ['user_id' => auth()->id()]);
+        
+        // store media
+        $sale->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection('oce'));
 
         foreach ($request->products as $product) {
             CatalogProductCompanySale::create($product + ['sale_id' => $sale->id]);

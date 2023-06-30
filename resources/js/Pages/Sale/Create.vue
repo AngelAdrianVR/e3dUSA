@@ -19,7 +19,7 @@
                     <div class="flex items-center">
                         <el-tooltip content="Cliente: Seleccione para poder habilitar sus productos" placement="top">
                             <span
-                                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
                         </el-tooltip>
@@ -31,7 +31,7 @@
                     <div v-if="form.company_branch_id" class="flex items-center mt-3">
                         <el-tooltip content="Contacto" placement="top">
                             <span
-                                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
                                 <i class="fa-solid fa-id-badge"></i>
                             </span>
                         </el-tooltip>
@@ -49,19 +49,25 @@
                     <div class="md:grid gap-6 mb-6 grid-cols-2">
                         <div>
                             <IconInput v-model="form.shipping_company" inputPlaceholder="Paquetería" inputType="text">
-                                <i class="fa-solid fa-truck-fast"></i>
+                                <el-tooltip content="Paquetería" placement="top">
+                                    <i class="fa-solid fa-truck-fast"></i>
+                                </el-tooltip>
                             </IconInput>
                             <InputError :message="form.errors.shipping_company" />
                         </div>
                         <div>
                             <IconInput v-model="form.freight_cost" inputPlaceholder="Costo logística" inputType="text">
-                                <i class="fa-solid fa-file-invoice-dollar"></i>
+                                <el-tooltip content="Costo logística" placement="top">
+                                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                                </el-tooltip>
                             </IconInput>
                             <InputError :message="form.errors.freight_cost" />
                         </div>
                         <div>
                             <IconInput v-model="form.tracking_guide" inputPlaceholder="Guía" inputType="text">
-                                <i class="fa-solid fa-magnifying-glass-location"></i>
+                                <el-tooltip content="Guía" placement="top">
+                                    <i class="fa-solid fa-magnifying-glass-location"></i>
+                                </el-tooltip>
                             </IconInput>
                             <InputError :message="form.errors.tracking_guide" />
                         </div>
@@ -71,33 +77,56 @@
                     <div class="grid gap-6 mb-6 md:grid-cols-2">
                         <div>
                             <IconInput v-model="form.order_via" inputPlaceholder="Medio de petición">
-                                <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                                <el-tooltip content="Medio de petición" placement="top">
+                                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                                </el-tooltip>
                             </IconInput>
                             <InputError :message="form.errors.order_via" />
                         </div>
                         <div>
                             <IconInput v-model="form.invoice" inputPlaceholder="Factura">
-                                <i class="fa-solid fa-money-check-dollar"></i>
+                                <el-tooltip content="Factura" placement="top">
+                                    <i class="fa-solid fa-money-check-dollar"></i>
+                                </el-tooltip>
                             </IconInput>
                             <InputError :message="form.errors.invoice" />
                         </div>
                         <div class="md:col-span-3">
-                            <IconInput v-model="form.oce_name" inputPlaceholder="Nombre/folio OCE">
-                                <i class="fa-solid fa-file-invoice"></i>
+                            <IconInput v-model="form.oce_name" inputPlaceholder="Nombre / folio OCE">
+                                <el-tooltip content="Nombre / folio OCE" placement="top">
+                                    <i class="fa-solid fa-file-invoice"></i>
+                                </el-tooltip>
                             </IconInput>
                             <InputError :message="form.errors.oce_name" />
                         </div>
-                        <div>
-                            <label for="">Archivo OCE</label>
-                            <input type="file" name="" id="">
+                        <div class="col-span-full">
+                            <div class="flex items-center">
+                                <span
+                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
+                                    <el-tooltip content="OCE" placement="top">
+                                        <i class="fa-solid fa-file-invoice"></i>
+                                    </el-tooltip>
+                                </span>
+                                <input @input="form.media = $event.target.files[0]" class="input h-12 rounded-lg
+                            file:mr-4 file:py-1 file:px-2
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-primary file:text-white
+                            file:cursor-pointer
+                            hover:file:bg-red-600" aria-describedby="file_input_help" id="file_input" type="file">
+                            </div>
+                            <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">SVG, PNG, JPG o
+                                GIF (MAX. 4 MB).</p>
                         </div>
                     </div>
                     <div class="flex">
-                        <span
-                            class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                            ...
-                        </span>
-                        <textarea v-model="form.notes" class="textarea" autocomplete="off" placeholder="Notas"></textarea>
+                        <el-tooltip content="Notas de la órden" placement="top">
+                            <span
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                ...
+                            </span>
+                        </el-tooltip>
+                        <textarea v-model="form.notes" class="textarea" autocomplete="off" placeholder="Notas de la órden"></textarea>
                         <InputError :message="form.errors.notes" />
                     </div>
                     <!-- products -->
@@ -137,7 +166,7 @@
                             <el-tooltip content="Producto: Seleccione entre los productos registrados para este cliente"
                                 placement="top">
                                 <span
-                                    class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
                                     <i class="fa-solid fa-magnifying-glass"></i>
                                 </span>
                             </el-tooltip>
@@ -151,17 +180,21 @@
                         </div>
                         <div>
                             <IconInput v-model="product.quantity" inputPlaceholder="Cantidad *" inputType="number">
-                                #
+                                <el-tooltip content="Cantidad" placement="top">
+                                    #
+                                </el-tooltip>
                             </IconInput>
                             <!-- <InputError :message="form.errors.fiscal_address" /> -->
                         </div>
                         <div class="flex col-span-full">
-                            <span
-                                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                                ...
-                            </span>
+                            <el-tooltip content="Notas de producto" placement="top">
+                                <span
+                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                    ...
+                                </span>
+                            </el-tooltip>
                             <textarea v-model="product.notes" class="textarea" autocomplete="off"
-                                placeholder="Notas"></textarea>
+                                placeholder="Notas de producto"></textarea>
                             <!-- <InputError :message="form.errors.notes" /> -->
                         </div>
                         <div class="col-span-full" @click="addProduct">
@@ -201,6 +234,7 @@ export default {
             tracking_guide: null,
             notes: null,
             products: [],
+            media: null,
         });
 
         return {

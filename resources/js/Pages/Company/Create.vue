@@ -20,31 +20,41 @@
           <div class="md:grid gap-6 mb-6 grid-cols-2 pb-4">
             <div>
               <IconInput v-model="form.business_name" inputPlaceholder="Razon social *" inputType="text">
-                A
+                <el-tooltip content="Razon social" placement="top">
+                  A
+                </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.business_name" />
             </div>
             <div>
               <IconInput v-model="form.phone" inputPlaceholder="Teléfono *" inputType="text">
-                <i class="fa-solid fa-phone"></i>
+                <el-tooltip content="Teléfono" placement="top">
+                  <i class="fa-solid fa-phone"></i>
+                </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.phone" />
             </div>
             <div>
               <IconInput v-model="form.rfc" inputPlaceholder="RFC *" inputType="text">
-                <i class="fa-solid fa-sheet-plastic"></i>
+                <el-tooltip content="RFC" placement="top">
+                  <i class="fa-solid fa-sheet-plastic"></i>
+                </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.rfc" />
             </div>
             <div>
               <IconInput v-model="form.post_code" inputPlaceholder="C.P. *" inputType="text">
-                <i class="fa-solid fa-envelopes-bulk"></i>
+                <el-tooltip content="C.P." placement="top">
+                  <i class="fa-solid fa-envelopes-bulk"></i>
+                </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.post_code" />
             </div>
-            <div>
+            <div class="col-span-full">
               <IconInput v-model="form.fiscal_address" inputPlaceholder="Domicilio fiscal *">
-                <i class="fa-solid fa-building"></i>
+                <el-tooltip content="Domicilio fiscal" placement="top">
+                  <i class="fa-solid fa-building"></i>
+                </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.fiscal_address" />
             </div>
@@ -78,47 +88,59 @@
           <div class="space-y-3 md:w-[92%] mx-auto border-2 border-[#b8b7b7] rounded-lg p-5">
             <div>
               <IconInput v-model="branch.name" inputPlaceholder="Nombre de sucursal *" inputType="text">
-                A
+                <el-tooltip content="Nombre de sucursal" placement="top">
+                  A
+                </el-tooltip>
               </IconInput>
               <!-- <InputError :message="branch.errors.name" /> -->
             </div>
             <div class="md:col-span-2">
               <IconInput v-model="branch.address" inputPlaceholder="Dirección *" inputType="text">
-                <i class="fa-solid fa-map-location-dot"></i>
+                <el-tooltip content="Dirección" placement="top">
+                  <i class="fa-solid fa-map-location-dot"></i>
+                </el-tooltip>
               </IconInput>
               <!-- <InputError :message="branch.errors.address" /> -->
             </div>
             <div>
               <IconInput v-model="branch.post_code" inputPlaceholder="C.P. *" inputType="text">
-                <i class="fa-solid fa-envelopes-bulk"></i>
+                <el-tooltip content="C.P." placement="top">
+                  <i class="fa-solid fa-envelopes-bulk"></i>
+                </el-tooltip>
               </IconInput>
               <!-- <InputError :message="branch.errors.post_code" /> -->
             </div>
             <div class="flex items-center">
-              <span
-                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
-                sat
-              </span>
+              <el-tooltip content="Método de pago" placement="top">
+                <span
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                  sat
+                </span>
+              </el-tooltip>
               <el-select v-model="branch.sat_method" clearable placeholder="Método de pago">
                 <el-option v-for="item in sat_method" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
               <!-- <InputError :message="branch.errors.sat_method" /> -->
             </div>
             <div class="flex items-center">
-              <span
-                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
-                sat
-              </span>
+              <el-tooltip content="Medio de pago" placement="top">
+                <span
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                  sat
+                </span>
+              </el-tooltip>
               <el-select v-model="branch.sat_way" clearable placeholder="Medio de pago">
                 <el-option v-for="item in sat_ways" :key="item.value" :label="item.label" :value="item.label" />
               </el-select>
               <!-- <InputError :message="branch.errors.sat_way" /> -->
             </div>
             <div class="flex items-center">
-              <span
-                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
-                sat
-              </span>
+              <el-tooltip content="Uso de factura" placement="top">
+                <span
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                  sat
+                </span>
+              </el-tooltip>
               <el-select v-model="branch.sat_type" clearable placeholder="Uso de factura">
                 <el-option v-for="item in sat_types" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
@@ -159,30 +181,38 @@
             <div class="md:w-[92%] mx-auto pt-3 space-y-3 rounded-lg p-5">
               <div>
                 <IconInput v-model="contact.name" inputPlaceholder="Nombre de contacto *" inputType="text">
-                  A
+                  <el-tooltip content="Nombre de contacto" placement="top">
+                    A
+                  </el-tooltip>
                 </IconInput>
                 <!-- <InputError :message="form.errors.name_contact" /> -->
               </div>
               <div class="md:grid gap-6 mb-6 grid-cols-2">
                 <div>
                   <IconInput v-model="contact.email" inputPlaceholder="Correo electrónico *" inputType="email">
-                    <i class="fa-solid fa-envelope"></i>
+                    <el-tooltip content="Correo electrónico" placement="top">
+                      <i class="fa-solid fa-envelope"></i>
+                    </el-tooltip>
                   </IconInput>
                   <!-- <InputError :message="form.errors.email" /> -->
                 </div>
                 <div>
                   <IconInput v-model="contact.phone" inputPlaceholder="Teléfono *" inputType="text">
-                    <i class="fa-solid fa-phone"></i>
+                    <el-tooltip content="Teléfono" placement="top">
+                      <i class="fa-solid fa-phone"></i>
+                    </el-tooltip>
                   </IconInput>
                   <!-- <InputError :message="form.errors.phone" /> -->
                 </div>
               </div>
               <div>
                 <div class="flex items-center">
-                  <span
-                    class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
-                    <i class="fa-solid fa-cake"></i>
-                  </span>
+                  <el-tooltip content="Cumpleaños" placement="top">
+                    <span
+                      class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                      <i class="fa-solid fa-cake"></i>
+                    </span>
+                  </el-tooltip>
                   <div class="grid grid-cols-2 gap-2">
                     <el-select v-model="contact.birthdate_day" clearable placeholder="Dia">
                       <el-option v-for="day in 31" :key="day" :label="day" :value="day" />
@@ -232,10 +262,12 @@
 
           <div class="space-y-3 rounded-lg p-5">
             <div class="flex items-center">
-              <span
-                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
-                <i class="fa-solid fa-magnifying-glass"></i>
-              </span>
+              <el-tooltip content="Producto de catálogo" placement="top">
+                <span
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+              </el-tooltip>
               <el-select v-model="product.catalog_product_id" clearable placeholder="Buscar producto">
                 <el-option v-for="item in catalog_products" :key="item.id" :label="item.name" :value="item.id" />
               </el-select>
@@ -243,15 +275,19 @@
             <div class="md:grid gap-6 mb-6 grid-cols-3">
               <div>
                 <IconInput v-model="product.old_price" inputPlaceholder="Precio anterior *" inputType="number">
-                  <i class="fa-solid fa-money-bill"></i>
+                  <el-tooltip content="Precio anterior" placement="top">
+                    <i class="fa-solid fa-money-bill"></i>
+                  </el-tooltip>
                 </IconInput>
                 <!-- <InputError :message="form.errors.old_price" /> -->
               </div>
               <div class="flex items-center">
-                <span
-                  class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
-                  <i class="fa-solid fa-dollar-sign"></i>
-                </span>
+                <el-tooltip content="Moneda" placement="top">
+                  <span
+                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                    <i class="fa-solid fa-dollar-sign"></i>
+                  </span>
+                </el-tooltip>
                 <el-select v-model="product.old_currency" placeholder="Moneda *" :fit-input-width="true">
                   <el-option v-for="item in currencies" :key="item.value" :label="item.label" :value="item.value">
                     <span style="float: left">{{ item.label }}</span>
@@ -270,15 +306,19 @@
               </div>
               <div>
                 <IconInput v-model="product.new_price" inputPlaceholder="Precio nuevo *" inputType="number">
-                  <i class="fa-solid fa-money-bill"></i>
+                  <el-tooltip content="Precio nuevo" placement="top">
+                    <i class="fa-solid fa-money-bill"></i>
+                  </el-tooltip>
                 </IconInput>
                 <!-- <InputError :message="form.errors.new_price" /> -->
               </div>
               <div class="flex items-center">
-                <span
-                  class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
-                  <i class="fa-solid fa-dollar-sign"></i>
-                </span>
+                <el-tooltip content="Moneda" placement="top">
+                    <span
+                      class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                      <i class="fa-solid fa-dollar-sign"></i>
+                    </span>
+                  </el-tooltip>
                 <el-select v-model="product.new_currency" placeholder="Moneda *" :fit-input-width="true">
                   <el-option v-for="item in currencies" :key="item.value" :label="item.label" :value="item.value">
                     <span style="float: left">{{ item.label }}</span>
