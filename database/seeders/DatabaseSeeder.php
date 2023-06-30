@@ -30,5 +30,7 @@ class DatabaseSeeder extends Seeder
         ]);
         
         $this->call(ProductionCostSeeder::class);
+        $this->call(justificationEventSeeder::class);
+        $this->call(BonusSeeder::class);
     }
 }

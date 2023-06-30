@@ -28,10 +28,10 @@ class PayrollUser extends Model
 
     protected $casts = [
         'date' => 'date',
-        'check_in' => 'datetime: h:i',
-        'start_break' => 'datetime: h:i',
-        'end_break' => 'datetime: h:i',
-        'check_out' => 'datetime: h:i',
+        'check_in' => 'datetime: h:mm',
+        'start_break' => 'datetime: h:mm',
+        'end_break' => 'datetime: h:mm',
+        'check_out' => 'datetime: h:mm',
         'additionals' => 'array',
     ];
 

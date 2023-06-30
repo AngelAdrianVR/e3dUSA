@@ -99,7 +99,7 @@
 
         <div v-if="!incidentsTab" class="text-right mr-9 flex items-center">
           <PrimaryButton>Imprimir</PrimaryButton>
-          <Dropdown align="right" width="60">
+          <DropdownNoClose align="right" width="60">
             <template #trigger>
               <i class="fa-solid fa-filter text-gray-600 text-lg ml-5 cursor-pointer"></i>
             </template>
@@ -118,7 +118,7 @@
                 </footer>
               </div>
             </template>
-          </Dropdown>
+          </DropdownNoClose>
         </div>
       </div>
       <!-- ------------- tabs section ends ------------- -->
@@ -137,7 +137,7 @@
           </el-select>
         </div>
         <div v-if="user_selected" class="mt-5">
-          <IncidentTable @closeIncidentTable="console.log('sdoifh')" />
+          <IncidentTable @closeIncidentTable="console.log('sdoifh')" :justifications="justifications" />
         </div>
       </div>
       <!-- -------------- Incidents ends----------------------- -->
@@ -242,7 +242,7 @@ import IncidentTable from "@/Components/MyComponents/IncidentTable.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import Modal from "@/Components/Modal.vue";
 import Checkbox from "@/Components/Checkbox.vue";
-import Dropdown from "@/Components/Dropdown.vue";
+import DropdownNoClose from "@/Components/DropdownNoClose.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 
@@ -294,7 +294,7 @@ export default {
     PrimaryButton,
     CancelButton,
     ThirthButton,
-    Dropdown,
+    DropdownNoClose,
     Modal,
     Link,
     IconInput,
@@ -303,8 +303,9 @@ export default {
   },
   props: {
     payroll: Object,
-    payrolls: Array,
+    payrolls: Object,
     users: Array,
+    justifications: Array,
   },
   methods: {
     deleteIncident() {
