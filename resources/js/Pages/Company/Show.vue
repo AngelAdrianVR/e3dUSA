@@ -1,23 +1,15 @@
 <template>
   <div>
-    <AppLayout title="Clientes">
-      <template #header>
-        <div class="flex justify-between">
-          <div class="flex items-center space-x-2">
-            <Link
-              :href="route('companies.index')"
-              class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center"
-            >
-              <i class="fa-solid fa-chevron-left"></i>
-            </Link>
-            <h2 class="font-semibold text-xl leading-tight">Clientes</h2>
-          </div>
-        </div>
-      </template>
-
+    <AppLayoutNoHeader title="Clientes">
       <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
-        <div>
-          <label>Cliente</label>
+        <div class="flex justify-between">
+          <label class="text-lg">Cliente</label>
+          <Link
+            :href="route('companies.index')"
+            class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </Link>
         </div>
         <div class="flex justify-between">
           <el-select
@@ -38,9 +30,9 @@
           <div class="flex items-center space-x-2">
             <el-tooltip content="Editar" placement="top">
               <Link :href="route('companies.edit', selectedCompany)">
-              <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
-                <i class="fa-solid fa-pen text-sm"></i>
-              </button>
+                <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
+                  <i class="fa-solid fa-pen text-sm"></i>
+                </button>
               </Link>
             </el-tooltip>
 
@@ -130,7 +122,9 @@
 
       <!-- -------------Sucursales starts 2 ------------- -->
       <div v-if="tabs == 2" class="lg:grid grid-cols-2 gap-8 md:mt-12 md:px-14">
-        <CompanyBranchCard :company_branches="currentCompany?.company_branches" />
+        <CompanyBranchCard
+          :company_branches="currentCompany?.company_branches"
+        />
       </div>
 
       <!-- ------------- Sucursales ends 2 ------------- -->
@@ -164,12 +158,12 @@
           </div>
         </template>
       </ConfirmationModal>
-    </AppLayout>
+    </AppLayoutNoHeader>
   </div>
 </template>
 
 <script>
-import AppLayout from "@/Layouts/AppLayout.vue";
+import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import CompanyBranchCard from "@/Components/MyComponents/CompanyBranchCard.vue";
 import CompanyProductCard from "@/Components/MyComponents/CompanyProductCard.vue";
 import Dropdown from "@/Components/Dropdown.vue";
@@ -194,7 +188,7 @@ export default {
     company_products: Array,
   },
   components: {
-    AppLayout,
+    AppLayoutNoHeader,
     CompanyBranchCard,
     CompanyProductCard,
     Dropdown,

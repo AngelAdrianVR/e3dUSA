@@ -30,9 +30,15 @@ class SupplierController extends Controller
             'address' => 'nullable|string',
             'post_code' => 'nullable|string|min:4|max:9',
             'phone' => 'required|string|min:10|max:13',
+            'banks' => 'array|min:1',
+            'contacts' => 'array|min:1',
         ]);
 
-        Supplier::create($request->all());
+        $supplier = Supplier::create($request->except('contacts'));
+
+        foreach ($request->contacts as $contact) {
+            $supplier->contacts()->create($contact);
+        }
 
         return to_route('suppliers.index');
     }

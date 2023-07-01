@@ -31,8 +31,7 @@
                 </div>
             </div>
             <el-table :data="filteredTableData" max-height="450" style="width: 100%"
-                @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName"
-                @row-click="handleRowClick" class="cursor-pointer">
+                @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                 <el-table-column type="selection" width="45" />
                 <el-table-column prop="folio" label="Folio" width="85" />
                 <el-table-column prop="user.name" label="Creado por" />
@@ -159,9 +158,9 @@ export default {
                 console.log(err);
             }
         },
-        handleRowClick(row) {
-            this.$inertia.get(route('quotes.show', row));
-        },
+        // handleRowClick(row) {
+        //     this.$inertia.get(route('quotes.show', row)); //Lleva a la vista show dando click a la fila
+        // },
         tableRowClassName({ row, rowIndex }) {
             if (row.status === 1) {
                 return 'text-green-600';
