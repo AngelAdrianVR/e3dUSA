@@ -203,9 +203,7 @@ export default {
                 console.log(err);
             }
         },
-        handleRowClick(row) {
-            this.$inertia.get(route('companies.show', row));
-        },
+
         handleCommand(command) {
             const commandName = command.split('-')[0];
             const rowId = command.split('-')[1];

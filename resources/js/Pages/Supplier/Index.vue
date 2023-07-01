@@ -38,9 +38,23 @@
                         <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
                     </template>
                     <template #default="scope">
-                        <el-button size="small" type="primary"
-                            @click="edit(scope.$index, scope.row)">Editar</el-button>
-                    </template>
+                            <el-dropdown trigger="click" @command="handleCommand">
+                                <span class="el-dropdown-link mr-3">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </span>
+                                <template #dropdown>
+                                    <el-dropdown-menu>
+                                        <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
+                                            Ver</el-dropdown-item>
+                                        <el-dropdown-item :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                            Editar</el-dropdown-item>
+                                        <!-- <el-dropdown-item :command="'clone-' + scope.row.id"><i
+                                                class="fa-solid fa-clone"></i>
+                                            Clonar</el-dropdown-item> -->
+                                    </el-dropdown-menu>
+                                </template>
+                            </el-dropdown>
+                        </template>
                 </el-table-column>
             </el-table>
     </div>
@@ -133,9 +147,19 @@ export default {
                 console.log(err);
             }
         },
-        edit(index, supplier) {
-            this.$inertia.get(route('suppliers.edit', supplier));
-        }
+
+        handleCommand(command) {
+            const commandName = command.split('-')[0];
+            const rowId = command.split('-')[1];
+
+            if (commandName == 'clone') {
+                this.clone(rowId);
+            } else if (commandName == 'make_so') {
+                console.log('SO');
+            } else {
+                this.$inertia.get(route('suppliers.' + commandName, rowId));
+            }
+        },
   },
 
 //   computed: {

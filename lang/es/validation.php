@@ -24,7 +24,7 @@ return [
     'before'               => ':attribute debe ser una fecha anterior a :date.',
     'before_or_equal'      => ':attribute debe ser una fecha anterior o igual a :date.',
     'between'              => [
-        'array'   => ':attribute tiene que tener entre :min - :max elementos.',
+        'array'   => ':attribute tiene que tener entre :min - :max elemento(s).',
         'file'    => ':attribute debe pesar entre :min - :max kilobytes.',
         'numeric' => ':attribute tiene que estar entre :min - :max.',
         'string'  => ':attribute tiene que tener entre :min - :max caracteres.',
@@ -49,13 +49,13 @@ return [
     'file'                 => 'El campo :attribute debe ser un archivo.',
     'filled'               => 'El campo :attribute es obligatorio.',
     'gt'                   => [
-        'array'   => 'El campo :attribute debe tener más de :value elementos.',
+        'array'   => 'El campo :attribute debe tener más de :value elemento(s).',
         'file'    => 'El campo :attribute debe tener más de :value kilobytes.',
         'numeric' => 'El campo :attribute debe ser mayor que :value.',
         'string'  => 'El campo :attribute debe tener más de :value caracteres.',
     ],
     'gte'                  => [
-        'array'   => 'El campo :attribute debe tener como mínimo :value elementos.',
+        'array'   => 'El campo :attribute debe tener como mínimo :value elemento(s).',
         'file'    => 'El campo :attribute debe tener como mínimo :value kilobytes.',
         'numeric' => 'El campo :attribute debe ser como mínimo :value.',
         'string'  => 'El campo :attribute debe tener como mínimo :value caracteres.',
@@ -69,20 +69,20 @@ return [
     'ipv6'                 => ':attribute debe ser una dirección IPv6 válida.',
     'json'                 => 'El campo :attribute debe ser una cadena JSON válida.',
     'lt'                   => [
-        'array'   => 'El campo :attribute debe tener menos de :value elementos.',
+        'array'   => 'El campo :attribute debe tener menos de :value elemento(s).',
         'file'    => 'El campo :attribute debe tener menos de :value kilobytes.',
         'numeric' => 'El campo :attribute debe ser menor que :value.',
         'string'  => 'El campo :attribute debe tener menos de :value caracteres.',
     ],
     'lte'                  => [
-        'array'   => 'El campo :attribute debe tener como máximo :value elementos.',
+        'array'   => 'El campo :attribute debe tener como máximo :value elemento(s).',
         'file'    => 'El campo :attribute debe tener como máximo :value kilobytes.',
         'numeric' => 'El campo :attribute debe ser como máximo :value.',
         'string'  => 'El campo :attribute debe tener como máximo :value caracteres.',
     ],
     'mac_address'          => 'El campo :attribute debe ser una dirección MAC válida.',
     'max'                  => [
-        'array'   => ':attribute no debe tener más de :max elementos.',
+        'array'   => ':attribute no debe tener más de :max elemento(s).',
         'file'    => ':attribute no debe ser mayor que :max kilobytes.',
         'numeric' => ':attribute no debe ser mayor que :max.',
         'string'  => ':attribute no debe ser mayor que :max caracteres.',
@@ -90,7 +90,7 @@ return [
     'mimes'                => ':attribute debe ser un archivo con formato: :values.',
     'mimetypes'            => ':attribute debe ser un archivo con formato: :values.',
     'min'                  => [
-        'array'   => ':attribute debe tener al menos :min elementos.',
+        'array'   => ':attribute debe tener al menos :min elemento(s).',
         'file'    => 'El tamaño de :attribute debe ser de al menos :min kilobytes.',
         'numeric' => 'El tamaño de :attribute debe ser de al menos :min.',
         'string'  => ':attribute debe contener al menos :min caracteres.',
@@ -116,7 +116,7 @@ return [
     'required_without_all' => 'El campo :attribute es obligatorio cuando ninguno de :values está presente.',
     'same'                 => ':attribute y :other deben coincidir.',
     'size'                 => [
-        'array'   => ':attribute debe contener :size elementos.',
+        'array'   => ':attribute debe contener :size elemento(s).',
         'file'    => 'El tamaño de :attribute debe ser :size kilobytes.',
         'numeric' => 'El tamaño de :attribute debe ser :size.',
         'string'  => ':attribute debe contener :size caracteres.',
@@ -157,5 +157,8 @@ return [
         'bank_name' => 'nombre de banco',
         'limit_date' => 'fecha límite',
         'terms' => 'Términos y condiciones',
+        'phone' => 'Teléfono',
+        'banks' => 'Datos bancarios',
+        'contacts' => 'Contactos',
     ],
 ];
