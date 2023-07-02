@@ -4,6 +4,7 @@ use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\MachineController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RawMaterialController;
@@ -103,6 +104,11 @@ Route::post('storages/massive-delete', [StorageController::class, 'massiveDelete
 
 // ------- Recursos humanos(Payrolls Routes)  ---------
 Route::resource('payrolls', PayrollController::class)->middleware('auth');
+
+
+// ------- Recursos humanos(Payrolls Routes)  ---------
+Route::resource('machines', MachineController::class)->middleware('auth');
+Route::post('machines/massive-delete', [MachineController::class, 'massiveDelete'])->name('machines.massive-delete');
 
 
 
