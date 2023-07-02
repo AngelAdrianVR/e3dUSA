@@ -20,6 +20,7 @@ class SupplierResource extends JsonResource
             'address' => $this->address,
             'post_code' => $this->post_code,
             'phone' => $this->phone,
+            'banks' => $this->banks,
             'created_at' => $this->created_at?->isoFormat('YYYY MMM DD'),
             'updated_at' => $this->updated_at?->isoFormat('YYYY MMM DD'),
         ];
