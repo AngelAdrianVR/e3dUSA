@@ -77,13 +77,14 @@ Route::post('suppliers/massive-delete', [SupplierController::class, 'massiveDele
 // ------- Compras(purchases Routes)  ---------
 Route::resource('purchases', PurchaseController::class)->middleware('auth');
 
+// ------- Nóminas(Payrolls Routes)  ---------
+Route::post('payrolls/processed-attendances', [PayrollController::class, 'getProcessedAttendances'])->middleware('auth')->name('payrolls.processed-attendances');
 
 // ------- Raw Material routes  ---------
 Route::resource('raw-materials', RawMaterialController::class)->middleware('auth');
 Route::post('raw-materials/massive-delete', [RawMaterialController::class, 'massiveDelete'])->name('raw-materials.massive-delete')->middleware('auth');
 Route::get('consumables/create', [RawMaterialController::class, 'create'])->name('consumables.create')->middleware('auth');
 Route::get('consumables-edit/{raw_material}', [RawMaterialController::class, 'editConsumable'])->name('consumables.edit')->middleware('auth');
-
 
 
 // ------- Almacen routes---------
