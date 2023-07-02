@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class PayrollUser extends Model
+class PayrollUser extends Pivot
 {
     use HasFactory;
+
+    public $incrementing = true;
 
     protected $fillable = [
         'date',
@@ -28,10 +30,10 @@ class PayrollUser extends Model
 
     protected $casts = [
         'date' => 'date',
-        'check_in' => 'datetime: h:mm',
-        'start_break' => 'datetime: h:mm',
-        'end_break' => 'datetime: h:mm',
-        'check_out' => 'datetime: h:mm',
+        'check_in' => 'datetime:h:m',
+        'start_break' => 'datetime:h:m',
+        'end_break' => 'datetime:h:m',
+        'check_out' => 'datetime:h:m',
         'additionals' => 'array',
     ];
 
@@ -45,4 +47,34 @@ class PayrollUser extends Model
      {
          return $this->belongsTo(Payroll::class);
      }
+
+    //  methods
+     public function totalBreakTime()
+     {
+        if($this->start_break && $this->end_break) {
+            $time = $this->start_break->diff($this->end_break);
+            return "{$time->h}h {$time->i}m";
+        }
+
+        return null;
+     }
+
+     public function totalWorkedTime()
+     {
+        if($this->check_in) {
+            $time = $this->check_in->diffInMinutes($this->check_out ?? now());
+            $break = $this->start_break->diffInMinutes($this->end_break ?? $this->start_break);
+            
+            $time -= $break;
+    
+            $hours = intval($time / 60);
+            $minutes = $time % 60;
+    
+            return "{$hours}h {$minutes}m";
+        } 
+
+        return null;
+     }
+
+     
 }

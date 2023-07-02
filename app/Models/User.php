@@ -27,7 +27,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'is_Active',
+        'is_active',
         'employee_properties',
     ];
 
@@ -61,4 +61,25 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    //Relationships
+    public function payrolls()
+    {
+        return $this->belongsToMany(Payroll::class)
+            ->using(PayrollUser::class)
+            ->withPivot([
+                'id',
+                'date',
+                'check_in',
+                'start_break',
+                'end_break',
+                'check_out',
+                'late',
+                'extras_enabled',
+                'extra_hours',
+                'extra_minutes',
+                'additionals',
+            ])
+            ->withTimestamps();
+    }
 }
