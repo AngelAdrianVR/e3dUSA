@@ -14,8 +14,13 @@ class Supplier extends Model
         'name',
         'address',
         'post_code',
-        'phone'
+        'phone',
+        'banks'
     ];
+
+    protected $casts = [
+        'banks' => 'array'
+    ];  
 
     //relationships
     public function contacts(): MorphMany

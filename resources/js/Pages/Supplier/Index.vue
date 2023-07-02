@@ -24,7 +24,7 @@
                     </template>
                 </el-popconfirm>
             </div>
-        <el-table :data="suppliers.data" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
+        <el-table :data="filteredTableData" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
                 ref="multipleTableRef" :row-class-name="tableRowClassName">
                 <el-table-column type="selection" width="45" />
                 <el-table-column prop="id" label="ID" width="45" />
@@ -103,8 +103,8 @@ export default {
             },
             async deleteSelections() {
             try {
-                const response = await axios.post(route('catalog-products.massive-delete', {
-                    catalog_products: this.$refs.multipleTableRef.value
+                const response = await axios.post(route('suppliers.massive-delete', {
+                    suppliers: this.$refs.multipleTableRef.value
                 }));
 
                 if (response.status == 200) {
@@ -116,8 +116,8 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.catalog_products.forEach((catalog_product, index) => {
-                        if (this.$refs.multipleTableRef.value.includes(catalog_product)) {
+                    this.suppliers.forEach((supplier, index) => {
+                        if (this.$refs.multipleTableRef.value.includes(supplier)) {
                             deletedIndexes.push(index);
                         }
                     });
@@ -127,7 +127,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.catalog_products.splice(index, 1);
+                        this.suppliers.splice(index, 1);
                     }
 
                 } else {
@@ -162,17 +162,15 @@ export default {
         },
   },
 
-//   computed: {
-//         filteredTableData() {
-//             return this.catalog_products.filter(
-//                 (catalog_product) =>
-//                     !this.search ||
-//                     catalog_product.name.toLowerCase().includes(this.search.toLowerCase()) ||
-//                     catalog_product.part_number.toLowerCase().includes(this.search.toLowerCase()) ||
-//                     catalog_product.measure_unit.toLowerCase().includes(this.search.toLowerCase()) ||
-//                     catalog_product.description.name.toLowerCase().includes(this.search.toLowerCase())
-//             )
-//         }
-//     },
+  computed: {
+        filteredTableData() {
+            return this.suppliers.data.filter(
+                (supplier) =>
+                    !this.search ||
+                   supplier.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                   supplier.address.toLowerCase().includes(this.search.toLowerCase())
+            )
+        }
+    },
 };
 </script>

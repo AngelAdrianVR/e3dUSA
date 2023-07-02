@@ -3,12 +3,16 @@
     <AppLayout title="Crear cliente">
       <template #header>
         <div class="flex justify-between">
-          <Link :href="route('companies.index')"
-            class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center">
-          <i class="fa-solid fa-chevron-left"></i>
+          <Link
+            :href="route('companies.index')"
+            class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center"
+          >
+            <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
-            <h2 class="font-semibold text-xl leading-tight">Agregar nuevo cliente</h2>
+            <h2 class="font-semibold text-xl leading-tight">
+              Agregar nuevo cliente
+            </h2>
           </div>
         </div>
       </template>
@@ -16,10 +20,16 @@
       <!-- Form -->
       <form @submit.prevent="store">
         <!-- ---------------- Company starts ----------------- -->
-        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
+        <div
+          class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md"
+        >
           <div class="md:grid gap-6 mb-6 grid-cols-2 pb-4">
             <div>
-              <IconInput v-model="form.business_name" inputPlaceholder="Razon social *" inputType="text">
+              <IconInput
+                v-model="form.business_name"
+                inputPlaceholder="Razon social *"
+                inputType="text"
+              >
                 <el-tooltip content="Razon social" placement="top">
                   A
                 </el-tooltip>
@@ -27,7 +37,11 @@
               <InputError :message="form.errors.business_name" />
             </div>
             <div>
-              <IconInput v-model="form.phone" inputPlaceholder="Teléfono *" inputType="text">
+              <IconInput
+                v-model="form.phone"
+                inputPlaceholder="Teléfono *"
+                inputType="text"
+              >
                 <el-tooltip content="Teléfono" placement="top">
                   <i class="fa-solid fa-phone"></i>
                 </el-tooltip>
@@ -35,7 +49,11 @@
               <InputError :message="form.errors.phone" />
             </div>
             <div>
-              <IconInput v-model="form.rfc" inputPlaceholder="RFC *" inputType="text">
+              <IconInput
+                v-model="form.rfc"
+                inputPlaceholder="RFC *"
+                inputType="text"
+              >
                 <el-tooltip content="RFC" placement="top">
                   <i class="fa-solid fa-sheet-plastic"></i>
                 </el-tooltip>
@@ -43,7 +61,11 @@
               <InputError :message="form.errors.rfc" />
             </div>
             <div>
-              <IconInput v-model="form.post_code" inputPlaceholder="C.P. *" inputType="text">
+              <IconInput
+                v-model="form.post_code"
+                inputPlaceholder="C.P. *"
+                inputType="text"
+              >
                 <el-tooltip content="C.P." placement="top">
                   <i class="fa-solid fa-envelopes-bulk"></i>
                 </el-tooltip>
@@ -51,7 +73,10 @@
               <InputError :message="form.errors.post_code" />
             </div>
             <div class="col-span-full">
-              <IconInput v-model="form.fiscal_address" inputPlaceholder="Domicilio fiscal *">
+              <IconInput
+                v-model="form.fiscal_address"
+                inputPlaceholder="Domicilio fiscal *"
+              >
                 <el-tooltip content="Domicilio fiscal" placement="top">
                   <i class="fa-solid fa-building"></i>
                 </el-tooltip>
@@ -63,8 +88,14 @@
 
           <!-- ---------------- Company Branch starts ----------------- -->
           <el-divider content-position="left">Sucursales</el-divider>
-          <ol v-if="form.company_branches.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1 mb-2">
-            <template v-for="(item, index) in form.company_branches" :key="index">
+          <ol
+            v-if="form.company_branches.length"
+            class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1 mb-2"
+          >
+            <template
+              v-for="(item, index) in form.company_branches"
+              :key="index"
+            >
               <li class="flex justify-between items-center">
                 <p class="text-sm">
                   <span class="text-primary">{{ index + 1 }}.</span>
@@ -75,19 +106,32 @@
                   <el-button @click="editBranch(index)" type="primary" circle>
                     <i class="fa-sharp fa-solid fa-pen-to-square"></i>
                   </el-button>
-                  <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
-                    @confirm="deleteBranch(index)">
+                  <el-popconfirm
+                    confirm-button-text="Si"
+                    cancel-button-text="No"
+                    icon-color="#FF0000"
+                    title="¿Continuar?"
+                    @confirm="deleteBranch(index)"
+                  >
                     <template #reference>
-                      <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>
+                      <el-button type="danger" circle
+                        ><i class="fa-sharp fa-solid fa-trash"></i
+                      ></el-button>
                     </template>
                   </el-popconfirm>
                 </div>
               </li>
             </template>
           </ol>
-          <div class="space-y-3 md:w-[92%] mx-auto border-2 border-[#b8b7b7] rounded-lg p-5">
+          <div
+            class="space-y-3 md:w-[92%] mx-auto border-2 border-[#b8b7b7] rounded-lg p-5"
+          >
             <div>
-              <IconInput v-model="branch.name" inputPlaceholder="Nombre de sucursal *" inputType="text">
+              <IconInput
+                v-model="branch.name"
+                inputPlaceholder="Nombre de sucursal *"
+                inputType="text"
+              >
                 <el-tooltip content="Nombre de sucursal" placement="top">
                   A
                 </el-tooltip>
@@ -95,7 +139,11 @@
               <!-- <InputError :message="branch.errors.name" /> -->
             </div>
             <div class="md:col-span-2">
-              <IconInput v-model="branch.address" inputPlaceholder="Dirección *" inputType="text">
+              <IconInput
+                v-model="branch.address"
+                inputPlaceholder="Dirección *"
+                inputType="text"
+              >
                 <el-tooltip content="Dirección" placement="top">
                   <i class="fa-solid fa-map-location-dot"></i>
                 </el-tooltip>
@@ -103,7 +151,11 @@
               <!-- <InputError :message="branch.errors.address" /> -->
             </div>
             <div>
-              <IconInput v-model="branch.post_code" inputPlaceholder="C.P. *" inputType="text">
+              <IconInput
+                v-model="branch.post_code"
+                inputPlaceholder="C.P. *"
+                inputType="text"
+              >
                 <el-tooltip content="C.P." placement="top">
                   <i class="fa-solid fa-envelopes-bulk"></i>
                 </el-tooltip>
@@ -113,50 +165,97 @@
             <div class="flex items-center">
               <el-tooltip content="Método de pago" placement="top">
                 <span
-                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12"
+                >
                   sat
                 </span>
               </el-tooltip>
-              <el-select v-model="branch.sat_method" clearable placeholder="Método de pago">
-                <el-option v-for="item in sat_method" :key="item.value" :label="item.label" :value="item.value" />
+              <el-select
+                v-model="branch.sat_method"
+                clearable
+                placeholder="Método de pago"
+              >
+                <el-option
+                  v-for="item in sat_method"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
               </el-select>
               <!-- <InputError :message="branch.errors.sat_method" /> -->
             </div>
             <div class="flex items-center">
               <el-tooltip content="Medio de pago" placement="top">
                 <span
-                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12"
+                >
                   sat
                 </span>
               </el-tooltip>
-              <el-select v-model="branch.sat_way" clearable placeholder="Medio de pago">
-                <el-option v-for="item in sat_ways" :key="item.value" :label="item.label" :value="item.label" />
+              <el-select
+                v-model="branch.sat_way"
+                clearable
+                placeholder="Medio de pago"
+              >
+                <el-option
+                  v-for="item in sat_ways"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.label"
+                />
               </el-select>
               <!-- <InputError :message="branch.errors.sat_way" /> -->
             </div>
             <div class="flex items-center">
               <el-tooltip content="Uso de factura" placement="top">
                 <span
-                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12"
+                >
                   sat
                 </span>
               </el-tooltip>
-              <el-select v-model="branch.sat_type" clearable placeholder="Uso de factura">
-                <el-option v-for="item in sat_types" :key="item.value" :label="item.label" :value="item.value" />
+              <el-select
+                v-model="branch.sat_type"
+                clearable
+                placeholder="Uso de factura"
+              >
+                <el-option
+                  v-for="item in sat_types"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
               </el-select>
               <!-- <InputError :message="form.errors.sat_types" /> -->
             </div>
             <div class="pb-7">
-              <SecondaryButton @click="addBranch"
-                :disabled="contacts.length == 0 || !branch.name || !branch.address || !branch.post_code || !branch.sat_method || !branch.sat_type || !branch.sat_way">
-                {{ editBranchIndex !== null ? 'Actualizar sucursal' : 'Agregar sucursal a lista' }}
+              <SecondaryButton
+                @click="addBranch"
+                :disabled="
+                  contacts.length == 0 ||
+                  !branch.name ||
+                  !branch.address ||
+                  !branch.post_code ||
+                  !branch.sat_method ||
+                  !branch.sat_type ||
+                  !branch.sat_way
+                "
+              >
+                {{
+                  editBranchIndex !== null
+                    ? "Actualizar sucursal"
+                    : "Agregar sucursal a lista"
+                }}
               </SecondaryButton>
             </div>
             <!-- ---------------- Company Branch ends ----------------- -->
 
             <!-- ---------------- Company Contacts starts ----------------- -->
             <el-divider content-position="left">Contactos</el-divider>
-            <ol v-if="contacts.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
+            <ol
+              v-if="contacts.length"
+              class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1"
+            >
               <template v-for="(item, index) in contacts" :key="index">
                 <li class="flex justify-between items-center">
                   <p class="text-sm">
@@ -165,13 +264,24 @@
                   </p>
                   <div class="flex space-x-2 items-center">
                     <el-tag v-if="editContactIndex == index">En edición</el-tag>
-                    <el-button @click="editContact(index)" type="primary" circle>
+                    <el-button
+                      @click="editContact(index)"
+                      type="primary"
+                      circle
+                    >
                       <i class="fa-sharp fa-solid fa-pen-to-square"></i>
                     </el-button>
-                    <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
-                      title="¿Continuar?" @confirm="deleteContact(index)">
+                    <el-popconfirm
+                      confirm-button-text="Si"
+                      cancel-button-text="No"
+                      icon-color="#FF0000"
+                      title="¿Continuar?"
+                      @confirm="deleteContact(index)"
+                    >
                       <template #reference>
-                        <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>
+                        <el-button type="danger" circle
+                          ><i class="fa-sharp fa-solid fa-trash"></i
+                        ></el-button>
                       </template>
                     </el-popconfirm>
                   </div>
@@ -180,7 +290,11 @@
             </ol>
             <div class="md:w-[92%] mx-auto pt-3 space-y-3 rounded-lg p-5">
               <div>
-                <IconInput v-model="contact.name" inputPlaceholder="Nombre de contacto *" inputType="text">
+                <IconInput
+                  v-model="contact.name"
+                  inputPlaceholder="Nombre de contacto *"
+                  inputType="text"
+                >
                   <el-tooltip content="Nombre de contacto" placement="top">
                     A
                   </el-tooltip>
@@ -189,7 +303,11 @@
               </div>
               <div class="md:grid gap-6 mb-6 grid-cols-2">
                 <div>
-                  <IconInput v-model="contact.email" inputPlaceholder="Correo electrónico *" inputType="email">
+                  <IconInput
+                    v-model="contact.email"
+                    inputPlaceholder="Correo electrónico *"
+                    inputType="email"
+                  >
                     <el-tooltip content="Correo electrónico" placement="top">
                       <i class="fa-solid fa-envelope"></i>
                     </el-tooltip>
@@ -197,7 +315,11 @@
                   <!-- <InputError :message="form.errors.email" /> -->
                 </div>
                 <div>
-                  <IconInput v-model="contact.phone" inputPlaceholder="Teléfono *" inputType="text">
+                  <IconInput
+                    v-model="contact.phone"
+                    inputPlaceholder="Teléfono *"
+                    inputType="text"
+                  >
                     <el-tooltip content="Teléfono" placement="top">
                       <i class="fa-solid fa-phone"></i>
                     </el-tooltip>
@@ -209,16 +331,35 @@
                 <div class="flex items-center">
                   <el-tooltip content="Cumpleaños" placement="top">
                     <span
-                      class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                      class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12"
+                    >
                       <i class="fa-solid fa-cake"></i>
                     </span>
                   </el-tooltip>
                   <div class="grid grid-cols-2 gap-2">
-                    <el-select v-model="contact.birthdate_day" clearable placeholder="Dia">
-                      <el-option v-for="day in 31" :key="day" :label="day" :value="day" />
+                    <el-select
+                      v-model="contact.birthdate_day"
+                      clearable
+                      placeholder="Dia"
+                    >
+                      <el-option
+                        v-for="day in 31"
+                        :key="day"
+                        :label="day"
+                        :value="day"
+                      />
                     </el-select>
-                    <el-select v-model="contact.birthdate_month" clearable placeholder="Mes">
-                      <el-option v-for="(month, index) in months" :key="index" :label="month" :value="index" />
+                    <el-select
+                      v-model="contact.birthdate_month"
+                      clearable
+                      placeholder="Mes"
+                    >
+                      <el-option
+                        v-for="(month, index) in months"
+                        :key="index"
+                        :label="month"
+                        :value="index"
+                      />
                     </el-select>
                   </div>
                   <!-- <InputError :message="form.errors.sat_way" /> -->
@@ -226,22 +367,36 @@
                 <!-- <InputError :message="form.errors.birthdate" /> -->
               </div>
             </div>
-            <SecondaryButton @click="addContact" :disabled="!this.contact.name || !this.contact.email || !this.contact.phone
-              ">
-              {{ editContactIndex !== null ? 'Actualizar contacto' : 'Agregar Contacto a lista' }}
+            <SecondaryButton
+              @click="addContact"
+              :disabled="
+                !this.contact.name || !this.contact.email || !this.contact.phone
+              "
+            >
+              {{
+                editContactIndex !== null
+                  ? "Actualizar contacto"
+                  : "Agregar Contacto a lista"
+              }}
             </SecondaryButton>
           </div>
           <!-- ---------------- Company Contacts ends ----------------- -->
 
-
           <!-- ---------------- Company Products starts ----------------- -->
           <el-divider content-position="left">Productos del cliente</el-divider>
-          <ol v-if="form.products.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
+          <ol
+            v-if="form.products.length"
+            class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1"
+          >
             <template v-for="(item, index) in form.products" :key="index">
               <li class="flex justify-between items-center">
                 <p class="text-sm">
                   <span class="text-primary">{{ index + 1 }}.</span>
-                  {{ catalog_products.find(prd => prd.id === item.catalog_product_id)?.name }}
+                  {{
+                    catalog_products.find(
+                      (prd) => prd.id === item.catalog_product_id
+                    )?.name
+                  }}
                   ({{ item.new_price }} {{ item.new_currency }} / unidad)
                 </p>
                 <div class="flex space-x-2 items-center">
@@ -249,10 +404,17 @@
                   <el-button @click="editProduct(index)" type="primary" circle>
                     <i class="fa-sharp fa-solid fa-pen-to-square"></i>
                   </el-button>
-                  <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
-                    @confirm="deleteProduct(index)">
+                  <el-popconfirm
+                    confirm-button-text="Si"
+                    cancel-button-text="No"
+                    icon-color="#FF0000"
+                    title="¿Continuar?"
+                    @confirm="deleteProduct(index)"
+                  >
                     <template #reference>
-                      <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>
+                      <el-button type="danger" circle
+                        ><i class="fa-sharp fa-solid fa-trash"></i
+                      ></el-button>
                     </template>
                   </el-popconfirm>
                 </div>
@@ -264,17 +426,31 @@
             <div class="flex items-center">
               <el-tooltip content="Producto de catálogo" placement="top">
                 <span
-                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12"
+                >
                   <i class="fa-solid fa-magnifying-glass"></i>
                 </span>
               </el-tooltip>
-              <el-select v-model="product.catalog_product_id" clearable placeholder="Buscar producto">
-                <el-option v-for="item in catalog_products" :key="item.id" :label="item.name" :value="item.id" />
+              <el-select
+                v-model="product.catalog_product_id"
+                clearable
+                placeholder="Buscar producto"
+              >
+                <el-option
+                  v-for="item in catalog_products"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                />
               </el-select>
             </div>
             <div class="md:grid gap-6 mb-6 grid-cols-3">
               <div>
-                <IconInput v-model="product.old_price" inputPlaceholder="Precio anterior *" inputType="number">
+                <IconInput
+                  v-model="product.old_price"
+                  inputPlaceholder="Precio anterior *"
+                  inputType="number"
+                >
                   <el-tooltip content="Precio anterior" placement="top">
                     <i class="fa-solid fa-money-bill"></i>
                   </el-tooltip>
@@ -284,28 +460,46 @@
               <div class="flex items-center">
                 <el-tooltip content="Moneda" placement="top">
                   <span
-                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12"
+                  >
                     <i class="fa-solid fa-dollar-sign"></i>
                   </span>
                 </el-tooltip>
-                <el-select v-model="product.old_currency" placeholder="Moneda *" :fit-input-width="true">
-                  <el-option v-for="item in currencies" :key="item.value" :label="item.label" :value="item.value">
+                <el-select
+                  v-model="product.old_currency"
+                  placeholder="Moneda *"
+                  :fit-input-width="true"
+                >
+                  <el-option
+                    v-for="item in currencies"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
                     <span style="float: left">{{ item.label }}</span>
-                    <span style="
-                                            float: right;
-                                            color: #cccccc;
-                                            font-size: 13px;
-                                            ">{{ item.value }}</span>
+                    <span
+                      style="float: right; color: #cccccc; font-size: 13px"
+                      >{{ item.value }}</span
+                    >
                   </el-option>
                 </el-select>
               </div>
               <div class="flex items-center">
-                <el-date-picker v-model="product.old_date" type="date" placeholder="Fecha" format="YYYY/MM/DD"
-                  value-format="YYYY-MM-DD" />
+                <el-date-picker
+                  v-model="product.old_date"
+                  type="date"
+                  placeholder="Fecha"
+                  format="YYYY/MM/DD"
+                  value-format="YYYY-MM-DD"
+                />
                 <!-- <InputError :message="form.errors.branches.old_date" /> -->
               </div>
               <div>
-                <IconInput v-model="product.new_price" inputPlaceholder="Precio nuevo *" inputType="number">
+                <IconInput
+                  v-model="product.new_price"
+                  inputPlaceholder="Precio nuevo *"
+                  inputType="number"
+                >
                   <el-tooltip content="Precio nuevo" placement="top">
                     <i class="fa-solid fa-money-bill"></i>
                   </el-tooltip>
@@ -314,38 +508,65 @@
               </div>
               <div class="flex items-center">
                 <el-tooltip content="Moneda" placement="top">
-                    <span
-                      class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
-                      <i class="fa-solid fa-dollar-sign"></i>
-                    </span>
-                  </el-tooltip>
-                <el-select v-model="product.new_currency" placeholder="Moneda *" :fit-input-width="true">
-                  <el-option v-for="item in currencies" :key="item.value" :label="item.label" :value="item.value">
+                  <span
+                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12"
+                  >
+                    <i class="fa-solid fa-dollar-sign"></i>
+                  </span>
+                </el-tooltip>
+                <el-select
+                  v-model="product.new_currency"
+                  placeholder="Moneda *"
+                  :fit-input-width="true"
+                >
+                  <el-option
+                    v-for="item in currencies"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
                     <span style="float: left">{{ item.label }}</span>
-                    <span style="
-                                            float: right;
-                                            color: #cccccc;
-                                            font-size: 13px;
-                                            ">{{ item.value }}</span>
+                    <span
+                      style="float: right; color: #cccccc; font-size: 13px"
+                      >{{ item.value }}</span
+                    >
                   </el-option>
                 </el-select>
               </div>
               <div class="flex items-center">
-                <el-date-picker v-model="product.new_date" type="date" placeholder="Fecha" format="YYYY/MM/DD"
-                  value-format="YYYY-MM-DD" />
+                <el-date-picker
+                  v-model="product.new_date"
+                  type="date"
+                  placeholder="Fecha"
+                  format="YYYY/MM/DD"
+                  value-format="YYYY-MM-DD"
+                />
                 <!-- <InputError :message="form.errors.branches.old_date" /> -->
               </div>
             </div>
 
-            <SecondaryButton @click="addProduct"
-              :disabled="!product.catalog_product_id || !product.new_date || !product.new_currency || !product.new_price">
-              {{ editProductIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
+            <SecondaryButton
+              @click="addProduct"
+              :disabled="
+                !product.catalog_product_id ||
+                !product.new_date ||
+                !product.new_currency ||
+                !product.new_price
+              "
+            >
+              {{
+                editProductIndex !== null
+                  ? "Actualizar producto"
+                  : "Agregar producto a lista"
+              }}
             </SecondaryButton>
           </div>
           <!-- ---------------- Company Products ends ----------------- -->
           <el-divider />
           <div class="md:text-right">
-            <PrimaryButton :disabled="form.processing"> Agregar Cliente </PrimaryButton>
+            <PrimaryButton :disabled="form.processing">
+              Agregar Cliente
+            </PrimaryButton>
           </div>
         </div>
       </form>
@@ -408,18 +629,18 @@ export default {
         { value: "$USD", label: "USD" },
       ],
       months: [
-        'Enero',
-        'Febrero',
-        'Marzo',
-        'Abril',
-        'Mayo',
-        'Junio',
-        'Julio',
-        'Agosto',
-        'Septiembre',
-        'Octubre',
-        'Noviembre',
-        'Diciembre',
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre",
       ],
       sat_method: [
         { value: "PUE", label: "PUE: Pago en una sola exhibición" },
@@ -430,15 +651,27 @@ export default {
         { value: "G02", label: "Devoluciones, descuentos o bonificaciones" },
         { value: "G03", label: "Gastos en general" },
         { value: "I01", label: "Construcciones" },
-        { value: "I02", label: "Mobiliario y equipo de oficina por inversiones" },
+        {
+          value: "I02",
+          label: "Mobiliario y equipo de oficina por inversiones",
+        },
         { value: "I03", label: "Equipo de transporte" },
         { value: "I04", label: "Equipo de cómputo y accesorios" },
-        { value: "I05", label: "Dados, troqueles, moldes, matrices y herramental" },
+        {
+          value: "I05",
+          label: "Dados, troqueles, moldes, matrices y herramental",
+        },
         { value: "I06", label: "Comunicaciones telefónicas" },
         { value: "I07", label: "Comunicaciones satelitales" },
         { value: "I08", label: "Otra maquinaria y equipo" },
-        { value: "D01", label: "Honorarios médicos, dentales y gastos hospitalarios" },
-        { value: "D02", label: "Gastos médicos por incapacidad o discapacidad" },
+        {
+          value: "D01",
+          label: "Honorarios médicos, dentales y gastos hospitalarios",
+        },
+        {
+          value: "D02",
+          label: "Gastos médicos por incapacidad o discapacidad",
+        },
         { value: "D03", label: "Gastos funerales" },
         { value: "D04", label: "Donativos" },
         {
@@ -492,20 +725,20 @@ export default {
   },
   props: {
     catalog_products: Array,
-    raw_materials: Array
+    raw_materials: Array,
   },
   methods: {
     store() {
       this.form.post(route("companies.store"), {
         onSuccess: () => {
           this.$notify({
-            title: 'Éxito',
-            message: 'Cliente creado',
-            type: 'success'
+            title: "Éxito",
+            message: "Cliente creado",
+            type: "success",
           });
 
           this.form.reset();
-        }
+        },
       });
     },
     // contacts
@@ -533,6 +766,7 @@ export default {
       this.contact = contact;
       this.editContactIndex = index;
     },
+    
     // branches
     addBranch() {
       let branch = { ...this.branch };
@@ -560,14 +794,14 @@ export default {
     editBranch(index) {
       const branch = { ...this.form.company_branches[index] };
 
-      this.form.company_branches[index].contacts.forEach(element => {
+      this.form.company_branches[index].contacts.forEach((element) => {
         const contact = {
           name: element.name,
           email: element.email,
           phone: element.phone,
           birthdate_day: element.birthdate_day,
           birthdate_month: element.birthdate_month,
-        }
+        };
 
         this.contacts.push(contact);
       });

@@ -71,6 +71,7 @@ Route::resource('company-branches', CompanyBranchController::class)->middleware(
 
 // ------- Compras(Suppliers Routes)  ---------
 Route::resource('suppliers', SupplierController::class)->middleware('auth');
+Route::post('suppliers/massive-delete', [SupplierController::class, 'massiveDelete'])->name('suppliers.massive-delete');
 
 
 // ------- Compras(purchases Routes)  ---------

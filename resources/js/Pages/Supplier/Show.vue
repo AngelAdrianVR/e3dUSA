@@ -1,11 +1,11 @@
 <template>
   <div>
-    <AppLayoutNoHeader title="Clientes">
+    <AppLayoutNoHeader title="Proveedores">
       <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
         <div class="flex justify-between">
-          <label class="text-lg">Cliente</label>
+          <label class="text-lg">Proveedor</label>
           <Link
-            :href="route('companies.index')"
+            :href="route('suppliers.index')"
             class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center"
           >
             <i class="fa-solid fa-xmark"></i>
@@ -13,23 +13,23 @@
         </div>
         <div class="flex justify-between">
           <el-select
-            v-model="selectedCompany"
+            v-model="selectedSupplier"
             clearable
             filterable
             placeholder="Buscar producto"
-            no-data-text="No hay clientes en el catálogo"
+            no-data-text="No hay proveedores en el catálogo"
             no-match-text="No se encontraron coincidencias"
           >
             <el-option
-              v-for="item in companies"
+              v-for="item in suppliers.data"
               :key="item.id"
-              :label="item.business_name"
+              :label="item.name"
               :value="item.id"
             />
           </el-select>
           <div class="flex items-center space-x-2">
             <el-tooltip content="Editar" placement="top">
-              <Link :href="route('companies.edit', selectedCompany)">
+              <Link :href="route('suppliers.edit', selectedSupplier)">
                 <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
                   <i class="fa-solid fa-pen text-sm"></i>
                 </button>
@@ -45,8 +45,8 @@
                 </button>
               </template>
               <template #content>
-                <DropdownLink :href="route('companies.create')">
-                  Crear nuevo cliente
+                <DropdownLink :href="route('suppliers.create')">
+                  Crear nuevo proveedor
                 </DropdownLink>
 
                 <DropdownLink @click="showConfirmModal = true" as="button">
@@ -58,12 +58,12 @@
         </div>
       </div>
       <p class="text-center font-bold text-lg mb-4">
-        {{ company.business_name }}
+        {{ supplier.name }}
       </p>
 
       <!-- ------------- tabs section starts ------------- -->
       <div
-        class="border-y-2 border-[#cccccc] flex justify-between items-center py-2"
+        class="border-y-2 border-[#cccccc] flex justify-between items-center py-2 "
       >
         <div class="flex">
           <p
@@ -71,7 +71,7 @@
             :class="
               tabs == 1 ? 'bg-secondary-gray rounded-xl text-primary' : ''
             "
-            class="h-10 p-2 cursor-pointer ml-5 transition duration-300 ease-in-out text-sm md:text-base"
+            class="h-10 p-2 cursor-pointer md:ml-5 transition duration-300 ease-in-out text-sm md:text-base"
           >
             Información general
           </p>
@@ -81,9 +81,9 @@
             :class="
               tabs == 2 ? 'bg-secondary-gray rounded-xl text-primary' : ''
             "
-            class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base"
+            class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base"
           >
-            Sucursales
+            Datos bancarios
           </p>
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
           <p
@@ -93,7 +93,7 @@
             "
             class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base"
           >
-            Matriz
+            Productos
           </p>
         </div>
       </div>
@@ -105,26 +105,26 @@
         class="md:w-1/2 grid grid-cols-2 text-left p-4 md:ml-20"
       >
         <span class="text-gray-500">ID</span>
-        <span>{{ currentCompany?.id }}</span>
+        <span>{{ currentSupplier?.id }}</span>
 
-        <span class="col-span-2 mt-8 mb-2">Datos fiscales</span>
+        <span class="col-span-2 mt-8 mb-2">Datos</span>
 
-        <span class="text-gray-500 my-2">Razón social</span>
-        <span>{{ currentCompany?.business_name }}</span>
-        <span class="text-gray-500 my-2">RFC</span>
-        <span>{{ currentCompany?.rfc }}</span>
-        <span class="text-gray-500 my-2">Código postal</span>
-        <span>{{ currentCompany?.post_code }}</span>
+        <span class="text-gray-500 my-2">Nombre</span>
+        <span>{{ currentSupplier?.name }}</span>
         <span class="text-gray-500 my-2">Dirección</span>
-        <span>{{ currentCompany?.fiscal_address }}</span>
+        <span>{{ currentSupplier?.address }}</span>
+        <span class="text-gray-500 my-2">Código postal</span>
+        <span>{{ currentSupplier?.post_code }}</span>
+        <span class="text-gray-500 my-2">Teléfono</span>
+        <span>{{ currentSupplier?.phone }}</span>
+        <span class="text-gray-500 my-2">Agregado el</span>
+        <span>{{ currentSupplier?.created_at }}</span>
       </div>
       <!-- ------------- Informacion general ends 1 ------------- -->
 
       <!-- -------------Sucursales starts 2 ------------- -->
       <div v-if="tabs == 2" class="lg:grid grid-cols-2 gap-8 md:mt-12 md:px-14">
-        <CompanyBranchCard
-          :company_branches="currentCompany?.company_branches"
-        />
+            <SupplierBankCard :banks="currentSupplier?.banks" />
       </div>
 
       <!-- ------------- Sucursales ends 2 ------------- -->
@@ -133,11 +133,11 @@
       <div v-if="tabs == 3" class="p-7">
         <p class="text-secondary">Productos registrados</p>
         <div class="grid lg:grid-cols-3 md:grid-cols-2 mt-7 gap-10">
-          <CompanyProductCard
+          <!-- <CompanyProductCard
             v-for="company_product in company_products"
             :key="company_product.id"
             :company_product="company_product"
-          />
+          /> -->
         </div>
       </div>
 
@@ -147,7 +147,7 @@
         :show="showConfirmModal"
         @close="showConfirmModal = false"
       >
-        <template #title> Eliminar cliente </template>
+        <template #title> Eliminar proveedor </template>
         <template #content> Continuar con la eliminación? </template>
         <template #footer>
           <div class="">
@@ -164,45 +164,43 @@
 
 <script>
 import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
-import CompanyBranchCard from "@/Components/MyComponents/CompanyBranchCard.vue";
-import CompanyProductCard from "@/Components/MyComponents/CompanyProductCard.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+import SupplierBankCard from "@/Components/MyComponents/SupplierBankCard.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link } from "@inertiajs/vue3";
 
 export default {
   data() {
     return {
-      selectedCompany: "",
-      currentCompany: null,
+      selectedSupplier: "",
+      currentSupplier: null,
       tabs: 1,
       showConfirmModal: false,
     };
   },
   props: {
-    company: Object,
-    companies: Array,
-    company_products: Array,
+    supplier: Object,
+    suppliers: Array,
+    // company_products: Array, Aqui van los productos registrados que se le compran al proveedor
   },
   components: {
     AppLayoutNoHeader,
-    CompanyBranchCard,
-    CompanyProductCard,
     Dropdown,
     DropdownLink,
     Link,
     ConfirmationModal,
     CancelButton,
     PrimaryButton,
+    SupplierBankCard
   },
   methods: {
     async deleteItem() {
       try {
         const response = await axios.delete(
-          route("companies.destroy", this.currentCompany?.id)
+          route("suppliers.destroy", this.currentSupplier?.id)
         );
 
         if (response.status == 200) {
@@ -212,12 +210,12 @@ export default {
             type: "success",
           });
 
-          const index = this.companies.findIndex(
-            (item) => item.id === this.currentCompany.id
+          const index = this.suppliers.data.findIndex(
+            (item) => item.id === this.currentSupplier.id
           );
           if (index !== -1) {
-            this.companies.splice(index, 1);
-            this.selectedCompany = "";
+            this.suppliers.data.splice(index, 1);
+            this.selectedSupplier = "";
           }
         } else {
           this.$notify({
@@ -240,13 +238,13 @@ export default {
   },
 
   watch: {
-    selectedCompany(newVal) {
-      this.currentCompany = this.companies.find((item) => item.id == newVal);
+    selectedSupplier(newVal) {
+      this.currentSupplier = this.suppliers.data.find((item) => item.id == newVal);
     },
   },
 
   mounted() {
-    this.selectedCompany = this.company.id;
+    this.selectedSupplier = this.supplier.id;
   },
 };
 </script>
