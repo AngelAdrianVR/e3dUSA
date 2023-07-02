@@ -30,9 +30,10 @@ class SupplierController extends Controller
             'address' => 'nullable|string',
             'post_code' => 'nullable|string|min:4|max:9',
             'phone' => 'required|string|min:10|max:13',
+            'banks' => 'array|min:1',
         ]);
 
-        Supplier::create($request->all());
+       Supplier::create($request->all());
 
         return to_route('suppliers.index');
     }
@@ -40,12 +41,15 @@ class SupplierController extends Controller
     
     public function show(Supplier $supplier)
     {
-        //
+        $suppliers = SupplierResource::collection(Supplier::all());
+
+        return inertia('Supplier/Show', compact('supplier', 'suppliers'));
     }
 
     
     public function edit(Supplier $supplier)
     {
+        // return $supplier;
         return inertia('Supplier/Edit', compact('supplier'));
     }
 
@@ -57,9 +61,10 @@ class SupplierController extends Controller
             'address' => 'nullable|string',
             'post_code' => 'nullable|string|min:4|max:9',
             'phone' => 'required|string|min:10|max:13',
+            'banks' => 'array|min:1',
         ]);
 
-        $supplier->update($request->all());
+       $supplier->update($request->all());
 
         return to_route('suppliers.index');
     }
@@ -67,6 +72,20 @@ class SupplierController extends Controller
     
     public function destroy(Supplier $supplier)
     {
-        //
+        $supplier_name = $supplier->name;
+        $supplier->delete();
+
+        return response()->json(['message' => "Producto eliminado: $supplier_name"]);
+    }
+
+    public function massiveDelete(Request $request)
+    {
+
+        foreach ($request->suppliers as $supplier) {
+            $supplier = Supplier::find($supplier['id']);
+            $supplier?->delete();
+        }
+
+        return response()->json(['message' => 'proveedor(es) eliminado(s)']);
     }
 }

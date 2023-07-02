@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CompanyResource;
 use App\Models\CatalogProduct;
+use App\Models\CatalogProductCompany;
 use App\Models\Company;
 use App\Models\CompanyBranch;
 use App\Models\CompanyProduct;
@@ -64,7 +65,7 @@ class CompanyController extends Controller
     {
         $company = Company::with('companyBranches.contacts')->find($company_id);
         $companies = Company::with('companyBranches.contacts')->get();
-        $company_products = CompanyProduct::with('company','catalogProduct')->get(); // retorna todos, hay que filtrarlos y que nomas regrese los registrados en el cliente
+        $company_products = CatalogProductCompany::with('company','catalogProduct')->get(); // retorna todos, hay que filtrarlos y que nomas regrese los registrados en el cliente
 
         return inertia('Company/Show', compact('company', 'companies' , 'company_products'));
     }

@@ -35,8 +35,7 @@
                     </div>
                 </div>
                 <el-table :data="filteredTableData" max-height="450" style="width: 100%"
-                    @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName"
-                    @row-click="handleRowClic" class="cursor-pointer">
+                    @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="" label="Imagen" width="80" />
                     <el-table-column prop="part_number" label="Num de parte" width="200" />
