@@ -14,6 +14,7 @@ class PayrollUserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $no_attendance = ['Descanso', 'Falta'];
         return [
             'id' => $this->id,
             'date' => [
@@ -31,6 +32,8 @@ class PayrollUserResource extends JsonResource
             'additionals' => $this->additionals,
             'total_break_time' => $this->totalBreakTime(),
             'total_worked_time' => $this->totalWorkedTime(),
+            'incident' => $this->justificationEvent,
+            // 'incident' => in_array($this->justification_event_id, $no_attendance) ? $this->justification_event_id : $this->justificationEvent?->name ,
             // 'user' => $this->user,
             // 'payroll' => $this->payroll,
         ];
