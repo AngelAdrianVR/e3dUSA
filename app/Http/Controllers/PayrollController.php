@@ -60,10 +60,36 @@ class PayrollController extends Controller
     {
         //
     }
+    
+    public function handleLate(Request $request)
+    {
+        $payroll_user = PayrollUser::find($request->payroll_user_id);
+        if ($payroll_user->late)
+            $payroll_user->late = 0;
+        else 
+            $payroll_user->late = 1;
+
+        $payroll_user->save();
+
+        return response()->json(['late' => $payroll_user->late]);
+    }
+
+    public function handleExtras(Request $request)
+    {
+        $payroll_user = PayrollUser::find($request->payroll_user_id);
+        if ($payroll_user->extras_enabled)
+            $payroll_user->extras_enabled = 0;
+        else 
+            $payroll_user->extras_enabled = 1;
+
+        $payroll_user->save();
+
+        return response()->json(['extras_enabled' => $payroll_user->extras_enabled]);
+    }
 
     public function getProcessedAttendances(Request $request)
     {
-        $payroll = Payroll::find($request->payroll_id);
+        $payroll = Payroll::findOrFail($request->payroll_id);
         $attendances = PayrollUserResource::collection(PayrollUser::where('user_id', $request->user_id)
             ->where('payroll_id', $request->payroll_id)
             ->oldest('date')

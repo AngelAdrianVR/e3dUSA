@@ -1,4 +1,7 @@
 <template>
+  <div v-if="pageLoading" class="absolute left-0 top-0 inset-0 bg-black opacity-90 flex items-center justify-center">
+  </div>
+  <i v-if="pageLoading" class="absolute top-1/2 left-1/2 fa-solid fa-spinner fa-spin text-6xl text-primary"></i>
   <div class="bg-[#D9D9D9] rounded-lg lg:w-4/5 mx-auto py-6 px-10">
     <div>
       <span class="text-secondary">Incidencias</span>
@@ -34,7 +37,7 @@
                     class="bg-transparent text-sm rounded-md border-gray-400 text-amber-600">
                 </el-tooltip>
                 <input v-else v-model="attendance.check_in" type="time"
-                    class="bg-transparent text-sm rounded-md border-gray-400 text-amber-600">
+                    class="bg-transparent text-sm rounded-md border-gray-400">
                 </td>
                 <td class="px-6 text-xs py-2">
                   <input v-model="attendance.start_break" type="time"
@@ -61,42 +64,26 @@
                   <i class="fa-solid fa-minus"></i>
                 </td>
                 <td class="w-11">
-                  <el-dropdown trigger="click" @command="handleCommand">
+                  <el-dropdown v-if="!pageLoading" trigger="click" @command="handleCommand">
                     <span class="w-6 h-6 rounded-full hover:bg-[#CCCCCC] cursor-pointer flex items-center justify-center">
                       <i class="fa-solid fa-ellipsis-vertical text-primary"></i>
                     </span>
                     <template #dropdown>
                       <el-dropdown-menu>
-                        <el-dropdown-item v-if="attendance.late" :command="'late1-' + attendance.id">
+                        <el-dropdown-item v-if="attendance.late" :command="'late-' + attendance.id">
                           Quitar retardo</el-dropdown-item>
-                          <el-dropdown-item v-else :command="'late2-' + attendance.id">
+                          <el-dropdown-item v-else :command="'late-' + attendance.id">
                           Poner retardo</el-dropdown-item>
-                        <el-dropdown-item :command="'extra-' + attendance.id">
-                          Extras dobles</el-dropdown-item>
+                        <el-dropdown-item v-if="!attendance.extras_enabled" :command="'extras-' + attendance.id">
+                          Activar extras dobles</el-dropdown-item>
+                        <el-dropdown-item v-else :command="'extras-' + attendance.id">
+                          Desactivar extras dobles</el-dropdown-item>
                         <el-dropdown-item v-for="(item, index1) in justifications" :key="index1"
                           :command="index1 + '-' + attendance.id">
                           {{ item.name }}</el-dropdown-item>
                       </el-dropdown-menu>
                     </template>
                   </el-dropdown>
-                  <!-- <Dropdown align="right" width="60">
-                        <template #trigger>
-                          <span class="block w-6 h-6 rounded-full hover:bg-[#CCCCCC] cursor-pointer">
-                            <i class="fa-solid fa-ellipsis-vertical text-primary"></i>
-                          </span>
-                        </template>
-                        <template #content>
-                          <DropdownLink as="button">
-                            Poner retardo
-                          </DropdownLink>
-                          <DropdownLink as="button">
-                            Extras dobles
-                          </DropdownLink>
-                          <DropdownLink v-for="(item, index) in justifications" :key="index" as="button">
-                            {{ item.name }}
-                          </DropdownLink>
-                        </template>
-                      </Dropdown> -->
                 </td>
               </tr>
               <tr v-else
@@ -114,7 +101,7 @@
                   <i class="fa-solid fa-minus"></i>
                 </td>
                 <td class="w-11">
-                  <el-dropdown trigger="click" @command="handleCommand">
+                  <el-dropdown v-if="!pageLoading" trigger="click" @command="handleCommand">
                     <span class="w-6 h-6 rounded-full hover:bg-[#CCCCCC] cursor-pointer flex items-center justify-center">
                       <i class="fa-solid fa-ellipsis-vertical text-primary"></i>
                     </span>
@@ -158,6 +145,7 @@ export default {
     return {
       processedAttendances: [],
       loading: false,
+      pageLoading: false,
     }
   },
   props: {
@@ -184,10 +172,10 @@ export default {
       const commandName = command.split('-')[0];
       const rowId = command.split('-')[1];
 
-      if (commandName == 'clone') {
-        this.clone(rowId);
-      } else if (commandName == 'make_so') {
-        console.log('SO');
+      if (commandName == 'late') {
+        this.handleLate(rowId);
+      } else if (commandName == 'extras') {
+        this.handleExtras(rowId);
       } else {
         this.$inertia.get(route('catalog-products.' + commandName, rowId));
       }
@@ -207,6 +195,49 @@ export default {
         console.log(error);
       } finally {
         this.loading = false;
+      }
+    },
+    async handleLate(payrollUserId) {
+      try {
+        this.pageLoading = true;
+        const response = await axios.post(route('payrolls.handle-late'), {
+          payroll_user_id: payrollUserId,
+        });
+
+        if (response.status === 200) {
+          console.log(response.data.late);
+          this.processedAttendances.find(item => item.id == payrollUserId).late = response.data.late;
+          this.$notify({
+                        title: 'Éxito',
+                        message: 'Retardo cambiado',
+                        type: 'success'
+                    });
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.pageLoading = false;
+      }
+    },
+    async handleExtras(payrollUserId) {
+      try {
+        this.pageLoading = true;
+        const response = await axios.post(route('payrolls.handle-extras'), {
+          payroll_user_id: payrollUserId,
+        });
+
+        if (response.status === 200) {
+          this.processedAttendances.find(item => item.id == payrollUserId).extras_enabled = response.data.extras_enabled;
+          this.$notify({
+                        title: 'Éxito',
+                        message: 'Extras cambiado',
+                        type: 'success'
+                    });
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.pageLoading = false;
       }
     }
   },
