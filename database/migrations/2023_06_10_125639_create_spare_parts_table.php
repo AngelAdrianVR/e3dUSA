@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->unsignedMediumInteger('quantity');
-            $table->string('supplier');
+            $table->string('supplier')->nullable();
             $table->unsignedFloat('cost');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->string('location');
             $table->foreignId('machine_id')->constrained()->cascadeOnDelete();
             $table->timestamps();

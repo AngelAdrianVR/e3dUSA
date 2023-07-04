@@ -84,4 +84,14 @@ class MachineController extends Controller
     {
         //
     }
+
+    public function massiveDelete(Request $request)
+    {
+        foreach ($request->machines as $machine) {
+            $machine = Machine::find($machine['id']);
+            $machine?->delete();
+        }
+
+        return response()->json(['message' => 'Maquina(s) eliminada(s)']);
+    }
 }
