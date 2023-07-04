@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('maintenances', function (Blueprint $table) {
             $table->id();
-            $table->text('problems');
+            $table->text('problems')->nullable();
             $table->text('actions');
             $table->unsignedFloat('cost');
             $table->enum('manteinance_type_id', [Maintenance::PREVENTIVE, Maintenance::CORRECTIVE]);

@@ -257,6 +257,30 @@ const logout = () => {
                             <ResponsiveNavLink :href="route('payrolls.index')" :active="route().current('payrolls.*')">
                                 Nóminas
                             </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                Solicitud de tiempo adicional
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('payrolls.index')" :active="route().current('payrolls.*')">
+                                Personal
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                Diseño
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                Producción
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                Mercadotecnia
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('machines.index')" :active="route().current('machines.*')">
+                                Máquinas
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                Reuniones
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                Biblioteca de medios
+                            </ResponsiveNavLink>
                         </div>
 
                         <!-- Responsive Settings Options -->

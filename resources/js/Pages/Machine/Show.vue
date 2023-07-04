@@ -48,10 +48,14 @@
               <DropdownLink :href="route('machines.create')">
                 Agregar nueva máquina
               </DropdownLink>
-              <DropdownLink :href="route('machines.create')">
+              <DropdownLink
+                :href="route('maintenances.create', selectedMachine)"
+              >
                 Registrar mantenimiento
               </DropdownLink>
-              <DropdownLink :href="route('machines.create')">
+              <DropdownLink
+                :href="route('spare-parts.create', selectedMachine)"
+              >
                 Registrar refacción
               </DropdownLink>
               <DropdownLink @click="showConfirmModal = true" as="button">
@@ -176,7 +180,7 @@
           <!-- --------------------- Tab 1 Información general ends------------------ -->
 
           <!-- --------------------- Tab 2 Mantenimient starts------------------ -->
-          <div v-if="tabs == 2" class="px-7 py-7 text-sm">
+          <div v-if="tabs == 2" class="px-7 py-7 text-sm overflow-scroll">
             <table class="border-separate border-spacing-x-8">
               <thead>
                 <tr>
@@ -185,23 +189,61 @@
                   <th class="px-4">Fecha</th>
                   <th class="px-4">Costo</th>
                   <th class="px-4">Realizó</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 <tr
-                  @click="openMaintenanceModal(maintenance, index)"
                   v-for="(maintenance, index) in currentMachine?.maintenances"
                   :key="index"
                   class="text-[#9A9A9A] cursor-pointer mb-4"
                 >
-                  <td class="text-left pb-3">{{ index + 1 }}</td>
-                  <td class="text-center pb-3">
+                  <td
+                    @click="openMaintenanceModal(maintenance, index)"
+                    class="text-left pb-3"
+                  >
+                    {{ index + 1 }}
+                  </td>
+                  <td
+                    @click="openMaintenanceModal(maintenance, index)"
+                    class="text-center pb-3"
+                  >
                     {{ maintenance.manteinance_type_id }}
                   </td>
-                  <td class="text-center pb-3">{{ maintenance.created_at }}</td>
-                  <td class="text-center pb-3">${{ maintenance.cost }}</td>
-                  <td class="text-center pb-3">
+                  <td
+                    @click="openMaintenanceModal(maintenance, index)"
+                    class="text-center pb-3"
+                  >
+                    {{ maintenance.created_at }}
+                  </td>
+                  <td
+                    @click="openMaintenanceModal(maintenance, index)"
+                    class="text-center pb-3"
+                  >
+                    ${{ maintenance.cost }}
+                  </td>
+                  <td
+                    @click="openMaintenanceModal(maintenance, index)"
+                    class="text-center pb-3"
+                  >
                     {{ maintenance.responsible }}
+                  </td>
+                  <td class="text-center pb-3">
+                    <div>
+                      <el-popconfirm
+                        confirm-button-text="Si"
+                        cancel-button-text="No"
+                        icon-color="#FFFFFF"
+                        title="¿Continuar?"
+                        @confirm="deleteRow(maintenance)"
+                      >
+                        <template #reference>
+                          <i
+                            class="fa-solid fa-trash-can text-[#9A9A9A] hover:text-red-600"
+                          ></i>
+                        </template>
+                      </el-popconfirm>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -209,9 +251,8 @@
           </div>
           <!-- --------------------- Tab 2 Mantenimient ends------------------ -->
 
-
           <!-- --------------------- Tab 3 refacciones starts------------------ -->
-          <div v-if="tabs == 3" class="px-7 py-7 text-sm">
+          <div v-if="tabs == 3" class="px-7 py-7 text-sm overflow-scroll">
             <table class="border-separate border-spacing-x-8">
               <thead>
                 <tr>
@@ -220,23 +261,61 @@
                   <th class="px-4">Cantidad</th>
                   <th class="px-4">Adquirida el</th>
                   <th class="px-4">Ubicación</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 <tr
-                  @click="openMaintenanceModal(spare_part, index)"
                   v-for="(spare_part, index) in currentMachine?.spare_parts"
                   :key="index"
                   class="text-[#9A9A9A] cursor-pointer mb-4"
                 >
-                  <td class="text-left pb-3">{{ index + 1 }}</td>
-                  <td class="text-center pb-3">
+                  <td
+                    @click="openSparePartModal(spare_part, index)"
+                    class="text-left pb-3"
+                  >
+                    {{ index + 1 }}
+                  </td>
+                  <td
+                    @click="openSparePartModal(spare_part, index)"
+                    class="text-center pb-3"
+                  >
                     {{ spare_part.name }}
                   </td>
-                  <td class="text-center pb-3">{{ spare_part.quantity }}</td>
-                  <td class="text-center pb-3">{{ spare_part.created_at }}</td>
-                  <td class="text-center pb-3">
+                  <td
+                    @click="openSparePartModal(spare_part, index)"
+                    class="text-center pb-3"
+                  >
+                    {{ spare_part.quantity }}
+                  </td>
+                  <td
+                    @click="openSparePartModal(spare_part, index)"
+                    class="text-center pb-3"
+                  >
+                    {{ spare_part.created_at }}
+                  </td>
+                  <td
+                    @click="openSparePartModal(spare_part, index)"
+                    class="text-center pb-3"
+                  >
                     {{ spare_part.location }}
+                  </td>
+                  <td class="text-center pb-3">
+                    <div>
+                      <el-popconfirm
+                        confirm-button-text="Si"
+                        cancel-button-text="No"
+                        icon-color="#FFFFFF"
+                        title="¿Continuar?"
+                        @confirm="deleteRow(spare_part)"
+                      >
+                        <template #reference>
+                          <i
+                            class="fa-solid fa-trash-can text-[#9A9A9A] hover:text-red-600"
+                          ></i>
+                        </template>
+                      </el-popconfirm>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -245,7 +324,6 @@
           <!-- --------------------- Tab 3 refacciones ends------------------ -->
         </div>
       </div>
-
 
       <ConfirmationModal
         :show="showConfirmModal"
@@ -263,74 +341,161 @@
         </template>
       </ConfirmationModal>
 
-
       <!-- -------------- maintenanceModal starts----------------------- -->
-      <Modal :show="maintenanceModal" @close="maintenanceModal = false">
+      <Modal :show="maintenanceModal || sparePartModal" @close="maintenanceModal = false, sparePartModal = false">
         <div class="mx-7 my-4 space-y-4 relative">
-          <div class="flex justify-center mb-7">
-            <h2 class="font-bold text-center mr-2">
-              {{ currentMachine.name }}
-            </h2>
-            <div
-              @click="maintenanceModal = false"
-              class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0"
-            >
-              <i class="fa-solid fa-xmark"></i>
+          <section v-if="maintenanceModal">
+            <div class="flex justify-center mb-4">
+              <h2 class="font-bold text-center mr-2">
+                {{ currentMachine.name }}
+              </h2>
+              <div
+                @click="maintenanceModal = false"
+                class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </div>
+              <span class="text-[#9A9A9A] absolute left-0 top-0">
+                # {{ maintenanceIndex }}</span
+              >
             </div>
-            <span class="text-[#9A9A9A] absolute left-0 top-0">
-              # {{ maintenanceIndex }}</span
-            >
-          </div>
 
-          <div class="grid grid-cols-2">
-            <div class="flex flex-col">
-              <p class="text-primary">Tipo de mantenimiento</p>
-              <p class="text-[#9A9A9A]">
-                {{ selectedMaintenance.manteinance_type_id }}
-              </p>
+            <div class="grid grid-cols-2">
+              <div class="flex flex-col pb-7">
+                <p class="text-primary">Tipo de mantenimiento</p>
+                <p class="text-[#9A9A9A]">
+                  {{ selectedMaintenance.manteinance_type_id }}
+                </p>
+              </div>
+              <div class="flex flex-col pb-7">
+                <div class="flex">
+                  <p class="text-primary">Fecha</p>
+                  <el-tooltip
+                    content="Fecha en que se realizó el mantenimiento"
+                    placement="top"
+                  >
+                    <i
+                      class="fa-solid fa-question text-[9px] h-3 w-3 bg-primary-gray rounded-full text-center"
+                    ></i>
+                  </el-tooltip>
+                </div>
+                <p class="text-[#9A9A9A]">
+                  {{ selectedMaintenance.created_at }}
+                </p>
+              </div>
+              <div class="flex flex-col pb-7">
+                <p class="text-primary">Costo (MXN)</p>
+                <p class="text-[#9A9A9A]">${{ selectedMaintenance.cost }}</p>
+              </div>
+              <div class="flex flex-col pb-7">
+                <div class="flex">
+                  <p class="text-primary">Realizó</p>
+                  <el-tooltip
+                    content="Persona o empresa que realizó el mantenimiento"
+                    placement="top"
+                  >
+                    <i
+                      class="fa-solid fa-question text-[9px] h-3 w-3 bg-primary-gray rounded-full text-center"
+                    ></i>
+                  </el-tooltip>
+                </div>
+                <p class="text-[#9A9A9A]">
+                  {{ selectedMaintenance.responsible }}
+                </p>
+              </div>
             </div>
-            <div class="flex flex-col">
-            <div class="flex">
-              <p class="text-primary">Fecha</p>
-              <el-tooltip content="Fecha en que se realizó el mantenimiento" placement="top">
-                <i
-                  class="fa-solid fa-question text-[9px] h-3 w-3 bg-primary-gray rounded-full text-center"
-                ></i>
-              </el-tooltip>
-            </div>
-              <p class="text-[#9A9A9A]">{{ selectedMaintenance.created_at }}</p>
-            </div>
-            <div class="flex flex-col">
-              <p class="text-primary">Costo (MXN)</p>
-              <p class="text-[#9A9A9A]">${{ selectedMaintenance.cost }}</p>
-            </div>
-            <div class="flex flex-col">
-            <div class="flex">
-              <p class="text-primary">Realizó</p>
-              <el-tooltip content="Persona o empresa que realizó el mantenimiento" placement="top">
-                <i
-                  class="fa-solid fa-question text-[9px] h-3 w-3 bg-primary-gray rounded-full text-center"
-                ></i>
-              </el-tooltip>
-            </div>
-              <p class="text-[#9A9A9A]">{{ selectedMaintenance.responsible }}</p>
-            </div>
-          </div>
-            
+
             <div class="grid grid-cols-3">
               <p class="text-primary">Descripción</p>
-              <p class="text-[#9A9A9A] col-span-2 mb-4">{{ selectedMaintenance.actions }}</p>
+              <p class="text-[#9A9A9A] col-span-2 mb-7">
+                {{ selectedMaintenance.actions }}
+              </p>
 
               <p class="text-primary">Evidencias</p>
-              <p class="text-[#9A9A9A] col-span-2">{{ 'Algunas fotografias de evidencias' }}</p>
+              <p class="text-[#9A9A9A] col-span-2">
+                {{ "Algunas fotografias de evidencias" }}
+              </p>
+            </div>
+          </section>
+      <!-- -------------- maintenanceModal ends----------------------- -->
+
+
+
+   <!-- --------------------------- sparepartmodal starts ------------------------------------ -->
+          <section v-if="sparePartModal">
+            <div class="flex justify-center mb-7">
+              <h2 class="font-bold text-center mr-2">
+                {{ currentMachine.name }}
+              </h2>
+              <div
+                @click="sparePartModal = false"
+                class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </div>
+              <span class="text-[#9A9A9A] absolute left-0 top-0">
+                # {{ maintenanceIndex }}</span
+              >
             </div>
 
-          <div class="flex justify-end space-x-3 pt-3">
-            <PrimaryButton>Editar</PrimaryButton>
-          </div>
+            <div class="grid grid-cols-2">
+              <div class="flex flex-col mb-7">
+                <p class="text-primary">Refacción</p>
+                <p class="text-[#9A9A9A]">
+                  {{ selectedSparePart.name }}
+                </p>
+              </div>
+              <div class="flex flex-col mb-7">
+                  <p class="text-primary">Adquirida el</p>
+                <p class="text-[#9A9A9A]">
+                  {{ selectedSparePart.created_at }}
+                </p>
+              </div>
+              <div class="flex flex-col mb-7">
+                <p class="text-primary">Costo unitario (MXN)</p>
+                <p class="text-[#9A9A9A]">${{ selectedSparePart.cost }}</p>
+              </div>
+              <div class="flex flex-col mb-7">
+                  <p class="text-primary">Cantidad</p>
+                <p class="text-[#9A9A9A]">
+                  {{ selectedSparePart.quantity }}
+                </p>
+              </div>
+              <div class="flex flex-col mb-7">
+                  <p class="text-primary">Proveedor</p>
+                <p class="text-[#9A9A9A]">
+                  {{ selectedSparePart.supplier }}
+                </p>
+              </div>
+              <div class="flex flex-col mb-7">
+                  <p class="text-primary">Ubicación</p>
+                <p class="text-[#9A9A9A]">
+                  {{ selectedSparePart.location }}
+                </p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3">
+              <p class="text-primary">Descripción</p>
+              <p class="text-[#9A9A9A] col-span-2 mb-7">
+                {{ selectedSparePart.description }}
+              </p>
+
+              <p class="text-primary">Evidencias</p>
+              <p class="text-[#9A9A9A] col-span-2">
+                {{ "Algunas fotografias de evidencias" }}
+              </p>
+            </div>
+          </section>
+   <!-- --------------------------- sparepartmodal ends ------------------------------------ -->
+
+            <div class="flex justify-end space-x-3 py-5">
+              <Link :href="maintenanceModal ? route('maintenances.edit', selectedMaintenance) : route('spare-parts.edit', selectedSparePart)">
+                <PrimaryButton>Editar</PrimaryButton>
+              </Link>
+            </div>
         </div>
       </Modal>
-      <!-- -------------- maintenanceModal ends----------------------- -->
     </AppLayoutNoHeader>
   </div>
 </template>
@@ -353,8 +518,11 @@ export default {
       imageHovered: false,
       showConfirmModal: false,
       maintenanceModal: false,
+      sparePartModal: false,
       maintenanceIndex: null,
+      sparePartIndex: null,
       selectedMaintenance: null,
+      selectedSparePart: null,
       tabs: 1,
     };
   },
@@ -373,10 +541,36 @@ export default {
     machines: Array,
   },
   methods: {
+    deleteRow(obj) {
+      if (this.tabs == 2) {
+        this.$inertia.delete(route("maintenances.destroy", obj));
+
+        this.$notify({
+          title: "Éxito",
+          message: "Se eliminó el registro de mantenimiento",
+          type: "success",
+        });
+      } else if (this.tabs == 3) {
+        this.$inertia.delete(route("spare-parts.destroy", obj));
+
+        this.$notify({
+          title: "Éxito",
+          message: "Se eliminó el registro de refacción",
+          type: "success",
+        });
+      }
+    },
+
     openMaintenanceModal(maintenance, index) {
       this.selectedMaintenance = maintenance;
       this.maintenanceModal = true;
       this.maintenanceIndex = index + 1;
+    },
+
+    openSparePartModal(spare_part, index) {
+      this.selectedSparePart = spare_part;
+      this.sparePartModal = true;
+      this.sparePartIndex = index + 1;
     },
 
     showOverlay() {
