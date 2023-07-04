@@ -2,7 +2,6 @@
   <div>
     <AppLayoutNoHeader title="Nóminas">
 
-
       <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
         <div>
           <label>Nóminas</label>

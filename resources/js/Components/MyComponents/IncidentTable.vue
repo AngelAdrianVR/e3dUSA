@@ -1,4 +1,7 @@
 <template>
+  <div v-if="pageLoading" class="absolute left-0 top-0 inset-0 bg-black opacity-90 flex items-center justify-center">
+  </div>
+  <i v-if="pageLoading" class="absolute top-1/2 left-1/2 fa-solid fa-spinner fa-spin text-6xl text-primary"></i>
   <div class="bg-[#D9D9D9] rounded-lg lg:w-4/5 mx-auto py-6 px-10">
     <div>
       <span class="text-secondary">Incidencias</span>
@@ -22,76 +25,101 @@
             </tr>
           </thead>
           <tbody v-if="!loading">
-            <tr v-for="(attendance, index) in processedAttendances" :key="attendance.id"
-              class="text-gray-600 text-center">
-              <th class="py-2 text-left mt-3 text-sm w-44">
-                <span class="ml-3 font-bold"> {{ attendance.date?.formatted }} </span>
-              </th>
-              <td class="px-6 text-xs py-2">
-                <input v-model="attendance.check_in" type="time"
-                  class="bg-transparent text-sm rounded-md border-gray-400">
-              </td>
-              <td class="px-6 text-xs py-2">
-                <input v-model="attendance.start_break" type="time"
-                  class="bg-transparent text-sm rounded-md border-gray-400">
-              </td>
-              <td class="px-6 text-xs py-2">
-                <input v-model="attendance.end_break" type="time"
-                  class="bg-transparent text-sm rounded-md border-gray-400">
-              </td>
-              <td class="px-6 text-xs py-2">
-                <input v-model="attendance.check_out" type="time"
-                  class="bg-transparent text-sm rounded-md border-gray-400">
-              </td>
-              <td v-if="attendance.total_break_time" class="px-6 text-xs py-2 w-32">
-                {{ attendance.total_break_time }}
-              </td>
-              <td v-else class="px-6 text-xs py-2 w-32">
-                <i class="fa-solid fa-minus"></i>
-              </td>
-              <td v-if="attendance.total_worked_time" class="px-6 text-xs py-2 w-32">
-                {{ attendance.total_worked_time }}
-              </td>
-              <td v-else class="px-6 text-xs py-2 w-32">
-                <i class="fa-solid fa-minus"></i>
-              </td>
-              <td class="w-11">
-                <el-dropdown trigger="click" @command="handleCommand">
-                  <span class="w-6 h-6 rounded-full hover:bg-[#CCCCCC] cursor-pointer flex items-center justify-center">
-                    <i class="fa-solid fa-ellipsis-vertical text-primary"></i>
-                  </span>
-                  <template #dropdown>
-                    <el-dropdown-menu>
-                      <el-dropdown-item :command="'late-' + attendance.id">
-                        Poner retardo</el-dropdown-item>
-                      <el-dropdown-item :command="'extra-' + attendance.id">
-                        Extras dobles</el-dropdown-item>
-                      <el-dropdown-item v-for="(item, index1) in justifications" :key="index1"
-                        :command="index1 + '-' + attendance.id">
-                        {{ item.name }}</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </template>
-                </el-dropdown>
-                <!-- <Dropdown align="right" width="60">
-                      <template #trigger>
-                        <span class="block w-6 h-6 rounded-full hover:bg-[#CCCCCC] cursor-pointer">
-                          <i class="fa-solid fa-ellipsis-vertical text-primary"></i>
-                        </span>
-                      </template>
-                      <template #content>
-                        <DropdownLink as="button">
-                          Poner retardo
-                        </DropdownLink>
-                        <DropdownLink as="button">
-                          Extras dobles
-                        </DropdownLink>
-                        <DropdownLink v-for="(item, index) in justifications" :key="index" as="button">
-                          {{ item.name }}
-                        </DropdownLink>
-                      </template>
-                    </Dropdown> -->
-              </td>
-            </tr>
+            <template v-for="(attendance, index) in processedAttendances" :key="attendance.id">
+              <tr v-if="!attendance.incident"
+                class="text-gray-600 text-center">
+                <th class="py-2 text-left mt-3 text-sm">
+                  <span class="ml-3 font-bold"> {{ attendance.date?.formatted }} </span>
+                </th>
+                <td class="px-6 text-xs py-2">
+                  <el-tooltip v-if="attendance.late" :content="'Retardo de ' + attendance.late + ' minutos' " placement="top">
+                  <input v-model="attendance.check_in" type="time"
+                    class="bg-transparent text-sm rounded-md border-gray-400 text-amber-600">
+                </el-tooltip>
+                <input v-else v-model="attendance.check_in" type="time"
+                    class="bg-transparent text-sm rounded-md border-gray-400">
+                </td>
+                <td class="px-6 text-xs py-2">
+                  <input v-model="attendance.start_break" type="time"
+                    class="bg-transparent text-sm rounded-md border-gray-400">
+                </td>
+                <td class="px-6 text-xs py-2">
+                  <input v-model="attendance.end_break" type="time"
+                    class="bg-transparent text-sm rounded-md border-gray-400">
+                </td>
+                <td class="px-6 text-xs py-2">
+                  <input v-model="attendance.check_out" type="time"
+                    class="bg-transparent text-sm rounded-md border-gray-400">
+                </td>
+                <td v-if="attendance.total_break_time" class="px-6 text-xs py-2 w-32">
+                  {{ attendance.total_break_time }}
+                </td>
+                <td v-else class="px-6 text-xs py-2 w-32">
+                  <i class="fa-solid fa-minus"></i>
+                </td>
+                <td v-if="attendance.total_worked_time" class="px-6 text-xs py-2 w-32">
+                  {{ attendance.total_worked_time }}
+                </td>
+                <td v-else class="px-6 text-xs py-2 w-32">
+                  <i class="fa-solid fa-minus"></i>
+                </td>
+                <td class="w-11">
+                  <el-dropdown v-if="!pageLoading" trigger="click" @command="handleCommand">
+                    <span class="w-6 h-6 rounded-full hover:bg-[#CCCCCC] cursor-pointer flex items-center justify-center">
+                      <i class="fa-solid fa-ellipsis-vertical text-primary"></i>
+                    </span>
+                    <template #dropdown>
+                      <el-dropdown-menu>
+                        <el-dropdown-item v-if="attendance.late" :command="'late-' + attendance.id">
+                          Quitar retardo</el-dropdown-item>
+                          <el-dropdown-item v-else :command="'late-' + attendance.id">
+                          Poner retardo</el-dropdown-item>
+                        <el-dropdown-item v-if="!attendance.extras_enabled" :command="'extras-' + attendance.id">
+                          Activar extras dobles</el-dropdown-item>
+                        <el-dropdown-item v-else :command="'extras-' + attendance.id">
+                          Desactivar extras dobles</el-dropdown-item>
+                        <el-dropdown-item v-for="(item, index1) in justifications" :key="index1"
+                          :command="index1 + '-' + attendance.id">
+                          {{ item.name }}</el-dropdown-item>
+                      </el-dropdown-menu>
+                    </template>
+                  </el-dropdown>
+                </td>
+              </tr>
+              <tr v-else
+                class="text-gray-600 text-center">
+                <th class="py-2 text-left mt-3 text-sm">
+                  <span class="ml-3 font-bold"> {{ attendance.date?.formatted }} </span>
+                </th>
+                <td class="px-6 py-2" colspan="4">
+                  <p class="text-lg rounded-xl py-2" :class="'bg-'+attendance.incident.additionals.color+'-100 text-'+attendance.incident.additionals.color+'-600'">{{ attendance.incident.name }}</p>
+                </td>
+                <td class="px-6 text-xs py-2 w-32">
+                  <i class="fa-solid fa-minus"></i>
+                </td>
+                <td class="px-6 text-xs py-2 w-32">
+                  <i class="fa-solid fa-minus"></i>
+                </td>
+                <td class="w-11">
+                  <el-dropdown v-if="!pageLoading" trigger="click" @command="handleCommand">
+                    <span class="w-6 h-6 rounded-full hover:bg-[#CCCCCC] cursor-pointer flex items-center justify-center">
+                      <i class="fa-solid fa-ellipsis-vertical text-primary"></i>
+                    </span>
+                    <template #dropdown>
+                      <el-dropdown-menu>
+                        <el-dropdown-item :command="'attendance-' + attendance.id">
+                            Poner asistencia</el-dropdown-item>
+                        <template v-for="(item, index1) in justifications" :key="index1">
+                          <el-dropdown-item v-if="item.id !== attendance.incident.id"
+                            :command="index1 + '-' + attendance.id">
+                            {{ item.name }}</el-dropdown-item>
+                        </template>
+                      </el-dropdown-menu>
+                    </template>
+                  </el-dropdown>
+                </td>
+              </tr>
+            </template>
           </tbody>
         </table>
         <div v-if="loading" class="flex justify-center items-center pt-10">
@@ -102,16 +130,6 @@
         <CancelButton @click="this.$emit(closeIncidentTable)">Cancelar</CancelButton>
         <PrimaryButton class="ml-3">Guardar</PrimaryButton>
       </div>
-
-      <!-- <div class="flex space-x-4 mt-9 border-b-2 border-[#9a9a9a]">
-                <span class="text-primary">Día</span>
-                <span class="text-primary">Entrada</span>
-                <span class="text-primary">Inicio break</span>
-                <span class="text-primary">Fin break</span>
-                <span class="text-primary">Salida</span>
-                <span class="text-primary">Hrs break</span>
-                <span class="text-primary">Hrs total</span>
-            </div> -->
     </div>
   </div>
 </template>
@@ -127,6 +145,7 @@ export default {
     return {
       processedAttendances: [],
       loading: false,
+      pageLoading: false,
     }
   },
   props: {
@@ -153,10 +172,10 @@ export default {
       const commandName = command.split('-')[0];
       const rowId = command.split('-')[1];
 
-      if (commandName == 'clone') {
-        this.clone(rowId);
-      } else if (commandName == 'make_so') {
-        console.log('SO');
+      if (commandName == 'late') {
+        this.handleLate(rowId);
+      } else if (commandName == 'extras') {
+        this.handleExtras(rowId);
       } else {
         this.$inertia.get(route('catalog-products.' + commandName, rowId));
       }
@@ -176,6 +195,49 @@ export default {
         console.log(error);
       } finally {
         this.loading = false;
+      }
+    },
+    async handleLate(payrollUserId) {
+      try {
+        this.pageLoading = true;
+        const response = await axios.post(route('payrolls.handle-late'), {
+          payroll_user_id: payrollUserId,
+        });
+
+        if (response.status === 200) {
+          console.log(response.data.late);
+          this.processedAttendances.find(item => item.id == payrollUserId).late = response.data.late;
+          this.$notify({
+                        title: 'Éxito',
+                        message: 'Retardo cambiado',
+                        type: 'success'
+                    });
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.pageLoading = false;
+      }
+    },
+    async handleExtras(payrollUserId) {
+      try {
+        this.pageLoading = true;
+        const response = await axios.post(route('payrolls.handle-extras'), {
+          payroll_user_id: payrollUserId,
+        });
+
+        if (response.status === 200) {
+          this.processedAttendances.find(item => item.id == payrollUserId).extras_enabled = response.data.extras_enabled;
+          this.$notify({
+                        title: 'Éxito',
+                        message: 'Extras cambiado',
+                        type: 'success'
+                    });
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.pageLoading = false;
       }
     }
   },

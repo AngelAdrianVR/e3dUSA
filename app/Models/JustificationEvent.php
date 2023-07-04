@@ -13,6 +13,11 @@ class JustificationEvent extends Model
     protected $fillable = [
         'name',
         'description',
+        'additionals',
+    ];
+
+    protected $casts = [
+        'additionals' => 'array'
     ];
 
     // relationships

@@ -60,22 +60,57 @@ class PayrollController extends Controller
     {
         //
     }
+    
+    public function handleLate(Request $request)
+    {
+        $payroll_user = PayrollUser::find($request->payroll_user_id);
+        if ($payroll_user->late)
+            $payroll_user->late = 0;
+        else 
+            $payroll_user->late = 1;
+
+        $payroll_user->save();
+
+        return response()->json(['late' => $payroll_user->late]);
+    }
+
+    public function handleExtras(Request $request)
+    {
+        $payroll_user = PayrollUser::find($request->payroll_user_id);
+        if ($payroll_user->extras_enabled)
+            $payroll_user->extras_enabled = 0;
+        else 
+            $payroll_user->extras_enabled = 1;
+
+        $payroll_user->save();
+
+        return response()->json(['extras_enabled' => $payroll_user->extras_enabled]);
+    }
 
     public function getProcessedAttendances(Request $request)
     {
-        $payroll = Payroll::find($request->payroll_id);
+        $payroll = Payroll::findOrFail($request->payroll_id);
         $attendances = PayrollUserResource::collection(PayrollUser::where('user_id', $request->user_id)
             ->where('payroll_id', $request->payroll_id)
             ->oldest('date')
             ->get());
+        $user = User::find($request->user_id);
 
         $processed = [];
         for ($i=0; $i < 7; $i++) { 
-            $current = $attendances->firstWhere('date', $payroll->start_date->addDays($i));
+            $current_date = $payroll->start_date->addDays($i);
+            $current = $attendances->firstWhere('date', $current_date);
             if ($current) {
                 $processed[] = $current;
             } else {
-                $processed[] = 'FALTA';
+                $payroll_user = new PayrollUser(['date' => $current_date->toDateString()]);
+                if ($user->employee_properties['work_days'][$current_date->dayOfWeek]['check_in'] == 0) {
+                    $payroll_user->justification_event_id = 6;
+                    
+                } else {
+                    $payroll_user->justification_event_id = 5;
+                }
+                $processed[] = PayrollUserResource::make($payroll_user);
             }
         }
 

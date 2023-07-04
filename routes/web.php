@@ -81,6 +81,8 @@ Route::resource('purchases', PurchaseController::class)->middleware('auth');
 
 // ------- Nóminas(Payrolls Routes)  ---------
 Route::post('payrolls/processed-attendances', [PayrollController::class, 'getProcessedAttendances'])->middleware('auth')->name('payrolls.processed-attendances');
+Route::post('payrolls/handle-late', [PayrollController::class, 'handleLate'])->middleware('auth')->name('payrolls.handle-late');
+Route::post('payrolls/handle-extras', [PayrollController::class, 'handleExtras'])->middleware('auth')->name('payrolls.handle-extras');
 
 // ------- Raw Material routes  ---------
 Route::resource('raw-materials', RawMaterialController::class)->middleware('auth');

@@ -48,6 +48,11 @@ class PayrollUser extends Pivot
          return $this->belongsTo(Payroll::class);
      }
 
+     public function justificationEvent() :BelongsTo
+     {
+         return $this->belongsTo(JustificationEvent::class);
+     }
+
     //  methods
      public function totalBreakTime()
      {
