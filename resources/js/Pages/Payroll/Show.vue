@@ -14,23 +14,29 @@
           </el-select>
         </div>
 
-        <div class="flex justify-end items-center">
-          <p class="lg:mr-60">
+        <div class="flex justify-center items-center">
+          <p class="lg:mr-2">
             <strong class="mr-4">Nómina semanal {{ currentPayroll?.week }}</strong>
             {{ currentPayroll?.start_date }} - {{ currentPayroll?.end_date }}
           </p>
+          <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+            title="Seguro que deseas eliminar?" @confirm="deleteIncident">
+            <template #reference>
+              <i class="fa-regular fa-trash-can text-red-600 hover:text-red-500 ml-3 cursor-pointer"></i>
+            </template>
+          </el-popconfirm>
           <div class="flex items-center">
-            <ThirthButton @click="incidentModal = true" class="ml-9">
+            <!-- <ThirthButton @click="incidentModal = true" class="ml-9">
               Registrar incidencia
-            </ThirthButton>
-            <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+            </ThirthButton> -->
+            <!-- <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
               title="Seguro que deseas eliminar?" @confirm="deleteIncident">
               <template #reference>
                 <el-tooltip content="Eliminar nómina" placement="top">
                   <i class="fa-regular fa-trash-can text-red-600 hover:text-red-500 ml-3 cursor-pointer"></i>
                 </el-tooltip>
               </template>
-            </el-popconfirm>
+            </el-popconfirm> -->
           </div>
         </div>
       </div>
@@ -85,10 +91,21 @@
           </el-select>
         </div>
         <div v-if="user_selected" class="mt-5">
-          <IncidentTable @closeIncidentTable="console.log('sdoifh')" :justifications="justifications" :user="users.find(item => item.id == user_selected)" :payrollId="selectedPayroll" />
+          <IncidentTable @closeIncidentTable="user_selected = null" :justifications="justifications"
+            :user="users.find(item => item.id == user_selected)" :payrollId="selectedPayroll" />
         </div>
       </div>
       <!-- -------------- Incidents ends----------------------- -->
+
+
+      <!-- -------------- print starts----------------------- -->
+      <div v-else>
+        <template v-for="(user_id, index) in Object.keys(this.payroll_users)" :key="index">
+          <payrollTemplate :user="users.find(item => item.id == user_id)" :payrollId="selectedPayroll" />
+        </template>
+      </div>
+      <!-- -------------- print ends----------------------- -->
+
 
       <!-- -------------- IncidentModal starts----------------------- -->
       <Modal :show="incidentModal" @close="incidentModal = false">
@@ -123,12 +140,12 @@
           </div>
           <div class="flex justify-center">
             <IconInput v-model="form.days" inputPlaceholder="Total" inputType="text">
-              
+
             </IconInput>
             <InputError :message="form.errors.days" />
 
             <IconInput v-model="form.hours" inputPlaceholder="Horas" inputType="text">
-              
+
             </IconInput>
             <InputError :message="form.errors.hours" />
           </div>
@@ -153,6 +170,7 @@ import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import ThirthButton from "@/Components/MyComponents/ThirthButton.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import IncidentTable from "@/Components/MyComponents/IncidentTable.vue";
+import payrollTemplate from "@/Components/MyComponents/payrollTemplate.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import Modal from "@/Components/Modal.vue";
 import Checkbox from "@/Components/Checkbox.vue";
@@ -179,29 +197,7 @@ export default {
       selectedPayroll: '',
       currentCatalogProduct: null,
       users_payroll_filtered_id: [],
-
-      incidents: [
-        {
-          label: "Permiso sin goce",
-          value: "PSG",
-        },
-        {
-          label: "Permiso con goce",
-          value: "PCG",
-        },
-        {
-          label: "Vacaciones",
-          value: "V",
-        },
-        {
-          label: "Falta justificada",
-          value: "FJ",
-        },
-        {
-          label: "Falta injustificada",
-          value: "FI",
-        },
-      ],
+      processedAttendances: [],
     };
   },
   components: {
@@ -215,16 +211,35 @@ export default {
     IconInput,
     Checkbox,
     IncidentTable,
+    payrollTemplate,
   },
   props: {
     payroll: Object,
     payrolls: Object,
     users: Array,
+    payroll_users: Object,
     justifications: Array,
   },
   methods: {
     deleteIncident() {
       console.log("Elimidado");
+    },
+    async getAttendances(user_id) {
+      try {
+        this.loading = true;
+        const response = await axios.post(route('payrolls.processed-attendances'), {
+          user_id: user_id,
+          payroll_id: this.payroll.data.id
+        });
+
+        if (response.status === 200) {
+          this.processedAttendances = response.data.items;
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.loading = false;
+      }
     },
   },
   watch: {
@@ -234,6 +249,11 @@ export default {
   },
   mounted() {
     this.selectedPayroll = this.payroll.data.id;
+
+    // // get processed payrolls for each user
+    // Object.keys(this.payroll_users).forEach(userId => {
+    //   this.getAttendances(userId);
+    // });
   },
   computed: {},
 };

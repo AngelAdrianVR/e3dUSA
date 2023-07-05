@@ -131,8 +131,8 @@
         </div>
       </div>
       <div class="mt-6 text-right">
-        <CancelButton @click="this.$emit(closeIncidentTable)">Cancelar</CancelButton>
-        <PrimaryButton class="ml-3">Guardar</PrimaryButton>
+        <CancelButton @click="this.$emit('closeIncidentTable')">Cancelar</CancelButton>
+        <PrimaryButton @click="updateAttendances" class="ml-3">Guardar</PrimaryButton>
       </div>
     </div>
   </div>
@@ -152,6 +152,7 @@ export default {
       pageLoading: false,
     }
   },
+  emits: ['closeIncidentTable'],
   props: {
     justifications: Array,
     user: Number,
@@ -188,9 +189,9 @@ export default {
         this.handleIncidents(rowId, commandName);
       }
     },
-    async getAttendances() {
+    async getAttendances(loadingState = true) {
       try {
-        this.loading = true;
+        this.loading = loadingState;
         const response = await axios.post(route('payrolls.processed-attendances'), {
           user_id: this.user.id,
           payroll_id: this.payrollId
@@ -287,6 +288,27 @@ export default {
           this.$notify({
             title: 'Éxito',
             message: 'Asistencia registrada',
+            type: 'success'
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.pageLoading = false;
+      }
+    },
+    async updateAttendances() {
+      try {
+        this.pageLoading = true;
+        const response = await axios.post(route('payrolls.update-attendances'), {
+          attendances: this.processedAttendances,
+        });
+
+        if (response.status === 200) {
+          this.getAttendances(false);
+          this.$notify({
+            title: 'Éxito',
+            message: response.data.message,
             type: 'success'
           });
         }

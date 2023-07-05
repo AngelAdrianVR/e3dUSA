@@ -39,8 +39,9 @@ class PayrollController extends Controller
         $users = User::all();
         $payrolls = PayrollResource::collection(Payroll::with('users')->get());
         $justifications = JustificationEvent::all();
+        $payroll_users = PayrollUser::where('payroll_id', $payroll_id)->get(['user_id', 'id'])->groupBy('user_id');
 
-        return inertia('Payroll/Show', compact('payroll', 'users', 'payrolls', 'justifications'));
+        return inertia('Payroll/Show', compact('payroll', 'users', 'payrolls', 'justifications', 'payroll_users'));
     }
 
 
@@ -64,10 +65,13 @@ class PayrollController extends Controller
     public function handleLate(Request $request)
     {
         $payroll_user = PayrollUser::find($request->payroll_user_id);
-        if ($payroll_user->late)
+        if ($payroll_user->late) {
             $payroll_user->late = 0;
-        else
-            $payroll_user->late = 1;
+        }
+        else {
+            $payroll_user->late = $payroll_user->getLateTime();
+
+        }
 
         $payroll_user->save();
 
@@ -109,6 +113,35 @@ class PayrollController extends Controller
         $payroll_user->save();
 
         return response()->json(['item' => PayrollUserResource::make($payroll_user)]);
+    }
+
+    public function updateAttendances(Request $request)
+    {
+
+        foreach ($request->attendances as $attendance) {
+            $payroll_user = PayrollUser::find($attendance['id']);
+
+            if ($payroll_user) {
+                $payroll_user->update([
+                    'check_in' => $attendance['check_in'],
+                    'start_break' => $attendance['start_break'],
+                    'end_break' => $attendance['end_break'],
+                    'check_out' => $attendance['check_out'],
+                ]);
+    
+                $payroll_user->late = $payroll_user->getLateTime();
+                $payroll_user->save();
+            }
+        }
+
+        return response()->json(['message' => 'Asistencias actualizadas']);
+    }
+
+    public function getPayroll(Request $request)
+    {
+        $payroll = PayrollResource::make(Payroll::find($request->payroll_id));
+
+        return response()->json(['item' => $payroll]);
     }
 
     public function getProcessedAttendances(Request $request)
