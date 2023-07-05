@@ -15,7 +15,7 @@ class Maintenance extends Model
         'problems',
         'actions',
         'cost',
-        'manteinance_type_id',
+        'maintenance_type_id',
         'responsible',
         'machine_id',
     ];

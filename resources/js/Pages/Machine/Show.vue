@@ -208,7 +208,7 @@
                     @click="openMaintenanceModal(maintenance, index)"
                     class="text-center pb-3"
                   >
-                    {{ maintenance.manteinance_type_id }}
+                    {{ maintenance.maintenance_type_id }}
                   </td>
                   <td
                     @click="openMaintenanceModal(maintenance, index)"
@@ -364,7 +364,7 @@
               <div class="flex flex-col pb-7">
                 <p class="text-primary">Tipo de mantenimiento</p>
                 <p class="text-[#9A9A9A]">
-                  {{ selectedMaintenance.manteinance_type_id }}
+                  {{ selectedMaintenance.maintenance_type_id }}
                 </p>
               </div>
               <div class="flex flex-col pb-7">
@@ -489,7 +489,7 @@
           </section>
    <!-- --------------------------- sparepartmodal ends ------------------------------------ -->
 
-            <div class="flex justify-end space-x-3 py-5">
+            <div class="flex justify-end space-x-3 pt-5 pb-1">
               <Link :href="maintenanceModal ? route('maintenances.edit', selectedMaintenance) : route('spare-parts.edit', selectedSparePart)">
                 <PrimaryButton>Editar</PrimaryButton>
               </Link>

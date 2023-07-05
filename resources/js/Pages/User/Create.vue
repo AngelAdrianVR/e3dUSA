@@ -1,17 +1,17 @@
 <template>
   <div>
-    <AppLayout title="Refacciones - Crear">
+    <AppLayout title="Usuarios - Crear">
       <template #header>
         <div class="flex justify-between">
           <Link
-            :href="route('machines.show', selectedMachine)"
+            :href="route('users.index')"
             class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center"
           >
             <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">
-              Registrar refacción
+              Crear nuevo usuario
             </h2>
           </div>
         </div>
@@ -22,13 +22,14 @@
         <div
           class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4"
         >
+        <div class="md:grid grid-cols-2 gap-3">
         <div>
             <IconInput
               v-model="form.name"
-              inputPlaceholder="Nombre *"
+              inputPlaceholder="Nombre completo *"
               inputType="text"
             >
-              <el-tooltip content="Nombre de refacción" placement="top">
+              <el-tooltip content="Nombre completo" placement="top">
                 A
               </el-tooltip>
             </IconInput>
@@ -36,79 +37,27 @@
           </div>
         <div>
             <IconInput
-              v-model="form.supplier"
-              inputPlaceholder="Proveedor"
+              v-model="form.email"
+              inputPlaceholder="Correo electrónico"
               inputType="text"
             >
-              <el-tooltip content="Proveedor" placement="top">
-                 <i class="fa-solid fa-user"></i>
+              <el-tooltip content="Correo electrónico" placement="top">
+                 <i class="fa-solid fa-at"></i>
               </el-tooltip>
             </IconInput>
-            <InputError :message="form.errors.supplier" />
+            <InputError :message="form.errors.email" />
           </div>
-          <div>
-            <IconInput
-              v-model="form.quantity"
-              inputPlaceholder="Cantidad *"
-              inputType="number"
-            >
-              <el-tooltip content="Cantidad de refacciones en stock" placement="top">
-                123
-              </el-tooltip>
-            </IconInput>
-            <InputError :message="form.errors.quantity" />
-          </div>
-          <div>
-            <IconInput
-              v-model="form.location"
-              inputPlaceholder="Ubicación *"
-              inputType="text"
-            >
-              <el-tooltip content="Ubicación" placement="top">
-                 <i class="fa-solid fa-map-pin"></i>
-              </el-tooltip>
-            </IconInput>
-            <InputError :message="form.errors.location" />
-          </div>
-          <div>
-            <IconInput
-              v-model="form.cost"
-              inputPlaceholder="Costo *"
-              inputType="number"
-            >
-              <el-tooltip content="Costo unitario" placement="top">
-                <i class="fa-solid fa-sack-dollar"></i>
-              </el-tooltip>
-            </IconInput>
-            <InputError :message="form.errors.cost" />
-          </div>
-            <div class="flex col-span-full">
-              <el-tooltip
-                content="Descripción de la refacción"
-                placement="top"
-              >
-                <span
-                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
-                >
-                  ...
-                </span>
-              </el-tooltip>
-              <textarea
-                v-model="form.description"
-                class="textarea"
-                autocomplete="off"
-                placeholder="Descripción"
-              ></textarea>
-              <InputError :message="form.errors.description" />
-            </div>
+        </div>
+
+
 
           <div class="col-span-full">
-            <label class="text-[#747474]">Imágenes de Refacción</label>
+            <label class="text-[#747474]">Imágenes de perfil</label>
             <div class="flex items-center">
               <span
                 class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9"
               >
-                <el-tooltip content="Imágenes de evidencia " placement="top">
+                <el-tooltip content="Imágen de perfil " placement="top">
                   <i class="fa-solid fa-file-invoice"></i>
                 </el-tooltip>
               </span>
@@ -155,7 +104,6 @@ export default {
       cost: null,
       location: null,
       description: null,
-      machine_id: this.selectedMachine,
     });
 
     return {
@@ -170,15 +118,14 @@ export default {
     IconInput,
   },
   props: {
-    selectedMachine: Number,
   },
   methods: {
     store() {
-      this.form.post(route("spare-parts.store"), {
+      this.form.post(route("users.store"), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: "Refacción registrada",
+            message: "Usuario creado",
             type: "success",
           });
 

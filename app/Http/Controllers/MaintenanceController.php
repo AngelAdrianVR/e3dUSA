@@ -32,10 +32,10 @@ class MaintenanceController extends Controller
             'machine_id' => 'required|numeric',
         ]);
 
-        Maintenance::create($request->except('maintenance_type_id'),[
+        Maintenance::create($request->except('maintenance_type_id') + [
             'maintenance_type_id' => $request->maintenance_type == 'Preventivo' ? '0' : '1',
         ]);
-
+        
         return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
     }
 
@@ -63,7 +63,7 @@ class MaintenanceController extends Controller
             'machine_id' => 'required|numeric',
         ]);
 
-        $maintenance->update($request->except('maintenance_type_id'),[
+        $maintenance->update($request->except('maintenance_type_id') + [
             'maintenance_type_id' => $request->maintenance_type == 'Preventivo' ? '0' : '1',
         ]);
 
