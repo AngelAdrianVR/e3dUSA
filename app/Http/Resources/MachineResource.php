@@ -29,8 +29,8 @@ class MachineResource extends JsonResource
             'days_next_maintenance' => $this->days_next_maintenance,
             'created_at' => $this->created_at?->isoFormat('YYYY MMM DD'),
             'updated_at' => $this->updated_at?->isoFormat('YYYY MMM DD'),
-            'maintenances' => $this->whenLoaded('maintenances'),
-            'spare_parts' => $this->whenLoaded('spareParts'),
+            'maintenances' => MaintenanceResource::collection($this->whenLoaded('maintenances')),
+            'spare_parts' => SparePartResource::collection($this->whenLoaded('spareParts')),
         ];
     }
 }

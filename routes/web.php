@@ -13,6 +13,7 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -107,6 +108,10 @@ Route::post('storages/massive-delete', [StorageController::class, 'massiveDelete
 
 // ------- Recursos humanos(Payrolls Routes)  ---------
 Route::resource('payrolls', PayrollController::class)->middleware('auth');
+
+
+// ------- Recursos humanos(users routes)  ---------
+Route::resource('users', UserController::class)->middleware('auth');
 
 
 // ------- Machines Routes  ---------

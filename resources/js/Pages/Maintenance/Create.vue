@@ -20,7 +20,7 @@
       <!-- Form -->
       <form @submit.prevent="store">
         <div
-          class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-2"
+          class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4"
         >
           <div style="margin-top: 20px">
             <el-radio-group v-model="form.maintenance_type">

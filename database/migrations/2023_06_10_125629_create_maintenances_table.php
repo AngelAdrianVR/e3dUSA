@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('problems')->nullable();
             $table->text('actions');
             $table->unsignedFloat('cost');
-            $table->enum('manteinance_type_id', [Maintenance::PREVENTIVE, Maintenance::CORRECTIVE]);
+            $table->enum('maintenance_type_id', [Maintenance::PREVENTIVE, Maintenance::CORRECTIVE]);
             $table->string('responsible');
             $table->foreignId('machine_id')->constrained()->cascadeOnDelete();
             $table->timestamps();

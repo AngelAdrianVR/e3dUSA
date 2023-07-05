@@ -136,7 +136,7 @@ export default {
                         },
                         {
                             label: 'Personal',
-                            route: 'dashboard'
+                            route: 'users.index'
                         },
                     ],
                     dropdown: true
