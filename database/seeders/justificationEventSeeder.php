@@ -15,39 +15,39 @@ class justificationEventSeeder extends Seeder
     {
         DB::table('justification_events')->insert(array(
             [
-                'name' => 'Permiso Sin Goce',
+                'name' => 'Permiso sin goce',
                 'description' => 'No se paga el día pero no afecta los bonos',
-                'additionals' => ['color' => 'yellow']
+                // 'additionals' => "{'color': 'yellow'}",
                 'created_at' => now(),
             ],
             [
-                'name' => 'Permiso con Goce',
+                'name' => 'Permiso con goce',
                 'description' => 'Se paga el 100% del día',
-                'additionals' => ['color' => 'yellow']
+                // 'additionals' => "{'color': 'yellow'}",
                 'created_at' => now(),
             ],
             [
                 'name' => 'Vacaciones',
                 'description' => 'Se paga el 100% del día y 25% extra por la prima vacacional',
-                'additionals' => ['color' => 'yellow']
+                // 'additionals' => "{'color': 'yellow'}",
                 'created_at' => now(),
             ],
             [
                 'name' => 'Falta justificada',
                 'description' => 'No se paga el día pero no afecta los bonos. Es requerido algún comprobante que justifique la falta',
-                'additionals' => ['color' => 'red']
+                // 'additionals' => "{'color': 'red'}",
                 'created_at' => now(),
             ],
             [
                 'name' => 'Falta injustificada',
                 'description' => 'No se paga el día y afecta a los bonos',
-                'additionals' => ['color' => 'red']
+                // 'additionals' => "{'color': 'red'}",
                 'created_at' => now(),
             ],
             [
                 'name' => 'Descanso',
                 'description' => 'Marcar el día como descanso',
-                'additionals' => ['color' => 'green']
+                // 'additionals' => json_encode(["color" => "green"]),
                 'created_at' => now(),
             ],
         ));

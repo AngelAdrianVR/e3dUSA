@@ -12,7 +12,7 @@
             <div id="dropdownAction" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 darkk:bg-gray-700 darkk:divide-gray-600">
                 <ul class="py-1 text-sm text-gray-700 darkk:text-gray-200" aria-labelledby="dropdownActionButton">
                     <li>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 darkk:hover:bg-gray-600 darkk:hover:text-white">Reward</a>
+                        <a href="#" class="block px-4 py-2 bg-green-100 text-yellow-600 darkk:hover:bg-gray-600 darkk:hover:text-white">Reward</a>
                     </li>
                     <li>
                         <a href="#" class="block px-4 py-2 hover:bg-gray-100 darkk:hover:bg-gray-600 darkk:hover:text-white">Promote</a>
