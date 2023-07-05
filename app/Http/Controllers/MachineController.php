@@ -2,64 +2,96 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MachineResource;
 use App\Models\Machine;
 use Illuminate\Http\Request;
 
 class MachineController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
-        //
+        $machines = MachineResource::collection(Machine::latest()->get());
+
+        return inertia('Machine/Index', compact('machines'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    
     public function create()
     {
-        //
+        return inertia('Machine/Create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'serial_number' => 'nullable',
+            'wight' => 'nullable|numeric|min:1',
+            'width' => 'nullable|numeric|min:1',
+            'large' => 'nullable|numeric|min:1',
+            'height' => 'nullable|numeric|min:1',
+            'cost' => 'nullable|numeric|min:1',
+            'supplier' => 'nullable|string',
+            'aquisition_date' => 'nullable|date|before:tomorrow',
+            'days_next_maintenance' => 'required|numeric|min:7|max:60',
+        ]);
+
+        Machine::create($request->all());
+
+        return to_route('machines.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
+    
     public function show(Machine $machine)
     {
-        //
+        $machines = MachineResource::collection(Machine::with('maintenances', 'spareParts')->get());
+
+        return inertia('Machine/Show', compact('machine', 'machines'));
+        
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    
     public function edit(Machine $machine)
     {
-        //
+        return inertia('Machine/Edit', compact('machine'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    
     public function update(Request $request, Machine $machine)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'serial_number' => 'nullable',
+            'wight' => 'nullable|numeric|min:1',
+            'width' => 'nullable|numeric|min:1',
+            'large' => 'nullable|numeric|min:1',
+            'height' => 'nullable|numeric|min:1',
+            'cost' => 'nullable|numeric|min:1',
+            'supplier' => 'nullable|string',
+            'aquisition_date' => 'nullable|date|before:tomorrow',
+            'days_next_maintenance' => 'required|numeric|min:7|max:60',
+        ]);
+
+        $machine->update($request->all());
+
+        return to_route('machines.index');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    
     public function destroy(Machine $machine)
     {
         //
+    }
+
+    public function massiveDelete(Request $request)
+    {
+        foreach ($request->machines as $machine) {
+            $machine = Machine::find($machine['id']);
+            $machine?->delete();
+        }
+
+        return response()->json(['message' => 'Maquina(s) eliminada(s)']);
     }
 }

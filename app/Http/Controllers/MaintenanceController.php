@@ -2,64 +2,78 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Machine;
 use App\Models\Maintenance;
 use Illuminate\Http\Request;
 
 class MaintenanceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    
+    public function create($selectedMachine)
     {
-        //
+        return inertia('Maintenance/Create', compact('selectedMachine'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'maintenance_type' => 'required',
+            'problems' => $request->maintenance_type =='Correctivo' ? 'required' : 'nullable' . '|string',
+            'actions' => 'required|string',
+            'cost' => 'required|numeric|min:0',
+            'responsible' => 'required|string',
+            'machine_id' => 'required|numeric',
+        ]);
+
+        Maintenance::create($request->except('maintenance_type_id') + [
+            'maintenance_type_id' => $request->maintenance_type == 'Preventivo' ? '0' : '1',
+        ]);
+        
+        return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
     }
 
-    /**
-     * Display the specified resource.
-     */
+    
     public function show(Maintenance $maintenance)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    
     public function edit(Maintenance $maintenance)
     {
-        //
+        return inertia('Maintenance/Edit', compact('maintenance'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    
     public function update(Request $request, Maintenance $maintenance)
     {
-        //
+        $request->validate([
+            'maintenance_type' => 'required',
+            'problems' => $request->maintenance_type =='Correctivo' ? 'required' : 'nullable' . '|string',
+            'actions' => 'required|string',
+            'cost' => 'required|numeric|min:0',
+            'responsible' => 'required|string',
+            'machine_id' => 'required|numeric',
+        ]);
+
+        $maintenance->update($request->except('maintenance_type_id') + [
+            'maintenance_type_id' => $request->maintenance_type == 'Preventivo' ? '0' : '1',
+        ]);
+
+        return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    
     public function destroy(Maintenance $maintenance)
     {
-        //
+        $maintenance->delete();
+
     }
 }

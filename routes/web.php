@@ -4,13 +4,16 @@ use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\MachineController;
+use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
-use App\Models\CatalogProduct;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -108,6 +111,24 @@ Route::post('storages/massive-delete', [StorageController::class, 'massiveDelete
 // ------- Recursos humanos(Payrolls Routes)  ---------
 Route::resource('payrolls', PayrollController::class)->middleware('auth');
 
+
+// ------- Recursos humanos(users routes)  ---------
+Route::resource('users', UserController::class)->middleware('auth');
+
+
+// ------- Machines Routes  ---------
+Route::resource('machines', MachineController::class)->middleware('auth');
+Route::post('machines/massive-delete', [MachineController::class, 'massiveDelete'])->name('machines.massive-delete');
+
+
+// ------- Maintenances routes  ---------
+Route::resource('maintenances', MaintenanceController::class)->except('create')->middleware('auth');
+Route::get('maintenances/create/{selectedMachine}',[ MaintenanceController::class, 'create'])->name('maintenances.create')->middleware('auth');
+
+
+// ------- Maintenances routes  ---------
+Route::resource('spare-parts', SparePartController::class)->except('create')->middleware('auth');
+Route::get('spare-parts/create/{selectedMachine}',[ SparePartController::class, 'create'])->name('spare-parts.create')->middleware('auth');
 
 
 Route::post('/upload-image',[FileUploadController::class, 'upload'])->name('upload-image');

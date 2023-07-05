@@ -136,7 +136,7 @@ export default {
                         },
                         {
                             label: 'Personal',
-                            route: 'dashboard'
+                            route: 'users.index'
                         },
                     ],
                     dropdown: true
@@ -166,12 +166,11 @@ export default {
                 {
                     label: 'Más',
                     icon: '<i class="fa-solid fa-ellipsis text-xs"></i>',
-                    route: route('dashboard'),
-                    active: route().current('dashboar'),
+                    active: route().current('machines.*'),
                     options: [
                         {
                             label: 'Máquinas',
-                            route: 'dashboard'
+                            route: 'machines.index'
                         },
                         {
                             label: 'Solicitudes de tiempo adicional',
