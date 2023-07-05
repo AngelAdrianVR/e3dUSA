@@ -60,13 +60,13 @@ class PayrollController extends Controller
     {
         //
     }
-    
+
     public function handleLate(Request $request)
     {
         $payroll_user = PayrollUser::find($request->payroll_user_id);
         if ($payroll_user->late)
             $payroll_user->late = 0;
-        else 
+        else
             $payroll_user->late = 1;
 
         $payroll_user->save();
@@ -79,12 +79,36 @@ class PayrollController extends Controller
         $payroll_user = PayrollUser::find($request->payroll_user_id);
         if ($payroll_user->extras_enabled)
             $payroll_user->extras_enabled = 0;
-        else 
+        else
             $payroll_user->extras_enabled = 1;
 
         $payroll_user->save();
 
         return response()->json(['extras_enabled' => $payroll_user->extras_enabled]);
+    }
+
+    public function handleIncidents(Request $request)
+    {
+        $payroll_user = PayrollUser::firstOrCreate(['id' => $request->payroll_user_id]);
+        $payroll_user->justification_event_id = $request->incident_id;
+
+        $payroll_user->save();
+
+        return response()->json(['item' => PayrollUserResource::make($payroll_user)]);
+    }
+
+    public function handleAttendance(Request $request)
+    {
+        $payroll_user = PayrollUser::firstOrCreate(['id' => $request->payroll_user_id], [
+            'date' => $request->date,
+            'user_id' => $request->user_id,
+            'payroll_id' => $request->payroll_id,
+        ]);
+        $payroll_user->justification_event_id = null;
+
+        $payroll_user->save();
+
+        return response()->json(['item' => PayrollUserResource::make($payroll_user)]);
     }
 
     public function getProcessedAttendances(Request $request)
@@ -97,7 +121,7 @@ class PayrollController extends Controller
         $user = User::find($request->user_id);
 
         $processed = [];
-        for ($i=0; $i < 7; $i++) { 
+        for ($i = 0; $i < 7; $i++) {
             $current_date = $payroll->start_date->addDays($i);
             $current = $attendances->firstWhere('date', $current_date);
             if ($current) {
@@ -106,7 +130,6 @@ class PayrollController extends Controller
                 $payroll_user = new PayrollUser(['date' => $current_date->toDateString()]);
                 if ($user->employee_properties['work_days'][$current_date->dayOfWeek]['check_in'] == 0) {
                     $payroll_user->justification_event_id = 6;
-                    
                 } else {
                     $payroll_user->justification_event_id = 5;
                 }

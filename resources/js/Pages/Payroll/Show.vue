@@ -85,7 +85,7 @@
           </el-select>
         </div>
         <div v-if="user_selected" class="mt-5">
-          <IncidentTable @closeIncidentTable="console.log('sdoifh')" :justifications="justifications" :userId="user_selected" :payrollId="selectedPayroll" />
+          <IncidentTable @closeIncidentTable="console.log('sdoifh')" :justifications="justifications" :user="users.find(item => item.id == user_selected)" :payrollId="selectedPayroll" />
         </div>
       </div>
       <!-- -------------- Incidents ends----------------------- -->
