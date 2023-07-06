@@ -62,6 +62,7 @@
                 </td>
                 <td v-if="attendance.total_worked_time" class="px-6 text-xs py-2 w-32">
                   {{ attendance.total_worked_time }}
+                  <span v-if="attendance.extras_enabled" class="text-green-500"> +{{ attendance.extras.formatted }} extras</span>
                 </td>
                 <td v-else class="px-6 text-xs py-2 w-32">
                   <i class="fa-solid fa-minus"></i>
@@ -82,7 +83,7 @@
                         <el-dropdown-item v-else :command="'extras-' + attendance.id">
                           Desactivar extras dobles</el-dropdown-item>
                         <el-dropdown-item v-for="(item, index1) in justifications" :key="item.id"
-                          :command="item.id + '-' + attendance.id">
+                          :command="item.id + '-' + attendance.id + '-' + index">
                           {{ item.name }}</el-dropdown-item>
                       </el-dropdown-menu>
                     </template>
@@ -115,7 +116,7 @@
                           Poner asistencia</el-dropdown-item>
                         <template v-for="(item, index1) in justifications" :key="item.id">
                           <el-dropdown-item v-if="item.id !== attendance.incident.id"
-                            :command="item.id + '-' + attendance.id">
+                            :command="item.id + '-' + attendance.id + '-' + index">
                             {{ item.name }}</el-dropdown-item>
                         </template>
                       </el-dropdown-menu>
@@ -186,7 +187,9 @@ export default {
         const date = this.processedAttendances[index].date.estandard;
         this.handleAttendance(rowId, date);
       } else {
-        this.handleIncidents(rowId, commandName);
+        const index = command.split('-')[2];
+        const date = this.processedAttendances[index].date.estandard;
+        this.handleIncidents(rowId, commandName, date);
       }
     },
     async getAttendances(loadingState = true) {
@@ -249,17 +252,22 @@ export default {
         this.pageLoading = false;
       }
     },
-    async handleIncidents(payrollUserId, incidentId) {
+    async handleIncidents(payrollUserId, incidentId, date) {
       try {
         this.pageLoading = true;
         const response = await axios.post(route('payrolls.handle-incidents'), {
           payroll_user_id: payrollUserId,
           incident_id: incidentId,
+          date: date,
+          payroll_id: this.payrollId,
+          user_id: this.user.id,
         });
 
         if (response.status === 200) {
-          const index = this.processedAttendances.findIndex(item => item.id == payrollUserId);
+          const index = this.processedAttendances.findIndex(item => item.date.estandard == date);
+          console.log('index',index);
           this.processedAttendances[index] = response.data.item;
+          console.log('response',response.data.item);
           this.$notify({
             title: 'Éxito',
             message: 'Incidencia cambiada',

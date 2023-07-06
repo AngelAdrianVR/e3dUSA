@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\PayrollResource;
 use App\Http\Resources\PayrollUserResource;
+use App\Models\Bonus;
 use App\Models\JustificationEvent;
 use App\Models\Payroll;
 use App\Models\PayrollUser;
@@ -93,7 +94,11 @@ class PayrollController extends Controller
 
     public function handleIncidents(Request $request)
     {
-        $payroll_user = PayrollUser::firstOrCreate(['id' => $request->payroll_user_id]);
+        $payroll_user = PayrollUser::firstOrCreate(['id' => $request->payroll_user_id],[
+            'date' => $request->date,
+            'user_id' => $request->user_id,
+            'payroll_id' => $request->payroll_id,
+        ]);
         $payroll_user->justification_event_id = $request->incident_id;
 
         $payroll_user->save();
@@ -144,31 +149,77 @@ class PayrollController extends Controller
         return response()->json(['item' => $payroll]);
     }
 
+    public function getBonuses(Request $request)
+    {
+        $payroll = Payroll::find($request->payroll_id);
+        $processed = collect($payroll->getProcessedAttendances($request->user_id));
+        $user = User::find($request->user_id);
+        
+        
+        // bonuses
+        $bonuses = [];
+        $user_bonuses = $user->employee_properties['bonuses'];
+        foreach ($user_bonuses as $user_bonus_id) {
+            $current_bonus = Bonus::find($user_bonus_id);
+            $amount = $user->employee_properties['hours_per_week'] >= 48 
+             ? $current_bonus->full_time
+             : $current_bonus->half_time;
+
+           
+            if ($user_bonus_id === 1) { // Asistencia
+                $absent = $processed->first(fn ($item) => $item->justification_event_id === 5);
+                if ($absent) {
+                    $amount = 0;
+                }
+            } elseif ($user_bonus_id === 2) { //Puntualidad
+                $days_late = $processed->filter(fn ($item) => $item->late)->count();
+                $absents = $processed->filter(fn ($item) => $item->justification_event_id === 5)->count();
+                $discount = $amount / 6;
+                $amount -= ($days_late + $absents) * $discount;
+            } elseif ($user_bonus_id === 3) { //productividad
+                $absents = $processed->filter(fn ($item) => $item->justification_event_id === 5)->count();
+                $discount = $amount / 6;
+                $amount -= $absents * $discount;
+            } elseif ($user_bonus_id === 4) { //Prima dominical
+                if (is_null($processed[2]->check_out)) {
+                    $amount = 0;
+                }
+            } elseif ($user_bonus_id === 5) { //Puntualidad jefe produccion
+                $days_late = $processed->filter(fn ($item) => $item->late)->count();
+                $absents = $processed->filter(fn ($item) => $item->justification_event_id === 5)->count();
+                $discount = $amount / 6;
+                $amount -= ($days_late + $absents) * $discount;
+            } 
+
+            $bonuses[] = ['name' => $current_bonus->name, 'amount' => ['number_format' => number_format($amount, 2), 'raw' => $amount]];
+        }
+
+
+        return response()->json(['item' => $bonuses]);
+    }
+
+    public function getExtras(Request $request)
+    {
+        $payroll = Payroll::find($request->payroll_id);
+        $processed = collect($payroll->getProcessedAttendances($request->user_id));
+        $user = User::find($request->user_id);
+
+        $extras = $processed->sum(function ($item){
+            return $item->getExtras()['minutes'];
+        });
+
+        $hours = intval($extras / 60);
+        $minutes = $extras % 60;
+
+        $amount = number_format($user->employee_properties['salary']['hour'] * ($extras / 60), 2);
+
+        return response()->json(['item' => ['formatted' => "{$hours}h {$minutes}m", 'minutes' => $extras, 'amount' => $amount]]);
+    }
+
     public function getProcessedAttendances(Request $request)
     {
         $payroll = Payroll::findOrFail($request->payroll_id);
-        $attendances = PayrollUserResource::collection(PayrollUser::where('user_id', $request->user_id)
-            ->where('payroll_id', $request->payroll_id)
-            ->oldest('date')
-            ->get());
-        $user = User::find($request->user_id);
-
-        $processed = [];
-        for ($i = 0; $i < 7; $i++) {
-            $current_date = $payroll->start_date->addDays($i);
-            $current = $attendances->firstWhere('date', $current_date);
-            if ($current) {
-                $processed[] = $current;
-            } else {
-                $payroll_user = new PayrollUser(['date' => $current_date->toDateString()]);
-                if ($user->employee_properties['work_days'][$current_date->dayOfWeek]['check_in'] == 0) {
-                    $payroll_user->justification_event_id = 6;
-                } else {
-                    $payroll_user->justification_event_id = 5;
-                }
-                $processed[] = PayrollUserResource::make($payroll_user);
-            }
-        }
+        $processed = PayrollUserResource::collection($payroll->getProcessedAttendances($request->user_id));
 
         return response()->json(['items' => $processed]);
     }

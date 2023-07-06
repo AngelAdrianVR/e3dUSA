@@ -36,6 +36,7 @@
                 </td>
                 <td v-if="attendance.total_worked_time" class="px-6 text-xs py-2 w-32">
                   {{ attendance.total_worked_time }}
+                  <span v-if="attendance.extras_enabled" class="text-green-500"> +{{ attendance.extras.formatted }} extras</span>
                 </td>
               </tr>
               <tr v-else class="text-gray-600 text-center border-b border-[#a9a9a9]">
@@ -65,45 +66,30 @@
         {{ payroll?.start_date }} - {{ payroll?.end_date }}
       </p>
       <div class="flex flex-col space-y-2">
-        <p class="flex justify-between">
-          Días a pagar
-          <span>{{ '2' }}</span>
-          <span>{{ '$2,500.00' }}</span>
+        <p class="grid grid-cols-3 gap-x-1">
+          <span>Días a pagar</span>
+          <span class="text-center">{{ getWorkedDays() }}</span>
+          <span>${{ user.employee_properties.salary.day * getWorkedDays() }}</span>
         </p>
-        <p class="flex justify-between">
-          Vacaciones
-          <span>{{ '2' }}</span>
-          <span>{{ '$2,500.00' }}</span>
+        <p v-if="getVacations()" class="grid grid-cols-3 gap-x-1">
+          <span>Vacaciones</span>
+          <span class="text-center">{{ getVacations() }}</span>
+          <span>${{ getVacations() * user.employee_properties.salary.day }}</span>
         </p>
-        <p class="flex justify-between">
-          Asistencia
-          <span>{{ '2' }}</span>
-          <span>{{ '$2,500.00' }}</span>
+        <p v-if="getVacations()" class="grid grid-cols-3 gap-x-1">
+          <span>Prima vacacional</span>
+          <span class="text-center"></span>
+          <span>${{ getVacations() * user.employee_properties.salary.day * 0.25 }}</span>
         </p>
-        <p class="flex justify-between">
-          Días a pagar
-          <span>{{ '2' }}</span>
-          <span>{{ '$2,500.00' }}</span>
+        <p v-for="(bonus, index) in bonuses" :key="index" class="grid grid-cols-3 gap-x-1">
+          <span>{{bonus.name}}</span>
+          <span class="text-center"></span>
+          <span>${{ bonus.amount.number_format }}</span>
         </p>
-        <p class="flex justify-between">
-          Días a pagar
-          <span>{{ '2' }}</span>
-          <span>{{ '$2,500.00' }}</span>
-        </p>
-        <p class="flex justify-between">
-          Días a pagar
-          <span>{{ '2' }}</span>
-          <span>{{ '$2,500.00' }}</span>
-        </p>
-        <p class="flex justify-between">
-          Días a pagar
-          <span>{{ '2' }}</span>
-          <span>{{ '$2,500.00' }}</span>
-        </p>
-        <p class="flex justify-between">
-          Días a pagar
-          <span>{{ '2' }}</span>
-          <span>{{ '$2,500.00' }}</span>
+        <p v-if="extras" class="grid grid-cols-3 gap-x-1">
+          <span>Horas extras</span>
+          <span class="text-center">{{ extras.formatted }}</span>
+          <span>${{ extras.amount }}</span>
         </p>
       </div>
     </div>
@@ -123,6 +109,8 @@ export default {
       pageLoading: false,
       processedAttendances: [],
       payroll: null,
+      bonuses: null,
+      extras: null,
     }
   },
   props: {
@@ -136,9 +124,8 @@ export default {
     DropdownLink,
   },
   methods: {
-    async getAttendances(loadingState = true) {
+    async getAttendances() {
       try {
-        this.loading = loadingState;
         const response = await axios.post(route('payrolls.processed-attendances'), {
           user_id: this.user.id,
           payroll_id: this.payrollId
@@ -149,8 +136,6 @@ export default {
         }
       } catch (error) {
         console.log(error);
-      } finally {
-        this.loading = false;
       }
     },
     async getPayroll() {
@@ -161,17 +146,56 @@ export default {
 
         if (response.status === 200) {
           this.payroll = response.data.item;
-          console.log(this.payroll);
         }
       } catch (error) {
         console.log(error);
-      } finally {
       }
     },
+    async getBonuses() {
+      try {
+        const response = await axios.post(route('payrolls.get-bonuses'), {
+          payroll_id: this.payrollId,
+          user_id: this.user.id
+        });
+
+        if (response.status === 200) {
+          this.bonuses = response.data.item;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async getExtras() {
+      try {
+        const response = await axios.post(route('payrolls.get-extras'), {
+          payroll_id: this.payrollId,
+          user_id: this.user.id
+        });
+
+        if (response.status === 200) {
+          this.extras = response.data.item;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    getVacations() {
+      const vacations = this.processedAttendances.filter(item => item.incident?.id === 3);
+      return vacations.length;
+    },
+    getWorkedDays() {
+      const worked = this.processedAttendances.filter(item => item.incident?.id == 2 || item.incident?.id == 3 || item.incident == null);
+      console.log(worked);
+      return worked.length;
+    }
   },
   mounted() {
+    this.loading = true;
     this.getAttendances();
     this.getPayroll();
+    this.getBonuses();
+    this.getExtras();
+    this.loading = false;
   }
 }
 </script>
