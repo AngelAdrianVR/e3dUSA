@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppLayout title="Órdenes de compra - Crear">
+    <AppLayout title="Órdenes de compra - Edit">
       <template #header>
         <div class="flex justify-between">
           <Link
@@ -11,14 +11,14 @@
           </Link>
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">
-              Crear órden de compra
+             Editar órden de compra
             </h2>
           </div>
         </div>
       </template>
-{{ productSelected }}
+
       <!-- Form -->
-      <form @submit.prevent="store">
+      <form @submit.prevent="update">
         <div
           class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4"
         >
@@ -141,7 +141,7 @@
                     v-for="item in raw_materials"
                     :key="item.id"
                     :label="item.name"
-                    :value="item"
+                    :value="item.name"
                   />
                 </el-select>
               </div>
@@ -211,14 +211,14 @@ import IconInput from "@/Components/MyComponents/IconInput.vue";
 export default {
   data() {
     const form = useForm({
-      notes: null,
-      expected_delivery_date: null,
-      is_iva_included: null,
-      supplier_id: null,
-      contact_id: null,
-      bank_information: null,
+      notes: this.purchase.notes,
+      expected_delivery_date: this.purchase.expected_delivery_date,
+    //   is_iva_included: this.purchase.is_iva_included,
+      supplier_id: this.purchase.supplier_id,
+      contact_id: this.purchase.contact_id,
+      bank_information: this.purchase.bank_information,
       // currentSupplier: null,
-      products: [],
+      products: this.purchase.products,
     });
 
     return {
@@ -241,14 +241,15 @@ export default {
     suppliers: Array,
     raw_materials: Array,
     contacts: Array,
+    purchase: Object,
   },
   methods: {
-    store() {
-      this.form.post(route("purchases.store"), {
+    update() {
+      this.form.put(route("purchases.update"), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: "Órden de compra creada",
+            message: "Órden de compra actualizada",
             type: "success",
           });
 
@@ -259,15 +260,7 @@ export default {
 
     addProduct() {
       let product = {
-        id: this.productSelected.id,
-        product: this.productSelected.name,
-        part_number: this.productSelected.part_number,
-        description: this.productSelected.description,
-        measure_unit: this.productSelected.measure_unit,
-        min_quantity: this.productSelected.min_quantity,
-        max_quantity: this.productSelected.max_quantity,
-        cost: this.productSelected.cost,
-        features: this.productSelected.features,
+        product: this.productSelected,
         quantity: this.form.quantity,
       };
 
