@@ -56,28 +56,25 @@
         </div>
 
         <div v-if="!incidentsTab" class="text-right mr-9 flex items-center">
-          <PrimaryButton>Imprimir</PrimaryButton>
-          <DropdownNoClose align="right" width="60">
-            <template #trigger>
-              <i class="fa-solid fa-filter text-gray-600 text-lg ml-5 cursor-pointer"></i>
-            </template>
-            <template #content>
-              <div class="block px-4 py-2 text-xs text-gray-400 text-center">
-                Por colaborador
-              </div>
-              <div class="flex flex-col">
-                <div v-for="user in users" :key="user.id" class="flex items-center space-x-2 mx-3">
-                  <Checkbox v-model:checked="users_payroll_filtered_id" :name="user.name" :value="user.id" />
-                  <label class="text-gray-600 text-sm" :for="user.name">{{ user.name }}</label>
+          <PrimaryButton @click="printPayrolls" class="mr-5" :disabled="!payrollUsersToShow.length">Imprimir</PrimaryButton>
+          <el-tooltip content="Filtrar nóminas" placement="top">
+            <DropdownNoClose align="right" width="60">
+              <template #trigger>
+                <i class="fa-solid fa-filter text-gray-600 text-lg cursor-pointer"></i>
+              </template>
+              <template #content>
+                <div class="block px-4 py-2 text-xs text-gray-400 text-center">
+                  Por colaborador
                 </div>
-                <footer class="grid grid-cols-2 border-t-2 border-[#cccccc] mt-2 py-1">
-                  <span @click="console.log('Aplicar filtro')"
-                    class="text-primary text-center border-r-2 border-[#cccccc] cursor-pointer">Aplicar</span>
-                  <span class="text-center cursor-pointer">cancelar</span>
-                </footer>
-              </div>
-            </template>
-          </DropdownNoClose>
+                <div class="flex flex-col">
+                  <div v-for="user in users" :key="user.id" class="flex items-center space-x-2 mx-3">
+                    <Checkbox v-model:checked="payrollUsersToShow" :id="user.name" :name="user.name" :value="user.id" />
+                    <label class="text-gray-600 text-sm" :for="user.name">{{ user.name }}</label>
+                  </div>
+                </div>
+              </template>
+            </DropdownNoClose>
+          </el-tooltip>
         </div>
       </div>
       <!-- ------------- tabs section ends ------------- -->
@@ -100,7 +97,7 @@
 
       <!-- -------------- print starts----------------------- -->
       <div v-else>
-        <template v-for="(user_id, index) in Object.keys(this.payroll_users)" :key="index">
+        <template v-for="(user_id, index) in payrollUsersToShow" :key="index">
           <payrollTemplate :user="users.find(item => item.id == user_id)" :payrollId="selectedPayroll" />
         </template>
       </div>
@@ -198,6 +195,7 @@ export default {
       currentCatalogProduct: null,
       users_payroll_filtered_id: [],
       processedAttendances: [],
+      payrollUsersToShow: [],
     };
   },
   components: {
@@ -224,6 +222,12 @@ export default {
     deleteIncident() {
       console.log("Elimidado");
     },
+    printPayrolls() {
+      this.$inertia.post(route('payrolls.print-template'), {
+        users_id_to_show: this.payrollUsersToShow,
+        payroll_id: this.payroll.data.id
+      });
+    },  
     async getAttendances(user_id) {
       try {
         this.loading = true;
@@ -250,10 +254,8 @@ export default {
   mounted() {
     this.selectedPayroll = this.payroll.data.id;
 
-    // // get processed payrolls for each user
-    // Object.keys(this.payroll_users).forEach(userId => {
-    //   this.getAttendances(userId);
-    // });
+    // get processed payrolls for each user
+    this.payrollUsersToShow = Object.keys(this.payroll_users);
   },
   computed: {},
 };

@@ -63,6 +63,16 @@ class PayrollController extends Controller
         //
     }
 
+    public function printTemplate(Request $request)
+    {
+        $users = User::all();
+        $payroll_id = $request->payroll_id;
+        $users_id_to_show = $request->users_id_to_show;
+
+        return inertia('Payroll/PrintTemplate', compact('users', 'payroll_id', 'users_id_to_show'));
+    }
+
+
     public function handleLate(Request $request)
     {
         $payroll_user = PayrollUser::find($request->payroll_user_id);
@@ -211,9 +221,9 @@ class PayrollController extends Controller
         $hours = intval($extras / 60);
         $minutes = $extras % 60;
 
-        $amount = number_format($user->employee_properties['salary']['hour'] * ($extras / 60), 2);
+        $amount = $user->employee_properties['salary']['hour'] * ($extras / 60);
 
-        return response()->json(['item' => ['formatted' => "{$hours}h {$minutes}m", 'minutes' => $extras, 'amount' => $amount]]);
+        return response()->json(['item' => ['formatted' => "{$hours}h {$minutes}m", 'minutes' => $extras, 'amount' => ['number_format' => number_format($amount, 2), 'raw' => $amount]]]);
     }
 
     public function getProcessedAttendances(Request $request)

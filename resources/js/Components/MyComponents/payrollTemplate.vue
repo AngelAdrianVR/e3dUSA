@@ -1,42 +1,44 @@
 <template>
-  <div class="lg:grid grid-cols-3 py-6 px-10">
-    <div class="bg-[#f2f2f2] rounded-lg mx-auto col-span-2 w-5/6">
+  <div v-if="!loading" class="grid grid-cols-4 md:grid-cols-3 lg:py-6 lg:px-10 mb-6 lg:mb-0 text-[10px] md:text-sm">
+    <div class="bg-transparent rounded-lg mx-auto col-span-3 md:col-span-2 w-5/6">
       <div class="flex items-center">
         <i class="fa-solid fa-circle-user mr-3 text-xl"></i>
         <p>{{ user.name }}</p>
       </div>
       <div class="overflow-x-auto shadow-md mt-3 rounded-lg">
         <table class="items-center w-full bg-transparent">
-          <thead class="text-primary bg-[#e6e6e6] text-[12px] px-3">
+          <thead class="text-primary bg-[#e6e6e6] px-3">
             <tr class="rounded-tl-lg rounded-tr-lg">
-              <th class="rounded-tl-lg">Día</th>
+              <th class="rounded-tl-lg w-48">Día</th>
               <th>Entrada</th>
               <th>Salida</th>
               <th>Break</th>
-              <th class="rounded-tr-lg py-2">Hrs x dia</th>
+              <th class="rounded-tr-lg py-px lg:py-2">Hrs x dia</th>
             </tr>
           </thead>
           <tbody>
             <template v-for="(attendance, index) in processedAttendances" :key="attendance.id">
               <tr v-if="!attendance.incident" class="text-gray-600 text-center border-b border-[#a9a9a9]">
-                <th class="py-2 text-left mt-3 text-sm">
-                  <span class="ml-3 font-bold"> {{ attendance.date?.formatted }} </span>
+                <th class="py-px lg:py-2 text-left text-sm">
+                  <span class="ml-3 font-bold text-xs"> {{ attendance.date?.formatted }} </span>
                 </th>
-                <td class="px-6 text-xs py-2">
-                  <p class="bg-transparent text-sm" :class="attendance.late ? 'text-amber-600' : ''">{{ attendance.check_in }}</p>
+                <td class="px-6 text-xs py-px lg:py-2">
+                  <p class="bg-transparent text-sm" :class="attendance.late ? 'text-amber-600' : ''">{{
+                    attendance.check_in }}</p>
                 </td>
-                <td class="px-6 text-xs py-2">
+                <td class="px-6 text-xs py-px lg:py-2">
                   <p class="bg-transparent text-sm">{{ attendance.check_out }}</p>
                 </td>
-                <td v-if="attendance.total_break_time" class="px-6 text-xs py-2 w-32">
+                <td v-if="attendance.total_break_time" class="px-6 text-xs py-px lg:py-2 w-32">
                   {{ attendance.total_break_time }}
                 </td>
-                <td v-else class="px-6 text-xs py-2 w-32">
+                <td v-else class="px-6 text-xs py-px lg:py-2 w-32">
                   <i class="fa-solid fa-minus"></i>
                 </td>
-                <td v-if="attendance.total_worked_time" class="px-6 text-xs py-2 w-32">
+                <td v-if="attendance.total_worked_time" class="px-6 text-xs py-px lg:py-2 w-32">
                   {{ attendance.total_worked_time }}
-                  <span v-if="attendance.extras_enabled" class="text-green-500"> +{{ attendance.extras.formatted }} extras</span>
+                  <span v-if="attendance.extras_enabled" class="text-green-500"> +{{ attendance.extras.formatted }}
+                    extras</span>
                 </td>
               </tr>
               <tr v-else class="text-gray-600 text-center border-b border-[#a9a9a9]">
@@ -44,16 +46,10 @@
                   <span class="ml-3 font-bold"> {{ attendance.date?.formatted }} </span>
                 </th>
                 <td class="px-6 py-2" colspan="4">
-                  <p class="text-sm rounded-xl py-2"
+                  <p class="text-xs lg:text-sm rounded-xl py-px lg:py-2"
                     :class="'bg-' + attendance.incident.additionals.color + '-100 text-' + attendance.incident.additionals.color + '-600'">
                     {{ attendance.incident.name }}</p>
                 </td>
-                <!-- <td class="px-6 text-xs py-2 w-32">
-                    <i class="fa-solid fa-minus"></i>
-                  </td>
-                  <td class="px-6 text-xs py-2 w-32">
-                    <i class="fa-solid fa-minus"></i>
-                  </td> -->
               </tr>
             </template>
           </tbody>
@@ -62,14 +58,14 @@
     </div>
     <div class="mr-auto">
       <p class="mb-3">
-        <strong class="mr-3"> Semana {{ payroll?.week }} </strong> 
+        <strong class="mr-3"> Semana {{ payroll?.week }} </strong>
         {{ payroll?.start_date }} - {{ payroll?.end_date }}
       </p>
       <div class="flex flex-col space-y-2">
         <p class="grid grid-cols-3 gap-x-1">
           <span>Días a pagar</span>
           <span class="text-center">{{ getWorkedDays() }}</span>
-          <span>${{ user.employee_properties.salary.day * getWorkedDays() }}</span>
+          <span>${{ (user.employee_properties.salary.day * getWorkedDays()).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
         </p>
         <p v-if="getVacations()" class="grid grid-cols-3 gap-x-1">
           <span>Vacaciones</span>
@@ -82,17 +78,29 @@
           <span>${{ getVacations() * user.employee_properties.salary.day * 0.25 }}</span>
         </p>
         <p v-for="(bonus, index) in bonuses" :key="index" class="grid grid-cols-3 gap-x-1">
-          <span>{{bonus.name}}</span>
+          <span>{{ bonus.name }}</span>
           <span class="text-center"></span>
           <span>${{ bonus.amount.number_format }}</span>
         </p>
         <p v-if="extras" class="grid grid-cols-3 gap-x-1">
           <span>Horas extras</span>
           <span class="text-center">{{ extras.formatted }}</span>
-          <span>${{ extras.amount }}</span>
+          <span>${{ extras.amount.number_format }}</span>
+        </p>
+        <p v-if="extras" class="grid grid-cols-3 gap-x-1">
+          <span>Total</span>
+          <span class="text-center"></span>
+          <span>${{ getTotal().toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+        </p> <br>
+        <p class="flex space-x-2">
+        <p>Firma</p>
+        <div class="border-b-2 border-black w-48"></div>
         </p>
       </div>
     </div>
+  </div>
+  <div v-else class="flex justify-center items-center pt-10">
+    <i class="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
   </div>
 </template>
 
@@ -105,8 +113,7 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 export default {
   data() {
     return {
-      loading: false,
-      pageLoading: false,
+      loading: true,
       processedAttendances: [],
       payroll: null,
       bonuses: null,
@@ -125,6 +132,7 @@ export default {
   },
   methods: {
     async getAttendances() {
+      this.loading = true;
       try {
         const response = await axios.post(route('payrolls.processed-attendances'), {
           user_id: this.user.id,
@@ -177,6 +185,8 @@ export default {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        this.loading = false;
       }
     },
     getVacations() {
@@ -184,18 +194,28 @@ export default {
       return vacations.length;
     },
     getWorkedDays() {
-      const worked = this.processedAttendances.filter(item => item.incident?.id == 2 || item.incident?.id == 3 || item.incident == null);
-      console.log(worked);
+      const worked = this.processedAttendances.filter(item => item.incident?.id == 2 || item.incident == null);
       return worked.length;
+    },
+    getTotal() {
+      const dayly_salary = this.user.employee_properties.salary.day;
+      const vacations = this.getVacations() * 1.25 * dayly_salary;
+      const weekSalary = dayly_salary * this.getWorkedDays();
+      const bonuses = this.bonuses.reduce((accumulator, bonus) => {
+        return accumulator + bonus.amount.raw;
+      }, 0);
+
+      return vacations
+            + weekSalary
+            + bonuses
+            + this.extras.amount.raw;
     }
   },
   mounted() {
-    this.loading = true;
     this.getAttendances();
     this.getPayroll();
     this.getBonuses();
     this.getExtras();
-    this.loading = false;
   }
 }
 </script>

@@ -90,6 +90,7 @@ Route::post('payrolls/update-attendances', [PayrollController::class, 'updateAtt
 Route::post('payrolls/get-payroll', [PayrollController::class, 'getPayroll'])->middleware('auth')->name('payrolls.get-payroll');
 Route::post('payrolls/get-bonuses', [PayrollController::class, 'getBonuses'])->middleware('auth')->name('payrolls.get-bonuses');
 Route::post('payrolls/get-extras', [PayrollController::class, 'getExtras'])->middleware('auth')->name('payrolls.get-extras');
+Route::post('payrolls/print-template', [PayrollController::class, 'printTemplate'])->middleware('auth')->name('payrolls.print-template');
 
 // ------- Raw Material routes  ---------
 Route::resource('raw-materials', RawMaterialController::class)->middleware('auth');
