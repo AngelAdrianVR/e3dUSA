@@ -9,7 +9,8 @@ use App\Models\CompanyBranch;
 use App\Models\Sale;
 use Illuminate\Http\Request;
 
-class SaleController extends Controller
+
+class SaleController extends Controller 
 {
 
     public function index()
@@ -56,7 +57,9 @@ class SaleController extends Controller
 
     public function show(Sale $sale)
     {
-        //
+        $sales = SaleResource::collection(Sale::all());
+        
+        return inertia('Sale/Show', compact('sale', 'sales'));
     }
 
 

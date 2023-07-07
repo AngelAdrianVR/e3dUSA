@@ -22,6 +22,8 @@ class Purchase extends Model
         'is_iva_included',
         'user_id',
         'supplier_id',
+        'products',
+        'bank_information',
         'contact_id'
     ];
 
@@ -30,6 +32,8 @@ class Purchase extends Model
         'expected_delivery_date' => 'date',
         'emited_at' => 'datetime',
         'recieved_at' => 'datetime',
+        'products' => 'array',
+        'bank_information' => 'array',
     ];
 
     //relationships

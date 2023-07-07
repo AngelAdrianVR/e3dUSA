@@ -110,12 +110,7 @@
             </template>
           </ol>
 
-          <div class="border-2 border-[#b8b7b7] rounded-lg p-4 relative">
-            <el-tooltip content="Primero agregar un contacto para poder agregar una cuenta bancaria" placement="top">
-              <i
-                class="fa-solid fa-question text-[9px] h-3 w-3 bg-primary-gray rounded-full text-center absolute right-2 top-1"
-              ></i>
-            </el-tooltip>
+          <div class="p-4">
             <div class="rounded-lg p-5">
               <div class="md:grid gap-6 mb-6 grid-cols-2">
                 <div>
@@ -167,7 +162,6 @@
               <SecondaryButton
                 @click="addBank"
                 :disabled="
-                  contacts.length == 0 ||
                   !bank.beneficiary_name ||
                   !bank.accountNumber ||
                   !bank.clabe ||
@@ -186,13 +180,13 @@
 
             <!-- ---------------- contacts starts ----------------- -->
             <el-divider content-position="left">Contactos</el-divider>
-            <!-- <InputError :message="form.errors.contacts" /> -->
+            <InputError :message="form.errors.contacts" />
 
             <ol
-              v-if="contacts.length"
+              v-if="form.contacts.length"
               class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1"
             >
-              <template v-for="(item, index) in contacts" :key="index">
+              <template v-for="(item, index) in form.contacts" :key="index">
                 <li class="flex justify-between items-center">
                   <p class="text-sm">
                     <span class="text-primary">{{ index + 1 }}.</span>
@@ -334,7 +328,6 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
-import { ref } from "vue";
 
 export default {
   data() {
@@ -344,13 +337,13 @@ export default {
       post_code: null,
       phone: null,
       banks: [],
+      contacts: [],
     });
 
     return {
       form,
       editIndex: null,
       editContactIndex: null,
-      contacts: [],
       bank: {
         beneficiary_name: null,
         accountNumber: null,
@@ -407,7 +400,6 @@ export default {
     //banks
     addBank() {
       let bank_info = { ...this.bank };
-      bank_info.contacts = this.contacts;
 
       if (this.editIndex !== null) {
         this.form.banks[this.editIndex] = bank_info;
@@ -418,13 +410,14 @@ export default {
 
       this.resetBankForm();
     },
+
     deleteBank(index) {
       this.form.banks.splice(index, 1);
     },
+
     editBank(index) {
       const bank_info = { ...this.form.banks[index] };
       this.bank = bank_info;
-      this.contacts = bank_info.contacts;
       this.editIndex = index;
     },
     resetBankForm() {
@@ -432,7 +425,6 @@ export default {
       this.bank.accountNumber = null;
       this.bank.clabe = null;
       this.bank.bank_name = null;
-      this.contacts = [];
     },
 
     // contacts
@@ -440,10 +432,10 @@ export default {
       const contact = { ...this.contact };
 
       if (this.editContactIndex !== null) {
-        this.contacts[this.editContactIndex] = contact;
+        this.form.contacts[this.editContactIndex] = contact;
         this.editContactIndex = null;
       } else {
-        this.contacts.push(contact);
+        this.form.contacts.push(contact);
       }
 
       this.contact.name = null;
@@ -453,10 +445,10 @@ export default {
       this.contact.birthdate_month = null;
     },
     deleteContact(index) {
-      this.contacts.splice(index, 1);
+      this.form.contacts.splice(index, 1);
     },
     editContact(index) {
-      const contact = { ...this.contacts[index] };
+      const contact = { ...this.form.contacts[index] };
       this.contact = contact;
       this.editContactIndex = index;
     },
