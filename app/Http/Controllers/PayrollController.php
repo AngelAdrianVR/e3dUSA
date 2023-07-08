@@ -40,9 +40,12 @@ class PayrollController extends Controller
         $payroll = PayrollResource::make(Payroll::find($payroll_id));
         $justifications = JustificationEvent::all();
         $payrolls = PayrollResource::collection(Payroll::with('users')->latest()->get());
-        $users = User::whereHas('payrolls', function($query) use($payroll){
-            $query->where('payrolls.id', $payroll->id);
-        })->get();
+        // $users = User::whereHas('payrolls', function($query) use($payroll){
+        //     $query->where('payrolls.id', $payroll->id);
+        // })->get();
+        $users = UserResource::collection(User::whereHas('payrolls', function($query) use($payroll_id){
+            $query->where('payrolls.id', $payroll_id);
+        })->get());
         $payroll_users = PayrollUser::where('payroll_id', $payroll_id)->get(['user_id', 'id'])->groupBy('user_id');
 
         return inertia('Payroll/Show', compact('payroll', 'users', 'payrolls', 'justifications', 'payroll_users'));
@@ -165,12 +168,12 @@ class PayrollController extends Controller
     public function getPayrollUsers(Request $request)
     {
         $payroll_id = $request->payroll_id;
-        $users = User::whereHas('payrolls', function($query) use($payroll_id){
-            $query->where('payrolls.id', $payroll_id);
-        })->get();
-        // $users = UserResource::collection(User::whereHas('payrolls', function($query) use($payroll_id){
+        // $users = User::whereHas('payrolls', function($query) use($payroll_id){
         //     $query->where('payrolls.id', $payroll_id);
-        // })->get());
+        // })->get();
+        $users = UserResource::collection(User::whereHas('payrolls', function($query) use($payroll_id){
+            $query->where('payrolls.id', $payroll_id);
+        })->get());
         $payroll_users = PayrollUser::where('payroll_id', $payroll_id)->get(['user_id', 'id'])->groupBy('user_id');
 
         return response()->json(compact('users', 'payroll_users'));

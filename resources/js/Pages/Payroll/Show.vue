@@ -74,7 +74,7 @@
                   Por colaborador
                 </div>
                 <div class="flex flex-col">
-                  <div v-for="user in users" :key="user.id" class="flex items-center space-x-2 mx-3">
+                  <div v-for="user in users.data" :key="user.id" class="flex items-center space-x-2 mx-3">
                     <Checkbox v-model:checked="payrollUsersToShow" :id="user.name" :name="user.name" :value="user.id" />
                     <label class="text-gray-600 text-sm" :for="user.name">{{ user.name }}</label>
                   </div>
@@ -91,12 +91,12 @@
         <div class="flex items-center">
           <label class="mr-10">Colaborador</label>
           <el-select v-model="user_selected" clearable class="m-2" placeholder="Seleccionar">
-            <el-option v-for="item in users" :key="item.id" :label="item.name" :value="item.id" />
+            <el-option v-for="item in users.data" :key="item.id" :label="item.name" :value="item.id" />
           </el-select>
         </div>
         <div v-if="user_selected" class="mt-5">
           <IncidentTable @closeIncidentTable="user_selected = null" :justifications="justifications"
-            :user="users.find(item => item.id == user_selected)" :payrollId="selectedPayroll" />
+            :user="users.data.find(item => item.id == user_selected)" :payrollId="selectedPayroll" />
         </div>
       </div>
       <!-- -------------- Incidents ends----------------------- -->
@@ -105,7 +105,7 @@
       <!-- -------------- print starts----------------------- -->
       <div v-else>
         <template v-for="(user_id, index) in payrollUsersToShow" :key="index">
-          <payrollTemplate :user="users.find(item => item.id == user_id)" :payrollId="selectedPayroll" />
+          <payrollTemplate :user="users.data.find(item => item.id == user_id)" :payrollId="selectedPayroll" />
         </template>
       </div>
       <!-- -------------- print ends----------------------- -->
@@ -125,7 +125,7 @@
           <div class="flex items-center">
             <label class="w-1/5">Colaborador</label>
             <el-select v-model="form.user_selected" clearable class="mx-2" placeholder="Seleccionar">
-              <el-option v-for="item in users" :key="item.id" :label="item.name" :value="item.id" />
+              <el-option v-for="item in users.data" :key="item.id" :label="item.name" :value="item.id" />
             </el-select>
             <InputError :message="form.errors.user_selected" />
           </div>
@@ -202,7 +202,6 @@ export default {
       users_payroll_filtered_id: [],
       payrollUsersToShow: [],
       loading: false,
-      // processedAttendances: [],
     };
   },
   components: {
@@ -221,7 +220,7 @@ export default {
   props: {
     payroll: Object,
     payrolls: Object,
-    users: Array,
+    users: Object,
     payroll_users: Object,
     justifications: Array,
   },
@@ -237,8 +236,7 @@ export default {
         });
 
         if (response.status === 200) {
-          this.users = response.data.users;
-          // this.payroll_users = response.data.payroll_users;
+          this.users.data = response.data.users;
           this.user_selected = null;
           this.payrollUsersToShow = [];
         }

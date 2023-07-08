@@ -1,6 +1,6 @@
 <template>
   <div v-if="!loading" class="grid grid-cols-4 md:grid-cols-3 lg:py-6 lg:px-10 mb-6 lg:mb-0 text-[10px] md:text-sm">
-    <div class="bg-transparent rounded-lg mx-auto col-span-3 md:col-span-2 w-5/6">
+    <div class="bg-transparent rounded-lg lg:mx-auto mr-auto col-span-3 md:col-span-2 w-5/6">
       <div class="flex items-center">
         <i class="fa-solid fa-circle-user mr-3 text-xl"></i>
         <p>{{ user.name }}</p>
@@ -56,12 +56,12 @@
         </table>
       </div>
     </div>
-    <div class="mr-auto">
+    <div class="mr-5">
       <p class="mb-3">
         <strong class="mr-3"> Semana {{ payroll?.week }} </strong>
         {{ payroll?.start_date }} - {{ payroll?.end_date }}
       </p>
-      <div class="flex flex-col space-y-2">
+      <div class="flex flex-col">
         <p class="grid grid-cols-3 gap-x-1">
           <span>Días a pagar</span>
           <span class="text-center">{{ getWorkedDays() }}</span>
