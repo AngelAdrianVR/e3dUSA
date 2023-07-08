@@ -1,8 +1,8 @@
 <template>
-  <div v-if="pageLoading" class="absolute left-0 top-0 inset-0 bg-black opacity-50 flex items-center justify-center">
+  <div v-if="pageLoading" class="absolute z-10 left-0 top-0 inset-0 bg-black opacity-50 flex items-center justify-center">
   </div>
   <div v-if="pageLoading"
-    class="absolute top-1/2 left-1/2 w-32 h-32 rounded-lg bg-white flex items-center justify-center">
+    class="absolute z-20 top-1/2 left-1/2 w-32 h-32 rounded-lg bg-white flex items-center justify-center">
     <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
   </div>
   <div class="bg-[#D9D9D9] rounded-lg lg:w-4/5 mx-auto py-6 px-10">
@@ -68,7 +68,7 @@
                   <i class="fa-solid fa-minus"></i>
                 </td>
                 <td class="w-11">
-                  <el-dropdown v-if="!pageLoading" trigger="click" @command="handleCommand">
+                  <el-dropdown trigger="click" @command="handleCommand">
                     <span class="w-6 h-6 rounded-full hover:bg-[#CCCCCC] cursor-pointer flex items-center justify-center">
                       <i class="fa-solid fa-ellipsis-vertical text-primary"></i>
                     </span>
@@ -106,7 +106,7 @@
                   <i class="fa-solid fa-minus"></i>
                 </td>
                 <td class="w-11">
-                  <el-dropdown v-if="!pageLoading" trigger="click" @command="handleCommand">
+                  <el-dropdown trigger="click" @command="handleCommand">
                     <span class="w-6 h-6 rounded-full hover:bg-[#CCCCCC] cursor-pointer flex items-center justify-center">
                       <i class="fa-solid fa-ellipsis-vertical text-primary"></i>
                     </span>

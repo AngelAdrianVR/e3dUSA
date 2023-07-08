@@ -1,14 +1,19 @@
 <template>
   <div>
     <AppLayoutNoHeader title="Nóminas">
-
+      <div v-if="loading" class="absolute left-0 top-0 inset-0 z-10 bg-black opacity-50 flex items-center justify-center">
+      </div>
+      <div v-if="loading"
+        class="absolute z-20 top-1/2 left-1/2 w-32 h-32 rounded-lg bg-white flex items-center justify-center">
+        <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
+      </div>
       <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
         <div>
           <label>Nóminas</label>
         </div>
         <div>
-          <el-select v-model="selectedPayroll" filterable allow-create default-first-option :reserve-keyword="false"
-            placeholder="Buscar nómina">
+          <el-select v-model="selectedPayroll" @change="payrollChanged" filterable allow-create default-first-option
+            :reserve-keyword="false" placeholder="Buscar nómina">
             <el-option v-for="item in payrolls.data" :key="item.id" :label="'Nómina semana: ' + item.week"
               :value="item.id" />
           </el-select>
@@ -18,6 +23,7 @@
           <p class="lg:mr-2">
             <strong class="mr-4">Nómina semanal {{ currentPayroll?.week }}</strong>
             {{ currentPayroll?.start_date }} - {{ currentPayroll?.end_date }}
+            <el-tag v-if="currentPayroll?.is_active">Nómina en curso</el-tag>
           </p>
           <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
             title="Seguro que deseas eliminar?" @confirm="deleteIncident">
@@ -56,7 +62,8 @@
         </div>
 
         <div v-if="!incidentsTab" class="text-right mr-9 flex items-center">
-          <PrimaryButton @click="printPayrolls" class="mr-5" :disabled="!payrollUsersToShow.length">Imprimir</PrimaryButton>
+          <PrimaryButton @click="printPayrolls" class="mr-5" :disabled="!payrollUsersToShow.length">Imprimir
+          </PrimaryButton>
           <el-tooltip content="Filtrar nóminas" placement="top">
             <DropdownNoClose align="right" width="60">
               <template #trigger>
@@ -188,14 +195,14 @@ export default {
 
     return {
       form,
-      user_selected: null,
       incidentsTab: true,
       incidentModal: false,
       selectedPayroll: '',
-      currentCatalogProduct: null,
+      user_selected: null,
       users_payroll_filtered_id: [],
-      processedAttendances: [],
       payrollUsersToShow: [],
+      loading: false,
+      // processedAttendances: [],
     };
   },
   components: {
@@ -222,28 +229,30 @@ export default {
     deleteIncident() {
       console.log("Elimidado");
     },
-    printPayrolls() {
-      this.$inertia.post(route('payrolls.print-template'), {
-        users_id_to_show: this.payrollUsersToShow,
-        payroll_id: this.payroll.data.id
-      });
-    },  
-    async getAttendances(user_id) {
+    async payrollChanged() {  
+      this.loading = true;
       try {
-        this.loading = true;
-        const response = await axios.post(route('payrolls.processed-attendances'), {
-          user_id: user_id,
-          payroll_id: this.payroll.data.id
+        const response = await axios.post(route('payrolls.get-payroll-users'), {
+          payroll_id: this.selectedPayroll
         });
 
         if (response.status === 200) {
-          this.processedAttendances = response.data.items;
+          this.users = response.data.users;
+          // this.payroll_users = response.data.payroll_users;
+          this.user_selected = null;
+          this.payrollUsersToShow = [];
         }
       } catch (error) {
         console.log(error);
       } finally {
         this.loading = false;
       }
+    },
+    printPayrolls() {
+      this.$inertia.post(route('payrolls.print-template'), {
+        users_id_to_show: this.payrollUsersToShow,
+        payroll_id: this.payroll.data.id
+      });
     },
   },
   watch: {
