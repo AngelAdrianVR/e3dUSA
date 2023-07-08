@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
@@ -81,5 +82,35 @@ class PayrollUser extends Pivot
         return null;
      }
 
+     public function getLateTime()
+     {
+        if ($this->check_in) {
+            $original_check_in = Carbon::parse($this->user->employee_properties['work_days'][$this->date->dayOfWeek]['check_in']);
+            $minutes_late = $original_check_in->diffInMinutes($this->check_in, false);
+            return $minutes_late < 0 ? 0 : $minutes_late;
+        }
+
+        return 0;
+
+     }
+
+     public function getExtras()
+     {
+        if($this->check_in && !$this->justification_event_id && $this->extras_enabled) {
+            $time = $this->check_in->diffInMinutes($this->check_out ?? now());
+            $break = $this->start_break->diffInMinutes($this->end_break ?? $this->start_break);
+            
+            // sub break and 8 hrs
+            $time -= ($break + 60 * 8);
+            if ($time < 0) $time = 0;
+
+            $hours = intval($time / 60);
+            $minutes = $time % 60;
+    
+            return ['formatted' => "{$hours}h {$minutes}m", 'minutes' => $time];
+        } 
+
+        return ['formatted' => "0h 0m", 'minutes' => 0];
+     }
      
 }
