@@ -26,7 +26,7 @@ class MoreAdditionalTimeResource extends JsonResource
             'time_requested' => $this->time_requested,
             'comments' => $this->comments ?? '--',
             'authorized_user_name' => $this->authorized_user_name ?? '--',
-            'authorized_at' => $this->authorized_at ?? 'No autorizado',
+            'authorized_at' => $this->authorized_at?->isoFormat('YYYY MMM DD') ?? 'No autorizado',
             'payroll' => $this->whenLoaded('payroll'),
             'user' => $this->whenLoaded('user'),
             'created_at' => $this->created_at?->isoFormat('YYYY MMM DD') ?? '--',

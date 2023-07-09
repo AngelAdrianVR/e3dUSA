@@ -124,7 +124,7 @@ export default {
                 {
                     label: 'Recursos Humanos',
                     icon: '<i class="fa-solid fa-user-group text-xs"></i>',
-                    active: route().current('payrolls.*'),
+                    active: route().current('payrolls.*') || route().current('admin-additional-times.*'),
                     options: [
                         {
                             label: 'Nóminas',
@@ -132,7 +132,7 @@ export default {
                         },
                         {
                             label: 'Solicitudes de tiempo adicional',
-                            route: 'dashboard'
+                            route: 'admin-additional-times.index'
                         },
                         {
                             label: 'Personal',

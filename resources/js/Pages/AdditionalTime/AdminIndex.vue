@@ -1,11 +1,11 @@
 <template>
   <div>
-    <AppLayout title="Solicitud de tiempo adicional">
+    <AppLayout title="Solicitud de tiempo adicional - RH">
       <template #header>
         <div class="flex justify-between">
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">
-              Solicitudes de tiempo adicional
+              Solicitudes de tiempo adicional (RH)
             </h2>
           </div>
           <div>
@@ -24,7 +24,7 @@
             <el-pagination
               @current-change="handlePagination"
               layout="prev, pager, next"
-              :total="more_additional_times.length"
+              :total="admin_additional_times.length"
             />
           </div>
 
@@ -60,6 +60,7 @@
         >
           <el-table-column type="selection" width="45" />
           <el-table-column prop="id" label="ID" width="45" />
+          <el-table-column prop="user.name" label="Creador" width="120" />
           <el-table-column
             prop="created_at"
             label="Solicitado el"
@@ -102,8 +103,11 @@
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item @click="edit(scope.row)" v-if="scope.row.authorized_at == 'No autorizado'"
+                    <el-dropdown-item @click="edit(scope.row)"
                       ><i class="fa-solid fa-pen"></i> Editar</el-dropdown-item
+                    >
+                    <el-dropdown-item @click="$inertia.put(route('admin-additional-times.authorize',scope.row))"
+                      ><i class="fa-solid fa-check"></i> Autorizar</el-dropdown-item
                     >
                   </el-dropdown-menu>
                 </template>
@@ -132,11 +136,29 @@
               class="fa-solid fa-question text-[9px] text-secondary h-3 w-3 bg-sky-300 rounded-full text-center absolute left-3 top-3 cursor-pointer"
             ></i>
 
-            <p class="font-bold text-center">
+            <p class="font-bold text-center mb-4">
               Solicitar autorización de timepo adicional
             </p>
 
-            <p class="ml-7 my-4 text-secondary">Nómina en curso</p>
+            <div class="w-1/3 ml-3">
+                    <el-select v-model="form.payroll_id" clearable filterable placeholder="Buscar nómina"
+                        no-data-text="No hay nóminas registradas" no-match-text="No se encontraron coincidencias">
+                        <el-option v-for="item in payrolls" 
+                            :key="item.id" 
+                            :label="item.week"
+                            :value="item.id" />
+                    </el-select>
+                </div>
+
+            <div class="w-1/3 ml-3">
+                    <el-select v-model="form.user_id" clearable filterable placeholder="Buscar usuario"
+                        no-data-text="No hay usuarios registrados" no-match-text="No se encontraron coincidencias">
+                        <el-option v-for="item in users" 
+                            :key="item.id" 
+                            :label="item.name"
+                            :value="item.id" />
+                    </el-select>
+                </div>
 
             <div class="ml-7 flex space-x-3 items-center">
               <div class="w-1/6 mr-2">
@@ -236,6 +258,8 @@ export default {
       hours: null,
       minutes: null,
       justification: null,
+      payroll_id: null,
+      user_id: null,
     });
     return {
       form,
@@ -244,7 +268,7 @@ export default {
       createRequestModal: false,
       helpDialog: false,
       editFlag: false,
-      more_additional_time: null,
+      admin_additional_time: null,
       // pagination
       itemsPerPage: 10,
       start: 0,
@@ -264,7 +288,9 @@ export default {
   },
 
   props: {
-    more_additional_times: Array,
+    admin_additional_times: Array,
+    payrolls: Array,
+    users: Array,
   },
   methods: {
     store() {
@@ -335,8 +361,8 @@ export default {
     async deleteSelections() {
       try {
         const response = await axios.post(
-          route("more-additional-times.massive-delete", {
-            more_additional_times: this.$refs.multipleTableRef.value,
+          route("admin-additional-times.massive-delete", {
+            admin_additional_times: this.$refs.multipleTableRef.value,
           })
         );
 
@@ -349,8 +375,8 @@ export default {
 
           // update list of companies
           let deletedIndexes = [];
-          this.more_additional_times.data.forEach((more_additional_time, index) => {
-            if (this.$refs.multipleTableRef.value.includes(more_additional_time)) {
+          this.admin_additional_times.data.forEach((admin_additional_time, index) => {
+            if (this.$refs.multipleTableRef.value.includes(admin_additional_time)) {
               deletedIndexes.push(index);
             }
           });
@@ -383,16 +409,16 @@ export default {
   computed: {
     filteredTableData() {
       if (!this.search) {
-        return this.more_additional_times.data.filter(
+        return this.admin_additional_times.data.filter(
           (item, index) => index >= this.start && index < this.end
         );
       } else {
-        return this.more_additional_times.data.filter(
-          (more_additional_time) =>
-            more_additional_time.status
+        return this.admin_additional_times.data.filter(
+          (admin_additional_time) =>
+            admin_additional_time.status
               .toLowerCase()
               .includes(this.search.toLowerCase()) ||
-            more_additional_time.justification
+            admin_additional_time.justification
               .toLowerCase()
               .includes(this.search.toLowerCase())
         );
