@@ -13,6 +13,7 @@ class Meeting extends Model
         'subject',
         'location',
         'url',
+        'authorized_at',
         'status',
         'description',
         'date',
@@ -22,7 +23,8 @@ class Meeting extends Model
     ];
 
     protected $casts = [
-        'date' => 'date'
+        'date' => 'date',
+        'authorized_at' => 'datetime'
     ];
 
     // relationships

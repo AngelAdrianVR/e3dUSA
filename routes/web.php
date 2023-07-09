@@ -7,6 +7,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\MachineController;
 use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RawMaterialController;
@@ -141,14 +142,19 @@ Route::post('admin-additional-times/massive-delete', [AdditionalTimeRequestContr
 
 
 
-// ------- Maintenances routes  ---------
+// ------- Maintenances routes  -------------
 Route::resource('maintenances', MaintenanceController::class)->except('create')->middleware('auth');
 Route::get('maintenances/create/{selectedMachine}',[ MaintenanceController::class, 'create'])->name('maintenances.create')->middleware('auth');
 
 
-// ------- Maintenances routes  ---------
+// ---------- spare parts routes  ---------------
 Route::resource('spare-parts', SparePartController::class)->except('create')->middleware('auth');
 Route::get('spare-parts/create/{selectedMachine}',[ SparePartController::class, 'create'])->name('spare-parts.create')->middleware('auth');
+
+
+//------------------ Meetings routes ----------------
+Route::resource('meetings', MeetingController::class)->middleware('auth');
+Route::post('meetongs/massive-delete', [MeetingController::class, 'massiveDeleteAdmin'])->name('meetings.massive-delete');
 
 
 Route::post('/upload-image',[FileUploadController::class, 'upload'])->name('upload-image');

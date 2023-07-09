@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('subject');
             $table->string('location')->nullable();
             $table->string('url')->nullable();
+            $table->timestamp('authorized_at')->nullable();
             $table->unsignedTinyInteger('status');
             $table->text('description')->nullable();
             $table->date('date');
