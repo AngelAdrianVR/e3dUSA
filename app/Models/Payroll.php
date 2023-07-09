@@ -39,4 +39,9 @@ class Payroll extends Model
             ])
             ->withTimestamps();
     }
+
+    public static function getCurrent()
+    {
+        return self::orderBy('id', 'desc')->first();
+    }
 }

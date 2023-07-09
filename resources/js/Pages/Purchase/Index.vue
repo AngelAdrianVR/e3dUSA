@@ -60,6 +60,7 @@
         >
           <el-table-column type="selection" width="45" />
           <el-table-column prop="id" label="ID" width="45" />
+          <el-table-column prop="folio" label="Folio" width="90" />
           <el-table-column prop="user.name" label="Creador" width="150" />
           <el-table-column prop="created_at" label="Creado el" width="120" />
           <el-table-column

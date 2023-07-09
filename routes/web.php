@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdditionalTimeRequestController;
 use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
@@ -80,6 +81,7 @@ Route::post('suppliers/massive-delete', [SupplierController::class, 'massiveDele
 // ------- Compras(purchases Routes)  ---------
 Route::resource('purchases', PurchaseController::class)->middleware('auth');
 Route::post('purchases/massive-delete', [PurchaseController::class, 'massiveDelete'])->name('purchases.massive-delete');
+Route::post('purchases/clone', [PurchaseController::class, 'clone'])->name('purchases.clone');
 Route::put('purchases/mark-order-done/{currentPurchase}', [PurchaseController::class, 'markOrderDone'])->name('purchases.done');
 Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseController::class, 'markOrderRecieved'])->name('purchases.recieved');
 
@@ -122,6 +124,11 @@ Route::resource('users', UserController::class)->middleware('auth');
 // ------- Machines Routes  ---------
 Route::resource('machines', MachineController::class)->middleware('auth');
 Route::post('machines/massive-delete', [MachineController::class, 'massiveDelete'])->name('machines.massive-delete');
+
+
+// ------- aditional time request Routes  ---------
+Route::resource('more-additional-times', AdditionalTimeRequestController::class)->middleware('auth');
+Route::post('more-additional-times/massive-delete', [AdditionalTimeRequestController::class, 'massiveDelete'])->name('more-additional-times.massive-delete');
 
 
 // ------- Maintenances routes  ---------

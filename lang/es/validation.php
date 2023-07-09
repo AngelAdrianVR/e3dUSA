@@ -162,5 +162,8 @@ return [
         'contacts' => 'Contactos',
         'days_next_maintenance' => 'Mantenimiento cada (días)',
         'aquisition_date' => 'Fecha de adquisición',
+        'hours' => 'horas',
+        'minutes' => 'minutos',
+        'justification' => 'justificación',
     ],
 ];
