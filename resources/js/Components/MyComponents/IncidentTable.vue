@@ -1,8 +1,8 @@
 <template>
-  <div v-if="pageLoading" class="absolute left-0 top-0 inset-0 bg-black opacity-50 flex items-center justify-center">
+  <div v-if="pageLoading" class="absolute z-10 left-0 top-0 inset-0 bg-black opacity-50 flex items-center justify-center">
   </div>
   <div v-if="pageLoading"
-    class="absolute top-1/2 left-1/2 w-32 h-32 rounded-lg bg-white flex items-center justify-center">
+    class="absolute z-20 top-1/2 left-1/2 w-32 h-32 rounded-lg bg-white flex items-center justify-center">
     <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
   </div>
   <div class="bg-[#D9D9D9] rounded-lg lg:w-4/5 mx-auto py-6 px-10">
@@ -62,12 +62,13 @@
                 </td>
                 <td v-if="attendance.total_worked_time" class="px-6 text-xs py-2 w-32">
                   {{ attendance.total_worked_time }}
+                  <span v-if="attendance.extras_enabled" class="text-green-500"> +{{ attendance.extras.formatted }} extras</span>
                 </td>
                 <td v-else class="px-6 text-xs py-2 w-32">
                   <i class="fa-solid fa-minus"></i>
                 </td>
                 <td class="w-11">
-                  <el-dropdown v-if="!pageLoading" trigger="click" @command="handleCommand">
+                  <el-dropdown trigger="click" @command="handleCommand">
                     <span class="w-6 h-6 rounded-full hover:bg-[#CCCCCC] cursor-pointer flex items-center justify-center">
                       <i class="fa-solid fa-ellipsis-vertical text-primary"></i>
                     </span>
@@ -82,7 +83,7 @@
                         <el-dropdown-item v-else :command="'extras-' + attendance.id">
                           Desactivar extras dobles</el-dropdown-item>
                         <el-dropdown-item v-for="(item, index1) in justifications" :key="item.id"
-                          :command="item.id + '-' + attendance.id">
+                          :command="item.id + '-' + attendance.id + '-' + index">
                           {{ item.name }}</el-dropdown-item>
                       </el-dropdown-menu>
                     </template>
@@ -105,7 +106,7 @@
                   <i class="fa-solid fa-minus"></i>
                 </td>
                 <td class="w-11">
-                  <el-dropdown v-if="!pageLoading" trigger="click" @command="handleCommand">
+                  <el-dropdown trigger="click" @command="handleCommand">
                     <span class="w-6 h-6 rounded-full hover:bg-[#CCCCCC] cursor-pointer flex items-center justify-center">
                       <i class="fa-solid fa-ellipsis-vertical text-primary"></i>
                     </span>
@@ -115,7 +116,7 @@
                           Poner asistencia</el-dropdown-item>
                         <template v-for="(item, index1) in justifications" :key="item.id">
                           <el-dropdown-item v-if="item.id !== attendance.incident.id"
-                            :command="item.id + '-' + attendance.id">
+                            :command="item.id + '-' + attendance.id + '-' + index">
                             {{ item.name }}</el-dropdown-item>
                         </template>
                       </el-dropdown-menu>
@@ -131,8 +132,8 @@
         </div>
       </div>
       <div class="mt-6 text-right">
-        <CancelButton @click="this.$emit(closeIncidentTable)">Cancelar</CancelButton>
-        <PrimaryButton class="ml-3">Guardar</PrimaryButton>
+        <CancelButton @click="this.$emit('closeIncidentTable')">Cancelar</CancelButton>
+        <PrimaryButton @click="updateAttendances" class="ml-3">Guardar</PrimaryButton>
       </div>
     </div>
   </div>
@@ -152,6 +153,7 @@ export default {
       pageLoading: false,
     }
   },
+  emits: ['closeIncidentTable'],
   props: {
     justifications: Array,
     user: Number,
@@ -185,12 +187,14 @@ export default {
         const date = this.processedAttendances[index].date.estandard;
         this.handleAttendance(rowId, date);
       } else {
-        this.handleIncidents(rowId, commandName);
+        const index = command.split('-')[2];
+        const date = this.processedAttendances[index].date.estandard;
+        this.handleIncidents(rowId, commandName, date);
       }
     },
-    async getAttendances() {
+    async getAttendances(loadingState = true) {
       try {
-        this.loading = true;
+        this.loading = loadingState;
         const response = await axios.post(route('payrolls.processed-attendances'), {
           user_id: this.user.id,
           payroll_id: this.payrollId
@@ -248,17 +252,22 @@ export default {
         this.pageLoading = false;
       }
     },
-    async handleIncidents(payrollUserId, incidentId) {
+    async handleIncidents(payrollUserId, incidentId, date) {
       try {
         this.pageLoading = true;
         const response = await axios.post(route('payrolls.handle-incidents'), {
           payroll_user_id: payrollUserId,
           incident_id: incidentId,
+          date: date,
+          payroll_id: this.payrollId,
+          user_id: this.user.id,
         });
 
         if (response.status === 200) {
-          const index = this.processedAttendances.findIndex(item => item.id == payrollUserId);
+          const index = this.processedAttendances.findIndex(item => item.date.estandard == date);
+          console.log('index',index);
           this.processedAttendances[index] = response.data.item;
+          console.log('response',response.data.item);
           this.$notify({
             title: 'Éxito',
             message: 'Incidencia cambiada',
@@ -287,6 +296,27 @@ export default {
           this.$notify({
             title: 'Éxito',
             message: 'Asistencia registrada',
+            type: 'success'
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.pageLoading = false;
+      }
+    },
+    async updateAttendances() {
+      try {
+        this.pageLoading = true;
+        const response = await axios.post(route('payrolls.update-attendances'), {
+          attendances: this.processedAttendances,
+        });
+
+        if (response.status === 200) {
+          this.getAttendances(false);
+          this.$notify({
+            title: 'Éxito',
+            message: response.data.message,
             type: 'success'
           });
         }
