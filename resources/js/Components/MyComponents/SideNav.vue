@@ -166,7 +166,7 @@ export default {
                 {
                     label: 'Más',
                     icon: '<i class="fa-solid fa-ellipsis text-xs"></i>',
-                    active: route().current('machines.*'),
+                    active: route().current('machines.*') || route().current('more-additional-times.*'),
                     options: [
                         {
                             label: 'Máquinas',
@@ -174,7 +174,7 @@ export default {
                         },
                         {
                             label: 'Solicitudes de tiempo adicional',
-                            route: 'dashboard'
+                            route: 'more-additional-times.index'
                         },
                         {
                             label: 'Reuniones',

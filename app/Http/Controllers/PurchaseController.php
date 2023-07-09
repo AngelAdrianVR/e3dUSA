@@ -15,7 +15,7 @@ class PurchaseController extends Controller
     public function index()
     {
         $purchases = PurchaseResource::collection(Purchase::with('contact', 'supplier', 'user')->latest()->get());
-        
+        // return $purchases;        
         return inertia('Purchase/Index', compact('purchases'));
     }
 
@@ -104,41 +104,16 @@ class PurchaseController extends Controller
 
     public function clone(Request $request)
     {
-        $company = Company::find($request->company_id);
+        $purchase = Purchase::find($request->purchase_id);
 
-        $clone = $company->replicate()->fill([
-            'business_name' => $company->business_name . ' (Copia)',
+        $clone = $purchase->replicate()->fill([
+            'folio' => $purchase->folio . ' (Copia)',
         ]);
 
         $clone->save();
 
-        foreach ($company->companyBranches as $branch) {
-            $branch = CompanyBranch::find($branch->id);
-            $branch_clone = $branch->replicate()->fill([
-                'company_id' => $clone->id
-            ]);
+    
 
-            $branch_clone->save();
-
-            foreach ($branch->contacts as $contact) {
-                $branch_clone->contacts()->create($contact->toArray());
-            }
-
-        }
-
-        foreach ($company->catalogProducts as $product) {
-            $pivot = [
-                'old_date' => $product->pivot->old_date,
-                'new_date' => $product->pivot->new_date,
-                'old_price' => $product->pivot->old_price,
-                'new_price' => $product->pivot->new_price,
-                'old_currency' => $product->pivot->old_currency,
-                'new_currency' => $product->pivot->new_currency,
-            ];
-
-            $clone->catalogProducts()->attach($product->pivot->catalog_product_id, $pivot);
-        }
-
-        return response()->json(['message' => "Cliente clonado: {$clone->business_name}", 'newItem' => CompanyResource::make($clone)]);
+        return response()->json(['message' => "Órden de compra clonada: {$clone->creator}", 'newItem' => PurchaseResource::make($clone)]);
     }
 }

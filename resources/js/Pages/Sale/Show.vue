@@ -11,9 +11,11 @@
             <i class="fa-solid fa-xmark"></i>
           </Link>
         </div>
+        {{saleSelected}}
+        {{currentSale}}
         <div class="flex justify-between">
           <el-select
-            v-model="selectedSale"
+            v-model="saleSelected"
             clearable
             filterable
             placeholder="Buscar órden de venta"
@@ -29,7 +31,7 @@
           </el-select>
           <div class="flex items-center space-x-2">
             <el-tooltip content="Editar" placement="top">
-              <Link :href="route('sales.edit', selectedSale)">
+              <Link :href="route('sales.edit', saleSelected)">
                 <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
                   <i class="fa-solid fa-pen text-sm"></i>
                 </button>
@@ -66,7 +68,7 @@
         </div>
       </div>
       <p class="text-center font-bold text-lg mb-4">
-        {{ selectedSale.folio }}
+        {{ saleSelected.folio }}
       </p>
 
       <!-- ------------- tabs section starts ------------- -->
@@ -105,11 +107,11 @@
         <p class="text-secondary col-span-2 mb-2">Logística</p>
 
             <span class="text-gray-500">Paquetería</span>
-            <span>{{ currentSale?.id }}</span>
+            <span>{{ currentSale?.shipping_company }}</span>
             <span class="text-gray-500">Guía</span>
-            <span>{{ currentSale?.id }}</span>
+            <span>{{ currentSale?.traking_guide }}</span>
             <span class="text-gray-500">Costo de envío</span>
-            <span>{{ currentSale?.id }}</span>
+            <span>{{ currentSale?.freight_cost }}</span>
 
         <p class="text-secondary col-span-2 mb-2">Datos de la órden</p>
 
@@ -211,7 +213,7 @@ import { Link } from "@inertiajs/vue3";
 export default {
   data() {
     return {
-      selectedSale: "",
+      saleSelected: "",
       currentSale: null,
       tabs: 1,
       showConfirmModal: false,
@@ -250,7 +252,7 @@ export default {
           );
           if (index !== -1) {
             this.sales.data.splice(index, 1);
-            this.selectedSale = "";
+            this.saleSelected = "";
           }
         } else {
           this.$notify({
@@ -278,8 +280,8 @@ export default {
     },
   },
 
-  mounted() {
-    this.selectedSale = this.sale.id;
+mounted() {
+    this.saleSelected = this.sale.id;
   },
 };
 </script>

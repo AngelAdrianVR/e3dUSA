@@ -41,6 +41,11 @@ class Payroll extends Model
             ->withTimestamps();
     }
 
+
+    public static function getCurrent()
+    {
+        return self::orderBy('id', 'desc')->first();
+
     // methods
     public function getProcessedAttendances($user_id)
     {
@@ -68,5 +73,6 @@ class Payroll extends Model
         }
 
         return $processed;
+
     }
 }
