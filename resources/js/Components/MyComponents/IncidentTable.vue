@@ -62,7 +62,8 @@
                 </td>
                 <td v-if="attendance.total_worked_time" class="px-6 text-xs py-2 w-32">
                   {{ attendance.total_worked_time }}
-                  <span v-if="attendance.extras_enabled" class="text-green-500"> +{{ attendance.extras.formatted }} extras</span>
+                  <span v-if="attendance.extras_enabled" class="text-green-500"> +{{ attendance.extras.formatted }}
+                    extras</span>
                 </td>
                 <td v-else class="px-6 text-xs py-2 w-32">
                   <i class="fa-solid fa-minus"></i>
@@ -82,9 +83,11 @@
                           Activar extras dobles</el-dropdown-item>
                         <el-dropdown-item v-else :command="'extras-' + attendance.id">
                           Desactivar extras dobles</el-dropdown-item>
-                        <el-dropdown-item v-for="(item, index1) in justifications" :key="item.id"
-                          :command="item.id + '-' + attendance.id + '-' + index">
-                          {{ item.name }}</el-dropdown-item>
+                          <template v-for="(item, index1) in justifications" :key="item.id">                             
+                            <el-dropdown-item v-if="item.id !== 7"
+                            :command="item.id + '-' + attendance.id + '-' + index">
+                            {{ item.name }}</el-dropdown-item>
+                          </template>
                       </el-dropdown-menu>
                     </template>
                   </el-dropdown>
@@ -115,7 +118,7 @@
                         <el-dropdown-item :command="'attendance-' + attendance.id + '-' + index">
                           Poner asistencia</el-dropdown-item>
                         <template v-for="(item, index1) in justifications" :key="item.id">
-                          <el-dropdown-item v-if="item.id !== attendance.incident.id"
+                          <el-dropdown-item v-if="item.id !== attendance.incident.id && item.id !== 7"
                             :command="item.id + '-' + attendance.id + '-' + index">
                             {{ item.name }}</el-dropdown-item>
                         </template>
@@ -239,7 +242,9 @@ export default {
         });
 
         if (response.status === 200) {
-          this.processedAttendances.find(item => item.id == payrollUserId).extras_enabled = response.data.extras_enabled;
+          let oldItem = this.processedAttendances.find(item => item.id == payrollUserId);
+          oldItem.extras_enabled = response.data.extras_enabled
+          oldItem.extras = response.data.extras;
           this.$notify({
             title: 'Éxito',
             message: 'Extras cambiado',
@@ -265,13 +270,11 @@ export default {
 
         if (response.status === 200) {
           const index = this.processedAttendances.findIndex(item => item.date.estandard == date);
-          console.log('index',index);
           this.processedAttendances[index] = response.data.item;
-          console.log('response',response.data.item);
           this.$notify({
-            title: 'Éxito',
-            message: 'Incidencia cambiada',
-            type: 'success'
+            title: response.data.title,
+            message: response.data.message,
+            type: response.data.type
           });
         }
       } catch (error) {

@@ -63,10 +63,14 @@ class Payroll extends Model
                 $processed[] = $current;
             } else {
                 $payroll_user = new PayrollUser(['date' => $current_date->toDateString()]);
-                if ($user->employee_properties['work_days'][$current_date->dayOfWeek]['check_in'] == 0) {
-                    $payroll_user->justification_event_id = 6;
+                if ($current_date->greaterThan(now())) {
+                    $payroll_user->justification_event_id = 7;
                 } else {
-                    $payroll_user->justification_event_id = 5;
+                    if ($user->employee_properties['work_days'][$current_date->dayOfWeek]['check_in'] == 0) {
+                        $payroll_user->justification_event_id = 6;
+                    } else {
+                        $payroll_user->justification_event_id = 5;
+                    }
                 }
                 $processed[] = $payroll_user;
             }
