@@ -50,6 +50,12 @@ class justificationEventSeeder extends Seeder
                 // 'additionals' => json_encode(["color" => "green"]),
                 'created_at' => now(),
             ],
+            [
+                'name' => 'Sin registro',
+                'description' => 'No ha pasado este día',
+                // 'additionals' => json_encode(["color" => "transparent"]),
+                'created_at' => now(),
+            ],
         ));
     }
 }

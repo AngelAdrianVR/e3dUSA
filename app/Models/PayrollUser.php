@@ -106,11 +106,13 @@ class PayrollUser extends Pivot
 
             $hours = intval($time / 60);
             $minutes = $time % 60;
+
+            $amount = $this->additionals['salary']['hour'] * ($time / 60);
     
-            return ['formatted' => "{$hours}h {$minutes}m", 'minutes' => $time];
+            return ['formatted' => "{$hours}h {$minutes}m", 'minutes' => $time, 'amount' => ['number_format' => number_format($amount, 2), 'raw' => $amount]];
         } 
 
-        return ['formatted' => "0h 0m", 'minutes' => 0];
+        return ['formatted' => "0h 0m", 'minutes' => 0, 'amount' => ['number_format' => 0.00, 'raw' => 0]];
      }
      
 }
