@@ -135,6 +135,10 @@ Route::post('machines/massive-delete', [MachineController::class, 'massiveDelete
 // ------- aditional time request Routes  ---------
 Route::resource('more-additional-times', AdditionalTimeRequestController::class)->middleware('auth');
 Route::post('more-additional-times/massive-delete', [AdditionalTimeRequestController::class, 'massiveDelete'])->name('more-additional-times.massive-delete');
+Route::get('admin-additional-times', [AdditionalTimeRequestController::class, 'adminIndex'])->name('admin-additional-times.index');
+Route::put('admin-additional-times/authorize/{admin_additional_time}', [AdditionalTimeRequestController::class, 'authorizeRequest'])->name('admin-additional-times.authorize');
+Route::post('admin-additional-times/massive-delete', [AdditionalTimeRequestController::class, 'massiveDeleteAdmin'])->name('admin-additional-times.massive-delete');
+
 
 
 // ------- Maintenances routes  ---------

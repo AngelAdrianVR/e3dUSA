@@ -45,7 +45,7 @@ class Payroll extends Model
     public static function getCurrent()
     {
         return self::orderBy('id', 'desc')->first();
-
+    }
     // methods
     public function getProcessedAttendances($user_id)
     {
