@@ -198,7 +198,7 @@ export default {
       return worked.length;
     },
     getTotal() {
-      const dayly_salary = this.user.employee_properties.salary.day;
+      const dayly_salary = this.processedAttendances.find(item => item.check_out).additionals.salary.day;
       const vacations = this.getVacations() * 1.25 * dayly_salary;
       const weekSalary = dayly_salary * this.getWorkedDays();
       const bonuses = this.bonuses.reduce((accumulator, bonus) => {

@@ -40,9 +40,6 @@ class PayrollController extends Controller
         $payroll = PayrollResource::make(Payroll::find($payroll_id));
         $justifications = JustificationEvent::all();
         $payrolls = PayrollResource::collection(Payroll::with('users')->latest()->get());
-        // $users = User::whereHas('payrolls', function($query) use($payroll){
-        //     $query->where('payrolls.id', $payroll->id);
-        // })->get();
         $users = UserResource::collection(User::whereHas('payrolls', function($query) use($payroll_id){
             $query->where('payrolls.id', $payroll_id);
         })->get());
@@ -105,7 +102,7 @@ class PayrollController extends Controller
 
         $payroll_user->save();
 
-        return response()->json(['extras_enabled' => $payroll_user->extras_enabled]);
+        return response()->json(['extras_enabled' => $payroll_user->extras_enabled, 'extras' => $payroll_user->getExtras()]);
     }
 
     public function handleIncidents(Request $request)
@@ -115,11 +112,21 @@ class PayrollController extends Controller
             'user_id' => $request->user_id,
             'payroll_id' => $request->payroll_id,
         ]);
+        $user = User::find($request->user_id);
+        $ep = $user->employee_properties;
+
+        if ($request->incident_id == 3 && $ep['vacations']['available_days'] >= 1) { //vacations?
+            $ep['vacations']['available_days'] = $ep['vacations']['available_days'] - 1;
+            $user->update(['employee_properties' => $ep]);
+        } else {
+            return response()->json(['message' => 'El colaborador no tiene vacaiones disponibles suficientes', 'title' => 'Error', 'type' => 'error', 'item' => PayrollUserResource::make($payroll_user)]); 
+        }
+
         $payroll_user->justification_event_id = $request->incident_id;
 
         $payroll_user->save();
 
-        return response()->json(['item' => PayrollUserResource::make($payroll_user)]);
+        return response()->json(['message' => 'Incidencia cambiada', 'title' => 'Éxito', 'type' => 'success', 'item' => PayrollUserResource::make($payroll_user)]); 
     }
 
     public function handleAttendance(Request $request)
@@ -168,9 +175,6 @@ class PayrollController extends Controller
     public function getPayrollUsers(Request $request)
     {
         $payroll_id = $request->payroll_id;
-        // $users = User::whereHas('payrolls', function($query) use($payroll_id){
-        //     $query->where('payrolls.id', $payroll_id);
-        // })->get();
         $users = UserResource::collection(User::whereHas('payrolls', function($query) use($payroll_id){
             $query->where('payrolls.id', $payroll_id);
         })->get());
@@ -185,7 +189,6 @@ class PayrollController extends Controller
         $processed = collect($payroll->getProcessedAttendances($request->user_id));
         $user = User::find($request->user_id);
         
-        
         // bonuses
         $bonuses = [];
         $user_bonuses = $user->employee_properties['bonuses'];
@@ -195,7 +198,6 @@ class PayrollController extends Controller
              ? $current_bonus->full_time
              : $current_bonus->half_time;
 
-           
             if ($user_bonus_id === 1) { // Asistencia
                 $absent = $processed->first(fn ($item) => $item->justification_event_id === 5);
                 if ($absent) {
@@ -238,10 +240,12 @@ class PayrollController extends Controller
             return $item->getExtras()['minutes'];
         });
 
+        $amount = $processed->sum(function ($item){
+            return $item->getExtras()['amount']['raw'];
+        });
+
         $hours = intval($extras / 60);
         $minutes = $extras % 60;
-
-        $amount = $user->employee_properties['salary']['hour'] * ($extras / 60);
 
         return response()->json(['item' => ['formatted' => "{$hours}h {$minutes}m", 'minutes' => $extras, 'amount' => ['number_format' => number_format($amount, 2), 'raw' => $amount]]]);
     }

@@ -18,7 +18,7 @@ const props = defineProps({
     },
     contentClasses: {
         type: Array,
-        default: () => ['py-1', 'bg-[#D9D9D9]'],
+        default: () => ['py-1', 'bg-[#D9D9D9]', 'px-2'],
     },
 });
 
@@ -73,7 +73,7 @@ const classes = computed(() => {
                 enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100"
                 leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100"
                 leave-to-class="transform opacity-0 scale-95">
-                <div v-show="open" class="absolute z-50 rounded-tr-xl rounded-br-xl origin-top-right -right-[192px] translate-y-[-34px]" :class="[widthClass, alignmentClasses]"
+                <div v-show="open" class="absolute z-50 rounded-tr-xl rounded-br-xl origin-top-right -right-[192px] translate-y-[-41px]" :class="[widthClass, alignmentClasses]"
                     style="display: none;" @click="open = false">
                     <div class="rounded-tr-xl rounded-br-xl" :class="contentClasses">
                         <slot name="content" />

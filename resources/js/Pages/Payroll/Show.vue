@@ -202,6 +202,7 @@ export default {
       users_payroll_filtered_id: [],
       payrollUsersToShow: [],
       loading: false,
+      currentPayroll: null,
     };
   },
   components: {
@@ -249,7 +250,7 @@ export default {
     printPayrolls() {
       this.$inertia.post(route('payrolls.print-template'), {
         users_id_to_show: this.payrollUsersToShow,
-        payroll_id: this.payroll.data.id
+        payroll_id: this.currentPayroll.id
       });
     },
   },
