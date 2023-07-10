@@ -166,7 +166,7 @@ export default {
                 {
                     label: 'Más',
                     icon: '<i class="fa-solid fa-ellipsis text-xs"></i>',
-                    active: route().current('machines.*') || route().current('more-additional-times.*'),
+                    active: route().current('machines.*') || route().current('more-additional-times.*') || route().current('meetings.*'),
                     options: [
                         {
                             label: 'Máquinas',
@@ -178,7 +178,7 @@ export default {
                         },
                         {
                             label: 'Reuniones',
-                            route: 'dashboard'
+                            route: 'meetings.index'
                         },
                         {
                             label: 'Biblioteca de medios',
