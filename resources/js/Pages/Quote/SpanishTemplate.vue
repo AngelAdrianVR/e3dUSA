@@ -46,13 +46,13 @@
                     </td>
                 </tr>
             </tbody>
-            <tfoot>
+            <!-- <tfoot>
                 <tr>
                     <td class="text-center border-t-2 border-gray-400 py-1 font-bold" colspan="6">
                         TOTAL SIN IVA: {{ quote.data.total.number_format }} {{ quote.data.currency }}
                     </td>
                 </tr>
-            </tfoot>
+            </tfoot> -->
         </table>
 
         <!-- Images -->

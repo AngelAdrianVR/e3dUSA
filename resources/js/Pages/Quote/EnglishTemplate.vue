@@ -45,13 +45,13 @@
                     <td class="px-2 py-px text-right">{{ item.pivot.quantity * item.pivot.price }} {{ quote.data.currency }}</td>
                 </tr>
             </tbody>
-            <tfoot>
+            <!-- <tfoot>
                 <tr>
                     <td class="text-center border-t-2 border-gray-400 py-1 font-bold" colspan="6">
                         TOTAL without taxes: {{ quote.data.total.number_format }} {{ quote.data.currency }}
                     </td>
                 </tr>
-            </tfoot>
+            </tfoot> -->
         </table>
 
         <!-- Images -->
