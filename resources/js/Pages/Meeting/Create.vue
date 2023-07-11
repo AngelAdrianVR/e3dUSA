@@ -46,6 +46,7 @@
               <el-time-picker
                 v-model="form.start"
                 placeholder="Hora de comienzo"
+                format="HH:mm"
               />
               <InputError :message="form.errors.start" />
             </div>
@@ -54,6 +55,7 @@
               <el-time-picker
                 v-model="form.end"
                 placeholder="Hora de finalización"
+                format="HH:mm"
               />
               <InputError :message="form.errors.end" />
             </div>

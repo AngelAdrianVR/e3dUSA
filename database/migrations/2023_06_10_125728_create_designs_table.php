@@ -29,13 +29,14 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->unsignedBigInteger('original_design_id');
             $table->foreign('original_design_id')->references('id')->on('designs');
-            $table->string('mesure_unit');
+            $table->string('measure_unit');
             $table->string('authorized_user_name')->nullable();
             $table->timestamp('authorized_at')->nullable();
             $table->timestamp('expected_end_at')->nullable();
             $table->boolean('is_complex')->default(false);
             $table->unsignedTinyInteger('reuse_percentage')->nullable();
             $table->timestamp('started_at')->nullable();
+            $table->timestamp('finished_at')->nullable();
             $table->json('design_modifications')->nullable();
             $table->timestamps();
         });

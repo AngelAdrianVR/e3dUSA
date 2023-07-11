@@ -14,14 +14,24 @@ class DesignResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $status = 'Esperando Autorización';
+        $status = ['label'=>'Esperando Autorización',
+                    'text-color' =>'text-amber-500',
+                    'border-color' => 'border-amber-500'        
+                ];
 
         if($this->authorized_at){
-            $status = 'Autorizado. Sin iniciar';
+            $status = ['label'=>'Autorizado. Sin iniciar',
+            'text-color' =>'text-amber-700',
+            'border-color' => 'border-amber-700'];
         }elseif($this->started_at){
-            $status = 'En proceso';
-        }elseif ($this->status == 1) {
-           $status = 'Terminado';
+            $status = ['label'=>'En proceso',
+            'text-color' =>'text-[#0355B5]',
+            'border-color' => 'border-[#0355B5]'];
+        if ($this->finished_at) {
+                $status = ['label'=>'Terminado',
+                'text-color' =>'text-green-600',
+                'border-color' => 'border-green-600'];
+             }
         }
 
         return [
@@ -36,10 +46,10 @@ class DesignResource extends JsonResource
             'design_data' => $this->design_data,
             'specifications' => $this->specifications,
             'pantones' => $this->pantones ?? 'N/A',
-            'design_type_id' => $this->design_type_id,
+            'design_type' => $this->whenLoaded('designType'),
             'designer' => $this->whenLoaded('designer'),
             'user' => $this->whenLoaded('user'),
-            'mesure_unit' => $this->mesure_unit,
+            'measure_unit' => $this->measure_unit,
             'authorized_user_name' => $this->authorized_user_name ?? '--',
             'authorized_at' => $this->authorized_at?->isoFormat('YYYY MMM DD') ?? 'No autorizado',
             'expected_end_at' => $this->expected_end_at?->isoFormat('YYYY MMM DD') ?? '--',
@@ -48,6 +58,7 @@ class DesignResource extends JsonResource
             'reuse_percentage' => $this->reuse_percentage,
             'design_modifications' => $this->design_modifications,
             'started_at' => $this->started_at?->isoFormat('YYYY MMM DD') ?? 'No iniciado',
+            'finished_at' => $this->finished_at?->isoFormat('YYYY MMM DD'),
             'created_at' => $this->created_at?->isoFormat('YYYY MMM DD'),
             'updated_at' => $this->updated_at?->isoFormat('YYYY MMM DD'),
         ];
