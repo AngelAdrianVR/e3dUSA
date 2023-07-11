@@ -36,6 +36,7 @@ return new class extends Migration
             $table->boolean('is_complex')->default(false);
             $table->unsignedTinyInteger('reuse_percentage')->nullable();
             $table->timestamp('started_at')->nullable();
+            $table->json('design_modifications')->nullable();
             $table->timestamps();
         });
     }

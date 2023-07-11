@@ -161,14 +161,14 @@
                 </IconInput>
                 <InputError :message="form.errors.minutes" />
               </div>
-              <span class="ml-2">min</span>
+              <span class="ml-1">min</span>
 
-              <div class="flex col-span-full ml-3">
+              <div class="flex ml-3">
                 <el-tooltip content="Justificación" placement="top">
                   <span
                     class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
                   >
-                    =
+                    ...
                   </span>
                 </el-tooltip>
                 <textarea

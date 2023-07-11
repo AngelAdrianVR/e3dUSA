@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\MeetingResource;
 use App\Models\Meeting;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class MeetingController extends Controller
@@ -18,7 +19,9 @@ class MeetingController extends Controller
     
     public function create()
     {
-        //
+        $users = User::all();
+
+        return inertia('Meeting/Create', compact('users'));
     }
 
     

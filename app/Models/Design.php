@@ -31,12 +31,14 @@ class Design extends Model
         'is_complex',
         'reuse_percentage',
         'started_at',
+        'design_modifications',
     ];
 
     protected $casts = [
         'authorized_at' => 'datetime',
         'started_at' => 'datetime',
-        'expected_end_at' => 'datetime'
+        'expected_end_at' => 'datetime',
+        'design_modifications' => 'array'
     ];
 
     // relationships
