@@ -18,7 +18,10 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'is_active' => $this->is_active,
+            'is_active' => [
+                'string' => $this->is_active ? 'Activo' : 'Inactivo',
+                'bool' => boolval($this->is_active),
+            ],
             'employee_properties' => $this->employee_properties,
             'pivot' => PayrollUserResource::make($this->pivot),
         ];
