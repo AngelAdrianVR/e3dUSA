@@ -61,7 +61,7 @@
         <strong class="mr-3"> Semana {{ payroll?.week }} </strong>
         {{ payroll?.start_date }} - {{ payroll?.end_date }}
       </p>
-      <div class="flex flex-col">
+      <div class="flex flex-col mr-5">
         <p class="grid grid-cols-3 gap-x-1">
           <span>Días a pagar</span>
           <span class="text-center">{{ getWorkedDays() }}</span>
