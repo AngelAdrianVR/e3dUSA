@@ -194,6 +194,7 @@ export default {
       return vacations.length;
     },
     getWorkedDays() {
+      console.log(this.processedAttendances);
       const worked = this.processedAttendances.filter(item => item.incident?.id == 2 || item.incident == null);
       return worked.length;
     },

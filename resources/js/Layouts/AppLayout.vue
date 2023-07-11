@@ -9,6 +9,7 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import SideNav from '@/Components/MyComponents/SideNav.vue';
 import axios from 'axios';
+import { ElNotification } from 'element-plus';
 
 defineProps({
     title: String,
@@ -32,7 +33,6 @@ const logout = () => {
 const getAttendanceTextButton = async () => {
     try {
         const response = await axios.get(route('users.get-next-attendance'));
-        console.log(response.data);
         nextAttendance.value = response.data.next;
     } catch (error) {
         console.error(error);
@@ -44,16 +44,14 @@ const setAttendance = async () => {
         const response = await axios.get(route('users.set-attendance'));
         if (response.status === 200) {
             nextAttendance.value = response.data.next;
-            this.$notify({
+            ElNotification.success({
                 title: 'Éxito',
                 message: 'Registro correcto',
-                type: 'success'
             });
         }
     } catch (error) {
         console.error(error);
-        this.$notify({
-            title: 'Error',
+        ElNotification.error({
             message: 'error:' + error.message,
             type: 'error'
         });
@@ -164,12 +162,15 @@ onMounted(getAttendanceTextButton);
                                     </Dropdown>
                                 </div>
 
-                                <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                                <el-popconfirm v-if="nextAttendance" confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
                                     title="¿Continuar?" @confirm="setAttendance">
                                     <template #reference>
-                                        <SecondaryButton class="mr-14">
+                                        <SecondaryButton v-if="nextAttendance != 'Dia terminado'" class="mr-14">
                                             {{ nextAttendance }}
                                         </SecondaryButton>
+                                        <span v-else class="bg-[#75b3f9] text-[#0355B5] mr-14 rounded-md px-3 py-1">
+                                            {{ nextAttendance }}
+                                        </span>
                                     </template>
                                 </el-popconfirm>
 

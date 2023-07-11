@@ -8,8 +8,14 @@
         <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
       </div>
       <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
-        <div>
+        <div class="flex justify-between">
           <label>Nóminas</label>
+          <Link
+            :href="route('payrolls.index')"
+            class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </Link>
         </div>
         <div>
           <el-select v-model="selectedPayroll" @change="payrollChanged" filterable allow-create default-first-option
@@ -25,12 +31,12 @@
             {{ currentPayroll?.start_date }} - {{ currentPayroll?.end_date }}
             <el-tag v-if="currentPayroll?.is_active">Nómina en curso</el-tag>
           </p>
-          <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+          <!-- <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
             title="Seguro que deseas eliminar?" @confirm="deleteIncident">
             <template #reference>
               <i class="fa-regular fa-trash-can text-red-600 hover:text-red-500 ml-3 cursor-pointer"></i>
             </template>
-          </el-popconfirm>
+          </el-popconfirm> -->
           <div class="flex items-center">
             <!-- <ThirthButton @click="incidentModal = true" class="ml-9">
               Registrar incidencia

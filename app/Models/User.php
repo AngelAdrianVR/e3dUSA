@@ -107,7 +107,7 @@ class User extends Authenticatable
     {
         $next = '';
         $bonuses = [];
-        foreach ($$this->employee_properties['bonuses'] as $bonus_id) {
+        foreach ($this->employee_properties['bonuses'] as $bonus_id) {
             $bonus = Bonus::find($bonus_id);
             $bonuses[] = [
                 'id' => $bonus_id,
@@ -125,12 +125,14 @@ class User extends Authenticatable
             ],
         ]);
 
+        $today_attendance->update(['late' => $today_attendance->getLateTime()]);
+
         $now_time = now()->isoFormat('HH:mm');
 
         if (is_null($today_attendance->check_in)) {
             $today_attendance->update([
                 'check_in' => $now_time,
-                'late' => $payroll_user->getLateTime(),
+                'late' => $today_attendance->getLateTime(),
             ]);
             $next = 'Registrar inicio break';
         } elseif (is_null($today_attendance->start_break)) {
