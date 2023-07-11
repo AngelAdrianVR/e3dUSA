@@ -82,4 +82,74 @@ class User extends Authenticatable
             ])
             ->withTimestamps();
     }
+
+    // methods
+    public function getNextAttendance()
+    {
+        $next = '';
+        $today_attendance = PayrollUser::where('user_id', $this->id)->whereDate('date', today())->first();
+        if (is_null($today_attendance)) {
+            $next = 'Registrar entrada';
+        } elseif (is_null($today_attendance->start_break)) {
+            $next = 'Registrar inicio break';
+        } elseif (is_null($today_attendance->end_break)) {
+            $next = 'Registrar fin break';
+        } elseif (is_null($today_attendance->check_out)) {
+            $next = 'Registrar salida';
+        } else {
+            $next = 'Dia terminado';
+        }
+
+        return $next;
+    }
+
+    public function setAttendance()
+    {
+        $next = '';
+        $bonuses = [];
+        foreach ($$this->employee_properties['bonuses'] as $bonus_id) {
+            $bonus = Bonus::find($bonus_id);
+            $bonuses[] = [
+                'id' => $bonus_id,
+                'amount' => $this->employee_properties['hours_per_week'] >= 48
+                    ? $bonus->full_time
+                    : $bonus->half_time
+            ];
+        }
+
+        $today_attendance = PayrollUser::firstOrCreate(['date' => today()->toDateString(), 'user_id' => $this->id], [
+            'payroll_id' => Payroll::getCurrent()->id,
+            'additionals' => [
+                'salary' =>  $this->employee_properties['salary'],
+                'bonuses' => $bonuses
+            ],
+        ]);
+
+        $now_time = now()->isoFormat('HH:mm');
+
+        if (is_null($today_attendance->check_in)) {
+            $today_attendance->update([
+                'check_in' => $now_time,
+                'late' => $payroll_user->getLateTime(),
+            ]);
+            $next = 'Registrar inicio break';
+        } elseif (is_null($today_attendance->start_break)) {
+            $today_attendance->update([
+                'start_break' => $now_time,
+            ]);
+            $next = 'Registrar fin break';
+        } elseif (is_null($today_attendance->end_break)) {
+            $today_attendance->update([
+                'end_break' => $now_time,
+            ]);
+            $next = 'Registrar salida';
+        } elseif (is_null($today_attendance->check_out)) {
+            $today_attendance->update([
+                'check_out' => $now_time,
+            ]);
+            $next = 'Dia terminado';
+        }
+
+        return $next;
+    }
 }

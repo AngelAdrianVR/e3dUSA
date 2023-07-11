@@ -124,7 +124,7 @@ export default {
                 {
                     label: 'Recursos Humanos',
                     icon: '<i class="fa-solid fa-user-group text-xs"></i>',
-                    active: route().current('payrolls.*') || route().current('admin-additional-times.*'),
+                    active: route().current('payrolls.*') || route().current('admin-additional-times.*') || route().current('users.*'),
                     options: [
                         {
                             label: 'Nóminas',

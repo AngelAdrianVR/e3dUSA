@@ -129,6 +129,8 @@ Route::resource('payrolls', PayrollController::class)->middleware('auth');
 
 // ------- Recursos humanos(users routes)  ---------
 Route::resource('users', UserController::class)->middleware('auth');
+Route::get('users-get-next-attendance', [UserController::class, 'getNextAttendance'])->middleware('auth')->name('users.get-next-attendance');
+Route::get('users-set-attendance', [UserController::class, 'setAttendance'])->middleware('auth')->name('users.set-attendance');
 
 
 // ------- Design department routes  ---------

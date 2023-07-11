@@ -1,19 +1,21 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import ApplicationMark from '@/Components/ApplicationMark.vue';
 import Banner from '@/Components/Banner.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import SideNav from '@/Components/MyComponents/SideNav.vue';
+import axios from 'axios';
 
 defineProps({
     title: String,
 });
 
 const showingNavigationDropdown = ref(false);
+const nextAttendance = ref('');
 
 const switchToTeam = (team) => {
     router.put(route('current-team.update'), {
@@ -27,6 +29,37 @@ const logout = () => {
     router.post(route('logout'));
 };
 
+const getAttendanceTextButton = async () => {
+    try {
+        const response = await axios.get(route('users.get-next-attendance'));
+        nextAttendance.value = response.data.next;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const setAttendance = async () => {
+    try {
+        const response = await axios.get(route('users.set-attendance'));
+        if (response.status === 200) {
+            nextAttendance.value = response.data.next;
+            this.$notify({
+                title: 'Éxito',
+                message: 'Registro correcto',
+                type: 'success'
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        this.$notify({
+            title: 'Error',
+            message: 'error:' + error.message,
+            type: 'error'
+        });
+    }
+};
+
+onMounted(getAttendanceTextButton);
 </script>
 
 <template>
@@ -129,13 +162,23 @@ const logout = () => {
                                     </Dropdown>
                                 </div>
 
+
+                                <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                                    title="¿Continuar?" @confirm="setAttendance">
+                                    <template #reference>
+                                        <SecondaryButton class="mr-14">
+                                            {{ nextAttendance }}
+                                        </SecondaryButton>
+                                    </template>
+                                </el-popconfirm>
+
                                 <el-tooltip content="Chat" placement="bottom">
                                     <a :href="route('chatify')" target="_blank" class="mr-8">
                                         <i class="fa-solid fa-comments text-[#9A9A9A]"></i>
                                     </a>
                                 </el-tooltip>
 
-                                <i class="fa-solid fa-bell text-[#9A9A9A] mr-8"></i>
+                                <!-- <i class="fa-solid fa-bell text-[#9A9A9A] mr-8"></i> -->
 
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                     class="bi bi-alarm-fill text-[#9A9A9A] mr-3" viewBox="0 0 16 16">
@@ -224,7 +267,8 @@ const logout = () => {
                             <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                 Panel de Inicio
                             </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('catalog-products.index')" :active="route().current('catalog-products.*')">
+                            <ResponsiveNavLink :href="route('catalog-products.index')"
+                                :active="route().current('catalog-products.*')">
                                 Catálogo de productos
                             </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('quotes.index')" :active="route().current('quotes.*')">
@@ -242,16 +286,20 @@ const logout = () => {
                             <ResponsiveNavLink :href="route('purchases.index')" :active="route().current('purchases.*')">
                                 Órdenes de compra
                             </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('storages.raw-materials.index')" :active="route().current('storages.raw-materials.*')">
+                            <ResponsiveNavLink :href="route('storages.raw-materials.index')"
+                                :active="route().current('storages.raw-materials.*')">
                                 Materia prima
                             </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('storages.consumables.index')" :active="route().current('storages.consumables.*')">
+                            <ResponsiveNavLink :href="route('storages.consumables.index')"
+                                :active="route().current('storages.consumables.*')">
                                 Insumos
                             </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('storages.finished-products.index')" :active="route().current('storages.finished-products.*')">
+                            <ResponsiveNavLink :href="route('storages.finished-products.index')"
+                                :active="route().current('storages.finished-products.*')">
                                 Producto terminado
                             </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('storages.scraps.index')" :active="route().current('storages.scraps.*')">
+                            <ResponsiveNavLink :href="route('storages.scraps.index')"
+                                :active="route().current('storages.scraps.*')">
                                 Scrap
                             </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('payrolls.index')" :active="route().current('payrolls.*')">

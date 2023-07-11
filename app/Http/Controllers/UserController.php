@@ -113,4 +113,19 @@ class UserController extends Controller
     {
         //
     }
+
+    // other methods
+    public function getNextAttendance()
+    {
+        $next = auth()->user()->getNextAttendance();
+
+        return response()->json(compact('next'));
+    }
+
+    public function setAttendance()
+    {
+        $next = auth()->user()->setAttendance();
+
+        return response()->json(compact('next'));
+    }
 }

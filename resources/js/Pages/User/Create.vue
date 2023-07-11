@@ -105,7 +105,7 @@
               </el-tooltip>
               <el-date-picker v-model="form.employee_properties.join_date" type="date" placeholder="Fecha de ingreso *"
                 format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
-                <InputError :message="form.errors.employee_properties?.join_date" />
+              <InputError :message="form.errors.employee_properties?.join_date" />
             </div>
             <div class="flex items-center col-span-full">
               <el-tooltip content="Bonos" placement="top">
@@ -136,6 +136,8 @@
             <div v-for="(day, index) in weekDays" :key="index" class="flex items-center">
               <span class="w-28 text-sm">{{ day }}</span>
               <div class="col-span-3">
+                <!-- <el-time-picker v-model="form.employee_properties.work_days[index].check_in" format="hh:mm a"
+                  placeholder="Hora de entrada *" /> -->
                 <IconInput v-model="form.employee_properties.work_days[index].check_in"
                   inputPlaceholder="Hora de entrada *" inputType="time">
                 </IconInput>
