@@ -12,11 +12,13 @@ use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RawMaterialController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
+use App\Models\Holiday;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -133,6 +135,14 @@ Route::resource('users', UserController::class)->middleware('auth');
 Route::get('users-get-next-attendance', [UserController::class, 'getNextAttendance'])->middleware('auth')->name('users.get-next-attendance');
 Route::get('users-set-attendance', [UserController::class, 'setAttendance'])->middleware('auth')->name('users.set-attendance');
 
+// ------- Recursos humanos(Roles and permissions Routes)  ---------
+Route::resource('roles-permissions', RolePermissionController::class)->middleware('auth');
+
+// ------- Recursos humanos(Bonuses Routes)  ---------
+Route::resource('bonuses', BonusController::class)->middleware('auth');
+
+// ------- Recursos humanos(Holidays Routes)  ---------
+Route::resource('holidays', HolidayController::class)->middleware('auth');
 
 // ------- Design department routes  ---------
 Route::resource('designs', DesignController::class)->middleware('auth');

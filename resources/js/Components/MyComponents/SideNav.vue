@@ -124,7 +124,12 @@ export default {
                 {
                     label: 'Recursos Humanos',
                     icon: '<i class="fa-solid fa-user-group text-xs"></i>',
-                    active: route().current('payrolls.*') || route().current('admin-additional-times.*') || route().current('users.*'),
+                    active: route().current('payrolls.*') 
+                        || route().current('admin-additional-times.*')
+                        || route().current('users.*')
+                        || route().current('roles-permissions.*')
+                        || route().current('bonuses.*')
+                        || route().current('holidays.*'),
                     options: [
                         {
                             label: 'Nóminas',
@@ -137,6 +142,18 @@ export default {
                         {
                             label: 'Personal',
                             route: 'users.index'
+                        },
+                        {
+                            label: 'Roles y permisos',
+                            route: 'roles-permissions.index'
+                        },
+                        {
+                            label: 'Bonos',
+                            route: 'bonuses.index'
+                        },
+                        {
+                            label: 'Dias festivos',
+                            route: 'holidays.index'
                         },
                     ],
                     dropdown: true

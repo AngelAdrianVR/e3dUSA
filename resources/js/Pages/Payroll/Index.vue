@@ -11,21 +11,23 @@
 
       <!-- tabla -->
       <div class="lg:w-5/6 mx-auto mt-6">
-        <!-- pagination -->
-        <div class="mb-3">
-          <el-pagination @current-change="handlePagination" layout="prev, pager, next" :total="payrolls.data.length" />
-        </div>
+        <div class="flex justify-between">
+          <!-- pagination -->
+          <div class="mb-3">
+            <el-pagination @current-change="handlePagination" layout="prev, pager, next" :total="payrolls.data.length" />
+          </div>
 
-        <!-- buttons -->
-        <div class="flex justify-end mb-3">
-          <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
-            @confirm="closePayroll">
-            <template #reference>
-              <PrimaryButton :disabled="!isThursdayAfter8PM">
-                Cerrar nómina
-              </PrimaryButton>
-            </template>
-          </el-popconfirm>
+          <!-- buttons -->
+          <div>
+            <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+              @confirm="closePayroll">
+              <template #reference>
+                <PrimaryButton :disabled="!isThursdayAfter8PM">
+                  Cerrar nómina
+                </PrimaryButton>
+              </template>
+            </el-popconfirm>
+          </div>
         </div>
         <el-table @row-click="handleRowClick" :data="filteredTableData" max-height="450" style="width: 100%"
           class="cursor-pointer" @selection-change="handleSelectionChange" ref="multipleTableRef"
@@ -139,12 +141,12 @@ export default {
     }
   },
   mounted() {
-  const today = moment();
-  const isThursday = today.isoWeekday() === 4;
-  const isAfter8PM = today.isAfter(moment().set('hour', 20));//8:00 PM
+    const today = moment();
+    const isThursday = today.isoWeekday() === 4;
+    const isAfter8PM = today.isAfter(moment().set('hour', 20));//8:00 PM
 
-  this.isThursdayAfter8PM = isThursday && isAfter8PM;
-},
+    this.isThursdayAfter8PM = isThursday && isAfter8PM;
+  },
   computed: {
     filteredTableData() {
       return this.payrolls.data.filter(
