@@ -4,6 +4,7 @@ use App\Http\Controllers\AdditionalTimeRequestController;
 use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\DesignController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\MachineController;
 use App\Http\Controllers\MaintenanceController;
@@ -86,6 +87,7 @@ Route::post('purchases/clone', [PurchaseController::class, 'clone'])->name('purc
 Route::put('purchases/mark-order-done/{currentPurchase}', [PurchaseController::class, 'markOrderDone'])->name('purchases.done');
 Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseController::class, 'markOrderRecieved'])->name('purchases.recieved');
 
+
 // ------- Nóminas(Payrolls Routes)  ---------
 Route::post('payrolls/processed-attendances', [PayrollController::class, 'getProcessedAttendances'])->middleware('auth')->name('payrolls.processed-attendances');
 Route::post('payrolls/handle-late', [PayrollController::class, 'handleLate'])->middleware('auth')->name('payrolls.handle-late');
@@ -98,6 +100,7 @@ Route::post('payrolls/get-bonuses', [PayrollController::class, 'getBonuses'])->m
 Route::post('payrolls/get-extras', [PayrollController::class, 'getExtras'])->middleware('auth')->name('payrolls.get-extras');
 Route::post('payrolls/get-payroll-users', [PayrollController::class, 'getPayrollUsers'])->middleware('auth')->name('payrolls.get-payroll-users');
 Route::post('payrolls/print-template', [PayrollController::class, 'printTemplate'])->middleware('auth')->name('payrolls.print-template');
+
 
 // ------- Raw Material routes  ---------
 Route::resource('raw-materials', RawMaterialController::class)->middleware('auth');
@@ -126,6 +129,11 @@ Route::resource('payrolls', PayrollController::class)->middleware('auth');
 
 // ------- Recursos humanos(users routes)  ---------
 Route::resource('users', UserController::class)->middleware('auth');
+
+
+// ------- Design department routes  ---------
+Route::resource('designs', DesignController::class)->middleware('auth');
+Route::post('designs/massive-delete', [DesignController::class, 'massiveDelete'])->name('designs.massive-delete');
 
 
 // ------- Machines Routes  ---------

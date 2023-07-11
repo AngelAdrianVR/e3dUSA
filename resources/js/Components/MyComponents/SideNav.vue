@@ -145,8 +145,8 @@ export default {
                 {
                     label: 'Diseño',
                     icon: '<i class="fa-solid fa-pen-ruler text-xs"></i>',
-                    route: route('dashboard'),
-                    active: route().current('dashboar'),
+                    route: route('designs.index'),
+                    active: route().current('designs.*'),
                     // show: this.$page.props.auth.user.is_admin
                 },
                 {
