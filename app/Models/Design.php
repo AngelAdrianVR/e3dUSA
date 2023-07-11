@@ -23,7 +23,7 @@ class Design extends Model
         'designer_id',
         'design_type_id',
         'user_id',
-        'mesure_unit',
+        'measure_unit',
         'authorized_user_name',
         'authorized_at',
         'expected_end_at',
@@ -31,12 +31,14 @@ class Design extends Model
         'is_complex',
         'reuse_percentage',
         'started_at',
+        'finished_at',
         'design_modifications',
     ];
 
     protected $casts = [
         'authorized_at' => 'datetime',
         'started_at' => 'datetime',
+        'finished_at' => 'datetime',
         'expected_end_at' => 'datetime',
         'design_modifications' => 'array'
     ];
