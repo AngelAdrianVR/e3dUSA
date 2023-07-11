@@ -165,5 +165,6 @@ return [
         'hours' => 'horas',
         'minutes' => 'minutos',
         'justification' => 'justificación',
+        'expected_end_at' => 'Fecha estimada de finalización',
     ],
 ];

@@ -41,7 +41,7 @@
                     <el-table-column prop="name" label="Deseño" width="150" />
                     <el-table-column prop="designer.name" label="Diseñador(a)" width="150" />
                     <el-table-column prop="created_at" label="Solicitado el" width="120" />
-                    <el-table-column prop="status" label="Estatus" width="200" />
+                    <el-table-column prop="status[label]" label="Estatus" width="200" />
                     <el-table-column align="right" fixed="right">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
@@ -55,7 +55,7 @@
                                     <el-dropdown-menu>
                                         <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
                                             Ver</el-dropdown-item>
-                                        <el-dropdown-item :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                        <el-dropdown-item v-if="scope.row.status['label'] == 'Esperando Autorización'" :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>

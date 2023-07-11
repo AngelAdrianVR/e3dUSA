@@ -232,11 +232,13 @@ import axios from "axios";
 
 export default {
   data() {
+    
     const form = useForm({
       hours: null,
       minutes: null,
       justification: null,
     });
+
     return {
       form,
       disableMassiveActions: true,

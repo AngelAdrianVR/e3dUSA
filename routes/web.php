@@ -134,6 +134,8 @@ Route::resource('users', UserController::class)->middleware('auth');
 // ------- Design department routes  ---------
 Route::resource('designs', DesignController::class)->middleware('auth');
 Route::post('designs/massive-delete', [DesignController::class, 'massiveDelete'])->name('designs.massive-delete');
+Route::put('designs/start-order/{design}', [DesignController::class, 'startOrder'])->name('designs.start-order');
+Route::put('designs/finish-order/{design}', [DesignController::class, 'finishOrder'])->name('designs.finish-order');
 
 
 // ------- Machines Routes  ---------
