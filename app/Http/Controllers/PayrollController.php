@@ -40,7 +40,7 @@ class PayrollController extends Controller
         $payroll = PayrollResource::make(Payroll::find($payroll_id));
         $justifications = JustificationEvent::all();
         $payrolls = PayrollResource::collection(Payroll::with('users')->latest()->get());
-        $users = UserResource::collection(User::whereHas('payrolls', function($query) use($payroll_id){
+        $users = UserResource::collection(User::whereHas('payrolls', function ($query) use ($payroll_id) {
             $query->where('payrolls.id', $payroll_id);
         })->get());
         $payroll_users = PayrollUser::where('payroll_id', $payroll_id)->get(['user_id', 'id'])->groupBy('user_id');
@@ -81,10 +81,8 @@ class PayrollController extends Controller
         $payroll_user = PayrollUser::find($request->payroll_user_id);
         if ($payroll_user->late) {
             $payroll_user->late = 0;
-        }
-        else {
+        } else {
             $payroll_user->late = $payroll_user->getLateTime();
-
         }
 
         $payroll_user->save();
@@ -107,7 +105,7 @@ class PayrollController extends Controller
 
     public function handleIncidents(Request $request)
     {
-        $payroll_user = PayrollUser::firstOrCreate(['id' => $request->payroll_user_id],[
+        $payroll_user = PayrollUser::firstOrCreate(['id' => $request->payroll_user_id], [
             'date' => $request->date,
             'user_id' => $request->user_id,
             'payroll_id' => $request->payroll_id,
@@ -119,14 +117,14 @@ class PayrollController extends Controller
             $ep['vacations']['available_days'] = $ep['vacations']['available_days'] - 1;
             $user->update(['employee_properties' => $ep]);
         } else {
-            return response()->json(['message' => 'El colaborador no tiene vacaiones disponibles suficientes', 'title' => 'Error', 'type' => 'error', 'item' => PayrollUserResource::make($payroll_user)]); 
+            return response()->json(['message' => 'El colaborador no tiene vacaiones disponibles suficientes', 'title' => 'Error', 'type' => 'error', 'item' => PayrollUserResource::make($payroll_user)]);
         }
 
         $payroll_user->justification_event_id = $request->incident_id;
 
         $payroll_user->save();
 
-        return response()->json(['message' => 'Incidencia cambiada', 'title' => 'Éxito', 'type' => 'success', 'item' => PayrollUserResource::make($payroll_user)]); 
+        return response()->json(['message' => 'Incidencia cambiada', 'title' => 'Éxito', 'type' => 'success', 'item' => PayrollUserResource::make($payroll_user)]);
     }
 
     public function handleAttendance(Request $request)
@@ -156,7 +154,7 @@ class PayrollController extends Controller
                     'end_break' => $attendance['end_break'],
                     'check_out' => $attendance['check_out'],
                 ]);
-    
+
                 $payroll_user->late = $payroll_user->getLateTime();
                 $payroll_user->save();
             }
@@ -175,7 +173,7 @@ class PayrollController extends Controller
     public function getPayrollUsers(Request $request)
     {
         $payroll_id = $request->payroll_id;
-        $users = UserResource::collection(User::whereHas('payrolls', function($query) use($payroll_id){
+        $users = UserResource::collection(User::whereHas('payrolls', function ($query) use ($payroll_id) {
             $query->where('payrolls.id', $payroll_id);
         })->get());
         $payroll_users = PayrollUser::where('payroll_id', $payroll_id)->get(['user_id', 'id'])->groupBy('user_id');
@@ -188,15 +186,15 @@ class PayrollController extends Controller
         $payroll = Payroll::find($request->payroll_id);
         $processed = collect($payroll->getProcessedAttendances($request->user_id));
         $user = User::find($request->user_id);
-        
+
         // bonuses
         $bonuses = [];
         $user_bonuses = $user->employee_properties['bonuses'];
         foreach ($user_bonuses as $user_bonus_id) {
             $current_bonus = Bonus::find($user_bonus_id);
-            $amount = $user->employee_properties['hours_per_week'] >= 48 
-             ? $current_bonus->full_time
-             : $current_bonus->half_time;
+            $amount = $user->employee_properties['hours_per_week'] >= 48
+                ? $current_bonus->full_time
+                : $current_bonus->half_time;
 
             if ($user_bonus_id === 1) { // Asistencia
                 $absent = $processed->first(fn ($item) => $item->justification_event_id === 5);
@@ -221,7 +219,7 @@ class PayrollController extends Controller
                 $absents = $processed->filter(fn ($item) => $item->justification_event_id === 5)->count();
                 $discount = $amount / 6;
                 $amount -= ($days_late + $absents) * $discount;
-            } 
+            }
 
             $bonuses[] = ['name' => $current_bonus->name, 'amount' => ['number_format' => number_format($amount, 2), 'raw' => $amount]];
         }
@@ -236,11 +234,11 @@ class PayrollController extends Controller
         $processed = collect($payroll->getProcessedAttendances($request->user_id));
         $user = User::find($request->user_id);
 
-        $extras = $processed->sum(function ($item){
+        $extras = $processed->sum(function ($item) {
             return $item->getExtras()['minutes'];
         });
 
-        $amount = $processed->sum(function ($item){
+        $amount = $processed->sum(function ($item) {
             return $item->getExtras()['amount']['raw'];
         });
 
@@ -256,5 +254,18 @@ class PayrollController extends Controller
         $processed = PayrollUserResource::collection($payroll->getProcessedAttendances($request->user_id));
 
         return response()->json(['items' => $processed]);
+    }
+
+    public function closeCurrent()
+    {
+        $current = Payroll::getCurrent();
+        $new = Payroll::create([
+            'start_date' => $current->start_date->addDays(7)->toDateString(),
+            'week' => today()->weekOfYear,
+        ]);
+
+        $current->update(['is_active' => 0]);
+
+        return response()->json(['message' => "Nomina semana $current->week cerrada", 'item' => PayrollResource::make($new)]);
     }
 }

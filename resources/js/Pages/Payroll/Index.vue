@@ -17,7 +17,15 @@
         </div>
 
         <!-- buttons -->
-        <div>
+        <div class="flex justify-end mb-3">
+          <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+            @confirm="closePayroll">
+            <template #reference>
+              <PrimaryButton :disabled="!isThursdayAfter8PM">
+                Cerrar nómina
+              </PrimaryButton>
+            </template>
+          </el-popconfirm>
         </div>
         <el-table @row-click="handleRowClick" :data="filteredTableData" max-height="450" style="width: 100%"
           class="cursor-pointer" @selection-change="handleSelectionChange" ref="multipleTableRef"
@@ -42,11 +50,15 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 import EmptyTable from "@/Components/MyComponents/EmptyTable.vue";
 import Table from "@/Components/MyComponents/Table.vue";
 import TextInput from '@/Components/TextInput.vue';
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
+import moment from 'moment';
+import 'moment/locale/es';
+moment.locale('es');
 
 
 export default {
@@ -60,6 +72,7 @@ export default {
       itemsPerPage: 10,
       start: 0,
       end: 10,
+      isThursdayAfter8PM: false
     };
   },
   components: {
@@ -69,9 +82,10 @@ export default {
     SecondaryButton,
     Link,
     TextInput,
+    PrimaryButton
   },
   props: {
-    payrolls: Array
+    payrolls: Object
   },
   methods: {
     tableRowClassName({ row, rowIndex }) {
@@ -92,35 +106,20 @@ export default {
       this.start = (val - 1) * this.itemsPerPage;
       this.end = val * this.itemsPerPage;
     },
-    async deleteSelections() {
+    handleRowClick(row) {
+      this.$inertia.get(route('payrolls.show', row));
+    },
+    async closePayroll() {
       try {
-        const response = await axios.post(route('raw-materials.massive-delete', {
-          payrolls: this.$refs.multipleTableRef.value
-        }));
+        const response = await axios.get(route('payrolls.close-current'));
 
         if (response.status == 200) {
+          this.payrolls.data.unshift(response.data.item);
           this.$notify({
             title: 'Éxito',
             message: response.data.message,
             type: 'success'
           });
-
-          // update list of quotes
-          let deletedIndexes = [];
-          this.payrolls.forEach((payroll, index) => {
-            if (this.$refs.multipleTableRef.value.includes(payroll)) {
-              deletedIndexes.push(index);
-            }
-          });
-
-          // Ordenar los índices de forma descendente para evitar problemas de desplazamiento al eliminar elementos
-          deletedIndexes.sort((a, b) => b - a);
-
-          // Eliminar cotizaciones por índice
-          for (const index of deletedIndexes) {
-            this.payrolls.splice(index, 1);
-          }
-
         } else {
           this.$notify({
             title: 'Algo salió mal',
@@ -137,16 +136,15 @@ export default {
         });
         console.log(err);
       }
-    },
-    edit(index, payroll) {
-      console.log(payroll);
-      this.$inertia.get(route('raw-materials.edit', payroll.storageable));
-    },
-    handleRowClick(row) {
-      this.$inertia.get(route('payrolls.show', row));
     }
   },
+  mounted() {
+  const today = moment();
+  const isThursday = today.isoWeekday() === 4;
+  const isAfter8PM = today.isAfter(moment().set('hour', 20));//8:00 PM
 
+  this.isThursdayAfter8PM = isThursday && isAfter8PM;
+},
   computed: {
     filteredTableData() {
       return this.payrolls.data.filter(
