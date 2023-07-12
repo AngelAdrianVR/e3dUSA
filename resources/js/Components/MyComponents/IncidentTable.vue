@@ -61,7 +61,7 @@
                   <i class="fa-solid fa-minus"></i>
                 </td>
                 <td v-if="attendance.total_worked_time" class="px-6 text-xs py-2 w-32">
-                  {{ attendance.total_worked_time }}
+                  {{ attendance.total_worked_time.formatted }}
                   <span v-if="attendance.extras_enabled" class="text-green-500"> +{{ attendance.extras.formatted }}
                     extras</span>
                 </td>

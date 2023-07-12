@@ -103,7 +103,8 @@ class UserController extends Controller
         $validated['employee_properties']['salary']['hour'] = 
             round($validated['employee_properties']['salary']['week'] / $validated['employee_properties']['hours_per_week'], 2);
         $validated['employee_properties']['salary']['day'] = round($validated['employee_properties']['salary']['hour'] * $hours_per_day, 2);   
-        
+        $validated['employee_properties']['hours_per_day'] = round($hours_per_day, 2);
+
         $user->update($validated);
 
         return to_route('users.index');

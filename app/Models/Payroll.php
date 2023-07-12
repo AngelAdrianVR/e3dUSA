@@ -59,18 +59,26 @@ class Payroll extends Model
         $processed = [];
         for ($i = 0; $i < 7; $i++) {
             $current_date = $this->start_date->addDays($i);
+            $holiday = Holiday::whereDate('date', $current_date)->where('is_active', 1)->first();
             $current = $attendances->firstWhere('date', $current_date);
+            $is_day_off = $user->employee_properties['work_days'][$current_date->dayOfWeek]['check_in'] == 0;
             if ($current) {
                 $processed[] = $current;
             } else {
                 $payroll_user = new PayrollUser(['date' => $current_date->toDateString()]);
-                if ($current_date->greaterThan(now())) {
-                    $payroll_user->justification_event_id = 7;
+                // holiday
+                if ($holiday && !$is_day_off) {
+                    $payroll_user->justification_event_id = -$holiday->id;
                 } else {
-                    if ($user->employee_properties['work_days'][$current_date->dayOfWeek]['check_in'] == 0) {
-                        $payroll_user->justification_event_id = 6;
-                    } else {
-                        $payroll_user->justification_event_id = 5;
+                    // day not passed yet
+                    if ($current_date->greaterThan(now())) {
+                        $payroll_user->justification_event_id = 7;
+                    } else { //days passed
+                        if ($is_day_off) { //day off
+                            $payroll_user->justification_event_id = 6;
+                        } else { //absent
+                            $payroll_user->justification_event_id = 5;
+                        }
                     }
                 }
                 $processed[] = $payroll_user;

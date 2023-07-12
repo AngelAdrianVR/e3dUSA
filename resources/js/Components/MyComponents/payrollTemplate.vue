@@ -36,7 +36,7 @@
                   <i class="fa-solid fa-minus"></i>
                 </td>
                 <td v-if="attendance.total_worked_time" class="px-6 text-xs py-px lg:py-2 w-32">
-                  {{ attendance.total_worked_time }}
+                  {{ attendance.total_worked_time.formatted }}
                   <span v-if="attendance.extras_enabled" class="text-green-500"> +{{ attendance.extras.formatted }}
                     extras</span>
                 </td>
@@ -63,19 +63,24 @@
       </p>
       <div class="flex flex-col mr-5">
         <p class="grid grid-cols-3 gap-x-1">
-          <span>Días a pagar</span>
-          <span class="text-center">{{ getWorkedDays() }}</span>
-          <span>${{ (user.employee_properties.salary.day * getWorkedDays()).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+          <span>Días trabajados</span>
+          <span class="text-center">{{ getWorkedDays().length }}</span>
+          <span>${{ getWorkedDaysSalary().toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
         </p>
-        <p v-if="getVacations()" class="grid grid-cols-3 gap-x-1">
+        <p v-if="getHolidays().length" class="grid grid-cols-3 gap-x-1">
+          <span>Días Feriados</span>
+          <span class="text-center">{{ getHolidays().length }}</span>
+          <span>${{ (user.employee_properties.salary.day * getHolidays().length).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+        </p>
+        <p v-if="getVacations().length" class="grid grid-cols-3 gap-x-1">
           <span>Vacaciones</span>
-          <span class="text-center">{{ getVacations() }}</span>
-          <span>${{ getVacations() * user.employee_properties.salary.day }}</span>
+          <span class="text-center">{{ getVacations().length }}</span>
+          <span>${{ getVacations().length * user.employee_properties.salary.day }}</span>
         </p>
-        <p v-if="getVacations()" class="grid grid-cols-3 gap-x-1">
+        <p v-if="getVacations().length" class="grid grid-cols-3 gap-x-1">
           <span>Prima vacacional</span>
           <span class="text-center"></span>
-          <span>${{ getVacations() * user.employee_properties.salary.day * 0.25 }}</span>
+          <span>${{ getVacations().length * user.employee_properties.salary.day * 0.25 }}</span>
         </p>
         <p v-for="(bonus, index) in bonuses" :key="index" class="grid grid-cols-3 gap-x-1">
           <span>{{ bonus.name }}</span>
@@ -190,24 +195,29 @@ export default {
       }
     },
     getVacations() {
-      const vacations = this.processedAttendances.filter(item => item.incident?.id === 3);
-      return vacations.length;
+      return this.processedAttendances.filter(item => item.incident?.id === 3);
     },
     getWorkedDays() {
-      console.log(this.processedAttendances);
-      const worked = this.processedAttendances.filter(item => item.incident?.id == 2 || item.incident == null);
-      return worked.length;
+      return this.processedAttendances.filter(item => item.incident?.id == 2 || item.incident == null);
+    },
+    getHolidays() {
+      return this.processedAttendances.filter(item => item.incident?.id < 0);
+    },
+    getWorkedDaysSalary() {
+      return this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0) * this.user.employee_properties.salary.hour;
     },
     getTotal() {
       const dayly_salary = this.processedAttendances.find(item => item.check_out).additionals.salary.day;
-      const vacations = this.getVacations() * 1.25 * dayly_salary;
-      const weekSalary = dayly_salary * this.getWorkedDays();
+      const vacations = this.getVacations().length * 1.25 * dayly_salary;
+      const workedDays = this.getWorkedDaysSalary();
+      const holyDays = dayly_salary * this.getHolidays().length;
       const bonuses = this.bonuses.reduce((accumulator, bonus) => {
         return accumulator + bonus.amount.raw;
       }, 0);
 
       return vacations
-            + weekSalary
+            + workedDays
+            + holyDays
             + bonuses
             + this.extras.amount.raw;
     }
