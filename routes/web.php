@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\AdditionalTimeRequestController;
+use App\Http\Controllers\BonusController;
 use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\MachineController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MeetingController;
@@ -89,6 +91,11 @@ Route::post('purchases/clone', [PurchaseController::class, 'clone'])->name('purc
 Route::put('purchases/mark-order-done/{currentPurchase}', [PurchaseController::class, 'markOrderDone'])->name('purchases.done');
 Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseController::class, 'markOrderRecieved'])->name('purchases.recieved');
 
+// ------- Raw Material routes  ---------
+Route::resource('raw-materials', RawMaterialController::class)->middleware('auth');
+Route::post('raw-materials/massive-delete', [RawMaterialController::class, 'massiveDelete'])->name('raw-materials.massive-delete')->middleware('auth');
+Route::get('consumables/create', [RawMaterialController::class, 'create'])->name('consumables.create')->middleware('auth');
+Route::get('consumables-edit/{raw_material}', [RawMaterialController::class, 'editConsumable'])->name('consumables.edit')->middleware('auth');
 
 // ------- Nóminas(Payrolls Routes)  ---------
 Route::post('payrolls/processed-attendances', [PayrollController::class, 'getProcessedAttendances'])->middleware('auth')->name('payrolls.processed-attendances');
@@ -104,13 +111,24 @@ Route::post('payrolls/get-payroll-users', [PayrollController::class, 'getPayroll
 Route::post('payrolls/print-template', [PayrollController::class, 'printTemplate'])->middleware('auth')->name('payrolls.print-template');
 Route::get('payrolls/close-current', [PayrollController::class, 'closeCurrent'])->middleware('auth')->name('payrolls.close-current');
 
+// ------- Recursos humanos(Payrolls Routes)  ---------
+Route::resource('payrolls', PayrollController::class)->middleware('auth');
 
-// ------- Raw Material routes  ---------
-Route::resource('raw-materials', RawMaterialController::class)->middleware('auth');
-Route::post('raw-materials/massive-delete', [RawMaterialController::class, 'massiveDelete'])->name('raw-materials.massive-delete')->middleware('auth');
-Route::get('consumables/create', [RawMaterialController::class, 'create'])->name('consumables.create')->middleware('auth');
-Route::get('consumables-edit/{raw_material}', [RawMaterialController::class, 'editConsumable'])->name('consumables.edit')->middleware('auth');
+// ------- Recursos humanos(users routes)  ---------
+Route::resource('users', UserController::class)->middleware('auth');
+Route::get('users-get-next-attendance', [UserController::class, 'getNextAttendance'])->middleware('auth')->name('users.get-next-attendance');
+Route::get('users-set-attendance', [UserController::class, 'setAttendance'])->middleware('auth')->name('users.set-attendance');
 
+// ------- Recursos humanos(Roles and permissions Routes)  ---------
+Route::resource('roles-permissions', RolePermissionController::class)->middleware('auth');
+
+// ------- Recursos humanos(Bonuses Routes)  ---------
+Route::resource('bonuses', BonusController::class)->middleware('auth');
+Route::post('bonuses/massive-delete', [BonusController::class, 'massiveDelete'])->name('bonuses.massive-delete');
+
+// ------- Recursos humanos(Holidays Routes)  ---------
+Route::resource('holidays', HolidayController::class)->middleware('auth');
+Route::post('holidays/massive-delete', [HolidayController::class, 'massiveDelete'])->name('holidays.massive-delete');
 
 // ------- Almacen routes---------
 Route::get('/storage-raw-materials', [StorageController::class, 'index'])->middleware('auth')->name('storages.raw-materials.index');
@@ -124,25 +142,6 @@ Route::get('/storage-scraps/create', [StorageController::class, 'create'])->midd
 Route::post('/storage-scraps/store', [StorageController::class, 'scrapStore'])->middleware('auth')->name('storages.scraps.store');
 Route::post('storages/scrap/massive-delete', [StorageController::class, 'scrapMassiveDelete'])->name('storages.scraps.massive-delete');
 Route::post('storages/massive-delete', [StorageController::class, 'massiveDelete'])->name('storages.massive-delete');
-
-
-// ------- Recursos humanos(Payrolls Routes)  ---------
-Route::resource('payrolls', PayrollController::class)->middleware('auth');
-
-
-// ------- Recursos humanos(users routes)  ---------
-Route::resource('users', UserController::class)->middleware('auth');
-Route::get('users-get-next-attendance', [UserController::class, 'getNextAttendance'])->middleware('auth')->name('users.get-next-attendance');
-Route::get('users-set-attendance', [UserController::class, 'setAttendance'])->middleware('auth')->name('users.set-attendance');
-
-// ------- Recursos humanos(Roles and permissions Routes)  ---------
-Route::resource('roles-permissions', RolePermissionController::class)->middleware('auth');
-
-// ------- Recursos humanos(Bonuses Routes)  ---------
-Route::resource('bonuses', BonusController::class)->middleware('auth');
-
-// ------- Recursos humanos(Holidays Routes)  ---------
-Route::resource('holidays', HolidayController::class)->middleware('auth');
 
 // ------- Design department routes  ---------
 Route::resource('designs', DesignController::class)->middleware('auth');
