@@ -5,7 +5,7 @@
         <div class="flex justify-between">
           <Link
             :href="route('storages.finished-products.index')"
-            class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center"
+            class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center"
           >
             <i class="fa-solid fa-chevron-left"></i>
           </Link>
@@ -42,10 +42,12 @@
             <div>
               <IconInput
                 v-model="form.quantity"
-                inputPlaceholder="Stock de apertura"
+                inputPlaceholder="Cantidad en stock"
                 inputType="number"
               >
+              <el-tooltip content="Cantidad en stock del producto terminado" placement="top">
                 123
+                </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.quantity" />
             </div>
@@ -56,7 +58,9 @@
                 inputPlaceholder="Ubicaión *"
                 inputType="text"
               >
+              <el-tooltip content="Ubicación en almacén" placement="top">
                 <i class="fa-solid fa-box"></i>
+                </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.location" />
             </div>

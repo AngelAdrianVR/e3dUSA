@@ -5,7 +5,7 @@
         <div class="flex justify-between">
           <Link
             :href="route('machines.index')"
-            class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center"
+            class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center"
           >
             <i class="fa-solid fa-chevron-left"></i>
           </Link>
