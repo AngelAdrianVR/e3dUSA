@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('company_branch_name')->nullable();
             $table->string('contact_name')->nullable();
             $table->string('dimensions')->nullable();
-            $table->unsignedTinyInteger('status');
             $table->text('design_data')->nullable();
             $table->text('specifications')->nullable();
             $table->string('pantones')->nullable();

@@ -15,7 +15,7 @@
         {{currentSale}}
         <div class="flex justify-between">
           <el-select
-            v-model="saleSelected"
+            v-model="selectedSale"
             clearable
             filterable
             placeholder="Buscar órden de venta"
@@ -108,12 +108,12 @@
 
             <span class="text-gray-500">Paquetería</span>
             <span>{{ currentSale?.shipping_company }}</span>
-            <span class="text-gray-500">Guía</span>
+            <span class="text-gray-500  my-2">Guía</span>
             <span>{{ currentSale?.traking_guide }}</span>
-            <span class="text-gray-500">Costo de envío</span>
+            <span class="text-gray-500  my-2">Costo de envío</span>
             <span>{{ currentSale?.freight_cost }}</span>
 
-        <p class="text-secondary col-span-2 mb-2">Datos de la órden</p>
+        <p class="text-secondary col-span-2 mb-2 mt-8">Datos de la órden</p>
 
             <span class="text-gray-500">ID</span>
             <span>{{ currentSale?.id }}</span>
@@ -277,6 +277,7 @@ export default {
   watch: {
     selectedSale(newVal) {
       this.currentSale = this.sales.data.find((item) => item.id == newVal);
+      console.log(this);
     },
   },
 

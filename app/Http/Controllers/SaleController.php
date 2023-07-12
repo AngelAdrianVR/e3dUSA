@@ -57,7 +57,7 @@ class SaleController extends Controller
 
     public function show(Sale $sale)
     {
-        $sales = SaleResource::collection(Sale::all());
+        $sales = SaleResource::collection(Sale::latest()->get());
         
         return inertia('Sale/Show', compact('sale', 'sales'));
     }

@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('shipping_company')->nullable();
             $table->unsignedMediumInteger('freight_cost');
-            $table->unsignedTinyInteger('status')->nullable()->default(0);
             $table->string('oce_name')->nullable();
             $table->string('order_via');
             $table->string('tracking_guide')->nullable();
