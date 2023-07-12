@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\HolidayResource;
 use App\Models\Holiday;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,9 @@ class HolidayController extends Controller
      */
     public function index()
     {
-        //
+        $holidays = HolidayResource::collection(Holiday::all());
+
+        return inertia('Holiday/Index', compact('holidays'));
     }
 
     /**
@@ -61,5 +64,16 @@ class HolidayController extends Controller
     public function destroy(Holiday $holiday)
     {
         //
+    }
+
+    // other methods
+    public function massiveDelete(Request $request)
+    {
+        foreach ($request->holidays as $holiday) {
+            $holiday = Holiday::find($holiday['id']);
+            $holiday?->delete();
+        }
+
+        return response()->json(['message' => 'Dia(s) eliminado(s)']);
     }
 }
