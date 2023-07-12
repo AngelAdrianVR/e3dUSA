@@ -14,6 +14,15 @@ class HolidayResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'date' => [
+                'string' => $this->date->toDateString(),
+                'formatted' => $this->date->isoFormat('DD MMMM'),
+            ],
+            'is_active' => $this->is_active,
+            'created_at' => $this->created_at,
+        ];
     }
 }

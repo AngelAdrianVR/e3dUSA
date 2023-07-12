@@ -7,9 +7,7 @@
                         <h2 class="font-semibold text-xl leading-tight">Gestión de dias festivos</h2>
                     </div>
                     <div>
-                        <Link :href="route('holidays.create')">
-                        <SecondaryButton>+ Nuevo</SecondaryButton>
-                        </Link>
+                        <SecondaryButton @click="editFlag = false; showModal = true;">+ Nuevo</SecondaryButton>
                     </div>
                 </div>
             </template>
@@ -34,35 +32,66 @@
                         </el-popconfirm>
                     </div>
                 </div>
-                <el-table :data="filteredTableData" max-height="450" style="width: 100%"
+                <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="450" style="width: 100%"
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="id" label="ID" width="50" />
                     <el-table-column prop="name" label="Nombre" />
-                    <el-table-column prop="date" label="Fecha" />
+                    <el-table-column prop="date.formatted" label="Fecha" />
                     <el-table-column align="right" fixed="right" width="200">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
-                        </template>
-                        <template #default="scope">
-                            <el-dropdown trigger="click" @command="handleCommand">
-                                <span class="el-dropdown-link mr-3">
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                </span>
-                                <template #dropdown>
-                                    <el-dropdown-menu>
-                                        <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
-                                            Ver</el-dropdown-item>
-                                        <el-dropdown-item :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
-                                            Editar</el-dropdown-item>
-                                    </el-dropdown-menu>
-                                </template>
-                            </el-dropdown>
                         </template>
                     </el-table-column>
                 </el-table>
             </div>
             <!-- tabla -->
+
+            <!-- -------------- Modal starts----------------------- -->
+            <DialogModal :show="showModal" @close="showModal = false">
+                <template #title>
+                    <p v-if="editFlag">Editar Bono "{{ itemClicked.name }}"</p>
+                    <p v-else>Crear Bono</p>
+                </template>
+                <template #content>
+                    <form ref="myForm" @submit.prevent="editFlag ? update() : store()">
+                        <div class="flex justify-end">
+                            <el-switch v-model="form.is_active" inline-prompt size="large"
+                                style="--el-switch-on-color: #0355B5; --el-switch-off-color: #CCCCCC" active-text="Activo"
+                                inactive-text="Inactivo" />
+                        </div>
+                        <div>
+                            <IconInput v-model="form.name" inputPlaceholder="Nombre de festividad *" inputType="text">
+                                <el-tooltip content="Nombre de festividad *" placement="top">
+                                    A
+                                </el-tooltip>
+                            </IconInput>
+                            <InputError :message="form.errors.name" />
+                        </div>
+                        <div class="flex items-center mt-2">
+                            <el-tooltip content="Método de pago" placement="top">
+                                <span
+                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                    <i class="fa-regular fa-calendar-days"></i>
+                                </span>
+                            </el-tooltip>
+                            <el-select v-model="form.day" clearable placeholder="Dia">
+                                <el-option v-for="item in 31" :key="item" :label="item" :value="item" />
+                            </el-select>
+                            <el-select v-model="form.month" clearable placeholder="Mes">
+                                <el-option v-for="(item, index) in months" :key="index" :label="item.label" :value="item.value" />
+                            </el-select>
+                        </div>
+                    </form>
+                </template>
+                <template #footer>
+                    <CancelButton @click="showModal = false; form.reset(); editFlag = false;" :disabled="form.processing">
+                        Cancelar</CancelButton>
+                    <PrimaryButton @click="submitForm" :disabled="form.processing">{{ editFlag ? 'Actualizar' : 'Crear' }}
+                    </PrimaryButton>
+                </template>
+            </DialogModal>
+            <!-- --------------------------- Modal ends ------------------------------------ -->
 
         </AppLayout>
     </div>
@@ -71,32 +100,96 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+import DialogModal from "@/Components/DialogModal.vue";
 import TextInput from '@/Components/TextInput.vue';
-import { Link } from "@inertiajs/vue3";
+import { Link, useForm } from "@inertiajs/vue3";
+import InputError from "@/Components/InputError.vue";
+import IconInput from "@/Components/MyComponents/IconInput.vue";
 import axios from 'axios';
 
 
 export default {
     data() {
+        const form = useForm({
+            name: null,
+            day: null,
+            month: null,
+            is_active: true,
+        });
+
         return {
+            form,
             disableMassiveActions: true,
             search: '',
             // pagination
             itemsPerPage: 10,
             start: 0,
             end: 10,
+            showModal: false,
+            editFlag: false,
+            itemClicked: null,
+            months: [
+                {label: "Enero", value: "01"},
+                {label: "Febrero", value: "02"},
+                {label: "Marzo", value: "03"},
+                {label: "Abril", value: "04"},
+                {label: "Mayo", value: "05"},
+                {label: "Junio", value: "06"},
+                {label: "Julio", value: "07"},
+                {label: "Agosto", value: "08"},
+                {label: "Septiembre", value: "09"},
+                {label: "Octubre", value: "10"},
+                {label: "Noviembre", value: "11"},
+                {label: "Diciembre", value: "12"},
+            ],
         };
     },
     components: {
         AppLayout,
         SecondaryButton,
+        PrimaryButton,
+        CancelButton,
         Link,
         TextInput,
+        DialogModal,
+        InputError,
+        IconInput
     },
     props: {
         holidays: Object
     },
     methods: {
+        update() {
+            this.form.put(route('holidays.update', this.itemClicked), {
+                onSuccess: () => {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: 'Dia festivo actualizado',
+                        type: 'success'
+                    });
+                    this.form.reset();
+                    this.showModal = false;
+                }
+            });
+        },
+        store() {
+            this.form.post(route('holidays.store'), {
+                onSuccess: () => {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: 'Dia festivo creado',
+                        type: 'success'
+                    });
+                    this.form.reset();
+                    this.showModal = false;
+                }
+            });
+        },
+        submitForm() {
+            this.$refs.myForm.dispatchEvent(new Event('submit', { cancelable: true }));
+        },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
 
@@ -157,26 +250,25 @@ export default {
             }
         },
         tableRowClassName({ row, rowIndex }) {
+            let classes = 'cursor-pointer';
+
             if (row.is_active !== 1) {
-                return 'text-red-600';
+                classes += ' text-red-600';
             }
 
-            return '';
+            return classes;
         },
         handleRowClick(row) {
-            this.$inertia.get(route('holidays.show', row));
-        },
-        handleCommand(command) {
-            const commandName = command.split('-')[0];
-            const rowId = command.split('-')[1];
+            this.itemClicked = row;
+            this.editFlag = true;
+            this.showModal = true;
 
-            if (commandName == 'clone') {
-                this.clone(rowId);
-            } else if (commandName == 'make_so') {
-                console.log('SO');
-            } else {
-                this.$inertia.get(route('holidays.' + commandName, rowId));
-            }
+            this.form.name = row.name;
+            this.form.day = row.date.string.split('-')[2];
+            this.form.month = row.date.string.split('-')[1];
+            this.form.is_active = Boolean(row.is_active);
+
+            console.log(this.form);
         },
     },
     computed: {
