@@ -33,13 +33,13 @@
             <el-table :data="filteredTableData" max-height="450" style="width: 100%"
                 @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                 <el-table-column type="selection" width="45" />
-                <el-table-column prop="folio" label="Folio" width="85" />
+                <el-table-column prop="folio" label="Folio" width="100" />
                 <el-table-column prop="user.name" label="Creado por" />
                 <el-table-column prop="receiver" label="Receptor" />
                 <el-table-column prop="companyBranch.name" label="Cliente" />
                 <el-table-column prop="authorized_user_name" label="Autorizado por" />
-                <el-table-column prop="created_at" label="Creado el" />
-                <el-table-column align="right" fixed="right" width="200">
+                <el-table-column prop="created_at" label="Creado el" width="180" />
+                <el-table-column align="right" fixed="right" >
                     <template #header>
                         <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
                     </template>

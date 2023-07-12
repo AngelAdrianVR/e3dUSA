@@ -12,7 +12,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = UserResource::collection(User::latest()->get());
+        $users = UserResource::collection(User::all());
 
         return inertia('User/Index', compact('users'));
     }
@@ -64,7 +64,8 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        //
+        $users = User::latest()->get();
+        return inertia('User/Show', compact('user', 'users'));
     }
 
 

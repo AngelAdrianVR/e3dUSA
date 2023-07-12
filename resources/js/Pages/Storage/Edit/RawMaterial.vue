@@ -5,7 +5,7 @@
         <div class="flex justify-between">
           <Link
             :href="route('storages.raw-materials.index')"
-            class="hover:bg-gray-100/50 rounded-full w-10 h-10 flex justify-center items-center"
+            class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center"
           >
             <i class="fa-solid fa-chevron-left"></i>
           </Link>
@@ -19,7 +19,7 @@
 
       <!-- Form -->
       <form @submit.prevent="update">
-        <div
+       <div
           class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4"
         >
           <div>
@@ -28,7 +28,7 @@
               inputPlaceholder="Nombre *"
               inputType="text"
             >
-              A
+              <el-tooltip content="Nombre" placement="top"> A </el-tooltip>
             </IconInput>
             <InputError :message="form.errors.name" />
           </div>
@@ -39,7 +39,9 @@
                 inputPlaceholder="Número de parte *"
                 inputType="text"
               >
-                #
+                <el-tooltip content="Número de parte" placement="top">
+                  #
+                </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.part_number" />
             </div>
@@ -49,7 +51,12 @@
                 inputPlaceholder="Stock mínimo"
                 inputType="number"
               >
-                <i class="fa-solid fa-minus"></i>
+                <el-tooltip
+                  content="Cantidad mínima que puede haber en stock"
+                  placement="top"
+                >
+                  <i class="fa-solid fa-minus"></i>
+                </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.min_quantity" />
             </div>
@@ -59,7 +66,12 @@
                 inputPlaceholder="Stock máximo"
                 inputType="number"
               >
-                <i class="fa-solid fa-plus"></i>
+                <el-tooltip
+                  content="Cantidad máxima que puede haber en stock"
+                  placement="top"
+                >
+                  <i class="fa-solid fa-plus"></i>
+                </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.max_quantity" />
             </div>
@@ -69,7 +81,9 @@
                 inputPlaceholder="Stock de apertura"
                 inputType="number"
               >
-                123
+                <el-tooltip content="Stock inicial" placement="top">
+                  123
+                </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.initial_stock" />
             </div>
@@ -79,7 +93,9 @@
                 inputPlaceholder="Unidad de medida"
                 inputType="text"
               >
-                <i class="fa-solid fa-ruler-vertical"></i>
+                <el-tooltip content="Unidad de medida" placement="top">
+                  <i class="fa-solid fa-ruler-vertical"></i>
+                </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.measure_unit" />
             </div>
@@ -88,28 +104,38 @@
                 v-model="form.cost"
                 inputPlaceholder="Costo *"
                 inputType="number"
+                inputStep="0.01"
               >
-                <i class="fa-solid fa-dollar"></i>
+                <el-tooltip
+                  content="Cuánto le cuesta a e3d adquirir esta materia prima"
+                  placement="top"
+                >
+                  <i class="fa-solid fa-dollar"></i>
+                </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.cost" />
             </div>
           </div>
           <div>
-              <IconInput
-                v-model="form.location"
-                inputPlaceholder="Ubicaión *"
-                inputType="text"
-              >
+            <IconInput
+              v-model="form.location"
+              inputPlaceholder="Ubicaión *"
+              inputType="text"
+            >
+              <el-tooltip content="Ubicación en almacén" placement="top">
                 <i class="fa-solid fa-box"></i>
-              </IconInput>
-              <InputError :message="form.errors.location" />
-            </div>
+              </el-tooltip>
+            </IconInput>
+            <InputError :message="form.errors.location" />
+          </div>
 
           <div class="flex">
             <span
               class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
             >
-              ...
+              <el-tooltip content="Descripción del producto" placement="top">
+                ...
+              </el-tooltip>
             </span>
             <textarea
               v-model="form.description"
@@ -120,11 +146,33 @@
             ></textarea>
             <InputError :message="form.errors.description" />
           </div>
+          <div class="col-span-full">
+            <div class="flex items-center">
+              <span
+                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
+              >
+                <el-tooltip content="Imagen del producto" placement="top">
+                  <i class="fa-solid fa-images"></i>
+                </el-tooltip>
+              </span>
+              <input
+                @input="form.media = $event.target.files[0]"
+                class="input h-12 rounded-lg file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white file:cursor-pointer hover:file:bg-red-600"
+                aria-describedby="file_input_help"
+                id="file_input"
+                type="file"
+              />
+            </div>
+            <p
+              class="mt-1 text-xs text-right text-gray-500"
+              id="file_input_help"
+            >
+              SVG, PNG, JPG o GIF (MAX. 4 MB).
+            </p>
+          </div>
 
           <div class="mt-2 mx-3 md:text-right">
-            <PrimaryButton :disabled="form.processing">
-              Actualizar
-            </PrimaryButton>
+            <PrimaryButton :disabled="form.processing"> Actualizar </PrimaryButton>
           </div>
         </div>
       </form>

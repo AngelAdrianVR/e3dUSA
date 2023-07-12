@@ -116,6 +116,7 @@ class StorageController extends Controller
     
     public function edit(Storage $storage)
     {
+        // return $storage;
         return inertia('Storage/Edit/FinishedProduct');
     }
 

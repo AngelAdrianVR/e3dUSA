@@ -15,7 +15,8 @@ class Supplier extends Model
         'address',
         'post_code',
         'phone',
-        'banks'
+        'banks',
+        'contact_id'
     ];
 
     protected $casts = [

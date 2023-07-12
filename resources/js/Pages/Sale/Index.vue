@@ -37,7 +37,7 @@
                 <el-table :data="filteredTableData" max-height="450" style="width: 100%"
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
-                    <el-table-column prop="folio" label="folio" width="85" />
+                    <el-table-column prop="folio" label="folio" width="100" />
                     <el-table-column prop="user.name" label="Creado por" />
                     <el-table-column prop="created_at" label="Creado el" />
                     <el-table-column prop="company_branch.name" label="Cliente" />
