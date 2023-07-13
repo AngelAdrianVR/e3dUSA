@@ -37,10 +37,10 @@
               </thead>
               <tbody>
                 <tr v-for="(role, index) in roles.data" :key="role.id" class="mb-4">
-                  <td @click="editRole(role)" class="text-left pb-3">
+                  <td class="text-left pb-3">
                     {{ role.id }}
                   </td>
-                  <td @click="editRole(role)" class="text-left pb-3">
+                  <td @click="editRole(role, index)" class="text-left pb-3">
                     <span class="hover:underline cursor-pointer">{{ role.name }}</span>
                   </td>
                   <td class="text-left pb-3">
@@ -67,8 +67,10 @@
             <div class="lg:grid grid-cols-4">
               <div v-for="(guard, index) in Object.keys(permissions.data)" :key="index" class="border p-3">
                 <h1 class="text-secondary">{{ guard.replace(/_/g, " ") }}</h1>
-                <div v-for="(permission, index2) in permissions.data[guard]" :key="index" class="flex justify-between items-center mt-1">
-                  <p @click="editPermission(permission, index2)" class="hover:underline cursor-pointer">{{ permission.name }}</p>
+                <div v-for="(permission, index2) in permissions.data[guard]" :key="index"
+                  class="flex justify-between items-center mt-1">
+                  <p @click="editPermission(permission, index2)" class="hover:underline cursor-pointer">{{ permission.name
+                  }}</p>
                   <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FFFFFF" title="¿Continuar?"
                     @confirm="deletePermission(permission, index2)">
                     <template #reference>
@@ -105,7 +107,7 @@
               <div v-for="(guard, index) in Object.keys(permissions.data)" :key="index" class="border p-3">
                 <h1 class="text-secondary">{{ guard.replace(/_/g, " ") }}</h1>
                 <label v-for="permission in permissions.data[guard]" :key="permission.id" class="flex items-center">
-                  <input type="checkbox" v-model="roleForm.permissions" :value="permission"
+                  <input type="checkbox" v-model="roleForm.permissions" :value="permission.id"
                     class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
                   <span class="ml-2 text-sm">{{ permission.name }}</span>
                 </label>
@@ -131,8 +133,7 @@
           <div>
             <form @submit.prevent="editFlag ? updatePermission() : storePermission()" ref="myPermissionForm">
               <div>
-                <IconInput v-model="permissionForm.name" inputPlaceholder="Nombre del permiso *"
-                  inputType="text">
+                <IconInput v-model="permissionForm.name" inputPlaceholder="Nombre del permiso *" inputType="text">
                   <el-tooltip content="Nombre del permiso *" placement="top">
                     A
                   </el-tooltip>
@@ -140,12 +141,12 @@
                 <InputError :message="permissionForm.errors.name" />
               </div>
               <div class="mt-3">
-                <IconInput v-model="permissionForm.guard_name"
-                  inputPlaceholder="Categoria del permiso (guard) *" inputType="text">
-                  <el-tooltip content="Categoria del permiso (guard) *" placement="top">
+                <IconInput v-model="permissionForm.category" inputPlaceholder="Categoria del permiso *" inputType="text">
+                  <el-tooltip content="Categoria del permiso *" placement="top">
                     A
                   </el-tooltip>
                 </IconInput>
+                <InputError :message="permissionForm.errors.category" />
               </div>
             </form>
           </div>
@@ -181,7 +182,7 @@ export default {
 
     const permissionForm = useForm({
       name: null,
-      guard_name: null,
+      category: null,
     });
 
     return {
@@ -215,7 +216,7 @@ export default {
       try {
         const response = await axios.delete(route('role-permission.delete-role', role));
 
-        if(response.status === 200) {
+        if (response.status === 200) {
           this.roles.data.splice(index, 1);
           this.$notify({
             title: 'Éxito',
@@ -225,10 +226,10 @@ export default {
         }
       } catch (error) {
         this.$notify({
-            title: 'Error',
-            message: error.message,
-            type: 'error'
-          });
+          title: 'Error',
+          message: error.message,
+          type: 'error'
+        });
       }
     },
     editRole(role, index) {
@@ -244,30 +245,31 @@ export default {
       this.currentRole = null;
       this.showRoleModal = true;
       this.editFlag = false;
+      this.roleForm.reset();
     },
-    async updateRole(index) {
+    async updateRole() {
       try {
         const response = await axios.put(route('role-permission.update-role', this.currentRole), {
           name: this.roleForm.name,
           permissions: this.roleForm.permissions,
         });
 
-        if(response.status === 200) {
+        if (response.status === 200) {
           this.$notify({
             title: 'Éxito',
             message: 'Rol actualizado',
             type: 'success'
           });
-          this.roles.data[index] = response.data.item;
+          this.roles.data[this.indexRoleEdit] = response.data.item;
           this.roleForm.reset();
           this.showRoleModal = false;
         }
       } catch (error) {
         this.$notify({
-            title: 'Error',
-            message: error.message,
-            type: 'error'
-          });
+          title: 'Error',
+          message: error.message,
+          type: 'error'
+        });
       }
     },
     async storeRole() {
@@ -277,7 +279,7 @@ export default {
           permissions: this.roleForm.permissions,
         });
 
-        if(response.status === 200) {
+        if (response.status === 200) {
           this.$notify({
             title: 'Éxito',
             message: 'Rol creado',
@@ -289,10 +291,10 @@ export default {
         }
       } catch (error) {
         this.$notify({
-            title: 'Error',
-            message: error.message,
-            type: 'error'
-          });
+          title: 'Error',
+          message: error.message,
+          type: 'error'
+        });
       }
     },
     submitRoleForm() {
@@ -304,8 +306,8 @@ export default {
       try {
         const response = await axios.delete(route('role-permission.delete-permission', permission));
 
-        if(response.status === 200) {
-          this.permissions.data[permission.guard_name].splice(index, 1);
+        if (response.status === 200) {
+          this.permissions.data[permission.category].splice(index, 1);
           this.$notify({
             title: 'Éxito',
             message: response.data.message,
@@ -314,10 +316,10 @@ export default {
         }
       } catch (error) {
         this.$notify({
-            title: 'Error',
-            message: error.message,
-            type: 'error'
-          });
+          title: 'Error',
+          message: error.message,
+          type: 'error'
+        });
       }
     },
     editPermission(permission, index) {
@@ -327,61 +329,61 @@ export default {
       this.showPermissionModal = true;
 
       this.permissionForm.name = permission.name;
-      this.permissionForm.guard_name = permission.guard_name;
+      this.permissionForm.category = permission.category;
     },
     createPermission() {
       this.currentPermission = null;
       this.showPermissionModal = true;
       this.editFlag = false;
     },
-    async updatePermission(index) {
+    async updatePermission() {
       try {
         const response = await axios.put(route('role-permission.update-permission', this.currentPermission), {
           name: this.permissionForm.name,
-          guard_name: this.permissionForm.guard_name,
+          category: this.permissionForm.category,
         });
 
-        if(response.status === 200) {
+        if (response.status === 200) {
           this.$notify({
             title: 'Éxito',
             message: 'Permiso actualizado',
             type: 'success'
           });
-          this.permissions.data[response.data.item.guard_name][index] = response.data.item;
+          this.permissions.data[response.data.item.category][this.indexPermissionEdit] = response.data.item;
           this.permissionForm.reset();
           this.showPermissionModal = false;
         }
       } catch (error) {
         this.$notify({
-            title: 'Error',
-            message: error.message,
-            type: 'error'
-          });
+          title: 'Error',
+          message: error.message,
+          type: 'error'
+        });
       }
     },
     async storePermission() {
       try {
         const response = await axios.post(route('role-permission.store-permission'), {
           name: this.permissionForm.name,
-          guard_name: this.permissionForm.guard_name,
+          category: this.permissionForm.category,
         });
 
-        if(response.status === 200) {
+        if (response.status === 200) {
           this.$notify({
             title: 'Éxito',
             message: 'Permiso creado',
             type: 'success'
           });
-          this.permissions.data[response.data.item.guard_name].push(response.data.item);
+          this.permissions.data[response.data.item.category].push(response.data.item);
           this.permissionForm.reset();
           this.showPermissionModal = false;
         }
       } catch (error) {
         this.$notify({
-            title: 'Error',
-            message: error.message,
-            type: 'error'
-          });
+          title: 'Error',
+          message: error.message,
+          type: 'error'
+        });
       }
     },
     submitPermissionForm() {

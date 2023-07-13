@@ -144,7 +144,22 @@
               </div>
             </div>
           </div>
+
+          <br><el-divider content-position="left" class="col-span-full">Roles</el-divider>
+          <br>
+
+          <!-- roles -->
+          <div class="grid grid-cols-3 gap-2">
+            <label v-for="role in roles" :key="role.id" class="flex items-center">
+              <input type="checkbox" v-model="form.roles" :value="role.id"
+                class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
+              <span class="ml-2 text-sm">{{ role.name }}</span>
+            </label>
+          </div>
+          <InputError :message="form.errors.roles" />
+
           <el-divider />
+
           <div class="md:text-right">
             <PrimaryButton :disabled="form.processing"> Crear usuario </PrimaryButton>
           </div>
@@ -214,6 +229,7 @@ export default {
         ],
         join_date: null,
       },
+      roles: []
     });
 
     return {
@@ -255,6 +271,7 @@ export default {
   props: {
     employee_number: Number,
     bonuses: Array,
+    roles: Array,
   },
   methods: {
     store() {

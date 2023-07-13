@@ -41,6 +41,7 @@ class PayrollUserResource extends JsonResource
             'total_break_time' => $this->totalBreakTime(),
             'total_worked_time' => $this->totalWorkedTime(),
             'incident' => $holiday ?? $this->justificationEvent,
+            // 'roles' => $this->user?->roles,
             'user_id' => $this->user_id,
             // 'incident' => in_array($this->justification_event_id, $no_attendance) ? $this->justification_event_id : $this->justificationEvent?->name ,
             // 'user' => $this->user,

@@ -14,7 +14,7 @@ class RolePermissionController extends Controller
     {
         $roles = RoleResource::collection(Role::all());
         $permissions = PermissionResource::collection(Permission::all()->groupBy(function($data){
-            return $data->guard_name;
+            return $data->category;
         }));
 
         return inertia('RolePermission/Index', compact('roles', 'permissions'));
@@ -38,11 +38,7 @@ class RolePermissionController extends Controller
         $request->validate([
             'permissions' => 'array|min:1'
         ]);
-
-        foreach ($request->permissions as $permission_id) {
-            $permission = Permission::find($permission_id);
-            $role->givePermissionTo($permission);
-        }
+        $role->syncPermissions($request->permissions);
 
         return response()->json(['item' => RoleResource::make($role)]);
     }
@@ -58,7 +54,7 @@ class RolePermissionController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:191',
-            'guard_name' => 'nullable'
+            'category' => 'required|string|max:191'
         ]);
 
         $permission = Permission::create($request->all());
@@ -70,7 +66,7 @@ class RolePermissionController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:191',
-            'guard_name' => 'nullable'
+            'category' => 'required|string|max:191'
         ]);
 
         $permission->update($request->all());
