@@ -122,10 +122,10 @@ Route::get('users-set-attendance', [UserController::class, 'setAttendance'])->mi
 // ------- Recursos humanos(Roles and permissions Routes)  ---------
 Route::get('role-permission', [RolePermissionController::class, 'index'])->middleware('auth')->name('role-permission.index');
 Route::put('role-permission/{role}/edit-role', [RolePermissionController::class, 'updateRole'])->middleware('auth')->name('role-permission.update-role');
-Route::post('role-permission', [RolePermissionController::class, 'storeRole'])->middleware('auth')->name('role-permission.store-role');
+Route::post('role-permission/store-role', [RolePermissionController::class, 'storeRole'])->middleware('auth')->name('role-permission.store-role');
 Route::delete('role-permission/{role}/destroy-role', [RolePermissionController::class, 'deleteRole'])->middleware('auth')->name('role-permission.delete-role');
 Route::put('role-permission/{permission}/edit-permission', [RolePermissionController::class, 'updatePermission'])->middleware('auth')->name('role-permission.update-permission');
-Route::post('role-permission', [RolePermissionController::class, 'storePermission'])->middleware('auth')->name('role-permission.store-permission');
+Route::post('role-permission/store-permission', [RolePermissionController::class, 'storePermission'])->middleware('auth')->name('role-permission.store-permission');
 Route::delete('role-permission/{permission}/destroy-permission', [RolePermissionController::class, 'deletePermission'])->middleware('auth')->name('role-permission.delete-permission');
 
 // ------- Recursos humanos(Bonuses Routes)  ---------
