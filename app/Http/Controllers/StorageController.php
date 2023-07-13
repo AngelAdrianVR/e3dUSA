@@ -109,9 +109,12 @@ class StorageController extends Controller
     }
 
     
-    public function show(Storage $storage)
+    public function show($storage_id)
     {
-        //
+        $storage = Storage::with('storageable')->find($storage_id);
+        $storages = Storage::with('storageable')->where('type', '!=', 'scrap')->get();
+        // return $storages;
+        return inertia('Storage/Show', compact('storage', 'storages'));
     }
 
     
@@ -132,7 +135,7 @@ class StorageController extends Controller
     
     public function destroy(Storage $storage)
     {
-        //
+        $storage->delete();
     }
 
     public function massiveDelete(Request $request)
@@ -166,5 +169,27 @@ class StorageController extends Controller
         }
 
         return response()->json(['message' => 'Producto(s) retirado(s) de scrap']);
+    }
+
+    public function addStorage(Request $request, Storage $storage)
+    {
+        $request->validate([
+            'quantity' => 'required|numeric|min:1'
+        ]);
+
+        $storage->update([
+            'quantity' => $storage->quantity += $request->quantity
+        ]);
+    }
+
+    public function subStorage(Request $request, Storage $storage)
+    {
+        $request->validate([
+            'quantity' => 'required|numeric|min:1|max:' . $storage?->quantity
+        ]);
+
+        $storage->update([
+            'quantity' => $storage->quantity -= $request->quantity
+        ]);
     }
 }

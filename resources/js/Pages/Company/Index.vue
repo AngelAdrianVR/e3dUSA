@@ -35,7 +35,7 @@
                     </div>
                 </div>
 
-                <el-table :data="filteredTableData" max-height="450" style="width: 100%"
+                <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="450" style="width: 100%"
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="id" label="ID" width="45" />
@@ -50,7 +50,7 @@
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
-                                <span class="el-dropdown-link mr-3">
+                                <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
                                     <i class="fa-solid fa-ellipsis-vertical"></i>
                                 </span>
                                 <template #dropdown>
@@ -120,11 +120,16 @@ export default {
         },
         tableRowClassName({ row, rowIndex }) {
             if (row.status === 1) {
-                return 'text-green-600';
+                return 'text-green-600 cursor-pointer';
             }
 
-            return '';
+            return 'cursor-pointer';
         },
+
+        handleRowClick(row) {
+            this.$inertia.get(route('companies.show', row));
+        },
+
         async clone(company_id) {
             try {
                 const response = await axios.post(route('companies.clone', {

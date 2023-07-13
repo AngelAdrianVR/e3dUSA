@@ -98,9 +98,9 @@ class DesignController extends Controller
 
     public function massiveDelete(Request $request)
     {
-        foreach ($request->companies as $company) {
-            $company = Design::find($company['id']);
-            $company?->delete();
+        foreach ($request->designs as $design) {
+            $design = Design::find($design['id']);
+            $design?->delete();
         }
 
         return response()->json(['message' => 'Cliente(s) eliminado(s)']);
