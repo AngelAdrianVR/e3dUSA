@@ -5,7 +5,7 @@
         <span>Roles y permisos</span>
       </div>
       <div class="flex justify-end mt-5 mx-14">
-        <PrimaryButton class="h-9 rounded-lg">
+        <PrimaryButton @click="tabs == 1 ? createRole() : createPermission()" class="h-9 rounded-lg">
           Crear
         </PrimaryButton>
       </div>
@@ -28,15 +28,15 @@
           <div v-if="tabs == 1" class="px-7 py-7 text-sm">
             <table class="w-full">
               <thead>
-                <tr class="text-left">  
-                  <th class="font-normal pb-3">#</th>
-                  <th class="font-normal">Roles</th>
-                  <th class="font-normal">Fecha de creación</th>
+                <tr class="text-left">
+                  <th class="font-normal pb-5"># <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
+                  <th class="font-normal pb-5">Roles <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
+                  <th class="font-normal pb-5">Fecha de creación <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(role, index) in roles.data" :key="role.id" class="text-[#9A9A9A] mb-4">
+                <tr v-for="(role, index) in roles.data" :key="role.id" class="mb-4">
                   <td @click="editRole(role)" class="text-left pb-3">
                     {{ role.id }}
                   </td>
@@ -49,7 +49,7 @@
                   <td class="text-left pb-3">
                     <div>
                       <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FFFFFF"
-                        title="¿Continuar?" @confirm="deleteRole(role)">
+                        title="¿Continuar?" @confirm="deleteRole(role, index)">
                         <template #reference>
                           <i class="fa-solid fa-trash-can text-red-600 cursor-pointer"></i>
                         </template>
@@ -67,7 +67,15 @@
             <div class="lg:grid grid-cols-4">
               <div v-for="(guard, index) in Object.keys(permissions.data)" :key="index" class="border p-3">
                 <h1 class="text-secondary">{{ guard.replace(/_/g, " ") }}</h1>
-                <p v-for="permission in permissions.data[guard]" :key="index" class="mt-1">{{ permission.name }}</p>
+                <div v-for="(permission, index2) in permissions.data[guard]" :key="index" class="flex justify-between items-center mt-1">
+                  <p @click="editPermission(permission, index2)" class="hover:underline cursor-pointer">{{ permission.name }}</p>
+                  <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FFFFFF" title="¿Continuar?"
+                    @confirm="deletePermission(permission, index2)">
+                    <template #reference>
+                      <i class="fa-solid fa-trash-can text-red-600 cursor-pointer"></i>
+                    </template>
+                  </el-popconfirm>
+                </div>
               </div>
             </div>
           </div>
@@ -76,15 +84,78 @@
         </div>
       </div>
 
-      <DialogModal :show="showModal" @close="showModal = false">
+      <!-- Role modal -->
+      <DialogModal :show="showRoleModal" @close="showRoleModal = false">
         <template #title>
-            Hola
+          <p v-if="editFlag">Rol {{ currentRole.name }}</p>
+          <p v-else>Crear nuevo rol</p>
         </template>
         <template #content>
-            content
+          <div>
+            <form @submit.prevent="editFlag ? updateRole() : storeRole()" ref="myRoleForm" class="grid grid-cols-3">
+              <div class="col-span-full">
+                <IconInput v-if="!editFlag" v-model="roleForm.name" inputPlaceholder="Nombre de rol *" inputType="text">
+                  <el-tooltip content="Nombre de rol *" placement="top">
+                    A
+                  </el-tooltip>
+                </IconInput>
+                <InputError :message="roleForm.errors.name" />
+              </div>
+              <p class="text-secondary mb-2 col-span-full">Asignar permisos</p>
+              <div v-for="(guard, index) in Object.keys(permissions.data)" :key="index" class="border p-3">
+                <h1 class="text-secondary">{{ guard.replace(/_/g, " ") }}</h1>
+                <label v-for="permission in permissions.data[guard]" :key="permission.id" class="flex items-center">
+                  <input type="checkbox" v-model="roleForm.permissions" :value="permission"
+                    class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
+                  <span class="ml-2 text-sm">{{ permission.name }}</span>
+                </label>
+              </div>
+            </form>
+          </div>
         </template>
         <template #footer>
-            footer
+          <CancelButton @click="showRoleModal = false; roleForm.reset(); editFlag = false;"
+            :disabled="roleForm.processing">Cancelar</CancelButton>
+          <PrimaryButton @click="submitRoleForm" :disabled="roleForm.processing">{{ editFlag ? 'Actualizar' : 'Crear' }}
+          </PrimaryButton>
+        </template>
+      </DialogModal>
+
+      <!-- Permission modal -->
+      <DialogModal :show="showPermissionModal" @close="showPermissionModal = false">
+        <template #title>
+          <p v-if="editFlag">Editar permiso</p>
+          <p v-else>Crear nuevo permiso</p>
+        </template>
+        <template #content>
+          <div>
+            <form @submit.prevent="editFlag ? updatePermission() : storePermission()" ref="myPermissionForm">
+              <div>
+                <IconInput v-model="permissionForm.name" inputPlaceholder="Nombre del permiso *"
+                  inputType="text">
+                  <el-tooltip content="Nombre del permiso *" placement="top">
+                    A
+                  </el-tooltip>
+                </IconInput>
+                <InputError :message="permissionForm.errors.name" />
+              </div>
+              <div class="mt-3">
+                <IconInput v-model="permissionForm.guard_name"
+                  inputPlaceholder="Categoria del permiso (guard) *" inputType="text">
+                  <el-tooltip content="Categoria del permiso (guard) *" placement="top">
+                    A
+                  </el-tooltip>
+                </IconInput>
+              </div>
+            </form>
+          </div>
+        </template>
+        <template #footer>
+          <CancelButton @click="showPermissionModal = false; permissionForm.reset(); editFlag = false;"
+            :disabled="permissionForm.processing">Cancelar</CancelButton>
+          <PrimaryButton @click="submitPermissionForm" :disabled="permissionForm.processing">{{ editFlag ? 'Actualizar' :
+            'Crear' }}
+          </PrimaryButton>
         </template>
       </DialogModal>
     </AppLayoutNoHeader>
@@ -96,14 +167,33 @@ import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import DialogModal from "@/Components/DialogModal.vue";
+import IconInput from "@/Components/MyComponents/IconInput.vue";
+import InputError from "@/Components/InputError.vue";
+import { useForm } from "@inertiajs/vue3";
+import axios from "axios";
 
 export default {
   data() {
+    const roleForm = useForm({
+      name: null,
+      permissions: [],
+    });
+
+    const permissionForm = useForm({
+      name: null,
+      guard_name: null,
+    });
+
     return {
+      roleForm,
+      permissionForm,
       currentRole: null,
       currentPermission: null,
-      showConfirmModal: false,
-      showModal: false,
+      showRoleModal: false,
+      showPermissionModal: false,
+      indexRoleEdit: null,
+      indexPermissionEdit: null,
+      editFlag: false,
       tabs: 1,
     };
   },
@@ -112,19 +202,190 @@ export default {
     PrimaryButton,
     CancelButton,
     DialogModal,
+    IconInput,
+    InputError
   },
   props: {
     roles: Object,
     permissions: Object,
   },
   methods: {
-    deleteRole(role) {
-      console.log(role);
+    // roles
+    async deleteRole(role, index) {
+      try {
+        const response = await axios.delete(route('role-permission.delete-role', role));
+
+        if(response.status === 200) {
+          this.roles.data.splice(index, 1);
+          this.$notify({
+            title: 'Éxito',
+            message: response.data.message,
+            type: 'success'
+          });
+        }
+      } catch (error) {
+        this.$notify({
+            title: 'Error',
+            message: error.message,
+            type: 'error'
+          });
+      }
+    },
+    editRole(role, index) {
+      this.currentRole = role;
+      this.editFlag = true;
+      this.indexRoleEdit = index;
+      this.showRoleModal = true;
+
+      this.roleForm.name = role.name;
+      this.roleForm.permissions = role.permissions.ids;
+    },
+    createRole() {
+      this.currentRole = null;
+      this.showRoleModal = true;
+      this.editFlag = false;
+    },
+    async updateRole(index) {
+      try {
+        const response = await axios.put(route('role-permission.update-role', this.currentRole), {
+          name: this.roleForm.name,
+          permissions: this.roleForm.permissions,
+        });
+
+        if(response.status === 200) {
+          this.$notify({
+            title: 'Éxito',
+            message: 'Rol actualizado',
+            type: 'success'
+          });
+          this.roles.data[index] = response.data.item;
+          this.roleForm.reset();
+          this.showRoleModal = false;
+        }
+      } catch (error) {
+        this.$notify({
+            title: 'Error',
+            message: error.message,
+            type: 'error'
+          });
+      }
+    },
+    async storeRole() {
+      try {
+        const response = await axios.post(route('role-permission.store-role'), {
+          name: this.roleForm.name,
+          permissions: this.roleForm.permissions,
+        });
+
+        if(response.status === 200) {
+          this.$notify({
+            title: 'Éxito',
+            message: 'Rol creado',
+            type: 'success'
+          });
+          this.roles.data.push(response.data.item);
+          this.roleForm.reset();
+          this.showRoleModal = false;
+        }
+      } catch (error) {
+        this.$notify({
+            title: 'Error',
+            message: error.message,
+            type: 'error'
+          });
+      }
+    },
+    submitRoleForm() {
+      this.$refs.myRoleForm.dispatchEvent(new Event('submit', { cancelable: true }));
     },
 
-    editRole(role) {
-      this.currentRole = role;
-      this.showModal = true;
+    // permissions
+    async deletePermission(permission, index) {
+      try {
+        const response = await axios.delete(route('role-permission.delete-permission', permission));
+
+        if(response.status === 200) {
+          this.permissions.data[permission.guard_name].splice(index, 1);
+          this.$notify({
+            title: 'Éxito',
+            message: response.data.message,
+            type: 'success'
+          });
+        }
+      } catch (error) {
+        this.$notify({
+            title: 'Error',
+            message: error.message,
+            type: 'error'
+          });
+      }
+    },
+    editPermission(permission, index) {
+      this.currentPermission = permission;
+      this.editFlag = true;
+      this.indexPermissionEdit = index;
+      this.showPermissionModal = true;
+
+      this.permissionForm.name = permission.name;
+      this.permissionForm.guard_name = permission.guard_name;
+    },
+    createPermission() {
+      this.currentPermission = null;
+      this.showPermissionModal = true;
+      this.editFlag = false;
+    },
+    async updatePermission(index) {
+      try {
+        const response = await axios.put(route('role-permission.update-permission', this.currentPermission), {
+          name: this.permissionForm.name,
+          guard_name: this.permissionForm.guard_name,
+        });
+
+        if(response.status === 200) {
+          this.$notify({
+            title: 'Éxito',
+            message: 'Permiso actualizado',
+            type: 'success'
+          });
+          this.permissions.data[response.data.item.guard_name][index] = response.data.item;
+          this.permissionForm.reset();
+          this.showPermissionModal = false;
+        }
+      } catch (error) {
+        this.$notify({
+            title: 'Error',
+            message: error.message,
+            type: 'error'
+          });
+      }
+    },
+    async storePermission() {
+      try {
+        const response = await axios.post(route('role-permission.store-permission'), {
+          name: this.permissionForm.name,
+          guard_name: this.permissionForm.guard_name,
+        });
+
+        if(response.status === 200) {
+          this.$notify({
+            title: 'Éxito',
+            message: 'Permiso creado',
+            type: 'success'
+          });
+          this.permissions.data[response.data.item.guard_name].push(response.data.item);
+          this.permissionForm.reset();
+          this.showPermissionModal = false;
+        }
+      } catch (error) {
+        this.$notify({
+            title: 'Error',
+            message: error.message,
+            type: 'error'
+          });
+      }
+    },
+    submitPermissionForm() {
+      this.$refs.myPermissionForm.dispatchEvent(new Event('submit', { cancelable: true }));
     },
   }
 };

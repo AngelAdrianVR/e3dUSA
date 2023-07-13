@@ -18,6 +18,10 @@ class RoleResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'guard_name' => $this->guard_name,
+            'permissions' => [
+                'ids' => $this->permissions->pluck('id'),
+                'object' => $this->permissions,
+            ],
             'created_at' => $this->created_at->isoFormat('DD MMMM YYYY'),
         ];
     }

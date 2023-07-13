@@ -127,7 +127,7 @@ export default {
                     active: route().current('payrolls.*') 
                         || route().current('admin-additional-times.*')
                         || route().current('users.*')
-                        || route().current('roles-permissions.*')
+                        || route().current('role-permission.*')
                         || route().current('bonuses.*')
                         || route().current('holidays.*'),
                     options: [
@@ -145,7 +145,7 @@ export default {
                         },
                         {
                             label: 'Roles y permisos',
-                            route: 'roles-permissions.index'
+                            route: 'role-permission.index'
                         },
                         {
                             label: 'Bonos',
