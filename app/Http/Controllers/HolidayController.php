@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\HolidayResource;
 use App\Models\Holiday;
 use Illuminate\Http\Request;
 
 class HolidayController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $holidays = HolidayResource::collection(Holiday::all());
+
+        return inertia('Holiday/Index', compact('holidays'));
     }
 
     /**
@@ -28,7 +28,19 @@ class HolidayController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:191',
+            'day' => 'required|numeric|min:1',
+            'month' => 'required|numeric|min:1',
+        ]);
+
+        Holiday::create([
+            'name' => $request->name,
+            'date' => "2023-$request->month-$request->day",
+            'is_active' => $request->is_active,
+        ]);
+
+        return to_route('holidays.index');
     }
 
     /**
@@ -52,7 +64,19 @@ class HolidayController extends Controller
      */
     public function update(Request $request, Holiday $holiday)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:191',
+            'day' => 'required|numeric|min:1',
+            'month' => 'required|numeric|min:1',
+        ]);
+
+        $holiday->update([
+            'name' => $request->name,
+            'date' => "2023-$request->month-$request->day",
+            'is_active' => $request->is_active,
+        ]);
+
+        return to_route('holidays.index');
     }
 
     /**
@@ -61,5 +85,16 @@ class HolidayController extends Controller
     public function destroy(Holiday $holiday)
     {
         //
+    }
+
+    // other methods
+    public function massiveDelete(Request $request)
+    {
+        foreach ($request->holidays as $holiday) {
+            $holiday = Holiday::find($holiday['id']);
+            $holiday?->delete();
+        }
+
+        return response()->json(['message' => 'Dia(s) eliminado(s)']);
     }
 }

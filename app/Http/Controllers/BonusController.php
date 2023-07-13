@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\BonusResource;
 use App\Models\Bonus;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,9 @@ class BonusController extends Controller
      */
     public function index()
     {
-        //
+        $bonuses = BonusResource::collection(Bonus::all());
+
+        return inertia('Bonus/Index', compact('bonuses'));
     }
 
     /**
@@ -28,7 +31,16 @@ class BonusController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:191',
+            'description' => 'nullable',
+            'full_time' => 'required|numeric|min:1',
+            'half_time' => 'required|numeric|min:1',
+        ]);
+
+        $bonus = Bonus::create($request->all());
+
+        return to_route('bonuses.index');
     }
 
     /**
@@ -52,7 +64,16 @@ class BonusController extends Controller
      */
     public function update(Request $request, Bonus $bonus)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:191',
+            'description' => 'nullable',
+            'full_time' => 'required|numeric|min:1',
+            'half_time' => 'required|numeric|min:1',
+        ]);
+
+        $bonus->update($request->all());
+
+        return to_route('bonuses.index');
     }
 
     /**
@@ -61,5 +82,16 @@ class BonusController extends Controller
     public function destroy(Bonus $bonus)
     {
         //
+    }
+
+    // other methods
+    public function massiveDelete(Request $request)
+    {
+        foreach ($request->bonuses as $bonus) {
+            $bonus = Bonus::find($bonus['id']);
+            $bonus?->delete();
+        }
+
+        return response()->json(['message' => 'Bono(s) eliminado(s)']);
     }
 }

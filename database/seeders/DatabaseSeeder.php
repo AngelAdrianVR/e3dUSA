@@ -28,9 +28,21 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@e3dusa.com',
             'password' => bcrypt('123123123'),
         ]);
+        User::create([
+            'name' => 'Jorge Sherman',
+            'email' => 'j.sherman@emblemas3d.com',
+            'password' => bcrypt('e3dusaJ'),
+        ]);
+        User::create([
+            'name' => 'Claudia Maribel Ortíz González',
+            'email' => 'maribel@emblemas3d.com',
+            'password' => bcrypt('e3dusaM'),
+        ]);
         
         $this->call(ProductionCostSeeder::class);
         $this->call(justificationEventSeeder::class);
         $this->call(BonusSeeder::class);
+        $this->call(HolidaySeeder::class);
+        $this->call(RolePermissionSeeder::class);
     }
 }
