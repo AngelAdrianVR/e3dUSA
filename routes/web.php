@@ -15,6 +15,7 @@ use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
@@ -97,7 +98,8 @@ Route::post('raw-materials/massive-delete', [RawMaterialController::class, 'mass
 Route::get('consumables/create', [RawMaterialController::class, 'create'])->name('consumables.create')->middleware('auth');
 Route::get('consumables-edit/{raw_material}', [RawMaterialController::class, 'editConsumable'])->name('consumables.edit')->middleware('auth');
 
-// ------- Nóminas(Payrolls Routes)  ---------
+// ------- Recursos humanos(Payrolls Routes)  ---------
+Route::resource('payrolls', PayrollController::class)->middleware('auth');
 Route::post('payrolls/processed-attendances', [PayrollController::class, 'getProcessedAttendances'])->middleware('auth')->name('payrolls.processed-attendances');
 Route::post('payrolls/handle-late', [PayrollController::class, 'handleLate'])->middleware('auth')->name('payrolls.handle-late');
 Route::post('payrolls/handle-extras', [PayrollController::class, 'handleExtras'])->middleware('auth')->name('payrolls.handle-extras');
@@ -110,9 +112,6 @@ Route::post('payrolls/get-extras', [PayrollController::class, 'getExtras'])->mid
 Route::post('payrolls/get-payroll-users', [PayrollController::class, 'getPayrollUsers'])->middleware('auth')->name('payrolls.get-payroll-users');
 Route::post('payrolls/print-template', [PayrollController::class, 'printTemplate'])->middleware('auth')->name('payrolls.print-template');
 Route::get('payrolls/close-current', [PayrollController::class, 'closeCurrent'])->middleware('auth')->name('payrolls.close-current');
-
-// ------- Recursos humanos(Payrolls Routes)  ---------
-Route::resource('payrolls', PayrollController::class)->middleware('auth');
 
 // ------- Recursos humanos(users routes)  ---------
 Route::resource('users', UserController::class)->middleware('auth');

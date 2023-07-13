@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class HolidayResource extends JsonResource
+class RoleResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,12 +17,8 @@ class HolidayResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'date' => [
-                'string' => $this->date->toDateString(),
-                'formatted' => $this->date->isoFormat('DD MMMM'),
-            ],
-            'is_active' => $this->is_active,
-            'created_at' => $this->created_at,
+            'guard_name' => $this->guard_name,
+            'created_at' => $this->created_at->isoFormat('DD MMMM YYYY'),
         ];
     }
 }

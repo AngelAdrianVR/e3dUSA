@@ -14,4 +14,8 @@ class Holiday extends Model
         'date',
         'is_active',
     ];
+
+    protected $casts = [
+        'date' => 'date'
+    ];
 }

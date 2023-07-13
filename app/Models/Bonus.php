@@ -11,6 +11,7 @@ class Bonus extends Model
 
     protected $fillable = [
         'name',
+        'description',
         'full_time',
         'half_time',
         'is_active',

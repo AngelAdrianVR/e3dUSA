@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Holiday;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,7 +15,15 @@ class PayrollUserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $no_attendance = ['Descanso', 'Falta'];
+        // holiday
+        $holiday = null;
+        if ($this->justification_event_id < 0) {
+            $holiday_id = $this->justification_event_id * -1;
+            $holiday = Holiday::find($holiday_id);
+            $holiday->id *= -1;
+            $holiday->additionals = ["color" => "green"];
+        }
+
         return [
             'id' => $this->id,
             'date' => [
@@ -31,7 +40,7 @@ class PayrollUserResource extends JsonResource
             'additionals' => $this->additionals,
             'total_break_time' => $this->totalBreakTime(),
             'total_worked_time' => $this->totalWorkedTime(),
-            'incident' => $this->justificationEvent,
+            'incident' => $holiday ?? $this->justificationEvent,
             'user_id' => $this->user_id,
             // 'incident' => in_array($this->justification_event_id, $no_attendance) ? $this->justification_event_id : $this->justificationEvent?->name ,
             // 'user' => $this->user,

@@ -76,8 +76,11 @@ class PayrollUser extends Pivot
             $hours = intval($time / 60);
             $minutes = $time % 60;
     
-            return "{$hours}h {$minutes}m";
-        } 
+            return [
+                'formatted' => "{$hours}h {$minutes}m",
+                'hours' => round($time / 60, 2),
+            ];
+        }
 
         return null;
      }

@@ -7,9 +7,7 @@
                         <h2 class="font-semibold text-xl leading-tight">Gestión de bonos</h2>
                     </div>
                     <div>
-                        <Link :href="route('bonuses.create')">
-                        <SecondaryButton>+ Nuevo</SecondaryButton>
-                        </Link>
+                        <SecondaryButton @click="editFlag = false; showModal = true;">+ Nuevo</SecondaryButton>
                     </div>
                 </div>
             </template>
@@ -34,7 +32,7 @@
                         </el-popconfirm>
                     </div>
                 </div>
-                <el-table :data="filteredTableData" max-height="450" style="width: 100%"
+                <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="450" style="width: 100%"
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="id" label="ID" width="50" />
@@ -46,49 +44,72 @@
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
                         </template>
-                        <template #default="scope">
-                            <el-dropdown trigger="click" @command="handleCommand">
-                                <span class="el-dropdown-link mr-3">
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                </span>
-                                <template #dropdown>
-                                    <el-dropdown-menu>
-                                        <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
-                                            Ver</el-dropdown-item>
-                                        <el-dropdown-item :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
-                                            Editar</el-dropdown-item>
-                                        <el-dropdown-item :command="'clone-' + scope.row.id"><i
-                                                class="fa-solid fa-clone"></i>
-                                            Clonar</el-dropdown-item>
-                                    </el-dropdown-menu>
-                                </template>
-                            </el-dropdown>
-                        </template>
                     </el-table-column>
                 </el-table>
             </div>
             <!-- tabla -->
 
             <!-- -------------- Modal starts----------------------- -->
-            <Modal :show="showCreateModal" @close="showCreateModal = false">
-                <form @submit.prevent="editFlag == true ? update() : store()">
-                    <div class="p-3 relative">
-                        <i @click="
-                            showCreateModal = false;
-                        form.reset();
-                        editFlag = false;
-                        " class="fa-solid fa-xmark cursor-pointer w-5 h-5 rounded-full border border-black flex items-center justify-center absolute right-3"></i>
-                        <div class="flex justify-start space-x-3 pt-5 pb-1">
-                            <PrimaryButton>{{ editFlag == true ? 'Actualizar' : 'Enviar' }}</PrimaryButton>
-                            <CancelButton @click="
-                                createRequestModal = false;
-                            form.reset();
-                            editFlag = false
-                                ">Cancelar</CancelButton>
+            <DialogModal :show="showModal" @close="showModal = false">
+                <template #title>
+                    <p v-if="editFlag">Editar Bono "{{ itemClicked.name }}"</p>
+                    <p v-else>Crear Bono</p>
+                </template>
+                <template #content>
+                    <form ref="myForm" @submit.prevent="editFlag ? update() : store()">
+                        <div class="flex justify-end">
+                            <el-switch v-model="form.is_active" inline-prompt size="large"
+                                style="--el-switch-on-color: #0355B5; --el-switch-off-color: #CCCCCC"
+                                active-text="Activo" inactive-text="Inactivo" />
                         </div>
-                    </div>
-                </form>
-            </Modal>
+                        <div>
+                            <IconInput v-model="form.name" inputPlaceholder="Nombre de bono *" inputType="text">
+                                <el-tooltip content="Nombre de bono *" placement="top">
+                                    A
+                                </el-tooltip>
+                            </IconInput>
+                            <InputError :message="form.errors.name" />
+                        </div>
+                        <div class="flex col-span-full mt-2">
+                            <el-tooltip content="Descripción" placement="top">
+                                <span
+                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                    ...
+                                </span>
+                            </el-tooltip>
+                            <textarea v-model="form.description" class="textarea" autocomplete="off"
+                                placeholder="Descripción"></textarea>
+                            <InputError :message="form.errors.description" />
+                        </div>
+                        <div class="grid grid-cols-2 gap-1 mt-3">
+                            <div>
+                                <IconInput v-model="form.full_time" inputPlaceholder="Monto para turno completo *"
+                                    inputType="number">
+                                    <el-tooltip content="Monto para turno completo *" placement="top">
+                                        <i class="fa-solid fa-money-bill-wave"></i>
+                                    </el-tooltip>
+                                </IconInput>
+                                <InputError :message="form.errors.full_time" />
+                            </div>
+                            <div>
+                                <IconInput v-model="form.half_time" inputPlaceholder="Monto para medio turno *"
+                                    inputType="number">
+                                    <el-tooltip content="Monto para medio turno *" placement="top">
+                                        <i class="fa-solid fa-money-bill-wave"></i>
+                                    </el-tooltip>
+                                </IconInput>
+                                <InputError :message="form.errors.half_time" />
+                            </div>
+                        </div>
+                    </form>
+                </template>
+                <template #footer>
+                    <CancelButton @click="showModal = false; form.reset(); editFlag = false;" :disabled="form.processing">
+                        Cancelar</CancelButton>
+                    <PrimaryButton @click="submitForm" :disabled="form.processing">{{ editFlag ? 'Actualizar' : 'Crear' }}
+                    </PrimaryButton>
+                </template>
+            </DialogModal>
             <!-- --------------------------- Modal ends ------------------------------------ -->
 
         </AppLayout>
@@ -98,11 +119,14 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
-import Modal from "@/Components/Modal.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+import DialogModal from "@/Components/DialogModal.vue";
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm } from "@inertiajs/vue3";
+import InputError from "@/Components/InputError.vue";
+import IconInput from "@/Components/MyComponents/IconInput.vue";
 import axios from 'axios';
-
 
 export default {
     data() {
@@ -111,7 +135,7 @@ export default {
             description: null,
             full_time: null,
             half_time: null,
-            is_active: null,
+            is_active: true,
         });
 
         return {
@@ -122,20 +146,55 @@ export default {
             itemsPerPage: 10,
             start: 0,
             end: 10,
-            showCreateModal: false,
+            showModal: false,
+            editFlag: false,
+            itemClicked: null,
         };
     },
     components: {
         AppLayout,
         SecondaryButton,
+        PrimaryButton,
+        CancelButton,
         Link,
         TextInput,
-        Modal,
+        DialogModal,
+        InputError,
+        IconInput
     },
     props: {
         bonuses: Object
     },
     methods: {
+        update() {
+            this.form.put(route('bonuses.update', this.itemClicked), {
+                onSuccess: () => {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: 'Bono actualizado',
+                        type: 'success'
+                    });
+                    this.form.reset();
+                    this.showModal = false;
+                }
+            });
+        },
+        store() {
+            this.form.post(route('bonuses.store'), {
+                onSuccess: () => {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: 'Bono creado',
+                        type: 'success'
+                    });
+                    this.form.reset();
+                    this.showModal = false;
+                }
+            });
+        },
+        submitForm() {
+            this.$refs.myForm.dispatchEvent(new Event('submit', { cancelable: true }));
+        },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
 
@@ -196,26 +255,24 @@ export default {
             }
         },
         tableRowClassName({ row, rowIndex }) {
+            let classes = 'cursor-pointer';
+
             if (row.is_active !== 1) {
-                return 'text-red-600';
+                classes += ' text-red-600';
             }
 
-            return '';
+            return classes;
         },
         handleRowClick(row) {
-            this.$inertia.get(route('bonuses.show', row));
-        },
-        handleCommand(command) {
-            const commandName = command.split('-')[0];
-            const rowId = command.split('-')[1];
+            this.itemClicked = row;
+            this.editFlag = true;
+            this.showModal = true;
 
-            if (commandName == 'clone') {
-                this.clone(rowId);
-            } else if (commandName == 'make_so') {
-                console.log('SO');
-            } else {
-                this.$inertia.get(route('bonuses.' + commandName, rowId));
-            }
+            this.form.name = row.name;
+            this.form.description = row.description;
+            this.form.full_time = row.full_time;
+            this.form.half_time = row.half_time;
+            this.form.is_active = Boolean(row.is_active);
         },
     },
     computed: {
