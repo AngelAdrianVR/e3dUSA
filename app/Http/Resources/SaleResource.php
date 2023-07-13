@@ -15,9 +15,21 @@ class SaleResource extends JsonResource
     public function toArray(Request $request): array
     {
 
-        $status = 'Esperando autorización';
+        $status = ['label' => 'Esperando autorización',
+                    'text-color' => 'text-amber-500',
+                    'border-color' => 'border-amber-500',               
+                    ];
         if($this->authorized_at){
-            $status = 'Autorizado';
+            $status = ['label' => 'Autorizado',
+            'text-color' => 'text-[#0355B5]',
+            'border-color' => 'border-[#0355B5]',               
+            ];
+            if ($this->recieved_at) {
+                $status = ['label' => 'Recibido',
+                'text-color' => 'text-green-600',
+                'border-color' => 'border-green-600',               
+                ];
+            }
         }
 
         return [
