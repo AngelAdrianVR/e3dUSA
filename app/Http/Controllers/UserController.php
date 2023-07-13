@@ -6,6 +6,7 @@ use App\Http\Resources\UserResource;
 use App\Models\Bonus;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -21,9 +22,10 @@ class UserController extends Controller
     public function create()
     {
         $employee_number = User::orderBy('id', 'desc')->first()->id + 1;
-        $bonuses = Bonus::all();
+        $bonuses = Bonus::where('is_active', 1)->get();
+        $roles = Role::all();
 
-        return inertia('User/Create', compact('employee_number', 'bonuses'));
+        return inertia('User/Create', compact('employee_number', 'bonuses', 'roles'));
     }
 
 
@@ -32,6 +34,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required',
             'email' => 'required|string|unique:users,email',
+            'roles' => 'array|min:1',
             'employee_properties.salary.week' => 'required|numeric|min:1',
             'employee_properties.hours_per_week' => 'required|numeric|min:1',
             'employee_properties.birthdate' => 'required|date',
@@ -56,7 +59,8 @@ class UserController extends Controller
         $validated['employee_properties']['salary']['day'] = round($validated['employee_properties']['salary']['hour'] * $hours_per_day, 2);   
         $validated['password'] = bcrypt($request->password);
         
-        User::create($validated);
+        $user = User::create($validated);
+        $user->syncRoles($request->roles);
 
         return to_route('users.index');
     }
@@ -65,16 +69,19 @@ class UserController extends Controller
     public function show(User $user)
     {
         $users = UserResource::collection(User::latest()->get());
-        // return $users;
-        return inertia('User/Show', compact('user', 'users'));
+        $roles = Role::all();
+
+        return inertia('User/Show', compact('user', 'users', 'roles'));
     }
 
 
     public function edit(User $user)
     {
-        $bonuses = Bonus::all();
+        $bonuses = Bonus::where('is_active', 1)->get();
+        $roles = Role::all();
+        $user_roles = $user->roles->pluck('id');
 
-        return inertia('User/Edit', compact('bonuses', 'user'));
+        return inertia('User/Edit', compact('bonuses', 'user', 'roles', 'user_roles'));
     }
 
 
@@ -83,6 +90,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required',
             'email' => 'required|string|unique:users,email,'.$user->id,
+            'roles' => 'array|min:1',
             'employee_properties.salary.week' => 'required|numeric|min:1',
             'employee_properties.hours_per_week' => 'required|numeric|min:1',
             'employee_properties.birthdate' => 'required|date',
@@ -107,6 +115,7 @@ class UserController extends Controller
         $validated['employee_properties']['hours_per_day'] = round($hours_per_day, 2);
 
         $user->update($validated);
+        $user->syncRoles($request->roles);
 
         return to_route('users.index');
     }
