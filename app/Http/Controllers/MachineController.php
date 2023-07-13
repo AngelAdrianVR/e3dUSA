@@ -35,7 +35,7 @@ class MachineController extends Controller
             'cost' => 'nullable|numeric|min:1',
             'supplier' => 'nullable|string',
             'aquisition_date' => 'nullable|date|before:tomorrow',
-            'days_next_maintenance' => 'required|numeric|min:7|max:60',
+            'days_next_maintenance' => 'required|numeric|min:7',
         ]);
 
         Machine::create($request->all());
@@ -71,7 +71,7 @@ class MachineController extends Controller
             'cost' => 'nullable|numeric|min:1',
             'supplier' => 'nullable|string',
             'aquisition_date' => 'nullable|date|before:tomorrow',
-            'days_next_maintenance' => 'required|numeric|min:7|max:60',
+            'days_next_maintenance' => 'required|numeric|min:7',
         ]);
 
         $machine->update($request->all());

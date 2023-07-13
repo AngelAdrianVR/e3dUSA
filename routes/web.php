@@ -15,6 +15,7 @@ use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
