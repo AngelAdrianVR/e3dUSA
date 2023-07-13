@@ -68,7 +68,6 @@
                 </el-table>
             </div>
             <!-- tabla -->
-
         </AppLayout>
     </div>
 </template>

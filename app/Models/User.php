@@ -156,4 +156,22 @@ class User extends Authenticatable
 
         return $next;
     }
+
+    public function getWeekTime()
+    {
+        if ( is_null($this->employee_properties) ) return 0;
+
+        $payroll = Payroll::getCurrent();
+        $processed_attendances = collect($payroll->getProcessedAttendances($this->id));
+
+        $week_time = $processed_attendances->sum(fn ($item) => $item?->totalWorkedTime()['hours'] ?? 0);
+
+        $hours = intval($week_time);
+        $minutes = abs($hours - $week_time) * 60;
+
+        return [
+            'formatted' => "{$hours}h {$minutes}m",
+            'hours' => round($week_time / 60, 2),
+        ];
+    }
 }
