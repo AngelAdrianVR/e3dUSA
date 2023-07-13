@@ -82,7 +82,7 @@ class MachineController extends Controller
     
     public function destroy(Machine $machine)
     {
-        //
+        $machine->delete();
     }
 
     public function massiveDelete(Request $request)

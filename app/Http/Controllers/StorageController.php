@@ -73,11 +73,12 @@ class StorageController extends Controller
     public function scrapStore(Request $request)
     {
         $storage = Storage::find($request->storage_id);
+        $request->storage_id ? $stock = $storage?->quantity : $stock = 1;
         $request->validate([
             'storage_id' => 'required',
-            'quantity' => 'required|numeric|min:1|max:' . $storage->quantity,
+            'quantity' => 'required|numeric|min:1|max:' . $stock,
             'location' => 'required|string',
-            'type' => 'required|string',
+            'type' => 'required',
             
         ]);
         
@@ -114,10 +115,12 @@ class StorageController extends Controller
     }
 
     
-    public function edit(Storage $storage)
+    public function edit($storage)
     {
-        // return $storage;
-        return inertia('Storage/Edit/FinishedProduct');
+        $finished_product = Storage::where('type', 'producto-terminado')->where('storageable_id', $storage)->get();
+        $catalog_products = CatalogProduct::all();
+        // return $finished_product;
+        return inertia('Storage/Edit/FinishedProduct', compact('finished_product', 'catalog_products'));
     }
 
     

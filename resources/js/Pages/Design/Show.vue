@@ -99,7 +99,7 @@
       <!-- ------------- Informacion general Starts 1 ------------- -->
       <div
         v-if="tabs == 1"
-        class="md:grid grid-cols-2 border-b-2 border-[#cccccc]"
+        class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm"
       >
         <div
           class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center"

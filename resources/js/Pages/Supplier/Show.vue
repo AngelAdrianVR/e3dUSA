@@ -102,7 +102,7 @@
       <!-- ------------- Informacion general Starts 1 ------------- -->
       <div
         v-if="tabs == 1"
-        class="md:w-1/2 grid grid-cols-2 text-left p-4 md:ml-20"
+        class="md:w-1/2 grid grid-cols-2 text-left p-4 md:ml-20 text-sm"
       >
         <span class="text-gray-500">ID</span>
         <span>{{ currentSupplier?.id }}</span>

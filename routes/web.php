@@ -74,6 +74,7 @@ Route::post('companies/clone', [CompanyController::class, 'clone'])->name('compa
 Route::resource('sales', SaleController::class)->middleware('auth');
 Route::post('sales/massive-delete', [SaleController::class, 'massiveDelete'])->name('sales.massive-delete');
 Route::post('sales/clone', [SaleController::class, 'clone'])->name('sales.clone');
+Route::put('sales/authorize/{sale}', [SaleController::class, 'authorize'])->name('sales.authorize');
 
 
 // ------- Ventas(Companybranches sucursales Routes)  ---------

@@ -42,11 +42,13 @@
             <div>
               <IconInput
                 v-model="form.quantity"
-                inputPlaceholder="Stock de apertura"
+                inputPlaceholder="Cantidad para scrap"
                 inputType="number"
                 inputStep="0.1"
               >
+              <el-tooltip content="Cantidad para scrap" placement="top">
                 123
+                </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.quantity" />
             </div>
@@ -57,7 +59,9 @@
                 inputPlaceholder="Ubicaión *"
                 inputType="text"
               >
+              <el-tooltip content="Ubicación en almacén" placement="top">
                 <i class="fa-solid fa-box"></i>
+                </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.location" />
             </div>

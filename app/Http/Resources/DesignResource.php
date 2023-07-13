@@ -23,15 +23,16 @@ class DesignResource extends JsonResource
             $status = ['label'=>'Autorizado. Sin iniciar',
             'text-color' =>'text-amber-700',
             'border-color' => 'border-amber-700'];
-        }elseif($this->started_at){
-            $status = ['label'=>'En proceso',
-            'text-color' =>'text-[#0355B5]',
-            'border-color' => 'border-[#0355B5]'];
-        if ($this->finished_at) {
-                $status = ['label'=>'Terminado',
-                'text-color' =>'text-green-600',
-                'border-color' => 'border-green-600'];
-             }
+            if($this->started_at){
+                $status = ['label'=>'En proceso',
+                'text-color' =>'text-[#0355B5]',
+                'border-color' => 'border-[#0355B5]'];
+            if ($this->finished_at) {
+                    $status = ['label'=>'Terminado',
+                    'text-color' =>'text-green-600',
+                    'border-color' => 'border-green-600'];
+                 }
+            }
         }
 
         return [
