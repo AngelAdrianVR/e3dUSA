@@ -40,11 +40,9 @@
 
 <!-- ----------------------- botones para super admin starts------------------------ -->
             <el-tooltip v-if="currentSale?.status['label'] == 'Esperando autorización'" content="Autorizar Órden" placement="top">
-              <Link :href="route('sales.authorize', saleSelected)">
-                <button class=" rounded-lg bg-green-600 text-white py-1 px-2">
+                <button @click="authorizeOrder" class=" rounded-lg bg-primary text-white py-1 px-2">
                   Autorizar
                 </button>
-              </Link>
             </el-tooltip>
 <!-- ----------------------- botones para super admin ends------------------------ -->
             
@@ -287,6 +285,14 @@ export default {
     },
     saleSelection(){
       this.currentSale = this.sales.data.find((item) => item.id == this.saleSelected);
+    },
+    authorizeOrder(){
+      this.$inertia.put(route("sales.authorize", this.saleSelected));
+      this.$notify({
+            title: "Éxito",
+            message: "Órden de venta autorizada",
+            type: "success",
+          });
     }
   },
 

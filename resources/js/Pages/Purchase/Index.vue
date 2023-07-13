@@ -52,6 +52,7 @@
 
         <el-table
           :data="filteredTableData"
+          @row-click="handleRowClick"
           max-height="450"
           style="width: 100%"
           @selection-change="handleSelectionChange"
@@ -83,7 +84,7 @@
             </template>
             <template #default="scope">
               <el-dropdown trigger="click" @command="handleCommand">
-                <span class="el-dropdown-link mr-3">
+                <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
                   <i class="fa-solid fa-ellipsis-vertical"></i>
                 </span>
                 <template #dropdown>
@@ -153,13 +154,17 @@ export default {
     },
     tableRowClassName({ row, rowIndex }) {
       if (row.status === 'Recibido') {
-        return "text-green-600";
+        return "text-green-600 cursor-pointer";
       } else {
-        return "text-amber-600";
+        return "text-amber-600 cursor-pointer";
       }
 
-      return "";
     },
+
+    handleRowClick(row) {
+            this.$inertia.get(route('purchases.show', row));
+        },
+
     async clone(purchase_id) {
       try {
         const response = await axios.post(

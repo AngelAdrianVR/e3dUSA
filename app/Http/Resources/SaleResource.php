@@ -20,12 +20,12 @@ class SaleResource extends JsonResource
                     'border-color' => 'border-amber-500',               
                     ];
         if($this->authorized_at){
-            $status = ['label' => 'Autorizado',
+            $status = ['label' => 'Autorizado. Sin Iniciar',
             'text-color' => 'text-[#0355B5]',
             'border-color' => 'border-[#0355B5]',               
             ];
             if ($this->recieved_at) {
-                $status = ['label' => 'Recibido',
+                $status = ['label' => 'Terminado',
                 'text-color' => 'text-green-600',
                 'border-color' => 'border-green-600',               
                 ];

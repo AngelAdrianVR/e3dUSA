@@ -97,7 +97,7 @@
             </template>
             <template #default="scope">
               <el-dropdown v-if="scope.row.authorized_at == 'No autorizado'" trigger="click">
-                <span class="el-dropdown-link mr-3">
+                <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
                   <i class="fa-solid fa-ellipsis-vertical"></i>
                 </span>
                 <template #dropdown>

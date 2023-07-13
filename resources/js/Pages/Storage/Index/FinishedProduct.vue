@@ -24,7 +24,7 @@
                     </template>
                 </el-popconfirm>
             </div>
-        <el-table :data="filteredTableData" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
+        <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
                 ref="multipleTableRef" :row-class-name="tableRowClassName">
                 <el-table-column type="selection" width="45" />
                 <el-table-column prop="storageable.name" label="Nombre" width="250" />
@@ -33,13 +33,13 @@
                 <el-table-column prop="storageable.min_quantity" label="Min. Stock" width="100" />
                 <el-table-column prop="storageable.max_quantity" label="Max. Stock" width="100" />
                 <el-table-column prop="quantity" label="Stock" width="100" />
-                <el-table-column align="right" fixed="right" width="200">
+                <el-table-column align="right" fixed="right" >
                     <template #header>
                         <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
                     </template>
                     <template #default="scope">
                         <el-button size="small" type="primary"
-                            @click="edit(scope.$index, scope.row)">Editar</el-button>
+                            @click.stop="edit(scope.$index, scope.row)">Editar</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -80,10 +80,12 @@ export default {
   methods:{
     tableRowClassName({row, rowIndex}){
         if(row.quantity <= row.storageable.min_quantity){
-            return 'text-red-600';
+            return 'text-red-600 cursor-pointer';
         }
         else if(row.quantity >= row.storageable.max_quantity){
-            return 'text-amber-600';
+            return 'text-amber-600 cursor-pointer';
+        }else{
+            return 'cursor-pointer';
         }
 
   },
@@ -142,10 +144,17 @@ export default {
                 console.log(err);
             }
         },
+            handleRowClick(row) {
+                console.log(row);
+                this.$inertia.get(route('storages.show', row));
+            },
+            
         edit(index, finished_product) {
             console.log(finished_product);
             this.$inertia.get(route('storages.finished-products.edit', finished_product.storageable));
-        }
+        },
+        
+        
   },
 
   computed: {
