@@ -11,11 +11,11 @@
             <i class="fa-solid fa-xmark"></i>
           </Link>
         </div>
-        {{saleSelected}}
-        {{currentSale}}
+        
         <div class="flex justify-between">
           <el-select
-            v-model="selectedSale"
+          @change="saleSelection"
+            v-model="saleSelected"
             clearable
             filterable
             placeholder="Buscar órden de venta"
@@ -37,6 +37,18 @@
                 </button>
               </Link>
             </el-tooltip>
+
+<!-- ----------------------- botones para super admin starts------------------------ -->
+            <el-tooltip v-if="currentSale?.status['label'] == 'Esperando autorización'" content="Autorizar Órden" placement="top">
+              <Link :href="route('sales.authorize', saleSelected)">
+                <button class=" rounded-lg bg-green-600 text-white py-1 px-2">
+                  Autorizar
+                </button>
+              </Link>
+            </el-tooltip>
+<!-- ----------------------- botones para super admin ends------------------------ -->
+            
+
 
             <Dropdown align="right" width="48">
               <template #trigger>
@@ -68,7 +80,7 @@
         </div>
       </div>
       <p class="text-center font-bold text-lg mb-4">
-        {{ saleSelected.folio }}
+        {{ currentSale?.folio }}
       </p>
 
       <!-- ------------- tabs section starts ------------- -->
@@ -100,7 +112,7 @@
       <!-- ------------- tabs section ends ------------- -->
 
       <!-- ------------- Informacion general Starts 1 ------------- -->
-      <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc]">
+      <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
         <div
             class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center"
         >
@@ -120,47 +132,48 @@
             <span class="text-gray-500 my-2">Solicitada por</span>
             <span>{{ currentSale?.user.name }}</span>
             <span class="text-gray-500 my-2">Solicitada el</span>
-            <span>{{ currentSale?.supplier.name }}</span>
-            <span class="text-gray-500 my-2">Medio de petición</span>
             <span>{{ currentSale?.created_at }}</span>
+            <span class="text-gray-500 my-2">Medio de petición</span>
+            <span>{{ currentSale?.order_via }}</span>
             <span class="text-gray-500 my-2">Prioridad</span>
-            <span :class="currentSale?.status == 'Pendiente' ? 'text-amber-600' : 'text-green-600'">{{ currentSale?.status }}</span>
+            <span>{{'currentSale?.status' }}</span>
             <span class="text-gray-500 my-2">Operadores</span>
-            <span>{{ currentSale?.authorized_at }}</span>
+            <span>{{ 'currentSale?.authorized_at' }}</span>
             <span class="text-gray-500 my-2">OCE</span>
-            <span>{{ currentSale?.authorized_user_name }}</span>
-            <span class="text-gray-500 my-2">Factira</span>
-            <span>{{ currentSale?.expected_delivery_date }}</span>
+            <span>{{ currentSale?.oce_name }}</span>
+            <span class="text-gray-500 my-2">Factura</span>
+            <span>{{ currentSale?.invoice }}</span>
             <span class="text-gray-500 my-2">Estatus</span>
-            <span>{{ currentSale?.emited_at }}</span>
+            <span :class="currentSale?.status['text-color'] + ' ' + currentSale?.status['border-color']" class="rounded-full border text-center">{{ currentSale?.status['label'] }}</span>
             <span class="text-gray-500 my-2">Notas</span>
+            <span>{{ currentSale?.notes }}</span>
         </div>
         <div
             class="grid grid-cols-2 text-left p-4 md:ml-10 items-center"
         >
-            <p class="text-secondary col-span-2 mb-2">Datos del proveedor</p>
+            <p class="text-secondary col-span-2 mb-2">Datos del cliente</p>
 
             <span class="text-gray-500">ID</span>
-            <span>{{ currentSale?.supplier.id }}</span>
+            <span>{{ currentSale?.company_branch?.id }}</span>
             <span class="text-gray-500 my-2">Nombre</span>
-            <span>{{ currentSale?.supplier.name }}</span>
+            <span>{{ currentSale?.company_branch?.name }}</span>
             <span class="text-gray-500 my-2">Dirección</span>
-            <span>{{ currentSale?.supplier.address }}</span>
+            <span>{{ currentSale?.company_branch?.address }}</span>
             <span class="text-gray-500 my-2">Código postal</span>
-            <span>{{ currentSale?.supplier.post_code }}</span>
+            <span>{{ currentSale?.company_branch?.post_code }}</span>
             <span class="text-gray-500 my-2">Teléfono</span>
-            <span>{{ currentSale?.supplier.phone }}</span>
+            <span>{{ currentSale?.company_branch?.phone }}</span>
 
-            <p class="text-secondary col-span-2 mt-7">Datos Bancarios</p>
+            <p class="text-secondary col-span-2 mt-7">Contacto</p>
 
-            <span class="text-gray-500 my-2">Nombre del beneficiario</span>
-            <span>{{ currentSale?.bank_information.beneficiary_name }}</span>
-            <span class="text-gray-500 my-2">Número de cuenta</span>
-            <span>{{ currentSale?.bank_information.accountNumber }}</span>
-            <span class="text-gray-500 my-2">Clabe</span>
-            <span>{{ currentSale?.bank_information.clabe }}</span>
-            <span class="text-gray-500 my-2">Banco</span>
-            <span>{{ currentSale?.bank_information.bank_name }}</span>
+            <span class="text-gray-500 my-2">Nombre</span>
+            <span>{{ currentSale?.contact?.name }}</span>
+            <span class="text-gray-500 my-2">Correo electrónico</span>
+            <span>{{ currentSale?.contact?.email }}</span>
+            <span class="text-gray-500 my-2">telefono</span>
+            <span>{{ currentSale?.contact?.phone }}</span>
+            <span class="text-gray-500 my-2">Cargo</span>
+            <span>{{ currentSale?.contact?.charge }}</span>
 
         </div>
       </div>
@@ -272,17 +285,21 @@ export default {
         this.showConfirmModal = false;
       }
     },
+    saleSelection(){
+      this.currentSale = this.sales.data.find((item) => item.id == this.saleSelected);
+    }
   },
 
-  watch: {
-    selectedSale(newVal) {
-      this.currentSale = this.sales.data.find((item) => item.id == newVal);
-      console.log(this);
-    },
-  },
+  // watch: {
+  //   selectedSale(newVal) {
+  //     this.currentSale = this.sales.data.find((item) => item.id == newVal);
+  //     console.log(this);
+  //   },
+  // },
 
 mounted() {
     this.saleSelected = this.sale.id;
+    this.currentSale = this.sales.data.find((item) => item.id == this.saleSelected);
   },
 };
 </script>

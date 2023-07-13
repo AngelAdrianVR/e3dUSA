@@ -69,6 +69,7 @@ Route::post('companies/clone', [CompanyController::class, 'clone'])->name('compa
 Route::resource('sales', SaleController::class)->middleware('auth');
 Route::post('sales/massive-delete', [SaleController::class, 'massiveDelete'])->name('sales.massive-delete');
 Route::post('sales/clone', [SaleController::class, 'clone'])->name('sales.clone');
+Route::put('sales/authorize/{sale}', [SaleController::class, 'authorize'])->name('sales.authorize');
 
 
 // ------- Ventas(Companybranches sucursales Routes)  ---------
@@ -132,6 +133,8 @@ Route::resource('payrolls', PayrollController::class)->middleware('auth');
 Route::resource('users', UserController::class)->middleware('auth');
 Route::get('users-get-next-attendance', [UserController::class, 'getNextAttendance'])->middleware('auth')->name('users.get-next-attendance');
 Route::get('users-set-attendance', [UserController::class, 'setAttendance'])->middleware('auth')->name('users.set-attendance');
+Route::put('users-reset-pass/{user}', [UserController::class, 'resetPass'])->middleware('auth')->name('users.reset-pass');
+Route::put('users-change-status/{user}', [UserController::class, 'changeStatus'])->middleware('auth')->name('users.change-status');
 
 
 // ------- Design department routes  ---------

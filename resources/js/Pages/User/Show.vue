@@ -13,6 +13,7 @@
         </div>
         <div class="flex justify-between">
           <el-select
+          @change="userSelection"
             v-model="userSelected"
             clearable
             filterable
@@ -21,9 +22,9 @@
             no-match-text="No se encontraron coincidencias"
           >
             <el-option
-              v-for="item in users"
+              v-for="item in users.data"
               :key="item.id"
-              :label="item.id + '-' + item.name"
+              :label="item.id + '. ' + item.name"
               :value="item.id"
             />
           </el-select>
@@ -59,13 +60,12 @@
               >
                 Reporte de actividades
               </DropdownLink>
-              <DropdownLink
-                :href="route('users.create')"
+              <DropdownLink @click="changeUserStatus" as="button"
               >
-                Desactivar usuario
+                {{currentUser?.is_active.bool ? 'Desactivar usuario' : 'Activar usuario'}}
               </DropdownLink>
-              <DropdownLink
-                :href="route('users.create')"
+
+              <DropdownLink @click="resetPassword" as="button"
               >
                 Reseetear contraseña
               </DropdownLink>
@@ -80,8 +80,6 @@
       <p class="text-center font-bold text-lg mb-4">
         {{ currentUser?.name }}
       </p>
-      {{userSelected}}
-      {{currentUser}}
       <!-- ------------- tabs section starts ------------- -->
       <div
         class="border-y-2 border-[#cccccc] flex justify-between items-center py-2"
@@ -122,60 +120,58 @@
         <p class="text-secondary col-span-2 mt-4 mb-2">Datos personales</p>
 
           <span class="text-gray-500">Nombre</span>
-          <span>{{ currentUser?.id }}</span>
+          <span>{{ currentUser?.name }}</span>
           <span class="text-gray-500 my-2">Fecha de nacimiento</span>
-          <span>{{ currentUser?.user.name }}</span>
+          <span>{{ currentUser?.employee_properties.birthdate }}</span>
           <span class="text-gray-500 my-2">Dependientes económicos</span>
-          <span>{{ currentUser?.created_at }}</span>
+          <span>{{ '--' }}</span>
           <span class="text-gray-500 my-2">Dirección</span>
-          <span
-            >{{ currentUser?.authorized_user_name }} 
-            {{ currentUser?.authorized_at }}</span
+          <span>{{ '--' }}</span
           >
           <span class="text-gray-500 my-2">Teléfono</span>
-          <span>{{ currentUser?.designer.name }}</span>
+          <span>{{ '--'}}</span>
           <span class="text-gray-500 my-2">Correo personal</span>
-          <span>{{ currentUser?.expected_end_at }}</span>
+          <span>{{ currentUser?.email }}</span>
 
           <p class="text-secondary col-span-2 mt-7">Datos laborales</p>
 
           <span class="text-gray-500 my-2">ID</span>
-          <span>{{ currentUser?.user.name }}</span>
+          <span>{{ currentUser?.id }}</span>
           <span class="text-gray-500 my-2">Fecha de ingreso</span>
-          <span>{{ currentUser?.user.name }}</span>
+          <span>{{ currentUser?.created_at }}</span>
           <span class="text-gray-500 my-2">Correo corporativo</span>
-          <span>{{ currentUser?.user.name }}</span>
+          <span>{{ '--' }}</span>
           <span class="text-gray-500 my-2">Departamento</span>
-          <span>{{ currentUser?.user.name }}</span>
+          <span>{{ currentUser?.employee_properties.department }}</span>
           
 
         </div>
 
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
         <span class="text-gray-500 my-2">Puesto</span>
-          <span>{{ currentUser?.user.name }}</span>
+          <span>{{ currentUser?.employee_properties.job_position }}</span>
           <span class="text-gray-500">NSS</span>
-          <span>{{ currentUser?.company_branch_name }}</span>
+          <span>{{ '--' }}</span>
           <span class="text-gray-500 my-2">RFC</span>
-          <span>{{ currentUser?.contact_name }}</span>
+          <span>{{ '--' }}</span>
           <span class="text-gray-500 my-2">Curp</span>
-          <span>{{ currentUser?.name }}</span>
+          <span>{{ '--' }}</span>
           <span class="text-gray-500 my-2">Nivel académico</span>
-          <span>{{ currentUser?.design_type.name }}</span>
+          <span>{{ '--' }}</span>
           <span class="text-gray-500 my-2">Salario semanal</span>
-          <span>{{ currentUser?.design_type.name }}</span>
+          <span>{{ currentUser?.employee_properties.salary.week }}</span>
           <span class="text-gray-500 my-2">Horas laborales por semana</span>
-          <span>{{ currentUser?.design_type.name }}</span>
+          <span>{{ currentUser?.employee_properties.hours_per_week }}</span>
 
           <p class="text-secondary col-span-2 mt-7">Contacto de emergencia</p>
 
           <span class="text-gray-500 my-2">Nombre</span>
-          <span>{{ currentUser?.specifications }}</span>
+          <span>{{ '--' }}</span>
 
           <span class="text-gray-500 my-2">Parentezco</span>
-          <span>{{ currentUser?.measure_unit }}</span>
+          <span>{{ '--' }}</span>
           <span class="text-gray-500 my-2">Teléfono</span>
-          <span>{{ currentUser?.dimensions }}</span>
+          <span>{{ '--' }}</span>
         </div>
       </div>
       <!-- ------------- Informacion general ends 1 ------------- -->
@@ -192,6 +188,22 @@
 
       <!-- ------------- tab 2 modifications ends ------------ -->
 
+      <ConfirmationModal
+        :show="showConfirmModal"
+        @close="showConfirmModal = false"
+      >
+        <template #title> Eliminar usuario </template>
+        <template #content> Continuar con la eliminación? </template>
+        <template #footer>
+          <div class="">
+            <CancelButton @click="showConfirmModal = false" class="mr-2"
+              >Cancelar</CancelButton
+            >
+            <PrimaryButton @click="deleteItem">Eliminar</PrimaryButton>
+          </div>
+        </template>
+      </ConfirmationModal>
+
     </AppLayoutNoHeader>
   </div>
 </template>
@@ -204,6 +216,7 @@ import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import InputError from "@/Components/InputError.vue";
 import Modal from "@/Components/Modal.vue";
+import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 
 export default {
@@ -216,6 +229,7 @@ export default {
     //   form,
       userSelected: "",
       currentUser: null,
+      showConfirmModal: false,
     //   startOrderModal: false,
     //   helpDialog: false,
       tabs: 1,
@@ -235,19 +249,79 @@ export default {
     Modal,
     CancelButton,
     InputError,
+    ConfirmationModal,
   },
   methods: {
+    async deleteItem() {
+      try {
+        const response = await axios.delete(
+          route("users.destroy", this.currentUser?.id)
+        );
 
-  },
+        if (response.status == 200) {
+          this.$notify({
+            title: "Éxito",
+            message: response.data.message,
+            type: "success",
+          });
 
-  watch: {
-    selectedUser(newVal) {
-      this.currentUser = this.users.find((item) => item.id == newVal);
+          const index = this.machines.data.findIndex(
+            (item) => item.id === this.currentUser.id
+          );
+          if (index !== -1) {
+            this.machines.data.splice(index, 1);
+            this.userSelected = "";
+          }
+        } else {
+          this.$notify({
+            title: "Algo salió mal",
+            message: response.data.message,
+            type: "error",
+          });
+        }
+      } catch (err) {
+        this.$notify({
+          title: "Algo salió mal",
+          message: err.message,
+          type: "error",
+        });
+        console.log(err);
+      } finally {
+        this.showConfirmModal = false;
+      }
     },
+
+    resetPassword(){
+      this.$inertia.put(route("users.reset-pass", this.currentUser?.id));
+      this.$notify({
+            title: "Éxito",
+            message: "Contraseña reseteada a 'e3d'",
+            type: "success",
+          });
+    },
+
+    changeUserStatus(){
+      this.$inertia.put(route("users.change-status", this.currentUser?.id));
+      this.$notify({
+            title: "Éxito",
+            message: this.currentUser?.is_active.bool ? 'Usuario activado' : 'Usuario desactivado',
+            type: "success",
+          });
+    },
+    userSelection(){
+      this.currentUser = this.users.data.find((item) => item.id == this.userSelected);
+    }
   },
+
+  // watch: {
+  //   selectedUser(newVal) {
+  //     this.currentUser = this.users.data.find((item) => item.id == newVal);
+  //   },
+  // },
 
   mounted() {
     this.userSelected = this.user.id;
+    this.currentUser = this.users.data.find((item) => item.id == this.userSelected);
   },
 };
 </script>

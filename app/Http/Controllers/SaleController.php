@@ -57,8 +57,8 @@ class SaleController extends Controller
 
     public function show(Sale $sale)
     {
-        $sales = SaleResource::collection(Sale::latest()->get());
-        
+        $sales = SaleResource::collection(Sale::with('user', 'companyBranch', 'contact')->latest()->get());
+        // return $sales;       
         return inertia('Sale/Show', compact('sale', 'sales'));
     }
 
@@ -101,7 +101,7 @@ class SaleController extends Controller
 
     public function destroy(Sale $sale)
     {
-        //
+        $sale->delete();
     }
 
     public function massiveDelete(Request $request)
@@ -112,6 +112,13 @@ class SaleController extends Controller
         }
 
         return response()->json(['message' => 'OV(s) eliminada(s)']);
+    }
+
+    public function authorize(Sale $sale)
+    {
+        $sale->update([
+            'authorized_at' => now()
+        ]);
     }
 
     public function clone(Request $request)
@@ -150,4 +157,6 @@ class SaleController extends Controller
                 'message' => "Orden de venta clonada: $new_item_folio", 'newItem' => saleResource::make(Sale::with('companyBranch', 'user')->find($clone->id))
             ]);
     }
+
+    
 }

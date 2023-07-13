@@ -1,5 +1,5 @@
 <template>
-    <div v-for="(bank, index) in banks" :key="index" class="bg-transparent rounded-lg border border-[#cccccc] shadow-md shadow-[#9b9999] p-4 w-full">
+    <div v-for="(bank, index) in banks" :key="index" class="text-sm bg-transparent rounded-lg border border-[#cccccc] shadow-md shadow-[#9b9999] p-4 w-full">
         <p class="text-secondary ">{{ bank.name }}</p>
         
         <p class="my-3">Datos</p>

@@ -31,7 +31,7 @@
                 <el-table-column prop="storageable.part_number" label="N° parte" width="120" />
                 <el-table-column prop="location" label="Ubicación" width="120" />
                 <el-table-column prop="quantity" label="Cantidad" width="100" />
-                <el-table-column align="right" fixed="right" width="200">
+                <el-table-column align="right" fixed="right" >
                     <template #header>
                         <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
                     </template>

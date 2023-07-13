@@ -1,7 +1,8 @@
 <template>
     <div>
-        <div class=" container mx-auto my-4">
+        <div class=" container mx-auto my-4 border-green-600">
          <el-table-v2
+         class="border-amber-700"
             :columns="columns"
             :data="[]"
             :row-height="40"
@@ -10,7 +11,7 @@
             :footer-height="50"
         >
             <template #empty>
-            <div class="flex items-center justify-center h-100%">
+            <div class="flex items-center justify-center h-100% border-amber-500 text-amber-700">
                 <el-empty />
             </div>
             </template>
