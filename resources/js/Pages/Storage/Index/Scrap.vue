@@ -134,6 +134,12 @@ export default {
                 console.log(err);
             }
         },
+
+        // handleRowClick(row) {
+        //     console.log(row);
+        //     this.$inertia.get(route('storages.show', row));
+        // },
+
         edit(index, scrap) {
             console.log(scrap);
             this.$inertia.get(route('storages.finished-products.edit', scrap.storageable));

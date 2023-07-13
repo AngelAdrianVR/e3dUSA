@@ -74,7 +74,7 @@ Route::post('companies/clone', [CompanyController::class, 'clone'])->name('compa
 Route::resource('sales', SaleController::class)->middleware('auth');
 Route::post('sales/massive-delete', [SaleController::class, 'massiveDelete'])->name('sales.massive-delete');
 Route::post('sales/clone', [SaleController::class, 'clone'])->name('sales.clone');
-Route::put('sales/authorize/{sale}', [SaleController::class, 'authorize'])->name('sales.authorize');
+Route::put('sales/authorize/{sale}', [SaleController::class, 'authorizeOrder'])->name('sales.authorize');
 
 
 // ------- Ventas(Companybranches sucursales Routes)  ---------
@@ -142,6 +142,10 @@ Route::get('/storage-scraps/create', [StorageController::class, 'create'])->midd
 Route::post('/storage-scraps/store', [StorageController::class, 'scrapStore'])->middleware('auth')->name('storages.scraps.store');
 Route::post('storages/scrap/massive-delete', [StorageController::class, 'scrapMassiveDelete'])->name('storages.scraps.massive-delete');
 Route::post('storages/massive-delete', [StorageController::class, 'massiveDelete'])->name('storages.massive-delete');
+Route::get('storages/{storage}/show', [StorageController::class, 'show'])->name('storages.show');
+Route::delete('storages/{storage}/destroy', [StorageController::class, 'destroy'])->name('storages.destroy');
+Route::post('storages/{storage}/add-storage', [StorageController::class, 'addStorage'])->name('storages.add');
+Route::post('storages/{storage}/sub-storage', [StorageController::class, 'subStorage'])->name('storages.sub');
 
 // ------- Design department routes  ---------
 Route::resource('designs', DesignController::class)->middleware('auth');

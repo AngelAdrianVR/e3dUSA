@@ -114,12 +114,12 @@ class SaleController extends Controller
         return response()->json(['message' => 'OV(s) eliminada(s)']);
     }
 
-    // public function authorize(Sale $sale)
-    // {
-    //     $sale->update([
-    //         'authorized_at' => now()
-    //     ]);
-    // }
+    public function authorizeOrder(Sale $sale)
+    {
+        $sale->update([
+            'authorized_at' => now()
+        ]);
+    }
 
     public function clone(Request $request)
     {
