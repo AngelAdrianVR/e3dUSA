@@ -4,6 +4,11 @@
       <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
         <div class="flex justify-between">
           <label class="text-lg">Usuarios</label>
+          <img
+        class="h-32 w-32 rounded-full object-cover absolute left-1/2 top-16 hidden md:block"
+        :src="$page.props.auth.user.profile_photo_url"
+        :alt="$page.props.auth.user.name"
+      />
           <Link
             :href="route('users.index')"
             class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center"
@@ -13,7 +18,7 @@
         </div>
         <div class="flex justify-between">
           <el-select
-          @change="userSelection"
+            @change="userSelection"
             v-model="userSelected"
             clearable
             filterable
@@ -29,54 +34,53 @@
             />
           </el-select>
           <div class="flex items-center space-x-2">
-          <el-tooltip content="Editar" placement="top">
-            <Link :href="route('users.edit', userSelected)">
-              <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
-                <i class="fa-solid fa-pen text-sm"></i>
-              </button>
-            </Link>
-          </el-tooltip>
-          <el-tooltip content="Crear nuevo usuario" placement="top">
-            <Link :href="route('users.create')">
-              <PrimaryButton>
-                + Nuevo
-              </PrimaryButton>
-            </Link>
-          </el-tooltip>
-          <Dropdown align="right" width="48">
-            <template #trigger>
-              <button
-                class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm"
-              >
-                Más <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
-              </button>
-            </template>
-            <template #content>
-              <DropdownLink :href="route('users.create')">
-                Geberar recibo de vacaciones
-              </DropdownLink>
-              <DropdownLink
-                :href="route('users.create')"
-              >
-                Reporte de actividades
-              </DropdownLink>
-              <DropdownLink @click="changeUserStatus" as="button"
-              >
-                {{currentUser?.is_active.bool ? 'Desactivar usuario' : 'Activar usuario'}}
-              </DropdownLink>
+            <el-tooltip content="Editar" placement="top">
+              <Link :href="route('users.edit', userSelected)">
+                <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
+                  <i class="fa-solid fa-pen text-sm"></i>
+                </button>
+              </Link>
+            </el-tooltip>
+            <el-tooltip content="Crear nuevo usuario" placement="top">
+              <Link :href="route('users.create')">
+                <button class="rounded-lg bg-primary p-2 text-sm text-white"> + Nuevo </button>
+              </Link>
+            </el-tooltip>
+            <Dropdown align="right" width="48">
+              <template #trigger>
+                <button
+                  class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm"
+                >
+                  Más <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
+                </button>
+              </template>
+              <template #content>
+                <DropdownLink :href="route('users.create')">
+                  Geberar recibo de vacaciones
+                </DropdownLink>
+                <DropdownLink :href="route('users.create')">
+                  Reporte de actividades
+                </DropdownLink>
+                <DropdownLink @click="changeUserStatus" as="button">
+                  {{
+                    currentUser?.is_active.bool
+                      ? "Desactivar usuario"
+                      : "Activar usuario"
+                  }}
+                </DropdownLink>
 
-              <DropdownLink @click="resetPassword" as="button"
-              >
-                Reseetear contraseña
-              </DropdownLink>
-              <DropdownLink @click="showConfirmModal = true" as="button">
-                Eliminar
-              </DropdownLink>
-            </template>
-          </Dropdown>
-        </div>
+                <DropdownLink @click="resetPassword" as="button">
+                  Reseetear contraseña
+                </DropdownLink>
+                <DropdownLink @click="showConfirmModal = true" as="button">
+                  Eliminar
+                </DropdownLink>
+              </template>
+            </Dropdown>
+          </div>
         </div>
       </div>
+      
       <p class="text-center font-bold text-lg mb-4">
         {{ currentUser?.name }}
       </p>
@@ -116,20 +120,18 @@
         <div
           class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center"
         >
-
-        <p class="text-secondary col-span-2 mt-4 mb-2">Datos personales</p>
+          <p class="text-secondary col-span-2 mt-4 mb-2">Datos personales</p>
 
           <span class="text-gray-500">Nombre</span>
           <span>{{ currentUser?.name }}</span>
           <span class="text-gray-500 my-2">Fecha de nacimiento</span>
           <span>{{ currentUser?.employee_properties.birthdate }}</span>
           <span class="text-gray-500 my-2">Dependientes económicos</span>
-          <span>{{ '--' }}</span>
+          <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Dirección</span>
-          <span>{{ '--' }}</span
-          >
+          <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Teléfono</span>
-          <span>{{ '--'}}</span>
+          <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Correo personal</span>
           <span>{{ currentUser?.email }}</span>
 
@@ -140,43 +142,40 @@
           <span class="text-gray-500 my-2">Fecha de ingreso</span>
           <span>{{ currentUser?.created_at }}</span>
           <span class="text-gray-500 my-2">Correo corporativo</span>
-          <span>{{ '--' }}</span>
+          <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Departamento</span>
           <span>{{ currentUser?.employee_properties.department }}</span>
-          
-
         </div>
 
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
-        <span class="text-gray-500 my-2">Puesto</span>
+          <span class="text-gray-500 my-2">Puesto</span>
           <span>{{ currentUser?.employee_properties.job_position }}</span>
           <span class="text-gray-500">NSS</span>
-          <span>{{ '--' }}</span>
+          <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">RFC</span>
-          <span>{{ '--' }}</span>
+          <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Curp</span>
-          <span>{{ '--' }}</span>
+          <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Nivel académico</span>
-          <span>{{ '--' }}</span>
+          <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Salario semanal</span>
-          <span>{{ currentUser?.employee_properties.salary.week }}</span>
+          <span>${{ currentUser?.employee_properties.salary.week.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
           <span class="text-gray-500 my-2">Horas laborales por semana</span>
           <span>{{ currentUser?.employee_properties.hours_per_week }}</span>
 
           <p class="text-secondary col-span-2 mt-7">Contacto de emergencia</p>
 
           <span class="text-gray-500 my-2">Nombre</span>
-          <span>{{ '--' }}</span>
+          <span>{{ "--" }}</span>
 
           <span class="text-gray-500 my-2">Parentezco</span>
-          <span>{{ '--' }}</span>
+          <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Teléfono</span>
-          <span>{{ '--' }}</span>
+          <span>{{ "--" }}</span>
         </div>
       </div>
       <!-- ------------- Informacion general ends 1 ------------- -->
 
-      
       <!-- -------------tab 2 modifications starts ------------- -->
 
       <!-- <div v-if="tabs == 2" class="p-7">
@@ -203,7 +202,6 @@
           </div>
         </template>
       </ConfirmationModal>
-
     </AppLayoutNoHeader>
   </div>
 </template>
@@ -226,12 +224,12 @@ export default {
     // });
 
     return {
-    //   form,
+      //   form,
       userSelected: "",
       currentUser: null,
       showConfirmModal: false,
-    //   startOrderModal: false,
-    //   helpDialog: false,
+      //   startOrderModal: false,
+      //   helpDialog: false,
       tabs: 1,
     };
   },
@@ -291,26 +289,30 @@ export default {
       }
     },
 
-    resetPassword(){
+    resetPassword() {
       this.$inertia.put(route("users.reset-pass", this.currentUser?.id));
       this.$notify({
-            title: "Éxito",
-            message: "Contraseña reseteada a 'e3d'",
-            type: "success",
-          });
+        title: "Éxito",
+        message: "Contraseña reseteada a 'e3d'",
+        type: "success",
+      });
     },
 
-    changeUserStatus(){
+    changeUserStatus() {
       this.$inertia.put(route("users.change-status", this.currentUser?.id));
       this.$notify({
-            title: "Éxito",
-            message: this.currentUser?.is_active.bool ? 'Usuario activado' : 'Usuario desactivado',
-            type: "success",
-          });
+        title: "Éxito",
+        message: this.currentUser?.is_active.bool
+          ? "Usuario activado"
+          : "Usuario desactivado",
+        type: "success",
+      });
     },
-    userSelection(){
-      this.currentUser = this.users.data.find((item) => item.id == this.userSelected);
-    }
+    userSelection() {
+      this.currentUser = this.users.data.find(
+        (item) => item.id == this.userSelected
+      );
+    },
   },
 
   // watch: {
@@ -321,7 +323,9 @@ export default {
 
   mounted() {
     this.userSelected = this.user.id;
-    this.currentUser = this.users.data.find((item) => item.id == this.userSelected);
+    this.currentUser = this.users.data.find(
+      (item) => item.id == this.userSelected
+    );
   },
 };
 </script>
