@@ -129,9 +129,9 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Solicitudes de tiempo adicional personal', 'guard_name' => 'Generales']);
         Permission::create(['name' => 'Reuniones personal', 'guard_name' => 'Generales']);
 
-        Permission::create(['name' => 'Ordenes de diseno todas', 'guard_name' => 'Diseno']);
-        Permission::create(['name' => 'Autorizar ordenes de diseno', 'guard_name' => 'Diseno']);
-        Permission::create(['name' => 'Ordenes de diseno personal', 'guard_name' => 'Diseno']);
+        Permission::create(['name' => 'Ordenes de diseño todas', 'guard_name' => 'Diseño']);
+        Permission::create(['name' => 'Autorizar ordenes de diseño', 'guard_name' => 'Diseño']);
+        Permission::create(['name' => 'Ordenes de diseño personal', 'guard_name' => 'Diseño']);
 
         Permission::create(['name' => 'Ordenes de produccion todas', 'guard_name' => 'Produccion']);
         Permission::create(['name' => 'Autorizar ordenes de produccion', 'guard_name' => 'Produccion']);
@@ -146,7 +146,7 @@ class RolePermissionSeeder extends Seeder
         Role::create(['name' => 'Auxiliar de produccion']);
         Role::create(['name' => 'Almacenista']);
         Role::create(['name' => 'Asistente de director']);
-        Role::create(['name' => 'Disenador']);
+        Role::create(['name' => 'Diseñador']);
         Role::create(['name' => 'Inspector de calidad']);
         Role::create(['name' => 'Jefe de produccion']);
         Role::create(['name' => 'Mantenimiento']);
