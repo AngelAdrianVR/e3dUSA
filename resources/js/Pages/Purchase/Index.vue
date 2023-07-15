@@ -10,7 +10,7 @@
           </div>
           <div>
             <Link :href="route('purchases.create')">
-              <SecondaryButton>+ Nuevo</SecondaryButton>
+            <SecondaryButton>+ Nuevo</SecondaryButton>
             </Link>
           </div>
         </div>
@@ -21,66 +21,35 @@
         <div class="flex justify-between">
           <!-- pagination -->
           <div>
-            <el-pagination
-              @current-change="handlePagination"
-              layout="prev, pager, next"
-              :total="purchases.length"
-            />
+            <el-pagination @current-change="handlePagination" layout="prev, pager, next" :total="purchases.length" />
           </div>
 
           <!-- buttons -->
           <div>
-            <el-popconfirm
-              confirm-button-text="Si"
-              cancel-button-text="No"
-              icon-color="#FF0000"
-              title="¿Continuar?"
-              @confirm="deleteSelections"
-            >
+            <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar ordenes de compra')" confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+              @confirm="deleteSelections">
               <template #reference>
-                <el-button
-                  type="danger"
-                  plain
-                  class="mb-3"
-                  :disabled="disableMassiveActions"
-                  >Eliminar</el-button
-                >
+                <el-button type="danger" plain class="mb-3" :disabled="disableMassiveActions">Eliminar</el-button>
               </template>
             </el-popconfirm>
           </div>
         </div>
 
-        <el-table
-          :data="filteredTableData"
-          @row-click="handleRowClick"
-          max-height="450"
-          style="width: 100%"
-          @selection-change="handleSelectionChange"
-          ref="multipleTableRef"
-          :row-class-name="tableRowClassName"
-        >
+        <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="450" style="width: 100%"
+          @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
           <el-table-column type="selection" width="45" />
           <el-table-column prop="id" label="ID" width="45" />
           <el-table-column prop="folio" label="Folio" width="90" />
           <el-table-column prop="user.name" label="Creador" width="150" />
           <el-table-column prop="created_at" label="Creado el" width="120" />
-          <el-table-column
-            prop="authorized_user_name"
-            label="Autorizado por"
-            width="130"
-          />
+          <el-table-column prop="authorized_user_name" label="Autorizado por" width="130" />
           <el-table-column prop="status" label="Estatus" width="100" />
           <el-table-column prop="emited_at" label="Pedido el" width="120" />
           <el-table-column prop="recieved_at" label="Recibido el" width="120" />
           <el-table-column prop="supplier.name" label="Proveedor" width="120" />
           <el-table-column align="right" fixed="right">
             <template #header>
-              <TextInput
-                v-model="search"
-                type="search"
-                class="w-full text-gray-600"
-                placeholder="Buscar"
-              />
+              <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
             </template>
             <template #default="scope">
               <el-dropdown trigger="click" @command="handleCommand">
@@ -89,16 +58,12 @@
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item :command="'show-' + scope.row.id"
-                      ><i class="fa-solid fa-eye"></i> Ver</el-dropdown-item
-                    >
-                    <el-dropdown-item :command="'edit-' + scope.row.id"
-                      ><i class="fa-solid fa-pen"></i> Editar</el-dropdown-item
-                    >
-                    <el-dropdown-item :command="'clone-' + scope.row.id"
-                      ><i class="fa-solid fa-clone"></i>
-                      Clonar</el-dropdown-item
-                    >
+                    <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
+                      Ver</el-dropdown-item>
+                    <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar ordenes de compra')" :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                      Editar</el-dropdown-item>
+                    <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear ordenes de compra')" :command="'clone-' + scope.row.id"><i class="fa-solid fa-clone"></i>
+                      Clonar</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -162,8 +127,8 @@ export default {
     },
 
     handleRowClick(row) {
-            this.$inertia.get(route('purchases.show', row));
-        },
+      this.$inertia.get(route('purchases.show', row));
+    },
 
     async clone(purchase_id) {
       try {
@@ -268,7 +233,7 @@ export default {
           (purchase) =>
             purchase.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
             purchase.status.toLowerCase().includes(this.search.toLowerCase()) ||
-            purchase.authorized_user_name.toLowerCase().includes(this.search.toLowerCase()) 
+            purchase.authorized_user_name.toLowerCase().includes(this.search.toLowerCase())
         );
       }
     },

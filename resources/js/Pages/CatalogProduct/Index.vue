@@ -6,7 +6,7 @@
                     <div class="flex items-center space-x-2">
                         <h2 class="font-semibold text-xl leading-tight">Catálogo de productos</h2>
                     </div>
-                    <div>
+                    <div v-if="$page.props.auth.user.permissions.includes('Crear catalogo de productos')">
                         <Link :href="route('catalog-products.create')">
                         <SecondaryButton>+ Nuevo</SecondaryButton>
                         </Link>
@@ -16,7 +16,7 @@
 
             <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
-                <div class="flex justify-between">
+                <div class="flex justify-between mb-2">
                     <!-- pagination -->
                     <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
@@ -24,7 +24,7 @@
                     </div>
 
                     <!-- buttons -->
-                    <div>
+                    <div v-if="$page.props.auth.user.permissions.includes('Eliminar catalogo de productos')">
                         <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
                             title="¿Continuar?" @confirm="deleteSelections">
                             <template #reference>
@@ -55,9 +55,9 @@
                                     <el-dropdown-menu>
                                         <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
                                             Ver</el-dropdown-item>
-                                        <el-dropdown-item :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar catalogo de productos')" :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
-                                        <el-dropdown-item :command="'clone-' + scope.row.id"><i
+                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear catalogo de productos')" :command="'clone-' + scope.row.id"><i
                                                 class="fa-solid fa-clone"></i>
                                             Clonar</el-dropdown-item>
                                     </el-dropdown-menu>

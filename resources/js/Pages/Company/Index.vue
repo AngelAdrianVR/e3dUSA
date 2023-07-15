@@ -6,7 +6,7 @@
                     <div class="flex items-center space-x-2">
                         <h2 class="font-semibold text-xl leading-tight">Cartera de Clientes</h2>
                     </div>
-                    <div>
+                    <div v-if="$page.props.auth.user.permissions.includes('Crear clientes')">
                         <Link :href="route('companies.create')">
                         <SecondaryButton>+ Nuevo</SecondaryButton>
                         </Link>
@@ -24,7 +24,7 @@
                     </div>
 
                     <!-- buttons -->
-                    <div>
+                    <div v-if="$page.props.auth.user.permissions.includes('Eliminar clientes')">
                         <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
                             title="¿Continuar?" @confirm="deleteSelections">
                             <template #reference>
@@ -57,9 +57,9 @@
                                     <el-dropdown-menu>
                                         <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
                                             Ver</el-dropdown-item>
-                                        <el-dropdown-item :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar clientes')" :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
-                                        <el-dropdown-item :command="'clone-' + scope.row.id"><i
+                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear clientes')" :command="'clone-' + scope.row.id"><i
                                                 class="fa-solid fa-clone"></i>
                                             Clonar</el-dropdown-item>
                                     </el-dropdown-menu>

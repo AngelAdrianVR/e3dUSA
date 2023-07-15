@@ -16,15 +16,13 @@ class RawMaterialController extends Controller
 
 
     public function create()
-    {        
-        if(Route::currentRouteName() == 'raw-materials.create'){
-           
+    {
+        if (Route::currentRouteName() == 'raw-materials.create') {
+
             return inertia('Storage/Create/RawMaterial');
+        } elseif (Route::currentRouteName() == 'consumables.create') {
 
-        }elseif(Route::currentRouteName() == 'consumables.create'){
-           
             return inertia('Storage/Create/Consumable');
-
         }
     }
 
@@ -43,16 +41,19 @@ class RawMaterialController extends Controller
         ]);
 
         $raw_material = RawMaterial::create($request->all());
+        $raw_material->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+
         $raw_material->storages()->create([
             'quantity' => $request->initial_stock,
             'type' => $request->type,
             'location' => $request->location,
         ]);
 
-        if($request->type == 'materia-prima')
-        return to_route('storages.raw-materials.index');
+
+        if ($request->type == 'materia-prima')
+            return to_route('storages.raw-materials.index');
         else
-        return to_route('storages.consumables.index');
+            return to_route('storages.consumables.index');
     }
 
 
@@ -64,16 +65,14 @@ class RawMaterialController extends Controller
 
     public function edit(RawMaterial $raw_material)
     {
-           
-         return inertia('Storage/Edit/RawMaterial',compact('raw_material'));
 
+        return inertia('Storage/Edit/RawMaterial', compact('raw_material'));
     }
 
     public function editConsumable(RawMaterial $raw_material)
     {
-           
-         return inertia('Storage/Edit/Consumable',compact('raw_material'));
 
+        return inertia('Storage/Edit/Consumable', compact('raw_material'));
     }
 
 
@@ -96,10 +95,10 @@ class RawMaterialController extends Controller
             'location' => $request->location,
         ]);
 
-        if($request->type == 'materia-prima')
-        return to_route('storages.raw-materials.index');
+        if ($request->type == 'materia-prima')
+            return to_route('storages.raw-materials.index');
         else
-        return to_route('storages.consumables.index');
+            return to_route('storages.consumables.index');
     }
 
 

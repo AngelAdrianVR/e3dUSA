@@ -5,7 +5,7 @@
                 <h2 class="font-semibold text-xl leading-tight">
                     Cotizaciones
                 </h2>
-                <Link :href="route('quotes.create')">
+                <Link v-if="$page.props.auth.user.permissions.includes('Crear cotizaciones')" :href="route('quotes.create')">
                 <SecondaryButton>+ Nuevo</SecondaryButton>
                 </Link>
             </div>
@@ -21,7 +21,7 @@
 
                 <!-- buttons -->
                 <div>
-                    <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+                    <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar cotizaciones')" confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
                         @confirm="deleteSelections">
                         <template #reference>
                             <el-button type="danger" plain class="mb-3"
@@ -52,12 +52,12 @@
                                 <el-dropdown-menu>
                                     <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
                                         Ver</el-dropdown-item>
-                                    <el-dropdown-item :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                    <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar cotizaciones')" :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                         Editar</el-dropdown-item>
-                                    <el-dropdown-item :command="'clone-' + scope.row.id"><i class="fa-solid fa-clone"></i>
+                                    <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear cotizaciones')" :command="'clone-' + scope.row.id"><i class="fa-solid fa-clone"></i>
                                         Clonar</el-dropdown-item>
-                                    <el-dropdown-item :command="'make_so-' + scope.row.id"><i
-                                            class="fa-solid fa-arrows-turn-to-dots"></i> Convertir a OV</el-dropdown-item>
+                                    <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')" :command="'make_so-' + scope.row.id"><i
+                                            class="fa-solid fa-arrows-turn-to-dots"></i>Convertir a OV</el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>

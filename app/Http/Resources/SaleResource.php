@@ -43,7 +43,7 @@ class SaleResource extends JsonResource
             'tracking_guide' => $this->tracking_guide,
             'invoice' => $this->invoice,
             'notes' => $this->notes ?? '--',
-            'authorized_user_name' => $this->authorized_user_name ?? '--',
+            'authorized_user_name' => $this->authorized_user_name ?? 'No autorizado',
             'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:mm A') ?? 'No autorizado',
             'recieved_at' => $this->recieved_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'user' => $this->whenLoaded('user'),

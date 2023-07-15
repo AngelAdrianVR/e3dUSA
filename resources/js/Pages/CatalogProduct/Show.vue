@@ -17,28 +17,31 @@
                     </el-select>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <el-tooltip content="Editar" placement="top">
+                    <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar catalogo de productos')"
+                        content="Editar" placement="top">
                         <Link :href="route('catalog-products.edit', selectedCatalogProduct)">
                         <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]"><i class="fa-solid fa-pen text-sm"></i></button>
                         </Link>
                     </el-tooltip>
                     <!-- <PrimaryButton class="rounded-lg">Ajustar existencias</PrimaryButton> -->
-                    <Dropdown align="right" width="48">
+                    <Dropdown align="right" width="48"
+                        v-if="$page.props.auth.user.permissions.includes('Crear catalogo de productos') 
+                        && $page.props.auth.user.permissions.includes('Eliminar catalogo de productos')">
                         <template #trigger>
                             <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">Más <i
                                     class="fa-solid fa-chevron-down text-[11px] ml-2"></i></button>
                         </template>
                         <template #content>
-                            <DropdownLink :href="route('catalog-products.create')">
+                            <DropdownLink :href="route('catalog-products.create')" v-if="$page.props.auth.user.permissions.includes('Crear catalogo de productos')">
                                 Crear nuevo artículo
                             </DropdownLink>
-                            <DropdownLink @click="clone" as="button">
+                            <DropdownLink @click="clone" as="button" v-if="$page.props.auth.user.permissions.includes('Crear catalogo de productos')">
                                 Clonar artículo
                             </DropdownLink>
                             <!-- <DropdownLink as="button">
                                 Marcar como inactivo
                             </DropdownLink> -->
-                            <DropdownLink @click="showConfirmModal = true" as="button">
+                            <DropdownLink @click="showConfirmModal = true" as="button" v-if="$page.props.auth.user.permissions.includes('Eliminar catalogo de productos')">
                                 Eliminar
                             </DropdownLink>
                         </template>
