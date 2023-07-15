@@ -6,11 +6,9 @@
                     <div class="flex items-center space-x-2">
                         <h2 class="font-semibold text-xl leading-tight">Maquinaria</h2>
                     </div>
-                    <div>
-                        <Link :href="route('machines.create')">
-                        <SecondaryButton>+ Nuevo</SecondaryButton>
-                        </Link>
-                    </div>
+                    <Link v-if="$page.props.auth.user.permissions.includes('Crear maquinas')" :href="route('machines.create')">
+                    <SecondaryButton>+ Nuevo</SecondaryButton>
+                    </Link>
                 </div>
             </template>
 
@@ -25,7 +23,7 @@
 
                     <!-- buttons -->
                     <div>
-                        <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                        <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar maquinas')" confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
                             title="¿Continuar?" @confirm="deleteSelections">
                             <template #reference>
                                 <el-button type="danger" plain class="mb-3"
@@ -57,7 +55,7 @@
                                     <el-dropdown-menu>
                                         <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
                                             Ver</el-dropdown-item>
-                                        <el-dropdown-item :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar maquinas')" :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
@@ -81,8 +79,6 @@ import axios from 'axios';
 
 export default {
     data() {
-
-
         return {
             disableMassiveActions: true,
             search: '',

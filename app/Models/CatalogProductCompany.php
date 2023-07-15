@@ -33,7 +33,7 @@ class CatalogProductCompany extends Pivot
 
     public function catalogProduct():BelongsTo
     {
-        return $this->belongsTo(catalogProduct::class);
+        return $this->belongsTo(CatalogProduct::class);
     }
 
     public function sales(): BelongsToMany

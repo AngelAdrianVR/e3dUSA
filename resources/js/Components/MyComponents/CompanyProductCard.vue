@@ -23,13 +23,13 @@
 
     <div class="bg-[#d9d9d9] rounded-lg p-2 grid grid-cols-2 my-3">
         <span class="text-sm">Precio Anterior:</span>
-        <span class="text-secondary text-sm">${{ company_product.old_price }} {{ company_product.old_currency }}</span>
+        <span class="text-secondary text-sm">{{ company_product.old_price }} {{ company_product.old_currency }}</span>
         <span class="text-sm">Establecido:</span>
         <span class="text-secondary text-sm mb-3">{{ company_product.old_date }}</span>
 
 
         <span class="text-sm">Precio Anterior:</span>
-        <span class="text-secondary text-sm">${{ company_product.new_price }} {{ company_product.new_currency }}</span>
+        <span class="text-secondary text-sm">{{ company_product.new_price }} {{ company_product.new_currency }}</span>
         <span class="text-sm">Establecido:</span>
         <span class="text-secondary text-sm">{{ company_product.new_date }}</span>
     </div>

@@ -162,7 +162,7 @@ onMounted(getAttendanceTextButton);
                                     </Dropdown>
                                 </div>
 
-                                <el-popconfirm v-if="nextAttendance" confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                                <el-popconfirm v-if="nextAttendance && $page.props.auth.user.permissions.includes('Registrar asistencia')" confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
                                     title="¿Continuar?" @confirm="setAttendance">
                                     <template #reference>
                                         <SecondaryButton v-if="nextAttendance != 'Dia terminado'" class="mr-14">

@@ -4,7 +4,7 @@
         <div class="bg-[#D9D9D9] h-full overflow-auto">
             <nav class="pt-2">
                 <div>
-                    <div v-if="$page.props.auth.user?.employee_properties" class="mb-4 items-center font-semibold text-[#0355B5] flex flex-col">
+                    <div v-if="$page.props.auth.user?.employee_properties" class="mb-4 items-center font-semibold text-sm text-[#0355B5] flex flex-col">
                         <span>Horas / semana</span>
                         <span>{{ $page.props.week_time.formatted }} / {{ $page.props.auth.user?.employee_properties?.hours_per_week ?? 0 }}h</span>
                     </div>

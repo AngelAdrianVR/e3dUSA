@@ -216,7 +216,7 @@
                     <el-divider />
                     <!-- buttons -->
                     <div class="md:text-right">
-                        <PrimaryButton :disabled="form.processing"> Crear </PrimaryButton>
+                        <PrimaryButton :disabled="form.processing"> Actualizar </PrimaryButton>
                     </div>
                 </div>
             </form>

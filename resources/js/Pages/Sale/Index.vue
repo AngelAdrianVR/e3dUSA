@@ -6,11 +6,9 @@
                     <div class="flex items-center space-x-2">
                         <h2 class="font-semibold text-xl leading-tight">Órdenes de venta</h2>
                     </div>
-                    <div>
-                        <Link :href="route('sales.create')">
-                        <SecondaryButton>+ Nuevo</SecondaryButton>
-                        </Link>
-                    </div>
+                    <Link v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')" :href="route('sales.create')">
+                    <SecondaryButton>+ Nuevo</SecondaryButton>
+                    </Link>
                 </div>
             </template>
 
@@ -25,7 +23,7 @@
 
                     <!-- buttons -->
                     <div>
-                        <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                        <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar ordenes de venta')" confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
                             title="¿Continuar?" @confirm="deleteSelections">
                             <template #reference>
                                 <el-button type="danger" plain class="mb-3"
@@ -56,9 +54,9 @@
                                     <el-dropdown-menu>
                                         <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
                                             Ver</el-dropdown-item>
-                                        <el-dropdown-item :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar ordenes de venta')" :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
-                                        <el-dropdown-item :command="'clone-' + scope.row.id"><i
+                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')" :command="'clone-' + scope.row.id"><i
                                                 class="fa-solid fa-clone"></i>
                                             Clonar</el-dropdown-item>
                                     </el-dropdown-menu>
