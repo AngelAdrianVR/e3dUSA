@@ -5,7 +5,8 @@
         <span>Roles y permisos</span>
       </div>
       <div class="flex justify-end mt-5 mx-14">
-        <PrimaryButton @click="tabs == 1 ? createRole() : createPermission()" class="h-9 rounded-lg">
+        <PrimaryButton v-if="$page.props.auth.user.permissions.includes('Crear roles y permisos')"
+          @click="tabs == 1 ? createRole() : createPermission()" class="h-9 rounded-lg">
           Crear
         </PrimaryButton>
       </div>
@@ -48,8 +49,9 @@
                   </td>
                   <td class="text-left pb-3">
                     <div>
-                      <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FFFFFF"
-                        title="¿Continuar?" @confirm="deleteRole(role, index)">
+                      <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar roles y permisos')"
+                        confirm-button-text="Si" cancel-button-text="No" icon-color="#FFFFFF" title="¿Continuar?"
+                        @confirm="deleteRole(role, index)">
                         <template #reference>
                           <i class="fa-solid fa-trash-can text-red-600 cursor-pointer"></i>
                         </template>
@@ -71,7 +73,8 @@
                   class="flex justify-between items-center mt-1">
                   <p @click="editPermission(permission, index2)" class="hover:underline cursor-pointer">{{ permission.name
                   }}</p>
-                  <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FFFFFF" title="¿Continuar?"
+                  <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar roles y permisos')"
+                    confirm-button-text="Si" cancel-button-text="No" icon-color="#FFFFFF" title="¿Continuar?"
                     @confirm="deletePermission(permission, index2)">
                     <template #reference>
                       <i class="fa-solid fa-trash-can text-red-600 cursor-pointer"></i>
@@ -233,13 +236,15 @@ export default {
       }
     },
     editRole(role, index) {
-      this.currentRole = role;
-      this.editFlag = true;
-      this.indexRoleEdit = index;
-      this.showRoleModal = true;
+      if (this.$page.props.auth.user.permissions.includes('Editar roles y permisos')) {
+        this.currentRole = role;
+        this.editFlag = true;
+        this.indexRoleEdit = index;
+        this.showRoleModal = true;
 
-      this.roleForm.name = role.name;
-      this.roleForm.permissions = role.permissions.ids;
+        this.roleForm.name = role.name;
+        this.roleForm.permissions = role.permissions.ids;
+      }
     },
     createRole() {
       this.currentRole = null;
@@ -323,13 +328,15 @@ export default {
       }
     },
     editPermission(permission, index) {
-      this.currentPermission = permission;
-      this.editFlag = true;
-      this.indexPermissionEdit = index;
-      this.showPermissionModal = true;
+      if (this.$page.props.auth.user.permissions.includes('Editar roles y permisos')) {
+        this.currentPermission = permission;
+        this.editFlag = true;
+        this.indexPermissionEdit = index;
+        this.showPermissionModal = true;
 
-      this.permissionForm.name = permission.name;
-      this.permissionForm.category = permission.category;
+        this.permissionForm.name = permission.name;
+        this.permissionForm.category = permission.category;
+      }
     },
     createPermission() {
       this.currentPermission = null;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\KioskDevice;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Spatie\Permission\Models\Permission;
@@ -41,7 +42,7 @@ class HandleInertiaRequests extends Middleware
             'week_time' => fn () => $request->user()
                 ? $request->user()->getWeekTime()
                 : null,
-            'auth.user.permissions' => function () use ($request){
+            'auth.user.permissions' => function () use ($request) {
                 if ($request->user()) {
                     if ($request->user()->hasRole('Super admin')) {
                         return Permission::whereNot('id', 86)->get()->pluck('name');
@@ -50,6 +51,13 @@ class HandleInertiaRequests extends Middleware
                     }
                 }
                 return [];
+            },
+            'isKiosk' => function () use ($request) {
+                $token = $_COOKIE['kioskToken'] ?? 'noToken';
+                $kiosk = KioskDevice::where('token', $token)
+                    ->first();
+
+                return !is_null($kiosk);
             },
 
         ]);

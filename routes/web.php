@@ -8,6 +8,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\HolidayController;
+use App\Http\Controllers\KioskDeviceController;
 use App\Http\Controllers\MachineController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MeetingController;
@@ -188,6 +189,8 @@ Route::get('spare-parts/create/{selectedMachine}',[ SparePartController::class, 
 Route::resource('meetings', MeetingController::class)->middleware('auth');
 Route::post('meetongs/massive-delete', [MeetingController::class, 'massiveDeleteAdmin'])->name('meetings.massive-delete');
 
+//------------------ Kiosk routes ----------------
+Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
 
 Route::post('/upload-image',[FileUploadController::class, 'upload'])->name('upload-image');
 

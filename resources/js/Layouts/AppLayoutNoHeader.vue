@@ -17,6 +17,7 @@ defineProps({
 
 const showingNavigationDropdown = ref(false);
 const nextAttendance = ref('');
+const temporalFlag = ref(false);
 
 const switchToTeam = (team) => {
     router.put(route('current-team.update'), {
@@ -34,6 +35,26 @@ const getAttendanceTextButton = async () => {
     try {
         const response = await axios.get(route('users.get-next-attendance'));
         nextAttendance.value = response.data.next;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const createKiosk = async () => {
+    try {
+        const response = await axios.post(route('kiosk.store'));
+        
+        if (response.status === 200) {
+            
+            // Set cookie in browser
+            document.cookie = 'kioskToken=' + response.data.token + '; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT';
+            ElNotification.success({
+                title: 'Éxito',
+                message: 'Dispositivo agregado como kiosco',
+            });
+            
+            temporalFlag.value = true;
+        }
     } catch (error) {
         console.error(error);
     }
@@ -162,7 +183,9 @@ onMounted(getAttendanceTextButton);
                                 </div>
 
 
-                                <el-popconfirm v-if="nextAttendance && $page.props.auth.user.permissions.includes('Registrar asistencia')" confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                                <el-popconfirm
+                                    v-if="nextAttendance && $page.props.auth.user.permissions.includes('Registrar asistencia')"
+                                    confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
                                     title="¿Continuar?" @confirm="setAttendance">
                                     <template #reference>
                                         <SecondaryButton v-if="nextAttendance != 'Dia terminado'" class="mr-14">
@@ -174,7 +197,21 @@ onMounted(getAttendanceTextButton);
                                     </template>
                                 </el-popconfirm>
 
-                                <el-tooltip content="Chat" placement="bottom">
+                                <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear kiosco')"
+                                    confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                                    title="¿Continuar?" @confirm="createKiosk">
+                                    <template #reference>
+                                        <span v-if="$page.props.isKiosk || temporalFlag" class="bg-[#75b3f9] text-[#0355B5] mr-14 rounded-md px-3 py-1">
+                                            Kiosco
+                                        </span>
+                                        <SecondaryButton v-else class="mr-14">
+                                            Hacer kiosco {{ temporalFlag }} - {{ $page.props.isKiosk }}
+                                        </SecondaryButton>
+                                    </template>
+                                </el-popconfirm>
+
+                                <el-tooltip v-if="$page.props.auth.user.permissions.includes('Chatear')" content="Chat"
+                                    placement="bottom">
                                     <a :href="route('chatify')" target="_blank" class="mr-8">
                                         <i class="fa-solid fa-comments text-[#9A9A9A]"></i>
                                     </a>
@@ -182,11 +219,12 @@ onMounted(getAttendanceTextButton);
 
                                 <!-- <i class="fa-solid fa-bell text-[#9A9A9A] mr-8"></i> -->
 
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                <!-- reminders -->
+                                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                     class="bi bi-alarm-fill text-[#9A9A9A] mr-3" viewBox="0 0 16 16">
                                     <path
                                         d="M6 .5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1H9v1.07a7.001 7.001 0 0 1 3.274 12.474l.601.602a.5.5 0 0 1-.707.708l-.746-.746A6.97 6.97 0 0 1 8 16a6.97 6.97 0 0 1-3.422-.892l-.746.746a.5.5 0 0 1-.707-.708l.602-.602A7.001 7.001 0 0 1 7 2.07V1h-.5A.5.5 0 0 1 6 .5zm2.5 5a.5.5 0 0 0-1 0v3.362l-1.429 2.38a.5.5 0 1 0 .858.515l1.5-2.5A.5.5 0 0 0 8.5 9V5.5zM.86 5.387A2.5 2.5 0 1 1 4.387 1.86 8.035 8.035 0 0 0 .86 5.387zM11.613 1.86a2.5 2.5 0 1 1 3.527 3.527 8.035 8.035 0 0 0-3.527-3.527z" />
-                                </svg>
+                                </svg> -->
 
                                 <!-- Settings Dropdown -->
                                 <div class="ml-3 relative">
