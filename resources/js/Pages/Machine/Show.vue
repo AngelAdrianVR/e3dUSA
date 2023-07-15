@@ -3,62 +3,49 @@
     <AppLayoutNoHeader title="Ver maquinaria">
       <div class="flex justify-between text-lg mx-14 mt-11">
         <span>Maquinaria</span>
-        <Link
-          :href="route('machines.index')"
-          class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center"
-        >
-          <i class="fa-solid fa-xmark"></i>
+        <Link :href="route('machines.index')"
+          class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+        <i class="fa-solid fa-xmark"></i>
         </Link>
       </div>
       <div class="flex justify-between mt-5 mx-14">
         <div class="w-1/3">
-          <el-select
-            v-model="selectedMachine"
-            clearable
-            filterable
-            placeholder="Buscar máquina"
-            no-data-text="No hay maquinaria registrada"
-            no-match-text="No se encontraron coincidencias"
-          >
-            <el-option
-              v-for="item in machines.data"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
+          <el-select v-model="selectedMachine" clearable filterable placeholder="Buscar máquina"
+            no-data-text="No hay maquinaria registrada" no-match-text="No se encontraron coincidencias">
+            <el-option v-for="item in machines.data" :key="item.id" :label="item.name" :value="item.id" />
           </el-select>
         </div>
         <div class="flex items-center space-x-2">
-          <el-tooltip content="Editar" placement="top">
+          <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar maquinas')" content="Editar"
+            placement="top">
             <Link :href="route('machines.edit', selectedMachine)">
-              <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
-                <i class="fa-solid fa-pen text-sm"></i>
-              </button>
+            <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
+              <i class="fa-solid fa-pen text-sm"></i>
+            </button>
             </Link>
           </el-tooltip>
-          <Dropdown align="right" width="48">
+          <Dropdown align="right" width="48"
+            v-if="$page.props.auth.user.permissions.includes('Crear maquinas') && $page.props.auth.user.permissions.includes('Crear mantenimientos') && $page.props.auth.user.permissions.includes('Crear refacciones') && $page.props.auth.user.permissions.includes('Eliminar maquinas')">
             <template #trigger>
-              <button
-                class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm"
-              >
+              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
                 Más <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
               </button>
             </template>
             <template #content>
-              <DropdownLink :href="route('machines.create')">
+              <DropdownLink :href="route('machines.create')"
+                v-if="$page.props.auth.user.permissions.includes('Crear maquinas')">
                 Agregar nueva máquina
               </DropdownLink>
-              <DropdownLink
-                :href="route('maintenances.create', selectedMachine)"
-              >
+              <DropdownLink :href="route('maintenances.create', selectedMachine)"
+                v-if="$page.props.auth.user.permissions.includes('Crear mantenimientos')">
                 Registrar mantenimiento
               </DropdownLink>
-              <DropdownLink
-                :href="route('spare-parts.create', selectedMachine)"
-              >
+              <DropdownLink :href="route('spare-parts.create', selectedMachine)"
+                v-if="$page.props.auth.user.permissions.includes('Crear refacciones')">
                 Registrar refacción
               </DropdownLink>
-              <DropdownLink @click="showConfirmModal = true" as="button">
+              <DropdownLink @click="showConfirmModal = true" as="button"
+                v-if="$page.props.auth.user.permissions.includes('Eliminar maquinas')">
                 Eliminar
               </DropdownLink>
             </template>
@@ -70,11 +57,8 @@
           <h2 class="text-xl font-bold text-center mb-6">
             {{ currentMachine?.name }}
           </h2>
-          <figure
-            @mouseover="showOverlay"
-            @mouseleave="hideOverlay"
-            class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center"
-          >
+          <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
+            class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center">
             <!-- <el-image
               style="height: 100%"
               :src="currentMachine?.media[0]?.original_url"
@@ -103,33 +87,19 @@
         <!-- ------------------------Information panel tabs--------------------- -->
         <div class="col-span-2 border-2">
           <div class="border-b-2 px-7 py-3 flex">
-            <p
-              @click="tabs = 1"
-              :class="
-                tabs == 1 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            <p @click="tabs = 1" :class="tabs == 1 ? 'bg-secondary-gray rounded-xl text-primary' : ''
               "
-              class="h-10 p-2 cursor-pointer md:ml-5 transition duration-300 ease-in-out text-sm md:text-base leading-none"
-            >
+              class="h-10 p-2 cursor-pointer md:ml-5 transition duration-300 ease-in-out text-sm md:text-base leading-none">
               Información general
             </p>
             <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
-            <p
-              @click="tabs = 2"
-              :class="
-                tabs == 2 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-              "
-              class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base"
-            >
+            <p @click="tabs = 2" :class="tabs == 2 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+              " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
               Mantenimiento
             </p>
             <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
-            <p
-              @click="tabs = 3"
-              :class="
-                tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-              "
-              class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base"
-            >
+            <p @click="tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+              " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
               Refacciones
             </p>
           </div>
@@ -193,54 +163,29 @@
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="(maintenance, index) in currentMachine?.maintenances"
-                  :key="index"
-                  class="text-[#9A9A9A] cursor-pointer mb-4"
-                >
-                  <td
-                    @click="openMaintenanceModal(maintenance, index)"
-                    class="text-left pb-3"
-                  >
+                <tr v-for="(maintenance, index) in currentMachine?.maintenances" :key="index"
+                  class="text-[#9A9A9A] cursor-pointer mb-4">
+                  <td @click="openMaintenanceModal(maintenance, index)" class="text-left pb-3">
                     {{ index + 1 }}
                   </td>
-                  <td
-                    @click="openMaintenanceModal(maintenance, index)"
-                    class="text-center pb-3"
-                  >
+                  <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
                     {{ maintenance.maintenance_type_id }}
                   </td>
-                  <td
-                    @click="openMaintenanceModal(maintenance, index)"
-                    class="text-center pb-3"
-                  >
+                  <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
                     {{ maintenance.created_at }}
                   </td>
-                  <td
-                    @click="openMaintenanceModal(maintenance, index)"
-                    class="text-center pb-3"
-                  >
+                  <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
                     ${{ maintenance.cost }}
                   </td>
-                  <td
-                    @click="openMaintenanceModal(maintenance, index)"
-                    class="text-center pb-3"
-                  >
+                  <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
                     {{ maintenance.responsible }}
                   </td>
                   <td class="text-center pb-3">
                     <div>
-                      <el-popconfirm
-                        confirm-button-text="Si"
-                        cancel-button-text="No"
-                        icon-color="#FFFFFF"
-                        title="¿Continuar?"
-                        @confirm="deleteRow(maintenance)"
-                      >
+                      <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FFFFFF"
+                        title="¿Continuar?" @confirm="deleteRow(maintenance)">
                         <template #reference>
-                          <i
-                            class="fa-solid fa-trash-can text-[#9A9A9A] hover:text-red-600"
-                          ></i>
+                          <i class="fa-solid fa-trash-can text-[#9A9A9A] hover:text-red-600"></i>
                         </template>
                       </el-popconfirm>
                     </div>
@@ -265,54 +210,29 @@
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="(spare_part, index) in currentMachine?.spare_parts"
-                  :key="index"
-                  class="text-[#9A9A9A] cursor-pointer mb-4"
-                >
-                  <td
-                    @click="openSparePartModal(spare_part, index)"
-                    class="text-left pb-3"
-                  >
+                <tr v-for="(spare_part, index) in currentMachine?.spare_parts" :key="index"
+                  class="text-[#9A9A9A] cursor-pointer mb-4">
+                  <td @click="openSparePartModal(spare_part, index)" class="text-left pb-3">
                     {{ index + 1 }}
                   </td>
-                  <td
-                    @click="openSparePartModal(spare_part, index)"
-                    class="text-center pb-3"
-                  >
+                  <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
                     {{ spare_part.name }}
                   </td>
-                  <td
-                    @click="openSparePartModal(spare_part, index)"
-                    class="text-center pb-3"
-                  >
+                  <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
                     {{ spare_part.quantity }}
                   </td>
-                  <td
-                    @click="openSparePartModal(spare_part, index)"
-                    class="text-center pb-3"
-                  >
+                  <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
                     {{ spare_part.created_at }}
                   </td>
-                  <td
-                    @click="openSparePartModal(spare_part, index)"
-                    class="text-center pb-3"
-                  >
+                  <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
                     {{ spare_part.location }}
                   </td>
                   <td class="text-center pb-3">
                     <div>
-                      <el-popconfirm
-                        confirm-button-text="Si"
-                        cancel-button-text="No"
-                        icon-color="#FFFFFF"
-                        title="¿Continuar?"
-                        @confirm="deleteRow(spare_part)"
-                      >
+                      <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FFFFFF"
+                        title="¿Continuar?" @confirm="deleteRow(spare_part)">
                         <template #reference>
-                          <i
-                            class="fa-solid fa-trash-can text-[#9A9A9A] hover:text-red-600"
-                          ></i>
+                          <i class="fa-solid fa-trash-can text-[#9A9A9A] hover:text-red-600"></i>
                         </template>
                       </el-popconfirm>
                     </div>
@@ -325,17 +245,12 @@
         </div>
       </div>
 
-      <ConfirmationModal
-        :show="showConfirmModal"
-        @close="showConfirmModal = false"
-      >
+      <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar máquina </template>
         <template #content> Continuar con la eliminación? </template>
         <template #footer>
           <div class="">
-            <CancelButton @click="showConfirmModal = false" class="mr-2"
-              >Cancelar</CancelButton
-            >
+            <CancelButton @click="showConfirmModal = false" class="mr-2">Cancelar</CancelButton>
             <PrimaryButton @click="deleteItem">Eliminar</PrimaryButton>
           </div>
         </template>
@@ -349,15 +264,12 @@
               <h2 class="font-bold text-center mr-2">
                 {{ currentMachine.name }}
               </h2>
-              <div
-                @click="maintenanceModal = false"
-                class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0"
-              >
+              <div @click="maintenanceModal = false"
+                class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
                 <i class="fa-solid fa-xmark"></i>
               </div>
               <span class="text-[#9A9A9A] absolute left-0 top-0">
-                # {{ maintenanceIndex }}</span
-              >
+                # {{ maintenanceIndex }}</span>
             </div>
 
             <div class="grid grid-cols-2">
@@ -370,13 +282,8 @@
               <div class="flex flex-col pb-7">
                 <div class="flex">
                   <p class="text-primary">Fecha</p>
-                  <el-tooltip
-                    content="Fecha en que se realizó el mantenimiento"
-                    placement="top"
-                  >
-                    <i
-                      class="fa-solid fa-question text-[9px] h-3 w-3 bg-primary-gray rounded-full text-center"
-                    ></i>
+                  <el-tooltip content="Fecha en que se realizó el mantenimiento" placement="top">
+                    <i class="fa-solid fa-question text-[9px] h-3 w-3 bg-primary-gray rounded-full text-center"></i>
                   </el-tooltip>
                 </div>
                 <p class="text-[#9A9A9A]">
@@ -390,13 +297,8 @@
               <div class="flex flex-col pb-7">
                 <div class="flex">
                   <p class="text-primary">Realizó</p>
-                  <el-tooltip
-                    content="Persona o empresa que realizó el mantenimiento"
-                    placement="top"
-                  >
-                    <i
-                      class="fa-solid fa-question text-[9px] h-3 w-3 bg-primary-gray rounded-full text-center"
-                    ></i>
+                  <el-tooltip content="Persona o empresa que realizó el mantenimiento" placement="top">
+                    <i class="fa-solid fa-question text-[9px] h-3 w-3 bg-primary-gray rounded-full text-center"></i>
                   </el-tooltip>
                 </div>
                 <p class="text-[#9A9A9A]">
@@ -417,25 +319,22 @@
               </p>
             </div>
           </section>
-      <!-- -------------- maintenanceModal ends----------------------- -->
+          <!-- -------------- maintenanceModal ends----------------------- -->
 
 
 
-   <!-- --------------------------- sparepartmodal starts ------------------------------------ -->
+          <!-- --------------------------- sparepartmodal starts ------------------------------------ -->
           <section v-if="sparePartModal">
             <div class="flex justify-center mb-7">
               <h2 class="font-bold text-center mr-2">
                 {{ currentMachine.name }}
               </h2>
-              <div
-                @click="sparePartModal = false"
-                class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0"
-              >
+              <div @click="sparePartModal = false"
+                class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
                 <i class="fa-solid fa-xmark"></i>
               </div>
               <span class="text-[#9A9A9A] absolute left-0 top-0">
-                # {{ maintenanceIndex }}</span
-              >
+                # {{ maintenanceIndex }}</span>
             </div>
 
             <div class="grid grid-cols-2">
@@ -446,7 +345,7 @@
                 </p>
               </div>
               <div class="flex flex-col mb-7">
-                  <p class="text-primary">Adquirida el</p>
+                <p class="text-primary">Adquirida el</p>
                 <p class="text-[#9A9A9A]">
                   {{ selectedSparePart.created_at }}
                 </p>
@@ -456,19 +355,19 @@
                 <p class="text-[#9A9A9A]">${{ selectedSparePart.cost }}</p>
               </div>
               <div class="flex flex-col mb-7">
-                  <p class="text-primary">Cantidad</p>
+                <p class="text-primary">Cantidad</p>
                 <p class="text-[#9A9A9A]">
                   {{ selectedSparePart.quantity }}
                 </p>
               </div>
               <div class="flex flex-col mb-7">
-                  <p class="text-primary">Proveedor</p>
+                <p class="text-primary">Proveedor</p>
                 <p class="text-[#9A9A9A]">
                   {{ selectedSparePart.supplier }}
                 </p>
               </div>
               <div class="flex flex-col mb-7">
-                  <p class="text-primary">Ubicación</p>
+                <p class="text-primary">Ubicación</p>
                 <p class="text-[#9A9A9A]">
                   {{ selectedSparePart.location }}
                 </p>
@@ -487,13 +386,14 @@
               </p>
             </div>
           </section>
-   <!-- --------------------------- sparepartmodal ends ------------------------------------ -->
+          <!-- --------------------------- sparepartmodal ends ------------------------------------ -->
 
-            <div class="flex justify-end space-x-3 pt-5 pb-1">
-              <Link :href="maintenanceModal ? route('maintenances.edit', selectedMaintenance) : route('spare-parts.edit', selectedSparePart)">
-                <PrimaryButton>Editar</PrimaryButton>
-              </Link>
-            </div>
+          <div class="flex justify-end space-x-3 pt-5 pb-1">
+            <Link
+              :href="maintenanceModal ? route('maintenances.edit', selectedMaintenance) : route('spare-parts.edit', selectedSparePart)">
+            <PrimaryButton>Editar</PrimaryButton>
+            </Link>
+          </div>
         </div>
       </Modal>
     </AppLayoutNoHeader>

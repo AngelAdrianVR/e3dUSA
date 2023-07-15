@@ -1,50 +1,69 @@
 <template>
     <div>
         <AppLayout title="Almacén de scrap">
-        <template #header>
-        <div class="flex justify-between">
-            <div class="flex items-center space-x-2">
-                <h2 class="font-semibold text-xl leading-tight">Almacén de scrap</h2>
-            </div>
-            <div>
-            <Link :href="route('storages.scraps.create')">
-                <SecondaryButton>+ Nuevo</SecondaryButton>
-            </Link>
-            </div>
-        </div>
-        </template>
+            <template #header>
+                <div class="flex justify-between">
+                    <div class="flex items-center space-x-2">
+                        <h2 class="font-semibold text-xl leading-tight">Almacén de scrap</h2>
+                    </div>
+                    <Link v-if="$page.props.auth.user.permissions.includes('Crear scrap')"
+                        :href="route('storages.scraps.create')">
+                    <SecondaryButton>+ Nuevo</SecondaryButton>
+                    </Link>
+                </div>
+            </template>
 
-    <!-- tabla -->
-    <div class="lg:w-5/6 mx-auto mt-6">
-            <div class="flex space-x-2 justify-end">
-                <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
-                    title="Continuar con la eliminacion?" @confirm="deleteSelections">
-                    <template #reference>
-                        <el-button type="danger" plain class="mb-3" :disabled="disableMassiveActions">Eliminar</el-button>
-                    </template>
-                </el-popconfirm>
+            <!-- tabla -->
+            <div class="lg:w-5/6 mx-auto mt-6">
+                <div class="flex justify-between">
+                    <!-- pagination -->
+                    <div>
+                        <el-pagination @current-change="handlePagination" layout="prev, pager, next"
+                            :total="scraps.length" />
+                    </div>
+                    <!-- buttons -->
+                    <div>
+                        <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar scrap')"
+                            confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+                            @confirm="deleteSelections">
+                            <template #reference>
+                                <el-button type="danger" plain class="mb-3"
+                                    :disabled="disableMassiveActions">Eliminar</el-button>
+                            </template>
+                        </el-popconfirm>
+                    </div>
+                </div>
+                <el-table :data="filteredTableData" max-height="450" style="width: 100%"
+                    @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
+                    <el-table-column type="selection" width="45" />
+                    <el-table-column prop="storageable.name" label="Nombre" width="250" />
+                    <el-table-column prop="storageable.part_number" label="N° parte" width="120" />
+                    <el-table-column prop="location" label="Ubicación" width="120" />
+                    <el-table-column prop="quantity" label="Cantidad" width="100" />
+                    <el-table-column align="right" fixed="right">
+                        <template #header>
+                            <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
+                        </template>
+                        <template #default="scope">
+                            <el-dropdown trigger="click" @command="handleCommand">
+                                <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </span>
+                                <template #dropdown>
+                                    <el-dropdown-menu>
+                                        <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
+                                            Ver</el-dropdown-item>
+                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar scrap')"
+                                            :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                            Editar</el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </template>
+                            </el-dropdown>
+                        </template>
+                    </el-table-column>
+                </el-table>
             </div>
-        <el-table :data="filteredTableData" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
-                ref="multipleTableRef" :row-class-name="tableRowClassName">
-                <el-table-column type="selection" width="45" />
-                <el-table-column prop="storageable.name" label="Nombre" width="250" />
-                <el-table-column prop="storageable.part_number" label="N° parte" width="120" />
-                <el-table-column prop="location" label="Ubicación" width="120" />
-                <el-table-column prop="quantity" label="Cantidad" width="100" />
-                <el-table-column align="right" fixed="right" >
-                    <template #header>
-                        <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
-                    </template>
-                    <!-- <template #default="scope">
-                        <el-button size="small" type="primary"
-                            @click="edit(scope.$index, scope.row)">Editar</el-button>
-                    </template> -->
-                </el-table-column>
-            </el-table>
-    </div>
-    <!-- tabla -->
-    
-
+            <!-- tabla -->
         </AppLayout>
     </div>
 </template>
@@ -58,37 +77,45 @@ import axios from 'axios';
 
 
 export default {
-  data() {
+    data() {
 
 
-    return {
-       disableMassiveActions: true,
-        search: '',
-    };
-  },
-  components: {
-    AppLayout,
-    SecondaryButton,
-    Link,
-    TextInput,
-  },
-  props: {
-    scraps: Array
-  },
-  methods:{
-    tableRowClassName({row, rowIndex}){
+        return {
+            disableMassiveActions: true,
+            search: '',
+            // pagination
+            itemsPerPage: 10,
+            start: 0,
+            end: 10,
+        };
+    },
+    components: {
+        AppLayout,
+        SecondaryButton,
+        Link,
+        TextInput,
+    },
+    props: {
+        scraps: Array
+    },
+    methods: {
+        tableRowClassName({ row, rowIndex }) {
             return 'text-red-600';
-  },
-    handleSelectionChange(val) {
-                this.$refs.multipleTableRef.value = val;
+        },
+        handleSelectionChange(val) {
+            this.$refs.multipleTableRef.value = val;
 
-                if (!this.$refs.multipleTableRef.value.length) {
-                    this.disableMassiveActions = true;
-                } else {
-                    this.disableMassiveActions = false;
-                }
-            },
-            async deleteSelections() {
+            if (!this.$refs.multipleTableRef.value.length) {
+                this.disableMassiveActions = true;
+            } else {
+                this.disableMassiveActions = false;
+            }
+        },
+        handlePagination(val) {
+            this.start = (val - 1) * this.itemsPerPage;
+            this.end = val * this.itemsPerPage;
+        },
+        async deleteSelections() {
             try {
                 const response = await axios.post(route('storages.scraps.massive-delete', {
                     scraps: this.$refs.multipleTableRef.value
@@ -127,10 +154,10 @@ export default {
 
             } catch (err) {
                 this.$notify({
-                        title: 'Algo salió mal',
-                        message: err.message,
-                        type: 'error'
-                    });
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
                 console.log(err);
             }
         },
@@ -144,9 +171,9 @@ export default {
             console.log(scrap);
             this.$inertia.get(route('storages.finished-products.edit', scrap.storageable));
         }
-  },
+    },
 
-  computed: {
+    computed: {
         filteredTableData() {
             return this.scraps.filter(
                 (scrap) =>

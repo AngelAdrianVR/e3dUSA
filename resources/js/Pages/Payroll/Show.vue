@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="$page.props.auth.user.permissions.includes('Editar nominas')">
     <AppLayoutNoHeader title="Nóminas">
       <div v-if="loading" class="absolute left-0 top-0 inset-0 z-10 bg-black opacity-50 flex items-center justify-center">
       </div>
@@ -17,7 +17,7 @@
             <i class="fa-solid fa-xmark"></i>
           </Link>
         </div>
-        <div>
+        <div class="w-1/3">
           <el-select v-model="selectedPayroll" @change="payrollChanged" filterable allow-create default-first-option
             :reserve-keyword="false" placeholder="Buscar nómina">
             <el-option v-for="item in payrolls.data" :key="item.id" :label="'Nómina semana: ' + item.week"

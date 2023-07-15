@@ -17,24 +17,24 @@
                     </el-select>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <el-tooltip content="Dar entrada a almacén" placement="top">
+                    <el-tooltip v-if="$page.props.auth.user.permissions.includes('Crear entradas')" content="Dar entrada a almacén" placement="top">
                         <button @click="is_add = true; showDialogModal = true" class="rounded-lg bg-green-600 text-white py-2 px-2 text-sm">Entrada</button>
                     </el-tooltip>
 
-                    <el-tooltip content="Dar salida de almacén" placement="top">
+                    <el-tooltip v-if="$page.props.auth.user.permissions.includes('Crear salidas')" content="Dar salida de almacén" placement="top">
                         <button @click="is_add = false; showDialogModal = true" class="rounded-lg bg-primary text-white py-2 px-2 text-sm">Salida</button>
                     </el-tooltip>
 
-                    <Dropdown align="right" width="48">
+                    <Dropdown align="right" width="48" v-if="$page.props.auth.user.permissions.includes('Crear scrap') && $page.props.auth.user.permissions.includes('Eliminar materia prima')">
                         <template #trigger>
                             <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">Más <i
                                     class="fa-solid fa-chevron-down text-[11px] ml-2"></i></button>
                         </template>
                         <template #content>
-                            <DropdownLink @click="console.log('No funciona')" as="button">
+                            <DropdownLink @click="console.log('No funciona')" as="button" v-if="$page.props.auth.user.permissions.includes('Crear scrap')">
                                 Mandar a scrap
                             </DropdownLink>
-                            <DropdownLink @click="showConfirmModal = true" as="button">
+                            <DropdownLink @click="showConfirmModal = true" as="button" v-if="$page.props.auth.user.permissions.includes('Eliminar materia prima')">
                                 Eliminar
                             </DropdownLink>
                         </template>
