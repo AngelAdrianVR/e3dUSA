@@ -2,64 +2,67 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProductionResource;
 use App\Models\Production;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ProductionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
-        //
+        $productions = ProductionResource::collection(Production::with('user', 'catalogProductCompanySale.catalogProductCompany.company')->latest()->get());
+        // return $productions;
+        return inertia('Production/Index',compact('productions'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    
     public function create()
     {
-        //
+        $production_users = User::where('employee_properties->department', 'Producción')->get();
+        // return $production_users;
+        return inertia('Production/Create', compact('production_users'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    
     public function store(Request $request)
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
+    
     public function show(Production $production)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    
     public function edit(Production $production)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    
     public function update(Request $request, Production $production)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    
     public function destroy(Production $production)
     {
         //
+    }
+
+
+    public function massiveDelete(Request $request)
+    {
+        foreach ($request->productions as $production) {
+            $production = Production::find($production['id']);
+            $production?->delete();
+        }
+
+        return response()->json(['message' => 'Producto(s) eliminado(s)']);
     }
 }
