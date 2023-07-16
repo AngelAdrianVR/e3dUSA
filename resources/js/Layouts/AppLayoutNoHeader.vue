@@ -43,16 +43,16 @@ const getAttendanceTextButton = async () => {
 const createKiosk = async () => {
     try {
         const response = await axios.post(route('kiosk.store'));
-        
+
         if (response.status === 200) {
-            
+
             // Set cookie in browser
             document.cookie = 'kioskToken=' + response.data.token + '; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT';
             ElNotification.success({
                 title: 'Éxito',
                 message: 'Dispositivo agregado como kiosco',
             });
-            
+
             temporalFlag.value = true;
         }
     } catch (error) {
@@ -201,11 +201,14 @@ onMounted(getAttendanceTextButton);
                                     confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
                                     title="¿Continuar?" @confirm="createKiosk">
                                     <template #reference>
-                                        <span v-if="$page.props.isKiosk || temporalFlag" class="bg-[#75b3f9] text-[#0355B5] mr-14 rounded-md px-3 py-1">
-                                            Kiosco
-                                        </span>
+                                        <el-tooltip v-if="$page.props.isKiosk || temporalFlag"
+                                            content="Se puede registrar asistencias desde este dispositivo">
+                                            <span class="bg-[#75b3f9] text-[#0355B5] mr-14 rounded-md px-3 py-1  text-xs">
+                                                Kiosco
+                                            </span>
+                                        </el-tooltip>
                                         <SecondaryButton v-else class="mr-14">
-                                            Hacer kiosco {{ temporalFlag }} - {{ $page.props.isKiosk }}
+                                            Hacer kiosco
                                         </SecondaryButton>
                                     </template>
                                 </el-popconfirm>

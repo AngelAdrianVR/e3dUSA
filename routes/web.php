@@ -5,6 +5,7 @@ use App\Http\Controllers\BonusController;
 use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\HolidayController;
@@ -52,9 +53,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
 
