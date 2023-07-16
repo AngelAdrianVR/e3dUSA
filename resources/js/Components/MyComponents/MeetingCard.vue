@@ -1,34 +1,39 @@
 <template>
-    <div class="w-full md:w-5/6 h-auto py-3 px-2 border border-black rounded-lg">
-            <div v-if="meeting" class="grid grid-cols-3 px-3 py-2">
-            <h2 class="font-bold ml-2">{{ meeting.title }}</h2>
-                <div class="col-start-1">
-                    <p class="text-gray-500 text-sm"><i class="fa-regular fa-calendar mr-1"></i> {{ meeting.date }} </p> 
-                    <p class="text-gray-500 text-sm"><i class="fa-regular fa-clock mr-1"></i> {{ meeting.hour }} </p> 
-                    <p class="text-gray-500 text-sm"><i class="fa-solid fa-location-dot mr-1"></i> {{ meeting.location }} </p> 
+    <div class="h-auto py-3 px-2 border bg-[#d9d9d9] rounded-lg">
+        <template v-if="meetings.data.length">
+            <div v-for="(meeting, index) in meetings.data" :key="meeting.id" class="grid grid-cols-3 px-3 py-2">
+                <div>
+                    <h2 class="font-bold ml-2 mb-3">{{ meeting.subject }}</h2>
+                    <p class="text-sm"><i class="fa-regular fa-calendar mr-1"></i> {{ meeting.date }} </p>
+                    <p class="text-sm"><i class="fa-regular fa-clock mr-1"></i> {{ meeting.start }} - {{ meeting.end }} </p>
+                    <p class="text-sm"><i class="fa-solid fa-location-dot mr-1"></i> {{ meeting.location }} </p>
                 </div>
-                <div class="col-start-2 col-span-2">
-                    <p class="text-gray-500 text-sm">Anfitrión: <span class="ml-2">{{ meeting.host }}</span></p> 
-                    <p class="text-gray-500 text-sm">Participantes: <span class="ml-2">{{ meeting.participants }}</span></p> 
-                    <p class="text-gray-500 text-sm">Descripción: <span class="ml-2">{{ meeting.description }}</span></p> 
+                <div class="grid grid-cols-5 col-span-2 text-sm">
+                    <p>Anfitrión:</p> <span class="col-span-4 truncate">{{ meeting.user.name }}</span>
+                    <p>Participantes:</p> <span class="col-span-4 truncate">{{ meeting.users.map(objeto => objeto.name).join(', ') }}</span>
+                    <p>Descripción:</p> <span class="col-span-4 truncate">{{ meeting.description }}</span>
                 </div>
             </div>
+        </template>
 
-            <div v-else>
-                <p class="text-center text-sm">No hay reuniones próximas</p>
-            </div>
+        <div v-else>
+            <p class="text-center text-sm">No hay reuniones próximas</p>
+        </div>
     </div>
 </template>
 
 <script>
 export default {
-    data(){
-        return{
+    data() {
+        return {
 
         }
     },
-    props:{
-        meeting: Object,
+    props: {
+        meetings: {
+            type: Object,
+            default: { data: [] }
+        },
     }
 }
 </script>

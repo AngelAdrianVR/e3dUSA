@@ -1,5 +1,5 @@
 <template>
-    <div class="w-1/2 h-52 bg-[#D9D9D9] rounded-xl pb-2 py-5 grid grid-cols-3 relative">
+    <div class="h-52 bg-[#D9D9D9] rounded-xl pb-2 py-5 grid grid-cols-3 relative">
         <div class="my-3 col-start-2 col-span-2 h-full">
             <h3 class="text-center text-gray-700">Agregados Recientemente <i class="fa-solid fa-user-plus ml-2"></i></h3>
         </div>

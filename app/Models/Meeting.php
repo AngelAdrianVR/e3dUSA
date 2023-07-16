@@ -24,7 +24,9 @@ class Meeting extends Model
 
     protected $casts = [
         'date' => 'date',
-        'authorized_at' => 'datetime'
+        'authorized_at' => 'datetime',
+        'start' => 'datetime',
+        'end' => 'datetime',
     ];
 
     // relationships

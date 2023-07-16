@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\Company;
 use App\Models\CompanyBranch;
 use App\Models\Contact;
+use App\Models\Payroll;
 use App\Models\RawMaterial;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -38,11 +39,17 @@ class DatabaseSeeder extends Seeder
             'email' => 'maribel@emblemas3d.com',
             'password' => bcrypt('e3dusaM'),
         ]);
-        
+
         $this->call(ProductionCostSeeder::class);
-        $this->call(justificationEventSeeder::class);
+        $this->call(JustificationEventSeeder::class);
         $this->call(BonusSeeder::class);
         $this->call(HolidaySeeder::class);
         $this->call(RolePermissionSeeder::class);
+
+        // create current payroll
+        Payroll::create([
+            'start_date' => today()->toDateString(),
+            'week' => today()->weekOfYear,
+        ]);
     }
 }
