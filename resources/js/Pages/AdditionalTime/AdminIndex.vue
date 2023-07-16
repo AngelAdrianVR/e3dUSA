@@ -55,6 +55,7 @@
           max-height="450"
           style="width: 100%"
           @selection-change="handleSelectionChange"
+          @row-click="handleRowClick" 
           ref="multipleTableRef"
           :row-class-name="tableRowClassName"
         >
@@ -346,13 +347,21 @@ export default {
     },
     tableRowClassName({ row, rowIndex }) {
       if (row.status === "Autorizado") {
-        return "text-green-600";
+        return "text-green-600 cursor-pointer";
       } else {
-        return "text-amber-600";
+        return "text-amber-600 cursor-pointer";
       }
 
-      return "";
     },
+
+    handleRowClick(row) {
+      if(row.status != 'Autorizado')
+            this.edit(row);
+            else{
+              return
+            }
+        },
+
     handlePagination(val) {
       this.start = (val - 1) * this.itemsPerPage;
       this.end = val * this.itemsPerPage;

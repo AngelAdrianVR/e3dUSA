@@ -35,8 +35,17 @@
           </div>
         </div>
 
-        <el-table :data="filteredTableData" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
-          ref="multipleTableRef" :row-class-name="tableRowClassName">
+
+        <el-table
+          :data="filteredTableData"
+          max-height="450"
+          style="width: 100%"
+          @selection-change="handleSelectionChange"
+          @row-click="handleRowClick" 
+          ref="multipleTableRef"
+          :row-class-name="tableRowClassName"
+        >
+
           <el-table-column type="selection" width="45" />
           <el-table-column prop="id" label="ID" width="45" />
           <el-table-column prop="created_at" label="Solicitado el" width="120" />
@@ -247,13 +256,20 @@ export default {
     },
     tableRowClassName({ row, rowIndex }) {
       if (row.status === "Autorizado") {
-        return "text-green-600";
+        return "text-green-600 cursor-pointer";
       } else {
-        return "text-amber-600";
+        return "text-amber-600 cursor-pointer";
       }
-
-      return "";
     },
+
+    handleRowClick(row) {
+      if(row.status != 'Autorizado')
+            this.(row);
+            else{
+              return
+            }
+        },
+        
     handlePagination(val) {
       this.start = (val - 1) * this.itemsPerPage;
       this.end = val * this.itemsPerPage;
