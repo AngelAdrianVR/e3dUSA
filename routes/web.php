@@ -14,6 +14,8 @@ use App\Http\Controllers\MachineController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\PayrollController;
+use App\Http\Controllers\ProductionController;
+use App\Http\Controllers\ProductionCostController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RoleController;
@@ -23,7 +25,6 @@ use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
-use App\Models\Holiday;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -158,6 +159,11 @@ Route::resource('designs', DesignController::class)->middleware('auth');
 Route::post('designs/massive-delete', [DesignController::class, 'massiveDelete'])->name('designs.massive-delete');
 Route::put('designs/start-order/{design}', [DesignController::class, 'startOrder'])->name('designs.start-order');
 Route::put('designs/finish-order/{design}', [DesignController::class, 'finishOrder'])->name('designs.finish-order');
+
+
+// ------- production department routes  ---------
+Route::resource('productions', ProductionController::class)->middleware('auth');
+Route::post('productions/massive-delete', [ProductionController::class, 'massiveDelete'])->name('productions.massive-delete');
 
 
 // ------- Machines Routes  ---------

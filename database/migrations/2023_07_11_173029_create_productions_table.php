@@ -10,12 +10,15 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('productions', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-    }
+{
+    Schema::create('productions', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+        $table->unsignedBigInteger('catalog_product_company_sale_id');
+        $table->json('user_tasks')->nullable();
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.

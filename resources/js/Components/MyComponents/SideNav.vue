@@ -196,8 +196,8 @@ export default {
                 {
                     label: 'Producción',
                     icon: '<i class="fa-solid fa-helmet-safety text-xs"></i>',
-                    route: route('dashboard'),
-                    active: route().current('dashboar'),
+                    route: route('productions.index'),
+                    active: route().current('productions.*'),
                     show: true
                 },
                 {
