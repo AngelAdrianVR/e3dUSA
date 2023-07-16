@@ -33,7 +33,7 @@
                     </div>
                 </div>
 
-                <el-table :data="filteredTableData" max-height="450" style="width: 100%"
+                <el-table :data="filteredTableData" @row-click="handleRowClick"  max-height="450" style="width: 100%"
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="id" label="ID" width="45" />
@@ -48,7 +48,7 @@
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
-                                <span class="el-dropdown-link mr-3">
+                                <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
                                     <i class="fa-solid fa-ellipsis-vertical"></i>
                                 </span>
                                 <template #dropdown>
@@ -111,13 +111,7 @@ export default {
             this.start = (val - 1) * this.itemsPerPage;
             this.end = val * this.itemsPerPage;
         },
-        tableRowClassName({ row, rowIndex }) {
-            if (row.status === 1) {
-                return 'text-green-600';
-            }
-
-            return '';
-        },
+        
         async clone(company_id) {
             try {
                 const response = await axios.post(route('companies.clone', {
@@ -195,6 +189,15 @@ export default {
                 });
                 console.log(err);
             }
+        },
+
+        handleRowClick(row) {
+            this.$inertia.get(route('machines.show', row));
+        },
+
+        tableRowClassName({ row, rowIndex }) {
+
+            return 'cursor-pointer';
         },
 
         handleCommand(command) {
