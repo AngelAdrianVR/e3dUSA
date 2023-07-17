@@ -31,15 +31,6 @@ const logout = () => {
     router.post(route('logout'));
 };
 
-const getAttendanceTextButton = async () => {
-    try {
-        const response = await axios.get(route('users.get-next-attendance'));
-        nextAttendance.value = response.data.next;
-    } catch (error) {
-        console.error(error);
-    }
-};
-
 const createKiosk = async () => {
     try {
         const response = await axios.post(route('kiosk.store'));
@@ -55,6 +46,15 @@ const createKiosk = async () => {
 
             temporalFlag.value = true;
         }
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const getAttendanceTextButton = async () => {
+    try {
+        const response = await axios.get(route('users.get-next-attendance'));
+        nextAttendance.value = response.data.next;
     } catch (error) {
         console.error(error);
     }

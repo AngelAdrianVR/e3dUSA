@@ -52,6 +52,13 @@ class HandleInertiaRequests extends Middleware
                 }
                 return [];
             },
+            'auth.user.nextAttendance' => function () use ($request) {
+                if ($request->user()) {
+                    $request->user()->getNextAttendance();
+                }
+
+                return null;
+            },
             'isKiosk' => function () use ($request) {
                 $token = $_COOKIE['kioskToken'] ?? 'noToken';
                 $kiosk = KioskDevice::where('token', $token)
