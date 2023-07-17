@@ -47,7 +47,7 @@
 
             <div class="flex justify-between items-center lg:mt-14 mt-0">
                 <h2 class="text-primary lg:text-xl text-lg">Reuniones</h2>
-                <thirthButton>Registrar reunion</thirthButton>
+                <thirthButton @click="showMeetingModal = true">Registrar reunion</thirthButton>
             </div>
             <MeetingCard :meetings="meetings" class="mt-4" />
 
@@ -78,11 +78,111 @@
                     :contacts="[{ id: 1, name: 'Miguel Osvaldo vr', email: 'miguel@e3dusa.com', contactable: { name: 'FORD QRO-CELAYA' } }, { id: 1, name: 'Angel Adrian vr', email: 'angel@e3dusa.com', contactable: { name: 'FORD QRO-CELAYA' } }]" />
             </div>
         </div>
+
+        <DialogModal :show="showMeetingModal" @close="showMeetingModal = false">
+            <template #title>
+
+            </template>
+            <template #content>
+                <!-- Form -->
+                <form @submit.prevent="store">
+                    <div class="space-y-4">
+                        <div>
+                            <IconInput v-model="form.subject" inputPlaceholder="Título de reunion *" inputType="text">
+                                <el-tooltip content="Título de reunión" placement="top">
+                                    A
+                                </el-tooltip>
+                            </IconInput>
+                            <InputError :message="form.errors.subject" />
+                        </div>
+
+                        <div class="mb-3">
+                            <el-date-picker v-model="form.date" type="date" placeholder="Selecciona una fecha" />
+                            <InputError :message="form.errors.date" />
+                        </div>
+                        <div class="flex items-center">
+                            <div>
+                                <el-time-picker v-model="form.start" placeholder="Hora de comienzo" format="HH:mm" />
+                                <InputError :message="form.errors.start" />
+                            </div>
+                            <span>a</span>
+                            <div class="ml-7">
+                                <el-time-picker v-model="form.end" placeholder="Hora de finalización" format="HH:mm" />
+                                <InputError :message="form.errors.end" />
+                            </div>
+
+                            <label class="flex items-center">
+                                <Checkbox v-model:checked="form.repit" name="repit" class="bg-transparent" />
+                                <span class="ml-2 text-sm text-[#9A9A9A]">Repetir</span>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center">
+                            <el-tooltip content="Participantes de la reunion" placement="top">
+                                <i class="fa-solid fa-users text-gray-700 mr-3"></i>
+                            </el-tooltip>
+                            <el-select v-model="form.participants" multiple placeholder="Participantes"
+                                style="width: 240px">
+                                <el-option v-for="item in users" :key="item.id" :label="item.name" :value="item.id" />
+                            </el-select>
+                            <InputError :message="form.errors.participants" />
+                            <p @click="availableModal = true" class="text-primary ml-4 text-sm cursor-pointer">
+                                Ver disponibilidad
+                            </p>
+                        </div>
+
+                        <div class="w-3/5">
+                            <IconInput v-model="form.subject" inputPlaceholder="Ubicación" inputType="text">
+                                <el-tooltip content="Lugar de la reunion" placement="top">
+                                    <i class="fa-solid fa-location-dot text-gray-700"></i>
+                                </el-tooltip>
+                            </IconInput>
+
+                            <InputError :message="form.errors.location" />
+                        </div>
+
+                        <div class="flex items-center">
+                            <IconInput v-model="form.subject" inputPlaceholder="Recordario" inputType="text" class="w-1/5">
+                                <el-tooltip content="Recordatorios" placement="top">
+                                    <i class="fa-solid fa-stopwatch text-gray-700"></i>
+                                </el-tooltip>
+                            </IconInput>
+
+                            <InputError :message="form.errors.location" />
+
+                            <p class="text-primary ml-4 text-sm cursor-pointer">
+                                Agregar recordatorio
+                            </p>
+                        </div>
+
+                        <div class="flex col-span-full">
+                            <el-tooltip content="Descripción" placement="top">
+                                <span
+                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                    ...
+                                </span>
+                            </el-tooltip>
+                            <textarea v-model="form.description" class="textarea" autocomplete="off"
+                                placeholder="Descripción"></textarea>
+                            <InputError :message="form.errors.description" />
+                        </div>
+                    </div>
+                </form>
+            </template>
+            <template #footer>
+                <CancelButton @click="showMeetingModal = false" :disabled="form.processing">
+                    Cancelar
+                </CancelButton>
+                <PrimaryButton :disabled="form.processing">
+                    Guardar
+                </PrimaryButton>
+            </template>
+        </DialogModal>
     </AppLayoutNoHeader>
 </template>
 
 <script>
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import DialogModal from '@/Components/DialogModal.vue';
 import MeetingCard from '@/Components/MyComponents/MeetingCard.vue';
 import DashboardCard from '@/Components/MyComponents/DashboardCard.vue';
 import ProductionPerformanceCard from '@/Components/MyComponents/ProductionPerformanceCard.vue';
@@ -91,80 +191,99 @@ import BirthdateCardCustomer from '@/Components/MyComponents/BirthdateCardCustom
 import RecentlyAddedCard from '@/Components/MyComponents/RecentlyAddedCard.vue';
 import InformationCard from '@/Components/MyComponents/InformationCard.vue';
 import ThirthButton from '@/Components/MyComponents/ThirthButton.vue';
+import CancelButton from '@/Components/MyComponents/CancelButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import AppLayoutNoHeader from '@/Layouts/AppLayoutNoHeader.vue';
+import InputError from "@/Components/InputError.vue";
+import IconInput from "@/Components/MyComponents/IconInput.vue";
+import Checkbox from "@/Components/Checkbox.vue";
 import axios from 'axios';
+import { useForm } from '@inertiajs/vue3';
 
 export default {
     data() {
+        const form = useForm({
+            subject: null,
+            location: null,
+            url: null,
+            description: null,
+            date: null,
+            start: null,
+            end: null,
+            repit: null,
+            participants: null,
+        });
+
         return {
             quickCards: [
                 {
                     title: 'Cotizaciones por autorizar',
-                    counter: 0,
+                    counter: this.counts[0],
                     icon: 'fa-solid fa-file-invoice',
                     url: route('quotes.index')
                 },
                 {
                     title: 'Órdenes de venta por autorizar',
-                    counter: 1,
+                    counter: this.counts[1],
                     icon: 'fa-solid fa-clipboard',
                     url: route('sales.index')
                 },
                 {
                     title: 'Órdenes de compra por autorizar',
-                    counter: 0,
+                    counter: this.counts[2],
                     icon: 'fa-solid fa-cart-shopping',
                     url: route('purchases.index')
                 },
                 {
                     title: 'Órden de diseño por autorizar',
-                    counter: 0,
+                    counter: this.counts[3],
                     icon: 'fa-solid fa-pen-ruler',
                     url: route('designs.index')
                 },
                 {
                     title: 'Productos con existencia baja',
-                    counter: 4,
+                    counter: this.counts[4],
                     icon: 'fa-solid fa-arrows-down-to-line',
                     url: route('raw-materials.index')
                 },
                 {
                     title: 'Órdenes de producción sin iniciar',
-                    counter: 0,
+                    counter: this.counts[5],
                     icon: 'fa-solid fa-spinner',
                     url: route('dashboard')
                 },
                 {
                     title: 'Órdenes de diseño por iniciar',
-                    counter: 10,
+                    counter: this.counts[6],
                     icon: 'fa-solid fa-compass-drafting',
                     url: route('dashboard')
                 },
                 {
                     title: 'Venta sin órden de producción',
-                    counter: 0,
+                    counter: this.counts[7],
                     icon: 'fa-solid fa-list-check',
                     url: route('sales.index')
                 },
                 {
                     title: 'Horas adicionales por autorizar',
-                    counter: 3,
+                    counter: this.counts[8],
                     icon: 'fa-solid fa-users',
                     url: route('admin-additional-times.index')
                 },
             ],
             nextAttendance: null,
-            temporalFlag: false
+            temporalFlag: false,
+            showMeetingModal: false,
+            form,
         }
     },
     props: {
         meetings: Object,
+        counts: Array,
     },
     components: {
         ThirthButton,
-        ApplicationLogo,
         MeetingCard,
         DashboardCard,
         PrimaryButton,
@@ -174,7 +293,12 @@ export default {
         RecentlyAddedCard,
         BirthdateCard,
         AppLayoutNoHeader,
-        BirthdateCardCustomer
+        BirthdateCardCustomer,
+        DialogModal,
+        InputError,
+        IconInput,
+        CancelButton,
+        Checkbox,
     },
     methods: {
         async getAttendanceTextButton() {
