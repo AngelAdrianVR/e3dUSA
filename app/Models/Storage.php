@@ -26,4 +26,11 @@ class Storage extends Model
     {
         return $this->morphTo();
     }
+
+    public static function lowStock()
+    {
+        return self::where('type', 'materia-prima')->whereHas('storageable', function ($query) {
+            $query->whereColumn('storages.quantity', '<=', 'raw_materials.min_quantity');
+        })->with('storageable')->get();
+    }
 }

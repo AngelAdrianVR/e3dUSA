@@ -245,7 +245,7 @@ export default {
                     title: 'Productos con existencia baja',
                     counter: this.counts[4],
                     icon: 'fa-solid fa-arrows-down-to-line',
-                    url: route('raw-materials.index')
+                    url: route('storages.raw-materials.index')
                 },
                 {
                     title: 'Órdenes de producción sin iniciar',
@@ -349,6 +349,6 @@ export default {
                 console.error(error);
             }
         }
-    }
+        }
 }
 </script>
