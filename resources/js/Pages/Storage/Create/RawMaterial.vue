@@ -147,6 +147,38 @@
             <InputError :message="form.errors.description" />
           </div>
           <div class="col-span-full">
+            <div class="flex space-x-2 mb-1">
+              <IconInput
+                v-model="newFeature"
+                inputPlaceholder="Ingresa una caracteristica"
+                inputType="text"
+                class="w-full"
+              >
+                <el-tooltip content="Caracteristicas" placement="top">
+                  <i class="fa-solid fa-palette"></i>
+                </el-tooltip>
+              </IconInput>
+              <SecondaryButton @click="addFeature" type="button">
+                Agregar
+                <i class="fa-solid fa-arrow-down ml-2"></i>
+              </SecondaryButton>
+            </div>
+            <el-select
+              v-model="form.features"
+              multiple
+              clearable
+              placeholder="Caracteristicas"
+              no-data-text="Agrega primero una caracteristica"
+            >
+              <el-option
+                v-for="feature in features"
+                :key="feature"
+                :label="feature"
+                :value="feature"
+              ></el-option>
+            </el-select>
+          </div>
+          <div class="col-span-full">
             <div class="flex items-center">
               <span
                 class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
@@ -202,11 +234,14 @@ export default {
       initial_stock: null,
       location: null,
       type: "materia-prima",
-      features: null,
+      features: [],
+      media: null,
     });
 
     return {
       form,
+      newFeature: null,
+      features: [],
     };
   },
   components: {
@@ -230,14 +265,13 @@ export default {
         },
       });
     },
-    handleRemove(uploadFile, uploadFiles) {
-      UploadProps["onRemove"] = 1;
-      //  console.log(uploadFile, uploadFiles);
+    addFeature() {
+      if (this.newFeature.trim() !== "") {
+        this.form.features.push(this.newFeature);
+        this.features.push(this.newFeature);
+        this.newFeature = "";
+      }
     },
-  },
-  handlePreview() {
-    UploadProps["onPreview"] = 2;
-    //  console.log(file);
   },
 };
 </script>

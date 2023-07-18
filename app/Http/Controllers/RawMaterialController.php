@@ -29,7 +29,7 @@ class RawMaterialController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $request->validate([ 
             'name' => 'required|string',
             'part_number' => 'required|string|unique:raw_materials,part_number',
             'measure_unit' => 'required',
