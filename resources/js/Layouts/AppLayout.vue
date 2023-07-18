@@ -7,6 +7,7 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import MobileSideNav from '@/Components/MyComponents/MobileSideNav.vue';
 import SideNav from '@/Components/MyComponents/SideNav.vue';
 import axios from 'axios';
 import { ElNotification } from 'element-plus';
@@ -304,74 +305,8 @@ onMounted(getAttendanceTextButton);
 
                     <!-- Responsive Navigation Menu -->
                     <div :class="{ 'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown }"
-                        class="sm:hidden">
-                        <div class="pt-2 pb-3 space-y-1">
-                            <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                Panel de Inicio
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('catalog-products.index')"
-                                :active="route().current('catalog-products.*')">
-                                Catálogo de productos
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('quotes.index')" :active="route().current('quotes.*')">
-                                Cotizaciones
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('companies.index')" :active="route().current('companies.*')">
-                                Clientes
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('sales.index')" :active="route().current('sales.*')">
-                                Órdenes de venta
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('suppliers.index')" :active="route().current('suppliers.*')">
-                                Proveedores
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('purchases.index')" :active="route().current('purchases.*')">
-                                Órdenes de compra
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('storages.raw-materials.index')"
-                                :active="route().current('storages.raw-materials.*')">
-                                Materia prima
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('storages.consumables.index')"
-                                :active="route().current('storages.consumables.*')">
-                                Insumos
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('storages.finished-products.index')"
-                                :active="route().current('storages.finished-products.*')">
-                                Producto terminado
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('storages.scraps.index')"
-                                :active="route().current('storages.scraps.*')">
-                                Scrap
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('payrolls.index')" :active="route().current('payrolls.*')">
-                                Nóminas
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                Solicitud de tiempo adicional
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('payrolls.index')" :active="route().current('payrolls.*')">
-                                Personal
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                Diseño
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                Producción
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                Mercadotecnia
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('machines.index')" :active="route().current('machines.*')">
-                                Máquinas
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                Reuniones
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                Biblioteca de medios
-                            </ResponsiveNavLink>
-                        </div>
+                        class="sm:hidden bg-[#d9d9d9] w-4/6 absolute right-0 top-14 z-10 max-h-[90%] overflow-y-scroll overflow-x-hidden pt-4">
+                        <MobileSideNav />
 
                         <!-- Responsive Settings Options -->
                         <div class="pt-4 pb-1 border-t border-gray-200">
