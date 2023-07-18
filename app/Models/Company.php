@@ -29,6 +29,7 @@ class Company extends Model
     {
         return $this->belongsToMany(CatalogProduct::class)
             ->withPivot([
+                'id',
                 'old_date',
                 'new_date',
                 'old_price',

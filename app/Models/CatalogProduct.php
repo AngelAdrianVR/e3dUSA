@@ -62,6 +62,7 @@ class CatalogProduct extends Model implements HasMedia
     {
       return $this->belongsToMany(Quote::class)
             ->withPivot([
+                'id',
                 'old_price',
                 'old_date',
                 'old_currency',
