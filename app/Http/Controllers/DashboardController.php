@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\MeetingResource;
 use App\Http\Resources\UserResource;
 use App\Models\AdditionalTimeRequest;
+use App\Models\Contact;
 use App\Models\Design;
 use App\Models\Meeting;
 use App\Models\Purchase;
@@ -39,15 +40,30 @@ class DashboardController extends Controller
         $collaborators_added = User::whereDate('employee_properties->join_date', '<=', today())->whereDate('employee_properties->join_date', '>', today()->subDays(3))->get();
 
         // anniversaries
-        $collaborators_anniversaires = User::whereRaw("DAY(employee_properties->'$.join_date') = ?", [today()->day])
-            ->whereRaw("MONTH(employee_properties->'$.join_date') = ?", [today()->month])
-            ->get();
+        $collaborators_anniversaires = User::whereDay('employee_properties->join_date', today()->day)
+            ->whereMonth('employee_properties->join_date', today()->month)
+            ->get()
+            ->map(function ($user) {
+                $years = today()->diffInYears($user->employee_properties['join_date']);
+                $user->years = $years;
+
+                return $user;
+            });
 
         // customers birthdays
-        $customers_birthdays = [];
+        $customers_birthdays = Contact::with('contactable')
+            ->where('birthdate_day', today()->day)
+            ->where('birthdate_month', today()->month)
+            ->get();
 
-        return $collaborators_anniversaires;
-
-        return inertia('Dashboard/Index', compact('meetings', 'counts'));
+        return inertia('Dashboard/Index', compact(
+            'meetings',
+            'counts',
+            'collaborators_performance',
+            'collaborators_birthdays',
+            'collaborators_added',
+            'collaborators_anniversaires',
+            'customers_birthdays'
+        ));
     }
 }

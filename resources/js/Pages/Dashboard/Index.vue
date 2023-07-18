@@ -47,7 +47,10 @@
 
             <div class="flex justify-between items-center lg:mt-14 mt-0">
                 <h2 class="text-primary lg:text-xl text-lg">Reuniones</h2>
-                <thirthButton @click="showMeetingModal = true">Registrar reunion</thirthButton>
+                <Link :href="route('meetings.create')">
+                    <thirthButton>Registrar reunion</thirthButton>
+                </Link>
+                <!-- <thirthButton @click="showMeetingModal = true">Registrar reunion</thirthButton> -->
             </div>
             <MeetingCard :meetings="meetings" class="mt-4" />
 
@@ -62,20 +65,20 @@
             <h2 class="text-primary lg:text-xl text-lg lg:mt-16 mt-6">Colaboradores</h2>
             <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 space-y-5 lg:space-y-0 mt-4">
                 <ProductionPerformanceCard
-                    :users="[{ id: 1, name: 'Miguel Osvaldo vr' }, { id: 2, name: 'Angel Adrian vr' }, { id: 2, name: 'Angel Adrian vr' }]" />
+                    :users="collaborators_performance" />
                 <BirthdateCard
-                    :users="[{ id: 1, name: 'Miguel Osvaldo vr', employee_properties: { job_position: 'Auxiliar de prodccion', birthdate: { formatted: '13 Marzo' } } }, { id: 1, name: 'Angel Adrian vr', employee_properties: { job_position: 'Jefe de prodccion', birthdate: { formatted: '13 Marzo' } } }]" />
+                    :users="collaborators_birthdays" />
                 <RecentlyAddedCard
-                    :users="[{ id: 1, name: 'Miguel Osvaldo vr', email: 'miguel@e3dusa.com', employee_properties: { job_position: 'Auxiliar de prodccion', department: 'Ventas' } }, { id: 1, name: 'Angel Adrian vr', email: 'angel@e3dusa.com', employee_properties: { job_position: 'Jefe de prodccion', department: 'Ventas' } }]" />
-                <InformationCard :years="3"
-                    :users="[{ id: 1, name: 'Miguel Osvaldo vr', employee_properties: { job_position: 'Auxiliar de prodccion', birthdate: { formatted: '13 Marzo' } } }, { id: 1, name: 'Angel Adrian vr', employee_properties: { job_position: 'Jefe de prodccion', birthdate: { formatted: '13 Marzo' } } }]" />
+                    :users="collaborators_added" />
+                <InformationCard
+                    :users="collaborators_anniversaires" />
             </div>
 
             <!-- customers -->
             <h2 class="text-primary lg:text-xl text-lg lg:mt-16 mt-6">Clientes</h2>
             <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 mt-4">
                 <BirthdateCardCustomer
-                    :contacts="[{ id: 1, name: 'Miguel Osvaldo vr', email: 'miguel@e3dusa.com', contactable: { name: 'FORD QRO-CELAYA' } }, { id: 1, name: 'Angel Adrian vr', email: 'angel@e3dusa.com', contactable: { name: 'FORD QRO-CELAYA' } }]" />
+                    :contacts="customers_birthdays" />
             </div>
         </div>
 
@@ -199,7 +202,7 @@ import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import axios from 'axios';
-import { useForm } from '@inertiajs/vue3';
+import { useForm,Link } from '@inertiajs/vue3';
 
 export default {
     data() {
@@ -281,6 +284,11 @@ export default {
     props: {
         meetings: Object,
         counts: Array,
+        collaborators_performance: Array,
+        collaborators_birthdays: Array,
+        collaborators_added: Array,
+        collaborators_anniversaires: Array,
+        customers_birthdays: Array,
     },
     components: {
         ThirthButton,
@@ -299,6 +307,7 @@ export default {
         IconInput,
         CancelButton,
         Checkbox,
+        Link
     },
     methods: {
         async getAttendanceTextButton() {
@@ -349,6 +358,6 @@ export default {
                 console.error(error);
             }
         }
-        }
+    }
 }
 </script>
