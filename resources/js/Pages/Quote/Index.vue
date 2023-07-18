@@ -202,6 +202,34 @@ export default {
                 console.log(err);
             }
         },
+        async createSO(quote_id) {
+            try {
+                const response = await axios.post(route('quotes.create-so', {
+                    quote_id: quote_id
+                }));
+
+                if (response.status == 200) {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+                } else {
+                    this.$notify({
+                        title: 'Algo salió mal',
+                        message: response.data.message,
+                        type: 'error'
+                    });
+                }
+            } catch (err) {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
+                console.log(err);
+            }
+        },
         handleCommand(command) {
             const commandName = command.split('-')[0];
             const rowId = command.split('-')[1];
@@ -209,7 +237,7 @@ export default {
             if (commandName == 'clone') {
                 this.clone(rowId);
             } else if (commandName == 'make_so') {
-                console.log('SO');
+                this.createSO(rowId);
             } else {
                 this.$inertia.get(route('quotes.' + commandName, rowId));
             }

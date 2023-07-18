@@ -49,7 +49,6 @@ class RawMaterialController extends Controller
             'location' => $request->location,
         ]);
 
-
         if ($request->type == 'materia-prima')
             return to_route('storages.raw-materials.index');
         else

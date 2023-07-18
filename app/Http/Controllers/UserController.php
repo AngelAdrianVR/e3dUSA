@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\UserResource;
 use App\Models\Bonus;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 
@@ -51,6 +52,10 @@ class UserController extends Controller
             if ($day['check_in'] != 0) $work_days ++;
         }
 
+        $validated['employee_properties']['birthdate'] = [
+            'formatted' => Carbon::parse($validated['employee_properties']['birthdate'])->isoFormat('DD MMMM'),
+            'raw' => $validated['employee_properties']['birthdate']
+        ];
         $validated['employee_properties']['salary']['week'] =  floatval($validated['employee_properties']['salary']['week']);
         $validated['employee_properties']['hours_per_week'] =  intval($validated['employee_properties']['hours_per_week']);
         $hours_per_day = $validated['employee_properties']['hours_per_week'] / $work_days; 
@@ -106,6 +111,10 @@ class UserController extends Controller
             if ($day['check_in'] != 0) $work_days ++;
         }
 
+        $validated['employee_properties']['birthdate'] = [
+            'formatted' => Carbon::parse($validated['employee_properties']['birthdate'])->isoFormat('DD MMMM'),
+            'raw' => $validated['employee_properties']['birthdate']
+        ];
         $validated['employee_properties']['salary']['week'] =  floatval($validated['employee_properties']['salary']['week']);
         $validated['employee_properties']['hours_per_week'] =  intval($validated['employee_properties']['hours_per_week']);
         $hours_per_day = $validated['employee_properties']['hours_per_week'] / $work_days; 

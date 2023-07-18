@@ -103,6 +103,7 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Crear dias festivos', 'category' => 'RRHH']);
         Permission::create(['name' => 'Editar dias festivos', 'category' => 'RRHH']);
         Permission::create(['name' => 'Eliminar dias festivos', 'category' => 'RRHH']);
+        Permission::create(['name' => 'Crear kiosco', 'category' => 'RRHH']);
 
         Permission::create(['name' => 'Ver maquinas', 'category' => 'Mantenimiento']);
         Permission::create(['name' => 'Crear maquinas', 'category' => 'Mantenimiento']);
