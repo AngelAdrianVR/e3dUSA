@@ -64,7 +64,7 @@ class CatalogProductController extends Controller
     public function show(CatalogProduct $catalog_product)
     {
         $catalog_products = CatalogProductResource::collection(CatalogProduct::with('storages')->get());
-
+        // return $catalog_products;
         return inertia('CatalogProduct/Show', compact('catalog_products', 'catalog_product'));
     }
 

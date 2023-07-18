@@ -113,7 +113,7 @@ class StorageController extends Controller
     {
         $storage = Storage::with('storageable')->find($storage_id);
         $storages = Storage::with('storageable')->where('type', '!=', 'scrap')->get();
-        // return $storages;
+        return $storages;
         return inertia('Storage/Show', compact('storage', 'storages'));
     }
 
