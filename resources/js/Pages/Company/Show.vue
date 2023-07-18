@@ -49,7 +49,6 @@
       <p class="text-center font-bold text-lg mb-4">
         {{ company.business_name }}
       </p>
-
       <!-- ------------- tabs section starts ------------- -->
       <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2">
         <div class="flex">
@@ -100,7 +99,7 @@
       <div v-if="tabs == 3" class="p-7">
         <p class="text-secondary">Productos registrados</p>
         <div class="grid lg:grid-cols-4 md:grid-cols-2 mt-7 gap-10">
-          <CompanyProductCard v-for="company_product in company_products" :key="company_product.id"
+          <CompanyProductCard v-for="company_product in company_products.data" :key="company_product.id"
             :company_product="company_product" />
         </div>
       </div>
@@ -137,6 +136,7 @@ export default {
     return {
       selectedCompany: "",
       currentCompany: null,
+      currentCompanyProducts: null,
       tabs: 1,
       showConfirmModal: false,
     };
@@ -201,6 +201,7 @@ export default {
   watch: {
     selectedCompany(newVal) {
       this.currentCompany = this.companies.find((item) => item.id == newVal);
+      this.currentCompanyProducts = this.company_products.data.find((item) => item.company_id == this.selectedCompany);
     },
   },
 

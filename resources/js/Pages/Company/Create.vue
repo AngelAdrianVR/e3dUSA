@@ -123,6 +123,7 @@
               </li>
             </template>
           </ol>
+          <InputError :message="form.errors.company_branches" />
           <div
             class="space-y-3 md:w-[92%] mx-auto border-2 border-[#b8b7b7] rounded-lg p-5"
           >
