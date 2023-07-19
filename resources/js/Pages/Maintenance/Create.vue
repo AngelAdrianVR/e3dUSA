@@ -151,6 +151,7 @@ export default {
       cost: null,
       responsible: null,
       machine_id: this.selectedMachine,
+      media: null,
     });
 
     return {

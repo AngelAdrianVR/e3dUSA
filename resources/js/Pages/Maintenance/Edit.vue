@@ -151,6 +151,7 @@ export default {
       cost: this.maintenance.cost,
       responsible: this.maintenance.responsible,
       machine_id: this.maintenance.machine_id,
+      media: null
     });
 
     return {
@@ -165,7 +166,8 @@ export default {
     IconInput,
   },
   props: {
-    maintenance: Object
+    maintenance: Object,
+    media: Object,
   },
   methods: {
     update() {

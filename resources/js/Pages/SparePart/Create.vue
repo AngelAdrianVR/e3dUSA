@@ -130,7 +130,7 @@
 
           <div class="mx-3 text-right">
             <PrimaryButton :disabled="form.processing">
-              Registrar mantenimiento
+              Registrar refacción
             </PrimaryButton>
           </div>
         </div>
@@ -156,6 +156,7 @@ export default {
       location: null,
       description: null,
       machine_id: this.selectedMachine,
+      media: null,
     });
 
     return {

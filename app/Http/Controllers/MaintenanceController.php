@@ -32,9 +32,11 @@ class MaintenanceController extends Controller
             'machine_id' => 'required|numeric',
         ]);
 
-        Maintenance::create($request->except('maintenance_type_id') + [
+        $maintenance = Maintenance::create($request->except('maintenance_type_id') + [
             'maintenance_type_id' => $request->maintenance_type == 'Preventivo' ? '0' : '1',
         ]);
+
+        $maintenance->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
         
         return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
     }
@@ -48,7 +50,9 @@ class MaintenanceController extends Controller
     
     public function edit(Maintenance $maintenance)
     {
-        return inertia('Maintenance/Edit', compact('maintenance'));
+        $media = $maintenance->getMedia()->all();
+
+        return inertia('Maintenance/Edit', compact('maintenance', 'media'));
     }
 
     
@@ -66,6 +70,11 @@ class MaintenanceController extends Controller
         $maintenance->update($request->except('maintenance_type_id') + [
             'maintenance_type_id' => $request->maintenance_type == 'Preventivo' ? '0' : '1',
         ]);
+
+         // update image
+         $maintenance->clearMediaCollection();
+         $maintenance->addMediaFromRequest('media')->toMediaCollection();
+         $maintenance->save();
 
         return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
     }

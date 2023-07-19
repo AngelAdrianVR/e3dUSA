@@ -156,6 +156,7 @@ export default {
       location: this.spare_part.location,
       description: this.spare_part.description,
       machine_id: this.spare_part.machine_id,
+      media: null,
     });
 
     return {
@@ -170,7 +171,8 @@ export default {
     IconInput,
   },
   props: {
-    spare_part: Object
+    spare_part: Object,
+    media: Array,
   },
   methods: {
     update() {
