@@ -15,19 +15,19 @@ class StorageController extends Controller
     public function index()
     {
         if(Route::currentRouteName() == 'storages.raw-materials.index'){
-            $raw_materials = Storage::with('storageable')->where('type', 'materia-prima')->get();
+            $raw_materials = Storage::with('storageable')->where('type', 'materia-prima')->latest()->get();
             return inertia('Storage/Index/RawMaterial', compact('raw_materials'));
 
         }elseif(Route::currentRouteName() == 'storages.consumables.index'){
-            $raw_materials = Storage::with('storageable')->where('type', 'consumible')->get();
+            $raw_materials = Storage::with('storageable')->where('type', 'consumible')->latest()->get();
             return inertia('Storage/Index/Consumable', compact('raw_materials'));
 
         }elseif(Route::currentRouteName() == 'storages.finished-products.index'){
-            $finished_products = Storage::with('storageable')->where('type', 'producto-terminado')->get();
+            $finished_products = Storage::with('storageable')->where('type', 'producto-terminado')->latest()->get();
             return inertia('Storage/Index/FinishedProduct',compact('finished_products'));
 
         }else
-        $scraps = Storage::with('storageable')->where('type', 'scrap')->get();
+        $scraps = Storage::with('storageable')->where('type', 'scrap')->latest()->get();
         return inertia('Storage/Index/Scrap', compact('scraps'));
     }
 
@@ -118,12 +118,12 @@ class StorageController extends Controller
     }
 
     
-    public function edit($storage)
+    public function edit(Storage $storage)
     {
-        $finished_product = Storage::where('type', 'producto-terminado')->where('storageable_id', $storage)->get();
+        // $finished_product = Storage::where('type', 'producto-terminado')->where('storageable_id', $storage)->get();
         $catalog_products = CatalogProduct::all();
-        // return $finished_product;
-        return inertia('Storage/Edit/FinishedProduct', compact('finished_product', 'catalog_products'));
+        // return $storage;
+        return inertia('Storage/Edit/FinishedProduct', compact('catalog_products'));
     }
 
     

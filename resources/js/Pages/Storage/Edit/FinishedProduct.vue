@@ -36,7 +36,7 @@
                   :value="item.id"
                 />
               </el-select>
-              <InputError :message="form.errors.storageable_id" />
+              <!-- <InputError :message="form.errors.storageable_id" /> -->
             </div>
           <div class="md:grid gap-6 mb-6 grid-cols-2">
             <div>
@@ -118,9 +118,9 @@ import { ref } from "vue";
 export default {
   data() {
     const form = useForm({
-      storageable_id: this.finished_product[0].storageable_id,
-      quantity: this.finished_product[0].quantity,
-      location: this.finished_product[0].location,
+      storageable_id: this.storage.storageable_id,
+      quantity: this.storage.quantity,
+      location: this.storage.location,
       type: 'producto-terminado',
     });
 
@@ -139,7 +139,7 @@ export default {
   },
   props: {
     catalog_products: Array,
-    finished_product: Object
+    storage: Object
   },
   methods: {
     update() {
@@ -147,7 +147,7 @@ export default {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: "Producto agregado",
+            message: "Producto editado",
             type: "success",
           });
         },

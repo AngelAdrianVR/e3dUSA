@@ -20,7 +20,7 @@
           <!-- pagination -->
           <div>
             <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-              :total="more_additional_times.length" />
+              :total="more_additional_times.data.length" />
           </div>
 
           <!-- buttons -->
@@ -255,7 +255,11 @@ export default {
     },
 
     handleRowClick(row) {
-      this.edit(row);
+      if(row.status != 'Autorizado')
+            this.edit(row);
+            else{
+              return
+            }
     },
 
     handlePagination(val) {
