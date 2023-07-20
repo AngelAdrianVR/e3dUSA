@@ -32,7 +32,8 @@ class SparePartController extends Controller
             'machine_id' => 'required',
         ]); 
 
-        SparePart::create($request->all());
+        $spare_part = SparePart::create($request->all());
+        $spare_part->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
 
         return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
     }
@@ -46,7 +47,9 @@ class SparePartController extends Controller
     
     public function edit(SparePart $spare_part)
     {
-        return inertia('SparePart/Edit', compact('spare_part'));
+        $media = $spare_part->getMedia()->all();
+
+        return inertia('SparePart/Edit', compact('spare_part', 'media'));
     }
 
     
@@ -63,6 +66,11 @@ class SparePartController extends Controller
         ]); 
 
         $spare_part->update($request->all());
+        
+        // update image
+        $spare_part->clearMediaCollection();
+        $spare_part->addMediaFromRequest('media')->toMediaCollection();
+        $spare_part->save();
 
         return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
     }

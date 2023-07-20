@@ -22,6 +22,7 @@ class SparePartResource extends JsonResource
             'cost' => number_format($this->cost),
             'description' => $this->description,
             'location' => $this->location,
+            'media' => $this->getMedia()->all(),
             'machine_id' => $this->machine_id,
             'created_at' => $this->created_at?->isoFormat('YYYY MMM DD'),
             'updated_at' => $this->updated_at?->isoFormat('YYYY MMM DD'),

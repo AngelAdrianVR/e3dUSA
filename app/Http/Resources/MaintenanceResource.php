@@ -21,6 +21,7 @@ class MaintenanceResource extends JsonResource
             'cost' => number_format($this->cost),
             'maintenance_type_id' => $this->maintenance_type_id == 0 ? 'Preventivo' : 'Correctivo',
             'responsible' => $this->responsible,
+            'media' => $this->getMedia()->all(),
             'machine_id' => $this->machine_id,
             'created_at' => $this->created_at?->isoFormat('YYYY MMM DD'),
             'updated_at' => $this->updated_at?->isoFormat('YYYY MMM DD'),

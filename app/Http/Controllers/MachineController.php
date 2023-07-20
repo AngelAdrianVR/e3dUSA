@@ -38,7 +38,8 @@ class MachineController extends Controller
             'days_next_maintenance' => 'required|numeric|min:7',
         ]);
 
-        Machine::create($request->all());
+        $machine = Machine::create($request->all());
+        $machine->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection('images'));
 
         return to_route('machines.index');
     }
@@ -46,16 +47,17 @@ class MachineController extends Controller
     
     public function show(Machine $machine)
     {
-        $machines = MachineResource::collection(Machine::with('maintenances', 'spareParts')->get());
+        $machines = MachineResource::collection(Machine::with('maintenances', 'spareParts', 'media')->get());
 
         return inertia('Machine/Show', compact('machine', 'machines'));
         
     }
 
-    
     public function edit(Machine $machine)
     {
-        return inertia('Machine/Edit', compact('machine'));
+        $media = $machine->getFirstMedia();
+
+        return inertia('Machine/Edit', compact('machine', 'media'));
     }
 
     
@@ -75,6 +77,11 @@ class MachineController extends Controller
         ]);
 
         $machine->update($request->all());
+
+         // update image
+         $machine->clearMediaCollection();
+         $machine->addMediaFromRequest('media')->toMediaCollection();
+         $machine->save();
 
         return to_route('machines.index');
     }
