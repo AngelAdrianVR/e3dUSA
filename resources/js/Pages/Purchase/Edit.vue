@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppLayout title="Órdenes de compra - Edit">
+    <AppLayout title="Órdenes de compra - Editar">
       <template #header>
         <div class="flex justify-between">
           <Link
@@ -11,12 +11,12 @@
           </Link>
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">
-             Editar órden de compra
+              Editar órden de compra
             </h2>
           </div>
         </div>
       </template>
-
+      {{productSelected}}
       <!-- Form -->
       <form @submit.prevent="update">
         <div
@@ -138,10 +138,10 @@
                   placeholder="Selecciona un producto"
                 >
                   <el-option
-                    v-for="item in raw_materials"
+                    v-for="item in raw_materials.data"
                     :key="item.id"
                     :label="item.name"
-                    :value="item.name"
+                    :value="item"
                   />
                 </el-select>
               </div>
@@ -213,7 +213,7 @@ export default {
     const form = useForm({
       notes: this.purchase.notes,
       expected_delivery_date: this.purchase.expected_delivery_date,
-    //   is_iva_included: this.purchase.is_iva_included,
+      is_iva_included: this.purchase.is_iva_included,
       supplier_id: this.purchase.supplier_id,
       contact_id: this.purchase.contact_id,
       bank_information: this.purchase.bank_information,
@@ -245,11 +245,11 @@ export default {
   },
   methods: {
     update() {
-      this.form.put(route("purchases.update"), {
+      this.form.put(route("purchases.update", this.currentSupplier.id), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: "Órden de compra actualizada",
+            message: "Órden de compra editada",
             type: "success",
           });
 
@@ -260,8 +260,17 @@ export default {
 
     addProduct() {
       let product = {
-        product: this.productSelected,
+        id: this.productSelected.id,
+        product: this.productSelected.name,
+        part_number: this.productSelected.part_number,
+        description: this.productSelected.description,
+        measure_unit: this.productSelected.measure_unit,
+        min_quantity: this.productSelected.min_quantity,
+        max_quantity: this.productSelected.max_quantity,
+        cost: this.productSelected.cost,
+        features: this.productSelected.features,
         quantity: this.form.quantity,
+        media: this.productSelected.media
       };
 
       // this.productValidation = this.form.products.some(function (item) {
