@@ -1,4 +1,4 @@
-<template>
+``<template>
   <div>
     <AppLayout title="Maquinaria - Editar">
       <template #header>
@@ -198,6 +198,7 @@ export default {
       supplier: this.machine.supplier,
       aquisition_date: this.machine.aquisition_date,
       days_next_maintenance: this.machine.days_next_maintenance,
+      media: null,
     });
 
     return {
@@ -213,7 +214,8 @@ export default {
     IconInput,
   },
   props: {
-    machine: Object
+    machine: Object,
+    media: Object,
   },
   methods: {
     update() {

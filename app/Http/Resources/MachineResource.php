@@ -26,11 +26,12 @@ class MachineResource extends JsonResource
             'cost_number_format' => number_format($this->cost) ?? '--',
             'supplier' => $this->supplier ?? '--',
             'aquisition_date' => $this->aquisition_date?->isoFormat('YYYY MMM DD') ?? '--',
-            'days_next_maintenance' => $this->days_next_maintenance,
+            'days_next_maintenance' => "{$this->days_next_maintenance} dias",
             'created_at' => $this->created_at?->isoFormat('YYYY MMM DD'),
             'updated_at' => $this->updated_at?->isoFormat('YYYY MMM DD'),
             'maintenances' => MaintenanceResource::collection($this->whenLoaded('maintenances')),
             'spare_parts' => SparePartResource::collection($this->whenLoaded('spareParts')),
+            'media' => $this->getMedia('images')->all(),
         ];
     }
 }

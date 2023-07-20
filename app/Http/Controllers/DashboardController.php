@@ -37,7 +37,9 @@ class DashboardController extends Controller
         $collaborators_birthdays = User::whereDate('employee_properties->birthdate', today())->get();
 
         // recently added
-        $collaborators_added = User::whereDate('employee_properties->join_date', '<=', today())->whereDate('employee_properties->join_date', '>', today()->subDays(3))->get();
+        $collaborators_added = User::whereDate('employee_properties->join_date', '<=', today())
+            ->whereDate('employee_properties->join_date', '>', today()->subDays(3))
+            ->get();
 
         // anniversaries
         $collaborators_anniversaires = User::whereDay('employee_properties->join_date', today()->day)
