@@ -45,7 +45,6 @@ class AdditionalTimeRequestController extends Controller
     
     public function store(Request $request)
     {
-
         $request->validate([
             'hours' => 'required|numeric|min:0',
             'minutes' => 'required|numeric|min:0|max:59',
@@ -60,7 +59,6 @@ class AdditionalTimeRequestController extends Controller
             'user_id' => $request->user_id ? $request->user_id : auth()->id(),
             'payroll_id' => $request->payroll_id ? $request->payroll_id : Payroll::getCurrent()->id,
         ]);
-        
     }
 
     

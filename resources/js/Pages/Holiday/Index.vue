@@ -267,8 +267,6 @@ export default {
             this.form.day = row.date.string.split('-')[2];
             this.form.month = row.date.string.split('-')[1];
             this.form.is_active = Boolean(row.is_active);
-
-            console.log(this.form);
         },
     },
     computed: {

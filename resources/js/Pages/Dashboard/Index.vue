@@ -55,10 +55,23 @@
             <MeetingCard :meetings="meetings" class="mt-4" />
 
             <!-- operative -->
-            <h2 class="text-primary lg:text-xl text-lg lg:mt-16 mt-6">Operativo</h2>
-            <div class="grid lg:grid-cols-4 grid-cols-2 gap-3 mt-4">
-                <DashboardCard v-for="(quickCard, index) in quickCards" :key="index" :title="quickCard.title"
-                    :counter="quickCard.counter" :icon="quickCard.icon" :href="quickCard.url" />
+            <div v-if="
+            this.$page.props.auth.user.permissions.includes('Autorizar cotizaciones') ||
+            this.$page.props.auth.user.permissions.includes('Autorizar ordenes de venta') ||
+            this.$page.props.auth.user.permissions.includes('Autorizar ordenes de compra') ||
+            this.$page.props.auth.user.permissions.includes('Autorizar ordenes de diseño') ||
+            this.$page.props.auth.user.permissions.includes('Autorizar Crear materia prima') ||
+            this.$page.props.auth.user.permissions.includes('Autorizar Ordenes de produccion todas') ||
+            this.$page.props.auth.user.permissions.includes('Autorizar Ordenes de diseño todas') ||
+            this.$page.props.auth.user.permissions.includes('Autorizar solicitudes de tiempo adicional')
+            ">
+                <h2 class="text-primary lg:text-xl text-lg lg:mt-16 mt-6">Operativo</h2>
+                <div class="grid lg:grid-cols-4 grid-cols-2 gap-3 mt-4">
+                    <template v-for="(quickCard, index) in quickCards" :key="index">
+                        <DashboardCard v-if="quickCard.show" :title="quickCard.title"
+                            :counter="quickCard.counter" :icon="quickCard.icon" :href="quickCard.url" />
+                    </template>
+                </div>
             </div>
 
             <!-- Collaborators -->
@@ -224,55 +237,64 @@ export default {
                     title: 'Cotizaciones por autorizar',
                     counter: this.counts[0],
                     icon: 'fa-solid fa-file-invoice',
-                    url: route('quotes.index')
+                    url: route('quotes.index'),
+                    show: this.$page.props.auth.user.permissions.includes('Autorizar cotizaciones')
                 },
                 {
                     title: 'Órdenes de venta por autorizar',
                     counter: this.counts[1],
                     icon: 'fa-solid fa-clipboard',
-                    url: route('sales.index')
+                    url: route('sales.index'),
+                    show: this.$page.props.auth.user.permissions.includes('Autorizar ordenes de venta')
                 },
                 {
                     title: 'Órdenes de compra por autorizar',
                     counter: this.counts[2],
                     icon: 'fa-solid fa-cart-shopping',
-                    url: route('purchases.index')
+                    url: route('purchases.index'),
+                    show: this.$page.props.auth.user.permissions.includes('Autorizar ordenes de compra')
                 },
                 {
                     title: 'Órden de diseño por autorizar',
                     counter: this.counts[3],
                     icon: 'fa-solid fa-pen-ruler',
-                    url: route('designs.index')
+                    url: route('designs.index'),
+                    show: this.$page.props.auth.user.permissions.includes('Autorizar ordenes de diseño')
                 },
                 {
                     title: 'Productos con existencia baja',
                     counter: this.counts[4],
                     icon: 'fa-solid fa-arrows-down-to-line',
-                    url: route('storages.raw-materials.index')
+                    url: route('storages.raw-materials.index'),
+                    show: this.$page.props.auth.user.permissions.includes('Crear materia prima')
                 },
                 {
                     title: 'Órdenes de producción sin iniciar',
                     counter: this.counts[5],
                     icon: 'fa-solid fa-spinner',
-                    url: route('dashboard')
+                    url: route('dashboard'),
+                    show: this.$page.props.auth.user.permissions.includes('Ordenes de produccion todas')
                 },
                 {
-                    title: 'Órdenes de diseño por iniciar',
+                    title: 'Órdenes de diseño sin iniciar',
                     counter: this.counts[6],
                     icon: 'fa-solid fa-compass-drafting',
-                    url: route('dashboard')
+                    url: route('dashboard'),
+                    show: this.$page.props.auth.user.permissions.includes('Ordenes de diseño todas')
                 },
                 {
                     title: 'Venta sin órden de producción',
                     counter: this.counts[7],
                     icon: 'fa-solid fa-list-check',
-                    url: route('sales.index')
+                    url: route('sales.index'),
+                    show: this.$page.props.auth.user.permissions.includes('Ordenes de produccion todas')
                 },
                 {
                     title: 'Horas adicionales por autorizar',
                     counter: this.counts[8],
                     icon: 'fa-solid fa-users',
-                    url: route('admin-additional-times.index')
+                    url: route('admin-additional-times.index'),
+                    show: this.$page.props.auth.user.permissions.includes('Autorizar solicitudes de tiempo adicional')
                 },
             ],
             nextAttendance: null,

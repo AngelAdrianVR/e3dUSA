@@ -135,6 +135,7 @@ class StorageController extends Controller
     
     public function destroy(Storage $storage)
     {
+        $storage->storageable->delete();
         $storage->delete();
     }
 
@@ -180,6 +181,8 @@ class StorageController extends Controller
         $storage->update([
             'quantity' => $storage->quantity += $request->quantity
         ]);
+
+        return response()->json(['item' => $storage]);
     }
 
     public function subStorage(Request $request, Storage $storage)
@@ -191,5 +194,7 @@ class StorageController extends Controller
         $storage->update([
             'quantity' => $storage->quantity -= $request->quantity
         ]);
+
+        return response()->json(['item' => $storage]);
     }
 }
