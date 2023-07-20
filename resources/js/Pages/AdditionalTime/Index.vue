@@ -9,8 +9,7 @@
             </h2>
           </div>
           <div>
-            <SecondaryButton
-              @click="createRequestModal = true; form.reset(); editFlag = false">+ Nuevo</SecondaryButton>
+            <SecondaryButton @click="createRequestModal = true; form.reset(); editFlag = false">+ Nuevo</SecondaryButton>
           </div>
         </div>
       </template>
@@ -36,15 +35,8 @@
         </div>
 
 
-        <el-table
-          :data="filteredTableData"
-          max-height="450"
-          style="width: 100%"
-          @selection-change="handleSelectionChange"
-          @row-click="handleRowClick" 
-          ref="multipleTableRef"
-          :row-class-name="tableRowClassName"
-        >
+        <el-table :data="filteredTableData" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
+          @row-click="handleRowClick" ref="multipleTableRef" :row-class-name="tableRowClassName">
 
           <el-table-column type="selection" width="45" />
           <el-table-column prop="id" label="ID" width="45" />
@@ -263,13 +255,9 @@ export default {
     },
 
     handleRowClick(row) {
-      if(row.status != 'Autorizado')
-            this.(row);
-            else{
-              return
-            }
-        },
-        
+      this.edit(row);
+    },
+
     handlePagination(val) {
       this.start = (val - 1) * this.itemsPerPage;
       this.end = val * this.itemsPerPage;

@@ -2,14 +2,14 @@
     <!-- sidebar -->
     <div class="h-screen hidden md:block shadow-lg relative">
         <div class="bg-[#D9D9D9] h-full overflow-auto">
-            <nav class="pt-2">
+            <nav class="pt-2 px-2">
                 <div>
-                    <div v-if="$page.props.auth.user?.employee_properties" class="mb-4 items-center font-semibold text-sm text-[#0355B5] flex flex-col">
+                    <div v-if="$page.props.auth.user?.employee_properties" class="mb-4 items-center font-semibold text-xs text-[#0355B5] flex flex-col">
                         <span>Horas / semana</span>
                         <span>{{ $page.props.week_time.formatted }} / {{ $page.props.auth.user?.employee_properties?.hours_per_week ?? 0 }}h</span>
                     </div>
                     <template v-for="(menu, index) in menus" :key="index">
-                        <SideNavLink v-if="menu.show"  :href="menu.route" :active="menu.active" :dropdown="menu.dropdown">
+                        <SideNavLink v-if="menu.show"  :href="menu.route" :active="menu.active" :dropdown="menu.dropdown" class="mb-px">
                             <template #trigger>
                                 <span v-html="menu.icon"></span>
                                 <span class="leading-none font-normal text-center">
@@ -230,7 +230,8 @@ export default {
                         {
                             label: 'Biblioteca de medios',
                             route: 'dashboard',
-                            show: this.$page.props.auth.user.permissions.includes('Ver medios')
+                            // show: this.$page.props.auth.user.permissions.includes('Ver medios')
+                            show: false
                         },
                     ],
                     dropdown: true,
