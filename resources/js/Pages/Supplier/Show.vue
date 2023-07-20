@@ -59,11 +59,11 @@
             " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Datos bancarios
           </p>
-          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <!-- <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
           <p @click="tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
             " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Productos
-          </p>
+          </p> -->
         </div>
       </div>
       <!-- ------------- tabs section ends ------------- -->
@@ -90,22 +90,18 @@
 
       <!-- -------------Sucursales starts 2 ------------- -->
       <div v-if="tabs == 2" class="lg:grid grid-cols-2 gap-8 md:mt-12 md:px-14">
-        <SupplierBankCard :banks="currentSupplier?.banks" />
+        <SupplierBankCard :banks="currentSupplier?.banks" :contacts="currentSupplier?.contacts" />
       </div>
 
       <!-- ------------- Sucursales ends 2 ------------- -->
 
       <!-- -------------Matriz starts 3 ------------- -->
-      <div v-if="tabs == 3" class="p-7">
+      <!-- <div v-if="tabs == 3" class="p-7">
         <p class="text-secondary">Productos registrados</p>
         <div class="grid lg:grid-cols-3 md:grid-cols-2 mt-7 gap-10">
-          <!-- <CompanyProductCard
-            v-for="company_product in company_products"
-            :key="company_product.id"
-            :company_product="company_product"
-          /> -->
+          
         </div>
-      </div>
+      </div> -->
 
       <!-- ------------- Matriz ends 3 ------------- -->
 

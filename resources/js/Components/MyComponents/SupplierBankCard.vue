@@ -14,7 +14,7 @@
             <span class="col-span-2">{{bank.bank_name}}</span>
         </div>
 
-        <div class="border border-[#0355B5] rounded-lg p-5 my-2" v-for="(contact, index) in bank.contacts" :key="contact.id">
+        <div class="border border-[#0355B5] rounded-lg p-5 my-2" v-for="(contact, index) in contacts" :key="contact.id">
             <p class="mt-9 mb-3">Contácto {{index + 1}}</p>
             <div class="grid grid-cols-3 text-left items-center">
                 <span class="text-gray-500">Nombre</span>
@@ -36,7 +36,8 @@ export default {
         }
     },
     props: {
-        banks: Array
+        banks: Array,
+        contacts: Array
     },
     components: {
 

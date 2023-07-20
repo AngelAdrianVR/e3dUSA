@@ -14,6 +14,12 @@ class StorageResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'storageable' => $this->storageable,
+            'quantity' => $this->quantity,
+            'location' => $this->location,
+            'type' => $this->type,
+        ];
     }
 }

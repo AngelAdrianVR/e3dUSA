@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\StorageResource;
 use App\Models\CatalogProduct;
 use App\Models\RawMaterial;
 use App\Models\Storage;

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\PurchaseResource;
+use App\Http\Resources\RawMaterialResource;
 use App\Models\Contact;
 use App\Models\Purchase;
 use App\Models\RawMaterial;
@@ -23,7 +24,9 @@ class PurchaseController extends Controller
     public function create()
     {
         $suppliers = Supplier::with('contacts')->get();
-        $raw_materials = RawMaterial::all();
+        $raw_materials = RawMaterialResource::collection(RawMaterial::all());
+
+        // return $raw_materials;
 
 
         return inertia('Purchase/Create', compact('suppliers', 'raw_materials'));
@@ -50,7 +53,8 @@ class PurchaseController extends Controller
     
     public function show(Purchase $purchase)
     {
-        $purchases = PurchaseResource::collection(Purchase::with('user','supplier')->get());
+        $purchases = PurchaseResource::collection(Purchase::with('user','supplier')->latest()->get());
+        // return $purchases;
         return inertia('Purchase/Show', compact('purchase', 'purchases'));
     }
 
@@ -65,7 +69,19 @@ class PurchaseController extends Controller
     
     public function update(Request $request, Purchase $purchase)
     {
-        //
+        $validation = $request->validate([
+            'notes' => 'nullable',
+            'expected_delivery_date' => 'nullable|date|after:yesterday',
+            // 'is_iva_included' => 'nullable|boolean',
+            'supplier_id' => 'required',
+            'contact_id' => 'required',
+            'products' => 'nullable|min:1',
+            'bank_information' => 'required',
+            ]);
+    
+            $purchase->update($validation + ['user_id' => auth()->user()->id]);
+    
+            return to_route('purchases.index');
     }
 
     
