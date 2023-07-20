@@ -18,7 +18,7 @@
 
      <div class="grid grid-cols-2">
      <p class="text-secondary col-span-2 text-sm">Características</p>
-        <span v-for="feature in raw_material.features" :key="feature" class="text-[#9a9a9a] text-sm">{{ feature }}</span>
+        <span v-for="feature in raw_material.features" :key="feature" class="text-[#9a9a9a] text-sm">-{{ feature }}</span>
     </div>
 
     <div class="bg-[#d9d9d9] rounded-lg p-2 grid grid-cols-2 my-3">

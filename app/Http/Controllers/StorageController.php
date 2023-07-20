@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\StorageResource;
 use App\Models\CatalogProduct;
 use App\Models\RawMaterial;
 use App\Models\Storage;
@@ -113,7 +114,7 @@ class StorageController extends Controller
     {
         $storage = Storage::with('storageable')->find($storage_id);
         $storages = Storage::with('storageable')->where('type', '!=', 'scrap')->get();
-        return $storages;
+        // return $storages;
         return inertia('Storage/Show', compact('storage', 'storages'));
     }
 

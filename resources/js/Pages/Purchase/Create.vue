@@ -16,7 +16,7 @@
           </div>
         </div>
       </template>
-{{ productSelected }}
+      {{productSelected}}
       <!-- Form -->
       <form @submit.prevent="store">
         <div
@@ -138,7 +138,7 @@
                   placeholder="Selecciona un producto"
                 >
                   <el-option
-                    v-for="item in raw_materials"
+                    v-for="item in raw_materials.data"
                     :key="item.id"
                     :label="item.name"
                     :value="item"
@@ -269,6 +269,7 @@ export default {
         cost: this.productSelected.cost,
         features: this.productSelected.features,
         quantity: this.form.quantity,
+        media: this.productSelected.media
       };
 
       // this.productValidation = this.form.products.some(function (item) {

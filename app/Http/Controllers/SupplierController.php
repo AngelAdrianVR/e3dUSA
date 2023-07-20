@@ -46,7 +46,8 @@ class SupplierController extends Controller
     
     public function show(Supplier $supplier)
     {
-        $suppliers = SupplierResource::collection(Supplier::all());
+        $suppliers = SupplierResource::collection(Supplier::with('contacts')->latest()->get());
+        // return $suppliers;
 
         return inertia('Supplier/Show', compact('supplier', 'suppliers'));
     }
