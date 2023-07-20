@@ -24,7 +24,7 @@
             <el-pagination
               @current-change="handlePagination"
               layout="prev, pager, next"
-              :total="admin_additional_times.length"
+              :total="admin_additional_times.data.length"
             />
           </div>
 
@@ -88,7 +88,7 @@
             label="Justificación"
             width="200"
           />
-          <el-table-column align="right" fixed="right">
+          <el-table-column align="right" fixed="right" width="200">
             <template #header>
               <TextInput
                 v-model="search"
@@ -98,17 +98,17 @@
               />
             </template>
             <template #default="scope">
-              <el-dropdown v-if="scope.row.authorized_at == 'No autorizado'" trigger="click">
+              <el-dropdown trigger="click">
                 <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
                   <i class="fa-solid fa-ellipsis-vertical"></i>
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item @click="edit(scope.row)"
+                    <el-dropdown-item v-if="scope.row.authorized_at == 'No autorizado'" @click="edit(scope.row)"
                       ><i class="fa-solid fa-pen"></i> Editar</el-dropdown-item
                     >
-                    <el-dropdown-item @click="$inertia.put(route('admin-additional-times.authorize',scope.row))"
-                      ><i class="fa-solid fa-check"></i> Autorizar</el-dropdown-item
+                    <el-dropdown-item @click="scope.row.authorized_at == 'No autorizado' ? authorize(scope.row) : unauthorize(scope.row)"
+                      ><i :class="scope.row.authorized_at != 'No autorizado' ? 'fa-xmark' : 'fa-check'" class="fa-solid"></i> {{scope.row.authorized_at != 'No autorizado' ? 'Quitar autorización' : 'Autorizar'}}</el-dropdown-item
                     >
                   </el-dropdown-menu>
                 </template>
@@ -142,7 +142,7 @@
             </p>
 
             <div class="w-1/3 ml-3">
-                    <el-select v-model="form.payroll_id" clearable filterable placeholder="Buscar nómina"
+                    <el-select :disabled="editFlag" v-model="form.payroll_id" clearable filterable placeholder="Buscar nómina"
                         no-data-text="No hay nóminas registradas" no-match-text="No se encontraron coincidencias">
                         <el-option v-for="item in payrolls" 
                             :key="item.id" 
@@ -152,7 +152,7 @@
                 </div>
 
             <div class="w-1/3 ml-3">
-                    <el-select v-model="form.user_id" clearable filterable placeholder="Buscar usuario"
+                    <el-select :disabled="editFlag" v-model="form.user_id" clearable filterable placeholder="Buscar usuario"
                         no-data-text="No hay usuarios registrados" no-match-text="No se encontraron coincidencias">
                         <el-option v-for="item in users" 
                             :key="item.id" 
@@ -308,7 +308,23 @@ export default {
         },
       });
     },
-
+    authorize(item){
+      
+      this.$inertia.put(route('admin-additional-times.authorize', item));
+      this.$notify({
+            title: "Éxito",
+            message: "Solicitud autorizada",
+            type: "success",
+          });
+    },
+    unauthorize(item){
+      this.$inertia.put(route('admin-additional-times.unauthorize', item));
+      this.$notify({
+            title: "Éxito",
+            message: "Solicitud revocada",
+            type: "success",
+          });
+    },
     update() {
       console.log('update');
       this.form.put(route("more-additional-times.update", this.more_additional_time), {
@@ -327,6 +343,7 @@ export default {
     },
 
     edit(obj){
+      console.log(obj);
       var parts = obj.time_requested.split(":");
       this.editFlag = true;
       this.more_additional_time = obj;
@@ -334,6 +351,8 @@ export default {
       this.form.hours = parts[0];
       this.form.minutes = parts[1];
       this.form.justification = obj.justification;
+      this.form.payroll_id = obj.payroll.id;
+      this.form.user_id = obj.user.id;
     },
 
     handleSelectionChange(val) {
