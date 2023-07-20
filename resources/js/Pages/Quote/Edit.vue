@@ -329,7 +329,7 @@ export default {
                 quantity: element.pivot.quantity,
                 notes: element.pivot.notes,
                 price: element.pivot.price,
-                show_image: element.pivot.show_image,
+                show_image: Boolean(element.pivot.show_image),
             }
 
             this.form.products.push(product);

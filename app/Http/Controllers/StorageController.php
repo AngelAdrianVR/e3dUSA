@@ -50,7 +50,6 @@ class StorageController extends Controller
         
     }
 
-    
     public function store(Request $request)
     {
         $request->validate([
@@ -112,9 +111,9 @@ class StorageController extends Controller
     
     public function show($storage_id)
     {
-        $storage = Storage::with('storageable')->find($storage_id);
-        $storages = Storage::with('storageable')->where('type', '!=', 'scrap')->get();
-        // return $storages;
+        $storage = Storage::with('storageable.media')->find($storage_id);
+        $storages = Storage::with('storageable.media')->where('type', '!=', 'scrap')->get();
+
         return inertia('Storage/Show', compact('storage', 'storages'));
     }
 

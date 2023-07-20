@@ -17,24 +17,31 @@
                     </el-select>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <el-tooltip v-if="$page.props.auth.user.permissions.includes('Crear entradas')" content="Dar entrada a almacén" placement="top">
-                        <button @click="is_add = true; showDialogModal = true" class="rounded-lg bg-green-600 text-white py-2 px-2 text-sm">Entrada</button>
+                    <el-tooltip v-if="$page.props.auth.user.permissions.includes('Crear entradas')"
+                        content="Dar entrada a almacén" placement="top">
+                        <button @click="is_add = true; showDialogModal = true"
+                            class="rounded-lg bg-green-600 text-white py-2 px-2 text-sm">Entrada</button>
                     </el-tooltip>
 
-                    <el-tooltip v-if="$page.props.auth.user.permissions.includes('Crear salidas')" content="Dar salida de almacén" placement="top">
-                        <button @click="is_add = false; showDialogModal = true" class="rounded-lg bg-primary text-white py-2 px-2 text-sm">Salida</button>
+                    <el-tooltip v-if="$page.props.auth.user.permissions.includes('Crear salidas')"
+                        content="Dar salida de almacén" placement="top">
+                        <button @click="is_add = false; showDialogModal = true"
+                            class="rounded-lg bg-primary text-white py-2 px-2 text-sm">Salida</button>
                     </el-tooltip>
 
-                    <Dropdown align="right" width="48" v-if="$page.props.auth.user.permissions.includes('Crear scrap') && $page.props.auth.user.permissions.includes('Eliminar materia prima')">
+                    <Dropdown align="right" width="48"
+                        v-if="$page.props.auth.user.permissions.includes('Crear scrap') && $page.props.auth.user.permissions.includes('Eliminar materia prima')">
                         <template #trigger>
                             <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">Más <i
                                     class="fa-solid fa-chevron-down text-[11px] ml-2"></i></button>
                         </template>
                         <template #content>
-                            <DropdownLink @click="console.log('No funciona')" as="button" v-if="$page.props.auth.user.permissions.includes('Crear scrap')">
+                            <DropdownLink @click="console.log('No funciona')" as="button"
+                                v-if="$page.props.auth.user.permissions.includes('Crear scrap')">
                                 Mandar a scrap
                             </DropdownLink>
-                            <DropdownLink @click="showConfirmModal = true" as="button" v-if="$page.props.auth.user.permissions.includes('Eliminar materia prima')">
+                            <DropdownLink @click="showConfirmModal = true" as="button"
+                                v-if="$page.props.auth.user.permissions.includes('Eliminar materia prima')">
                                 Eliminar
                             </DropdownLink>
                         </template>
@@ -46,24 +53,23 @@
                     <h2 class="text-xl font-bold text-center mb-6">{{ currentStorage?.storageable.name }}</h2>
                     <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
                         class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center">
-                        <!-- <el-image style="height: 100%; " :src="currentStorage?.media[0]?.original_url" fit="fit">
+                        <el-image style="height: 100%; " :src="currentStorage?.storageable?.media[0]?.original_url" fit="fit">
                             <template #error>
                                 <div class="flex justify-center items-center text-[#ababab]">
                                     <i class="fa-solid fa-image text-6xl"></i>
                                 </div>
                             </template>
-                        </el-image> -->
-                        <!-- <img :src="currentStorage?.media[0]?.original_url" :alt="currentStorage?.name"
-                            class="object-contain w-full h-full rounded-lg"> -->
-                        <!-- <div v-if="imageHovered" @click="openImage(currentStorage?.media[0]?.original_url)"
+                        </el-image>
+                        <div v-if="imageHovered" @click="openImage(currentStorage?.storageable?.media[0]?.original_url)"
                             class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
                             <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
-                        </div> -->
+                        </div>
                     </figure>
                     <div class="mt-8 ml-6 text-sm">
                         <div class="flex mb-2">
                             <p class="w-1/3 text-primary">Existencias</p>
-                            <p>{{ currentStorage?.quantity ?? '0' }} {{ currentStorage?.storageable.measure_unit ?? '' }}</p>
+                            <p>{{ currentStorage?.quantity ?? '0' }} {{ currentStorage?.storageable.measure_unit ?? '' }}
+                            </p>
                         </div>
                         <div class="flex mb-3">
                             <p class="w-1/3 text-primary">Ubicación</p>
@@ -90,7 +96,7 @@
                         </div>
                         <div class="flex mb-6 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Características</p>
-                            <p>{{ currentStorage?.storageable.features }}</p>
+                            <p>{{ currentStorage?.storageable.features.join(', ') }}</p>
                         </div>
                         <div class="flex mb-2 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Número parte</p>
@@ -148,9 +154,10 @@
                     </form>
                 </template>
                 <template #footer>
-                    <CancelButton @click="showDialogModal = false; form.reset(); is_add= null" :disabled="form.processing">
+                    <CancelButton @click="showDialogModal = false; form.reset(); is_add = null" :disabled="form.processing">
                         Cancelar</CancelButton>
-                    <PrimaryButton  @click="submitForm" :disabled="form.processing">{{ is_add ? 'Dar entrada' : 'Dar salida' }}
+                    <PrimaryButton @click="submitForm" :disabled="form.processing">{{ is_add ? 'Dar entrada' : 'Dar salida'
+                    }}
                     </PrimaryButton>
                 </template>
             </DialogModal>
@@ -212,7 +219,7 @@ export default {
         openImage(url) {
             window.open(url, '_blank');
         },
-        
+
         async deleteItem() {
             try {
                 const response = await axios.delete(route('storages.destroy', this.currentStorage?.id));
@@ -254,7 +261,7 @@ export default {
             this.$refs.myForm.dispatchEvent(new Event('submit', { cancelable: true }));
         },
 
-        addStorage(){
+        addStorage() {
             console.log('Entrada');
             this.form.post(route('storages.add', this.selectedStorage), {
                 onSuccess: () => {
@@ -270,8 +277,8 @@ export default {
             });
         },
 
-        subStorage(){
-             console.log('Salida');
+        subStorage() {
+            console.log('Salida');
             this.form.post(route('storages.sub', this.selectedStorage), {
                 onSuccess: () => {
                     this.$notify({

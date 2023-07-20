@@ -60,8 +60,6 @@
                                 </div>
                             </template>
                         </el-image>
-                        <!-- <img :src="currentCatalogProduct?.media[0]?.original_url" :alt="currentCatalogProduct?.name"
-                            class="object-contain w-full h-full rounded-lg"> -->
                         <div v-if="imageHovered" @click="openImage(currentCatalogProduct?.media[0]?.original_url)"
                             class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
                             <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
@@ -93,7 +91,7 @@
                         </div>
                         <div class="flex mb-6 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Características</p>
-                            <p>{{ currentCatalogProduct?.features.string }}</p>
+                            <p>{{ currentCatalogProduct?.features.raw.join(', ') }}</p>
                         </div>
                         <div class="flex mb-2 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Número parte</p>
