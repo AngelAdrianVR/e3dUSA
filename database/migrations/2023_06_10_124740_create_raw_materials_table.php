@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('measure_unit');
             $table->unsignedMediumInteger('min_quantity');
             $table->unsignedMediumInteger('max_quantity');
-            $table->unsignedMediumInteger('cost');
+            $table->unsignedFloat('cost');
             $table->json('features')->nullable();
             $table->timestamps();
         });
