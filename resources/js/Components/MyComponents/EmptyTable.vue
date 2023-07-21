@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="border-blue-500">
         <div class=" container mx-auto my-4 border-green-600">
          <el-table-v2
          class="border-amber-700"
