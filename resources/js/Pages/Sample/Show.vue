@@ -41,26 +41,46 @@
             </Link>
           </el-tooltip>
 
-          <el-tooltip
-            v-if="$page.props.auth.user.permissions.includes('Editar muestra')
-                  && !currentSample?.returned_at"
-            content="Marcar como muestra devuelta por el cliente"
-            placement="top"
+          
+              <el-tooltip
+                v-if="
+                  $page.props.auth.user.permissions.includes(
+                    'Editar muestra'
+                  ) && !currentSample?.returned_at && currentSample
+                "
+                content="Marcar como muestra devuelta por el cliente"
+                placement="top"
+              >
+              <el-popconfirm
+            v-if="
+              $page.props.auth.user.permissions.includes('Muestra devuelta')
+            "
+            confirm-button-text="Si"
+            cancel-button-text="No"
+            icon-color="#FF0000"
+            title="¿Continuar?"
+            @confirm="returnedSample"
           >
-              <button class="rounded-lg bg-primary text-white p-2 text-sm">
-                Muestra devuelta
-              </button>
-          </el-tooltip>
+            <template #reference>
+                <button class="rounded-lg bg-primary text-white p-2 text-sm">
+                  Muestra devuelta
+                </button>
+            </template>
+          </el-popconfirm>
+              </el-tooltip>
 
           <el-tooltip
-            v-if="$page.props.auth.user.permissions.includes('Editar muestra')
-                  && (currentSample?.returned_at && !currentSample?.sale_order_at) "
+            v-if="
+              $page.props.auth.user.permissions.includes('Generar orden de venta en muestra') &&
+              currentSample?.returned_at &&
+              !currentSample?.sale_order_at
+            "
             content="Marcar como muestra devuelta por el cliente"
             placement="top"
           >
-              <button class="rounded-lg bg-primary text-white p-2 text-sm">
-                Generar orden de venta
-              </button>
+            <button class="rounded-lg bg-primary text-white p-2 text-sm">
+              Generar orden de venta
+            </button>
           </el-tooltip>
           <Dropdown
             align="right"
@@ -136,15 +156,23 @@
           </figure>
 
           <!-- ----------------------progress bar---------------------- -->
-          <el-tooltip content="progreso para cerrar venta" placement="top">
-          <div class="mt-8 ml-6 text-sm">
-          <p class="text-gray-700 text-center text-sm mb-1">{{currentSample?.status['progress']}}</p>
-          <div class="mb-5 border-2 border-[#b3b3b3] rounded-full">
-            <div :class="'w-' + currentSample?.status['progress']" class="h-[10px] bg-primary rounded-full"></div>
-          </div>
+          <el-tooltip v-if="currentSample" content="Progreso para cerrar venta" placement="top">
+            <div class="mt-8 ml-6 text-sm">
+              <p v-if="currentSample?.status['label'] == 'Orden generada. Venta exitosa'" class="text-secondary text-center text-xs mb-1">¡Venta cerrada!</p>
+              <div class="mb-5 border-2 border-[#b3b3b3] rounded-full">
+                <div
+                  v-if="currentSample?.status['label'] == 'Enviado. Esperando respuesta'"
+                  class="h-[10px] bg-primary rounded-full w-1/3"></div>
+                <div
+                  v-else-if="currentSample?.status['label'] == 'Muestra devuelta'"
+                  class="h-[10px] bg-primary rounded-full w-2/3"></div>
+                <div
+                  v-else
+                  class="h-[10px] bg-green-600 rounded-full w-full"></div>
+              </div>
+            </div>
+          </el-tooltip>
         </div>
-            </el-tooltip>
-          </div>
         <!-- ------------------------------------------------------------------- -->
 
         <!-- ------------------------Information panel tabs--------------------- -->
@@ -197,31 +225,37 @@
             </div>
             <div class="flex mb-2 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Cantidad de muestras enviada</p>
-              <p>{{ currentSample?.quantity }} {{ currentSample?.catalog_product?.measure_unit }}</p>
+              <p>
+                {{ currentSample?.quantity }}
+                {{ currentSample?.catalog_product?.measure_unit }}
+              </p>
             </div>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Devuelta el</p>
-              <p>{{ currentSample?.returned_at?? '--' }}</p>
+              <p>{{ currentSample?.returned_at ?? "--" }}</p>
             </div>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Orden generada el</p>
               <p class="text-[#4FC03D]">
-                {{ currentSample?.sale_order_at?? '--' }}
+                {{ currentSample?.sale_order_at ?? "--" }}
               </p>
             </div>
             <div class="flex mb-2 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">
-                Comentarios/notas
-              </p>
+              <p class="w-1/3 text-[#9A9A9A]">Comentarios/notas</p>
               <p>
-                {{ currentSample?.comments?? '--' }}
+                {{ currentSample?.comments ?? "--" }}
               </p>
             </div>
             <div class="flex space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">
-                Estatus
-              </p>
-              <p :class="currentSample?.status['text-color'] + ' ' + currentSample?.status['border-color']" class="border rounded-full px-2">
+              <p class="w-1/3 text-[#9A9A9A]">Estatus</p>
+              <p
+                :class="
+                  currentSample?.status['text-color'] +
+                  ' ' +
+                  currentSample?.status['border-color']
+                "
+                class="border rounded-full px-2"
+              >
                 {{ currentSample?.status.label }}
               </p>
             </div>
@@ -282,7 +316,7 @@
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Nombre</p>
               <p>
-                {{ currentSample?.company_branch?.name}}
+                {{ currentSample?.company_branch?.name }}
               </p>
             </div>
             <div class="flex mb-2 space-x-2">
@@ -298,21 +332,20 @@
 
             <div class="flex mb-2 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Nombre</p>
-              <p>{{ currentSample?.contact?.name ?? '--' }}</p>
+              <p>{{ currentSample?.contact?.name ?? "--" }}</p>
             </div>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Correo</p>
-              <p>{{ currentSample?.contact?.email ?? '--' }}</p>
+              <p>{{ currentSample?.contact?.email ?? "--" }}</p>
             </div>
             <div class="flex mb-2 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Teléfono</p>
-              <p>{{ currentSample?.contact?.phone ?? '--' }}</p>
+              <p>{{ currentSample?.contact?.phone ?? "--" }}</p>
             </div>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Cargo</p>
-              <p>{{ currentSample?.contact?.charge ?? '--' }}</p>
+              <p>{{ currentSample?.contact?.charge ?? "--" }}</p>
             </div>
-
           </div>
         </div>
       </div>
@@ -378,6 +411,14 @@ export default {
     },
     openImage(url) {
       window.open(url, "_blank");
+    },
+    returnedSample(){
+      this.$inertia.put(route('samples.returned',this.selectedSample));
+      this.$notify({
+            title: "Éxito",
+            message: 'Muestra devuelta por el cliente',
+            type: "success",
+          });
     },
 
     async deleteItem() {

@@ -46,21 +46,12 @@
               content="Marcar como orden terminada"
               placement="top"
             >
-              <el-popconfirm
-                confirm-button-text="Si"
-                cancel-button-text="No"
-                icon-color="#FF0000"
-                title="¿Continuar?"
-                @confirm="finishOrder"
-              >
-                <template #reference>
                   <button
+                  @click="finishOrderModal = true"
                     class="rounded-lg bg-green-600 text-sm text-white p-2"
                   >
                     Terminada
                   </button>
-                </template>
-              </el-popconfirm>
             </el-tooltip>
           </div>
         </div>
@@ -129,6 +120,10 @@
             "
             >{{ currentDesign?.status["label"] }}</span
           >
+          <span class="text-gray-500 my-2">Archivos de resultados</span>
+          <div class="flex flex-col">
+            <a class="hover:underline text-primary hover:text-secondary" v-for="file in currentDesign?.media" :key="file.id" :href="file.original_url" target="_blank">{{file.file_name }}</a>
+          </div>
         </div>
 
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
@@ -170,19 +165,21 @@
       <!-- ------------- tab 2 modifications ends ------------ -->
 
       <!-- -------------- Modal starts----------------------- -->
-      <Modal :show="startOrderModal" @close="startOrderModal = false">
+      <Modal :show="startOrderModal || finishOrderModal" @close="startOrderModal = false; finishOrderModal = false">
         <div class="p-3 relative">
           <i
-            @click="startOrderModal = false"
+            @click="startOrderModal = false; finishOrderModal = false"
             class="fa-solid fa-xmark cursor-pointer w-5 h-5 rounded-full border border-black flex items-center justify-center absolute right-3"
           ></i>
+          <el-tooltip content="Ayuda" placement="left">
           <i
             v-if="!helpDialog"
             @click="helpDialog = true"
             class="fa-solid fa-question text-[9px] text-secondary h-3 w-3 bg-sky-300 rounded-full text-center absolute left-3 top-3 cursor-pointer"
           ></i>
+          </el-tooltip>
 
-          <form class="text-center mt-5 mb-2" @submit.prevent="startOrder">
+          <form v-if="startOrderModal" class="text-center mt-5 mb-2" @submit.prevent="startOrder">
             <div class="felx items-center mb-3">
               <el-tooltip
                 content="Fecha estimada de finalización"
@@ -199,7 +196,28 @@
             </div>
 
             <div
-              class="flex justify-start space-x-3 pt-2 pb-1 border-t-2 border-[#9a9a9a]"
+            v-if="helpDialog"
+            class="border border-[#0355B5] rounded-lg px-6 py-2 mt-5 mx-7 relative"
+          >
+            <i
+              class="fa-solid fa-question text-[9px] text-secondary h-3 w-3 bg-sky-300 rounded-full text-center absolute left-2 top-3"
+            ></i>
+            <i
+              @click="helpDialog = false"
+              class="fa-solid fa-xmark cursor-pointer w-3 h-3 rounded-full text-secondary flex items-center justify-center absolute right-3 top-3 text-xs"
+            ></i>
+
+            <p v-if="startOrderModal" class="text-secondary text-sm">
+              Una vez dando una fecha estimada de finalización, se entenderá que
+              el trabajo estará en proceso.
+            </p>
+            <p v-if="finishOrderModal" class="text-secondary text-sm">
+              Puedes subir todos los archivos que necesites para dar por terminada la orden. No es obligatorio.
+            </p>
+          </div>
+
+            <div
+              class="flex justify-start space-x-3 pt-2 pb-1 border-t border-[#9a9a9a] py-2"
             >
               <PrimaryButton>Iniciar órden</PrimaryButton>
               <CancelButton
@@ -211,6 +229,34 @@
               >
             </div>
           </form>
+
+<!-- ---------------------------------------FinishOrderModal------------------------------------------- -->
+          <form v-if="finishOrderModal" class="text-center mt-5 mb-2" @submit.prevent="finishOrder">
+           <div class="col-span-full">
+            <div class="flex items-center">
+              <span
+                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9"
+              >
+                <el-tooltip content="Archivos de resultado" placement="left">
+                  <i class="fa-solid fa-object-group"></i>
+                </el-tooltip>
+              </span>
+              <input
+                @input="form.media = $event.target.files"
+                class="input h-12 rounded-lg file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white file:cursor-pointer hover:file:bg-red-600"
+                aria-describedby="file_input_help"
+                id="file_input"
+                type="file"
+                multiple
+              />
+            </div>
+            <p
+              class="mt-1 text-xs text-right text-gray-500"
+              id="file_input_help"
+            >
+              PDF, SVG, PNG, JPG o GIF (MAX. 4 MB).
+            </p>
+          </div>
 
           <div
             v-if="helpDialog"
@@ -224,11 +270,29 @@
               class="fa-solid fa-xmark cursor-pointer w-3 h-3 rounded-full text-secondary flex items-center justify-center absolute right-3 top-3 text-xs"
             ></i>
 
-            <p class="text-secondary text-sm">
+            <p v-if="startOrderModal" class="text-secondary text-sm">
               Una vez dando una fecha estimada de finalización, se entenderá que
               el trabajo estará en proceso.
             </p>
+            <p v-if="finishOrderModal" class="text-secondary text-sm">
+              Puedes subir todos los archivos que necesites para dar por terminada la orden. No es obligatorio.
+            </p>
           </div>
+
+            <div
+              class="flex justify-start space-x-3 pt-2 pb-1 border-t border-[#9a9a9a] py-2"
+            >
+              <PrimaryButton>Terminar orden</PrimaryButton>
+              <CancelButton
+                @click="
+                  finishOrderModal = false;
+                  form.reset();
+                "
+                >Cancelar</CancelButton
+              >
+            </div>
+          </form>
+
         </div>
       </Modal>
       <!-- --------------------------- Modal ends ------------------------------------ -->
@@ -250,6 +314,7 @@ export default {
   data() {
     const form = useForm({
       expected_end_at: null,
+      media: null,
     });
 
     return {
@@ -257,6 +322,7 @@ export default {
       selectedDesign: "",
       currentDesign: null,
       startOrderModal: false,
+      finishOrderModal: false,
       helpDialog: false,
       tabs: 1,
     };
@@ -293,13 +359,17 @@ export default {
     },
 
     finishOrder() {
-      this.form.put(route("designs.finish-order", this.selectedDesign), {
+      this.form.post(route("designs.finish-order", this.selectedDesign), {
+        _method: 'put',
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
             message: "Órden terminada",
             type: "success",
           });
+
+          this.form.reset();
+          this.finishOrderModal = false;
         },
       });
     },
