@@ -18,6 +18,7 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
+            'profile_photo_url' => $this->profile_photo_url,
             'is_active' => [
                 'string' => $this->is_active ? 'Activo' : 'Inactivo',
                 'bool' => boolval($this->is_active),
