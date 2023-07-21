@@ -16,7 +16,7 @@ class ProductionController extends Controller
     {
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de produccion todas')) {
             // $productions = ProductionResource::collection(Production::with('user', 'catalogProductCompanySale.catalogProductCompany.company')->latest()->get());
-            $productions = SaleResource::collection(Sale::with('user', 'productions', 'companyBranch')->whereHas('productions')->latest()->get());
+            $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale', 'companyBranch')->whereHas('productions')->latest()->get());
             // return $productions;
             return inertia('Production/Admin', compact('productions'));
         } elseif (auth()->user()->can('Ordenes de produccion personal')) {
@@ -28,16 +28,14 @@ class ProductionController extends Controller
         }
     }
 
-
     public function create()
     {
         $operators = User::where('employee_properties->department', 'Producción')->get();
-        $sales = SaleResource::collection(Sale::with('companyBranch', 'catalogProductsCompany.catalogProduct')->whereNotNull('authorized_at')->whereDoesntHave('productions')->get());
+        $sales = SaleResource::collection(Sale::with('companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct')->whereNotNull('authorized_at')->whereDoesntHave('productions')->get());
 
         // return $sales;
         return inertia('Production/Create', compact('operators', 'sales'));
     }
-
 
     public function store(Request $request)
     {
@@ -62,20 +60,23 @@ class ProductionController extends Controller
     }
 
 
-    public function show(Production $production)
+    public function show($sale_id)
     {
-        
+        $sale = SaleResource::make(Sale::with(['contact', 'companyBranch.company', 'catalogProductCompanySales.catalogProductCompany.catalogProduct.media', 'productions' => ['user', 'operator']])->find($sale_id));
+        $sales = SaleResource::collection(Sale::with(['contact', 'companyBranch.company', 'catalogProductCompanySales.catalogProductCompany.catalogProduct.media', 'productions' => ['user', 'operator']])->whereHas('productions')->get());
+
+        // return compact('sale', 'sales');
+        return inertia('Production/Show', compact('sale', 'sales'));
     }
 
     public function edit($sale_id)
     {
         $operators = User::where('employee_properties->department', 'Producción')->get();
-        $sale = SaleResource::make(Sale::with('companyBranch', 'catalogProductsCompany.catalogProduct', 'productions')->find($sale_id));
+        $sale = SaleResource::make(Sale::with('companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct', 'productions')->find($sale_id));
 
         // return $sale;
         return inertia('Production/Edit', compact('operators', 'sale'));
     }
-
 
     public function update(Request $request, $sale_id)
     {
@@ -102,12 +103,10 @@ class ProductionController extends Controller
         return to_route('productions.index');
     }
 
-
     public function destroy(Production $production)
     {
         //
     }
-
 
     public function massiveDelete(Request $request)
     {

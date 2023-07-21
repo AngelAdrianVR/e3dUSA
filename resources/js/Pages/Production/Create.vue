@@ -42,8 +42,7 @@
                 <li class="flex justify-between items-center">
                   <p class="text-sm">
                     <span class="text-primary">{{ index + 1 }}.</span>
-                    {{ sales.data.find(item => item.id == saleId).catalogProductsCompany.find(prd => prd.pivot.id ==
-                      item.catalog_product_company_sale_id).catalog_product.name }} | {{ item.tasks?.length }} operador(es)
+                    {{ sales.data.find(item2 => item2.id == saleId).catalogProductCompanySales.find(cpcs => cpcs.id == item.catalog_product_company_sale_id).catalog_product_company.catalog_product.name }} | {{ item.tasks?.length }} operador(es)
                     asignado(s)
                   </p>
                   <div class="flex space-x-2 items-center">
@@ -73,8 +72,8 @@
                 <el-select v-model="production.catalog_product_company_sale_id" clearable filterable
                   placeholder="Busca en productos ordenados" no-data-text="No hay productos registrados"
                   no-match-text="No se encontraron coincidencias">
-                  <el-option v-for="item in orderedProducts" :key="item.id" :label="item.catalog_product.name"
-                    :value="item.pivot.id" />
+                  <el-option v-for="item in orderedProducts" :key="item.id" :label="item.catalog_product_company.catalog_product.name"
+                    :value="item.id" />
                 </el-select>
               </div>
 
@@ -290,12 +289,12 @@ export default {
       this.production.catalog_product_company_sale_id = null;
 
       // remove ordered product from list
-      const index = this.orderedProducts.findIndex(item => item.pivot.id == production.catalog_product_company_sale_id);
+      const index = this.orderedProducts.findIndex(item => item.id == production.catalog_product_company_sale_id);
       this.orderedProducts.splice(index, 1);
     },
     deleteProduction(index) {
       // add ordered product to list
-      const product = this.sale.data.catalogProductsCompany.find(item => item.pivot.id == this.form.productions[index].catalog_product_company_sale_id);
+      const product = sales.data.find(item => item.id == saleId).catalogProductCompanySales.find(cpcs => cpcs.id == this.form.productions[index].catalog_product_company_sale_id).catalog_product_company.catalog_product.name
       this.orderedProducts.push(product);
 
       this.form.productions.splice(index, 1);
@@ -320,7 +319,7 @@ export default {
   },
   watch: {
     saleId(newVal) {
-      this.orderedProducts = this.sales.data.find(item => item.id == newVal).catalogProductsCompany;
+      this.orderedProducts = [...this.sales.data.find(item => item.id == newVal).catalogProductCompanySales];
     }
   }
 

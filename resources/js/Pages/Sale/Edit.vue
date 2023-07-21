@@ -87,9 +87,27 @@
                             </IconInput>
                             <InputError :message="form.errors.oce_name" />
                         </div>
-                        <div>
-                            <label for="">Archivo OCE</label>
-                            <input type="file" name="" id="">
+                        <div class="col-span-full">
+                            <div class="mb-2">
+                                <a class="text-primary cursor-pointer hover:underline text-sm" target="_blank" v-for="(file, index) in media" :key="index" :href="file.original_url">{{ file.file_name }}</a>
+                            </div>
+                            <div class="flex items-center">
+                                <span
+                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
+                                    <el-tooltip content="OCE" placement="top">
+                                        <i class="fa-solid fa-file-invoice"></i>
+                                    </el-tooltip>
+                                </span>
+                                <input @input="form.media = $event.target.files[0]" class="input h-12 rounded-lg
+                            file:mr-4 file:py-1 file:px-2
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-primary file:text-white
+                            file:cursor-pointer
+                            hover:file:bg-red-600" aria-describedby="file_input_help" id="file_input" type="file">
+                            </div>
+                            <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">SVG, PNG, JPG o
+                                GIF (MAX. 4 MB).</p>
                         </div>
                     </div>
                     <div class="flex">
@@ -202,6 +220,7 @@ export default {
             tracking_guide: this.sale.tracking_guide,
             notes: this.sale.notes,
             products: [],
+            media: null,
         });
 
         return {
@@ -226,6 +245,7 @@ export default {
         company_branches: Array,
         catalog_products_company_sale: Array,
         sale: Array,
+        media: Array,
     },
     methods: {
         edit() {
