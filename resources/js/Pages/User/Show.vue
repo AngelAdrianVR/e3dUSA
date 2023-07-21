@@ -30,9 +30,10 @@
             />
           </el-select>
           <img
-            class="h-32 w-32 rounded-full object-cover hidden md:block"
-            :src="$page.props.auth.user.profile_photo_url"
-            :alt="$page.props.auth.user.name"
+          :class="currentUser?.is_active.bool ? 'border-green-600' : 'border-red-600'"
+            class="h-32 w-32 rounded-full object-cover hidden md:block border-2"
+            :src="currentUser?.profile_photo_url"
+            :alt="currentUser?.name"
           />
           <div class="flex items-center space-x-2">
             <el-tooltip content="Editar" placement="top">
@@ -128,7 +129,7 @@
           <span class="text-gray-500">Nombre</span>
           <span>{{ currentUser?.name }}</span>
           <span class="text-gray-500 my-2">Fecha de nacimiento</span>
-          <span>{{ currentUser?.employee_properties.birthdate }}</span>
+          <span>{{ currentUser?.employee_properties?.birthdate }}</span>
           <span class="text-gray-500 my-2">Dependientes económicos</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Dirección</span>
@@ -147,12 +148,12 @@
           <span class="text-gray-500 my-2">Correo corporativo</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Departamento</span>
-          <span>{{ currentUser?.employee_properties.department }}</span>
+          <span>{{ currentUser?.employee_properties?.department }}</span>
         </div>
 
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
           <span class="text-gray-500 my-2">Puesto</span>
-          <span>{{ currentUser?.employee_properties.job_position }}</span>
+          <span>{{ currentUser?.employee_properties?.job_position }}</span>
           <span class="text-gray-500">NSS</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">RFC</span>
@@ -164,13 +165,13 @@
           <span class="text-gray-500 my-2">Salario semanal</span>
           <span
             >${{
-              currentUser?.employee_properties.salary.week
+              currentUser?.employee_properties?.salary.week
                 .toString()
                 .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
             }}</span
           >
           <span class="text-gray-500 my-2">Horas laborales por semana</span>
-          <span>{{ currentUser?.employee_properties.hours_per_week }}</span>
+          <span>{{ currentUser?.employee_properties?.hours_per_week }}</span>
 
           <p class="text-secondary col-span-2 mt-7">Contacto de emergencia</p>
 

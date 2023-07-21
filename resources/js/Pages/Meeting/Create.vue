@@ -60,14 +60,14 @@
               <InputError :message="form.errors.end" />
             </div>
 
-            <label class="flex items-center">
+            <!-- <label class="flex items-center">
               <Checkbox
                 v-model:checked="form.repit"
                 name="repit"
                 class="bg-transparent"
               />
               <span class="ml-2 text-sm text-[#9A9A9A]">Repetir</span>
-            </label>
+            </label> -->
           </div>
 
           <div class="flex items-center">
@@ -89,7 +89,7 @@
             </el-select>
             <InputError :message="form.errors.participants" />
             <p @click="availableModal = true" class="text-primary ml-4 text-sm cursor-pointer">
-              Ver disponibilidad
+              Ver disponibilidad de sherman
             </p>
           </div>
 
@@ -107,7 +107,7 @@
             <InputError :message="form.errors.location" />
           </div>
 
-          <div class="flex items-center">
+          <!-- <div class="flex items-center">
             <IconInput
               v-model="form.subject"
               inputPlaceholder="Recordario"
@@ -124,7 +124,7 @@
             <p class="text-primary ml-4 text-sm cursor-pointer">
               Agregar recordatorio
             </p>
-          </div>
+          </div> -->
 
           <div class="flex col-span-full">
             <el-tooltip content="Descripción" placement="top">
@@ -169,47 +169,8 @@
           <p class="ml-7 my-6 text-secondary">Disponibilidad del día de hoy</p>
 
           <div class="text-center rounded-lg border border-[#9a9a9a] w-1/3 mx-auto relative">
-          <!-- ---------------- 9am ---------------- -->
-            <span class="absolute text-sm text-[#9a9a9a] -left-20 top-1">9:00 Am</span>
-            <div class="border-b border-[#9a9a9a] h-[30px]"></div>
-
-          <!-- ---------------- 10am ---------------- -->
-            <span class="absolute text-sm text-[#9a9a9a] -left-20 top-8">10:00 Am</span>
-            <div class="border-b border-[#9a9a9a] h-[30px]"></div>
-
-          <!-- ---------------- 11am ---------------- -->
-            <span class="absolute text-sm text-[#9a9a9a] -left-20 top-16">11:00 Am</span>
-            <div class="border-b border-[#9a9a9a] h-[30px] bg-primary"></div>
-
-          <!-- ---------------- 12pm ---------------- -->
-            <span class="absolute text-sm text-[#9a9a9a] -left-20 top-24">12:00 Pm</span>
-            <div class="border-b border-[#9a9a9a] h-[30px] bg-primary"></div>
-
-          <!-- ---------------- 1pm ---------------- -->
-            <span class="absolute text-sm text-[#9a9a9a] -left-20 top-32">1:00 Pm</span>
-            <div class="border-b border-[#9a9a9a] h-[30px]"></div>
-
-          <!-- ---------------- 2pm ---------------- -->
-            <span class="absolute text-sm text-[#9a9a9a] -left-20 top-40">2:00 Pm</span>
-            <div class="border-b border-[#9a9a9a] h-[30px] bg-primary"></div>
-
-          <!-- ---------------- 3pm ---------------- -->
-            <span class="absolute text-sm text-[#9a9a9a] -left-20 top-48">3:00 Pm</span>
-            <div class="border-b border-[#9a9a9a] h-[30px]"></div>
-
-          <!-- ---------------- 4pm ---------------- -->
-            <span class="absolute text-sm text-[#9a9a9a] -left-20 top-56">4:00 Pm</span>
-            <div class="border-b border-[#9a9a9a] h-[30px]"></div>
-
-          <!-- ---------------- 5pm ---------------- -->
-            <span class="absolute text-sm text-[#9a9a9a] -left-20 top-64">5:00 Pm</span>
-            <div class="border-b border-[#9a9a9a] h-[30px] bg-primary"></div>
-
-          <!-- ---------------- 6pm ---------------- -->
-            <span class="absolute text-sm text-[#9a9a9a] -left-20 top-72">5:00 Pm</span>
-            <div class="h-[30px]"></div>
-
-          </div>
+            <div @click="selectTime(hour)" v-for="(hour, index) in schedule" :key="hour" class="cursor-pointer border-b border-[#9a9a9a] h-[25px] hover:bg-secondary hover:text-white">{{ index % 2 ? '' : hour }}</div>
+          </div> 
 
           <div
             v-if="helpDialog"
@@ -268,6 +229,31 @@ export default {
       form,
       availableModal: false,
       helpDialog: false,
+
+      schedule:[
+          '9:00',
+          '9:30',
+          '10:00',
+          '10:30',
+          '11:00',
+          '11:30',
+          '12:00',
+          '12:30',
+          '12:00',
+          '12:30',
+          '13:00',
+          '13:30',
+          '14:00',
+          '14:30',
+          '15:00',
+          '15:30',
+          '16:00',
+          '16:30',
+          '17:00',
+          '17:30',
+          '18:00',
+          '18:30',
+      ]
     };
   },
   components: {
@@ -296,6 +282,10 @@ export default {
           this.form.reset();
         },
       });
+    },
+    selectTime(hour){
+      console.log(hour);
+      // this.form.start = hour;
     },
   },
 };
