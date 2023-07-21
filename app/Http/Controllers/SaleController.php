@@ -58,7 +58,7 @@ class SaleController extends Controller
     public function show(Sale $sale)
     {
         $sales = SaleResource::collection(Sale::with('user', 'companyBranch', 'contact')->latest()->get());
-        // return $sales;       
+
         return inertia('Sale/Show', compact('sale', 'sales'));
     }
 
@@ -117,8 +117,11 @@ class SaleController extends Controller
     public function authorizeOrder(Sale $sale)
     {
         $sale->update([
-            'authorized_at' => now()
+            'authorized_at' => now(),
+            'authorized_user_name' => auth()->user()->name,
         ]);
+
+        return response()->json(['item' => SaleResource::make($sale)]);
     }
 
     public function clone(Request $request)

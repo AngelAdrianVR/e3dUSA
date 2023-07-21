@@ -43,7 +43,8 @@
                   <p class="text-sm">
                     <span class="text-primary">{{ index + 1 }}.</span>
                     {{ sales.data.find(item => item.id == saleId).catalogProductsCompany.find(prd => prd.pivot.id ==
-                      item.catalog_product_company_sale_id).catalog_product.name }} | {{ item.tasks?.length }} operador(es) asignado(s)
+                      item.catalog_product_company_sale_id).catalog_product.name }} | {{ item.tasks?.length }} operador(es)
+                    asignado(s)
                   </p>
                   <div class="flex space-x-2 items-center">
                     <el-tag v-if="editProductionIndex == index">En edición</el-tag>
@@ -77,7 +78,8 @@
                 </el-select>
               </div>
 
-              <el-divider v-if="production.catalog_product_company_sale_id" content-position="left" class="col-span-full">Tareas</el-divider>
+              <el-divider v-if="production.catalog_product_company_sale_id" content-position="left"
+                class="col-span-full">Tareas</el-divider>
 
               <ol v-if="tasks.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
                 <template v-for="(item, index) in tasks" :key="index">
@@ -103,7 +105,8 @@
                 </template>
               </ol>
 
-              <div v-if="production.catalog_product_company_sale_id" class="space-y-3 md:w-[92%] mx-auto border-2 border-[#b8b7b7] rounded-lg p-5 my-3">
+              <div v-if="production.catalog_product_company_sale_id"
+                class="space-y-3 md:w-[92%] mx-auto border-2 border-[#b8b7b7] rounded-lg p-5 my-3">
                 <div class="flex items-center">
                   <el-tooltip content="Seleccionar a operador(es)" placement="top">
                     <span
@@ -154,14 +157,16 @@
                 </div>
 
                 <div calss="col-span-full">
-                  <SecondaryButton @click="addTask" type="button" :disabled="form.processing || !task.operator_id || !task.tasks  ">
+                  <SecondaryButton @click="addTask" type="button"
+                    :disabled="form.processing || !task.operator_id || !task.tasks">
                     {{ editTaskIndex !== null ? 'Actualizar tareas' : 'Agregar tareas' }}
                   </SecondaryButton>
                 </div>
               </div>
 
               <div calss="col-span-full">
-                <SecondaryButton @click="addProduction" type="button" :disabled="form.processing || !production.catalog_product_company_sale_id || !tasks.length">
+                <SecondaryButton @click="addProduction" type="button"
+                  :disabled="form.processing || !production.catalog_product_company_sale_id || !tasks.length">
                   {{ editProductionIndex !== null ? 'Actualizar orden' : 'Agregar orden' }}
                 </SecondaryButton>
               </div>
@@ -171,7 +176,8 @@
           <el-divider />
 
           <div class="md:text-right">
-            <PrimaryButton :disabled="form.processing || !form.productions.length"> Crear órden de producción </PrimaryButton>
+            <PrimaryButton :disabled="form.processing || orderedProducts.length != 0"> Crear órden de producción
+            </PrimaryButton>
           </div>
         </div>
       </form>
@@ -282,8 +288,16 @@ export default {
       this.tasks = [];
       this.production.user_id = this.$page.props.auth.user.id;
       this.production.catalog_product_company_sale_id = null;
+
+      // remove ordered product from list
+      const index = this.orderedProducts.findIndex(item => item.pivot.id == production.catalog_product_company_sale_id);
+      this.orderedProducts.splice(index, 1);
     },
     deleteProduction(index) {
+      // add ordered product to list
+      const product = this.sale.data.catalogProductsCompany.find(item => item.pivot.id == this.form.productions[index].catalog_product_company_sale_id);
+      this.orderedProducts.push(product);
+
       this.form.productions.splice(index, 1);
     },
     editProduction(index) {

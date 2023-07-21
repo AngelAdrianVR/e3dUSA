@@ -358,7 +358,7 @@
                     <!-- ---------------- Company Products ends ----------------- -->
                     <el-divider />
                     <div class="md:text-right">
-                        <PrimaryButton :disabled="form.processing"> Agregar Cliente </PrimaryButton>
+                        <PrimaryButton :disabled="form.processing"> Actualizar Cliente </PrimaryButton>
                     </div>
                 </div>
             </form>

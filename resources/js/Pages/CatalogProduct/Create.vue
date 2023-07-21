@@ -162,13 +162,14 @@
                                 :value="item.id" />
                         </el-select>
                     </div>
-                    <div>
+                    <div class="grid grid-cols-3 gap-x-1">
                         <IconInput v-model="rawMaterial.quantity" inputPlaceholder="Cantidad necesaria *" inputType="number"
-                            inputStep="0.1">
+                            inputStep="0.1" class="col-span-2">
                             <el-tooltip content="Cantidad necesaria de materia prima seleccionada" placement="top">
                                 #
                             </el-tooltip>
                         </IconInput>
+                        <span class="text-sm pt-2">{{ raw_materials.find(item => item.id == rawMaterial.raw_material_id)?.measure_unit }}</span>
                     </div>
                     <div calss="col-span-full">
                         <SecondaryButton @click="addProduct" type="button"
