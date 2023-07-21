@@ -45,7 +45,7 @@ class HandleInertiaRequests extends Middleware
             'auth.user.permissions' => function () use ($request) {
                 if ($request->user()) {
                     if ($request->user()->hasRole('Super admin')) {
-                        return Permission::whereNot('id', 86)->get()->pluck('name');
+                        return Permission::whereNotIn('id', [88, 86])->get()->pluck('name');
                     } else {
                         return $request->user()->getAllPermissions()->pluck('name');
                     }

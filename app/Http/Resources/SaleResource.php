@@ -48,6 +48,8 @@ class SaleResource extends JsonResource
             'recieved_at' => $this->recieved_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'user' => $this->whenLoaded('user'),
             'company_branch' => $this->whenLoaded('companyBranch'),
+            'productions' => $this->whenLoaded('productions'),
+            'catalogProductsCompany' => $this->whenLoaded('catalogProductsCompany'),
             'contact' => $this->whenLoaded('contact'),
             'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
         ];

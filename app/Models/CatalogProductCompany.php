@@ -39,7 +39,7 @@ class CatalogProductCompany extends Pivot
     public function sales(): BelongsToMany
     {
         return $this->belongsToMany(Sale::class)
-            ->withPivot('quantity', 'notes', 'status', 'assigned_jobs')
+            ->withPivot('id', 'quantity', 'notes', 'status', 'assigned_jobs')
             ->withTimestamps()
             ->using(CatalogProductCompanySale::class);
     }

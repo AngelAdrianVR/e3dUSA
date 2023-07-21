@@ -73,6 +73,9 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Editar scrap', 'category' => 'Almacen']);
         Permission::create(['name' => 'Eliminar scrap', 'category' => 'Almacen']);
 
+        Permission::create(['name' => 'Crear entradas', 'category' => 'Almacen']);
+        Permission::create(['name' => 'Crear salidas', 'category' => 'Almacen']);
+
         Permission::create(['name' => 'Ver nominas', 'category' => 'RRHH']);
         Permission::create(['name' => 'Crear nominas', 'category' => 'RRHH']);
         Permission::create(['name' => 'Editar nominas', 'category' => 'RRHH']);
