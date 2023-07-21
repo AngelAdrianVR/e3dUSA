@@ -57,7 +57,8 @@
                                             Ver</el-dropdown-item>
                                         <el-dropdown-item
                                             v-if="$page.props.auth.user.permissions.includes('Editar insumos')"
-                                            :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                            @click="$inertia.get(route('raw-materials.edit', scope.row.storageable))">
+                                            <i class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
@@ -120,6 +121,18 @@ export default {
                 this.disableMassiveActions = true;
             } else {
                 this.disableMassiveActions = false;
+            }
+        },
+        handleCommand(command) {
+            const commandName = command.split('-')[0];
+            const rowId = command.split('-')[1];
+
+            if (commandName == 'clone') {
+                this.clone(rowId);
+            } else if (commandName == 'make_so') {
+                console.log('SO');
+            } else {
+                this.$inertia.get(route('storages.' + commandName, rowId));
             }
         },
         handlePagination(val) {

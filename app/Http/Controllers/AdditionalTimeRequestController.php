@@ -19,7 +19,7 @@ class AdditionalTimeRequestController extends Controller
 
     public function adminIndex()
     {
-        $admin_additional_times = MoreAdditionalTimeResource::collection(AdditionalTimeRequest::with('user')->latest()->get());
+        $admin_additional_times = MoreAdditionalTimeResource::collection(AdditionalTimeRequest::with('user', 'payroll')->latest()->get());
         $payrolls = Payroll::latest()->get();
         $users = User::all();
         
@@ -31,6 +31,16 @@ class AdditionalTimeRequestController extends Controller
         
         $admin_additional_time->authorized_at = now();
         $admin_additional_time->authorized_user_name = auth()->user()->name;
+        $admin_additional_time->save();
+
+        return to_route('admin-additional-times.index');
+    }
+
+    public function unauthorizeRequest(AdditionalTimeRequest $admin_additional_time)
+    {
+        
+        $admin_additional_time->authorized_at = null;
+        $admin_additional_time->authorized_user_name = null;
         $admin_additional_time->save();
 
         return to_route('admin-additional-times.index');

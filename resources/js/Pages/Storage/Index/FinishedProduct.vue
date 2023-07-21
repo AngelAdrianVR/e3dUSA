@@ -59,7 +59,8 @@
                                             Ver</el-dropdown-item>
                                         <el-dropdown-item
                                             v-if="$page.props.auth.user.permissions.includes('Editar insumos')"
-                                            :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                             @click="$inertia.get(route('storages.finished-products.edit', scope.row.id))">
+                                             <i class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
@@ -125,6 +126,18 @@ export default {
         handlePagination(val) {
             this.start = (val - 1) * this.itemsPerPage;
             this.end = val * this.itemsPerPage;
+        },
+        handleCommand(command) {
+            const commandName = command.split('-')[0];
+            const rowId = command.split('-')[1];
+
+            if (commandName == 'clone') {
+                this.clone(rowId);
+            } else if (commandName == 'make_so') {
+                console.log('SO');
+            } else {
+                this.$inertia.get(route('storages.' + commandName, rowId));
+            }
         },
         async deleteSelections() {
             try {
