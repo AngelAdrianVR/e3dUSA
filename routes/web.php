@@ -157,12 +157,13 @@ Route::post('storages/{storage}/sub-storage', [StorageController::class, 'subSto
 // ----------------MUESTRAS-----------------------
 Route::resource('samples', SampleController::class)->middleware('auth');
 Route::post('samples/massive-delete', [SampleController::class, 'massiveDelete'])->name('samples.massive-delete');
+Route::put('samples/returned-sample/{sample}', [SampleController::class, 'returned'])->name('samples.returned');
 
 // ------- Design department routes  ---------
 Route::resource('designs', DesignController::class)->middleware('auth');
 Route::post('designs/massive-delete', [DesignController::class, 'massiveDelete'])->name('designs.massive-delete');
 Route::put('designs/start-order/{design}', [DesignController::class, 'startOrder'])->name('designs.start-order');
-Route::put('designs/finish-order/{design}', [DesignController::class, 'finishOrder'])->name('designs.finish-order');
+Route::post('designs/finish-order/{design}', [DesignController::class, 'finishOrder'])->name('designs.finish-order');
 
 
 // ------- production department routes  ---------
@@ -173,6 +174,7 @@ Route::post('productions/massive-delete', [ProductionController::class, 'massive
 // ------- Machines Routes  ---------
 Route::resource('machines', MachineController::class)->middleware('auth');
 Route::post('machines/massive-delete', [MachineController::class, 'massiveDelete'])->name('machines.massive-delete');
+Route::post('machines/upload-files/{machine}', [MachineController::class, 'uploadFiles'])->name('machines.upload-files');
 
 
 // ------- aditional time request Routes  ---------

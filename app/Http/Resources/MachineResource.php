@@ -32,6 +32,7 @@ class MachineResource extends JsonResource
             'maintenances' => MaintenanceResource::collection($this->whenLoaded('maintenances')),
             'spare_parts' => SparePartResource::collection($this->whenLoaded('spareParts')),
             'media' => $this->getMedia('images')->all(),
+            'files' => $this->getMedia('files')->all(),
         ];
     }
 }

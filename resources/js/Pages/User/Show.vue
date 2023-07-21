@@ -4,11 +4,7 @@
       <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
         <div class="flex justify-between">
           <label class="text-lg">Usuarios</label>
-          <img
-        class="h-32 w-32 rounded-full object-cover absolute left-1/2 top-16 hidden md:block"
-        :src="$page.props.auth.user.profile_photo_url"
-        :alt="$page.props.auth.user.name"
-      />
+          
           <Link
             :href="route('users.index')"
             class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center"
@@ -33,6 +29,11 @@
               :value="item.id"
             />
           </el-select>
+          <img
+            class="h-32 w-32 rounded-full object-cover hidden md:block"
+            :src="$page.props.auth.user.profile_photo_url"
+            :alt="$page.props.auth.user.name"
+          />
           <div class="flex items-center space-x-2">
             <el-tooltip content="Editar" placement="top">
               <Link :href="route('users.edit', userSelected)">
@@ -43,7 +44,9 @@
             </el-tooltip>
             <el-tooltip content="Crear nuevo usuario" placement="top">
               <Link :href="route('users.create')">
-                <button class="rounded-lg bg-primary p-2 text-sm text-white"> + Nuevo </button>
+                <button class="rounded-lg bg-primary p-2 text-sm text-white">
+                  + Nuevo
+                </button>
               </Link>
             </el-tooltip>
             <Dropdown align="right" width="48">
@@ -80,7 +83,7 @@
           </div>
         </div>
       </div>
-      
+
       <p class="text-center font-bold text-lg mb-4">
         {{ currentUser?.name }}
       </p>
@@ -159,7 +162,13 @@
           <span class="text-gray-500 my-2">Nivel académico</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Salario semanal</span>
-          <span>${{ currentUser?.employee_properties.salary.week.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
+          <span
+            >${{
+              currentUser?.employee_properties.salary.week
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+            }}</span
+          >
           <span class="text-gray-500 my-2">Horas laborales por semana</span>
           <span>{{ currentUser?.employee_properties.hours_per_week }}</span>
 

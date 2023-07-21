@@ -4,7 +4,7 @@
             <template #header>
                 <div class="flex justify-between">
                     <div class="flex items-center space-x-2">
-                        <h2 class="font-semibold text-xl leading-tight">Tus órdenes de diseño</h2>
+                        <h2 class="font-semibold text-xl leading-tight">Órdenes de diseño</h2>
                     </div>
                     <div>
                         <Link :href="route('designs.create')">
