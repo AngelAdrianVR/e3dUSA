@@ -3,53 +3,106 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductionResource;
+use App\Http\Resources\SaleResource;
 use App\Models\Production;
+use App\Models\Sale;
 use App\Models\User;
 use Illuminate\Http\Request;
 
 class ProductionController extends Controller
 {
-    
+
     public function index()
     {
-        $productions = ProductionResource::collection(Production::with('user', 'catalogProductCompanySale.catalogProductCompany.company')->latest()->get());
-        // return $productions;
-        return inertia('Production/Index',compact('productions'));
+        if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de produccion todas')) {
+            // $productions = ProductionResource::collection(Production::with('user', 'catalogProductCompanySale.catalogProductCompany.company')->latest()->get());
+            $productions = SaleResource::collection(Sale::with('user', 'productions', 'companyBranch')->whereHas('productions')->latest()->get());
+            // return $productions;
+            return inertia('Production/Admin', compact('productions'));
+        } elseif (auth()->user()->can('Ordenes de produccion personal')) {
+            $productions = ProductionResource::collection(Production::with('user', 'catalogProductCompanySale.catalogProductCompany.company')->where('user_id', auth()->id())->latest()->get());
+            return inertia('Production/Index', compact('productions'));
+        } else {
+            $productions = ProductionResource::collection(Production::with('user', 'catalogProductCompanySale.catalogProductCompany.company')->where('operator_id', auth()->id())->latest()->get());
+            return inertia('Production/Operator', compact('productions'));
+        }
     }
 
-    
+
     public function create()
     {
-        $production_users = User::where('employee_properties->department', 'Producción')->get();
-        // return $production_users;
-        return inertia('Production/Create', compact('production_users'));
+        $operators = User::where('employee_properties->department', 'Producción')->get();
+        $sales = SaleResource::collection(Sale::with('companyBranch', 'catalogProductsCompany.catalogProduct')->whereNotNull('authorized_at')->whereDoesntHave('productions')->get());
+
+        // return $sales;
+        return inertia('Production/Create', compact('operators', 'sales'));
     }
 
-    
+
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'productions' => 'array|min:1',
+        ]);
+
+        foreach ($request->productions as $production) {
+            $foreigns = [
+                'user_id' => $production['user_id'],
+                'catalog_product_company_sale_id' => $production['catalog_product_company_sale_id']
+            ];
+
+            foreach ($production['tasks'] as $task) {
+                $data = $task + $foreigns;
+
+                Production::create($data);
+            }
+        }
+
+        return to_route('productions.index');
     }
 
-    
+
     public function show(Production $production)
     {
-        //
+        
     }
 
-    
-    public function edit(Production $production)
+    public function edit($sale_id)
     {
-        //
+        $operators = User::where('employee_properties->department', 'Producción')->get();
+        $sale = SaleResource::make(Sale::with('companyBranch', 'catalogProductsCompany.catalogProduct', 'productions')->find($sale_id));
+
+        // return $sale;
+        return inertia('Production/Edit', compact('operators', 'sale'));
     }
 
-    
-    public function update(Request $request, Production $production)
+
+    public function update(Request $request, $sale_id)
     {
-        //
+        $request->validate([
+            'productions' => 'array|min:1',
+        ]);
+
+        $sale = Sale::find($sale_id);
+        $sale->productions()->delete();
+
+        foreach ($request->productions as $production) {
+            $foreigns = [
+                'user_id' => $production['user_id'],
+                'catalog_product_company_sale_id' => $production['catalog_product_company_sale_id']
+            ];
+
+            foreach ($production['tasks'] as $task) {
+                $data = $task + $foreigns;
+
+                Production::create($data);
+            }
+        }
+
+        return to_route('productions.index');
     }
 
-    
+
     public function destroy(Production $production)
     {
         //
