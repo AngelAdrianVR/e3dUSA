@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -38,9 +39,9 @@ class Sale extends Model implements HasMedia
     ];
 
     //relationships
-    public function contact(): MorphMany
+    public function contact(): BelongsTo
     {
-        return $this->morphMany(Contact::class, 'contactable');
+        return $this->BelongsTo(Contact::class);
     }
 
     public function user(): BelongsTo
@@ -53,12 +54,17 @@ class Sale extends Model implements HasMedia
         return $this->belongsTo(CompanyBranch::class);
     }
 
-    public function catalogProductsCompany(): BelongsToMany
+    // public function catalogProductsCompany(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(CatalogProductCompany::class, 'catalog_product_company_sale', 'sale_id', 'catalog_product_company_id')
+    //         ->withPivot('id', 'quantity', 'notes', 'status', 'assigned_jobs')
+    //         ->withTimestamps()
+    //         ->using(CatalogProductCompanySale::class);
+    // }
+
+    public function catalogProductCompanySales(): HasMany
     {
-        return $this->belongsToMany(CatalogProductCompany::class, 'catalog_product_company_sale', 'sale_id', 'catalog_product_company_id')
-            ->withPivot('id', 'quantity', 'notes', 'status', 'assigned_jobs')
-            ->withTimestamps()
-            ->using(CatalogProductCompanySale::class);
+        return $this->HasMany(CatalogProductCompanySale::class);
     }
 
     public function productions()

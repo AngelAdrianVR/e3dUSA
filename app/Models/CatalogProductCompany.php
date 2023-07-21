@@ -36,11 +36,11 @@ class CatalogProductCompany extends Pivot
         return $this->belongsTo(CatalogProduct::class);
     }
 
-    public function sales(): BelongsToMany
-    {
-        return $this->belongsToMany(Sale::class)
-            ->withPivot('id', 'quantity', 'notes', 'status', 'assigned_jobs')
-            ->withTimestamps()
-            ->using(CatalogProductCompanySale::class);
-    }
+    // public function sales(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(Sale::class)
+    //         ->withPivot('id', 'quantity', 'notes', 'status', 'assigned_jobs')
+    //         ->withTimestamps()
+    //         ->using(CatalogProductCompanySale::class);
+    // }
 }

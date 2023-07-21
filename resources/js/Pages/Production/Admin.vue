@@ -116,7 +116,7 @@ export default {
         async deleteSelections() {
             try {
                 const response = await axios.post(route('productions.massive-delete', {
-                   productions: this.$refs.multipleTableRef.value
+                    productions: this.$refs.multipleTableRef.value
                 }));
 
                 if (response.status == 200) {

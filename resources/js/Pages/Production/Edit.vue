@@ -39,10 +39,10 @@
                                 <li class="flex justify-between items-center">
                                     <p class="text-sm">
                                         <span class="text-primary">{{ index + 1 }}.</span>
-                                        {{ sale.data.catalogProductsCompany.find(prd =>
-                                            prd.pivot.id ==
-                                            item.catalog_product_company_sale_id).catalog_product.name }} | {{
-        item.tasks?.length }} operador(es) asignado(s)
+                                        {{ sale.data.catalogProductCompanySales.find(cpcs => cpcs.id ==
+                                            item.catalog_product_company_sale_id).catalog_product_company.catalog_product.name
+                                        }}
+                                        | {{ item.tasks?.length }} operador(es) asignado(s)
                                     </p>
                                     <div class="flex space-x-2 items-center">
                                         <el-tag v-if="editProductionIndex == index">En edición</el-tag>
@@ -70,11 +70,10 @@
                                     </span>
                                 </el-tooltip>
                                 <el-select v-model="production.catalog_product_company_sale_id" clearable filterable
-                                    placeholder="Busca en productos ordenados"
-                                    no-data-text="Asignaste ordenes a todos los productos"
+                                    placeholder="Busca en productos ordenados" no-data-text="No hay productos registrados"
                                     no-match-text="No se encontraron coincidencias">
                                     <el-option v-for="item in orderedProducts" :key="item.id"
-                                        :label="item.catalog_product.name" :value="item.pivot.id" />
+                                        :label="item.catalog_product_company.catalog_product.name" :value="item.id" />
                                 </el-select>
                             </div>
 
@@ -180,7 +179,7 @@
                     <el-divider />
 
                     <div class="md:text-right">
-                        <PrimaryButton :disabled="form.processing || orderedProducts.length != 0 "> Actualizar órden de
+                        <PrimaryButton :disabled="form.processing || orderedProducts.length != 0"> Actualizar órden de
                             producción
                         </PrimaryButton>
                     </div>
@@ -295,12 +294,12 @@ export default {
             this.production.catalog_product_company_sale_id = null;
 
             // remove ordered product from list
-            const index = this.orderedProducts.findIndex(item => item.pivot.id == production.catalog_product_company_sale_id);
+            const index = this.orderedProducts.findIndex(item => item.id == production.catalog_product_company_sale_id);
             this.orderedProducts.splice(index, 1);
         },
         deleteProduction(index) {
             // add ordered product to list
-            const product = this.sale.data.catalogProductsCompany.find(item => item.pivot.id == this.form.productions[index].catalog_product_company_sale_id);
+            const product = this.sale.data.catalogProductCompanySales.find(item => item.id == this.form.productions[index].catalog_product_company_sale_id);
             this.orderedProducts.push(product);
 
             this.form.productions.splice(index, 1);
@@ -366,8 +365,6 @@ export default {
         }
 
         this.form.productions = productions;
-
-        // this.orderePdroducts = this.sale.data.catalogProductsCompany;
     }
 
 };

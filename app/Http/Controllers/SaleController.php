@@ -28,7 +28,6 @@ class SaleController extends Controller
         return inertia('Sale/Create', compact('company_branches'));
     }
 
-
     public function store(Request $request)
     {
         $request->validate([
@@ -54,7 +53,6 @@ class SaleController extends Controller
         return to_route('sales.index');
     }
 
-
     public function show(Sale $sale)
     {
         $sales = SaleResource::collection(Sale::with('user', 'companyBranch', 'contact')->latest()->get());
@@ -62,17 +60,15 @@ class SaleController extends Controller
         return inertia('Sale/Show', compact('sale', 'sales'));
     }
 
-
     public function edit(Sale $sale)
     {
         $sale = Sale::find($sale->id);
         $catalog_products_company_sale = CatalogProductCompanySale::where('sale_id', $sale->id)->get();
-
         $company_branches = CompanyBranch::with('company.catalogProducts', 'contacts')->get();
+        $media = $sale->getMedia('oce')->all();
 
-        return inertia('Sale/Edit', compact('company_branches', 'sale', 'catalog_products_company_sale'));
+        return inertia('Sale/Edit', compact('company_branches', 'sale', 'catalog_products_company_sale', 'media'));
     }
-
 
     public function update(Request $request, Sale $sale)
     {
@@ -89,7 +85,7 @@ class SaleController extends Controller
         ]);
 
         $sale->update($request->except('products'));
-        $sale->catalogProductsCompany()->detach();
+        $sale->catalogProductCompanySales()->delete();
 
         foreach ($request->products as $product) {
             CatalogProductCompanySale::create($product + ['sale_id' => $sale->id]);
@@ -97,7 +93,6 @@ class SaleController extends Controller
 
         return to_route('sales.index');
     }
-
 
     public function destroy(Sale $sale)
     {

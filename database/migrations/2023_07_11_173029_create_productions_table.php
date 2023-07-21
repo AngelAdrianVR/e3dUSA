@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('operator_id');
             $table->foreign('operator_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            // $table->foreignId('sale_id')->constrained()->cascadeOnDelete();
             $table->unsignedBigInteger('catalog_product_company_sale_id');
             $table->text('tasks')->nullable();
             $table->unsignedTinyInteger('estimated_time_hours')->default(0);
