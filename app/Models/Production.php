@@ -11,13 +11,21 @@ class Production extends Model
     use HasFactory;
 
     protected $fillable = [
+        'operator_id',
+        'user_id',
         'catalog_product_company_sale_id',
-        'user_tasks',
-        'user_id'
+        'tasks',
+        'estimated_time_hours',
+        'estimated_time_minutes',
+        'started_at',
+        'finished_at',
+        'additionals',
     ];
 
     protected $casts = [
-        'user_tasks' => 'array'
+        'additionals' => 'array',
+        'started_at' => 'datetime',
+        'finished_at' => 'datetime',
     ];
 
     //relationships

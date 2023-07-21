@@ -55,9 +55,14 @@ class Sale extends Model implements HasMedia
 
     public function catalogProductsCompany(): BelongsToMany
     {
-        return $this->belongsToMany(CatalogProductCompany::class)
-            ->withPivot('quantity', 'notes', 'status', 'assigned_jobs')
+        return $this->belongsToMany(CatalogProductCompany::class, 'catalog_product_company_sale', 'sale_id', 'catalog_product_company_id')
+            ->withPivot('id', 'quantity', 'notes', 'status', 'assigned_jobs')
             ->withTimestamps()
             ->using(CatalogProductCompanySale::class);
+    }
+
+    public function productions()
+    {
+        return $this->hasManyThrough(Production::class, CatalogProductCompanySale::class, 'sale_id', 'catalog_product_company_sale_id');
     }
 }
