@@ -131,6 +131,7 @@ export default {
                             route: 'storages.scraps.index',
                             show: this.$page.props.auth.user.permissions.includes('Ver scrap')
                         },
+                        
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver materia prima') ||
@@ -233,12 +234,18 @@ export default {
                             // show: this.$page.props.auth.user.permissions.includes('Ver medios')
                             show: false
                         },
+                        {
+                            label: 'Seguimiento de muestras',
+                            route: 'samples.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver scrap')
+                        },
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver maquinas') ||
                           this.$page.props.auth.user.permissions.includes('Solicitudes de tiempo adicional personal') ||
                           this.$page.props.auth.user.permissions.includes('Reuniones personal') ||
-                          this.$page.props.auth.user.permissions.includes('Ver biblioteca de medios')
+                          this.$page.props.auth.user.permissions.includes('Ver biblioteca de medios') || 
+                          route().current('samples.*')
                 },
                 {
                     label: 'Configuración',

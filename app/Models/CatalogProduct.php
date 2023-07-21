@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -71,5 +72,10 @@ class CatalogProduct extends Model implements HasMedia
                 'new_currency',
             ])->withTimestamps()
             ->using(CatalogProductCompany::class);
+    }
+
+    public function samples():HasMany 
+    {
+        return $this->hasMany(Sample::class);
     }
 }

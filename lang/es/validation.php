@@ -186,5 +186,6 @@ return [
         'location' => 'Ubicación',
         'storageable_id' => 'Producto de almacén',
         'quantity' => 'Cantidad',
+        'contact_id' => 'Contacto',
     ],
 ];
