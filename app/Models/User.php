@@ -91,6 +91,11 @@ class User extends Authenticatable
         return $this-> hasMany(Production::class);
     }
 
+    public function samples():HasMany
+    {
+        return $this->hasMany(Sample::class);
+    }
+
     // methods
     public function getNextAttendance()
     {
@@ -180,4 +185,6 @@ class User extends Authenticatable
             'hours' => round($week_time / 60, 2),
         ];
     }
+
+   
 }

@@ -21,6 +21,7 @@ use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\SampleController;
 use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
@@ -153,6 +154,9 @@ Route::get('storages/{storage}/show', [StorageController::class, 'show'])->name(
 Route::delete('storages/{storage}/destroy', [StorageController::class, 'destroy'])->name('storages.destroy');
 Route::post('storages/{storage}/add-storage', [StorageController::class, 'addStorage'])->name('storages.add');
 Route::post('storages/{storage}/sub-storage', [StorageController::class, 'subStorage'])->name('storages.sub');
+// ----------------MUESTRAS-----------------------
+Route::resource('samples', SampleController::class)->middleware('auth');
+Route::post('samples/massive-delete', [SampleController::class, 'massiveDelete'])->name('samples.massive-delete');
 
 // ------- Design department routes  ---------
 Route::resource('designs', DesignController::class)->middleware('auth');
