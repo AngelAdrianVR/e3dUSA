@@ -48,7 +48,8 @@ class CatalogProductController extends Controller
         foreach ($request->raw_materials as $product) {
             $total_cost += RawMaterial::find($product['raw_material_id'])?->cost * $product['quantity'];
 
-            foreach ($product['production_costs'] as $process_id) {
+            $costs = $product['production_costs'] ?? [];
+            foreach ($costs as $process_id) {
                 $total_cost += ProductionCost::find($process_id)->cost * $product['quantity'];
             }
 
@@ -98,7 +99,8 @@ class CatalogProductController extends Controller
         foreach ($request->raw_materials as $product) {
             $total_cost += RawMaterial::find($product['raw_material_id'])?->cost * $product['quantity'];
 
-            foreach ($product['production_costs'] as $process_id) {
+            $costs = $product['production_costs'] ?? [];
+            foreach ($costs as $process_id) {
                 $total_cost += ProductionCost::find($process_id)->cost * $product['quantity'];
             }
 

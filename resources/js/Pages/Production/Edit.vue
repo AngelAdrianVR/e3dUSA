@@ -70,7 +70,8 @@
                                     </span>
                                 </el-tooltip>
                                 <el-select v-model="production.catalog_product_company_sale_id" clearable filterable
-                                    placeholder="Busca en productos ordenados" no-data-text="No hay productos registrados"
+                                    placeholder="Busca en productos ordenados"
+                                    no-data-text="Asignaste ordenes a todos los productos"
                                     no-match-text="No se encontraron coincidencias">
                                     <el-option v-for="item in orderedProducts" :key="item.id"
                                         :label="item.catalog_product.name" :value="item.pivot.id" />
@@ -179,7 +180,7 @@
                     <el-divider />
 
                     <div class="md:text-right">
-                        <PrimaryButton :disabled="form.processing || !form.productions.length"> Actualizar órden de
+                        <PrimaryButton :disabled="form.processing || orderedProducts.length != 0 "> Actualizar órden de
                             producción
                         </PrimaryButton>
                     </div>
@@ -292,8 +293,16 @@ export default {
             this.tasks = [];
             this.production.user_id = this.$page.props.auth.user.id;
             this.production.catalog_product_company_sale_id = null;
+
+            // remove ordered product from list
+            const index = this.orderedProducts.findIndex(item => item.pivot.id == production.catalog_product_company_sale_id);
+            this.orderedProducts.splice(index, 1);
         },
         deleteProduction(index) {
+            // add ordered product to list
+            const product = this.sale.data.catalogProductsCompany.find(item => item.pivot.id == this.form.productions[index].catalog_product_company_sale_id);
+            this.orderedProducts.push(product);
+
             this.form.productions.splice(index, 1);
         },
         editProduction(index) {
@@ -343,7 +352,7 @@ export default {
                     estimated_time_hours: groupedByCatalogId[item][currentTask].estimated_time_hours,
                     estimated_time_minutes: groupedByCatalogId[item][currentTask].estimated_time_minutes,
                 };
-    
+
                 _tasks.push(task);
             }
 
@@ -358,7 +367,7 @@ export default {
 
         this.form.productions = productions;
 
-        this.orderedProducts = this.sale.data.catalogProductsCompany;
+        // this.orderePdroducts = this.sale.data.catalogProductsCompany;
     }
 
 };
