@@ -106,7 +106,13 @@ export default {
     methods: {
         tableRowClassName({ row, rowIndex }) {
 
-                return 'cursor-pointer';
+            if (row.status['label'] == 'Enviado. Esperando respuesta') {
+                 return 'cursor-pointer text-amber-500';
+            }else if(row.status['label'] == 'Muestra devuelta'){
+                return 'cursor-pointer text-blue-500';
+            }else{
+                return 'cursor-pointer text-green-600';
+            }
 
         },
         handleSelectionChange(val) {
@@ -138,7 +144,7 @@ export default {
         
         async deleteSelections() {
             try {
-                const response = await axios.post(route('samples-delete', {
+                const response = await axios.post(route('samples.massive-delete', {
                     samples: this.$refs.multipleTableRef.value
                 }));
 

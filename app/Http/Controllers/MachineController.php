@@ -49,6 +49,7 @@ class MachineController extends Controller
     {
         $machines = MachineResource::collection(Machine::with('maintenances', 'spareParts', 'media')->get());
 
+        // return $machines;
         return inertia('Machine/Show', compact('machine', 'machines'));
         
     }
@@ -100,5 +101,17 @@ class MachineController extends Controller
         }
 
         return response()->json(['message' => 'Maquina(s) eliminada(s)']);
+    }
+
+    public function uploadFiles(Request $request, Machine $machine)
+    {
+        $request->validate([
+            'media' => 'required'
+        ]);
+
+
+        $machine->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection('files'));
+
+       return to_route('machines.show', ['machine'=> $machine]);
     }
 }

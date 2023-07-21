@@ -42,6 +42,8 @@ class CatalogProductController extends Controller
             'description' => 'nullable'
         ]);
 
+        // return $request;
+
         $catalog_product = CatalogProduct::create($request->all());
         $catalog_product->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
 

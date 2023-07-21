@@ -44,6 +44,10 @@
                 v-if="$page.props.auth.user.permissions.includes('Crear refacciones')">
                 Registrar refacción
               </DropdownLink>
+              <DropdownLink @click="uploadFilesModal = true" as="button"
+                v-if="$page.props.auth.user.permissions.includes('Crear maquinas')">
+                Subir archivos
+              </DropdownLink>
               <DropdownLink @click="showConfirmModal = true" as="button"
                 v-if="$page.props.auth.user.permissions.includes('Eliminar maquinas')">
                 Eliminar
@@ -133,8 +137,11 @@
             </div>
             <div class="flex mt-7 mb-2 items-center">
               <i class="fa-solid fa-paperclip mr-2"></i>
-              <p class="text-[#9A9A9A]">No hay archivos adjuntos</p>
+              <p class="text-[#9A9A9A]">Archivos adjuntos</p>
             </div>
+            <div class="flex flex-col">
+            <a class="hover:underline text-primary hover:text-secondary" v-for="file in currentMachine?.files" :key="file.id" :href="file.original_url" target="_blank">{{file.file_name }}</a>
+          </div>
           </div>
           <!-- --------------------- Tab 1 Información general ends------------------ -->
 
@@ -383,6 +390,52 @@
           </div>
         </div>
       </Modal>
+
+      <DialogModal :show="uploadFilesModal" @close="uploadFilesModal = false">
+        <template #title>
+          <p class="text-center font-bold"> Subir archivos a {{ currentMachine?.name }}</p>
+        </template>
+        <template #content>
+          <div>
+            <form @submit.prevent="uploadFiles" ref="myUploadFilesForm">
+              <div class="col-span-full">
+            <div class="flex items-center">
+              <span
+                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9"
+              >
+                <el-tooltip content="Archivos de la máquina (Manales, instructivos, etc)" placement="left">
+                  <i class="fa-solid fa-object-group"></i>
+                </el-tooltip>
+              </span>
+              <input
+                @input="form.media = $event.target.files"
+                class="input h-12 rounded-lg file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white file:cursor-pointer hover:file:bg-red-600"
+                aria-describedby="file_input_help"
+                id="file_input"
+                type="file"
+                multiple
+              />
+            </div>
+            <p
+              class="mt-1 text-xs text-right text-gray-500"
+              id="file_input_help"
+            >
+              PDF, SVG, PNG, JPG o GIF (MAX. 4 MB).
+            </p>
+          </div>
+            </form>
+          </div>
+        </template>
+        <template #footer>
+          <CancelButton @click="uploadFilesModal = false; form.reset()"
+            :disabled="form.processing">Cancelar</CancelButton>
+          <PrimaryButton @click="submitUploadFilesForm" :disabled="form.processing">Subir archivos
+          </PrimaryButton>
+        </template>
+      </DialogModal>
+
+
+
     </AppLayoutNoHeader>
   </div>
 </template>
@@ -395,17 +448,23 @@ import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import Modal from "@/Components/Modal.vue";
-import { Link } from "@inertiajs/vue3";
+import DialogModal from "@/Components/DialogModal.vue";
+import { Link, useForm } from "@inertiajs/vue3";
 
 export default {
   data() {
+    const form = useForm({
+      media: null,
+    });
     return {
+      form,
       selectedMachine: "",
       currentMachine: null,
       imageHovered: false,
       showConfirmModal: false,
       maintenanceModal: false,
       sparePartModal: false,
+      uploadFilesModal: false,
       maintenanceIndex: null,
       sparePartIndex: null,
       selectedMaintenance: null,
@@ -422,6 +481,7 @@ export default {
     Dropdown,
     ConfirmationModal,
     Modal,
+    DialogModal
   },
   props: {
     machine: Object,
@@ -468,6 +528,24 @@ export default {
     },
     openImage(url) {
       window.open(url, "_blank");
+    },
+    submitUploadFilesForm() {
+      this.$refs.myUploadFilesForm.dispatchEvent(new Event('submit', { cancelable: true }));
+    },
+    uploadFiles(){
+      this.form.post(route("machines.upload-files", this.selectedMachine), {
+        _method: 'put',
+        onSuccess: () => {
+          this.$notify({
+            title: "Éxito",
+            message: "Archivos subidos",
+            type: "success",
+          });
+
+          this.form.reset();
+          this.uploadFilesModal = false;
+        },
+      });
     },
     async clone() {
       try {
