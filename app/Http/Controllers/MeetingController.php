@@ -20,14 +20,34 @@ class MeetingController extends Controller
     public function create()
     {
         $users = User::all();
+        $meetings = Meeting::all();
 
-        return inertia('Meeting/Create', compact('users'));
+        // return $meetings;
+
+        return inertia('Meeting/Create', compact('users', 'meetings'));
     }
 
     
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'subject' => 'required|string',
+            'location' => 'required|string',
+            'url' => 'nullable|string',
+            'description' => 'nullable|string',
+            'date' => 'required|date|after:today',
+            'start' => 'required|string',
+            'end' => 'required|string',
+            'participants' => 'required',
+        ]);
+
+        // return $request;
+
+        Meeting::create($validated + [
+            'user_id' => auth()->id()
+        ]);
+
+        return to_route('meetings.index');
     }
 
     
@@ -39,13 +59,30 @@ class MeetingController extends Controller
     
     public function edit(Meeting $meeting)
     {
-        //
+        $users = User::all();
+
+        return inertia('Meeting/Edit', compact('meeting', 'users'));
     }
 
     
     public function update(Request $request, Meeting $meeting)
     {
-        //
+        $validated = $request->validate([
+            'subject' => 'required|string',
+            'location' => 'required|string',
+            'url' => 'nullable|string',
+            'description' => 'nullable|string',
+            'date' => 'required|date|after:today',
+            'start' => 'required',
+            'end' => 'required',
+            'participants' => 'required',
+        ]);
+
+        $meeting->update($validated + [
+            'user_id' => auth()->id()
+        ]);
+
+        return to_route('meetings.index');
     }
 
     
@@ -56,11 +93,11 @@ class MeetingController extends Controller
 
     public function massiveDelete(Request $request)
     {
-        foreach ($request->companies as $company) {
-            $company = Company::find($company['id']);
-            $company?->delete();
+        foreach ($request->meetings as $meeting) {
+            $meeting = Meeting::find($meeting['id']);
+            $meeting?->delete();
         }
 
-        return response()->json(['message' => 'Cliente(s) eliminado(s)']);
+        return response()->json(['message' => 'reunion(es) eliminada(s)']);
     }
 }
