@@ -115,7 +115,7 @@
                 <div class="grid grid-cols-4 gap-7">
                     <ProductSaleCard @selected="handleSelections(index, $event)"
                         v-for="(productSale, index) in currentSale?.catalogProductCompanySales" :key="productSale.id"
-                        :catalog_product_company_sale="productSale" :productions="[]" />
+                        :catalog_product_company_sale="productSale" />
                 </div>
             </div>
 
