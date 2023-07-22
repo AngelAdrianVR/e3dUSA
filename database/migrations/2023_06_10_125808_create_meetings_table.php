@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('meetings', function (Blueprint $table) {
             $table->id();
             $table->string('subject');
-            $table->string('location')->nullable();
+            $table->string('location');
             $table->string('url')->nullable();
             $table->timestamp('authorized_at')->nullable();
-            $table->unsignedTinyInteger('status');
             $table->text('description')->nullable();
             $table->date('date');
             $table->string('start');
             $table->string('end');
+            $table->json('participants')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });

@@ -14,11 +14,11 @@ class Meeting extends Model
         'location',
         'url',
         'authorized_at',
-        'status',
         'description',
         'date',
         'start',
         'end',
+        'participants',
         'user_id',
     ];
 
@@ -27,6 +27,7 @@ class Meeting extends Model
         'authorized_at' => 'datetime',
         'start' => 'datetime',
         'end' => 'datetime',
+        'participants' => 'array',
     ];
 
     // relationships

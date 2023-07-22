@@ -199,7 +199,7 @@ Route::get('spare-parts/create/{selectedMachine}',[ SparePartController::class, 
 
 //------------------ Meetings routes ----------------
 Route::resource('meetings', MeetingController::class)->middleware('auth');
-Route::post('meetongs/massive-delete', [MeetingController::class, 'massiveDeleteAdmin'])->name('meetings.massive-delete');
+Route::post('meetings/massive-delete', [MeetingController::class, 'massiveDelete'])->name('meetings.massive-delete');
 
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
