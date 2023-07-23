@@ -58,7 +58,8 @@
                                         <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
                                             Ver</el-dropdown-item>
                                         <el-dropdown-item
-                                            v-if="$page.props.auth.user.permissions.includes('Editar muestra')"
+                                            v-if="$page.props.auth.user.permissions.includes('Editar muestra')
+                                            && scope.row.status['label'] == 'Enviado. Esperando respuesta'"
                                             :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
                                     </el-dropdown-menu>
