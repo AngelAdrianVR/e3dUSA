@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\PayrollResource;
 use App\Http\Resources\PayrollUserResource;
 use App\Http\Resources\UserResource;
+use App\Models\AdditionalTimeRequest;
 use App\Models\Bonus;
 use App\Models\JustificationEvent;
 use App\Models\Payroll;
@@ -143,6 +144,17 @@ class PayrollController extends Controller
 
     public function updateAttendances(Request $request)
     {
+        $user = User::find($request->user_id);
+        $bonuses = [];
+        foreach ($user->employee_properties['bonuses'] as $bonus_id) {
+            $bonus = Bonus::find($bonus_id);
+            $bonuses[] = [
+                'id' => $bonus_id,
+                'amount' => $user->employee_properties['hours_per_week'] >= 48
+                    ? $bonus->full_time
+                    : $bonus->half_time
+            ];
+        }
 
         foreach ($request->attendances as $attendance) {
             $payroll_user = PayrollUser::find($attendance['id']);
@@ -153,6 +165,11 @@ class PayrollController extends Controller
                     'start_break' => $attendance['start_break'],
                     'end_break' => $attendance['end_break'],
                     'check_out' => $attendance['check_out'],
+                    'additionals' => [
+                        'salary' =>  $user->employee_properties['salary'],
+                        'bonuses' => $bonuses,
+                        'hours_per_week' => $user->employee_properties['hours_per_week'],
+                    ],
                 ]);
 
                 $payroll_user->late = $payroll_user->getLateTime();
@@ -267,5 +284,12 @@ class PayrollController extends Controller
         $current->update(['is_active' => 0]);
 
         return response()->json(['message' => "Nomina semana $current->week cerrada", 'item' => PayrollResource::make($new)]);
+    }
+
+    public function getAdditionalTime(Request $request)
+    {
+        $additiona_time = AdditionalTimeRequest::where('user_id', $request->user_id)->where('payroll_id', $request->payroll_id)->whereNotNull('authorized_at')->first();
+
+        return response()->json(['item' => $additiona_time]);
     }
 }

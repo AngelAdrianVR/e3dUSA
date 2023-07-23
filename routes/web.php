@@ -114,7 +114,7 @@ Route::post('payrolls/get-bonuses', [PayrollController::class, 'getBonuses'])->m
 Route::post('payrolls/get-extras', [PayrollController::class, 'getExtras'])->middleware('auth')->name('payrolls.get-extras');
 Route::post('payrolls/get-payroll-users', [PayrollController::class, 'getPayrollUsers'])->middleware('auth')->name('payrolls.get-payroll-users');
 Route::post('payrolls/print-template', [PayrollController::class, 'printTemplate'])->middleware('auth')->name('payrolls.print-template');
-Route::get('payrolls/close-current', [PayrollController::class, 'closeCurrent'])->middleware('auth')->name('payrolls.close-current');
+Route::post('payrolls/get-additional-time', [PayrollController::class, 'getAdditionalTime'])->middleware('auth')->name('payrolls.get-additional-time');
 
 // ------- Recursos humanos(users routes)  ---------
 Route::resource('users', UserController::class)->middleware('auth');
@@ -154,6 +154,7 @@ Route::get('storages/{storage}/show', [StorageController::class, 'show'])->name(
 Route::delete('storages/{storage}/destroy', [StorageController::class, 'destroy'])->name('storages.destroy');
 Route::post('storages/{storage}/add-storage', [StorageController::class, 'addStorage'])->name('storages.add');
 Route::post('storages/{storage}/sub-storage', [StorageController::class, 'subStorage'])->name('storages.sub');
+
 // ----------------MUESTRAS-----------------------
 Route::resource('samples', SampleController::class)->middleware('auth');
 Route::post('samples/massive-delete', [SampleController::class, 'massiveDelete'])->name('samples.massive-delete');
@@ -164,7 +165,6 @@ Route::resource('designs', DesignController::class)->middleware('auth');
 Route::post('designs/massive-delete', [DesignController::class, 'massiveDelete'])->name('designs.massive-delete');
 Route::put('designs/start-order/{design}', [DesignController::class, 'startOrder'])->name('designs.start-order');
 Route::post('designs/finish-order/{design}', [DesignController::class, 'finishOrder'])->name('designs.finish-order');
-
 
 // ------- production department routes  ---------
 Route::resource('productions', ProductionController::class)->middleware('auth');

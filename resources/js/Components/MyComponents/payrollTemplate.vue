@@ -67,6 +67,11 @@
           <span class="text-center">{{ getWorkedDays().length }}</span>
           <span>${{ getWorkedDaysSalary().toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
         </p>
+        <p v-if="additionalTime" class="grid grid-cols-3 gap-x-1">
+          <span>Tiempo adicional</span>
+          <span class="text-center">{{ additionalTime.time_requested }}</span>
+          <span class=""></span>
+        </p>
         <p v-if="getHolidays().length" class="grid grid-cols-3 gap-x-1">
           <span>Días Feriados</span>
           <span class="text-center">{{ getHolidays().length }}</span>
@@ -203,7 +208,6 @@ export default {
           payroll_id: this.payrollId,
           user_id: this.user.id
         });
-
         if (response.status === 200) {
           this.additionalTime = response.data.item;
         }
@@ -224,7 +228,16 @@ export default {
     },
     getWorkedDaysSalary() {
       let totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
-      const totalWeekHoursAllowed = this.processedAttendances.find(item => item.check_in)?.additionals.hours_per_week;
+      let totalWeekHoursAllowed = this.processedAttendances.find(item => item.check_in)?.additionals.hours_per_week;
+
+      if (this.additionalTime) {
+        const time = this.additionalTime.time_requested;
+        const hours = time.split(':')[0];
+        const minutes = time.split(':')[1]
+
+        totalWeekHoursAllowed += parseFloat(hours) + parseFloat(minutes / 60);
+        console.log(totalWeekHoursAllowed);
+      }
 
       if (totalWeekHours > totalWeekHoursAllowed) {
         totalWeekHours = totalWeekHoursAllowed;
