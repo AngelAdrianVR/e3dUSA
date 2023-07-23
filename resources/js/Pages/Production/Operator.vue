@@ -4,7 +4,7 @@
             <template #header>
                 <div class="flex justify-between">
                     <div class="flex items-center space-x-2">
-                        <h2 class="font-semibold text-xl leading-tight">Tus órdenes de producción</h2>
+                        <h2 class="font-semibold text-xl leading-tight">Tus órdenes de producción asignadas</h2>
                     </div>
                 </div>
             </template>
@@ -17,27 +17,15 @@
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
                             :total="productions.data.length" />
                     </div>
-
-                    <!-- buttons -->
-                    <div>
-                        <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
-                            title="¿Continuar?" @confirm="deleteSelections">
-                            <template #reference>
-                                <el-button type="danger" plain class="mb-3"
-                                    :disabled="disableMassiveActions">Eliminar</el-button>
-                            </template>
-                        </el-popconfirm>
-                    </div>
                 </div>
                 <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="450" style="width: 100%"
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
-                    <el-table-column type="selection" width="45" />
-                    <el-table-column prop="id" label="ID" width="60" />
-                    <el-table-column prop="user.name" label="Creador" width="150" />
-                    <el-table-column prop="catalog_product_company_sale.catalog_product_company.company.business_name" label="Cliente" width="150" />
-                    <el-table-column prop="created_at" label="Creada el" width="150" />
-                    <el-table-column prop="created_at" label="Operadores" width="120" />
-                    <el-table-column align="right" fixed="right">
+                    <el-table-column type="selection" width="55" />
+                    <el-table-column prop="user.name" label="Creador" />
+                    <el-table-column prop="company_branch.name" label="Cliente" />
+                    <el-table-column prop="created_at" label="Creada el" />
+                    <el-table-column prop="productions.length" label="Operadores" />
+                    <el-table-column align="right" fixed="right" width="200">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
                         </template>
@@ -112,7 +100,7 @@ export default {
         async deleteSelections() {
             try {
                 const response = await axios.post(route('productions.massive-delete', {
-                   productions: this.$refs.multipleTableRef.value
+                    productions: this.$refs.multipleTableRef.value
                 }));
 
                 if (response.status == 200) {
@@ -183,8 +171,7 @@ export default {
                 return this.productions.data.filter(
                     (production) =>
                         production.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                        production.status.toLowerCase().includes(this.search.toLowerCase()) ||
-                        production.user.name.toLowerCase().includes(this.search.toLowerCase())
+                        production.company_branch.name.toLowerCase().includes(this.search.toLowerCase())
                 )
             }
         }
