@@ -91,4 +91,16 @@ class SampleController extends Controller
     {
         //
     }
+
+    public function returned(Request $request, Sample $sample)
+    {
+        $request->validate([
+            'comments' => 'required|string'
+        ]);
+
+        $sample->update([
+            'comments' => $request->comments,
+            'returned_at' => now(),
+        ]);
+    }
 }

@@ -147,8 +147,10 @@
           <span>{{ currentDesign?.dimensions }}</span>
           <span class="text-gray-500 my-2">Pantones</span>
           <span>{{ currentDesign?.pantones }}</span>
-          <span class="text-gray-500 my-2">Imágenes</span>
-          <span>{{ currentDesign?.pantones }}</span>
+          <span class="text-gray-500 my-2">Plano</span>
+          <a class="text-primary hover:text-secondary hover:underline" target="_blank" :href="currentDesign?.media_plano[0]?.original_url">{{ currentDesign?.media_plano[0]?.file_name }}</a>
+          <span class="text-gray-500 my-2">Logo</span>
+          <a class="text-primary hover:text-secondary hover:underline" target="_blank" :href="currentDesign?.media_logo[0]?.original_url">{{ currentDesign?.media_logo[0]?.file_name }}</a>
         </div>
       </div>
       <!-- ------------- Informacion general ends 1 ------------- -->

@@ -51,22 +51,11 @@
                 content="Marcar como muestra devuelta por el cliente"
                 placement="top"
               >
-              <el-popconfirm
-            v-if="
-              $page.props.auth.user.permissions.includes('Muestra devuelta')
-            "
-            confirm-button-text="Si"
-            cancel-button-text="No"
-            icon-color="#FF0000"
-            title="¿Continuar?"
-            @confirm="returnedSample"
-          >
-            <template #reference>
-                <button class="rounded-lg bg-primary text-white p-2 text-sm">
+             
+                <button @click="returnedSampleModal = true" class="rounded-lg bg-primary text-white p-2 text-sm">
                   Muestra devuelta
                 </button>
-            </template>
-          </el-popconfirm>
+
               </el-tooltip>
 
           <el-tooltip
@@ -364,6 +353,58 @@
           </div>
         </template>
       </ConfirmationModal>
+
+      <!-- -------------- Modal starts----------------------- -->
+      <Modal :show="returnedSampleModal" @close="returnedSampleModal = false">
+        <form @submit.prevent="returnedSample()">
+          <div class="p-3 relative">
+            <i @click="
+              returnedSampleModal = false;
+            form.reset();
+            "
+              class="fa-solid fa-xmark cursor-pointer w-5 h-5 rounded-full border border-black flex items-center justify-center absolute right-3"></i>
+            <i v-if="!helpDialog" @click="helpDialog = true"
+              class="fa-solid fa-question text-[9px] text-secondary h-3 w-3 bg-sky-300 rounded-full text-center absolute left-3 top-3 cursor-pointer"></i>
+
+            <p class="font-bold text-center my-3">
+              Marcar como muestra devuelta por el cliente
+            </p>
+
+            <div class="flex ml-3 px-9">
+              <el-tooltip content="Comentarios de retroalinmentación" placement="top">
+                <span
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                  <i class="fa-solid fa-grip-lines"></i>
+                </span>
+              </el-tooltip>
+              <textarea v-model="form.comments" class="textarea w-full" autocomplete="off"
+                placeholder="Comentarios de retroalinmentación"></textarea>
+              <InputError :message="form.errors.comments" />
+            </div>
+            <div v-if="helpDialog" class="border border-[#0355B5] rounded-lg px-6 py-2 mt-5 mx-7 relative">
+              <i
+                class="fa-solid fa-question text-[9px] text-secondary h-3 w-3 bg-sky-300 rounded-full text-center absolute left-2 top-3"></i>
+              <i @click="helpDialog = false"
+                class="fa-solid fa-xmark cursor-pointer w-3 h-3 rounded-full text-secondary flex items-center justify-center absolute right-3 top-3 text-xs"></i>
+              <p class="text-secondary text-sm">
+                Escribir un comentario de retroalimentación del cliente, como correcciones del producto o fecha esperada
+                de generación de orden de compra por parte del cliente.
+              </p>
+            </div>
+
+            <div class="flex justify-start space-x-3 pt-5 pb-1">
+              <PrimaryButton>Enviar</PrimaryButton>
+              <CancelButton @click="
+                returnedSampleModal = false;
+              form.reset();
+                ">Cancelar</CancelButton>
+            </div>
+          </div>
+        </form>
+      </Modal>
+      <!-- --------------------------- Modal ends ------------------------------------ -->
+
+
     </AppLayoutNoHeader>
   </div>
 </template>
@@ -375,15 +416,25 @@ import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
-import { Link } from "@inertiajs/vue3";
+import Modal from "@/Components/Modal.vue";
+import InputError from "@/Components/InputError.vue";
+import { Link, useForm } from "@inertiajs/vue3";
 
 export default {
   data() {
+    const form = useForm({
+      comments: null,
+
+    });
+
     return {
+      form,
       selectedSample: "",
       currentSample: null,
       imageHovered: false,
       showConfirmModal: false,
+      returnedSampleModal: false,
+      helpDialog: false,
       tabs: 1,
     };
   },
@@ -395,6 +446,8 @@ export default {
     DropdownLink,
     Dropdown,
     ConfirmationModal,
+    Modal,
+    InputError
   },
   props: {
     catalog_product: Object,
@@ -413,12 +466,18 @@ export default {
       window.open(url, "_blank");
     },
     returnedSample(){
-      this.$inertia.put(route('samples.returned',this.selectedSample));
-      this.$notify({
+      this.form.put(route("samples.returned", this.selectedSample), {
+        onSuccess: () => {
+          this.$notify({
             title: "Éxito",
-            message: 'Muestra devuelta por el cliente',
+            message: "Muestra devuelta por el cliente",
             type: "success",
           });
+
+          this.form.reset();
+          returnedSampleModal = false;
+        },
+      });
     },
 
     async deleteItem() {
