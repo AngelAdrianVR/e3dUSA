@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-xl bg-[#cccccc] px-7 py-3 relative text-xs">
+  <div class="rounded-xl bg-[#cccccc] px-7 py-3 relative text-xs shadow-lg">
     <!-- selection circle -->
     <div @click="handleSelection"
       class="w-5 h-5 border-2 rounded-full absolute top-3 left-3 cursor-pointer flex items-center justify-center"

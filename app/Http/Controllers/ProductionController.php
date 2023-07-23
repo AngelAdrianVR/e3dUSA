@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductionResource;
 use App\Http\Resources\SaleResource;
+use App\Models\CatalogProductCompanySale;
 use App\Models\Production;
 use App\Models\Sale;
 use App\Models\User;
@@ -108,6 +109,7 @@ class ProductionController extends Controller
         //
     }
 
+    // methods
     public function massiveDelete(Request $request)
     {
         foreach ($request->productions as $production) {
@@ -116,5 +118,12 @@ class ProductionController extends Controller
         }
 
         return response()->json(['message' => 'Producto(s) eliminado(s)']);
+    }
+
+    public function print($productions) 
+    {
+        $ordered_products = CatalogProductCompanySale::with(['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'user'], 'sale' => ['user', 'companyBranch']])->whereIn('id', json_decode($productions))->get();
+        // return $ordered_products;
+        return inertia('Production/PrintTemplate', compact('ordered_products'));
     }
 }

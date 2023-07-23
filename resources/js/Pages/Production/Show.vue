@@ -107,7 +107,7 @@
 
             <div v-if="tabs == 2" class="p-7">
                 <div class="mb-5">
-                    <PrimaryButton class="rounded-[10px]" :disabled="!orderedProductsSelected.length">
+                    <PrimaryButton @click="$inertia.get(route('productions.print', JSON.stringify(orderedProductsSelected)))" class="rounded-[10px]" :disabled="!orderedProductsSelected.length">
                         Imprimir
                     </PrimaryButton>
                 </div>

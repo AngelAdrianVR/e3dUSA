@@ -169,7 +169,7 @@ Route::post('designs/finish-order/{design}', [DesignController::class, 'finishOr
 // ------- production department routes  ---------
 Route::resource('productions', ProductionController::class)->middleware('auth');
 Route::post('productions/massive-delete', [ProductionController::class, 'massiveDelete'])->name('productions.massive-delete');
-
+Route::get('productions/print/{productions}', [ProductionController::class, 'print'])->name('productions.print');
 
 // ------- Machines Routes  ---------
 Route::resource('machines', MachineController::class)->middleware('auth');
