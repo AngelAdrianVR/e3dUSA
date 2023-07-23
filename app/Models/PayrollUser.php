@@ -69,7 +69,11 @@ class PayrollUser extends Pivot
      {
         if($this->check_in) {
             $time = $this->check_in->diffInMinutes($this->check_out ?? now());
-            $break = $this->start_break->diffInMinutes($this->end_break ?? $this->start_break);
+            if ($this->start_break) {
+                $break = $this->start_break->diffInMinutes($this->end_break ?? $this->start_break);
+            } else {
+                $break = 0;
+            }
             
             $time -= $break;
     

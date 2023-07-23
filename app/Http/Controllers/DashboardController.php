@@ -8,6 +8,7 @@ use App\Models\AdditionalTimeRequest;
 use App\Models\Contact;
 use App\Models\Design;
 use App\Models\Meeting;
+use App\Models\Production;
 use App\Models\Purchase;
 use App\Models\Quote;
 use App\Models\Sale;
@@ -25,9 +26,9 @@ class DashboardController extends Controller
         $counts[] = Purchase::whereNull('authorized_at')->get()->count();
         $counts[] = Design::whereNull('authorized_at')->get()->count();
         $counts[] = Storage::lowStock()->count();
-        $counts[] = 0;
+        $counts[] = Production::whereNull('started_at')->get()->count();
         $counts[] = Design::whereNull('started_at')->get()->count();
-        $counts[] = 0;
+        $counts[] = Sale::whereDoesntHave('productions')->get()->count();
         $counts[] = AdditionalTimeRequest::whereNull('authorized_at')->get()->count();
 
         // week performance collaborators
