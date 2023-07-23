@@ -40,11 +40,11 @@
                     <el-table-column prop="storageable.part_number" label="N° parte" width="120" />
                     <el-table-column prop="location" label="Ubicación" width="120" />
                     <el-table-column prop="quantity" label="Cantidad" width="100" />
-                    <el-table-column align="right" fixed="right">
+                    <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
                         </template>
-                        <template #default="scope">
+                        <!-- <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
                                 <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
                                     <i class="fa-solid fa-ellipsis-vertical"></i>
@@ -59,7 +59,7 @@
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
-                        </template>
+                        </template> -->
                     </el-table-column>
                 </el-table>
             </div>

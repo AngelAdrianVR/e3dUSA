@@ -44,7 +44,7 @@
                     <el-table-column prop="sent_at" label="Enviado el" width="100" />
                     <el-table-column prop="returned_at" label="devuelto el" widh="100" />
                     <el-table-column prop="status.label" label="Estatus" width="220" />
-                    <el-table-column align="right" fixed="right">
+                    <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
                         </template>

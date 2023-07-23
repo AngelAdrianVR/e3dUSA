@@ -44,7 +44,7 @@
                     <el-table-column prop="location" label="lugar" width="150" />
                     <el-table-column prop="url" label="URL" width="150" />
                     <el-table-column prop="status" label="Estatus" width="100" />
-                    <el-table-column align="right" fixed="right">
+                    <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
                         </template>
@@ -125,7 +125,7 @@
               <el-tooltip content="URL de meeting en caso de ser en linea" placement="top">
                 <i class="fa-solid fa-chain text-gray-700"></i>
               </el-tooltip>
-              <a v-if="url != '--'" :href="url" target="_blank" class="text-secondary ml-3">{{ url }}</a>
+              <a v-if="url != '--'" :href="url" target="_blank" class="text-secondary ml-3 hover:underline">{{ url }}</a>
               <p v-else class="text-gray-600 ml-3">{{ url }}</p>
           </div>
 

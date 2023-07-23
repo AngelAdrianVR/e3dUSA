@@ -47,7 +47,7 @@
           <el-table-column prop="emited_at" label="Pedido el" width="120" />
           <el-table-column prop="recieved_at" label="Recibido el" width="120" />
           <el-table-column prop="supplier.name" label="Proveedor" width="120" />
-          <el-table-column align="right" fixed="right">
+          <el-table-column align="right" fixed="right" width="120">
             <template #header>
               <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
             </template>

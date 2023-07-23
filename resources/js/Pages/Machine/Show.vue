@@ -9,7 +9,7 @@
         </Link>
       </div>
       <div class="flex justify-between mt-5 mx-14">
-        <div class="w-1/3">
+        <div class="md:w-1/3 mr-2">
           <el-select v-model="selectedMachine" clearable filterable placeholder="Buscar máquina"
             no-data-text="No hay maquinaria registrada" no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in machines.data" :key="item.id" :label="item.name" :value="item.id" />
@@ -109,20 +109,20 @@
             </div>
             <p class="mt-7 mb-3">Dimensiones</p>
             <div class="flex mb-6 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">Peso (kg)</p>
-              <p>{{ currentMachine?.weight }}</p>
+              <p class="w-1/3 text-[#9A9A9A]">Peso</p>
+              <p>{{ currentMachine?.weight }} kg</p>
             </div>
             <div class="flex mb-6 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">Ancho (cm)</p>
-              <p>{{ currentMachine?.width }}</p>
+              <p class="w-1/3 text-[#9A9A9A]">Ancho</p>
+              <p>{{ currentMachine?.width }} cm</p>
             </div>
             <div class="flex mb-6 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">Largo (cm)</p>
-              <p>{{ currentMachine?.large }}</p>
+              <p class="w-1/3 text-[#9A9A9A]">Largo</p>
+              <p>{{ currentMachine?.large }} cm</p>
             </div>
             <div class="flex mb-6 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">Alto (cm)</p>
-              <p>{{ currentMachine?.height }}</p>
+              <p class="w-1/3 text-[#9A9A9A]">Alto</p>
+              <p>{{ currentMachine?.height }} cm</p>
             </div>
             <p class="mt-7 mb-3">Datos de compra</p>
             <div class="flex mb-2 space-x-2">

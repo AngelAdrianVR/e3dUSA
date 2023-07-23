@@ -48,7 +48,7 @@
                             <InputError :message="form.errors.currency" />
                         </div>
                         <div>
-                            <div class="flex items-center">
+                            <div class="flex items-center mb-2">
                                 <el-tooltip
                                     content="Para poder cotizar, los clientes (sucursales) deben de estar registrados"
                                     placement="top">
@@ -150,7 +150,7 @@
                             </template>
                         </ol>
 
-                        <div class="flex items-center">
+                        <div class="flex items-center mt-2">
                             <el-tooltip content="Producto de catálogo" placement="top">
                                 <span
                                     class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">

@@ -47,7 +47,7 @@
             />
             <InputError :message="form.errors.date" />
           </div>
-          <div class="md:flex">
+          <div class="flex">
             <div class="mr-3">
               <IconInput
               v-model="form.start"
@@ -179,7 +179,6 @@
       <!-- -------------- Modal starts----------------------- -->
       <Modal :show="availableModal" @close="availableModal = false">
         <div class="p-3 relative">
-        {{form}}
           <i
             @click="availableModal = false"
             class="fa-solid fa-xmark cursor-pointer w-5 h-5 rounded-full border border-black flex items-center justify-center absolute right-3"
@@ -204,18 +203,8 @@
               type="date"
               placeholder="Selecciona una fecha"
             />
+            <p v-if="!form.date" class="text-xs">Selecciona una fecha</p>
           </div>
-
-          <p v-if="!start_selected" class="ml-7 my-6 text-secondary">Selecciona la hora de inicio</p>
-          <p v-else class="ml-7 my-6 text-secondary">Selecciona la hora de terminación</p>
-
-          <p class="ml-7 my-6 text-primary text-center">De {{ form.start ?? '____'}} a {{ form.end ?? '____' }}</p>
-
-          
-
-          <div class="text-center rounded-lg border border-[#9a9a9a] w-1/3 mx-auto relative">
-            <div @click="selectTime(meeting, index)" v-for="(meeting, index) in schedule" :key="meeting" :class="meeting.bg + ' ' + meeting.text" class="cursor-pointer border-b border-[#9a9a9a] h-[25px] hover:bg-secondary hover:text-white">{{ index % 2 ? '' : meeting.label }}</div>
-          </div> 
 
           <div
             v-if="helpDialog"
@@ -229,12 +218,25 @@
               class="fa-solid fa-xmark cursor-pointer w-3 h-3 rounded-full text-secondary flex items-center justify-center absolute right-3 top-3 text-xs"
             ></i>
             <p class="text-secondary text-sm">
-              Es necesario describir las actividades que justifiquen el tiempo
-              adicional que estas solicitando. Sólo se podrá realizar una
-              solicitud por semana, por lo que debes de ingresar las horas
-              semanales adicionales a tu jornada normal.
+              Las secciones en color rojos no están disponibles para agendar reunión.
+              Las secciones azules son las horas que seleccionaste para tu reunión.
             </p>
           </div>
+
+        <section v-if="form.date">
+          <p v-if="!start_selected" class="ml-7 my-6 text-secondary">Selecciona la hora de inicio</p>
+          <p v-else class="ml-7 my-6 text-secondary">Selecciona la hora de terminación</p>
+
+          <p class="ml-7 my-6 text-primary text-center">De {{ form.start ?? '____'}} a {{ form.end ?? '____' }}</p>
+
+          
+
+          <div class="text-center rounded-lg border border-[#9a9a9a] lg:w-1/3 mx-auto relative">
+            <div @click="selectTime(meeting, index)" v-for="(meeting, index) in schedule" :key="meeting" :class="meeting.bg + ' ' + meeting.text" class="cursor-pointer border-b border-[#9a9a9a] h-[25px] hover:bg-secondary hover:text-white">{{ index % 2 ? '' : meeting.label }}</div>
+          </div> 
+
+          
+        </section>
 
           <div class="flex justify-start space-x-3 pt-5 pb-1">
             <PrimaryButton @click="availableModal = false">Listo</PrimaryButton>
@@ -392,15 +394,20 @@ export default {
       });
     },
     selectTime(meeting, index){
-      if(this.start_selected == false){
-        
-        this.start_index = index;
+
+      if(this.form.start && this.form.end){
+        return 
+        }
+
+        if(this.start_selected == false){
+          
+          this.start_index = index;
         this.form.start = meeting.label;
         this.schedule[index].bg = 'bg-secondary';
         this.schedule[index].text = 'text-white';
         this.start_selected = true;
       }else{
- 
+        
         this.form.end = meeting.label;
         for (let i = this.start_index; i <= index; i++) {
           this.schedule[i].bg = 'bg-secondary';
@@ -415,7 +422,7 @@ export default {
           this.schedule[i].bg = 'bg-transparent';
           this.schedule[i].text = 'text-black';   
         }
-        this.form.date = null;
+        // this.form.date = null;
         this.form.start = null;
         this.form.end = null;
         this.start_selected = false;

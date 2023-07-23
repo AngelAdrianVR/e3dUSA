@@ -52,9 +52,11 @@ class DesignController extends Controller
             'specifications' => 'required',
         ]);
 
-        Design::create($request->except('original_design_id') + [
+        $design = Design::create($request->except('original_design_id') + [
             'user_id' => auth()->id()
         ]);
+
+        // $design->addAllMediaFromRequest('media_plano')->each(fn ($file) => $file->toMediaCollection('plano'));
 
         return to_route('designs.index');
     }
@@ -74,8 +76,6 @@ class DesignController extends Controller
             return inertia('Design/Show', compact('design', 'designs'));
         }
 
-        // $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->latest()->get());
-        // return inertia('Design/Show', compact('design', 'designs'));
     }
 
     

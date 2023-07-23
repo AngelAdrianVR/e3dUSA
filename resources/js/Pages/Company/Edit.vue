@@ -184,7 +184,7 @@
                                 </li>
                             </template>
                         </ol>
-                        <div class="md:w-[92%] mx-auto pt-3 space-y-3 rounded-lg p-5">
+                        <div class="md:w-[92%] mx-auto pt-3 m:space-y-3 rounded-lg p-5">
                             <div>
                                 <IconInput v-model="contact.name" inputPlaceholder="Nombre de contacto *" inputType="text">
                                     <el-tooltip content="Nombre de contacto" placement="top">
@@ -193,7 +193,7 @@
                                 </IconInput>
                                 <!-- <InputError :message="form.errors.name_contact" /> -->
                             </div>
-                            <div class="md:grid gap-6 mb-6 grid-cols-2">
+                            <div class="md:grid gap-6 m:mb-6 grid-cols-2">
                                 <div>
                                     <IconInput v-model="contact.email" inputPlaceholder="Correo electrónico *"
                                         inputType="email">

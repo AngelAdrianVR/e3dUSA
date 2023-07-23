@@ -42,7 +42,7 @@
                     <el-table-column prop="name" label="Nombre" width="200" />
                     <el-table-column prop="cost.number_format" label="Costo $" width="150" />
                     <el-table-column prop="description" label="Descripción" />
-                    <el-table-column align="right" fixed="right" width="200">
+                    <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
                         </template>

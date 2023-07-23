@@ -38,7 +38,7 @@
                     <el-table-column prop="id" label="ID" width="50" />
                     <el-table-column prop="name" label="Nombre" />
                     <el-table-column prop="date.formatted" label="Fecha" />
-                    <el-table-column align="right" fixed="right" width="200">
+                    <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
                         </template>

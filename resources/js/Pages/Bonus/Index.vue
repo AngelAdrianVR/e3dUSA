@@ -40,7 +40,7 @@
                     <el-table-column prop="description" label="Descripción" />
                     <el-table-column prop="full_time" label="$ Tiempo completo" />
                     <el-table-column prop="half_time" label="$ Medio tiempo" />
-                    <el-table-column align="right" fixed="right" width="200">
+                    <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
                         </template>
