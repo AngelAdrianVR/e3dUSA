@@ -134,7 +134,8 @@ class User extends Authenticatable
             'payroll_id' => Payroll::getCurrent()->id,
             'additionals' => [
                 'salary' =>  $this->employee_properties['salary'],
-                'bonuses' => $bonuses
+                'bonuses' => $bonuses,
+                'hours_per_week' => $this->employee_properties['hours_per_week'],
             ],
         ]);
 
@@ -178,7 +179,7 @@ class User extends Authenticatable
         $week_time = $processed_attendances->sum(fn ($item) => $item?->totalWorkedTime()['hours'] ?? 0);
 
         $hours = intval($week_time);
-        $minutes = abs($hours - $week_time) * 60;
+        $minutes = intval(abs($hours - $week_time) * 60);
 
         return [
             'formatted' => "{$hours}h {$minutes}m",

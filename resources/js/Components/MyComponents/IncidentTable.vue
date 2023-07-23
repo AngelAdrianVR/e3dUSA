@@ -7,7 +7,10 @@
   </div>
   <div class="bg-[#D9D9D9] rounded-lg lg:w-4/5 mx-auto py-6 px-10">
     <div>
-      <span class="text-secondary">Incidencias</span>
+      <div class="flex items-center justify-between">
+        <span class="text-secondary">Incidencias</span>
+        <el-tag v-if="additionalTime" type="success">Tiempo adicional autorizado {{ additionalTime.time_requested }}</el-tag>
+      </div>
       <div class="flex justify-center items-center">
         <i class="fa-solid fa-circle-user mr-3 text-xl"></i>
         <p>{{ user.name }}</p>
@@ -83,11 +86,10 @@
                           Activar extras dobles</el-dropdown-item>
                         <el-dropdown-item v-else :command="'extras-' + attendance.id">
                           Desactivar extras dobles</el-dropdown-item>
-                          <template v-for="(item, index1) in justifications" :key="item.id">                             
-                            <el-dropdown-item v-if="item.id !== 7"
-                            :command="item.id + '-' + attendance.id + '-' + index">
+                        <template v-for="(item, index1) in justifications" :key="item.id">
+                          <el-dropdown-item v-if="item.id !== 7" :command="item.id + '-' + attendance.id + '-' + index">
                             {{ item.name }}</el-dropdown-item>
-                          </template>
+                        </template>
                       </el-dropdown-menu>
                     </template>
                   </el-dropdown>
@@ -154,6 +156,7 @@ export default {
       processedAttendances: [],
       loading: false,
       pageLoading: false,
+      additionalTime: null,
     }
   },
   emits: ['closeIncidentTable'],
@@ -313,6 +316,7 @@ export default {
         this.pageLoading = true;
         const response = await axios.post(route('payrolls.update-attendances'), {
           attendances: this.processedAttendances,
+          user_id: this.user.id
         });
 
         if (response.status === 200) {
@@ -328,7 +332,25 @@ export default {
       } finally {
         this.pageLoading = false;
       }
-    }
+    },
+    async getAuthorizedAdditionalTime() {
+      try {
+        const response = await axios.post(route('payrolls.get-additional-time'), {
+          payroll_id: this.payrollId,
+          user_id: this.user.id
+        });
+        if (response.status === 200) {
+          this.additionalTime = response.data.item;
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.loading = false;
+      }
+    },
+  },
+  mounted() {
+    this.getAuthorizedAdditionalTime();
   },
 }
 </script>

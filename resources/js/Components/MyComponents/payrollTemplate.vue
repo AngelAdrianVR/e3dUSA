@@ -67,10 +67,17 @@
           <span class="text-center">{{ getWorkedDays().length }}</span>
           <span>${{ getWorkedDaysSalary().toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
         </p>
+        <p v-if="additionalTime" class="grid grid-cols-3 gap-x-1">
+          <span>Tiempo adicional</span>
+          <span class="text-center">{{ additionalTime.time_requested }}</span>
+          <span class=""></span>
+        </p>
         <p v-if="getHolidays().length" class="grid grid-cols-3 gap-x-1">
           <span>Días Feriados</span>
           <span class="text-center">{{ getHolidays().length }}</span>
-          <span>${{ (user.employee_properties.salary.day * getHolidays().length).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+          <span>${{ (user.employee_properties.salary.day * getHolidays().length).toLocaleString('en-US', {
+            minimumFractionDigits: 2
+          }) }}</span>
         </p>
         <p v-if="getVacations().length" class="grid grid-cols-3 gap-x-1">
           <span>Vacaciones</span>
@@ -123,6 +130,7 @@ export default {
       payroll: null,
       bonuses: null,
       extras: null,
+      additionalTime: null,
     }
   },
   props: {
@@ -194,6 +202,21 @@ export default {
         this.loading = false;
       }
     },
+    async getAuthorizedAdditionalTime() {
+      try {
+        const response = await axios.post(route('payrolls.get-additional-time'), {
+          payroll_id: this.payrollId,
+          user_id: this.user.id
+        });
+        if (response.status === 200) {
+          this.additionalTime = response.data.item;
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.loading = false;
+      }
+    },
     getVacations() {
       return this.processedAttendances.filter(item => item.incident?.id === 3);
     },
@@ -204,10 +227,25 @@ export default {
       return this.processedAttendances.filter(item => item.incident?.id < 0);
     },
     getWorkedDaysSalary() {
-      return this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0) * this.user.employee_properties.salary.hour;
+      let totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
+      let totalWeekHoursAllowed = this.processedAttendances.find(item => item.check_in)?.additionals.hours_per_week;
+
+      if (this.additionalTime) {
+        const time = this.additionalTime.time_requested;
+        const hours = time.split(':')[0];
+        const minutes = time.split(':')[1]
+
+        totalWeekHoursAllowed += parseFloat(hours) + parseFloat(minutes / 60);
+        console.log(totalWeekHoursAllowed);
+      }
+
+      if (totalWeekHours > totalWeekHoursAllowed) {
+        totalWeekHours = totalWeekHoursAllowed;
+      }
+      return totalWeekHours * this.user.employee_properties.salary.hour;
     },
     getTotal() {
-      const dayly_salary = this.processedAttendances.find(item => item.check_out).additionals.salary.day;
+      const dayly_salary = this.processedAttendances.find(item => item.check_in)?.additionals.salary.day;
       const vacations = this.getVacations().length * 1.25 * dayly_salary;
       const workedDays = this.getWorkedDaysSalary();
       const holyDays = dayly_salary * this.getHolidays().length;
@@ -216,10 +254,10 @@ export default {
       }, 0);
 
       return vacations
-            + workedDays
-            + holyDays
-            + bonuses
-            + this.extras.amount.raw;
+        + workedDays
+        + holyDays
+        + bonuses
+        + this.extras.amount.raw;
     }
   },
   mounted() {
@@ -227,6 +265,7 @@ export default {
     this.getPayroll();
     this.getBonuses();
     this.getExtras();
+    this.getAuthorizedAdditionalTime();
   }
 }
 </script>
