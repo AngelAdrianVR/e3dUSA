@@ -47,14 +47,15 @@
       <p class="text-primary ">Operadores asignados:</p>
       <p v-for="production in catalog_product_company_sale.productions" :key="production.id"
         class="mt-1 flex justify-between items-center">
-        <span :class="$page.props.auth.user.id == production.operator.id ? 'text-green-600' : null">-{{ production.operator.name }} {{ $page.props.auth.user.id == production.operator.id ? '(Tú)' : '' }}</span>
+        <span :class="$page.props.auth.user.id == production.operator.id ? 'text-green-600' : null">-{{
+          production.operator.name }} {{ $page.props.auth.user.id == production.operator.id ? '(Tú)' : '' }}</span>
         <el-tooltip placement="right">
           <template #content>
             <p> <strong class="text-yellow-500">Tareas: </strong>{{ production.tasks }}</p>
             <p> <strong class="text-yellow-500">Tiempo estimado: </strong>{{ production.estimated_time_hours }}h {{
               production.estimated_time_minutes }}m</p>
-            <p> <strong class="text-yellow-500">Empezado el: </strong>{{ production.started_at ?? 'Sin iniciar' }}</p>
-            <p> <strong class="text-yellow-500">Terminado el: </strong>{{ production.finished_at ?? 'Sin terminar' }}</p>
+            <p> <strong class="text-yellow-500">Empezado el: </strong>{{ production.started_at ? getDateFormtted(production.started_at) : 'Sin iniciar' }}</p>
+            <p> <strong class="text-yellow-500">Terminado el: </strong>{{ production.finished_at ? getDateFormtted(production.finished_at) : 'Sin terminar' }}</p>
           </template>
           <i class="fa-solid fa-list-check"></i>
         </el-tooltip>
@@ -83,15 +84,27 @@
         'border-[#0355B5] text-secondary': getOrderStatus() == 'En proceso',
         'border-green-600 text-green-600': getOrderStatus() == 'Terminado',
         'border-[#9a9a9a] text-[#9a9a9a]': getOrderStatus() == 'Sin iniciar',
-        }">{{ getOrderStatus() }}</p>
+      }">{{ getOrderStatus() }}</p>
     </div>
-    <button v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id)" :disabled="getNextAction() == 'Finalizado'" class="absolute bottom-3 right-4 bg-secondary px-2 rounded-md text-white disabled:opacity-25 disabled:cursor-not-allowed">
-      {{ getNextAction() }}
-    </button>
+
+    <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+      @confirm="changeTaskStatus">
+      <template #reference>
+        <button
+          v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id)"
+          :disabled="getNextAction() == 'Finalizado'"
+          class="absolute bottom-3 right-4 bg-secondary px-2 rounded-md text-white disabled:opacity-25 disabled:cursor-not-allowed">
+          {{ getNextAction() }}
+        </button>
+      </template>
+    </el-popconfirm>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+import moment from "moment";
+
 export default {
   data() {
     return {
@@ -121,15 +134,41 @@ export default {
       } else if (allTasksNotStarted) {
         return "Sin iniciar";
       } else {
-        // Aquí estamos considerando el caso donde algunos están "Terminados" y otros "En proceso"
         return "En proceso";
       }
     },
     getNextAction() {
       const task = this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id);
-       if (task.finished_at) return 'Finalizado';
-       else if (task.started_at) return 'Finalizar';
-       else return 'Iniciar';
+      if (task.finished_at) return 'Finalizado';
+      else if (task.started_at) return 'Finalizar';
+      else return 'Iniciar';
+    },
+    getDateFormtted(dateTime) {
+      if (!dateTime) return null;
+      return moment.utc(dateTime).format("DD MMM YYYY, hh:mmA");
+    },
+    async changeTaskStatus() {
+      try {
+        let task = this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id);
+        const response = await axios.put(route('productions.change-status', task.id));
+
+        if (response.status === 200) {
+          this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id).started_at = response.data.item.started_at;
+          this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id).finished_at = response.data.item.finished_at;
+
+          this.$notify({
+            title: 'Éxito',
+            message: response.data.message,
+            type: 'success'
+          });
+        }
+      } catch (error) {
+        this.$notify({
+          title: 'Error',
+          message: error.message,
+          type: 'error'
+        });
+      }
     }
   }
 };

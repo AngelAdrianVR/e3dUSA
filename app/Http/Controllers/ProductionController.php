@@ -127,4 +127,19 @@ class ProductionController extends Controller
         // return $ordered_products;
         return inertia('Production/PrintTemplate', compact('ordered_products'));
     }
+
+    public function changeStatus(Production $production)
+    {
+        if (!$production->started_at) {
+            $production->update(['started_at' => now()]);
+            $message = 'Se ha registrado el inicio';
+        } else {
+            $production->update(['finished_at' => now()]);
+            $message = 'Se ha registrado el final';
+        }
+
+        $production = Production::with(['operator', 'user'])->find($production->id);
+
+        return response()->json(['message' => $message, 'item' => $production]);
+    }
 }

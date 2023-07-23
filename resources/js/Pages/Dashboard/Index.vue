@@ -269,10 +269,10 @@ export default {
                     show: this.$page.props.auth.user.permissions.includes('Crear materia prima')
                 },
                 {
-                    title: 'Órdenes de producción sin iniciar',
+                    title: 'Tareas asignadas a operadores sin iniciar',
                     counter: this.counts[5],
                     icon: 'fa-solid fa-spinner',
-                    url: route('dashboard'),
+                    url: route('productions.index'),
                     show: this.$page.props.auth.user.permissions.includes('Ordenes de produccion todas')
                 },
                 {
