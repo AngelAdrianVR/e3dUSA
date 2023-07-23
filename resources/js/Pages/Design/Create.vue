@@ -70,7 +70,13 @@
             <InputError :message="form.errors.company_branch_name" />
           </div>
 
-            <div>
+            <div class="flex items-center">
+            <span
+              class="font-bold text-xl inline-flex items-center text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+              <el-tooltip content="Seleccionar Diseñador(a)" placement="top">
+                <i class="fa-solid fa-user text-sm"></i>
+              </el-tooltip>
+            </span>
             <el-select
             v-model="form.designer_id"
             clearable
@@ -100,7 +106,13 @@
             <InputError :message="form.errors.name" />
           </div>
 
-          <div>
+          <div class="flex items-center">
+          <span
+              class="font-bold text-xl inline-flex items-center text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+              <el-tooltip content="Tipo de diseño" placement="top">
+                C
+              </el-tooltip>
+            </span>
             <el-select
             v-model="form.design_type_id"
             clearable
@@ -182,7 +194,7 @@
                 </el-tooltip>
               </span>
               <input
-                @input="form.media = $event.target.files[0]"
+                @input="form.media_plano = $event.target.files[0]"
                 class="input h-12 rounded-lg file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white file:cursor-pointer hover:file:bg-red-600"
                 aria-describedby="file_input_help"
                 id="file_input"
@@ -207,7 +219,7 @@
                 </el-tooltip>
               </span>
               <input
-                @input="form.media = $event.target.files[0]"
+                @input="form.media_logo = $event.target.files[0]"
                 class="input h-12 rounded-lg file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white file:cursor-pointer hover:file:bg-red-600"
                 aria-describedby="file_input_help"
                 id="file_input"
@@ -254,7 +266,8 @@ export default {
     measure_unit: null,
     pantones: null,
     specifications: null,
-
+    media_plano: null,
+    media_logo: null,
     });
 
     return {

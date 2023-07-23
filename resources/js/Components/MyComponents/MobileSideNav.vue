@@ -245,14 +245,21 @@ export default {
                         {
                             label: 'Biblioteca de medios',
                             route: route('dashboard'),
-                            active: route().current('dashboar'),
+                            active: route().current('dashboard'),
                             show: this.$page.props.auth.user.permissions.includes('Ver medios')
+                        },
+                        {
+                            label: 'Seguimiento de muestras',
+                            route: route('samples.index'),
+                            active: route().current('samples.*'),
+                            show: this.$page.props.auth.user.permissions.includes('Ver muestra')
                         },
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver maquinas') ||
                         this.$page.props.auth.user.permissions.includes('Solicitudes de tiempo adicional personal') ||
                         this.$page.props.auth.user.permissions.includes('Reuniones personal') ||
+                        this.$page.props.auth.user.permissions.includes('Ver muestra') ||
                         this.$page.props.auth.user.permissions.includes('Ver biblioteca de medios')
                 },
                 {

@@ -18,41 +18,53 @@
                 <div class="md:grid gap-6 mb-6 grid-cols-2">
                     <div>
                         <IconInput v-model="form.name" inputPlaceholder="Nombre *" inputType="text">
-                            A
+                            <el-tooltip content="Nombre" placement="top">
+                                A
+                            </el-tooltip>
                         </IconInput>
                         <InputError :message="form.errors.name" />
                     </div>
                     <div>
                         <IconInput v-model="form.part_number" inputPlaceholder="Número de parte *" inputType="text">
-                            #
+                            <el-tooltip content="Número de parte" placement="top">
+                                #
+                            </el-tooltip>
                         </IconInput>
                         <InputError :message="form.errors.part_number" />
                     </div>
                     <div>
                         <IconInput v-model="form.measure_unit" inputPlaceholder="Unidad de medida *" inputType="text">
-                            <i class="fa-solid fa-ruler-vertical"></i>
+                            <el-tooltip content="Unidad de medida" placement="top">
+                                <i class="fa-solid fa-ruler-vertical"></i>
+                            </el-tooltip>
                         </IconInput>
                         <InputError :message="form.errors.measure_unit" />
                     </div>
                     <div>
                         <IconInput v-model="form.min_quantity" inputPlaceholder="Cantidad mínima" inputType="number">
-                            <i class="fa-solid fa-minus"></i>
+                            <el-tooltip content="Cantidad mínima" placement="top">
+                                <i class="fa-solid fa-minus"></i>
+                            </el-tooltip>
                         </IconInput>
                         <InputError :message="form.errors.min_quantity" />
                     </div>
                     <div>
                         <IconInput v-model="form.max_quantity" inputPlaceholder="Cantidad máxima" inputType="number">
-                            <i class="fa-solid fa-plus"></i>
+                            <el-tooltip content="Cantidad máxima" placement="top">
+                                <i class="fa-solid fa-plus"></i>
+                            </el-tooltip>
                         </IconInput>
                         <InputError :message="form.errors.max_quantity" />
                     </div>
                     <div class="flex col-span-full">
-                        <span
-                            class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                            ...
-                        </span>
-                        <textarea v-model="form.description" class="textarea" autocomplete="off"
-                            placeholder="Descripción "></textarea>
+                        <el-tooltip content="Descripción" placement="top">
+                            <span
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                ...
+                            </span>
+                        </el-tooltip>
+                        <textarea v-model="form.description" class="textarea mb-1" autocomplete="off"
+                            placeholder="Descripción"></textarea>
                         <InputError :message="form.errors.description" />
                     </div>
                     <div class="col-span-full">
@@ -74,7 +86,7 @@
                                 :value="feature"></el-option>
                         </el-select>
                     </div>
-                    <div class="col-span-full">
+                    <div class="col-span-full mt-2"> 
                         <div class="flex items-center">
                             <span
                                 class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
@@ -123,22 +135,26 @@
                             </li>
                         </template>
                     </ol>
-                    <div class="flex items-center">
-                        <span
-                            class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </span>
+                    <div class="flex items-center my-2">
+                        <el-tooltip content="Materias primas" placement="top">
+                            <span
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                        </el-tooltip>
                         <el-select v-model="rawMaterial.raw_material_id" clearable filterable
                             placeholder="Busca en materias primas" no-data-text="No hay materias primas registradas"
                             no-match-text="No se encontraron coincidencias">
                             <el-option v-for="item in raw_materials" :key="item.id" :label="item.name" :value="item.id" />
                         </el-select>
                     </div>
-                    <div class="flex items-center">
-                        <span
-                            class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </span>
+                    <div class="flex items-center mb-2">
+                        <el-tooltip content="proceso(s) de produccion" placement="top">
+                            <span
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                        </el-tooltip>
                         <el-select v-model="rawMaterial.production_costs" multiple clearable filterable
                             placeholder="Selecciona proceso(s) de produccion" no-data-text="No hay procesos registradas"
                             no-match-text="No se encontraron coincidencias">
@@ -167,7 +183,7 @@
                 <el-divider />
 
                 <div class="md:text-right">
-                    <PrimaryButton :disabled="form.processing"> Actualizar producto </PrimaryButton>
+                    <PrimaryButton :disabled="form.processing"> Crear producto </PrimaryButton>
                 </div>
             </div>
         </form>

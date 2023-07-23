@@ -42,7 +42,7 @@
                     <el-table-column prop="supplier" label="Proveedor" width="130" />
                     <el-table-column prop="days_next_maintenance" label="Mantenimiento cada" width="160" />
                     <el-table-column prop="aquisition_date" label="Fecha de adquisición" />
-                    <el-table-column align="right" fixed="right" width="200">
+                    <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
                         </template>

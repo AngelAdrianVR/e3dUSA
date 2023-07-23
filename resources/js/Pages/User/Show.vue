@@ -29,7 +29,7 @@
               :value="item.id"
             />
           </el-select>
-          <img
+          <img v-if="currentUser"
           :class="currentUser?.is_active.bool ? 'border-green-600' : 'border-red-600'"
             class="h-32 w-32 rounded-full object-cover hidden md:block border-2"
             :src="currentUser?.profile_photo_url"
@@ -45,8 +45,8 @@
             </el-tooltip>
             <el-tooltip content="Crear nuevo usuario" placement="top">
               <Link :href="route('users.create')">
-                <button class="rounded-lg bg-primary p-2 text-sm text-white">
-                  + Nuevo
+                <button class="rounded-lg bg-primary py-2 px-3 text-sm text-white">
+                  +
                 </button>
               </Link>
             </el-tooltip>

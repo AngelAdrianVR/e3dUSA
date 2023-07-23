@@ -44,7 +44,7 @@
                     <el-table-column prop="storageable.min_quantity" label="Min. Stock" width="100" />
                     <el-table-column prop="storageable.max_quantity" label="Max. Stock" width="100" />
                     <el-table-column prop="quantity" label="Stock" width="100" />
-                    <el-table-column align="right" fixed="right">
+                    <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
                         </template>

@@ -38,12 +38,12 @@
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="id" label="ID" width="45" />
-                    <el-table-column prop="name" label="Nombre" width="160" />
+                    <el-table-column prop="name" label="Nombre" width="150" />
                     <el-table-column prop="phone" label="Teléfono" width="130" />
                     <el-table-column prop="address" label="Dirección" width="170" />
                     <el-table-column prop="post_code" label="C.P." width="100" />
                     <el-table-column prop="created_at" label="Agregado el" width="120" />
-                    <el-table-column align="right" fixed="right">
+                    <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
                         </template>

@@ -22,7 +22,13 @@
         <div
           class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4"
         >
-          <div>
+          <div class="flex items-center">
+          <span
+              class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+              <el-tooltip content="Descripción del producto" placement="top">
+                <i class="fa-brands fa-product-hunt"></i>
+              </el-tooltip>
+            </span>
             <el-select
               v-model="form.storage_id"
               @change="storageableObj"
