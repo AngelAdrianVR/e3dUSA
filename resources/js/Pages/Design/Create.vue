@@ -205,7 +205,7 @@
               class="mt-1 text-xs text-right text-gray-500"
               id="file_input_help"
             >
-              SVG, PNG, JPG o GIF (MAX. 4 MB).
+              PDF, SVG, PNG, JPG, GIF, etc. (MAX. 4 MB).
             </p>
           </div>
 
@@ -230,7 +230,7 @@
               class="mt-1 text-xs text-right text-gray-500"
               id="file_input_help"
             >
-              SVG, PNG, JPG o GIF (MAX. 4 MB).
+              PDF, SVG, PNG, JPG, GIF, etc. (MAX. 4 MB).
             </p>
           </div>
 

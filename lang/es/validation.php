@@ -187,5 +187,9 @@ return [
         'storageable_id' => 'Producto de almacén',
         'quantity' => 'Cantidad',
         'contact_id' => 'Contacto',
+        'company_branch' => 'Cliente',
+        'designer_id' => 'Diseñedor(a)',
+        'design_type_id' => 'Categoria de diseño',
+        'specifications' => 'Especificaciones',
     ],
 ];

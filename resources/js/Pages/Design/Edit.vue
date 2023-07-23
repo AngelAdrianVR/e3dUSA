@@ -182,7 +182,7 @@
                 </el-tooltip>
               </span>
               <input
-                @input="form.media = $event.target.files[0]"
+                @input="form.media_plano = $event.target.files[0]"
                 class="input h-12 rounded-lg file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white file:cursor-pointer hover:file:bg-red-600"
                 aria-describedby="file_input_help"
                 id="file_input"
@@ -193,7 +193,7 @@
               class="mt-1 text-xs text-right text-gray-500"
               id="file_input_help"
             >
-              SVG, PNG, JPG o GIF (MAX. 4 MB).
+              SVG, PNG, JPG, GIF, etc. (MAX. 4 MB).
             </p>
           </div>
 
@@ -207,7 +207,7 @@
                 </el-tooltip>
               </span>
               <input
-                @input="form.media = $event.target.files[0]"
+                @input="form.media_logo = $event.target.files[0]"
                 class="input h-12 rounded-lg file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white file:cursor-pointer hover:file:bg-red-600"
                 aria-describedby="file_input_help"
                 id="file_input"
@@ -218,7 +218,7 @@
               class="mt-1 text-xs text-right text-gray-500"
               id="file_input_help"
             >
-              SVG, PNG, JPG o GIF (MAX. 4 MB).
+              SVG, PNG, JPG, GIF, etc. (MAX. 4 MB).
             </p>
           </div>
 
@@ -254,7 +254,8 @@ export default {
     measure_unit: this.design.measure_unit,
     pantones: this.design.pantones,
     specifications: this.design.specifications,
-
+    media_plano: null,
+    media_logo: null,
     });
 
     return {
@@ -284,8 +285,6 @@ export default {
             message: "Órden aditada",
             type: "success",
           });
-
-          this.form.reset();
         },
       });
     },

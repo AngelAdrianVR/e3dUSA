@@ -56,7 +56,15 @@ class DesignController extends Controller
             'user_id' => auth()->id()
         ]);
 
-        // $design->addAllMediaFromRequest('media_plano')->each(fn ($file) => $file->toMediaCollection('plano'));
+        // Guardar el archivo en la colección 'plano'
+    if ($request->hasFile('media_plano')) {
+        $design->addMediaFromRequest('media_plano')->toMediaCollection('plano');
+    }
+
+    // Guardar el archivo en la colección 'logo'
+    if ($request->hasFile('media_logo')) {
+        $design->addMediaFromRequest('media_logo')->toMediaCollection('logo');
+    }
 
         return to_route('designs.index');
     }
@@ -103,10 +111,21 @@ class DesignController extends Controller
             'specifications' => 'required',
         ]);
 
+        
+        // Guardar el archivo en la colección 'plano'
+        if ($request->hasFile('media_plano')) {
+            $design->addMediaFromRequest('media_plano')->toMediaCollection('plano');
+        }
+        
+        // Guardar el archivo en la colección 'logo'
+        if ($request->hasFile('media_logo')) {
+            $design->addMediaFromRequest('media_logo')->toMediaCollection('logo');
+        }
+        
         $design->update($request->except('original_design_id') + [
             'user_id' => auth()->id()
         ]);
-
+        
         return to_route('designs.index');
     }
 
