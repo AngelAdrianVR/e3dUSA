@@ -47,7 +47,7 @@
       <p class="text-primary ">Operadores asignados:</p>
       <p v-for="production in catalog_product_company_sale.productions" :key="production.id"
         class="mt-1 flex justify-between items-center">
-        -{{ production.operator.name }}
+        <span :class="$page.props.auth.user.id == production.operator.id ? 'text-green-600' : null">-{{ production.operator.name }} {{ $page.props.auth.user.id == production.operator.id ? '(Tú)' : '' }}</span>
         <el-tooltip placement="right">
           <template #content>
             <p> <strong class="text-yellow-500">Tareas: </strong>{{ production.tasks }}</p>
@@ -85,6 +85,9 @@
         'border-[#9a9a9a] text-[#9a9a9a]': getOrderStatus() == 'Sin iniciar',
         }">{{ getOrderStatus() }}</p>
     </div>
+    <button v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id)" :disabled="getNextAction() == 'Finalizado'" class="absolute bottom-3 right-4 bg-secondary px-2 rounded-md text-white disabled:opacity-25 disabled:cursor-not-allowed">
+      {{ getNextAction() }}
+    </button>
   </div>
 </template>
 
@@ -122,6 +125,12 @@ export default {
         return "En proceso";
       }
     },
+    getNextAction() {
+      const task = this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id);
+       if (task.finished_at) return 'Finalizado';
+       else if (task.started_at) return 'Finalizar';
+       else return 'Iniciar';
+    }
   }
 };
 </script>

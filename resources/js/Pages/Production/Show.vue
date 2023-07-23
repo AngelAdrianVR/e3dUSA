@@ -9,12 +9,23 @@
                     <i class="fa-solid fa-xmark"></i>
                     </Link>
                 </div>
-                <div class="w-1/3">
-                    <el-select v-model="selectedSale" clearable filterable placeholder="Buscar orden de producción"
-                        no-data-text="No hay órdenes registradas" no-match-text="No se encontraron coincidencias">
-                        <el-option v-for="item in sales.data" :key="item.id"
-                            :label="item.folio.replace('OV', 'OP') + ' | ' + item.company_branch.name" :value="item.id" />
-                    </el-select>
+                <div class="flex justify-between">
+                    <div class="w-1/3">
+                        <el-select v-model="selectedSale" clearable filterable placeholder="Buscar orden de producción"
+                            no-data-text="No hay órdenes registradas" no-match-text="No se encontraron coincidencias">
+                            <el-option v-for="item in sales.data" :key="item.id"
+                                :label="item.folio.replace('OV', 'OP') + ' | ' + item.company_branch.name"
+                                :value="item.id" />
+                        </el-select>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <el-tooltip v-if="$page.props.auth.user.permissions.includes('Ordenes de produccion todas')"
+                            content="Editar" placement="top">
+                            <Link :href="route('productions.edit', selectedSale)">
+                            <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]"><i class="fa-solid fa-pen text-sm"></i></button>
+                            </Link>
+                        </el-tooltip>
+                    </div>
                 </div>
             </div>
             <p class="text-center font-bold text-lg mb-4">
@@ -107,7 +118,9 @@
 
             <div v-if="tabs == 2" class="p-7">
                 <div class="mb-5">
-                    <PrimaryButton @click="$inertia.get(route('productions.print', JSON.stringify(orderedProductsSelected)))" class="rounded-[10px]" :disabled="!orderedProductsSelected.length">
+                    <PrimaryButton
+                        @click="$inertia.get(route('productions.print', JSON.stringify(orderedProductsSelected)))"
+                        class="rounded-[10px]" :disabled="!orderedProductsSelected.length">
                         Imprimir
                     </PrimaryButton>
                 </div>
@@ -183,32 +196,6 @@ export default {
                 this.orderedProductsSelected.splice(opsIndex, 1);
             }
         },
-        //   startOrder() {
-        //     this.form.put(route("designs.start-order", this.selectedSale), {
-        //       onSuccess: () => {
-        //         this.$notify({
-        //           title: "Éxito",
-        //           message: "Órden en proceso",
-        //           type: "success",
-        //         });
-
-        //         this.form.reset();
-        //         this.startOrderModal = false;
-        //       },
-        //     });
-        //   },
-
-        //   finishOrder() {
-        //     this.form.put(route("designs.finish-order", this.selectedSale), {
-        //       onSuccess: () => {
-        //         this.$notify({
-        //           title: "Éxito",
-        //           message: "Órden terminada",
-        //           type: "success",
-        //         });
-        //       },
-        //     });
-        //   },
     },
 
     watch: {

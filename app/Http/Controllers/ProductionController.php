@@ -18,13 +18,14 @@ class ProductionController extends Controller
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de produccion todas')) {
             // $productions = ProductionResource::collection(Production::with('user', 'catalogProductCompanySale.catalogProductCompany.company')->latest()->get());
             $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale', 'companyBranch')->whereHas('productions')->latest()->get());
-            // return $productions;
             return inertia('Production/Admin', compact('productions'));
         } elseif (auth()->user()->can('Ordenes de produccion personal')) {
-            $productions = ProductionResource::collection(Production::with('user', 'catalogProductCompanySale.catalogProductCompany.company')->where('user_id', auth()->id())->latest()->get());
+            $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale', 'companyBranch')->whereHas('productions')->where('user_id', auth()->id())->latest()->get());
             return inertia('Production/Index', compact('productions'));
         } else {
-            $productions = ProductionResource::collection(Production::with('user', 'catalogProductCompanySale.catalogProductCompany.company')->where('operator_id', auth()->id())->latest()->get());
+            $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale', 'companyBranch')->whereHas('productions', function ($query){
+                $query->where('productions.operator_id', auth()->id());
+            })->latest()->get());
             return inertia('Production/Operator', compact('productions'));
         }
     }

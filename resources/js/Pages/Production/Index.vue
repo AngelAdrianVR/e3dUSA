@@ -36,13 +36,12 @@
                 </div>
                 <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="450" style="width: 100%"
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
-                    <el-table-column type="selection" width="45" />
-                    <el-table-column prop="id" label="ID" width="60" />
-                    <el-table-column prop="user.name" label="Creador" width="150" />
-                    <el-table-column prop="catalog_product_company_sale.catalog_product_company.company.business_name" label="Cliente" width="150" />
-                    <el-table-column prop="created_at" label="Creada el" width="150" />
-                    <el-table-column prop="created_at" label="Operadores" width="120" />
-                    <el-table-column align="right" fixed="right">
+                    <el-table-column type="selection" width="55" />
+                    <el-table-column prop="user.name" label="Creador" />
+                    <el-table-column prop="company_branch.name" label="Cliente" />
+                    <el-table-column prop="created_at" label="Creada el" />
+                    <el-table-column prop="productions.length" label="Operadores" />
+                    <el-table-column align="right" fixed="right" width="200">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
                         </template>
@@ -117,7 +116,7 @@ export default {
         async deleteSelections() {
             try {
                 const response = await axios.post(route('productions.massive-delete', {
-                   productions: this.$refs.multipleTableRef.value
+                    productions: this.$refs.multipleTableRef.value
                 }));
 
                 if (response.status == 200) {
@@ -188,8 +187,7 @@ export default {
                 return this.productions.data.filter(
                     (production) =>
                         production.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                        production.status.toLowerCase().includes(this.search.toLowerCase()) ||
-                        production.user.name.toLowerCase().includes(this.search.toLowerCase())
+                        production.company_branch.name.toLowerCase().includes(this.search.toLowerCase())
                 )
             }
         }
