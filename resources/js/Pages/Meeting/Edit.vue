@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppLayout title="Reuniones - Crear">
+    <AppLayout title="Reuniones - Editar">
       <template #header>
         <div class="flex justify-between">
           <Link
@@ -10,13 +10,13 @@
             <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
-            <h2 class="font-semibold text-xl leading-tight">Agendar reunion</h2>
+            <h2 class="font-semibold text-xl leading-tight">Editar reunion "{{ meeting.subject }}"</h2>
           </div>
         </div>
       </template>
 
       <!-- Form -->
-      <form @submit.prevent="store">
+      <form @submit.prevent="update">
         <div
           class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4"
         >
@@ -95,7 +95,7 @@
                 v-for="item in users"
                 :key="item.id"
                 :label="item.name"
-                :value="item.name"
+                :value="item.id"
               />
             </el-select>
             <InputError :message="form.errors.participants" />
@@ -110,7 +110,7 @@
               inputPlaceholder="Ubicación *"
               inputType="text"
             >
-              <el-tooltip content="Lugar de la reunión. Si es en linea, indicarlo *" placement="top">
+              <el-tooltip content="Lugar de la reunión *" placement="top">
                 <i class="fa-solid fa-location-dot text-gray-700"></i>
               </el-tooltip>
             </IconInput>
@@ -179,7 +179,6 @@
       <!-- -------------- Modal starts----------------------- -->
       <Modal :show="availableModal" @close="availableModal = false">
         <div class="p-3 relative">
-        {{form}}
           <i
             @click="availableModal = false"
             class="fa-solid fa-xmark cursor-pointer w-5 h-5 rounded-full border border-black flex items-center justify-center absolute right-3"
@@ -190,31 +189,12 @@
             class="fa-solid fa-question text-[9px] text-secondary h-3 w-3 bg-sky-300 rounded-full text-center absolute left-3 top-3 cursor-pointer"
           ></i>
 
-          <p class="font-bold text-center mb-5">Disponibilidad de Sherman</p>
+          <p class="font-bold text-center">Disponibilidad de Sherman</p>
 
-          <div class="mb-3 flex items-center justify-start">
-          <el-tooltip content="Fecha de reunión *" placement="top">
-          <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                <i class="fa-solid fa-calendar"></i>
-              </span>
-        </el-tooltip>
-            <el-date-picker
-              v-model="form.date"
-              type="date"
-              placeholder="Selecciona una fecha"
-            />
-          </div>
-
-          <p v-if="!start_selected" class="ml-7 my-6 text-secondary">Selecciona la hora de inicio</p>
-          <p v-else class="ml-7 my-6 text-secondary">Selecciona la hora de terminación</p>
-
-          <p class="ml-7 my-6 text-primary text-center">De {{ form.start ?? '____'}} a {{ form.end ?? '____' }}</p>
-
-          
+          <p class="ml-7 my-6 text-secondary">Disponibilidad del día de hoy</p>
 
           <div class="text-center rounded-lg border border-[#9a9a9a] w-1/3 mx-auto relative">
-            <div @click="selectTime(meeting, index)" v-for="(meeting, index) in schedule" :key="meeting" :class="meeting.bg + ' ' + meeting.text" class="cursor-pointer border-b border-[#9a9a9a] h-[25px] hover:bg-secondary hover:text-white">{{ index % 2 ? '' : meeting.label }}</div>
+            <div @click="selectTime(hour)" v-for="(hour, index) in schedule" :key="hour" class="cursor-pointer border-b border-[#9a9a9a] h-[25px] hover:bg-secondary hover:text-white">{{ index % 2 ? '' : hour }}</div>
           </div> 
 
           <div
@@ -238,7 +218,6 @@
 
           <div class="flex justify-start space-x-3 pt-5 pb-1">
             <PrimaryButton @click="availableModal = false">Listo</PrimaryButton>
-            <CancelButton v-if="form.start" @click="reset()">Borrar</CancelButton>
           </div>
         </div>
       </Modal>
@@ -251,7 +230,6 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
-import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
@@ -261,105 +239,45 @@ import Modal from "@/Components/Modal.vue";
 export default {
   data() {
     const form = useForm({
-      subject: null,
-      location: null,
-      url: null,
-      description: null,
-      date: null,
-      start: null,
-      end: null,
-      repit: null,
-      participants: null,
+      subject: this.meeting.subject,
+      location: this.meeting.location,
+      url: this.meeting.url,
+      description: this.meeting.description,
+      date: this.meeting.date,
+      start: this.meeting.start.raw,
+      end: this.meeting.end.raw,
+      repit: this.meeting.repit,
+      participants: this.meeting.participants,
     });
 
     return {
       form,
       availableModal: false,
       helpDialog: false,
-      start_selected: false,
-      start_index: null,
 
       schedule:[
-          {'label':'09:00',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'09:30',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'10:00',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'10:30',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'11:00',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'11:30',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'12:00',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'12:30',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'13:00',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'13:30',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'14:00',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'14:30',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'15:00',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'15:30',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'16:00',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'16:30',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'17:00',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'17:30',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'18:00',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
-          {'label':'18:30',
-            'bg':'bg-transparent',
-            'text':'text-black'
-          },
+          '9:00',
+          '9:30',
+          '10:00',
+          '10:30',
+          '11:00',
+          '11:30',
+          '12:00',
+          '12:30',
+          '12:00',
+          '12:30',
+          '13:00',
+          '13:30',
+          '14:00',
+          '14:30',
+          '15:00',
+          '15:30',
+          '16:00',
+          '16:30',
+          '17:00',
+          '17:30',
+          '18:00',
+          '18:30',
       ]
     };
   },
@@ -372,18 +290,18 @@ export default {
     IconInput,
     Checkbox,
     Modal,
-    CancelButton
   },
   props: {
     users: Array,
+    meeting: Object,
   },
   methods: {
-    store() {
-      this.form.post(route("meetings.store"), {
+    update() {
+      this.form.put(route("meetings.update", this.meeting), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: "Reunion agendada",
+            message: "Reunion editada",
             type: "success",
           });
 
@@ -391,35 +309,10 @@ export default {
         },
       });
     },
-    selectTime(meeting, index){
-      if(this.start_selected == false){
-        
-        this.start_index = index;
-        this.form.start = meeting.label;
-        this.schedule[index].bg = 'bg-secondary';
-        this.schedule[index].text = 'text-white';
-        this.start_selected = true;
-      }else{
- 
-        this.form.end = meeting.label;
-        for (let i = this.start_index; i <= index; i++) {
-          this.schedule[i].bg = 'bg-secondary';
-          this.schedule[i].text = 'text-white';   
-        }
-        
-        this.start_selected = false;
-      }
+    selectTime(hour){
+      console.log(hour);
+      // this.form.start = hour;
     },
-    reset(){
-      for (let i = 0; i < this.schedule.length; i++) {
-          this.schedule[i].bg = 'bg-transparent';
-          this.schedule[i].text = 'text-black';   
-        }
-        this.form.date = null;
-        this.form.start = null;
-        this.form.end = null;
-        this.start_selected = false;
-    }
   },
 };
 </script>
