@@ -9,7 +9,7 @@
                 </Link>
             </div>
             <div class="flex justify-between mt-5 mx-14">
-                <div class="w-1/3">
+                <div class="md:w-1/3">
                     <el-select v-model="selectedCatalogProduct" clearable filterable placeholder="Buscar producto"
                         no-data-text="No hay productos en el catalogo" no-match-text="No se encontraron coincidencias">
                         <el-option v-for="item in catalog_products.data" :key="item.id" :label="item.name"
@@ -107,11 +107,11 @@
                         </div>
                         <div class="flex mb-2 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Cantidad miníma permitida en almacén</p>
-                            <p>{{ currentCatalogProduct?.min_quantity }}</p>
+                            <p>{{ currentCatalogProduct?.min_quantity }} {{ currentCatalogProduct?.measure_unit }}</p>
                         </div>
                         <div class="flex space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Cantidad máxima permitida en almacén</p>
-                            <p>{{ currentCatalogProduct?.max_quantity }}</p>
+                            <p>{{ currentCatalogProduct?.max_quantity }} {{ currentCatalogProduct?.measure_unit }}</p>
                         </div>
                     </div>
                 </div>

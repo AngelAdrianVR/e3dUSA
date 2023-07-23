@@ -63,7 +63,7 @@
                                 ...
                             </span>
                         </el-tooltip>
-                        <textarea v-model="form.description" class="textarea" autocomplete="off"
+                        <textarea v-model="form.description" class="textarea mb-1" autocomplete="off"
                             placeholder="Descripción"></textarea>
                         <InputError :message="form.errors.description" />
                     </div>
@@ -86,7 +86,7 @@
                                 :value="feature"></el-option>
                         </el-select>
                     </div>
-                    <div class="col-span-full"> 
+                    <div class="col-span-full mt-2"> 
                         <div class="flex items-center">
                             <span
                                 class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
@@ -135,7 +135,7 @@
                             </li>
                         </template>
                     </ol>
-                    <div class="flex items-center">
+                    <div class="flex items-center my-2">
                         <el-tooltip content="Materias primas" placement="top">
                             <span
                                 class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
@@ -148,7 +148,7 @@
                             <el-option v-for="item in raw_materials" :key="item.id" :label="item.name" :value="item.id" />
                         </el-select>
                     </div>
-                    <div class="flex items-center">
+                    <div class="flex items-center mb-2">
                         <el-tooltip content="proceso(s) de produccion" placement="top">
                             <span
                                 class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">

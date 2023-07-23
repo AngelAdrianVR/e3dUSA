@@ -19,26 +19,16 @@
 
       <!-- Form -->
       <form @submit.prevent="update">
-       <div
-          class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4"
-        >
+       <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md md:space-y-4">
           <div>
-            <IconInput
-              v-model="form.name"
-              inputPlaceholder="Nombre *"
-              inputType="text"
-            >
+            <IconInput v-model="form.name" inputPlaceholder="Nombre *" inputType="text">
               <el-tooltip content="Nombre" placement="top"> A </el-tooltip>
             </IconInput>
             <InputError :message="form.errors.name" />
           </div>
-          <div class="md:grid gap-6 mb-6 grid-cols-2">
+          <div class="md:grid gap-6 md:mb-6 grid-cols-2">
             <div>
-              <IconInput
-                v-model="form.part_number"
-                inputPlaceholder="Número de parte *"
-                inputType="text"
-              >
+              <IconInput v-model="form.part_number" inputPlaceholder="Número de parte *" inputType="text">
                 <el-tooltip content="Número de parte" placement="top">
                   #
                 </el-tooltip>
@@ -46,41 +36,23 @@
               <InputError :message="form.errors.part_number" />
             </div>
             <div>
-              <IconInput
-                v-model="form.min_quantity"
-                inputPlaceholder="Stock mínimo"
-                inputType="number"
-              >
-                <el-tooltip
-                  content="Cantidad mínima que puede haber en stock"
-                  placement="top"
-                >
+              <IconInput v-model="form.min_quantity" inputPlaceholder="Stock mínimo" inputType="number">
+                <el-tooltip content="Cantidad mínima que puede haber en stock" placement="top">
                   <i class="fa-solid fa-minus"></i>
                 </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.min_quantity" />
             </div>
             <div>
-              <IconInput
-                v-model="form.max_quantity"
-                inputPlaceholder="Stock máximo"
-                inputType="number"
-              >
-                <el-tooltip
-                  content="Cantidad máxima que puede haber en stock"
-                  placement="top"
-                >
+              <IconInput v-model="form.max_quantity" inputPlaceholder="Stock máximo" inputType="number">
+                <el-tooltip content="Cantidad máxima que puede haber en stock" placement="top">
                   <i class="fa-solid fa-plus"></i>
                 </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.max_quantity" />
             </div>
             <div>
-              <IconInput
-                v-model="form.initial_stock"
-                inputPlaceholder="Stock de apertura"
-                inputType="number"
-              >
+              <IconInput v-model="form.initial_stock" inputPlaceholder="Stock de apertura" inputType="number">
                 <el-tooltip content="Stock inicial" placement="top">
                   123
                 </el-tooltip>
@@ -88,11 +60,7 @@
               <InputError :message="form.errors.initial_stock" />
             </div>
             <div>
-              <IconInput
-                v-model="form.measure_unit"
-                inputPlaceholder="Unidad de medida"
-                inputType="text"
-              >
+              <IconInput v-model="form.measure_unit" inputPlaceholder="Unidad de medida" inputType="text">
                 <el-tooltip content="Unidad de medida" placement="top">
                   <i class="fa-solid fa-ruler-vertical"></i>
                 </el-tooltip>
@@ -100,16 +68,8 @@
               <InputError :message="form.errors.measure_unit" />
             </div>
             <div>
-              <IconInput
-                v-model="form.cost"
-                inputPlaceholder="Costo *"
-                inputType="number"
-                inputStep="0.01"
-              >
-                <el-tooltip
-                  content="Cuánto le cuesta a e3d adquirir esta materia prima"
-                  placement="top"
-                >
+              <IconInput v-model="form.cost" inputPlaceholder="Costo *" inputType="number" inputStep="0.01">
+                <el-tooltip content="Cuánto le cuesta a e3d adquirir esta materia prima" placement="top">
                   <i class="fa-solid fa-dollar"></i>
                 </el-tooltip>
               </IconInput>
@@ -117,11 +77,7 @@
             </div>
           </div>
           <div>
-            <IconInput
-              v-model="form.location"
-              inputPlaceholder="Ubicaión *"
-              inputType="text"
-            >
+            <IconInput v-model="form.location" inputPlaceholder="Ubicaión *" inputType="text">
               <el-tooltip content="Ubicación en almacén" placement="top">
                 <i class="fa-solid fa-box"></i>
               </el-tooltip>
@@ -129,21 +85,15 @@
             <InputError :message="form.errors.location" />
           </div>
 
-          <div class="flex">
+          <div class="flex mb-1">
             <span
-              class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
-            >
+              class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
               <el-tooltip content="Descripción del producto" placement="top">
                 ...
               </el-tooltip>
             </span>
-            <textarea
-              v-model="form.description"
-              class="textarea"
-              autocomplete="off"
-              placeholder="Descripción *"
-              required
-            ></textarea>
+            <textarea v-model="form.description" class="textarea" autocomplete="off" placeholder="Descripción *"
+              required></textarea>
             <InputError :message="form.errors.description" />
           </div>
           <div class="col-span-full">
@@ -164,33 +114,25 @@
               <el-option v-for="feature in features" :key="feature" :label="feature" :value="feature"></el-option>
             </el-select>
           </div>
-          <div class="col-span-full">
+          <div class="col-span-full mt-2">
             <div class="flex items-center">
               <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
-              >
+                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
                 <el-tooltip content="Imagen del producto" placement="top">
                   <i class="fa-solid fa-images"></i>
                 </el-tooltip>
               </span>
-              <input
-                @input="form.media = $event.target.files[0]"
+              <input @input="form.media = $event.target.files[0]"
                 class="input h-12 rounded-lg file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white file:cursor-pointer hover:file:bg-red-600"
-                aria-describedby="file_input_help"
-                id="file_input"
-                type="file"
-              />
+                aria-describedby="file_input_help" id="file_input" type="file" />
             </div>
-            <p
-              class="mt-1 text-xs text-right text-gray-500"
-              id="file_input_help"
-            >
+            <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
               SVG, PNG, JPG o GIF (MAX. 4 MB).
             </p>
           </div>
 
           <div class="mt-2 mx-3 md:text-right">
-            <PrimaryButton :disabled="form.processing"> Actualizar </PrimaryButton>
+            <PrimaryButton :disabled="form.processing"> Agregar </PrimaryButton>
           </div>
         </div>
       </form>

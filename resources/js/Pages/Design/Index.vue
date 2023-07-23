@@ -42,7 +42,7 @@
                     <el-table-column prop="designer.name" label="Diseñador(a)" width="150" />
                     <el-table-column prop="created_at" label="Solicitado el" width="120" />
                     <el-table-column prop="status[label]" label="Estatus" width="200" />
-                    <el-table-column align="right" fixed="right">
+                    <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
                         </template>

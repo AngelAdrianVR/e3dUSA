@@ -88,7 +88,7 @@
             label="Justificación"
             width="200"
           />
-          <el-table-column align="right" fixed="right" width="200">
+          <el-table-column align="right" fixed="right" width="120">
             <template #header>
               <TextInput
                 v-model="search"
@@ -137,11 +137,17 @@
               class="fa-solid fa-question text-[9px] text-secondary h-3 w-3 bg-sky-300 rounded-full text-center absolute left-3 top-3 cursor-pointer"
             ></i>
 
-            <p class="font-bold text-center mb-4">
+            <p class="font-bold text-center mt-4 ">
               Solicitar autorización de timepo adicional
             </p>
 
-            <div class="w-1/3 ml-3">
+            <div class="md:w-1/3 ml-3 my-2 flex items-center">
+            <span
+              class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+              <el-tooltip content="Seleccionar nómina" placement="top">
+                <i class="fa-solid fa-file-invoice"></i>
+              </el-tooltip>
+            </span>
                     <el-select :disabled="editFlag" v-model="form.payroll_id" clearable filterable placeholder="Buscar nómina"
                         no-data-text="No hay nóminas registradas" no-match-text="No se encontraron coincidencias">
                         <el-option v-for="item in payrolls" 
@@ -151,7 +157,13 @@
                     </el-select>
                 </div>
 
-            <div class="w-1/3 ml-3">
+            <div class="md:w-1/3 ml-3 mb-2 flex items-center">
+            <span
+              class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+              <el-tooltip content="Seleccionar nómina" placement="top">
+                <i class="fa-solid fa-user"></i>
+              </el-tooltip>
+            </span>
                     <el-select :disabled="editFlag" v-model="form.user_id" clearable filterable placeholder="Buscar usuario"
                         no-data-text="No hay usuarios registrados" no-match-text="No se encontraron coincidencias">
                         <el-option v-for="item in users" 
@@ -162,7 +174,7 @@
                 </div>
 
             <div class="ml-7 flex space-x-3 items-center">
-              <div class="w-1/6 mr-2">
+              <div class="md:w-1/6 mr-2">
                 <IconInput
                   v-model="form.hours"
                   inputPlaceholder="Horas *"
@@ -175,7 +187,7 @@
                 <InputError :message="form.errors.hours" />
               </div>
               hrs
-              <div class="w-[14%]">
+              <div class="md:w-[14%]">
                 <IconInput
                   v-model="form.minutes"
                   inputPlaceholder="Minutos *"
@@ -185,8 +197,9 @@
                 <InputError :message="form.errors.minutes" />
               </div>
               <span class="ml-2">min</span>
-
-              <div class="flex col-span-full ml-3">
+              
+            </div>
+              <div class="flex col-span-full ml-3 mt-2">
                 <el-tooltip content="Justificación" placement="top">
                   <span
                     class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
@@ -202,7 +215,6 @@
                 ></textarea>
                 <InputError :message="form.errors.justification" />
               </div>
-            </div>
             <div
               v-if="helpDialog"
               class="border border-[#0355B5] rounded-lg px-6 py-2 mt-5 mx-7 relative"

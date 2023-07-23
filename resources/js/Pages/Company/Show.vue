@@ -10,7 +10,7 @@
           </Link>
         </div>
         <div class="flex justify-between">
-          <div class="w-1/3">
+          <div class="md:w-1/3">
             <el-select v-model="selectedCompany" clearable filterable placeholder="Buscar producto"
               no-data-text="No hay clientes en el catálogo" no-match-text="No se encontraron coincidencias">
               <el-option v-for="item in companies" :key="item.id" :label="item.business_name" :value="item.id" />

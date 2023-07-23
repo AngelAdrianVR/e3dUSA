@@ -11,7 +11,7 @@
         </Link>
       </div>
       <div class="flex justify-between mt-5 mx-14">
-        <div class="w-1/3">
+        <div class="md:w-1/3 mr-2">
           <el-select
             v-model="selectedStorage"
             clearable
@@ -28,7 +28,8 @@
             />
           </el-select>
         </div>
-        <div class="flex items-center space-x-2">
+        <div class="flex flex-col md:flex-row items-center space-x-2">
+        <div class="flex gap-1 mb-2">
           <el-tooltip
             v-if="$page.props.auth.user.permissions.includes('Crear entradas')"
             content="Dar entrada a almacén"
@@ -60,7 +61,9 @@
               Salida
             </button>
           </el-tooltip>
+        </div>
 
+        <div class="flex gap-1">
           <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar materia prima') && currentStorage?.type != 'producto-terminado'" content="Editar"
             placement="top">
             <Link :href="route('raw-materials.edit', selectedRawMaterial)">
@@ -108,6 +111,7 @@
               </DropdownLink>
             </template>
           </Dropdown>
+        </div>
         </div>
       </div>
       <div class="lg:grid grid-cols-3 mt-12 border-b-2">

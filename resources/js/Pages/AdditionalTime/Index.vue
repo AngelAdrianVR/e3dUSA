@@ -46,7 +46,7 @@
           <el-table-column prop="authorized_user_name" label="Autorizado por" width="130" />
           <el-table-column prop="authorized_at" label="Autorizado el" width="120" />
           <el-table-column prop="justification" label="Justificación" width="200" />
-          <el-table-column align="right" fixed="right">
+          <el-table-column align="right" fixed="right" width="120">
             <template #header>
               <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
             </template>

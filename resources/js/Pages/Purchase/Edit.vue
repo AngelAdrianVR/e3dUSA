@@ -22,7 +22,13 @@
         <div
           class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4"
         >
-          <div>
+          <div class="flex items-center">
+          <el-tooltip content="Selecciona un provedor" placement="top">
+          <span
+                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                <i class="fa-solid fa-boxes-packing"></i>
+              </span>
+        </el-tooltip>
             <el-select
             @change="selectedSupplier"
               v-model="form.supplier_id"
@@ -39,7 +45,13 @@
             </el-select>
           </div>
 
-          <div>
+          <div class="flex items-center">
+          <el-tooltip content="Selecciona la información bancaria" placement="top">
+          <span
+                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                <i class="fa-solid fa-money-check-dollar"></i>
+              </span>
+        </el-tooltip>
             <el-select
               v-model="form.bank_information"
               class="mt-2"
@@ -55,7 +67,13 @@
             </el-select>
           </div>
 
-          <div>
+          <div class="flex items-center pb-2">
+          <el-tooltip content="Selecciona un contacto" placement="top">
+          <span
+                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                <i class="fa-solid fa-address-card"></i>
+              </span>
+        </el-tooltip>
             <el-select
               v-model="form.contact_id"
               class="mt-2"
@@ -74,19 +92,19 @@
           <!-- --------------- Order info ----------------------------- -->
           <el-divider content-position="left">Datos de la órden</el-divider>
           <div class="pb-4 pt-3">
-            <label for="">Fecha esperada de llegada</label>
-            <IconInput
-              v-model="form.expected_delivery_date"
-              inputPlaceholder="Fecha esperada de llegada"
-              inputType="date"
-            >
-              <el-tooltip
-                content="Fecha esperada en la que se entrega el pedido realizado"
-                placement="top"
-              >
+            <div class="flex items-center">
+          <el-tooltip content="fecha de entrega esperada" placement="top">
+          <span
+                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
                 <i class="fa-solid fa-calendar"></i>
-              </el-tooltip>
-            </IconInput>
+              </span>
+        </el-tooltip>
+            <el-date-picker
+              v-model="form.expected_delivery_date"
+              type="date"
+              placeholder="fecha de entrega esperada"
+            />
+          </div>
             <InputError :message="form.errors.expected_delivery_date" />
           </div>
 
@@ -130,7 +148,14 @@
           </ol>
           <div class="space-y-3 bg-[#b8b7b7] rounded-lg p-5">
             <div class="md:grid gap-6 mb-6 grid-cols-2">
-              <div>
+              <div class="flex items-center mb-3">
+              <el-tooltip content="Selecciona un contacto" placement="top">
+              <span
+                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"
+              >
+                <i class="fa-brands fa-product-hunt"></i>
+              </span>
+            </el-tooltip>
                 <el-select
                   v-model="productSelected"
                   class="mt-2"

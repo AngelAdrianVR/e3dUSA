@@ -11,7 +11,7 @@
         </Link>
       </div>
       <div class="flex justify-between mt-5 mx-14">
-        <div class="w-1/3">
+        <div class="md:w-1/3 mr-2">
           <el-select
             v-model="selectedSample"
             clearable

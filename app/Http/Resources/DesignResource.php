@@ -51,6 +51,8 @@ class DesignResource extends JsonResource
             'designer' => $this->whenLoaded('designer'),
             'user' => $this->whenLoaded('user'),
             'media' => $this->getMedia('results')->all(),
+            // 'media_plano' => $this->getMedia('plano')->all(),
+            // 'media_logo' => $this->getMedia('logo')->all(),
             'measure_unit' => $this->measure_unit,
             'authorized_user_name' => $this->authorized_user_name ?? '--',
             'authorized_at' => $this->authorized_at?->isoFormat('YYYY MMM DD') ?? 'No autorizado',

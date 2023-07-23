@@ -289,7 +289,7 @@
                 </li>
               </template>
             </ol>
-            <div class="md:w-[92%] mx-auto pt-3 space-y-3 rounded-lg p-5">
+            <div class="md:w-[92%] mx-auto pt-3 md:space-y-3 rounded-lg p-5">
               <div>
                 <IconInput
                   v-model="contact.name"
@@ -302,7 +302,7 @@
                 </IconInput>
                 <!-- <InputError :message="form.errors.name_contact" /> -->
               </div>
-              <div class="md:grid gap-6 mb-6 grid-cols-2">
+              <div class="md:grid gap-6 md:mb-6 grid-cols-2">
                 <div>
                   <IconInput
                     v-model="contact.email"

@@ -17,14 +17,14 @@
 
       <!-- Form -->
       <form @submit.prevent="store">
-        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4">
+        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md md:space-y-4">
           <div>
             <IconInput v-model="form.name" inputPlaceholder="Nombre *" inputType="text">
               <el-tooltip content="Nombre" placement="top"> A </el-tooltip>
             </IconInput>
             <InputError :message="form.errors.name" />
           </div>
-          <div class="md:grid gap-6 mb-6 grid-cols-2">
+          <div class="md:grid gap-6 md:mb-6 grid-cols-2">
             <div>
               <IconInput v-model="form.part_number" inputPlaceholder="Número de parte *" inputType="text">
                 <el-tooltip content="Número de parte" placement="top">
@@ -83,7 +83,7 @@
             <InputError :message="form.errors.location" />
           </div>
 
-          <div class="flex">
+          <div class="flex mb-1">
             <span
               class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
               <el-tooltip content="Descripción del producto" placement="top">

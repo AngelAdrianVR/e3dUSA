@@ -39,7 +39,7 @@
                 <el-table-column prop="companyBranch.name" label="Cliente" />
                 <el-table-column prop="authorized_user_name" label="Autorizado por" />
                 <el-table-column prop="created_at" label="Creado el" width="180" />
-                <el-table-column align="right" fixed="right" >
+                <el-table-column align="right" fixed="right" width="120" >
                     <template #header>
                         <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
                     </template>
