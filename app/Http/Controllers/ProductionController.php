@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductionResource;
 use App\Http\Resources\SaleResource;
+use App\Models\CatalogProductCompanySale;
 use App\Models\Production;
 use App\Models\Sale;
 use App\Models\User;
@@ -17,13 +18,14 @@ class ProductionController extends Controller
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de produccion todas')) {
             // $productions = ProductionResource::collection(Production::with('user', 'catalogProductCompanySale.catalogProductCompany.company')->latest()->get());
             $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale', 'companyBranch')->whereHas('productions')->latest()->get());
-            // return $productions;
             return inertia('Production/Admin', compact('productions'));
         } elseif (auth()->user()->can('Ordenes de produccion personal')) {
-            $productions = ProductionResource::collection(Production::with('user', 'catalogProductCompanySale.catalogProductCompany.company')->where('user_id', auth()->id())->latest()->get());
+            $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale', 'companyBranch')->whereHas('productions')->where('user_id', auth()->id())->latest()->get());
             return inertia('Production/Index', compact('productions'));
         } else {
-            $productions = ProductionResource::collection(Production::with('user', 'catalogProductCompanySale.catalogProductCompany.company')->where('operator_id', auth()->id())->latest()->get());
+            $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale', 'companyBranch')->whereHas('productions', function ($query){
+                $query->where('productions.operator_id', auth()->id());
+            })->latest()->get());
             return inertia('Production/Operator', compact('productions'));
         }
     }
@@ -62,8 +64,8 @@ class ProductionController extends Controller
 
     public function show($sale_id)
     {
-        $sale = SaleResource::make(Sale::with(['contact', 'companyBranch.company', 'catalogProductCompanySales.catalogProductCompany.catalogProduct.media', 'productions' => ['user', 'operator']])->find($sale_id));
-        $sales = SaleResource::collection(Sale::with(['contact', 'companyBranch.company', 'catalogProductCompanySales.catalogProductCompany.catalogProduct.media', 'productions' => ['user', 'operator']])->whereHas('productions')->get());
+        $sale = SaleResource::make(Sale::with(['contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator'], 'productions' => ['user', 'operator']])->find($sale_id));
+        $sales = SaleResource::collection(Sale::with(['contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator'], 'productions' => ['user', 'operator']])->whereHas('productions')->get());
 
         // return compact('sale', 'sales');
         return inertia('Production/Show', compact('sale', 'sales'));
@@ -108,6 +110,7 @@ class ProductionController extends Controller
         //
     }
 
+    // methods
     public function massiveDelete(Request $request)
     {
         foreach ($request->productions as $production) {
@@ -116,5 +119,12 @@ class ProductionController extends Controller
         }
 
         return response()->json(['message' => 'Producto(s) eliminado(s)']);
+    }
+
+    public function print($productions) 
+    {
+        $ordered_products = CatalogProductCompanySale::with(['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'user'], 'sale' => ['user', 'companyBranch']])->whereIn('id', json_decode($productions))->get();
+        // return $ordered_products;
+        return inertia('Production/PrintTemplate', compact('ordered_products'));
     }
 }
