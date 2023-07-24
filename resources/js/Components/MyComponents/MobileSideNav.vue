@@ -254,13 +254,19 @@ export default {
                             active: route().current('samples.*'),
                             show: this.$page.props.auth.user.permissions.includes('Ver muestra')
                         },
+                        {
+                            label: 'Costos de producción',
+                            route: 'production-costs.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver costos de produccion')
+                        },
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver maquinas') ||
                         this.$page.props.auth.user.permissions.includes('Solicitudes de tiempo adicional personal') ||
                         this.$page.props.auth.user.permissions.includes('Reuniones personal') ||
                         this.$page.props.auth.user.permissions.includes('Ver muestra') ||
-                        this.$page.props.auth.user.permissions.includes('Ver biblioteca de medios')
+                        this.$page.props.auth.user.permissions.includes('Ver biblioteca de medios') ||
+                          this.$page.props.auth.user.permissions.includes('Ver costos de produccion')
                 },
                 {
                     label: 'Configuración',
