@@ -1,10 +1,10 @@
 <template>
   <div class="rounded-xl bg-[#cccccc] px-7 py-3 relative">
     <p class="text-center font-bold mt-4">
-      {{ company_product.catalog_product.name }}
+      {{ company_product.name }}
     </p>
     <span class="font-bold absolute right-5 top-2">{{
-      company_product.catalog_product.part_number
+      company_product.part_number
     }}</span>
     <el-tooltip content="Número de parte" placement="top">
       <i
@@ -12,9 +12,9 @@
       ></i>
     </el-tooltip>
     <figure class="bg-[#D9D9D9] w-full h-48 my-3">
-      <el-image
+      <!-- <el-image
         style="height: 100%"
-        :src="company_product.catalog_product.media[0]?.original_url"
+        :src="company_product.media[0]?.original_url"
         fit="fit"
       >
         <template #error>
@@ -22,7 +22,7 @@
             <i class="fa-solid fa-image text-6xl"></i>
           </div>
         </template>
-      </el-image>
+      </el-image> -->
     </figure>
 
     <p class="text-primary text-left">Detalles</p>
@@ -38,21 +38,21 @@
     <div class="bg-[#d9d9d9] rounded-lg p-2 grid grid-cols-2 my-3">
       <span class="text-sm">Precio Anterior:</span>
       <span class="text-secondary text-sm"
-        >{{ company_product.old_price }}
-        {{ company_product.old_currency }}</span
+        >{{ company_product.pivot.old_price }}
+        {{ company_product.pivot.old_currency }}</span
       >
       <span class="text-sm">Establecido:</span>
       <span class="text-secondary text-sm mb-3">{{
-        company_product.old_date
+        company_product.pivot.old_date
       }}</span>
 
       <span class="text-sm">Precio Anterior:</span>
       <span class="text-secondary text-sm"
-        >{{ company_product.new_price }}
-        {{ company_product.new_currency }}</span
+        >{{ company_product.pivot.new_price }}
+        {{ company_product.pivot.new_currency }}</span
       >
       <span class="text-sm">Establecido:</span>
-      <span class="text-secondary text-sm">{{ company_product.new_date }}</span>
+      <span class="text-secondary text-sm">{{ company_product.pivot.new_date }}</span>
     </div>
   </div>
 </template>
