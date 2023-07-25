@@ -42,6 +42,7 @@ class SaleResource extends JsonResource
             'order_via' => $this->order_via,
             'tracking_guide' => $this->tracking_guide,
             'invoice' => $this->invoice,
+            'products' => $this->products,
             'notes' => $this->notes ?? '--',
             'authorized_user_name' => $this->authorized_user_name ?? 'No autorizado',
             'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:mm A') ?? 'No autorizado',

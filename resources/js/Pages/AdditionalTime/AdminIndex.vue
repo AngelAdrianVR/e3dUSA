@@ -283,7 +283,7 @@ export default {
       editFlag: false,
       admin_additional_time: null,
       // pagination
-      itemsPerPage: 10,
+      itemsPerPage: 25,
       start: 0,
       end: 10,
     };

@@ -285,6 +285,12 @@ onMounted(getAttendanceTextButton);
 
                             <!-- Hamburger -->
                             <div class="-mr-2 flex items-center sm:hidden">
+                            <el-tooltip v-if="$page.props.auth.user.permissions.includes('Chatear')" content="Chat"
+                                    placement="bottom">
+                                    <a :href="route('chatify')" target="_blank" class="mr-8">
+                                        <i class="fa-solid fa-comments text-[#9A9A9A]"></i>
+                                    </a>
+                                </el-tooltip>
                                 <button
                                     class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
                                     @click="showingNavigationDropdown = !showingNavigationDropdown">
@@ -299,10 +305,10 @@ onMounted(getAttendanceTextButton);
                                             d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
+
                             </div>
                         </div>
                     </div>
-
                     <!-- Responsive Navigation Menu -->
                     <div :class="{ 'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown }"
                         class="sm:hidden bg-[#d9d9d9] w-4/6 absolute right-0 top-14 z-10 max-h-[90%] overflow-y-scroll overflow-x-hidden shadow-lg border border-[#cccccc] pt-4">
