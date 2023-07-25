@@ -18,7 +18,7 @@
                     <!-- pagination -->
                     <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                            :total="machines.length" />
+                            :total="machines.data.length" />
                     </div>
 
                     <!-- buttons -->
@@ -83,7 +83,7 @@ export default {
             disableMassiveActions: true,
             search: '',
             // pagination
-            itemsPerPage: 10,
+            itemsPerPage: 25,
             start: 0,
             end: 10,
         };
@@ -159,7 +159,7 @@ export default {
 
                     // update list of companies
                     let deletedIndexes = [];
-                    this.machines.forEach((machine, index) => {
+                    this.machines.data.forEach((machine, index) => {
                         if (this.$refs.multipleTableRef.value.includes(machine)) {
                             deletedIndexes.push(index);
                         }
@@ -170,7 +170,7 @@ export default {
 
                     // Eliminar clientes por índice
                     for (const index of deletedIndexes) {
-                        this.machines.splice(index, 1);
+                        this.machines.data.splice(index, 1);
                     }
 
                 } else {
@@ -206,9 +206,7 @@ export default {
 
             if (commandName == 'clone') {
                 this.clone(rowId);
-            } else if (commandName == 'make_so') {
-                console.log('SO');
-            } else {
+            }else {
                 this.$inertia.get(route('machines.' + commandName, rowId));
             }
         },

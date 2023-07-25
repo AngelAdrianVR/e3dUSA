@@ -14,6 +14,7 @@ use App\Http\Controllers\MachineController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\PayrollController;
+use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\ProductionCostController;
 use App\Http\Controllers\PurchaseController;
@@ -78,15 +79,12 @@ Route::post('sales/massive-delete', [SaleController::class, 'massiveDelete'])->n
 Route::post('sales/clone', [SaleController::class, 'clone'])->name('sales.clone');
 Route::put('sales/authorize/{sale}', [SaleController::class, 'authorizeOrder'])->name('sales.authorize');
 
-
 // ------- Ventas(Companybranches sucursales Routes)  ---------
 Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');
-
 
 // ------- Compras(Suppliers Routes)  ---------
 Route::resource('suppliers', SupplierController::class)->middleware('auth');
 Route::post('suppliers/massive-delete', [SupplierController::class, 'massiveDelete'])->name('suppliers.massive-delete');
-
 
 // ------- Compras(purchases Routes)  ---------
 Route::resource('purchases', PurchaseController::class)->middleware('auth');
@@ -186,7 +184,9 @@ Route::put('admin-additional-times/authorize/{admin_additional_time}', [Addition
 Route::put('admin-additional-times/unauthorize/{admin_additional_time}', [AdditionalTimeRequestController::class, 'unauthorizeRequest'])->name('admin-additional-times.unauthorize');
 Route::post('admin-additional-times/massive-delete', [AdditionalTimeRequestController::class, 'massiveDeleteAdmin'])->name('admin-additional-times.massive-delete');
 
-
+// ------- PDF routes -------------------
+Route::get('/raw-material-actual-stock', [PdfController::class, 'RawMaterialActualStock'])->name('pdf.raw-material-actual-stock')->middleware('auth');
+Route::get('/consumables-actual-stock', [PdfController::class, 'consumablesActualStock'])->name('pdf.consumables-actual-stock')->middleware('auth');
 
 // ------- Maintenances routes  -------------
 Route::resource('maintenances', MaintenanceController::class)->except('create')->middleware('auth');
@@ -201,6 +201,11 @@ Route::get('spare-parts/create/{selectedMachine}',[ SparePartController::class, 
 //------------------ Meetings routes ----------------
 Route::resource('meetings', MeetingController::class)->middleware('auth');
 Route::post('meetings/massive-delete', [MeetingController::class, 'massiveDelete'])->name('meetings.massive-delete');
+
+
+//------------------ Meetings routes ----------------
+Route::resource('production-costs', ProductionCostController::class)->middleware('auth');
+Route::post('production-costs/massive-delete', [ProductionCostController::class, 'massiveDelete'])->name('production-costs.massive-delete');
 
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');

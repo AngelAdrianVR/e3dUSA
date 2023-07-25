@@ -23,12 +23,25 @@ class StorageController extends Controller
             return inertia('Storage/Index/Consumable', compact('raw_materials'));
 
         }elseif(Route::currentRouteName() == 'storages.finished-products.index'){
-            $finished_products = Storage::with('storageable')->where('type', 'producto-terminado')->latest()->get();
-            return inertia('Storage/Index/FinishedProduct',compact('finished_products'));
+            $finished_products = Storage::with('storageable.media')->where('type', 'producto-terminado')->latest()->get();
 
-        }else
-        $scraps = Storage::with('storageable')->where('type', 'scrap')->latest()->get();
-        return inertia('Storage/Index/Scrap', compact('scraps'));
+            // Calcular la suma de costo de todo el scrap
+            $totalFinishedProductMoney = collect($finished_products)->sum(function ($item) {
+            return $item->storageable->cost * $item->quantity;
+            });
+
+            return inertia('Storage/Index/FinishedProduct',compact('finished_products', 'totalFinishedProductMoney'));
+        }else {
+
+            $scraps = Storage::with('storageable.media')->where('type', 'scrap')->latest()->get();
+
+            // Calcular la suma de costo de todo el scrap
+            $totalScrapMoney = collect($scraps)->sum(function ($item) {
+                return $item->storageable->cost * $item->quantity;
+            });
+
+            return inertia('Storage/Index/Scrap', compact('scraps', 'totalScrapMoney'));
+        }
     }
 
     
@@ -36,16 +49,11 @@ class StorageController extends Controller
     {
 
         if(Route::currentRouteName() == 'storages.scraps.create'){
-
-            $storages = Storage::with('storageable')->get();
-            // return $storages;
+            $storages = Storage::with('storageable.media')->get();
             return inertia('Storage/Create/Scrap', compact('storages'));
-
         }elseif(Route::currentRouteName() == 'storages.finished-products.create'){
-
-            $catalog_products = CatalogProduct::all();
-        return inertia('Storage/Create/FinishedProduct', compact('catalog_products'));
-
+            $catalog_products = CatalogProduct::with('media')->get();
+            return inertia('Storage/Create/FinishedProduct', compact('catalog_products'));
         }
         
     }
@@ -113,17 +121,21 @@ class StorageController extends Controller
     {
         $storage = Storage::with('storageable.media')->find($storage_id);
         $storages = Storage::with('storageable.media')->where('type', '!=', 'scrap')->get();
+       
+        // Calcular la suma de la variable "cost" de todos los objetos
+    $totalStorageMoney = collect($storages)->sum(function ($item) {
+        return $item->storageable->cost * $item->quantity;
+    });
+        // return $totalStorageMoney;
 
-        return inertia('Storage/Show', compact('storage', 'storages'));
+        return inertia('Storage/Show', compact('storage', 'storages', 'totalStorageMoney'));
     }
 
     
     public function edit(Storage $storage)
     {
-        // $finished_product = Storage::where('type', 'producto-terminado')->where('storageable_id', $storage)->get();
         $catalog_products = CatalogProduct::all();
-        // return $storage;
-        return inertia('Storage/Edit/FinishedProduct', compact('catalog_products'));
+        return inertia('Storage/Edit/FinishedProduct', compact('catalog_products', 'storage'));
     }
 
     

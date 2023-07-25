@@ -74,12 +74,20 @@
           
           <div
             v-show="catalog_product_selected"
-            class="text-gray-500 bg-secondary-gray rounded-lg p-4 flex justify-between"
+            class="text-gray-500 bg-secondary-gray rounded-lg p-4 flex"
           >
-          <div class="bg-gray-300 h-48 w-1/2 rounded-lg">
-                imagen
-         </div>
-            <ul>
+            <figure class="bg-[#D9D9D9] h-52 rounded-[10px] mr-5">
+              <el-image style="height: 100%; border-radius: 10px;"
+                :src="catalog_product_selected?.media[0]?.original_url"
+                fit="contain">
+                <template #error>
+                  <div class="flex justify-center items-center text-[#ababab]">
+                    <i class="fa-solid fa-image text-6xl"></i>
+                  </div>
+                </template>
+              </el-image>
+            </figure>
+            <ul class="px-4">
               <li>
                 <label class="text-primary">Nombre: </label>
                 {{ catalog_product_selected?.name }}
@@ -94,7 +102,7 @@
               </li>
               <li>
                 <label class="text-primary">Stock: </label>
-                {{ catalog_product_selected?.quantity }} {{ catalog_product_selected?.measure_unit  }}
+                {{ form.quantity }} {{ catalog_product_selected?.measure_unit  }}
               </li>
               <li>
                 <label class="text-primary">costo: </label> ${{

@@ -45,6 +45,7 @@ class DatabaseSeeder extends Seeder
         $this->call(BonusSeeder::class);
         $this->call(HolidaySeeder::class);
         $this->call(RolePermissionSeeder::class);
+        $this->call(DesignTypeSeeder::class);
 
         // create current payroll
         Payroll::create([

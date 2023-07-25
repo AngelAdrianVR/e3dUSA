@@ -71,7 +71,7 @@ export default {
       disableMassiveActions: true,
       search: '',
       // pagination
-      itemsPerPage: 10,
+      itemsPerPage: 25,
       start: 0,
       end: 10,
       isThursdayAfter8PM: false

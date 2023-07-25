@@ -1,12 +1,12 @@
 <template>
     <div>
-        <AppLayout title="Órdenes de venta">
+        <AppLayout title="Costos de producción">
             <template #header>
                 <div class="flex justify-between">
                     <div class="flex items-center space-x-2">
-                        <h2 class="font-semibold text-xl leading-tight">Órdenes de venta</h2>
+                        <h2 class="font-semibold text-xl leading-tight">Costos de prosucción</h2>
                     </div>
-                    <Link v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')" :href="route('sales.create')">
+                    <Link v-if="$page.props.auth.user.permissions.includes('Crear costos de produccion')" :href="route('production-costs.create')">
                     <SecondaryButton>+ Nuevo</SecondaryButton>
                     </Link>
                 </div>
@@ -18,12 +18,12 @@
                     <!-- pagination -->
                     <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                            :total="sales.data.length" />
+                            :total="production_costs.data.length" />
                     </div>
 
                     <!-- buttons -->
                     <div>
-                        <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar ordenes de venta')" confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                        <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar costos de produccion')" confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
                             title="¿Continuar?" @confirm="deleteSelections">
                             <template #reference>
                                 <el-button type="danger" plain class="mb-3"
@@ -32,15 +32,14 @@
                         </el-popconfirm>
                     </div>
                 </div>
-                <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="450" style="width: 100%"
+
+                <el-table :data="filteredTableData" @row-click="handleRowClick"  max-height="450" style="width: 100%"
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
-                    <el-table-column prop="folio" label="folio" width="100" />
-                    <el-table-column prop="user.name" label="Creado por" />
-                    <el-table-column prop="created_at" label="Creado el" />
-                    <el-table-column prop="company_branch.name" label="Cliente" />
-                    <el-table-column prop="authorized_user_name" label="Autorizado por" />
-                    <el-table-column prop="status['label']" label="Estatus" />
+                    <el-table-column prop="id" label="ID" width="45" />
+                    <el-table-column prop="name" label="Nombre" width="200" />
+                    <el-table-column prop="cost.format" label="Costo" width="120" />
+                    <el-table-column prop="description" label="Descripción" width="300" />
                     <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
@@ -52,13 +51,10 @@
                                 </span>
                                 <template #dropdown>
                                     <el-dropdown-menu>
-                                        <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
-                                            Ver</el-dropdown-item>
-                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar ordenes de venta')" :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                        <!-- <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
+                                            Ver</el-dropdown-item> -->
+                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar costos de produccion')" :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
-                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')" :command="'clone-' + scope.row.id"><i
-                                                class="fa-solid fa-clone"></i>
-                                            Clonar</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -67,15 +63,14 @@
                 </el-table>
             </div>
             <!-- tabla -->
-
         </AppLayout>
     </div>
 </template>
 
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 
@@ -90,7 +85,6 @@ export default {
             start: 0,
             end: 10,
         };
-
     },
     components: {
         AppLayout,
@@ -99,21 +93,11 @@ export default {
         TextInput,
     },
     props: {
-        sales: Object,
-        company_branches: Array
+        production_costs: Array
     },
-
     methods: {
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
-
-            if (!this.$refs.multipleTableRef.value.length) {
-                this.disableMassiveActions = true;
-            } else {
-                this.disableMassiveActions = false;
-            }
-        },
-        async deleteSelections() {
 
             if (!this.$refs.multipleTableRef.value.length) {
                 this.disableMassiveActions = true;
@@ -125,11 +109,11 @@ export default {
             this.start = (val - 1) * this.itemsPerPage;
             this.end = val * this.itemsPerPage;
         },
+        
         async deleteSelections() {
-
             try {
-                const response = await axios.post(route('sales.massive-delete', {
-                    sales: this.$refs.multipleTableRef.value
+                const response = await axios.post(route('production-costs.massive-delete', {
+                    production_costs: this.$refs.multipleTableRef.value
                 }));
 
                 if (response.status == 200) {
@@ -139,10 +123,10 @@ export default {
                         type: 'success'
                     });
 
-                    // update list of sales
+                    // update list of companies
                     let deletedIndexes = [];
-                    this.sales.data.forEach((sale, index) => {
-                        if (this.$refs.multipleTableRef.value.includes(sale)) {
+                    this.production_costs.data.forEach((production_cost, index) => {
+                        if (this.$refs.multipleTableRef.value.includes(production_cost)) {
                             deletedIndexes.push(index);
                         }
                     });
@@ -150,9 +134,9 @@ export default {
                     // Ordenar los índices de forma descendente para evitar problemas de desplazamiento al eliminar elementos
                     deletedIndexes.sort((a, b) => b - a);
 
-                    // Eliminar OV por índice
+                    // Eliminar clientes por índice
                     for (const index of deletedIndexes) {
-                        this.sales.data.splice(index, 1);
+                        this.production_costs.data.splice(index, 1);
                     }
 
                 } else {
@@ -172,68 +156,38 @@ export default {
                 console.log(err);
             }
         },
+
+        // handleRowClick(row) {
+        //     this.$inertia.get(route('production-costs.show', row));
+        // },
+
         tableRowClassName({ row, rowIndex }) {
-            return 'cursor-pointer';
+
+            // return 'cursor-pointer';
         },
-        handleRowClick(row) {
-            this.$inertia.get(route('sales.show', row));
-        },
-        async clone(sale_id) {
-            try {
-                const response = await axios.post(route('sales.clone', {
-                    sale_id: sale_id
-                }));
 
-                if (response.status == 200) {
-                    this.$notify({
-                        title: 'Éxito',
-                        message: response.data.message,
-                        type: 'success'
-                    });
-
-                    this.sales.data.unshift(response.data.newItem);
-
-                } else {
-                    this.$notify({
-                        title: 'Algo salió mal',
-                        message: response.data.message,
-                        type: 'error'
-                    });
-                }
-
-            } catch (err) {
-                this.$notify({
-                    title: 'Algo salió mal',
-                    message: err.message,
-                    type: 'error'
-                });
-                console.log(err);
-            }
-        },
         handleCommand(command) {
             const commandName = command.split('-')[0];
             const rowId = command.split('-')[1];
 
             if (commandName == 'clone') {
                 this.clone(rowId);
-            } else if (commandName == 'make_so') {
-                console.log('SO');
-            } else {
-                this.$inertia.get(route('sales.' + commandName, rowId));
+            }else {
+                this.$inertia.get(route('production-costs.' + commandName, rowId));
             }
         },
     },
     computed: {
         filteredTableData() {
             if (!this.search) {
-                return this.sales.data.filter((item, index) => index >= this.start && index < this.end);
+                return this.production_costs.data.filter((item, index) => index >= this.start && index < this.end);
             } else {
-                return this.sales.data.filter(
-                    (sale) =>
-                        // sale.id.toLowerCase().includes(this.search.toLowerCase()) ||
-                        sale.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                        sale.company_branch.name.toLowerCase().includes(this.search.toLowerCase())
-                );
+                return this.production_costs.data.filter(
+                    (production_cost) =>
+                        production_cost.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                        production_cost.description.toLowerCase().includes(this.search.toLowerCase()) ||
+                        production_cost.cost['format'].toLowerCase().includes(this.search.toLowerCase()) 
+                )
             }
         }
     },
