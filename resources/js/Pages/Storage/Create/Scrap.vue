@@ -72,15 +72,21 @@
               <InputError :message="form.errors.location" />
             </div>
           </div>
-
           <div
             v-show="storage_selected"
-            class="text-gray-500 bg-secondary-gray rounded-lg p-4 flex justify-between"
+            class="text-gray-500 bg-secondary-gray rounded-lg p-4 flex"
           >
-          <div class="bg-gray-300 h-48 w-1/2 rounded-lg">
-                imagen
-         </div>
-         
+          <figure class="bg-[#D9D9D9] h-52 rounded-[10px] mr-5">
+              <el-image style="height: 100%; border-radius: 10px;"
+                :src="storage_selected?.storageable?.media[0]?.original_url"
+                fit="contain">
+                <template #error>
+                  <div class="flex justify-center items-center text-[#ababab]">
+                    <i class="fa-solid fa-image text-6xl"></i>
+                  </div>
+                </template>
+              </el-image>
+            </figure>
             <ul>
               <li>
                 <label class="text-primary">Nombre: </label>
@@ -129,7 +135,6 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
-import { ref } from "vue";
 
 export default {
   data() {

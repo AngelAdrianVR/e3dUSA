@@ -65,9 +65,8 @@ class CompanyController extends Controller
     public function show($company_id)
     {
         $company = Company::with('companyBranches.contacts')->find($company_id);
-        $companies = Company::with('companyBranches.contacts', 'catalogProducts')->get();
-        // $company_products = CatalogProductCompanyResource::collection(CatalogProductCompany::where('company_id', $company_id)->with('company','catalogProduct')->latest()->get());
-        // return $companies;
+        $companies = Company::with('companyBranches.contacts', 'catalogProducts.media')->get();
+        
         return inertia('Company/Show', compact('company', 'companies'));
     }
 
