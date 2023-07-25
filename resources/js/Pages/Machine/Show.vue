@@ -110,19 +110,19 @@
             <p class="mt-7 mb-3">Dimensiones</p>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Peso</p>
-              <p>{{ currentMachine?.weight }} kg</p>
+              <p>{{ currentMachine?.weight.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} kg</p>
             </div>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Ancho</p>
-              <p>{{ currentMachine?.width }} cm</p>
+              <p>{{ currentMachine?.width.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} cm</p>
             </div>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Largo</p>
-              <p>{{ currentMachine?.large }} cm</p>
+              <p>{{ currentMachine?.large.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} cm</p>
             </div>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Alto</p>
-              <p>{{ currentMachine?.height }} cm</p>
+              <p>{{ currentMachine?.height.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} cm</p>
             </div>
             <p class="mt-7 mb-3">Datos de compra</p>
             <div class="flex mb-2 space-x-2">
@@ -171,7 +171,7 @@
                     {{ maintenance.created_at }}
                   </td>
                   <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
-                    ${{ maintenance.cost }}
+                    ${{ maintenance.cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
                   </td>
                   <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
                     {{ maintenance.responsible }}
@@ -200,6 +200,7 @@
                   <th class="pr-4">#</th>
                   <th class="px-4">Refacción</th>
                   <th class="px-4">Cantidad</th>
+                  <th class="px-4">Costo</th>
                   <th class="px-4">Adquirida el</th>
                   <th class="px-4">Ubicación</th>
                   <th></th>
@@ -216,6 +217,9 @@
                   </td>
                   <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
                     {{ spare_part.quantity }}
+                  </td>
+                  <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
+                    ${{ spare_part.cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
                   </td>
                   <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
                     {{ spare_part.created_at }}

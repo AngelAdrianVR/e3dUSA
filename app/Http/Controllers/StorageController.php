@@ -27,7 +27,7 @@ class StorageController extends Controller
 
             // Calcular la suma de costo de todo el scrap
         $totalFinishedProductMoney = collect($finished_products)->sum(function ($item) {
-            return $item->storageable->cost * $item->quantity;
+            return $item->storageable?->cost * $item->quantity;
         });
             return inertia('Storage/Index/FinishedProduct',compact('finished_products', 'totalFinishedProductMoney'));
 
@@ -37,7 +37,7 @@ class StorageController extends Controller
 
         // Calcular la suma de costo de todo el scrap
         $totalScrapMoney = collect($scraps)->sum(function ($item) {
-        return $item->storageable->cost * $item->quantity;
+        return $item->storageable?->cost * $item->quantity;
     });
         // return $totalScrapMoney;
         return inertia('Storage/Index/Scrap', compact('scraps', 'totalScrapMoney'));
@@ -128,7 +128,7 @@ class StorageController extends Controller
        
         // Calcular la suma de la variable "cost" de todos los objetos
     $totalStorageMoney = collect($storages)->sum(function ($item) {
-        return $item->storageable->cost * $item->quantity;
+        return $item->storageable?->cost * $item->quantity;
     });
         // return $totalStorageMoney;
 
