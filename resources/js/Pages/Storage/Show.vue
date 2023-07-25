@@ -1,8 +1,13 @@
 <template>
   <div>
     <AppLayoutNoHeader title="Almacén">
+    <div class="text-center mt-3">
+                <el-tag class="mt-3" style="font-size: 20px;" type="success">Almacén total: ${{totalStorageMoney.toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
+    </div>
       <div class="flex justify-between text-lg mx-14 mt-11">
         <span>Almacén</span>
+        
         <Link
           :href="route('storages.raw-materials.index')"
           class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center"
@@ -29,7 +34,7 @@
           </el-select>
         </div>
         <div class="flex flex-col md:flex-row items-center space-x-2">
-        <div class="flex gap-1 mb-2">
+        <div class="flex gap-1 mb-2 md:mb-[1px]">
           <el-tooltip
             v-if="$page.props.auth.user.permissions.includes('Crear entradas')"
             content="Dar entrada a almacén"
@@ -190,10 +195,16 @@
               <p class="w-1/3 text-[#9A9A9A]">Unidad de medida</p>
               <p>{{ currentStorage?.storageable.measure_unit }}</p>
             </div>
-            <div class="flex mb-6 space-x-2">
+            <div class="flex mb-3 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Costo de aquisición</p>
               <p class="text-[#4FC03D]">
-                {{ currentStorage?.storageable.cost }} $MXN
+                {{ currentStorage?.storageable.cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")?? '--' }} $MXN
+              </p>
+            </div>
+            <div class="flex mb-6 space-x-2">
+              <p class="w-1/3 text-[#9A9A9A]">Costo total en stock</p>
+              <p class="text-[#4FC03D]">
+                {{ (currentStorage?.storageable.cost * currentStorage?.quantity).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} $MXN
               </p>
             </div>
             <div class="flex mb-2 space-x-2">
@@ -324,6 +335,7 @@ export default {
   props: {
     storage: Object,
     storages: Array,
+    totalStorageMoney: Number
   },
   methods: {
     showOverlay() {

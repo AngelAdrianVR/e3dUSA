@@ -87,7 +87,7 @@
                 </template>
               </el-image>
             </figure>
-            <ul>
+            <ul class="px-4">
               <li>
                 <label class="text-primary">Nombre: </label>
                 {{ storage_selected?.storageable.name }}

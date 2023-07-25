@@ -67,6 +67,18 @@ class ProductionCostSeeder extends Seeder
                 'cost' => 1,
                 'created_at' => now(),
             ],
+            [
+                'name' => 'Pegar emblema',
+                'description' => 'Pegar emblema a superficie',
+                'cost' => 1,
+                'created_at' => now(),
+            ],
+            [
+                'name' => 'Pegar vinil',
+                'description' => 'Pegar vinil a superficie',
+                'cost' => 1.5,
+                'created_at' => now(),
+            ],
         ));
     }
 }
