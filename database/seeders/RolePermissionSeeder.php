@@ -83,6 +83,9 @@ class RolePermissionSeeder extends Seeder
 
         Permission::create(['name' => 'Crear entradas', 'category' => 'Almacen']);
         Permission::create(['name' => 'Crear salidas', 'category' => 'Almacen']);
+        
+        Permission::create(['name' => 'Generar reportes materia prima', 'category' => 'Almacen']);
+        Permission::create(['name' => 'Generar reportes insumos', 'category' => 'Almacen']);
 
         Permission::create(['name' => 'Ver nominas', 'category' => 'RRHH']);
         Permission::create(['name' => 'Crear nominas', 'category' => 'RRHH']);

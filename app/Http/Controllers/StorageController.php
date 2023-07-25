@@ -23,24 +23,25 @@ class StorageController extends Controller
             return inertia('Storage/Index/Consumable', compact('raw_materials'));
 
         }elseif(Route::currentRouteName() == 'storages.finished-products.index'){
-            $finished_products = Storage::with('storageable')->where('type', 'producto-terminado')->latest()->get();
+            $finished_products = Storage::with('storageable.media')->where('type', 'producto-terminado')->latest()->get();
 
             // Calcular la suma de costo de todo el scrap
-        $totalFinishedProductMoney = collect($finished_products)->sum(function ($item) {
+            $totalFinishedProductMoney = collect($finished_products)->sum(function ($item) {
             return $item->storageable->cost * $item->quantity;
-        });
+            });
+
             return inertia('Storage/Index/FinishedProduct',compact('finished_products', 'totalFinishedProductMoney'));
+        }else {
 
-        }else
+            $scraps = Storage::with('storageable.media')->where('type', 'scrap')->latest()->get();
 
-        $scraps = Storage::with('storageable')->where('type', 'scrap')->latest()->get();
+            // Calcular la suma de costo de todo el scrap
+            $totalScrapMoney = collect($scraps)->sum(function ($item) {
+                return $item->storageable->cost * $item->quantity;
+            });
 
-        // Calcular la suma de costo de todo el scrap
-        $totalScrapMoney = collect($scraps)->sum(function ($item) {
-        return $item->storageable->cost * $item->quantity;
-    });
-        // return $totalScrapMoney;
-        return inertia('Storage/Index/Scrap', compact('scraps', 'totalScrapMoney'));
+            return inertia('Storage/Index/Scrap', compact('scraps', 'totalScrapMoney'));
+        }
     }
 
     
@@ -48,16 +49,11 @@ class StorageController extends Controller
     {
 
         if(Route::currentRouteName() == 'storages.scraps.create'){
-
-            $storages = Storage::with('storageable')->get();
-            // return $storages;
+            $storages = Storage::with('storageable.media')->get();
             return inertia('Storage/Create/Scrap', compact('storages'));
-
         }elseif(Route::currentRouteName() == 'storages.finished-products.create'){
-
-            $catalog_products = CatalogProduct::all();
-        return inertia('Storage/Create/FinishedProduct', compact('catalog_products'));
-
+            $catalog_products = CatalogProduct::with('media')->get();
+            return inertia('Storage/Create/FinishedProduct', compact('catalog_products'));
         }
         
     }

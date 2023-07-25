@@ -14,7 +14,6 @@
             </template>
 
             <!-- Form -->
-{{product}}
             <form @submit.prevent="store">
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
                     <div class="flex items-center">
