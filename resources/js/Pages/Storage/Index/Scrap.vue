@@ -13,6 +13,11 @@
                 </div>
             </template>
 
+                <div class="text-center mt-3">
+                    <el-tag class="mt-3" style="font-size: 20px;" type="danger">Scrap total: ${{totalScrapMoney.toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
+                </div>
+
             <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
                 <div class="flex justify-between">
@@ -96,7 +101,8 @@ export default {
         TextInput,
     },
     props: {
-        scraps: Array
+        scraps: Array,
+        totalScrapMoney: Number,
     },
     methods: {
         tableRowClassName({ row, rowIndex }) {
