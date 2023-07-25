@@ -124,7 +124,7 @@ class StorageController extends Controller
        
         // Calcular la suma de la variable "cost" de todos los objetos
     $totalStorageMoney = collect($storages)->sum(function ($item) {
-        return $item->storageable->cost * $item->quantity;
+        return $item->storageable?->cost * $item->quantity;
     });
         // return $totalStorageMoney;
 

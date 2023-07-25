@@ -137,7 +137,7 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.suppliers.forEach((supplier, index) => {
+                    this.suppliers.data.forEach((supplier, index) => {
                         if (this.$refs.multipleTableRef.value.includes(supplier)) {
                             deletedIndexes.push(index);
                         }
@@ -148,7 +148,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.suppliers.splice(index, 1);
+                        this.suppliers.data.splice(index, 1);
                     }
 
                 } else {
@@ -175,9 +175,7 @@ export default {
 
             if (commandName == 'clone') {
                 this.clone(rowId);
-            } else if (commandName == 'make_so') {
-                console.log('SO');
-            } else {
+            }else {
                 this.$inertia.get(route('suppliers.' + commandName, rowId));
             }
         },
