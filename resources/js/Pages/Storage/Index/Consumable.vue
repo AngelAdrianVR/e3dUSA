@@ -22,12 +22,19 @@
                             :total="raw_materials.length" />
                     </div>
                     <!-- buttons -->
-                    <div>
+                    <div class="mb-3">
+                        <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Generar reportes insumos')"
+                            confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+                            @confirm="generatePdf">
+                            <template #reference>
+                                <el-button type="primary" plain>Reporte PDF</el-button>
+                            </template>
+                        </el-popconfirm>
                         <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar insumos')"
                             confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
                             @confirm="deleteSelections">
                             <template #reference>
-                                <el-button type="danger" plain class="mb-3"
+                                <el-button type="danger" plain
                                     :disabled="disableMassiveActions">Eliminar</el-button>
                             </template>
                         </el-popconfirm>
@@ -36,12 +43,12 @@
                 <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="450" style="width: 100%"
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
-                    <el-table-column prop="storageable.name" label="Nombre" width="250" />
-                    <el-table-column prop="storageable.part_number" label="N° parte" width="120" />
-                    <el-table-column prop="location" label="Ubicación" width="120" />
-                    <el-table-column prop="storageable.min_quantity" label="Min. Stock" width="100" />
-                    <el-table-column prop="storageable.max_quantity" label="Max. Stock" width="100" />
-                    <el-table-column prop="quantity" label="Stock" width="100" />
+                    <el-table-column prop="storageable.name" label="Nombre" />
+                    <el-table-column prop="storageable.part_number" label="N° parte" />
+                    <el-table-column prop="location" label="Ubicación" />
+                    <el-table-column prop="storageable.min_quantity" label="Min. Stock" />
+                    <el-table-column prop="storageable.max_quantity" label="Max. Stock" />
+                    <el-table-column prop="quantity" label="Stock" />
                     <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
@@ -185,14 +192,14 @@ export default {
                 console.log(err);
             }
         },
-
+        generatePdf() {
+            window.open(route('pdf.consumables-actual-stock'), '_blank');
+        },
         handleRowClick(row) {
-            console.log(row);
             this.$inertia.get(route('storages.show', row));
         },
 
         edit(index, raw_material) {
-            console.log(raw_material);
             this.$inertia.get(route('consumables.edit', raw_material.storageable));
         }
     },
