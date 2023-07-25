@@ -44,11 +44,11 @@
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="storageable.name" label="Nombre" width="250" />
-                    <el-table-column prop="storageable.part_number" label="N° parte" width="120" />
-                    <el-table-column prop="location" label="Ubicación" width="120" />
-                    <el-table-column prop="storageable.min_quantity" label="Min. Stock" width="100" />
-                    <el-table-column prop="storageable.max_quantity" label="Max. Stock" width="100" />
-                    <el-table-column prop="quantity" label="Stock" width="100" />
+                    <el-table-column prop="storageable.part_number" label="N° parte" />
+                    <el-table-column prop="location" label="Ubicación" />
+                    <el-table-column prop="storageable.min_quantity" label="Min. Stock" />
+                    <el-table-column prop="storageable.max_quantity" label="Max. Stock" />
+                    <el-table-column prop="quantity" label="Stock" />
                     <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />

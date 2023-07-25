@@ -32,12 +32,18 @@
                         </IconInput>
                         <InputError :message="form.errors.part_number" />
                     </div>
-                    <div>
-                        <IconInput v-model="form.measure_unit" inputPlaceholder="Unidad de medida *" inputType="text">
-                            <el-tooltip content="Unidad de medida" placement="top">
+                    <div class="flex items-center my-2">
+                        <el-tooltip content="Materias primas" placement="top">
+                            <span
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
                                 <i class="fa-solid fa-ruler-vertical"></i>
-                            </el-tooltip>
-                        </IconInput>
+                            </span>
+                        </el-tooltip>
+                        <el-select v-model="form.measure_unit" clearable
+                            placeholder="Busca unidad de medida" no-data-text="No hay unidades de medida registradas"
+                            no-match-text="No se encontraron coincidencias">
+                            <el-option v-for="(item, index) in mesureUnits" :key="index" :label="item" :value="item" />
+                        </el-select>
                         <InputError :message="form.errors.measure_unit" />
                     </div>
                     <div>
@@ -223,6 +229,14 @@ export default {
             },
             features: [],
             newFeature: null,
+            mesureUnits: [
+                'Pieza(s)',
+                'Litro(s)',
+                'Par(es)',
+                'kilogramo(s)',
+                'Metro(s)',
+                'Rollo(s)',
+            ],
         };
     },
     components: {
