@@ -147,11 +147,11 @@
                             no-match-text="No se encontraron coincidencias">
                             <el-option v-for="item in raw_materials" :key="item.id" :label="item.name" :value="item.id" />
                         </el-select>
-                        <el-tooltip content="Agregar materia prima" placement="top">
+                        <!-- <el-tooltip content="Agregar materia prima" placement="top">
                             <Link class="ml-3" :href="route('raw-materials.create')">
                             <PrimaryButton class="!rounded-lg">+</PrimaryButton>
                             </Link>
-                        </el-tooltip>
+                        </el-tooltip> -->
                     </div>
                     <div class="flex items-center mb-2">
                         <el-tooltip content="proceso(s) de produccion" placement="top">
@@ -166,11 +166,11 @@
                             <el-option v-for="item in production_costs" :key="item.id" :label="item.name"
                                 :value="item.id" />
                         </el-select>
-                        <el-tooltip content="Agregar proceso de producción" placement="top">
+                        <!-- <el-tooltip content="Agregar proceso de producción" placement="top">
                             <Link class="ml-3" :href="route('production-costs.create')">
                             <PrimaryButton class="!rounded-lg">+</PrimaryButton>
                             </Link>
-                        </el-tooltip>
+                        </el-tooltip> -->
                     </div>
                     <div class="grid grid-cols-3 gap-x-1">
                         <IconInput v-model="rawMaterial.quantity" inputPlaceholder="Cantidad necesaria *" inputType="number"

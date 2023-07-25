@@ -79,7 +79,7 @@
           <div class="bg-gray-300 h-48 w-1/2 rounded-lg">
                 imagen
          </div>
-            <ul>
+            <ul class="px-4">
               <li>
                 <label class="text-primary">Nombre: </label>
                 {{ catalog_product_selected?.name }}
@@ -94,7 +94,7 @@
               </li>
               <li>
                 <label class="text-primary">Stock: </label>
-                {{ catalog_product_selected?.quantity }} {{ catalog_product_selected?.measure_unit  }}
+                {{ form.quantity }} {{ catalog_product_selected?.measure_unit  }}
               </li>
               <li>
                 <label class="text-primary">costo: </label> ${{
