@@ -38,7 +38,7 @@
               <el-option
                 v-for="item in storages"
                 :key="item.id"
-                :label="item.storageable.name"
+                :label="item.storageable?.name"
                 :value="item.id"
               />
             </el-select>
@@ -90,15 +90,15 @@
             <ul class="px-4">
               <li>
                 <label class="text-primary">Nombre: </label>
-                {{ storage_selected?.storageable.name }}
+                {{ storage_selected?.storageable?.name }}
               </li>
               <li>
                 <label class="text-primary">Número de parte: </label>
-                {{ storage_selected?.storageable.part_number }}
+                {{ storage_selected?.storageable?.part_number }}
               </li>
               <li>
                 <label class="text-primary">Descripción: </label>
-                {{ storage_selected?.storageable.description }}
+                {{ storage_selected?.storageable?.description }}
               </li>
               <li>
                 <label class="text-primary">Tipo: </label> {{
@@ -107,11 +107,11 @@
               </li>
               <li>
                 <label class="text-primary">Stock: </label>
-                {{ storage_selected?.quantity }} {{ storage_selected?.storageable.measure_unit  }}
+                {{ storage_selected?.quantity }} {{ storage_selected?.storageable?.measure_unit  }}
               </li>
               <li>
                 <label class="text-primary">costo: </label> ${{
-                  storage_selected?.storageable.cost * form.quantity
+                  storage_selected?.storageable?.cost * form.quantity
                 }}
               </li>
             </ul>
