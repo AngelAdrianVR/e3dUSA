@@ -13,9 +13,8 @@
                 </div>
             </template>
 
-                <div class="text-center mt-3">
-                    <el-tag class="mt-3" style="font-size: 20px;" type="danger">Scrap total: ${{totalScrapMoney.toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
+                <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de scrap')" class="text-center mt-3">
+                    <el-tag class="mt-3" style="font-size: 20px;" type="danger">Scrap total: ${{totalScrapMoney.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
                 </div>
 
             <!-- tabla -->

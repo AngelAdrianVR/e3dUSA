@@ -18,7 +18,9 @@
             </el-select>
           </div>
           <div class="flex items-center space-x-2">
-            <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar ordenes de compra')" content="Editar"
+
+            <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar ordenes de compra') &&
+                       currentPurchase?.user.id == $page.props.auth.user.id" content="Editar"
               placement="top">
               <Link :href="route('purchases.edit', selectedPurchase)">
               <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">

@@ -15,7 +15,7 @@
                 </div>
             </template>
 
-            <div class="text-center mt-3">
+            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de producto terminado')" class="text-center mt-3">
                     <el-tag class="mt-3" style="font-size: 20px;" type="success">Costo total en almacén de Producto terminado: ${{totalFinishedProductMoney.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
                 </div>
 
