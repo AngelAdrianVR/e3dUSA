@@ -149,7 +149,7 @@ export default {
     },
     getDateFormtted(dateTime) {
       if (!dateTime) return null;
-      return moment.utc(dateTime).format("DD MMM YYYY, hh:mmA");
+      return moment(dateTime).format("DD MMM YYYY, hh:mmA");
     },
     async changeTaskStatus() {
       try {
