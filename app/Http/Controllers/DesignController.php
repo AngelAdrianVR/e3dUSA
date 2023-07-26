@@ -175,4 +175,14 @@ class DesignController extends Controller
 
         return to_route('designs.show', ['design' => $design]);
     }
+
+    public function authorizeOrder(Design $design)
+    {
+        $design->update([
+            'authorized_at' => now(),
+            'authorized_user_name' => auth()->user()->name,
+        ]);
+
+        return response()->json(['item' => DesignResource::make($design)]);
+    }
 }

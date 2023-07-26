@@ -37,7 +37,6 @@
                 <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="450" style="width: 100%"
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
-                    <el-table-column prop="" label="Imagen" width="80" />
                     <el-table-column prop="part_number" label="Num de parte" width="200" />
                     <el-table-column prop="name" label="Nombre" width="200" />
                     <el-table-column prop="cost.number_format" label="Costo $" width="150" />

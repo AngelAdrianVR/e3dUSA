@@ -103,6 +103,7 @@
               v-model="form.expected_delivery_date"
               type="date"
               placeholder="fecha de entrega esperada"
+              :disabled-date="disabledDate"
             />
           </div>
             <InputError :message="form.errors.expected_delivery_date" />
@@ -282,7 +283,11 @@ export default {
         },
       });
     },
-
+    disabledDate(time) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return time.getTime() < today.getTime();
+    },
     addProduct() {
       let product = {
         id: this.productSelected.id,

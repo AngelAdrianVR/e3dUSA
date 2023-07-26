@@ -44,6 +44,7 @@
               v-model="form.date"
               type="date"
               placeholder="Selecciona una fecha"
+              :disabled-date="disabledDate"
             />
             <InputError :message="form.errors.date" />
           </div>
@@ -308,6 +309,11 @@ export default {
           this.form.reset();
         },
       });
+    },
+    disabledDate(time) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return time.getTime() < today.getTime();
     },
     selectTime(hour){
       console.log(hour);

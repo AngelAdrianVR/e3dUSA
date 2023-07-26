@@ -66,7 +66,7 @@
               </span>
             </el-tooltip>
             <el-date-picker v-model="form.sent_at" type="date" placeholder="Fecha de envío de muestra * "
-              format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
+              format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
             <InputError :message="form.errors.sent_at" />
           </div>
           <div class="md:grid md:grid-cols-2 gap-2">
@@ -159,6 +159,11 @@ export default {
           this.form.reset();
         },
       });
+    },
+    disabledDate(time) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return time.getTime() > today.getTime();
     },
     selectCurrentCompanyBranch(){
       this.currentCompanyBranch = this.company_branches.find(item => item.id == this.form.company_branch_id);

@@ -492,6 +492,7 @@
                   placeholder="Fecha"
                   format="YYYY/MM/DD"
                   value-format="YYYY-MM-DD"
+                  :disabled-date="disabledDate"
                 />
                 <!-- <InputError :message="form.errors.branches.old_date" /> -->
               </div>
@@ -541,6 +542,7 @@
                   placeholder="Fecha"
                   format="YYYY/MM/DD"
                   value-format="YYYY-MM-DD"
+                  :disabled-date="disabledDate"
                 />
                 <!-- <InputError :message="form.errors.branches.old_date" /> -->
               </div>
@@ -741,6 +743,11 @@ export default {
           this.form.reset();
         },
       });
+    },
+    disabledDate(time) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return time.getTime() > today.getTime();
     },
     // contacts
     addContact() {

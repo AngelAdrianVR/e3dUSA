@@ -164,6 +164,7 @@ Route::resource('designs', DesignController::class)->middleware('auth');
 Route::post('designs/massive-delete', [DesignController::class, 'massiveDelete'])->name('designs.massive-delete');
 Route::put('designs/start-order/{design}', [DesignController::class, 'startOrder'])->name('designs.start-order');
 Route::post('designs/finish-order/{design}', [DesignController::class, 'finishOrder'])->name('designs.finish-order');
+Route::put('designs/authorize/{design}', [DesignController::class, 'authorizeOrder'])->name('designs.authorize');
 
 // ------- production department routes  ---------
 Route::resource('productions', ProductionController::class)->middleware('auth');

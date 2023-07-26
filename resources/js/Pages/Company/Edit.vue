@@ -313,7 +313,7 @@
                             </div>
                             <div class="flex items-center">
                                 <el-date-picker v-model="product.old_date" type="date" placeholder="Fecha"
-                                    format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
+                                    format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
                                 <!-- <InputError :message="form.errors.branches.old_date" /> -->
                             </div>
                             <div>
@@ -345,7 +345,7 @@
                             </div>
                             <div class="flex items-center">
                                 <el-date-picker v-model="product.new_date" type="date" placeholder="Fecha"
-                                    format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
+                                    format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
                                 <!-- <InputError :message="form.errors.branches.old_date" /> -->
                             </div>
                         </div>
@@ -521,6 +521,11 @@ export default {
                     this.form.reset();
                 }
             });
+        },
+        disabledDate(time) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return time.getTime() > today.getTime();
         },
         // contacts
         addContact() {

@@ -93,7 +93,7 @@
                 </span>
               </el-tooltip>
               <el-date-picker v-model="form.employee_properties.birthdate" type="date" placeholder="Fecha de nacimiento *"
-                format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
+                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
               <InputError :message="form.errors.employee_properties?.birthdate" />
             </div>
             <div class="flex items-center">
@@ -104,7 +104,7 @@
                 </span>
               </el-tooltip>
               <el-date-picker v-model="form.employee_properties.join_date" type="date" placeholder="Fecha de ingreso *"
-                format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
+                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
               <InputError :message="form.errors.employee_properties?.join_date" />
             </div>
             <div class="flex items-center col-span-full">
@@ -287,6 +287,11 @@ export default {
           this.form.reset();
         },
       });
+    },
+    disabledDate(time) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return time.getTime() > today.getTime();
     },
     getRandomString() {
       var char = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
