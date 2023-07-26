@@ -236,6 +236,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import InputError from "@/Components/InputError.vue";
 import Modal from "@/Components/Modal.vue";
 import { Link, useForm } from "@inertiajs/vue3";
+import axios from "axios";
 
 export default {
   data() {
@@ -270,19 +271,30 @@ export default {
     InputError,
   },
   methods: {
-    startOrder() {
-      this.form.put(route("designs.start-order", this.selectedDesign), {
-        onSuccess: () => {
+    async startOrder() {
+      try {
+        const response = await axios.put(route("designs.start-order", this.selectedDesign), {
+          expected_end_at: this.form.expected_end_at
+        });
+
+        if (response.status === 200) {
           this.$notify({
-            title: "Éxito",
-            message: "Órden en proceso",
+            title: "Exito",
+            message: "Orden iniciada",
             type: "success",
           });
 
+          this.currentDesign.started_at = response.data.item.started_at;
           this.form.reset();
           this.startOrderModal = false;
-        },
-      });
+        }
+      } catch (error) {
+        this.$notify({
+          title: "Error",
+          message: error.message,
+          type: "error",
+        });
+      }
     },
     disabledDate(time) {
       const today = new Date();

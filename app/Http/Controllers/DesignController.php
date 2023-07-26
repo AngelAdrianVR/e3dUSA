@@ -71,7 +71,6 @@ class DesignController extends Controller
         return to_route('designs.index');
     }
 
-
     public function show(Design $design)
     {
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de diseño todas')) {
@@ -87,7 +86,6 @@ class DesignController extends Controller
         }
     }
 
-
     public function edit(Design $design)
     {
         $designers = User::all();
@@ -96,7 +94,6 @@ class DesignController extends Controller
 
         return inertia('Design/Edit', compact('design', 'designers', 'design_types', 'companies'));
     }
-
 
     public function update(Request $request, Design $design)
     {
@@ -157,7 +154,7 @@ class DesignController extends Controller
             'started_at' => now()
         ]);
 
-        return to_route('designs.show', ['design' => $design]);
+        return response()->json(['item' => DesignResource::make($design)]);
     }
 
     public function finishOrder(Request $request, Design $design)
@@ -166,14 +163,13 @@ class DesignController extends Controller
             'media' => 'nullable'
         ]);
 
-
         $design->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection('results'));
 
         $design->update([
             'finished_at' => now()
         ]);
 
-        return to_route('designs.show', ['design' => $design]);
+        return response()->json(['item' => DesignResource::make(Design::find($design->id))]);
     }
 
     public function authorizeOrder(Design $design)
