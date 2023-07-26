@@ -15,6 +15,10 @@
                 </div>
             </template>
 
+            <div class="text-center mt-3">
+                <el-tag class="mt-3" style="font-size: 20px;" type="success">Costo total en almacén de materia prima    : ${{totalRawMaterialMoney.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
+            </div>
+
             <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
                 <div class="flex justify-between">
@@ -109,7 +113,8 @@ export default {
         TextInput,
     },
     props: {
-        raw_materials: Array
+        raw_materials: Array,
+        totalRawMaterialMoney: Number
     },
     methods: {
         tableRowClassName({ row, rowIndex }) {

@@ -1,10 +1,7 @@
 <template>
   <div>
     <AppLayoutNoHeader title="Almacén">
-    <div class="text-center mt-3">
-                <el-tag class="mt-3" style="font-size: 20px;" type="success">Almacén total: ${{totalStorageMoney.toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
-    </div>
+    
       <div class="flex justify-between text-lg mx-14 mt-11">
         <span>Almacén</span>
         
@@ -202,7 +199,7 @@
               </p>
             </div>
             <div class="flex mb-6 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">Costo total en stock</p>
+              <p class="w-1/3 text-[#9A9A9A]">Costo total de este producto en almacén</p>
               <p class="text-[#4FC03D]">
                 {{ (currentStorage?.storageable.cost * currentStorage?.quantity).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} $MXN
               </p>
@@ -211,13 +208,13 @@
               <p class="w-1/3 text-[#9A9A9A]">
                 Cantidad miníma permitida en almacén
               </p>
-              <p>{{ currentStorage?.storageable.min_quantity }} {{ currentStorage?.storageable.measure_unit }}</p>
+              <p>{{ currentStorage?.storageable.min_quantity.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ currentStorage?.storageable.measure_unit }}</p>
             </div>
             <div class="flex space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">
                 Cantidad máxima permitida en almacén
               </p>
-              <p>{{ currentStorage?.storageable.max_quantity }} {{ currentStorage?.storageable.measure_unit }}</p>
+              <p>{{ currentStorage?.storageable.max_quantity.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ currentStorage?.storageable.measure_unit }}</p>
             </div>
           </div>
         </div>
