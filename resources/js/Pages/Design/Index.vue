@@ -37,11 +37,11 @@
                 <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="450" style="width: 100%"
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
-                    <el-table-column prop="user.name" label="Solicitante" width="150" />
-                    <el-table-column prop="name" label="Deseño" width="150" />
-                    <el-table-column prop="designer.name" label="Diseñador(a)" width="150" />
-                    <el-table-column prop="created_at" label="Solicitado el" width="120" />
-                    <el-table-column prop="status[label]" label="Estatus" width="200" />
+                    <el-table-column prop="user.name" label="Solicitante" />
+                    <el-table-column prop="name" label="Deseño" />
+                    <el-table-column prop="designer.name" label="Diseñador(a)" />
+                    <el-table-column prop="created_at" label="Solicitado el" />
+                    <el-table-column prop="status[label]" label="Estatus" />
                     <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
@@ -56,7 +56,8 @@
                                         <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
                                             Ver</el-dropdown-item>
                                         <el-dropdown-item v-if="scope.row.status['label'] == 'Esperando Autorización' &&
-                                                            scope.row.user.id == $page.props.auth.user.id" :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                            scope.row.user.id == $page.props.auth.user.id"
+                                            :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
@@ -118,7 +119,7 @@ export default {
         async deleteSelections() {
             try {
                 const response = await axios.post(route('designs.massive-delete', {
-                   designs: this.$refs.multipleTableRef.value
+                    designs: this.$refs.multipleTableRef.value
                 }));
 
                 if (response.status == 200) {

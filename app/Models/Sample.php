@@ -20,6 +20,9 @@ class Sample extends Model
         'catalog_product_id',
         'company_branch_id',
         'user_id',
+        'authorized_user_name',
+        'authorized_at',
+        'user_id',
         'contact_id'
     ];
 
@@ -27,6 +30,7 @@ class Sample extends Model
         'sent_at' => 'datetime',
         'returned_at' => 'datetime',
         'sale_order_at' => 'datetime',
+        'authorized_at' => 'datetime',
     ];
 
     //relationships

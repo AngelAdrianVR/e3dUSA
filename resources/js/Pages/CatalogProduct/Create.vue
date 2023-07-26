@@ -245,6 +245,9 @@ export default {
                 'kilogramo(s)',
                 'Metro(s)',
                 'Rollo(s)',
+                'Galon(es)',
+                'Cubeta(s)',
+                'Bote(s)',
             ],
         };
 

@@ -44,6 +44,11 @@ class QuoteController extends Controller
         ]);
 
         $quote = Quote::create($request->except('products') + ['user_id' => auth()->id()]);
+        $can_authorize = auth()->user()->can('Autorizar cotizaciones') || auth()->user()->hasRole('Super admin');
+
+        if($can_authorize) {
+            $quote->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
+        }
 
         foreach ($request->products as $product) {
             $quote->catalogProducts()->attach($product['id'], $product);

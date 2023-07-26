@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class DesignController extends Controller
 {
-    
+
     public function index()
     {
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de diseño todas')) {
@@ -24,20 +24,17 @@ class DesignController extends Controller
             $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->where('designer_id', auth()->id())->latest()->get());
             return inertia('Design/Index', compact('designs'));
         }
-
     }
 
-    
     public function create()
     {
-        $designers = User::all();
+        $designers = User::where('is_active', 1)->where('employee_properties->department', 'Diseño')->get();
         $design_types = DesignType::all();
         $companies = Company::all();
 
         return inertia('Design/Create', compact('designers', 'design_types', 'companies'));
     }
 
-    
     public function store(Request $request)
     {
         $request->validate([
@@ -55,21 +52,26 @@ class DesignController extends Controller
         $design = Design::create($request->except('original_design_id') + [
             'user_id' => auth()->id()
         ]);
+        $can_authorize = auth()->user()->can('Autorizar ordenes de diseño') || auth()->user()->hasRole('Super admin');
+
+        if ($can_authorize) {
+            $design->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
+        }
 
         // Guardar el archivo en la colección 'plano'
-    if ($request->hasFile('media_plano')) {
-        $design->addMediaFromRequest('media_plano')->toMediaCollection('plano');
-    }
+        if ($request->hasFile('media_plano')) {
+            $design->addMediaFromRequest('media_plano')->toMediaCollection('plano');
+        }
 
-    // Guardar el archivo en la colección 'logo'
-    if ($request->hasFile('media_logo')) {
-        $design->addMediaFromRequest('media_logo')->toMediaCollection('logo');
-    }
+        // Guardar el archivo en la colección 'logo'
+        if ($request->hasFile('media_logo')) {
+            $design->addMediaFromRequest('media_logo')->toMediaCollection('logo');
+        }
 
         return to_route('designs.index');
     }
 
-    
+
     public function show(Design $design)
     {
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de diseño todas')) {
@@ -83,20 +85,19 @@ class DesignController extends Controller
             $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->where('designer_id', auth()->id())->latest()->get());
             return inertia('Design/Show', compact('design', 'designs'));
         }
-
     }
 
-    
+
     public function edit(Design $design)
     {
         $designers = User::all();
         $design_types = DesignType::all();
         $companies = Company::all();
 
-        return inertia('Design/Edit',compact('design', 'designers', 'design_types', 'companies'));
+        return inertia('Design/Edit', compact('design', 'designers', 'design_types', 'companies'));
     }
 
-    
+
     public function update(Request $request, Design $design)
     {
         $request->validate([
@@ -111,25 +112,25 @@ class DesignController extends Controller
             'specifications' => 'required',
         ]);
 
-        
+
         // Guardar el archivo en la colección 'plano'
         if ($request->hasFile('media_plano')) {
             $design->addMediaFromRequest('media_plano')->toMediaCollection('plano');
         }
-        
+
         // Guardar el archivo en la colección 'logo'
         if ($request->hasFile('media_logo')) {
             $design->addMediaFromRequest('media_logo')->toMediaCollection('logo');
         }
-        
+
         $design->update($request->except('original_design_id') + [
             'user_id' => auth()->id()
         ]);
-        
+
         return to_route('designs.index');
     }
 
-    
+
     public function destroy(Design $design)
     {
         //
@@ -156,7 +157,7 @@ class DesignController extends Controller
             'started_at' => now()
         ]);
 
-       return to_route('designs.show', ['design'=> $design]);
+        return to_route('designs.show', ['design' => $design]);
     }
 
     public function finishOrder(Request $request, Design $design)
@@ -172,6 +173,6 @@ class DesignController extends Controller
             'finished_at' => now()
         ]);
 
-       return to_route('designs.show', ['design'=> $design]);
+        return to_route('designs.show', ['design' => $design]);
     }
 }

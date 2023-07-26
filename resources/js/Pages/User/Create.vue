@@ -197,6 +197,7 @@ export default {
         bonuses: [],
         job_position: null,
         department: null,
+        password: null,
         work_days: [
           {
             day: 0,
