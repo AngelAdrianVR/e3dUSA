@@ -26,7 +26,7 @@ class DashboardController extends Controller
         $counts[] = Purchase::whereNull('authorized_at')->get()->count();
         $counts[] = Design::whereNull('authorized_at')->get()->count();
         $counts[] = Storage::lowStock()->count();
-        // $counts[] = Production::whereNull('started_at')->get()->count();
+        $counts[] = Production::whereNull('started_at')->get()->count();
         $counts[] = Design::whereNull('started_at')->get()->count();
         $counts[] = Sale::whereDoesntHave('productions')->get()->count();
         $counts[] = AdditionalTimeRequest::whereNull('authorized_at')->get()->count();

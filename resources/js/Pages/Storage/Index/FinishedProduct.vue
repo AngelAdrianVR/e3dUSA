@@ -16,8 +16,7 @@
             </template>
 
             <div class="text-center mt-3">
-                    <el-tag class="mt-3" style="font-size: 20px;" type="success">Almacén total Producto terminado: ${{totalFinishedProductMoney.toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
+                    <el-tag class="mt-3" style="font-size: 20px;" type="success">Costo total en almacén de Producto terminado: ${{totalFinishedProductMoney.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
                 </div>
 
             <!-- tabla -->
