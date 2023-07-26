@@ -32,7 +32,9 @@
 
             <!-- ----------------------- botones para super admin starts------------------------ -->
 
-            <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de venta') && currentSale?.authorized_at == 'No autorizado'" confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+            <el-popconfirm
+              v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de venta') && currentSale?.authorized_at == 'No autorizado'"
+              confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
               @confirm="authorizeOrder">
               <template #reference>
                 <button class="rounded-lg bg-primary text-white py-1 px-2">
@@ -173,9 +175,11 @@
       <!-- -------------tab 2 products starts ------------- -->
 
       <div v-if="tabs == 2" class="p-7">
-        <p class="text-secondary">Productos Ordenados</p>
-        <div class="grid lg:grid-cols-3 md:grid-cols-2 mt-7 gap-10">
-          <RawMaterialCard v-for="product in currentSale?.products" :key="product.id" :raw_material="product" />
+        <p class="text-secondary mb-2">Productos Ordenados</p>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-7">
+          <ProductSaleCard @selected="" is_view_for_seller
+            v-for="(productSale, index) in currentSale?.catalogProductCompanySales" :key="productSale.id"
+            :catalog_product_company_sale="productSale" />
         </div>
       </div>
 
@@ -216,6 +220,7 @@ import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import RawMaterialCard from "@/Components/MyComponents/RawMaterialCard.vue";
 import Modal from "@/Components/Modal.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import ProductSaleCard from "@/Components/MyComponents/ProductSaleCard.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from "axios";
 
@@ -243,6 +248,7 @@ export default {
     PrimaryButton,
     RawMaterialCard,
     Modal,
+    ProductSaleCard
   },
   methods: {
     async deleteItem() {
@@ -299,7 +305,6 @@ export default {
             type: "success",
           });
 
-          console.log(response);
           this.currentSale.authorized_at = response.data.item.authorized_at;
           this.currentSale.status = response.data.item.status;
         }
