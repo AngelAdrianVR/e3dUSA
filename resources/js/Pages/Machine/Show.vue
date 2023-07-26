@@ -146,7 +146,7 @@
           <!-- --------------------- Tab 1 Información general ends------------------ -->
 
           <!-- --------------------- Tab 2 Mantenimient starts------------------ -->
-          <div v-if="tabs == 2" class="px-7 py-7 text-sm overflow-scroll">
+          <div v-if="tabs == 2" class="px-7 py-7 text-sm overflow-scroll h-96">
             <table class="border-separate border-spacing-x-8">
               <thead>
                 <tr>
@@ -193,7 +193,7 @@
           <!-- --------------------- Tab 2 Mantenimient ends------------------ -->
 
           <!-- --------------------- Tab 3 refacciones starts------------------ -->
-          <div v-if="tabs == 3" class="px-7 py-7 text-sm overflow-scroll">
+          <div v-if="tabs == 3" class="px-7 py-7 text-sm overflow-scroll h-96">
             <table class="border-separate border-spacing-x-8">
               <thead>
                 <tr>
@@ -314,15 +314,16 @@
               </p>
 
               <p class="text-primary">Evidencia</p>
-              <div v-for="(media, index) in selectedMaintenance.media" :key="index" class="text-secondary hover:underline col-span-2 flex flex-col space-y-1">
-                <a :href="media.original_url" target="_blank" rel="noopener noreferrer">{{ media.file_name }}</a>
+              <div v-for="(media, index) in selectedMaintenance.media" :key="index" class="text-secondary hover:underline col-span-2 inline-flex  space-y-1">
+                <a :href="media.original_url" target="_blank" rel="noopener noreferrer">
                 <el-image style="width: 40%;" :src="media.original_url" fit="fit">
-                            <template #error>
-                                <div class="flex justify-center items-center text-[#ababab]">
-                                    <i class="fa-solid fa-image text-6xl"></i>
-                                </div>
-                            </template>
-                        </el-image>
+                    <template #error>
+                        <div class="flex justify-center items-center text-[#ababab]">
+                            <i class="fa-solid fa-image text-6xl"></i>
+                        </div>
+                    </template>
+                </el-image>
+              </a>
               </div>
             </div>
           </section>
@@ -386,15 +387,16 @@
               </p>
 
               <p class="text-primary">Evidencia</p>
-              <div v-for="(media, index) in selectedSparePart.media" :key="index" class="text-secondary hover:underline col-span-2 flex flex-col space-y-1">
-                <a :href="media.original_url" target="_blank" rel="noopener noreferrer">{{ media.file_name }}</a>
-                <el-image style="width: 40%;" :src="media.original_url" fit="fit">
-                            <template #error>
-                                <div class="flex justify-center items-center text-[#ababab]">
-                                    <i class="fa-solid fa-image text-6xl"></i>
-                                </div>
-                            </template>
-                        </el-image>
+              <div v-for="(media, index) in selectedSparePart.media" :key="index" class="text-secondary hover:underline col-span-2 inline-flex space-y-1">
+                <a :href="media.original_url" target="_blank" rel="noopener noreferrer">
+                <el-image style="width: 70%;" :src="media.original_url" fit="fit">
+                    <template #error>
+                        <div class="flex justify-center items-center text-[#ababab]">
+                            <i class="fa-solid fa-image text-6xl"></i>
+                        </div>
+                    </template>
+                </el-image>
+                </a>
               </div>
             </div>
           </section>

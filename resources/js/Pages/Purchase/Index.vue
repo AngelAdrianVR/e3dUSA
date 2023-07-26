@@ -60,7 +60,8 @@
                   <el-dropdown-menu>
                     <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
                       Ver</el-dropdown-item>
-                    <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar ordenes de compra')" :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                    <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar ordenes de compra') ||
+                                      scope.row.user.id == $page.props.auth.user.id" :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                       Editar</el-dropdown-item>
                     <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear ordenes de compra')" :command="'clone-' + scope.row.id"><i class="fa-solid fa-clone"></i>
                       Clonar</el-dropdown-item>
