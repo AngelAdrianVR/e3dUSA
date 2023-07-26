@@ -3,11 +3,9 @@
     <AppLayout title="Editar Materia prima">
       <template #header>
         <div class="flex justify-between">
-          <Link
-            :href="route('storages.raw-materials.index')"
-            class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center"
-          >
-            <i class="fa-solid fa-chevron-left"></i>
+          <Link :href="route('storages.raw-materials.index')"
+            class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
+          <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">
@@ -19,7 +17,7 @@
 
       <!-- Form -->
       <form @submit.prevent="update">
-       <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md md:space-y-4">
+        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md md:space-y-4">
           <div>
             <IconInput v-model="form.name" inputPlaceholder="Nombre *" inputType="text">
               <el-tooltip content="Nombre" placement="top"> A </el-tooltip>
@@ -60,19 +58,18 @@
               <InputError :message="form.errors.initial_stock" />
             </div>
             <div class="flex items-center my-2">
-                        <el-tooltip content="Materias primas" placement="top">
-                            <span
-                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                                <i class="fa-solid fa-ruler-vertical"></i>
-                            </span>
-                        </el-tooltip>
-                        <el-select v-model="form.measure_unit" clearable
-                            placeholder="Busca unidad de medida" no-data-text="No hay unidades de medida registradas"
-                            no-match-text="No se encontraron coincidencias">
-                            <el-option v-for="(item, index) in mesureUnits" :key="index" :label="item" :value="item" />
-                        </el-select>
-                        <InputError :message="form.errors.measure_unit" />
-                    </div>
+              <el-tooltip content="Materias primas" placement="top">
+                <span
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                  <i class="fa-solid fa-ruler-vertical"></i>
+                </span>
+              </el-tooltip>
+              <el-select v-model="form.measure_unit" clearable placeholder="Busca unidad de medida"
+                no-data-text="No hay unidades de medida registradas" no-match-text="No se encontraron coincidencias">
+                <el-option v-for="(item, index) in mesureUnits" :key="index" :label="item" :value="item" />
+              </el-select>
+              <InputError :message="form.errors.measure_unit" />
+            </div>
             <div>
               <IconInput v-model="form.cost" inputPlaceholder="Costo *" inputType="number" inputStep="0.01">
                 <el-tooltip content="Cuánto le cuesta a e3d adquirir esta materia prima" placement="top">
@@ -176,13 +173,16 @@ export default {
       newFeature: null,
       features: [],
       mesureUnits: [
-                'Pieza(s)',
-                'Litro(s)',
-                'Par(es)',
-                'kilogramo(s)',
-                'Metro(s)',
-                'Rollo(s)',
-            ],
+        'Pieza(s)',
+        'Litro(s)',
+        'Par(es)',
+        'kilogramo(s)',
+        'Metro(s)',
+        'Rollo(s)',
+        'Galon(es)',
+        'Cubeta(s)',
+        'Bote(s)',
+      ],
     };
   },
   components: {

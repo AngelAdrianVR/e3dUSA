@@ -39,8 +39,8 @@
                                 <i class="fa-solid fa-ruler-vertical"></i>
                             </span>
                         </el-tooltip>
-                        <el-select v-model="form.measure_unit" clearable
-                            placeholder="Busca unidad de medida" no-data-text="No hay unidades de medida registradas"
+                        <el-select v-model="form.measure_unit" clearable placeholder="Busca unidad de medida"
+                            no-data-text="No hay unidades de medida registradas"
                             no-match-text="No se encontraron coincidencias">
                             <el-option v-for="(item, index) in mesureUnits" :key="index" :label="item" :value="item" />
                         </el-select>
@@ -92,7 +92,7 @@
                                 :value="feature"></el-option>
                         </el-select>
                     </div>
-                    <div class="col-span-full mt-2"> 
+                    <div class="col-span-full mt-2">
                         <div class="flex items-center">
                             <span
                                 class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
@@ -106,8 +106,7 @@
                             file:text-sm file:font-semibold
                             file:bg-primary file:text-white
                             file:cursor-pointer
-                            hover:file:bg-red-600" 
-                            aria-describedby="file_input_help" id="file_input" type="file">
+                            hover:file:bg-red-600" aria-describedby="file_input_help" id="file_input" type="file">
                         </div>
                         <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">SVG, PNG, JPG o
                             GIF (MAX. 4 MB).</p>
@@ -175,7 +174,8 @@
                                 #
                             </el-tooltip>
                         </IconInput>
-                        <span class="text-sm pt-2">{{ raw_materials.find(item => item.id == rawMaterial.raw_material_id)?.measure_unit }}</span>
+                        <span class="text-sm pt-2">{{ raw_materials.find(item => item.id ==
+                            rawMaterial.raw_material_id)?.measure_unit }}</span>
                     </div>
                     <div calss="col-span-full">
                         <SecondaryButton @click="addProduct" type="button"
@@ -236,6 +236,9 @@ export default {
                 'kilogramo(s)',
                 'Metro(s)',
                 'Rollo(s)',
+                'Galon(es)',
+                'Cubeta(s)',
+                'Bote(s)',
             ],
         };
     },

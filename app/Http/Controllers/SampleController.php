@@ -42,9 +42,14 @@ class SampleController extends Controller
             'contact_id' => 'required'
         ]);
 
-        Sample::create($request->all() + [
+        $sample = Sample::create($request->all() + [
             'user_id' => auth()->id()
         ]);
+        $can_authorize = auth()->user()->can('Autorizar muestra') || auth()->user()->hasRole('Super admin');
+
+        if ($can_authorize) {
+            $sample->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
+        }
 
         return to_route('samples.index');
     }

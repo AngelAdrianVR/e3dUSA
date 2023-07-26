@@ -118,6 +118,7 @@ Route::post('payrolls/get-additional-time', [PayrollController::class, 'getAddit
 Route::resource('users', UserController::class)->middleware('auth');
 Route::get('users-get-next-attendance', [UserController::class, 'getNextAttendance'])->middleware('auth')->name('users.get-next-attendance');
 Route::get('users-set-attendance', [UserController::class, 'setAttendance'])->middleware('auth')->name('users.set-attendance');
+Route::put('users-reset-pass/{user}', [UserController::class, 'resetPass'])->middleware('auth')->name('users.reset-pass');
 
 // ------- Recursos humanos(Roles and permissions Routes)  ---------
 Route::get('role-permission', [RolePermissionController::class, 'index'])->middleware('auth')->name('role-permission.index');

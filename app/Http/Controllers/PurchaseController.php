@@ -45,7 +45,12 @@ class PurchaseController extends Controller
         'bank_information' => 'required',
         ]);
 
-        Purchase::create($validation + ['user_id' => auth()->user()->id]);
+        $purchase = Purchase::create($validation + ['user_id' => auth()->user()->id]);
+        $can_authorize = auth()->user()->can('Autorizar ordenes de compra') || auth()->user()->hasRole('Super admin');
+
+        if ($can_authorize) {
+            $purchase->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
+        }
 
         return to_route('purchases.index');
     }

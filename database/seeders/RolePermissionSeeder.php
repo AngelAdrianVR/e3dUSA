@@ -180,7 +180,7 @@ class RolePermissionSeeder extends Seeder
 
         $role3 = Role::create(['name' => 'Super admin']);
         
-        // gets all permissions via Gate::before rule; see AuthServiceProvider
+        // gets all permissions
         $users = User::all();
         $users->each( fn ($user) => $user->assignRole($role3) );
     }

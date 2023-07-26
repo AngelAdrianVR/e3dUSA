@@ -42,6 +42,11 @@ class SaleController extends Controller
         ]);
 
         $sale = Sale::create($request->except('products') + ['user_id' => auth()->id()]);
+        $can_authorize = auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin');
+
+        if($can_authorize) {
+            $sale->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
+        }
         
         // store media
         $sale->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection('oce'));

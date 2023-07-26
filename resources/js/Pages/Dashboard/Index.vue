@@ -279,7 +279,7 @@ export default {
                     title: 'Órdenes de diseño sin iniciar',
                     counter: this.counts[6],
                     icon: 'fa-solid fa-compass-drafting',
-                    url: route('dashboard'),
+                    url: route('designs.index'),
                     show: this.$page.props.auth.user.permissions.includes('Ordenes de diseño todas')
                 },
                 {

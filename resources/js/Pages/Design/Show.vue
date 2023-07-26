@@ -12,21 +12,23 @@
           </Link>
         </div>
         <div class="flex justify-between">
-          <el-select
-            v-model="selectedDesign"
-            clearable
-            filterable
-            placeholder="Buscar órden de diseño"
-            no-data-text="No hay órdenes registradas"
-            no-match-text="No se encontraron coincidencias"
-          >
-            <el-option
-              v-for="item in designs.data"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
+          <div class="w-1/3">
+            <el-select
+              v-model="selectedDesign"
+              clearable
+              filterable
+              placeholder="Buscar órden de diseño"
+              no-data-text="No hay órdenes registradas"
+              no-match-text="No se encontraron coincidencias"
+            >
+              <el-option
+                v-for="item in designs.data"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </div>
           <div v-if="currentDesign" class="flex items-center space-x-2">
             <el-tooltip
               v-if="currentDesign?.expected_end_at == '--'"

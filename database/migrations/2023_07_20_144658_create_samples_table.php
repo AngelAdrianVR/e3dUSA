@@ -23,6 +23,8 @@ return new class extends Migration
             $table->foreignId('company_branch_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('contact_id')->constrained()->cascadeOnDelete();
+            $table->string('authorized_user_name')->nullable();
+            $table->timestamp('authorized_at')->nullable();
             $table->timestamps();
         });
     }

@@ -13,28 +13,24 @@
           </Link>
         </div>
         <div class="flex justify-between">
-          <el-select
-            @change="userSelection"
-            v-model="userSelected"
-            clearable
-            filterable
-            placeholder="Buscar órden de diseño"
-            no-data-text="No hay órdenes registradas"
-            no-match-text="No se encontraron coincidencias"
-          >
-            <el-option
-              v-for="item in users.data"
-              :key="item.id"
-              :label="item.id + '. ' + item.name"
-              :value="item.id"
-            />
-          </el-select>
-          <img v-if="currentUser"
-          :class="currentUser?.is_active.bool ? 'border-green-600' : 'border-red-600'"
-            class="h-32 w-32 rounded-full object-cover hidden md:block border-2"
-            :src="currentUser?.profile_photo_url"
-            :alt="currentUser?.name"
-          />
+          <div class="w-1/3">
+            <el-select
+              @change="userSelection"
+              v-model="userSelected"
+              clearable
+              filterable
+              placeholder="Buscar órden de diseño"
+              no-data-text="No hay órdenes registradas"
+              no-match-text="No se encontraron coincidencias"
+            >
+              <el-option
+                v-for="item in users.data"
+                :key="item.id"
+                :label="item.id + '. ' + item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </div>
           <div class="flex items-center space-x-2">
             <el-tooltip content="Editar" placement="top">
               <Link :href="route('users.edit', userSelected)">
@@ -85,9 +81,15 @@
         </div>
       </div>
 
-      <p class="text-center font-bold text-lg mb-4">
-        {{ currentUser?.name }}
-      </p>
+      <div class="flex flex-col items-center justify-center mb-4">
+        <img v-if="currentUser"
+          :class="currentUser?.is_active.bool ? 'border-green-600' : 'border-red-600'"
+            class="h-32 w-32 rounded-full object-cover hidden md:block border-2"
+            :src="currentUser?.profile_photo_url"
+            :alt="currentUser?.name"
+          />
+        <p class="font-bold text-lg">{{ currentUser?.name }}</p>
+      </div>
       <!-- ------------- tabs section starts ------------- -->
       <div
         class="border-y-2 border-[#cccccc] flex justify-between items-center py-2"
@@ -129,7 +131,7 @@
           <span class="text-gray-500">Nombre</span>
           <span>{{ currentUser?.name }}</span>
           <span class="text-gray-500 my-2">Fecha de nacimiento</span>
-          <span>{{ currentUser?.employee_properties?.birthdate }}</span>
+          <span>{{ currentUser?.employee_properties?.birthdate.raw }}</span>
           <span class="text-gray-500 my-2">Dependientes económicos</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Dirección</span>

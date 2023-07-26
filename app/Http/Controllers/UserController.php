@@ -46,7 +46,6 @@ class UserController extends Controller
             'employee_properties.bonuses' => 'nullable',
             'employee_properties.vacations' => 'nullable',
         ]);
-
         $work_days = 0;
         foreach ($validated['employee_properties']['work_days'] as $day) {
             if ($day['check_in'] != 0) $work_days ++;
@@ -62,7 +61,7 @@ class UserController extends Controller
         $validated['employee_properties']['salary']['hour'] = 
             round($validated['employee_properties']['salary']['week'] / $validated['employee_properties']['hours_per_week'], 2);
         $validated['employee_properties']['salary']['day'] = round($validated['employee_properties']['salary']['hour'] * $hours_per_day, 2);   
-        $validated['password'] = bcrypt($request->password);
+        $validated['password'] = bcrypt($request['employee_properties']['password']);
         
         $user = User::create($validated);
         $user->syncRoles($request->roles);
