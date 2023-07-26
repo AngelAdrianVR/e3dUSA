@@ -34,4 +34,9 @@ class Storage extends Model
             $query->whereColumn('storages.quantity', '<=', 'raw_materials.min_quantity');
         })->with('storageable')->get();
     }
+
+    public function movements()
+    {
+        return $this->hasMany(StockMovementHistory::class);
+    }
 }

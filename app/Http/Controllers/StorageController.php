@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\StorageResource;
 use App\Models\CatalogProduct;
 use App\Models\RawMaterial;
+use App\Models\StockMovementHistory;
 use App\Models\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -130,8 +131,8 @@ class StorageController extends Controller
     
     public function show($storage_id)
     {
-        $storage = Storage::with('storageable.media')->find($storage_id);
-        $storages = Storage::with('storageable.media')->where('type', '!=', 'scrap')->get();
+        $storage = Storage::with('storageable.media', 'movements.user')->find($storage_id);
+        $storages = Storage::with('storageable.media', 'movements.user')->where('type', '!=', 'scrap')->get();
        
         // Calcular la suma de la variable "cost" de todos los objetos
     $totalStorageMoney = collect($storages)->sum(function ($item) {
@@ -197,27 +198,41 @@ class StorageController extends Controller
 
     public function addStorage(Request $request, Storage $storage)
     {
-        $request->validate([
-            'quantity' => 'required|numeric|min:1'
+        $validated = $request->validate([
+            'quantity' => 'required|numeric|min:1',
+            'notes' => 'nullable',
+            'type' => 'required|string'
         ]);
 
+        // Add movement to history
+        $history = StockMovementHistory::Create($validated + ['storage_id' => $storage->id, 'user_id' => auth()->id()]);
+        $history = StockMovementHistory::with('user')->find($history->id);
+        
+        // update stock
         $storage->update([
             'quantity' => $storage->quantity += $request->quantity
         ]);
 
-        return response()->json(['item' => $storage]);
+        return response()->json(['item' => $storage, 'movement' => $history]);
     }
 
     public function subStorage(Request $request, Storage $storage)
     {
-        $request->validate([
-            'quantity' => 'required|numeric|min:1|max:' . $storage?->quantity
+        $validated = $request->validate([
+            'quantity' => 'required|numeric|min:1',
+            'notes' => 'nullable',
+            'type' => 'required|string'
         ]);
 
+        // Add movement to history
+        $history = StockMovementHistory::Create($validated + ['storage_id' => $storage->id, 'user_id' => auth()->id()]);
+        $history = StockMovementHistory::with('user')->find($history->id);
+
+        // update stock
         $storage->update([
             'quantity' => $storage->quantity -= $request->quantity
         ]);
 
-        return response()->json(['item' => $storage]);
+        return response()->json(['item' => $storage, 'movement' => $history]);
     }
 }

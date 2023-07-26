@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-xl bg-[#cccccc] px-7 py-3 relative text-xs shadow-lg">
     <!-- selection circle -->
-    <div @click="handleSelection"
+    <div @click="handleSelection" v-if="!is_view_for_seller"
       class="w-5 h-5 border-2 rounded-full absolute top-3 left-3 cursor-pointer flex items-center justify-center"
       :class="selected ? 'border-[#d90537]' : 'border-black'">
       <div class="w-3 h-3 rounded-full" :class="selected ? 'bg-primary' : null"></div>
@@ -43,7 +43,7 @@
       }}</span></p>
     </div>
 
-    <div class="border-b-2 border-[#9a9a9a] pb-1 mt-2">
+    <div v-if="!is_view_for_seller" class="border-b-2 border-[#9a9a9a] pb-1 mt-2">
       <p class="text-primary ">Operadores asignados:</p>
       <p v-for="production in catalog_product_company_sale.productions" :key="production.id"
         class="mt-1 flex justify-between items-center">
@@ -114,6 +114,10 @@ export default {
   emits: ['selected'],
   props: {
     catalog_product_company_sale: Object,
+    is_view_for_seller: {
+      type: Boolean,
+      default: false
+    },
   },
   components: {},
   methods: {
@@ -145,7 +149,7 @@ export default {
     },
     getDateFormtted(dateTime) {
       if (!dateTime) return null;
-      return moment.utc(dateTime).format("DD MMM YYYY, hh:mmA");
+      return moment(dateTime).format("DD MMM YYYY, hh:mmA");
     },
     async changeTaskStatus() {
       try {
