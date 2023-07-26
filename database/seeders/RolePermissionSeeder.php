@@ -86,6 +86,11 @@ class RolePermissionSeeder extends Seeder
         
         Permission::create(['name' => 'Generar reportes materia prima', 'category' => 'Almacen']);
         Permission::create(['name' => 'Generar reportes insumos', 'category' => 'Almacen']);
+        
+        Permission::create(['name' => 'Ver costo de almacen de producto terminado', 'category' => 'Almacen']);
+        Permission::create(['name' => 'Ver costo de almacen de materia prima', 'category' => 'Almacen']);
+        Permission::create(['name' => 'Ver costo de almacen de insumos', 'category' => 'Almacen']);
+        Permission::create(['name' => 'Ver costo de almacen de scrap', 'category' => 'Almacen']);
 
         Permission::create(['name' => 'Ver nominas', 'category' => 'RRHH']);
         Permission::create(['name' => 'Crear nominas', 'category' => 'RRHH']);
