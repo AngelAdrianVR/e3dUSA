@@ -71,7 +71,7 @@
       <!-- ------------- tabs section ends ------------- -->
 
       <!-- ------------- Informacion general Starts 1 ------------- -->
-      <div v-if="tabs == 1" class="md:w-1/2 grid grid-cols-2 text-left p-4 md:ml-20 text-sm">
+      <div v-if="tabs == 1" class="md:w-1/2 grid grid-cols-2 text-left p-4 md:ml-20 text-sm items-center">
         <span class="text-gray-500">ID</span>
         <span>{{ currentCompany?.id }}</span>
 

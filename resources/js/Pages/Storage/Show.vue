@@ -102,7 +102,7 @@
             <div class="flex mb-2">
               <p class="w-1/3 text-primary">Existencias</p>
               <p>
-                {{ currentStorage?.quantity ?? "0" }}
+                {{ currentStorage?.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0" }}
                 {{ currentStorage?.storageable.measure_unit ?? "" }}
               </p>
             </div>
@@ -158,28 +158,28 @@
               <div class="flex mb-3 space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">Costo de aquisición</p>
                 <p class="text-[#4FC03D]">
-                  {{ currentStorage?.storageable.cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '--' }} $MXN
+                  {{ currentStorage?.storageable.cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '--' }} $MXN
                 </p>
               </div>
               <div class="flex mb-6 space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">Costo total de este producto en almacén</p>
                 <p class="text-[#4FC03D]">
                   {{ (currentStorage?.storageable.cost *
-                    currentStorage?.quantity).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} $MXN
+                    currentStorage?.quantity).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} $MXN
                 </p>
               </div>
               <div class="flex mb-2 space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">
                   Cantidad miníma permitida en almacén
                 </p>
-                <p>{{ currentStorage?.storageable.min_quantity.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
+                <p>{{ currentStorage?.storageable.min_quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
                   currentStorage?.storageable.measure_unit }}</p>
               </div>
               <div class="flex space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">
                   Cantidad máxima permitida en almacén
                 </p>
-                <p>{{ currentStorage?.storageable.max_quantity.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
+                <p>{{ currentStorage?.storageable.max_quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
                   currentStorage?.storageable.measure_unit }}</p>
               </div>
             </div>

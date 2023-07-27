@@ -90,7 +90,7 @@ export default {
             // pagination
             itemsPerPage: 25,
             start: 0,
-            end: 10,
+            end: 25,
         };
     },
     components: {

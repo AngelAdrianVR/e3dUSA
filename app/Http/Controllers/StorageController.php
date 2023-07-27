@@ -64,7 +64,7 @@ class StorageController extends Controller
             $storages = Storage::with('storageable.media')->get();
             return inertia('Storage/Create/Scrap', compact('storages'));
         }elseif(Route::currentRouteName() == 'storages.finished-products.create'){
-            $catalog_products = CatalogProduct::with('media')->get();
+            $catalog_products = CatalogProduct::with('media')->latest()->get();
             return inertia('Storage/Create/FinishedProduct', compact('catalog_products'));
         }
         
@@ -146,7 +146,7 @@ class StorageController extends Controller
     
     public function edit(Storage $storage)
     {
-        $catalog_products = CatalogProduct::all();
+        $catalog_products = CatalogProduct::with('media')->latest()->get();
         return inertia('Storage/Edit/FinishedProduct', compact('catalog_products', 'storage'));
     }
 
