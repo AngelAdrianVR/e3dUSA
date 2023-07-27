@@ -66,4 +66,9 @@ class Design extends Model implements HasMedia
         return $this->belongsTo(self::class);
     }
 
+    public function modifications()
+    {
+        return $this->hasMany(DesignModification::class);
+    }
+
 }

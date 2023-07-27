@@ -98,7 +98,7 @@
             </el-tooltip>
             <el-date-picker v-model="form.aquisition_date" type="date" placeholder="Fecha de adquisición * *"
               format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
-            <InputError :message="form.errors.aquisition_date" />
+            <InputError :message="form.errors.aquisition_date" :disabled-date="disabledDate" />
           </div>
           <!-- <div>
             <IconInput v-model="form.aquisition_date" inputPlaceholder="Fecha de adquisición" inputType="date">
@@ -191,6 +191,11 @@ export default {
           this.form.reset();
         },
       });
+    },
+    disabledDate(time) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return time.getTime() > today.getTime();
     },
   },
 };
