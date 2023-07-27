@@ -15,32 +15,62 @@
         <!-- Form -->
         <form @submit.prevent="store">
             <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
+                <div class="flex items-center mb-2">
+                    <el-tooltip content="Tipo de producto (necesario para generar el número de parte)" placement="top">
+                        <span
+                            class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                            <i class="fa-solid fa-tag"></i>
+                        </span>
+                    </el-tooltip>
+                    <el-select @change="generatePartNumber" v-model="productType" placeholder="Tipo de producto *">
+                        <el-option v-for="item in productTypes" :key="item.value" :label="item.label" :value="item.value">
+                            <span style="float: left">{{ item.label }}</span>
+                            <span style="
+                  float: right;
+                  color: #cccccc;
+                  font-size: 13px;
+                  ">{{ item.value }}</span>
+                        </el-option>
+                    </el-select>
+                </div>
+                <div class="mb-2">
+                    <IconInput v-model="brand" @change="generatePartNumber" inputPlaceholder="Marca del producto *"
+                        inputType="text">
+                        <el-tooltip content="Marca del producto (si no tiene marca colocar 'Generico')" placement="top">
+                            <i class="fa-solid fa-copyright"></i>
+                        </el-tooltip>
+                    </IconInput>
+                </div>
+                <div class="mb-2">
+                    <IconInput v-model="form.name" inputPlaceholder="Nombre *" inputType="text">
+                        <el-tooltip content="Nombre" placement="top">
+                            A
+                        </el-tooltip>
+                    </IconInput>
+                    <InputError :message="form.errors.name" />
+                </div>
                 <div class="md:grid gap-6 mb-6 grid-cols-2">
-                    <div>
-                        <IconInput v-model="form.name" inputPlaceholder="Nombre *" inputType="text">
-                            <el-tooltip content="Nombre" placement="top">
-                                A
-                            </el-tooltip>
-                        </IconInput>
-                        <InputError :message="form.errors.name" />
-                    </div>
-                    <div>
-                        <IconInput v-model="form.part_number" inputPlaceholder="Número de parte *" inputType="text">
-                            <el-tooltip content="Número de parte" placement="top">
+                    <div class="flex items-center">
+                        <el-tooltip content="Número de parte *" placement="top">
+                            <span
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
                                 #
-                            </el-tooltip>
-                        </IconInput>
+                            </span>
+                        </el-tooltip>
+                        <input v-model="form.part_number" type="text"
+                            class="input disabled:cursor-not-allowed disabled:opacity-80" placeholder="Número de parte *"
+                            disabled>
                         <InputError :message="form.errors.part_number" />
                     </div>
-                    <div class="flex items-center my-2">
+                    <div class="flex items-center">
                         <el-tooltip content="Materias primas" placement="top">
                             <span
                                 class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
                                 <i class="fa-solid fa-ruler-vertical"></i>
                             </span>
                         </el-tooltip>
-                        <el-select v-model="form.measure_unit" clearable
-                            placeholder="Busca unidad de medida" no-data-text="No hay unidades de medida registradas"
+                        <el-select v-model="form.measure_unit" clearable placeholder="Busca unidad de medida"
+                            no-data-text="No hay unidades de medida registradas"
                             no-match-text="No se encontraron coincidencias">
                             <el-option v-for="(item, index) in mesureUnits" :key="index" :label="item" :value="item" />
                         </el-select>
@@ -92,7 +122,7 @@
                                 :value="feature"></el-option>
                         </el-select>
                     </div>
-                    <div class="col-span-full mt-2"> 
+                    <div class="col-span-full mt-2">
                         <div class="flex items-center">
                             <span
                                 class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
@@ -106,8 +136,7 @@
                             file:text-sm file:font-semibold
                             file:bg-primary file:text-white
                             file:cursor-pointer
-                            hover:file:bg-red-600" 
-                            aria-describedby="file_input_help" id="file_input" type="file">
+                            hover:file:bg-red-600" aria-describedby="file_input_help" id="file_input" type="file">
                         </div>
                         <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">SVG, PNG, JPG o
                             GIF (MAX. 4 MB).</p>
@@ -185,7 +214,8 @@
                                 #
                             </el-tooltip>
                         </IconInput>
-                        <span class="text-sm pt-2">{{ raw_materials.find(item => item.id == rawMaterial.raw_material_id)?.measure_unit }}</span>
+                        <span class="text-sm pt-2">{{ raw_materials.find(item => item.id ==
+                            rawMaterial.raw_material_id)?.measure_unit }}</span>
                     </div>
                     <div calss="col-span-full">
                         <SecondaryButton @click="addProduct" type="button"
@@ -197,7 +227,6 @@
                 </div>
 
                 <el-divider />
-
                 <div class="md:text-right">
                     <PrimaryButton :disabled="form.processing"> Crear producto </PrimaryButton>
                 </div>
@@ -249,6 +278,90 @@ export default {
                 'Cubeta(s)',
                 'Bote(s)',
             ],
+            productType: 'PP',
+            brand: null,
+            productTypes: [
+                {
+                    label: 'Porta-placa',
+                    value: 'PP',
+                },
+                {
+                    label: 'Emblema',
+                    value: 'EM',
+                },
+                {
+                    label: 'Llavero',
+                    value: 'LL',
+                },
+                {
+                    label: 'Parasol',
+                    value: 'PS',
+                },
+                {
+                    label: 'Tapete',
+                    value: 'TP',
+                },
+                {
+                    label: 'Porta-documento',
+                    value: 'PD',
+                },
+                {
+                    label: 'Termo',
+                    value: 'TM',
+                },
+                {
+                    label: 'Placa de estireno',
+                    value: 'PE',
+                },
+                {
+                    label: 'Etiqueta',
+                    value: 'ET',
+                },
+                {
+                    label: 'Overlay',
+                    value: 'OV',
+                },
+                {
+                    label: 'Accesorio para llavero',
+                    value: 'ALL',
+                },
+                {
+                    label: 'Pin',
+                    value: 'PI',
+                },
+                {
+                    label: 'Prenda',
+                    value: 'PR',
+                },
+                {
+                    label: 'Botella',
+                    value: 'BT',
+                },
+                {
+                    label: 'Hielera',
+                    value: 'HI',
+                },
+                {
+                    label: 'Funda para auto',
+                    value: 'FA',
+                },
+                {
+                    label: 'Perfumero',
+                    value: 'PF',
+                },
+                {
+                    label: 'Funda para llave',
+                    value: 'FLL',
+                },
+                {
+                    label: 'Bocina',
+                    value: 'BC',
+                },
+                {
+                    label: 'Impresión',
+                    value: 'IM',
+                },
+            ],
         };
 
     },
@@ -262,7 +375,8 @@ export default {
     },
     props: {
         raw_materials: Array,
-        production_costs: Array
+        production_costs: Array,
+        consecutive: String,
     },
     methods: {
         store() {
@@ -277,6 +391,10 @@ export default {
                     this.form.reset();
                 }
             });
+        },
+        generatePartNumber() {
+            const partNumber = 'C-' + this.productType + '-' + this.brand?.toUpperCase().substr(0, 3) + '-' + this.consecutive;
+            this.form.part_number = partNumber;
         },
         addProduct() {
             const product = { ...this.rawMaterial };

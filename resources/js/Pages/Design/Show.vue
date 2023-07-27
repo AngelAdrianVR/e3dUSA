@@ -157,7 +157,7 @@
                 {{ getDateFormtted(modification.created_at) }}
               </td>
               <td class="pb-6 w-64">
-                <template v-if="modification.media.length">
+                <template v-if="modification.media?.length">
                   <p v-if="modification.media.length" v-for="file in modification.media" :key="file.id">
                     <a class="hover:underline text-primary hover:text-secondary" :href="file.original_url"
                       target="_blank">{{ file.file_name }}</a>
@@ -270,7 +270,7 @@
           <p v-if="showModificationsResultsModal">Resultados de modificaciones</p>
         </template>
         <template #content>
-          <form @submit.prevent="showModificationsModal ? storeModifications : storeModificationsResults" ref="myForm">
+          <form @submit.prevent="showModificationsModal ? storeModifications() : storeModificationsResults()" ref="myForm">
             <div v-if="showModificationsModal" class="flex">
               <el-tooltip content="Modificaciones *" placement="top">
                 <span
@@ -316,7 +316,7 @@
             @click="storeModificationsResults()" :disabled="modificationsForm.processing">
             Subir resultados
           </PrimaryButton>
-          <PrimaryButton v-if="showModificationsModal" @click="submitModificationsForm()"
+          <PrimaryButton v-if="showModificationsModal" @click="submitModificationsForm"
             :disabled="modificationsForm.processing">
             Solicitar
           </PrimaryButton>
@@ -423,7 +423,7 @@ export default {
         });
 
         if (response.status === 200) {
-          this.currentDesign.modifications.push(response.data.item);
+          this.currentDesign.modifications.unshift(response.data.item);
           this.showModificationsModal = false;
           this.$notify({
             title: "Éxito",
@@ -473,7 +473,7 @@ export default {
       return moment(dateTime).format("DD MMM YYYY, hh:mmA");
     },
     submitModificationsForm() {
-      this.$refs.myForm.dispatchEvent(new Event('submit', { cancelable: true }));
+      this.$refs.myForm.dispatchEvent(new Event('submit', { cancelable: false }));
     },
     disabledDate(time) {
       const today = new Date();

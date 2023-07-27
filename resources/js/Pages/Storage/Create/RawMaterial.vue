@@ -18,6 +18,31 @@
       <!-- Form -->
       <form @submit.prevent="store">
         <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md md:space-y-4">
+          <div class="flex items-center">
+            <el-tooltip content="Tipo de producto (necesario para generar el número de parte)" placement="top">
+              <span
+                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                <i class="fa-solid fa-tag"></i>
+              </span>
+            </el-tooltip>
+            <el-select @change="generatePartNumber" v-model="productType" placeholder="Tipo de producto *">
+              <el-option v-for="item in productTypes" :key="item.value" :label="item.label" :value="item.value">
+                <span style="float: left">{{ item.label }}</span>
+                <span style="
+                  float: right;
+                  color: #cccccc;
+                  font-size: 13px;
+                  ">{{ item.value }}</span>
+              </el-option>
+            </el-select>
+          </div>
+          <div>
+            <IconInput v-model="brand" @change="generatePartNumber" inputPlaceholder="Marca del producto *" inputType="text">
+              <el-tooltip content="Marca del producto (si no tiene marca colocar 'Generico')" placement="top">
+                <i class="fa-solid fa-copyright"></i>
+              </el-tooltip>
+            </IconInput>
+          </div>
           <div>
             <IconInput v-model="form.name" inputPlaceholder="Nombre *" inputType="text">
               <el-tooltip content="Nombre" placement="top"> A </el-tooltip>
@@ -25,12 +50,15 @@
             <InputError :message="form.errors.name" />
           </div>
           <div class="md:grid gap-6 md:mb-6 grid-cols-2">
-            <div>
-              <IconInput v-model="form.part_number" inputPlaceholder="Número de parte *" inputType="text">
-                <el-tooltip content="Número de parte" placement="top">
+            <div class="flex items-center">
+              <el-tooltip content="Número de parte *" placement="top">
+                <span
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
                   #
-                </el-tooltip>
-              </IconInput>
+                </span>
+              </el-tooltip>
+              <input v-model="form.part_number" type="text" class="input disabled:cursor-not-allowed disabled:opacity-80"
+                placeholder="Número de parte *" disabled>
               <InputError :message="form.errors.part_number" />
             </div>
             <div>
@@ -134,7 +162,8 @@
             </p>
           </div>
 
-          <div class="mt-2 mx-3 md:text-right">
+          <el-divider />
+          <div class="mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing"> Agregar </PrimaryButton>
           </div>
         </div>
@@ -183,6 +212,90 @@ export default {
         'Cubeta(s)',
         'Bote(s)',
       ],
+      productType: 'PP',
+      brand: null,
+      productTypes: [
+        {
+          label: 'Porta-placa',
+          value: 'PP',
+        },
+        {
+          label: 'Emblema',
+          value: 'EM',
+        },
+        {
+          label: 'Llavero',
+          value: 'LL',
+        },
+        {
+          label: 'Parasol',
+          value: 'PS',
+        },
+        {
+          label: 'Tapete',
+          value: 'TP',
+        },
+        {
+          label: 'Porta-documento',
+          value: 'PD',
+        },
+        {
+          label: 'Termo',
+          value: 'TM',
+        },
+        {
+          label: 'Placa de estireno',
+          value: 'PE',
+        },
+        {
+          label: 'Etiqueta',
+          value: 'ET',
+        },
+        {
+          label: 'Overlay',
+          value: 'OV',
+        },
+        {
+          label: 'Accesorio para llavero',
+          value: 'ALL',
+        },
+        {
+          label: 'Pin',
+          value: 'PI',
+        },
+        {
+          label: 'Prenda',
+          value: 'PR',
+        },
+        {
+          label: 'Botella',
+          value: 'BT',
+        },
+        {
+          label: 'Hielera',
+          value: 'HI',
+        },
+        {
+          label: 'Funda para auto',
+          value: 'FA',
+        },
+        {
+          label: 'Perfumero',
+          value: 'PF',
+        },
+        {
+          label: 'Funda para llave',
+          value: 'FLL',
+        },
+        {
+          label: 'Bocina',
+          value: 'BC',
+        },
+        {
+          label: 'Impresión',
+          value: 'IM',
+        },
+      ],
     };
   },
   components: {
@@ -193,7 +306,9 @@ export default {
     InputError,
     IconInput,
   },
-  props: {},
+  props: {
+    consecutive: String,
+  },
   methods: {
     store() {
       this.form.post(route("raw-materials.store"), {
@@ -205,6 +320,10 @@ export default {
           });
         },
       });
+    },
+    generatePartNumber() {
+      const partNumber = this.productType + '-' + this.brand?.toUpperCase().substr(0,3) + '-' + this.consecutive;
+      this.form.part_number = partNumber;
     },
     addFeature() {
       if (this.newFeature.trim() !== "") {
