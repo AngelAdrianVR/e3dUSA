@@ -74,14 +74,14 @@ class DesignController extends Controller
     public function show(Design $design)
     {
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de diseño todas')) {
-            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->latest()->get());
+            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType', 'modifications.media')->latest()->get());
             // return $designs;
             return inertia('Design/Show', compact('design', 'designs'));
         } elseif (auth()->user()->can('Ordenes de diseño personal')) {
-            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->where('user_id', auth()->id())->latest()->get());
+            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType', 'modifications.media')->where('user_id', auth()->id())->latest()->get());
             return inertia('Design/Show', compact('design', 'designs'));
         } else {
-            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->where('designer_id', auth()->id())->latest()->get());
+            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType', 'modifications.media')->where('designer_id', auth()->id())->latest()->get());
             return inertia('Design/Show', compact('design', 'designs'));
         }
     }
@@ -159,10 +159,6 @@ class DesignController extends Controller
 
     public function finishOrder(Request $request, Design $design)
     {
-        $request->validate([
-            'media' => 'nullable'
-        ]);
-
         $design->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection('results'));
 
         $design->update([

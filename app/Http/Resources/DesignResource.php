@@ -60,6 +60,7 @@ class DesignResource extends JsonResource
             'original_design_id' => $this->original_design_id,
             'is_complex' => $this->is_complex,
             'reuse_percentage' => $this->reuse_percentage,
+            'modifications' => $this->whenLoaded('modifications'),
             'design_modifications' => $this->design_modifications,
             'started_at' => $this->started_at?->isoFormat('YYYY MMM DD') ?? 'No iniciado',
             'finished_at' => $this->finished_at?->isoFormat('YYYY MMM DD'),

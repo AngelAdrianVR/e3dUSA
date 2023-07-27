@@ -7,6 +7,7 @@ use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DesignController;
+use App\Http\Controllers\DesignModificationController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\KioskDeviceController;
@@ -165,6 +166,10 @@ Route::post('designs/massive-delete', [DesignController::class, 'massiveDelete']
 Route::put('designs/start-order/{design}', [DesignController::class, 'startOrder'])->name('designs.start-order');
 Route::post('designs/finish-order/{design}', [DesignController::class, 'finishOrder'])->name('designs.finish-order');
 Route::put('designs/authorize/{design}', [DesignController::class, 'authorizeOrder'])->name('designs.authorize');
+
+// ------- Design modifications routes  ---------
+Route::resource('design-modifications', DesignModificationController::class)->middleware('auth');
+Route::post('design-modifications/upload-results', [DesignModificationController::class, 'uploadResults'])->name('design-modifications.upload-results');
 
 // ------- production department routes  ---------
 Route::resource('productions', ProductionController::class)->middleware('auth');
