@@ -56,9 +56,9 @@
                                             Ver</el-dropdown-item>
                                         <el-dropdown-item :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
-                                        <el-dropdown-item :command="'edit-' + scope.row.id"><i
+                                        <el-dropdown-item @click="changeStatus(scope.row)"><i
                                                 class="fa-solid fa-user-slash"></i>
-                                            Deshabilitar</el-dropdown-item>
+                                            {{scope.row.is_active.bool ? 'Deshabilitar' : 'Habilitar'}}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -87,9 +87,9 @@ export default {
             disableMassiveActions: true,
             search: '',
             // pagination
-            itemsPerPage: 25,
+            itemsPerPage: 10,
             start: 0,
-            end: 25,
+            end: 10,
         };
     },
     components: {
@@ -131,12 +131,21 @@ export default {
 
             if (commandName == 'clone') {
                 this.clone(rowId);
-            } else if (commandName == 'make_so') {
-                console.log('SO');
-            } else {
+            }else {
                 this.$inertia.get(route('users.' + commandName, rowId));
             }
         },
+        changeStatus(user){
+
+            this.$inertia.put(route("users.change-status", user)),
+            
+            this.$notify({
+                title: "Éxito",
+            message: "Se cambió el estatus del usuario",
+            type: "success",
+          });
+
+        }
     },
     computed: {
         filteredTableData() {

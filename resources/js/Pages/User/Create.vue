@@ -236,6 +236,7 @@ export default {
     return {
       form,
       departments: [
+        'Administración',
         'Almacén',
         'Calidad',
         'Compras',

@@ -22,9 +22,9 @@ const _sfc_main = {
             disableMassiveActions: true,
             search: '',
             // pagination
-            itemsPerPage: 25,
+            itemsPerPage: 10,
             start: 0,
-            end: 25,
+            end: 10,
         };
     },
     components: {
