@@ -157,15 +157,18 @@ class DesignController extends Controller
         return response()->json(['item' => DesignResource::make($design)]);
     }
 
-    public function finishOrder(Request $request, Design $design)
+    public function finishOrder(Request $request)
     {
+        $design = Design::find($request->design_id);
         $design->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection('results'));
-
         $design->update([
             'finished_at' => now()
         ]);
 
-        return response()->json(['item' => DesignResource::make(Design::find($design->id))]);
+        // $design = Design::find($design->id);
+        $media = $design->getMedia('results')->all();
+
+        return response()->json(['item' => $media]);
     }
 
     public function authorizeOrder(Design $design)

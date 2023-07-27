@@ -46,10 +46,10 @@
             </el-tooltip>
 
             <el-tooltip
-              v-else-if="!currentDesign?.finished_at && this.currentDesign.designer.id == this.$page.props.auth.user.id"
-              content="Marcar como orden terminada" placement="top">
+              v-else-if="this.currentDesign.designer.id == this.$page.props.auth.user.id"
+              content="Marcar como orden terminada y subir resultados" placement="top">
               <button @click="finishOrderModal = true" class="rounded-lg bg-green-600 text-sm text-white p-2">
-                Terminada
+                Subir resultados
               </button>
             </el-tooltip>
           </div>
@@ -251,7 +251,7 @@
             </div>
 
             <div class="flex justify-start space-x-3 pt-2 pb-1 border-t border-[#9a9a9a] py-2">
-              <PrimaryButton>Terminar orden</PrimaryButton>
+              <PrimaryButton>Subir</PrimaryButton>
               <CancelButton @click="
                 finishOrderModal = false;
               form.reset();
@@ -502,10 +502,20 @@ export default {
         });
       }
     },
-    finishOrder() {
-      this.form.post(route("designs.finish-order", this.selectedDesign), {
-        _method: 'put',
-        onSuccess: () => {
+    async finishOrder() {
+      try {
+        const response = await axios.post(route('designs.finish-order'), {
+          expected_end_at: this.form.expected_end_at,
+          media: this.form.media,
+          design_id: this.selectedDesign,
+        }, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        if (response.status === 200) {
+          this.currentDesign.media = response.data.item;
           this.$notify({
             title: "Éxito",
             message: "Órden terminada",
@@ -514,8 +524,14 @@ export default {
 
           this.form.reset();
           this.finishOrderModal = false;
-        },
-      });
+        }
+      } catch (error) {
+        this.$notify({
+          title: "Error",
+          message: error.message,
+          type: "error",
+        });
+      }
     },
   },
 
