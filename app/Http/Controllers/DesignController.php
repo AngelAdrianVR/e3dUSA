@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\DesignResource;
 use App\Models\Company;
+use App\Models\CompanyBranch;
 use App\Models\Design;
 use App\Models\DesignType;
 use App\Models\User;
@@ -31,8 +32,9 @@ class DesignController extends Controller
         $designers = User::where('is_active', 1)->where('employee_properties->department', 'Diseño')->get();
         $design_types = DesignType::all();
         $companies = Company::all();
+        $company_branches = CompanyBranch::with('contacts')->latest()->get();
 
-        return inertia('Design/Create', compact('designers', 'design_types', 'companies'));
+        return inertia('Design/Create', compact('designers', 'design_types', 'companies', 'company_branches'));
     }
 
     public function store(Request $request)

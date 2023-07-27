@@ -68,7 +68,7 @@
                     <div class="mt-8 ml-6 text-sm">
                         <div class="flex mb-2">
                             <p class="w-1/3 text-primary">Existencias</p>
-                            <p>{{ currentCatalogProduct?.storages[0]?.quantity.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '0' }} {{ currentCatalogProduct?.measure_unit }}</p>
+                            <p>{{ currentCatalogProduct?.storages[0]?.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '0' }} {{ currentCatalogProduct?.measure_unit }}</p>
                         </div>
                         <div class="flex mb-3">
                             <p class="w-1/3 text-primary">Ubicación</p>
@@ -107,11 +107,11 @@
                         </div>
                         <div class="flex mb-2 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Cantidad miníma permitida en almacén</p>
-                            <p>{{ currentCatalogProduct?.min_quantity.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ currentCatalogProduct?.measure_unit }}</p>
+                            <p>{{ currentCatalogProduct?.min_quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ currentCatalogProduct?.measure_unit }}</p>
                         </div>
                         <div class="flex space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Cantidad máxima permitida en almacén</p>
-                            <p>{{ currentCatalogProduct?.max_quantity.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ currentCatalogProduct?.measure_unit }}</p>
+                            <p>{{ currentCatalogProduct?.max_quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ currentCatalogProduct?.measure_unit }}</p>
                         </div>
                     </div>
                 </div>

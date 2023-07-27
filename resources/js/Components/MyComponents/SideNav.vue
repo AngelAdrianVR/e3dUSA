@@ -109,7 +109,7 @@ export default {
                 {
                     label: 'Almacén',
                     icon: '<i class="fa-solid fa-warehouse text-xs"></i>',
-                    active: route().current('storages.*'),
+                    active: route().current('storages.*') || route().current('raw-materials.*'),
                     options: [
                         {
                             label: 'Materia prima',

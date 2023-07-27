@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\RawMaterialResource;
 use App\Models\RawMaterial;
 use App\Models\Storage;
 use Illuminate\Http\Request;
@@ -66,15 +67,19 @@ class RawMaterialController extends Controller
     }
 
 
-    public function edit(RawMaterial $raw_material)
+    public function edit($raw_material)
     {
+       $raw_material = RawMaterialResource::make(RawMaterial::with('storages')->find($raw_material));
+        // return $raw_material;
 
         return inertia('Storage/Edit/RawMaterial', compact('raw_material'));
     }
 
-    public function editConsumable(RawMaterial $raw_material)
+    public function editConsumable($raw_material)
     {
 
+        $raw_material = RawMaterialResource::make(RawMaterial::with('storages')->find($raw_material));
+        // return $raw_material;
         return inertia('Storage/Edit/Consumable', compact('raw_material'));
     }
 

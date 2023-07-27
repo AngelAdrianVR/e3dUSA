@@ -106,7 +106,7 @@
               </li>
               <li>
                 <label class="text-primary">costo: </label> ${{
-                  catalog_product_selected?.cost * form.quantity
+                  (catalog_product_selected?.cost * form.quantity).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                 }}
               </li>
             </ul>
