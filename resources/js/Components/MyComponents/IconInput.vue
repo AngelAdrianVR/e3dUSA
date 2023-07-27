@@ -37,7 +37,6 @@ export default {
       type: String,
       required: true,
     },
-
   },
     emits: ['update:modelValue'],
   setup(props, { emit }) {

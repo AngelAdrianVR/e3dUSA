@@ -17,12 +17,16 @@ class RawMaterialController extends Controller
 
     public function create()
     {
+        $last = RawMaterial::latest()->first();
+        $next_id = $last ? $last->id + 1 : 1;
+        $consecutive = str_pad($next_id, 4, "0", STR_PAD_LEFT);
+
         if (Route::currentRouteName() == 'raw-materials.create') {
 
-            return inertia('Storage/Create/RawMaterial');
+            return inertia('Storage/Create/RawMaterial', compact('consecutive'));
         } elseif (Route::currentRouteName() == 'consumables.create') {
 
-            return inertia('Storage/Create/Consumable');
+            return inertia('Storage/Create/Consumable', compact('consecutive'));
         }
     }
 

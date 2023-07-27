@@ -24,13 +24,16 @@
             </IconInput>
             <InputError :message="form.errors.name" />
           </div>
-          <div class="md:grid gap-6 md:mb-6 grid-cols-2">
-            <div>
-              <IconInput v-model="form.part_number" inputPlaceholder="Número de parte *" inputType="text">
-                <el-tooltip content="Número de parte" placement="top">
+          <div class="md:grid gap-x-6 gap-y-2 md:mb-6 grid-cols-2">
+            <div class="flex items-center">
+              <el-tooltip content="Número de parte *" placement="top">
+                <span
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
                   #
-                </el-tooltip>
-              </IconInput>
+                </span>
+              </el-tooltip>
+              <input v-model="form.part_number" type="text" class="input disabled:cursor-not-allowed disabled:opacity-80"
+                placeholder="Número de parte *" disabled>
               <InputError :message="form.errors.part_number" />
             </div>
             <div>
@@ -57,7 +60,7 @@
               </IconInput>
               <InputError :message="form.errors.initial_stock" />
             </div>
-            <div class="flex items-center my-2">
+            <div class="flex items-center ">
               <el-tooltip content="Materias primas" placement="top">
                 <span
                   class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
@@ -80,7 +83,7 @@
                 <InputError :message="form.errors.cost" />
               </div>
             </div>
-            <div>
+            <div class="col-span-2">
               <IconInput v-model="form.location" inputPlaceholder="Ubicaión *" inputType="text">
                 <el-tooltip content="Ubicación en almacén" placement="top">
                   <i class="fa-solid fa-box"></i>
@@ -89,9 +92,9 @@
               <InputError :message="form.errors.location" />
             </div>
 
-            <div class="flex mb-1">
+            <div class="flex items-center mb-1 col-span-2">
               <span
-                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                class="self-start font-bold text-xl inline-flex items-center text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md">
                 <el-tooltip content="Descripción del producto" placement="top">
                   ...
                 </el-tooltip>
@@ -134,11 +137,13 @@
                 SVG, PNG, JPG o GIF (MAX. 4 MB).
               </p>
             </div>
-
-            <div class="mt-2 mx-3 md:text-right">
-              <PrimaryButton :disabled="form.processing"> Agregar </PrimaryButton>
-            </div>
           </div>
+
+          <el-divider />
+          <div class="mx-3 md:text-right">
+            <PrimaryButton :disabled="form.processing"> Agregar </PrimaryButton>
+          </div>
+        </div>
       </form>
     </AppLayout>
   </div>
