@@ -157,8 +157,8 @@
                 {{ getDateFormtted(modification.created_at) }}
               </td>
               <td class="pb-6 w-64">
-                <template v-if="modification.media?.length">
-                  <p v-if="modification.media.length" v-for="file in modification.media" :key="file.id">
+                <template v-if="modification?.media?.length">
+                  <p v-if="modification?.media?.length" v-for="file in modification.media" :key="file.id">
                     <a class="hover:underline text-primary hover:text-secondary" :href="file.original_url"
                       target="_blank">{{ file.file_name }}</a>
                   </p>
@@ -538,7 +538,7 @@ export default {
   watch: {
     selectedDesign(newVal) {
       this.currentDesign = this.designs.data.find((item) => item.id == newVal);
-      this.modifications = this.currentDesign.modifications.reverse();
+      this.modifications = this.currentDesign?.modifications.reverse();
     },
   },
 
