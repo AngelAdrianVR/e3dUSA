@@ -14,7 +14,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = UserResource::collection(User::all());
+        $users = UserResource::collection(User::latest()->get());
 
         return inertia('User/Index', compact('users'));
     }
