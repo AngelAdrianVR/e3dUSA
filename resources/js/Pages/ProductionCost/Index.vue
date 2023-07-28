@@ -81,7 +81,7 @@ export default {
             disableMassiveActions: true,
             search: '',
             // pagination
-            itemsPerPage: 25,
+            itemsPerPage: 10,
             start: 0,
             end: 10,
         };

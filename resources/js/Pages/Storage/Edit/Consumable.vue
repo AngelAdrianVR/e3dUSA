@@ -1,15 +1,15 @@
 <template>
   <div>
-    <AppLayout title="Editar Materia prima">
+    <AppLayout title="Editar Insumo">
       <template #header>
         <div class="flex justify-between">
-          <Link :href="route('storages.raw-materials.index')"
+          <Link :href="route('storages.consumables.index')"
             class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
           <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">
-              Editar "{{ raw_material.name }}""
+              Editar "{{ raw_material.data.name }}""
             </h2>
           </div>
         </div>
@@ -50,8 +50,8 @@
               <InputError :message="form.errors.max_quantity" />
             </div>
             <div>
-              <IconInput v-model="form.initial_stock" inputPlaceholder="Stock de apertura" inputType="number">
-                <el-tooltip content="Stock inicial" placement="top">
+              <IconInput v-model="form.initial_stock" inputPlaceholder="Stock de actual" inputType="number">
+                <el-tooltip content="Stock actual" placement="top">
                   123
                 </el-tooltip>
               </IconInput>
@@ -155,17 +155,17 @@ import { ref } from "vue";
 export default {
   data() {
     const form = useForm({
-      name: this.raw_material.name,
-      part_number: this.raw_material.part_number,
-      measure_unit: this.raw_material.measure_unit,
-      min_quantity: this.raw_material.min_quantity,
-      max_quantity: this.raw_material.max_quantity,
-      cost: this.raw_material.cost,
-      initial_stock: null,
-      location: null,
+      name: this.raw_material.data.name,
+      part_number: this.raw_material.data.part_number,
+      measure_unit: this.raw_material.data.measure_unit,
+      min_quantity: this.raw_material.data.min_quantity,
+      max_quantity: this.raw_material.data.max_quantity,
+      cost: this.raw_material.data.cost,
+      initial_stock: this.raw_material.data.storages[0]?.quantity,
+      location: this.raw_material.data.storages[0]?.location,
       type: 'consumible',
-      description: this.raw_material.description,
-      features: this.raw_material.features,
+      description: this.raw_material.data.description,
+      features: this.raw_material.data.features,
     });
 
     return {

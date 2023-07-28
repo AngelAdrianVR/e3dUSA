@@ -111,7 +111,7 @@
               </li>
               <li>
                 <label class="text-primary">costo: </label> ${{
-                  storage_selected?.storageable?.cost * form.quantity
+                  (storage_selected?.storageable?.cost * form.quantity).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                 }}
               </li>
             </ul>

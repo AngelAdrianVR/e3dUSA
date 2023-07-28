@@ -39,7 +39,7 @@
     </div>
 
     <div class="border-b-2 border-[#9a9a9a] pb-1">
-      <p class="text-primary ">Unidades ordenadas: <span class="ml-4 text-black">{{ catalog_product_company_sale.quantity
+      <p class="text-primary ">Unidades ordenadas: <span class="ml-4 text-black">{{ catalog_product_company_sale.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       }}</span></p>
     </div>
 

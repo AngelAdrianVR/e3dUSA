@@ -168,8 +168,7 @@
           <span
             >${{
               currentUser?.employee_properties?.salary.week
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                .toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
             }}</span
           >
           <span class="text-gray-500 my-2">Horas laborales por semana</span>

@@ -14,7 +14,7 @@
             </template>
 
             <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de insumos')" class="text-center mt-3">
-                <el-tag class="mt-3" style="font-size: 20px;" type="success">Costo total en almacén de insumos: ${{totalConsumableMoney.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
+                <el-tag class="mt-3" style="font-size: 20px;" type="success">Costo total en almacén de insumos: ${{totalConsumableMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
             </div>
 
             <!-- tabla -->
@@ -68,7 +68,7 @@
                                             Ver</el-dropdown-item>
                                         <el-dropdown-item
                                             v-if="$page.props.auth.user.permissions.includes('Editar insumos')"
-                                            @click="$inertia.get(route('raw-materials.edit', scope.row.storageable))">
+                                            @click="$inertia.get(route('consumables.edit', scope.row.storageable))">
                                             <i class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
                                     </el-dropdown-menu>
@@ -99,7 +99,7 @@ export default {
             disableMassiveActions: true,
             search: '',
             // pagination
-            itemsPerPage: 25,
+            itemsPerPage: 10,
             start: 0,
             end: 10,
         };

@@ -16,7 +16,7 @@
             </template>
 
             <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de producto terminado')" class="text-center mt-3">
-                    <el-tag class="mt-3" style="font-size: 20px;" type="success">Costo total en almacén de Producto terminado: ${{totalFinishedProductMoney.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
+                    <el-tag class="mt-3" style="font-size: 20px;" type="success">Costo total en almacén de Producto terminado: ${{totalFinishedProductMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
                 </div>
 
             <!-- tabla -->
@@ -92,7 +92,7 @@ export default {
             disableMassiveActions: true,
             search: '',
             // pagination
-            itemsPerPage: 25,
+            itemsPerPage: 10,
             start: 0,
             end: 10,
         };
