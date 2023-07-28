@@ -113,7 +113,7 @@ export default {
     },
     async closePayroll() {
       try {
-        const response = await axios.get(route('payrolls.close-current'));
+        const response = await axios.post(route('payrolls.close-current'));
 
         if (response.status == 200) {
           this.payrolls.data.unshift(response.data.item);

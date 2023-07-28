@@ -278,7 +278,7 @@ class PayrollController extends Controller
         $current = Payroll::getCurrent();
         $new = Payroll::create([
             'start_date' => $current->start_date->addDays(7)->toDateString(),
-            'week' => today()->weekOfYear,
+            'week' => today()->addDays(7)->weekOfYear,
         ]);
 
         $current->update(['is_active' => 0]);
