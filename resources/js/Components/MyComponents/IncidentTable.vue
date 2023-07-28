@@ -183,7 +183,7 @@ export default {
     handleCommand(command) {
       const commandName = command.split('-')[0];
       const rowId = command.split('-')[1];
-
+      
       if (commandName == 'late') {
         this.handleLate(rowId);
       } else if (commandName == 'extras') {

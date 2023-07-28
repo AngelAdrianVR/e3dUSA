@@ -253,13 +253,13 @@ export default {
         'Ventas',
       ],
       weekDays: [
-        'Viernes',
-        'Sábado',
         'Domingo',
         'Lunes',
         'Martes',
         'Miércoles',
         'Jueves',
+        'Viernes',
+        'Sábado',
       ],
     };
   },
