@@ -67,11 +67,10 @@ class PayrollController extends Controller
         //
     }
 
-    public function printTemplate(Request $request)
+    public function printTemplate($users_id_to_show, $payroll_id)
     {
         $users = User::all();
-        $payroll_id = $request->payroll_id;
-        $users_id_to_show = $request->users_id_to_show;
+        $users_id_to_show = json_decode($users_id_to_show);
 
         return inertia('Payroll/PrintTemplate', compact('users', 'payroll_id', 'users_id_to_show'));
     }

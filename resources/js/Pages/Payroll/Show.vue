@@ -68,7 +68,8 @@
         </div>
 
         <div v-if="!incidentsTab" class="text-right mr-9 flex items-center">
-          <PrimaryButton @click="printPayrolls" class="mr-5" :disabled="!payrollUsersToShow.length">Imprimir
+          <PrimaryButton @click="printPayrolls" class="mr-5" :disabled="!payrollUsersToShow.length">
+            Imprimir
           </PrimaryButton>
           <el-tooltip content="Filtrar nóminas" placement="top">
             <DropdownNoClose align="right" width="60">
@@ -110,7 +111,7 @@
 
       <!-- -------------- print starts----------------------- -->
       <div v-else>
-        <template v-for="(user_id, index) in payrollUsersToShow" :key="index">
+        <template v-for="(user_id, index) in payrollUsersToShow" :key="user_id">
           <payrollTemplate :user="users.data.find(item => item.id == user_id)" :payrollId="selectedPayroll" />
         </template>
       </div>
@@ -254,10 +255,7 @@ export default {
       }
     },
     printPayrolls() {
-      this.$inertia.post(route('payrolls.print-template'), {
-        users_id_to_show: this.payrollUsersToShow,
-        payroll_id: this.currentPayroll.id
-      });
+      this.$inertia.get(route('payrolls.print-template', {users_id_to_show: JSON.stringify(this.payrollUsersToShow), payroll_id: this.currentPayroll.id}));
     },
   },
   watch: {
