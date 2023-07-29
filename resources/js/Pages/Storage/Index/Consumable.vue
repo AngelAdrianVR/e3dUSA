@@ -13,8 +13,11 @@
                 </div>
             </template>
 
-            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de insumos')" class="text-center mt-3">
+            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de insumos')" class="text-center mt-3 hidden md:block">
                 <el-tag class="mt-3" style="font-size: 20px;" type="success">Costo total en almacén de insumos: ${{totalConsumableMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
+            </div>
+            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de insumos')" class="text-center mt-3 md:hidden block">
+                <el-tag class="mt-3" style="font-size: 17px;" type="success">Costo total en almacén de insumos: ${{totalConsumableMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
             </div>
 
             <!-- tabla -->
@@ -141,8 +144,6 @@ export default {
 
             if (commandName == 'clone') {
                 this.clone(rowId);
-            } else if (commandName == 'make_so') {
-                console.log('SO');
             } else {
                 this.$inertia.get(route('storages.' + commandName, rowId));
             }
