@@ -17,7 +17,7 @@
                 <el-tag class="mt-3" style="font-size: 20px;" type="success">Costo total en almacén de insumos: ${{totalConsumableMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
             </div>
             <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de insumos')" class="text-center mt-3 md:hidden block">
-                <el-tag class="mt-3" style="font-size: 17px;" type="success">Costo total en almacén de insumos: ${{totalConsumableMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
+                <el-tag class="mt-3" style="font-size: 17px;" type="success">Total almacén de insumos: ${{totalConsumableMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
             </div>
 
             <!-- tabla -->
