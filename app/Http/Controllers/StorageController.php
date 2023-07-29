@@ -16,8 +16,8 @@ class StorageController extends Controller
     public function index()
     {
         if(Route::currentRouteName() == 'storages.raw-materials.index'){
-            $raw_materials = Storage::with('storageable')->where('type', 'materia-prima')->latest()->get();
-
+            $raw_materials = StorageResource::collection(Storage::with('storageable')->where('type', 'materia-prima')->latest()->get());
+            // return $raw_materials;
             // Calcular la suma de costo de todo el materia prima
             $totalRawMaterialMoney = collect($raw_materials)->sum(function ($item) {
                 return $item->storageable?->cost * $item->quantity;

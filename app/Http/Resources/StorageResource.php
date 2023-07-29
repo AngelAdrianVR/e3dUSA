@@ -20,6 +20,7 @@ class StorageResource extends JsonResource
             'quantity' => $this->quantity,
             'location' => $this->location,
             'type' => $this->type,
+            'storageable' => $this->whenLoaded('storageable'),
         ];
     }
 }

@@ -28,7 +28,7 @@
                     <!-- pagination -->
                     <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                            :total="raw_materials.length" />
+                            :total="raw_materials.data.length" />
                     </div>
                     <!-- buttons -->
                     <div class="mb-3">
@@ -49,7 +49,7 @@
                         </el-popconfirm>
                     </div>
                 </div>
-                <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="450" style="width: 100%"
+                <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="500" style="width: 100%"
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="storageable.name" label="Nombre" />
@@ -150,9 +150,7 @@ export default {
 
             if (commandName == 'clone') {
                 this.clone(rowId);
-            } else if (commandName == 'make_so') {
-                console.log('SO');
-            } else {
+            }else {
                 this.$inertia.get(route('storages.' + commandName, rowId));
             }
         },
@@ -174,7 +172,7 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.raw_materials.forEach((raw_material, index) => {
+                    this.raw_materials.data.forEach((raw_material, index) => {
                         if (this.$refs.multipleTableRef.value.includes(raw_material)) {
                             deletedIndexes.push(index);
                         }
@@ -185,7 +183,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.raw_materials.splice(index, 1);
+                        this.raw_materials.data.splice(index, 1);
                     }
 
                 } else {
@@ -214,7 +212,7 @@ export default {
     },
     computed: {
         filteredTableData() {
-            return this.raw_materials.filter(
+            return this.raw_materials.data.filter(
                 (raw_material) =>
                     !this.search ||
                     raw_material.storageable.name.toLowerCase().includes(this.search.toLowerCase()) ||
