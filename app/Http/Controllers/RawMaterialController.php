@@ -103,6 +103,36 @@ class RawMaterialController extends Controller
             'location' => $request->location,
         ]);
 
+
+        if ($request->type == 'materia-prima')
+            return to_route('storages.raw-materials.index');
+        else
+            return to_route('storages.consumables.index');
+    }
+
+    public function updateWithMedia(Request $request, RawMaterial $raw_material)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'part_number' => 'required|string',
+            'measure_unit' => 'required',
+            'min_quantity' => 'required|numeric|min:0',
+            'max_quantity' => 'required|numeric|min:0',
+            'cost' => 'required|numeric|min:0',
+            'description' => 'required|string',
+            'location' => 'required|string',
+        ]);
+
+        $raw_material->update($request->all());
+        $raw_material->storages()->update([
+            'quantity' => $request->initial_stock,
+            'location' => $request->location,
+        ]);
+
+          // update image
+        $raw_material->clearMediaCollection();
+        $raw_material->addAllMediaFromRequest('media')->each(fn ($file) => $file->toMediaCollection());
+
         if ($request->type == 'materia-prima')
             return to_route('storages.raw-materials.index');
         else

@@ -9,7 +9,7 @@
           </Link>
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">
-              Editar "{{ raw_material.data.name }}""
+              Editar "{{ raw_material.data.name }}"
             </h2>
           </div>
         </div>
@@ -135,7 +135,7 @@
           </div>
 
           <div class="mt-2 mx-3 md:text-right">
-            <PrimaryButton :disabled="form.processing"> Agregar </PrimaryButton>
+            <PrimaryButton :disabled="form.processing"> Editar </PrimaryButton>
           </div>
         </div>
       </form>
@@ -155,6 +155,7 @@ import { ref } from "vue";
 export default {
   data() {
     const form = useForm({
+      type: 'consumible',
       name: this.raw_material.data.name,
       part_number: this.raw_material.data.part_number,
       measure_unit: this.raw_material.data.measure_unit,
@@ -163,7 +164,6 @@ export default {
       cost: this.raw_material.data.cost,
       initial_stock: this.raw_material.data.storages[0]?.quantity,
       location: this.raw_material.data.storages[0]?.location,
-      type: 'consumible',
       description: this.raw_material.data.description,
       features: this.raw_material.data.features,
     });
@@ -198,7 +198,7 @@ export default {
   },
   methods: {
     update() {
-      this.form.put(route("raw-materials.update", this.raw_material), {
+      this.form.put(route("raw-materials.update", this.raw_material.data), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",

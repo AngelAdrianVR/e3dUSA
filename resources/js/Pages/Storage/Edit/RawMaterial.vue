@@ -9,7 +9,7 @@
           </Link>
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">
-              Editar "{{ raw_material.data.name }}""
+              Editar "{{ raw_material.data.name }}"
             </h2>
           </div>
         </div>
@@ -141,7 +141,7 @@
 
           <el-divider />
           <div class="mx-3 md:text-right">
-            <PrimaryButton :disabled="form.processing"> Agregar </PrimaryButton>
+            <PrimaryButton :disabled="form.processing"> Editar </PrimaryButton>
           </div>
         </div>
       </form>
@@ -172,6 +172,7 @@ export default {
       type: 'materia-prima',
       description: this.raw_material.data.description,
       features: this.raw_material.data.features,
+      media: null,
     });
 
     return {
@@ -204,15 +205,28 @@ export default {
   },
   methods: {
     update() {
-      this.form.put(route("raw-materials.update", this.raw_material), {
-        onSuccess: () => {
-          this.$notify({
-            title: "Éxito",
-            message: "Se actualizó correctamente",
-            type: "success",
-          });
-        },
-      });
+      if (this.form.media !== null) {
+        this.form.post(route("raw-materials.update-with-media", this.raw_material.data), {
+          method: '_put',
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Se actualizó correctamente",
+              type: "success",
+            });
+          },
+        });
+      } else {
+        this.form.put(route("raw-materials.update", this.raw_material.data), {
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Se actualizó correctamente",
+              type: "success",
+            });
+          },
+        });
+      }
     },
     addFeature() {
       if (this.newFeature.trim() !== "") {

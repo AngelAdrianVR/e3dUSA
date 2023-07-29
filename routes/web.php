@@ -97,6 +97,7 @@ Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseControlle
 // ------- Raw Material routes  ---------
 Route::resource('raw-materials', RawMaterialController::class)->middleware('auth');
 Route::post('raw-materials/massive-delete', [RawMaterialController::class, 'massiveDelete'])->name('raw-materials.massive-delete')->middleware('auth');
+Route::post('raw-materials/update-with-media/{raw_material}', [RawMaterialController::class, 'updateWithMedia'])->name('raw-materials.update-with-media')->middleware('auth');
 Route::get('consumables/create', [RawMaterialController::class, 'create'])->name('consumables.create')->middleware('auth');
 Route::get('consumables-edit/{raw_material}', [RawMaterialController::class, 'editConsumable'])->name('consumables.edit')->middleware('auth');
 

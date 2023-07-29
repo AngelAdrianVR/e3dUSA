@@ -15,8 +15,11 @@
                 </div>
             </template>
 
-            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de materia prima')" class="text-center mt-3">
+            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de materia prima')" class="text-center mt-3 hidden md:block">
                 <el-tag class="mt-3" style="font-size: 20px;" type="success">Costo total en almacén de materia prima: ${{totalRawMaterialMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
+            </div>
+            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de materia prima')" class="text-center mt-3 md:hidden block">
+                <el-tag class="mt-3" style="font-size: 17px;" type="success">Total Almacén materia prima: ${{totalRawMaterialMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
             </div>
 
             <!-- tabla -->
