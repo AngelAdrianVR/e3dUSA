@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import ApplicationMark from '@/Components/ApplicationMark.vue';
 import Banner from '@/Components/Banner.vue';
@@ -79,7 +79,25 @@ const setAttendance = async () => {
     }
 };
 
-onMounted(getAttendanceTextButton);
+const currentTime = ref(new Date().getHours());
+
+    const greeting = computed(() => {
+      if (currentTime.value >= 0 && currentTime.value < 12) {
+        return {text: "Buenos días ", class: "fa-solid fa-sun text-yellow-500 mr-2"};
+      } else if (currentTime.value >= 12 && currentTime.value < 19) {
+        return {text: "Buenas tardes ", class: "fa-solid fa-cloud-sun text-orange-500 mr-2"};
+      } else {
+        return {text: "Buenas noches ", class: "fa-solid fa-moon text-purple-500 mr-2"};
+      }
+    });
+
+    onMounted(() => {
+    getAttendanceTextButton();
+
+    setInterval(() => {
+       currentTime.value = new Date().getHours();
+     }, 60000); // 60000 ms = 1 minute
+    });
 
 </script>
 
@@ -182,6 +200,11 @@ onMounted(getAttendanceTextButton);
                                         </template>
                                     </Dropdown>
                                 </div>
+
+                                <p class="mr-24">
+                                    <i :class="greeting.class"></i>
+                                    {{ greeting.text }} <strong>{{ $page.props.auth.user.name }}</strong>
+                                </p>
 
                                 <el-popconfirm
                                     v-if="$page.props.isKiosk && nextAttendance && $page.props.auth.user.permissions.includes('Registrar asistencia')"

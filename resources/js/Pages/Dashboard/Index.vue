@@ -5,9 +5,13 @@
 
             <!-- attendance -->
             <div class="lg:hidden mx-auto w-4/5 rounded-[20px] bg-[#d9d9d9] py-3 px-5 flex flex-col space-y-2 mt-4">
-                <figure class="flex justify-center">
+                <!-- <figure class="flex justify-center">
                     <img class="w-[40%]" src="@/../../public/images/rainbow.png">
-                </figure>
+                </figure> -->
+                <div class="flex flex-col items-center space-y-2">
+                    <p class="text-center">{{ greeting?.text }} <strong>{{ $page.props.auth.user.name }}</strong></p>
+                    <i :class="greeting?.class"></i>
+                </div>
                 <el-popconfirm v-if="nextAttendance && $page.props.auth.user.permissions.includes('Registrar asistencia')"
                     confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
                     @confirm="setAttendance">
@@ -301,6 +305,8 @@ export default {
             temporalFlag: false,
             showMeetingModal: false,
             form,
+            currentTime: new Date().getHours(),
+            greeting: null,
         }
     },
     props: {
@@ -379,7 +385,26 @@ export default {
             } catch (error) {
                 console.error(error);
             }
-        }
+        },
+        updateGreeting() {
+      if (this.currentTime >= 0 && this.currentTime < 12) {
+        this.greeting = {text: "Buenos días ", class: "fa-solid fa-sun text-yellow-500 text-6xl"};
+      } else if (this.currentTime >= 12 && this.currentTime < 19) {
+        this.greeting = {text: "Buenas tardes ", class: "fa-solid fa-cloud-sun text-orange-500 text-6xl"};
+      } else {
+        this.greeting = {text: "Buenas noches ", class: "fa-solid fa-moon text-purple-500 text-6xl"};
+      }
     }
+    },
+    mounted() {
+    // Actualizar el saludo inicial
+    this.updateGreeting();
+
+    // Actualizar el saludo cada minuto
+    setInterval(() => {
+      this.currentTime = new Date().getHours();
+      this.updateGreeting();
+    }, 60000); // 60000 ms = 1 minuto
+  }
 }
 </script>
