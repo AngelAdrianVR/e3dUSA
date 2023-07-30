@@ -100,14 +100,6 @@
               format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
             <InputError :message="form.errors.aquisition_date" :disabled-date="disabledDate" />
           </div>
-          <!-- <div>
-            <IconInput v-model="form.aquisition_date" inputPlaceholder="Fecha de adquisición" inputType="date">
-              <el-tooltip content="Fecha de adquisición" placement="top">
-                <i class="fa-solid fa-calendar"></i>
-              </el-tooltip>
-            </IconInput>
-            <InputError :message="form.errors.aquisition_date" />
-          </div> -->
           <div class="col-span-full">
             <div class="flex items-center">
               <span

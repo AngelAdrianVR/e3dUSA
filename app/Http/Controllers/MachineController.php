@@ -79,12 +79,32 @@ class MachineController extends Controller
 
         $machine->update($request->all());
 
-         // update image
-         $machine->clearMediaCollection();
-         $machine->addMediaFromRequest('media')->toMediaCollection();
-         $machine->save();
 
         return to_route('machines.index');
+    }
+
+    public function updateWithMedia(Request $request, Machine $machine)
+    {
+        $request->validate([
+            'name' => 'required',
+            'serial_number' => 'nullable',
+            'wight' => 'nullable|numeric|min:1',
+            'width' => 'nullable|numeric|min:1',
+            'large' => 'nullable|numeric|min:1',
+            'height' => 'nullable|numeric|min:1',
+            'cost' => 'nullable|numeric|min:1',
+            'supplier' => 'nullable|string',
+            'aquisition_date' => 'nullable|date|before:tomorrow',
+            'days_next_maintenance' => 'required|numeric|min:7',
+        ]);
+
+        $machine->update($request->all());
+          // update image
+        $machine->clearMediaCollection('images');
+        $machine->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection('images'));
+
+        return to_route('machines.index');
+
     }
 
     
