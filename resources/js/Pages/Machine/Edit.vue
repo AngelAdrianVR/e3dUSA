@@ -128,19 +128,17 @@
             </IconInput>
             <InputError :message="form.errors.days_next_maintenance" />
           </div>
-          <div>
-            <IconInput
-              v-model="form.aquisition_date"
-              inputPlaceholder="Fecha de adquisición"
-              inputType="date"
-            >
-              <el-tooltip content="Fecha de adquisición" placement="top">
+          <div class="flex items-center">
+            <el-tooltip content="Fecha de adquisición *" placement="top">
+              <span
+                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
                 <i class="fa-solid fa-calendar"></i>
-              </el-tooltip>
-            </IconInput>
-            <InputError :message="form.errors.aquisition_date" />
+              </span>
+            </el-tooltip>
+            <el-date-picker v-model="form.aquisition_date" type="date" placeholder="Fecha de adquisición * *"
+              format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
+            <InputError :message="form.errors.aquisition_date" :disabled-date="disabledDate" />
           </div>
-
           <div class="col-span-full">
             <div class="flex items-center">
               <span
@@ -219,17 +217,28 @@ export default {
   },
   methods: {
     update() {
-      this.form.put(route("machines.update", this.machine), {
-        onSuccess: () => {
-          this.$notify({
-            title: "Éxito",
-            message: "Máquina actualizada",
-            type: "success",
-          });
-
-          this.form.reset();
-        },
-      });
+      if (this.form.media !== null) {
+        this.form.post(route("machines.update-with-media", this.machine), {
+          method: '_put',
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Se actualizó correctamente",
+              type: "success",
+            });
+          },
+        });
+      } else {
+        this.form.put(route("machines.update", this.machine), {
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Se actualizó correctamente",
+              type: "success",
+            });
+          },
+        });
+      }
     },
   },
 };

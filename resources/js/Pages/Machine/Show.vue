@@ -57,10 +57,12 @@
         </div>
       </div>
       <div class="lg:grid grid-cols-3 mt-12 border-b-2">
-        <div class="px-14">
+        <div class="px-7">
           <h2 class="text-xl font-bold text-center mb-6">
             {{ currentMachine?.name }}
           </h2>
+          <div class="flex items-center justify-center">
+          <i :class="selectedMachine - 1 == 0 ? 'hidden' : 'block'" @click="previus" class="fa-solid fa-chevron-left mr-4 text-lg text-gray-600 cursor-pointer p-1 rounded-full"></i>
           <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
             class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center">
             <el-image style="height: 100%; " :src="currentMachine?.media[0]?.original_url" fit="fit">
@@ -75,6 +77,8 @@
               <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
             </div>
           </figure>
+           <i @click="next" class="fa-solid fa-chevron-right ml-4 text-lg text-gray-600 cursor-pointer p-1 mb-2 rounded-full"></i>
+          </div>
         </div>
 
         <!-- ------------------------Information panel tabs--------------------- -->
@@ -638,6 +642,14 @@ export default {
       } finally {
         this.showConfirmModal = false;
       }
+    },
+    previus(){
+      this.selectedMachine = this.selectedMachine - 1 ;
+      this.currentMachine = this.machines.find((item) => item.id == this.selectedMachine);
+    },
+    next(){
+      this.selectedMachine = this.selectedMachine + 1 ;
+      this.currentMachine = this.machines.find((item) => item.id == this.selectedMachine);
     },
   },
   watch: {

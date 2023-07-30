@@ -29,6 +29,7 @@ use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -184,6 +185,8 @@ Route::put('productions/change-status/{production}', [ProductionController::clas
 Route::resource('machines', MachineController::class)->middleware('auth');
 Route::post('machines/massive-delete', [MachineController::class, 'massiveDelete'])->name('machines.massive-delete');
 Route::post('machines/upload-files/{machine}', [MachineController::class, 'uploadFiles'])->name('machines.upload-files');
+Route::post('machines/update-with-media/{machine}', [MachineController::class, 'updateWithMedia'])->name('machines.update-with-media')->middleware('auth');
+
 
 
 // ------- aditional time request Routes  ---------
@@ -221,4 +224,14 @@ Route::post('production-costs/massive-delete', [ProductionCostController::class,
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
 
 Route::post('/upload-image',[FileUploadController::class, 'upload'])->name('upload-image');
+
+//artisan commands
+
+Route::get('/clear-all', function () {
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+    return 'cleared.';
+});
 
