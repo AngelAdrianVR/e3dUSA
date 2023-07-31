@@ -121,7 +121,14 @@
                 </span>
               </el-tooltip>
               <el-select v-model="branch.sat_method" clearable placeholder="Método de pago">
-                <el-option v-for="item in sat_method" :key="item.value" :label="item.label" :value="item.value" />
+                <el-option v-for="item in sat_method" :key="item.value">
+                  <span style="float: left">{{ item.label }}</span>
+                  <span style="
+                                            float: right;
+                                            color: #cccccc;
+                                            font-size: 11px;
+                                            ">{{ item.value }}</span>
+                </el-option>
               </el-select>
               <!-- <InputError :message="branch.errors.sat_method" /> -->
             </div>
@@ -133,7 +140,14 @@
                 </span>
               </el-tooltip>
               <el-select v-model="branch.sat_way" clearable placeholder="Medio de pago">
-                <el-option v-for="item in sat_ways" :key="item.value" :label="item.label" :value="item.label" />
+                <el-option v-for="item in sat_ways" :key="item.value">
+                  <span style="float: left">{{ item.label }}</span>
+                  <span style="
+                                            float: right;
+                                            color: #cccccc;
+                                            font-size: 11px;
+                                            ">{{ item.value }}</span>
+                </el-option>
               </el-select>
               <!-- <InputError :message="branch.errors.sat_way" /> -->
             </div>
@@ -452,8 +466,8 @@ export default {
         "Diciembre",
       ],
       sat_method: [
-        { value: "PUE", label: "PUE: Pago en una sola exhibición" },
-        { value: "PPD", label: "PPD: Pago en parcialidades o diferido" },
+        { value: "PUE", label: "Pago en una sola exhibición" },
+        { value: "PPD", label: "Pago en parcialidades o diferido" },
       ],
       sat_types: [
         { value: "G01", label: "Adquisición de mercancías" },

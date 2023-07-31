@@ -95,7 +95,7 @@
                         </div>
                         <div class="flex mb-6 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Características</p>
-                            <p>{{ currentCatalogProduct?.features.raw.join(', ') }}</p>
+                            <p>{{ currentCatalogProduct?.features?.raw.join(', ') }}</p>
                         </div>
                         <div class="flex mb-2 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Número parte</p>
