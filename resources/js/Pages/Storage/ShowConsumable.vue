@@ -62,6 +62,10 @@
                 </button>
               </template>
               <template #content>
+              <DropdownLink :href="route('consumables.create')"
+                v-if="$page.props.auth.user.permissions.includes('Crear insumos')">
+                Agregar nuevo insumo
+              </DropdownLink>
                 <DropdownLink @click="console.log('No funciona')" as="button"
                   v-if="$page.props.auth.user.permissions.includes('Crear scrap')">
                   Mandar a scrap
