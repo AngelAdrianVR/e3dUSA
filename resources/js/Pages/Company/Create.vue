@@ -451,6 +451,7 @@
                   v-model="product.old_price"
                   inputPlaceholder="Precio anterior *"
                   inputType="number"
+                  inputStep="0.01"
                 >
                   <el-tooltip content="Precio anterior" placement="top">
                     <i class="fa-solid fa-money-bill"></i>
@@ -501,6 +502,7 @@
                   v-model="product.new_price"
                   inputPlaceholder="Precio nuevo *"
                   inputType="number"
+                  inputStep="0.01"
                 >
                   <el-tooltip content="Precio nuevo" placement="top">
                     <i class="fa-solid fa-money-bill"></i>
