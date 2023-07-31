@@ -64,7 +64,8 @@
           <div class="flex items-center justify-center">
           <i :class="selectedMachine - 1 == 0 ? 'hidden' : 'block'" @click="previus" class="fa-solid fa-chevron-left mr-4 text-lg text-gray-600 cursor-pointer p-1 rounded-full"></i>
           <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
-            class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center">
+            :class="currentMachine?.media?.length ? 'bg-transparent' : 'bg-[#D9D9D9]'"
+            class="w-full h-60 rounded-lg relative flex items-center justify-center">
             <el-image style="height: 100%; " :src="currentMachine?.media[0]?.original_url" fit="fit">
               <template #error>
                 <div class="flex justify-center items-center text-[#ababab]">
@@ -77,7 +78,7 @@
               <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
             </div>
           </figure>
-           <i @click="next" class="fa-solid fa-chevron-right ml-4 text-lg text-gray-600 cursor-pointer p-1 mb-2 rounded-full"></i>
+           <i :class="currentIndexMachine == machines.data.length - 1 ? 'hidden' : 'block'" @click="next" class="fa-solid fa-chevron-right ml-4 text-lg text-gray-600 cursor-pointer p-1 mb-2 rounded-full"></i>
           </div>
         </div>
 
@@ -459,7 +460,6 @@
       </DialogModal>
 
 
-
     </AppLayoutNoHeader>
   </div>
 </template>
@@ -493,6 +493,7 @@ export default {
       sparePartIndex: null,
       selectedMaintenance: null,
       selectedSparePart: null,
+      currentIndexMachine: null,
       tabs: 1,
     };
   },
@@ -644,12 +645,14 @@ export default {
       }
     },
     previus(){
-      this.selectedMachine = this.selectedMachine - 1 ;
-      this.currentMachine = this.machines.find((item) => item.id == this.selectedMachine);
-    },
+      this.currentIndexMachine -= 1;
+      this.currentMachine = this.machines.data[this.currentIndexMachine];
+      this.selectedMachine = this.currentMachine.id;
+      },
     next(){
-      this.selectedMachine = this.selectedMachine + 1 ;
-      this.currentMachine = this.machines.find((item) => item.id == this.selectedMachine);
+      this.currentIndexMachine += 1;
+      this.currentMachine = this.machines.data[this.currentIndexMachine];
+      this.selectedMachine = this.currentMachine.id;
     },
   },
   watch: {
@@ -661,6 +664,8 @@ export default {
   },
   mounted() {
     this.selectedMachine = this.machine.id;
+  this.currentIndexMachine = this.machines.data.findIndex((obj) => obj.id == this.selectedMachine);
+
   },
 };
 </script>
