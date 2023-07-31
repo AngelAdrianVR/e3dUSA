@@ -32,7 +32,7 @@ class ProductionController extends Controller
 
     public function create()
     {
-        $operators = User::where('employee_properties->department', 'Producción')->get();
+        $operators = User::where('employee_properties->department', 'Producción')->where('is_active', 1)->get();
         $sales = SaleResource::collection(Sale::with('companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct')->whereNotNull('authorized_at')->whereDoesntHave('productions')->get());
 
         // return $sales;
@@ -113,9 +113,12 @@ class ProductionController extends Controller
     // methods
     public function massiveDelete(Request $request)
     {
-        foreach ($request->productions as $production) {
-            $production = Production::find($production['id']);
-            $production?->delete();
+        foreach ($request->sales as $sale) {
+            $sale = Sale::find($sale['id']);
+            foreach ($sale->productions as $production) {
+                $production->catalogProductCompanySale?->delete();
+                $production->delete();
+            }
         }
 
         return response()->json(['message' => 'Producto(s) eliminado(s)']);

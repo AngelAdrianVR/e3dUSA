@@ -108,6 +108,10 @@ class SaleController extends Controller
     {
         foreach ($request->sales as $sale) {
             $sale = Sale::find($sale['id']);
+            foreach ($sale->productions as $production) {
+                $production->catalogProductCompanySale?->delete();
+                $production->delete();
+            }
             $sale?->delete();
         }
 

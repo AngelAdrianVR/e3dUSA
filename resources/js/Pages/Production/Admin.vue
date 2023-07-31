@@ -116,17 +116,17 @@ export default {
         async deleteSelections() {
             try {
                 const response = await axios.post(route('productions.massive-delete', {
-                    productions: this.$refs.multipleTableRef.value
+                    sales: this.$refs.multipleTableRef.value
                 }));
 
                 if (response.status == 200) {
                     this.$notify({
                         title: 'Éxito',
-                        message: response.message,
+                        message: response.data.message,
                         type: 'success'
                     });
 
-                    // update list of quotes
+                    // update list of productions
                     let deletedIndexes = [];
                     this.productions.data.forEach((production, index) => {
                         if (this.$refs.multipleTableRef.value.includes(production)) {
@@ -134,10 +134,8 @@ export default {
                         }
                     });
 
-                    // Ordenar los índices de forma descendente para evitar problemas de desplazamiento al eliminar elementos
                     deletedIndexes.sort((a, b) => b - a);
 
-                    // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
                         this.productions.data.splice(index, 1);
                     }
@@ -145,7 +143,7 @@ export default {
                 } else {
                     this.$notify({
                         title: 'Algo salió mal',
-                        message: response.message,
+                        message: response.data.message,
                         type: 'error'
                     });
                 }

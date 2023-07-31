@@ -59,11 +59,11 @@
                   'Crear ordenes de venta'
                 )
                   " :href="route('sales.create')">
-                  Crear nueva órden
+                  Crear nueva orden de venta
                 </DropdownLink>
-                <DropdownLink @click="productionOrderModal = true">
-                  Crear órden de producción
-                </DropdownLink>
+                <!-- <DropdownLink @click="productionOrderModal = true" as="button">
+                  Crear orden de producción
+                </DropdownLink> -->
                 <!-- <DropdownLink :href="route('sales.create')">
                   Certificado de calidad
                 </DropdownLink>

@@ -72,9 +72,9 @@
                     <span class="text-gray-500 my-2">Factura</span>
                     <span>{{ currentSale?.invoice ?? '--' }}</span>
                     <span class="text-gray-500 my-2">OCE</span>
-                    <a :href="currentSale?.media[0].original_url" target="_blank"
+                    <a :href="currentSale?.media[0]?.original_url" target="_blank"
                         class="text-secondary cursor-pointer hover:underline">
-                        {{ currentSale?.oce_name ?? currentSale?.media[0].file_name }}
+                        {{ currentSale?.oce_name ?? currentSale?.media[0]?.file_name }}
                     </a>
                     <span class="text-gray-500 my-2">Notas</span>
                     <span>{{ currentSale?.notes ?? '--' }}</span>

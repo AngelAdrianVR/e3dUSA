@@ -66,15 +66,15 @@
       <span class="">Precio Anterior:</span>
       <span class="text-secondary ">{{ catalog_product_company_sale.catalog_product_company.old_price }}
         {{ catalog_product_company_sale.catalog_product_company.old_currency }}</span>
-      <span class="">Establecido:</span>
+      <span class="">Establecido el:</span>
       <span class="text-secondary  mb-3">{{
         catalog_product_company_sale.catalog_product_company.old_date
       }}</span>
 
-      <span class="">Precio Anterior:</span>
+      <span class="">Precio Actual:</span>
       <span class="text-secondary ">{{ catalog_product_company_sale.catalog_product_company.new_price }}
         {{ catalog_product_company_sale.catalog_product_company.new_currency }}</span>
-      <span class="">Establecido:</span>
+      <span class="">Establecido el:</span>
       <span class="text-secondary ">{{ catalog_product_company_sale.catalog_product_company.new_date }}</span>
     </div><br>
 
@@ -130,6 +130,8 @@ export default {
       const allTasksFinished = productions.every((order) => order.finished_at !== null);
       const someTasksStarted = productions.some((order) => order.started_at !== null && order.finished_at === null);
       const allTasksNotStarted = productions.every((order) => order.started_at === null);
+
+      if (!productions.length) return "Sin iniciar";
 
       if (allTasksFinished) {
         return "Terminado";
