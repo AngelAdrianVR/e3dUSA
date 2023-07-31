@@ -19,20 +19,30 @@
       <form @submit.prevent="store">
         <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md md:space-y-4">
           <div>
+            <IconInput v-model="brand" @change="generatePartNumber" inputPlaceholder="Marca del producto *" inputType="text">
+              <el-tooltip content="Marca del producto (si no tiene marca colocar 'Generico')" placement="top">
+                <i class="fa-solid fa-copyright"></i>
+              </el-tooltip>
+            </IconInput>
+          </div>
+          <div>
             <IconInput v-model="form.name" inputPlaceholder="Nombre *" inputType="text">
               <el-tooltip content="Nombre" placement="top"> A </el-tooltip>
             </IconInput>
             <InputError :message="form.errors.name" />
           </div>
           <div class="md:grid gap-6 md:mb-6 grid-cols-2">
-            <div>
-              <IconInput v-model="form.part_number" inputPlaceholder="Número de parte *" inputType="text">
-                <el-tooltip content="Número de parte" placement="top">
+            <div class="flex items-center">
+              <el-tooltip content="Número de parte *" placement="top">
+                <span
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
                   #
-                </el-tooltip>
-              </IconInput>
+                </span>
+              </el-tooltip>
+              <input v-model="form.part_number" type="text" class="input disabled:cursor-not-allowed disabled:opacity-80"
+                placeholder="Número de parte *" disabled>
               <InputError :message="form.errors.part_number" />
-            </div>
+            </div> 
             <div>
               <IconInput v-model="form.min_quantity" inputPlaceholder="Stock mínimo" inputType="number">
                 <el-tooltip content="Cantidad mínima que puede haber en stock" placement="top">
@@ -167,6 +177,7 @@ export default {
       type: 'consumible',
       features: null,
       media: null,
+      brand: null,
     });
 
     return {
@@ -206,6 +217,10 @@ export default {
           });
         },
       });
+    },
+    generatePartNumber() {
+      const partNumber = 'INS' + '-' + this.brand?.toUpperCase().substr(0,3) + '-';
+      this.form.part_number = partNumber;
     },
     addFeature() {
       if (this.newFeature.trim() !== "") {

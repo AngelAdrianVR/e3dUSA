@@ -20,21 +20,20 @@ class RawMaterialController extends Controller
     {
         $last = RawMaterial::latest()->first();
         $next_id = $last ? $last->id + 1 : 1;
-        $consecutive = str_pad($next_id, 4, "0", STR_PAD_LEFT);
 
         if (Route::currentRouteName() == 'raw-materials.create') {
 
-            return inertia('Storage/Create/RawMaterial', compact('consecutive'));
+            return inertia('Storage/Create/RawMaterial');
         } elseif (Route::currentRouteName() == 'consumables.create') {
 
-            return inertia('Storage/Create/Consumable', compact('consecutive'));
+            return inertia('Storage/Create/Consumable');
         }
     }
 
 
     public function store(Request $request)
     {
-        $request->validate([ 
+        $validated = $request->validate([ 
             'name' => 'required|string',
             'part_number' => 'required|string|unique:raw_materials,part_number',
             'measure_unit' => 'required',
@@ -45,7 +44,13 @@ class RawMaterialController extends Controller
             'location' => 'required|string',
         ]);
 
-        $raw_material = RawMaterial::create($request->all());
+        // consecutive
+        $last = RawMaterial::latest()->first();
+        $next_id = $last ? $last->id + 1 : 1;
+        $consecutive = str_pad($next_id, 4, "0", STR_PAD_LEFT);
+        $validated['part_number'] .= $consecutive;
+
+        $raw_material = RawMaterial::create($validated);
         $raw_material->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
 
         $raw_material->storages()->create([

@@ -24,7 +24,7 @@
 
             <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
-                <div class="flex justify-between">
+                <div class="flex justify-between flex-wrap">
                     <!-- pagination -->
                     <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
@@ -212,12 +212,16 @@ export default {
     },
     computed: {
         filteredTableData() {
-            return this.raw_materials.data.filter(
-                (raw_material) =>
+            if (!this.search) {
+                return this.raw_materials.data.filter((item, index) => index >= this.start && index < this.end);
+            } else {
+                return this.raw_materials.data.filter(
+                    (raw_material) =>
                     !this.search ||
                     raw_material.storageable.name.toLowerCase().includes(this.search.toLowerCase()) ||
                     raw_material.storageable.part_number.toLowerCase().includes(this.search.toLowerCase())
-            )
+                );
+            }
         }
     },
 };

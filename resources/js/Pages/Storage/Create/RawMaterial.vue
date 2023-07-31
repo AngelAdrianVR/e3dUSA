@@ -307,7 +307,6 @@ export default {
     IconInput,
   },
   props: {
-    consecutive: String,
   },
   methods: {
     store() {
@@ -322,7 +321,7 @@ export default {
       });
     },
     generatePartNumber() {
-      const partNumber = this.productType + '-' + this.brand?.toUpperCase().substr(0,3) + '-' + this.consecutive;
+      const partNumber = this.productType + '-' + this.brand?.toUpperCase().substr(0,3) + '-';
       this.form.part_number = partNumber;
     },
     addFeature() {
