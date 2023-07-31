@@ -59,7 +59,7 @@
         <div class="w-11/12 mx-auto my-3 grid grid-cols-3 gap-4 ">
             <template v-for="item in quote.data.products" ::key="item.id">
                 <div class="bg-gray-200 rounded-t-xl rounded-b-md border" style="font-size: 8px;">
-                    <img class="rounded-t-xl max-h-52 mx-auto" :src="item.media[0].original_url">
+                    <img class="rounded-t-xl max-h-52 mx-auto" :src="item.media[0]?.original_url">
                     <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
                 </div>
             </template>
@@ -120,14 +120,15 @@
             </div>
             <div>
                 Autorizado por:
-                <span v-if="quote.authorized_user_name" class="text-green-600">{{ quote.data.authorized_user_name }}</span>
+                <span v-if="quote.data.authorized_user_name" class="text-green-600">{{ quote.data.authorized_user_name }}</span>
                 <!-- No authorized Banner -->
-                <div v-else class="absolute left-28 top-1/3 text-red-700 text-5xl border-4 border-red-700 p-6">
+                <span v-else class="text-amber-500">Sin autorización</span>
+
+                <div v-if="!quote.data.authorized_user_name" class="absolute left-28 top-1/3 text-red-700 text-5xl border-4 border-red-700 p-6">
                     <i class="fas fa-exclamation"></i>
                     <span class="ml-2">SIN AUTORIZACIÓN</span>
                 </div>
 
-                <span class="text-amber-500">Sin autorización</span>
             </div>
         </div>
 

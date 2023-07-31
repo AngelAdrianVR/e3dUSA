@@ -186,4 +186,14 @@ class QuoteController extends Controller
 
         return response()->json(['message' => "Cotización convertida en orden de venta con folio: {$sale_folio}"]);
     }
+
+   public function authorizeQuote(Quote $quote)
+   {
+        $quote->update([
+            'authorized_at' => now(),
+            'authorized_user_name' => auth()->user()->name,
+        ]);
+
+        return response()->json(['message' => 'Cotizacion autorizadda', 'item' => $quote]);
+   }
 }

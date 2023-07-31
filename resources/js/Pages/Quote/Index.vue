@@ -5,7 +5,8 @@
                 <h2 class="font-semibold text-xl leading-tight">
                     Cotizaciones
                 </h2>
-                <Link v-if="$page.props.auth.user.permissions.includes('Crear cotizaciones')" :href="route('quotes.create')">
+                <Link v-if="$page.props.auth.user.permissions.includes('Crear cotizaciones')"
+                    :href="route('quotes.create')">
                 <SecondaryButton>+ Nuevo</SecondaryButton>
                 </Link>
             </div>
@@ -21,7 +22,8 @@
 
                 <!-- buttons -->
                 <div>
-                    <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar cotizaciones')" confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+                    <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar cotizaciones')"
+                        confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
                         @confirm="deleteSelections">
                         <template #reference>
                             <el-button type="danger" plain class="mb-3"
@@ -39,7 +41,7 @@
                 <el-table-column prop="companyBranch.name" label="Cliente" />
                 <el-table-column prop="authorized_user_name" label="Autorizado por" />
                 <el-table-column prop="created_at" label="Creado el" width="180" />
-                <el-table-column align="right" fixed="right" width="120" >
+                <el-table-column align="right" fixed="right" width="120">
                     <template #header>
                         <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
                     </template>
@@ -52,15 +54,23 @@
                                 <el-dropdown-menu>
                                     <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
                                         Ver</el-dropdown-item>
-                                    <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar cotizaciones') 
-                                                    || scope.row.user.id == $page.props.auth.user.id" 
-                                                    :command="'edit-' + scope.row.id">
-                                                    <i class="fa-solid fa-pen"></i>
+                                    <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar cotizaciones')
+                                        || scope.row.user.id == $page.props.auth.user.id"
+                                        :command="'edit-' + scope.row.id">
+                                        <i class="fa-solid fa-pen"></i>
                                         Editar</el-dropdown-item>
-                                    <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear cotizaciones')" :command="'clone-' + scope.row.id"><i class="fa-solid fa-clone"></i>
+                                    <el-dropdown-item
+                                        v-if="$page.props.auth.user.permissions.includes('Crear cotizaciones')"
+                                        :command="'clone-' + scope.row.id"><i class="fa-solid fa-clone"></i>
                                         Clonar</el-dropdown-item>
-                                    <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')" :command="'make_so-' + scope.row.id"><i
+                                    <el-dropdown-item
+                                        v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')"
+                                        :command="'make_so-' + scope.row.id"><i
                                             class="fa-solid fa-arrows-turn-to-dots"></i>Convertir a OV</el-dropdown-item>
+                                    <el-dropdown-item
+                                        v-if="$page.props.auth.user.permissions.includes('Autorizar cotizaciones') && !scope.row.authorized_at"
+                                        :command="'authorize-' + scope.row.id"><i
+                                            class="fa-solid fa-check"></i>Autoizar</el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>
@@ -233,6 +243,35 @@ export default {
                 console.log(err);
             }
         },
+        async authorize(quote_id) {
+            try {
+                const response = await axios.put(route('quotes.authorize', quote_id));
+
+                if (response.status == 200) {
+                    const index = this.quotes.data.findIndex(item => item.id == quote_id);
+                    this.quotes.data[index].authorized_at = response.data.item.authorized_at;
+                    this.quotes.data[index].authorized_user_name = response.data.item.authorized_user_name;
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+                } else {
+                    this.$notify({
+                        title: 'Algo salió mal',
+                        message: response.data.message,
+                        type: 'error'
+                    });
+                }
+            } catch (err) {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
+                console.log(err);
+            }
+        },
         handleCommand(command) {
             const commandName = command.split('-')[0];
             const rowId = command.split('-')[1];
@@ -241,6 +280,8 @@ export default {
                 this.clone(rowId);
             } else if (commandName == 'make_so') {
                 this.createSO(rowId);
+            } else if (commandName == 'authorize') {
+                this.authorize(rowId);
             } else {
                 this.$inertia.get(route('quotes.' + commandName, rowId));
             }
