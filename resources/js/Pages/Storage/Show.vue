@@ -62,6 +62,10 @@
                 </button>
               </template>
               <template #content>
+              <DropdownLink :href="route('raw-materials.create')"
+                v-if="$page.props.auth.user.permissions.includes('Crear materia prima')">
+                Agregar nueva materia prima
+              </DropdownLink>
                 <DropdownLink @click="scrapModal = true" as="button"
                   v-if="$page.props.auth.user.permissions.includes('Crear scrap')">
                   Mandar a scrap
@@ -307,9 +311,7 @@
                   123
                 </el-tooltip>
               </IconInput>
-              <!-- <p v-if="errorMessage" class="text-red-600 text-xs">
-                {{ errorMessage }}
-              </p> -->
+              <InputError :message="form.errors.quantity" />
             </div>
               <div>
               <IconInput v-model="form.location" inputPlaceholder="Ubicación" inputType="text">
@@ -355,7 +357,8 @@ export default {
       notes: null,
       location: null,
       type: 'scrap',
-      storage_id: this.currentStorage?.id,
+      storage_id: null,
+
     });
     return {
       form,
@@ -392,6 +395,7 @@ export default {
   },
   methods: {
     sentToScrap() {
+      this.form.storage_id = this.currentStorage.id;
       this.form.post(route("storages.scraps.store"), {
         onSuccess: () => {
           this.$notify({
