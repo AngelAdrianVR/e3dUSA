@@ -145,6 +145,7 @@ Route::post('holidays/massive-delete', [HolidayController::class, 'massiveDelete
 // ------- Almacen routes---------
 Route::get('/storage-raw-materials', [StorageController::class, 'index'])->middleware('auth')->name('storages.raw-materials.index');
 Route::get('/storage-consumables', [StorageController::class, 'index'])->middleware('auth')->name('storages.consumables.index');
+Route::get('/storage-show-consumables/{storage}', [StorageController::class, 'showConsumable'])->middleware('auth')->name('storages.consumables.show');
 Route::get('/storage-finished-products', [StorageController::class, 'index'])->middleware('auth')->name('storages.finished-products.index');
 Route::get('/storage-finished-products/create', [StorageController::class, 'create'])->middleware('auth')->name('storages.finished-products.create');
 Route::get('/storage-finished-products/{storage}/edit', [StorageController::class, 'edit'])->middleware('auth')->name('storages.finished-products.edit');

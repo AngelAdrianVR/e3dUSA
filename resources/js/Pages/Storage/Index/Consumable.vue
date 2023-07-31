@@ -145,7 +145,7 @@ export default {
             if (commandName == 'clone') {
                 this.clone(rowId);
             } else {
-                this.$inertia.get(route('storages.' + commandName, rowId));
+                this.$inertia.get(route('storages.consumables.' + commandName, rowId));
             }
         },
         handlePagination(val) {
@@ -202,7 +202,7 @@ export default {
             window.open(route('pdf.consumables-actual-stock'), '_blank');
         },
         handleRowClick(row) {
-            this.$inertia.get(route('storages.show', row));
+            this.$inertia.get(route('storages.consumables.show', row));
         },
 
         edit(index, raw_material) {
