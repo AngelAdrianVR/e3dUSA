@@ -93,7 +93,7 @@ class StorageController extends Controller
     public function scrapStore(Request $request)
     {
         $storage = Storage::find($request->storage_id);
-        $request->storage_id ? $stock = $storage?->quantity : $stock = 1;
+        $stock = $request->storage_id ? $storage?->quantity : 2;
         $request->validate([
             'storage_id' => 'required',
             'quantity' => 'required|numeric|min:1|max:' . $stock,

@@ -51,6 +51,8 @@
             <div class="lg:grid grid-cols-3 mt-12 border-b-2">
                 <div class="px-14">
                     <h2 class="text-xl font-bold text-center mb-6">{{ currentCatalogProduct?.name }}</h2>
+                    <div class="flex items-center">
+                    <i :class="currentIndexProduct == 0 ? 'hidden' : 'block'" @click="previus" class="fa-solid fa-chevron-left mr-4 text-lg text-gray-600 cursor-pointer p-1 rounded-full"></i>
                     <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
                         class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center">
                         <el-image style="height: 100%; " :src="currentCatalogProduct?.media[0]?.original_url" fit="fit">
@@ -65,6 +67,8 @@
                             <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
                         </div>
                     </figure>
+                    <i :class="currentIndexProduct == catalog_products.data.length - 1 ? 'hidden' : 'block'" @click="next" class="fa-solid fa-chevron-right ml-4 text-lg text-gray-600 cursor-pointer p-1 mb-2 rounded-full"></i>
+                    </div>
                     <div class="mt-8 ml-6 text-sm">
                         <div class="flex mb-2">
                             <p class="w-1/3 text-primary">Existencias</p>
@@ -150,6 +154,7 @@ export default {
             currentCatalogProduct: null,
             imageHovered: false,
             showConfirmModal: false,
+            currentIndexProduct: null,
         };
     },
     components: {
@@ -245,6 +250,16 @@ export default {
                 this.showConfirmModal = false;
             }
         },
+        previus(){
+      this.currentIndexProduct -= 1;
+      this.currentCatalogProduct = this.catalog_products.data[this.currentIndexProduct];
+      this.selectedCatalogProduct = this.currentCatalogProduct.id;
+    },
+    next(){
+      this.currentIndexProduct += 1;
+      this.currentCatalogProduct = this.catalog_products.data[this.currentIndexProduct];
+      this.selectedCatalogProduct = this.currentCatalogProduct.id;
+    },
     },
     watch: {
         selectedCatalogProduct(newVal) {
@@ -253,6 +268,7 @@ export default {
     },
     mounted() {
         this.selectedCatalogProduct = this.catalog_product.id;
+        this.currentIndexProduct = this.catalog_products.data.findIndex((obj) => obj.id == this.selectedCatalogProduct);
     }
 };
 </script>
