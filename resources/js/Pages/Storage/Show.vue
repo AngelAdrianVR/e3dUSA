@@ -83,7 +83,7 @@
             {{ currentStorage?.storageable.name }}
           </h2>
           <div class="flex items-center">
-          <i :class="selectedStorage - 1 == 0 ? 'hidden' : 'block'" @click="previus" class="fa-solid fa-chevron-left mr-4 text-lg text-gray-600 cursor-pointer p-1 rounded-full"></i>
+          <i :class="currentIndexStorage == 0 ? 'hidden' : 'block'" @click="previus" class="fa-solid fa-chevron-left mr-4 text-lg text-gray-600 cursor-pointer p-1 rounded-full"></i>
           <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
           :class="currentStorage?.storageable?.media.length ? 'bg-transparent' : 'bg-[#D9D9D9]'"
             class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center">
