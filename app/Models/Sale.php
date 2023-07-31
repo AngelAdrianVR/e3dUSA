@@ -41,7 +41,7 @@ class Sale extends Model implements HasMedia
     //relationships
     public function contact(): BelongsTo
     {
-        return $this->BelongsTo(Contact::class);
+        return $this->belongsTo(Contact::class);
     }
 
     public function user(): BelongsTo
@@ -64,7 +64,7 @@ class Sale extends Model implements HasMedia
 
     public function catalogProductCompanySales(): HasMany
     {
-        return $this->HasMany(CatalogProductCompanySale::class);
+        return $this->hasMany(CatalogProductCompanySale::class);
     }
 
     public function productions()

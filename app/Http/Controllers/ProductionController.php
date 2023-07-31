@@ -35,7 +35,6 @@ class ProductionController extends Controller
         $operators = User::where('employee_properties->department', 'Producción')->where('is_active', 1)->get();
         $sales = SaleResource::collection(Sale::with('companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct')->whereNotNull('authorized_at')->whereDoesntHave('productions')->get());
 
-        // return $sales;
         return inertia('Production/Create', compact('operators', 'sales'));
     }
 
@@ -116,7 +115,6 @@ class ProductionController extends Controller
         foreach ($request->sales as $sale) {
             $sale = Sale::find($sale['id']);
             foreach ($sale->productions as $production) {
-                $production->catalogProductCompanySale?->delete();
                 $production->delete();
             }
         }
