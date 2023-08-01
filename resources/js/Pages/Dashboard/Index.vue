@@ -44,17 +44,20 @@
                     <span>{{ $page.props.week_time.formatted }} / {{
                         $page.props.auth.user?.employee_properties?.hours_per_week ?? 0 }}h</span>
                 </div>
-                <!-- <button class="text-xs text-primary hover:underline self-end">Ver detalles</button> -->
+                <button @click="showPayrollModal = true" class="text-xs text-primary hover:underline self-end">Ver
+                    detalles</button>
             </div>
 
             <hr class="lg:hidden block border-[#cccccc] mt-8 mb-6">
 
             <!-- meetings -->
-            <div v-if="$page.props.auth.user.permissions.some(item => ['Reuniones personal', 'Reuniones todas'].includes(item))">
+            <div
+                v-if="$page.props.auth.user.permissions.some(item => ['Reuniones personal', 'Reuniones todas'].includes(item))">
                 <div class="flex justify-between items-center lg:mt-14 mt-0">
-                    <h2 class="text-primary lg:text-xl text-lg">Reuniones {{ $page.props.auth.user.permissions.some(item => ['Reuniones personal', 'Reuniones todas'].includes(item)) }}</h2>
+                    <h2 class="text-primary lg:text-xl text-lg">Reuniones {{ $page.props.auth.user.permissions.some(item =>
+                        ['Reuniones personal', 'Reuniones todas'].includes(item)) }}</h2>
                     <Link :href="route('meetings.create')">
-                        <thirthButton>Registrar reunion</thirthButton>
+                    <thirthButton>Registrar reunion</thirthButton>
                     </Link>
                     <!-- <thirthButton @click="showMeetingModal = true">Registrar reunion</thirthButton> -->
                 </div>
@@ -62,21 +65,20 @@
             </div>
 
             <!-- operative -->
-            <div v-if="
-            this.$page.props.auth.user.permissions.includes('Autorizar cotizaciones') ||
-            this.$page.props.auth.user.permissions.includes('Autorizar ordenes de venta') ||
-            this.$page.props.auth.user.permissions.includes('Autorizar ordenes de compra') ||
-            this.$page.props.auth.user.permissions.includes('Autorizar ordenes de diseño') ||
-            this.$page.props.auth.user.permissions.includes('Autorizar Crear materia prima') ||
-            this.$page.props.auth.user.permissions.includes('Autorizar Ordenes de produccion todas') ||
-            this.$page.props.auth.user.permissions.includes('Autorizar Ordenes de diseño todas') ||
-            this.$page.props.auth.user.permissions.includes('Autorizar solicitudes de tiempo adicional')
-            ">
+            <div v-if="this.$page.props.auth.user.permissions.includes('Autorizar cotizaciones') ||
+                this.$page.props.auth.user.permissions.includes('Autorizar ordenes de venta') ||
+                this.$page.props.auth.user.permissions.includes('Autorizar ordenes de compra') ||
+                this.$page.props.auth.user.permissions.includes('Autorizar ordenes de diseño') ||
+                this.$page.props.auth.user.permissions.includes('Autorizar Crear materia prima') ||
+                this.$page.props.auth.user.permissions.includes('Autorizar Ordenes de produccion todas') ||
+                this.$page.props.auth.user.permissions.includes('Autorizar Ordenes de diseño todas') ||
+                this.$page.props.auth.user.permissions.includes('Autorizar solicitudes de tiempo adicional')
+                ">
                 <h2 class="text-primary lg:text-xl text-lg lg:mt-16 mt-6">Operativo</h2>
                 <div class="grid lg:grid-cols-4 grid-cols-2 gap-3 mt-4">
                     <template v-for="(quickCard, index) in quickCards" :key="index">
-                        <DashboardCard v-if="quickCard.show" :title="quickCard.title"
-                            :counter="quickCard.counter" :icon="quickCard.icon" :href="quickCard.url" />
+                        <DashboardCard v-if="quickCard.show" :title="quickCard.title" :counter="quickCard.counter"
+                            :icon="quickCard.icon" :href="quickCard.url" />
                     </template>
                 </div>
             </div>
@@ -84,31 +86,28 @@
             <!-- Collaborators -->
             <h2 class="text-primary lg:text-xl text-lg lg:mt-16 mt-6">Colaboradores</h2>
             <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 space-y-5 lg:space-y-0 mt-4">
-                <ProductionPerformanceCard
-                    :users="collaborators_performance" />
-                <BirthdateCard
-                    :users="collaborators_birthdays" />
-                <RecentlyAddedCard
-                    :users="collaborators_added" />
-                <InformationCard
-                    :users="collaborators_anniversaires" />
+                <ProductionPerformanceCard :users="collaborators_performance" />
+                <BirthdateCard :users="collaborators_birthdays" />
+                <RecentlyAddedCard :users="collaborators_added" />
+                <InformationCard :users="collaborators_anniversaires" />
             </div>
 
             <!-- customers -->
             <h2 class="text-primary lg:text-xl text-lg lg:mt-16 mt-6">Clientes</h2>
             <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 mt-4">
-                <BirthdateCardCustomer
-                    :contacts="customers_birthdays" />
+                <BirthdateCardCustomer :contacts="customers_birthdays" />
             </div>
         </div>
 
-        <DialogModal :show="showMeetingModal" @close="showMeetingModal = false">
+        <DialogModal :show="showMeetingModal || showPayrollModal"
+            @close="showMeetingModal = false; showPayrollModal = false">
             <template #title>
-
+                <p v-if="showMeetingModal">Crear reunion</p>
+                <p v-else>Nómina semanal</p>
             </template>
             <template #content>
                 <!-- Form -->
-                <form @submit.prevent="store">
+                <form v-if="showMeetingModal" @submit.prevent="store">
                     <div class="space-y-4">
                         <div>
                             <IconInput v-model="form.subject" inputPlaceholder="Título de reunion *" inputType="text">
@@ -191,12 +190,14 @@
                         </div>
                     </div>
                 </form>
+
+                <PayrollTemplate v-else :user="$page.props.auth.user" :payrollId="payrollId" dontShowDetails />
             </template>
             <template #footer>
-                <CancelButton @click="showMeetingModal = false" :disabled="form.processing">
+                <CancelButton @click="showMeetingModal = false; showPayrollModal = false" :disabled="form.processing">
                     Cancelar
                 </CancelButton>
-                <PrimaryButton :disabled="form.processing">
+                <PrimaryButton v-if="showMeetingModal" :disabled="form.processing">
                     Guardar
                 </PrimaryButton>
             </template>
@@ -220,9 +221,10 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import AppLayoutNoHeader from '@/Layouts/AppLayoutNoHeader.vue';
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
+import PayrollTemplate from "@/Components/MyComponents/payrollTemplate.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import axios from 'axios';
-import { useForm,Link } from '@inertiajs/vue3';
+import { useForm, Link } from '@inertiajs/vue3';
 
 export default {
     data() {
@@ -310,6 +312,8 @@ export default {
             form,
             currentTime: new Date().getHours(),
             greeting: null,
+            showPayrollModal: false,
+            payrollId: null,
         }
     },
     props: {
@@ -338,7 +342,8 @@ export default {
         IconInput,
         CancelButton,
         Checkbox,
-        Link
+        Link,
+        PayrollTemplate,
     },
     methods: {
         async getAttendanceTextButton() {
@@ -390,24 +395,37 @@ export default {
             }
         },
         updateGreeting() {
-      if (this.currentTime >= 0 && this.currentTime < 12) {
-        this.greeting = {text: "Buenos días ", class: "fa-solid fa-sun text-yellow-500 text-6xl"};
-      } else if (this.currentTime >= 12 && this.currentTime < 19) {
-        this.greeting = {text: "Buenas tardes ", class: "fa-solid fa-cloud-sun text-orange-500 text-6xl"};
-      } else {
-        this.greeting = {text: "Buenas noches ", class: "fa-solid fa-moon text-purple-500 text-6xl"};
-      }
-    }
+            if (this.currentTime >= 0 && this.currentTime < 12) {
+                this.greeting = { text: "Buenos días ", class: "fa-solid fa-sun text-yellow-500 text-6xl" };
+            } else if (this.currentTime >= 12 && this.currentTime < 19) {
+                this.greeting = { text: "Buenas tardes ", class: "fa-solid fa-cloud-sun text-orange-500 text-6xl" };
+            } else {
+                this.greeting = { text: "Buenas noches ", class: "fa-solid fa-moon text-purple-500 text-6xl" };
+            }
+        },
+        async getCurrentPayroll() {
+            try {
+                const response = axios.post(route('payrolls.get-current-payroll'));
+
+                if (response.status === 200) {
+                    this.payrollId = response.data.item.id;
+                }
+            } catch (error) {
+                console.log(error.message);
+            }
+        },
     },
     mounted() {
-    // Actualizar el saludo inicial
-    this.updateGreeting();
+        // Actualizar el saludo inicial
+        this.updateGreeting();
 
-    // Actualizar el saludo cada minuto
-    setInterval(() => {
-      this.currentTime = new Date().getHours();
-      this.updateGreeting();
-    }, 60000); // 60000 ms = 1 minuto
-  }
+        // Actualizar el saludo cada minuto
+        setInterval(() => {
+            this.currentTime = new Date().getHours();
+            this.updateGreeting();
+        }, 60000); // 60000 ms = 1 minuto
+
+        this.getCurrentPayroll();
+    }
 }
 </script>

@@ -1,6 +1,7 @@
 <template>
   <div v-if="!loading" class="grid grid-cols-4 md:grid-cols-3 lg:py-6 lg:px-10 mb-6 lg:mb-0 text-[10px] md:text-sm">
-    <div class="bg-transparent rounded-lg lg:mx-auto mr-auto col-span-3 md:col-span-2 w-5/6">
+    <div class="bg-transparent rounded-lg lg:mx-auto"
+      :class="dontShowDetails ? 'col-span-full' : 'col-span-3 md:col-span-2 mr-auto w-5/6'">
       <div class="flex items-center">
         <i class="fa-solid fa-circle-user mr-3 text-xl"></i>
         <p>{{ user.name }}</p>
@@ -9,7 +10,7 @@
         <table class="items-center w-full bg-transparent">
           <thead class="text-primary bg-[#e6e6e6] px-3">
             <tr class="rounded-tl-lg rounded-tr-lg">
-              <th class="rounded-tl-lg w-48">Día</th>
+              <th class="rounded-tl-lg md:w-48">Día</th>
               <th>Entrada</th>
               <th>Salida</th>
               <th>Break</th>
@@ -56,7 +57,7 @@
         </table>
       </div>
     </div>
-    <div class="mr-5">
+    <div v-if="!dontShowDetails" class="mr-5">
       <p class="mb-3">
         <strong class="mr-3"> Semana {{ payroll?.week }} </strong>
         {{ payroll?.start_date }} - {{ payroll?.end_date }}
@@ -136,6 +137,10 @@ export default {
   props: {
     user: Number,
     payrollId: Number,
+    dontShowDetails: {
+      type: Boolean,
+      default: false,
+    }
   },
   components: {
     PrimaryButton,
@@ -236,7 +241,6 @@ export default {
         const minutes = time.split(':')[1]
 
         totalWeekHoursAllowed += parseFloat(hours) + parseFloat(minutes / 60);
-        console.log(totalWeekHoursAllowed);
       }
 
       if (totalWeekHours > totalWeekHoursAllowed) {

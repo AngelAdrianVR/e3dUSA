@@ -117,6 +117,7 @@ Route::post('payrolls/get-payroll-users', [PayrollController::class, 'getPayroll
 Route::get('payrolls/print-template/{users_id_to_show}/{payroll_id}', [PayrollController::class, 'printTemplate'])->middleware('auth')->name('payrolls.print-template');
 Route::post('payrolls/get-additional-time', [PayrollController::class, 'getAdditionalTime'])->middleware('auth')->name('payrolls.get-additional-time');
 Route::post('payrolls/close-current', [PayrollController::class, 'closeCurrent'])->middleware('auth')->name('payrolls.close-current');
+Route::post('payrolls/get-current-payroll', [PayrollController::class, 'getCurrentPayroll'])->middleware('auth')->name('payrolls.get-current-payroll');
 
 // ------- Recursos humanos(users routes)  ---------
 Route::resource('users', UserController::class)->middleware('auth');

@@ -4,12 +4,15 @@
         <div class="bg-[#D9D9D9] h-full overflow-auto">
             <nav class="pt-2 px-2">
                 <div>
-                    <div v-if="$page.props.auth.user?.employee_properties" class="mb-4 items-center font-semibold text-xs text-[#0355B5] flex flex-col">
+                    <div @click="showModal = true" v-if="$page.props.auth.user?.employee_properties"
+                        class="cursor-pointer hover:underline mb-4 items-center font-semibold text-xs text-[#0355B5] flex flex-col">
                         <span>Horas / semana</span>
-                        <span>{{ $page.props.week_time.formatted }} / {{ $page.props.auth.user?.employee_properties?.hours_per_week ?? 0 }}h</span>
+                        <span>{{ $page.props.week_time.formatted }} / {{
+                            $page.props.auth.user?.employee_properties?.hours_per_week ?? 0 }}h</span>
                     </div>
                     <template v-for="(menu, index) in menus" :key="index">
-                        <SideNavLink v-if="menu.show"  :href="menu.route" :active="menu.active" :dropdown="menu.dropdown" class="mb-px">
+                        <SideNavLink v-if="menu.show" :href="menu.route" :active="menu.active" :dropdown="menu.dropdown"
+                            class="mb-px">
                             <template #trigger>
                                 <span v-html="menu.icon"></span>
                                 <span class="leading-none font-normal text-center">
@@ -29,12 +32,27 @@
             </nav>
         </div>
     </div>
+
+    <DialogModal :show="showModal" @close="showModal = false">
+        <template #title>
+            Nómina semanal
+        </template>
+        <template #content>
+            <PayrollTemplate :user="$page.props.auth.user" :payrollId="payrollId" dontShowDetails />
+        </template>
+        <template #footer>
+            <CancelButton @click="showModal = false">Cerrar</CancelButton>
+        </template>
+    </DialogModal>
 </template>
 
 <script>
 
 import SideNavLink from "@/Components/MyComponents/SideNavLink.vue";
 import DropdownNavLink from "@/Components/MyComponents/DropdownNavLink.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+import PayrollTemplate from "@/Components/MyComponents/payrollTemplate.vue";
+import DialogModal from "@/Components/DialogModal.vue";
 
 export default {
     data() {
@@ -81,9 +99,9 @@ export default {
 
                     ],
                     dropdown: true,
-                    show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones') || 
-                          this.$page.props.auth.user.permissions.includes('Ver clientes') ||
-                          this.$page.props.auth.user.permissions.includes('Ver ordenes de venta')
+                    show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones') ||
+                        this.$page.props.auth.user.permissions.includes('Ver clientes') ||
+                        this.$page.props.auth.user.permissions.includes('Ver ordenes de venta')
                 },
                 {
                     label: 'Compras',
@@ -104,7 +122,7 @@ export default {
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver proveedores') ||
-                          this.$page.props.auth.user.permissions.includes('Ver ordenes de compra')
+                        this.$page.props.auth.user.permissions.includes('Ver ordenes de compra')
                 },
                 {
                     label: 'Almacén',
@@ -131,18 +149,18 @@ export default {
                             route: 'storages.scraps.index',
                             show: this.$page.props.auth.user.permissions.includes('Ver scrap')
                         },
-                        
+
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver materia prima') ||
-                          this.$page.props.auth.user.permissions.includes('Ver insumos') ||
-                          this.$page.props.auth.user.permissions.includes('Ver producto terminado') ||
-                          this.$page.props.auth.user.permissions.includes('Ver scrap')
+                        this.$page.props.auth.user.permissions.includes('Ver insumos') ||
+                        this.$page.props.auth.user.permissions.includes('Ver producto terminado') ||
+                        this.$page.props.auth.user.permissions.includes('Ver scrap')
                 },
                 {
                     label: 'Recursos Humanos',
                     icon: '<i class="fa-solid fa-user-group text-xs"></i>',
-                    active: route().current('payrolls.*') 
+                    active: route().current('payrolls.*')
                         || route().current('admin-additional-times.*')
                         || route().current('users.*')
                         || route().current('role-permission.*')
@@ -182,10 +200,10 @@ export default {
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver nominas') ||
-                          this.$page.props.auth.user.permissions.includes('Ver solicitudes de tiempo adicional') ||
-                          this.$page.props.auth.user.permissions.includes('Ver roles y permisos') ||
-                          this.$page.props.auth.user.permissions.includes('Ver bonos') ||
-                          this.$page.props.auth.user.permissions.includes('Ver dias festivos')
+                        this.$page.props.auth.user.permissions.includes('Ver solicitudes de tiempo adicional') ||
+                        this.$page.props.auth.user.permissions.includes('Ver roles y permisos') ||
+                        this.$page.props.auth.user.permissions.includes('Ver bonos') ||
+                        this.$page.props.auth.user.permissions.includes('Ver dias festivos')
                 },
                 {
                     label: 'Diseño',
@@ -211,8 +229,8 @@ export default {
                 {
                     label: 'Más',
                     icon: '<i class="fa-solid fa-ellipsis text-xs"></i>',
-                    active: route().current('machines.*') || route().current('more-additional-times.*') || route().current('meetings.*') || 
-                          route().current('samples.*') || route().current('production-costs.*'),
+                    active: route().current('machines.*') || route().current('more-additional-times.*') || route().current('meetings.*') ||
+                        route().current('samples.*') || route().current('production-costs.*'),
                     options: [
                         {
                             label: 'Máquinas',
@@ -248,10 +266,10 @@ export default {
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver maquinas') ||
-                          this.$page.props.auth.user.permissions.includes('Solicitudes de tiempo adicional personal') ||
-                          this.$page.props.auth.user.permissions.includes('Reuniones personal') ||
-                          this.$page.props.auth.user.permissions.includes('Ver biblioteca de medios') ||
-                          this.$page.props.auth.user.permissions.includes('Ver costos de produccion')
+                        this.$page.props.auth.user.permissions.includes('Solicitudes de tiempo adicional personal') ||
+                        this.$page.props.auth.user.permissions.includes('Reuniones personal') ||
+                        this.$page.props.auth.user.permissions.includes('Ver biblioteca de medios') ||
+                        this.$page.props.auth.user.permissions.includes('Ver costos de produccion')
                 },
                 {
                     label: 'Configuración',
@@ -261,11 +279,32 @@ export default {
                     show: false
                 },
             ],
+            showModal: false,
+            payrollId: null,
         }
     },
     components: {
         SideNavLink,
-        DropdownNavLink
+        DropdownNavLink,
+        DialogModal,
+        CancelButton,
+        PayrollTemplate
+    },
+    methods: {
+        async getCurrentPayroll() {
+            try {
+                const response = axios.post(route('payrolls.get-current-payroll'));
+
+                if (response.status === 200) {
+                    this.payrollId = response.data.item.id;
+                }
+            } catch (error) {
+                console.log(error.message);
+            }
+        }
+    },
+    mounted() {
+        this.getCurrentPayroll();
     }
 }
 </script>

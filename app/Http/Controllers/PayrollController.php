@@ -289,6 +289,13 @@ class PayrollController extends Controller
         return response()->json(['message' => "Nomina semana $current->week cerrada", 'item' => PayrollResource::make($new)]);
     }
 
+    public function getCurrentPayroll()
+    {
+        $current = Payroll::getCurrent();
+
+        return response()->json(['item' => $current]);
+    }
+
     public function getAdditionalTime(Request $request)
     {
         $additiona_time = AdditionalTimeRequest::where('user_id', $request->user_id)->where('payroll_id', $request->payroll_id)->whereNotNull('authorized_at')->first();
