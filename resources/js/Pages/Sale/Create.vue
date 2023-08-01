@@ -126,7 +126,8 @@
                                 ...
                             </span>
                         </el-tooltip>
-                        <textarea v-model="form.notes" class="textarea" autocomplete="off" placeholder="Notas de la órden"></textarea>
+                        <textarea v-model="form.notes" class="textarea" autocomplete="off"
+                            placeholder="Notas de la órden"></textarea>
                         <InputError :message="form.errors.notes" />
                     </div>
                     <!-- products -->
@@ -179,11 +180,13 @@
                             </el-select>
                         </div>
                         <div>
-                            <IconInput v-model="product.quantity" inputPlaceholder="Cantidad *" inputType="number">
+                            <IconInput @change="validateQuantity()" v-model="product.quantity" inputPlaceholder="Cantidad *"
+                                inputType="number">
                                 <el-tooltip content="Cantidad" placement="top">
                                     #
                                 </el-tooltip>
                             </IconInput>
+                            <p v-if="alertMaxQuantity" class="text-red-600 text-xs"> La cantidad maxima que se puede generar es de {{ alertMaxQuantity }} unidades </p>
                             <!-- <InputError :message="form.errors.fiscal_address" /> -->
                         </div>
                         <div class="flex col-span-full">
@@ -199,7 +202,7 @@
                         </div>
                         <div class="col-span-full" @click="addProduct">
                             <SecondaryButton
-                                :disabled="form.processing || !product.catalog_product_company_id || !product.quantity">
+                                :disabled="form.processing || !product.catalog_product_company_id || !product.quantity || alertMaxQuantity !== null">
                                 {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
                             </SecondaryButton>
                         </div>
@@ -245,6 +248,7 @@ export default {
                 notes: null,
             },
             editIndex: null,
+            alertMaxQuantity: 0,
         };
     },
     components: {
@@ -271,6 +275,24 @@ export default {
                     this.form.reset();
                 }
             });
+        },
+        validateQuantity() {
+            const catalogProducts = this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.company.catalog_products;
+            const components = catalogProducts.find(item => this.product.catalog_product_company_id == item.pivot.id).raw_materials;
+
+            let maxQuantity = null;
+            components.forEach(element => {
+                const currentMax = element.storages[0].quantity / element.pivot.quantity;
+                if (maxQuantity === null || maxQuantity > currentMax) {
+                    maxQuantity = currentMax;
+                }
+            });
+
+            if (this.product.quantity > maxQuantity) {
+                this.alertMaxQuantity = maxQuantity;
+            } else {
+                this.alertMaxQuantity = null;
+            }
         },
         addProduct() {
             const product = { ...this.product };

@@ -23,8 +23,9 @@ class SaleController extends Controller
 
     public function create()
     {
-        $company_branches = CompanyBranch::with('company.catalogProducts', 'contacts')->latest()->get();
+        $company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
 
+        // return $company_branches;
         return inertia('Sale/Create', compact('company_branches'));
     }
 
