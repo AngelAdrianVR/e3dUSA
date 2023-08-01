@@ -121,7 +121,7 @@
                 </span>
               </el-tooltip>
               <el-select v-model="branch.sat_method" clearable placeholder="Método de pago">
-                <el-option v-for="item in sat_method" :key="item.value">
+                <el-option v-for="item in sat_method" :key="item.value" :value="item.value" :label="item.label">
                   <span style="float: left">{{ item.label }}</span>
                   <span style="
                                             float: right;
@@ -140,7 +140,7 @@
                 </span>
               </el-tooltip>
               <el-select v-model="branch.sat_way" clearable placeholder="Medio de pago">
-                <el-option v-for="item in sat_ways" :key="item.value">
+                <el-option v-for="item in sat_ways" :key="item.value" :value="item.value" :label="item.label">
                   <span style="float: left">{{ item.label }}</span>
                   <span style="
                                             float: right;
@@ -159,7 +159,7 @@
                 </span>
               </el-tooltip>
               <el-select v-model="branch.sat_type" clearable placeholder="Uso de factura">
-                <el-option v-for="item in sat_types" :key="item.value">
+                <el-option v-for="item in sat_types" :key="item.value" :value="item.value" :label="item.label">
                   <span style="float: left">{{ item.label }}</span>
                   <span style="
                                             float: right;

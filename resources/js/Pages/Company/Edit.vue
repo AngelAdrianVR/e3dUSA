@@ -9,14 +9,14 @@
           </Link>
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">
-              Agregar nuevo cliente
+              Editar cliente {{ company.name }}
             </h2>
           </div>
         </div>
       </template>
 
       <!-- Form -->
-      <form @submit.prevent="store">
+      <form @submit.prevent="update">
         <!-- ---------------- Company starts ----------------- -->
         <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
           <div class="md:grid gap-6 mb-6 grid-cols-2 pb-4">
@@ -121,7 +121,7 @@
                 </span>
               </el-tooltip>
               <el-select v-model="branch.sat_method" clearable placeholder="Método de pago">
-                <el-option v-for="item in sat_method" :key="item.value">
+                <el-option v-for="item in sat_method" :key="item.value" :label="item.label" :value="item.value">
                   <span style="float: left">{{ item.label }}</span>
                   <span style="
                                             float: right;
@@ -140,7 +140,7 @@
                 </span>
               </el-tooltip>
               <el-select v-model="branch.sat_way" clearable placeholder="Medio de pago">
-                <el-option v-for="item in sat_ways" :key="item.value">
+                <el-option v-for="item in sat_ways" :key="item.value" :label="item.label" :value="item.value">
                   <span style="float: left">{{ item.label }}</span>
                   <span style="
                                             float: right;
@@ -159,7 +159,7 @@
                 </span>
               </el-tooltip>
               <el-select v-model="branch.sat_type" clearable placeholder="Uso de factura">
-                <el-option v-for="item in sat_types" :key="item.value">
+                <el-option v-for="item in sat_types" :key="item.value" :label="item.label" :value="item.value">
                   <span style="float: left">{{ item.label }}</span>
                   <span style="
                                             float: right;
@@ -388,7 +388,7 @@
           <el-divider />
           <div class="md:text-right">
             <PrimaryButton :disabled="form.processing">
-              Agregar Cliente
+              Actualizar Cliente
             </PrimaryButton>
           </div>
         </div>
