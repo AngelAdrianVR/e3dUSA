@@ -63,6 +63,7 @@ class SaleController extends Controller
     {
         $sales = SaleResource::collection(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator'], 'productions' => ['user', 'operator']])->latest()->get());
 
+        // return $sales;
         return inertia('Sale/Show', compact('sale', 'sales'));
     }
 

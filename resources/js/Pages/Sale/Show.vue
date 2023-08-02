@@ -145,6 +145,8 @@
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
           <p class="text-secondary col-span-2 mb-2">Datos del cliente</p>
 
+          <span class="text-gray-500">Matriz</span>
+          <span>{{ Matriz }}</span>
           <span class="text-gray-500">ID</span>
           <span>{{ currentSale?.company_branch?.id }}</span>
           <span class="text-gray-500 my-2">Nombre</span>

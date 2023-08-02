@@ -192,7 +192,7 @@
 
                 <el-divider />
                 <div class="md:text-right">
-                    <PrimaryButton :disabled="form.processing"> Crear producto </PrimaryButton>
+                    <PrimaryButton :disabled="form.processing"> Actualizar producto </PrimaryButton>
                 </div>
             </div>
         </form>

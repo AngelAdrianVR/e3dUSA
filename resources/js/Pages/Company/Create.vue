@@ -120,7 +120,7 @@
                   sat
                 </span>
               </el-tooltip>
-              <el-select v-model="branch.sat_method" clearable placeholder="Método de pago">
+              <el-select v-model="branch.sat_method" clearable filterable placeholder="Método de pago">
                 <el-option v-for="item in sat_method" :key="item.value" :value="item.value" :label="item.label">
                   <span style="float: left">{{ item.label }}</span>
                   <span style="
@@ -139,7 +139,7 @@
                   sat
                 </span>
               </el-tooltip>
-              <el-select v-model="branch.sat_way" clearable placeholder="Medio de pago">
+              <el-select v-model="branch.sat_way" clearable filterable placeholder="Medio de pago">
                 <el-option v-for="item in sat_ways" :key="item.value" :value="item.value" :label="item.label">
                   <span style="float: left">{{ item.label }}</span>
                   <span style="
@@ -158,7 +158,7 @@
                   sat
                 </span>
               </el-tooltip>
-              <el-select v-model="branch.sat_type" clearable placeholder="Uso de factura">
+              <el-select v-model="branch.sat_type" clearable filterable placeholder="Uso de factura">
                 <el-option v-for="item in sat_types" :key="item.value" :value="item.value" :label="item.label">
                   <span style="float: left">{{ item.label }}</span>
                   <span style="
@@ -248,10 +248,10 @@
                     </span>
                   </el-tooltip>
                   <div class="grid grid-cols-2 gap-2">
-                    <el-select v-model="contact.birthdate_day" clearable placeholder="Dia">
+                    <el-select v-model="contact.birthdate_day" clearable filterable placeholder="Dia">
                       <el-option v-for="day in 31" :key="day" :label="day" :value="day" />
                     </el-select>
-                    <el-select v-model="contact.birthdate_month" clearable placeholder="Mes">
+                    <el-select v-model="contact.birthdate_month" clearable filterable placeholder="Mes">
                       <el-option v-for="(month, index) in months" :key="index" :label="month" :value="index" />
                     </el-select>
                   </div>
@@ -309,7 +309,7 @@
                   <i class="fa-solid fa-magnifying-glass"></i>
                 </span>
               </el-tooltip>
-              <el-select v-model="product.catalog_product_id" clearable placeholder="Buscar producto">
+              <el-select v-model="product.catalog_product_id" clearable filterable placeholder="Buscar producto">
                 <el-option v-for="item in catalog_products" :key="item.id" :label="item.name" :value="item.id" />
               </el-select>
             </div>
