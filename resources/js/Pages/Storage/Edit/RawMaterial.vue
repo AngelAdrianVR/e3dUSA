@@ -243,6 +243,18 @@ export default {
           value: 'PD',
         },
         {
+                    label: 'Manta',
+                    value: 'MT',
+                },
+                {
+                    label: 'Carpeta',
+                    value: 'CP',
+                },
+                {
+                    label: 'Separador',
+                    value: 'SP',
+                },
+        {
           label: 'Termo',
           value: 'TM',
         },
