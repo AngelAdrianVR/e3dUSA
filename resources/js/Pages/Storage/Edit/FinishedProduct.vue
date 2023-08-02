@@ -34,6 +34,7 @@
                 @change="storageableObj"
                 class="my-2"
                 placeholder="Selecciona un producto del catálogo"
+                clearable filterable
               >
                 <el-option
                   v-for="item in catalog_products"

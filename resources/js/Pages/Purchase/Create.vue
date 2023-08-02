@@ -34,7 +34,7 @@
               @change="selectedSupplier"
               v-model="form.supplier_id"
               class="mt-2"
-              clearable
+              clearable filterable
               placeholder="Selecciona proveedor"
             >
               <el-option
@@ -60,7 +60,7 @@
             <el-select
               v-model="form.bank_information"
               class="mt-2"
-              clearable
+              clearable filterable
               placeholder="Selecciona la información bancaria"
             >
               <el-option
@@ -83,7 +83,7 @@
             <el-select
               v-model="form.contact_id"
               class="mt-2"
-              clearable
+              clearable filterable
               placeholder="Selecciona un contacto"
             >
               <el-option
@@ -167,7 +167,7 @@
                 <el-select
                   v-model="productSelected"
                   class="mt-2"
-                  clearable
+                  clearable filterable
                   placeholder="Selecciona un producto"
                 >
                   <el-option

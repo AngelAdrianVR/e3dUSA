@@ -16,7 +16,7 @@ class CatalogProductResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => strtoupper($this->name),
             'description' => $this->description ?? '--',
             'part_number' => $this->part_number,
             'measure_unit' => $this->measure_unit,

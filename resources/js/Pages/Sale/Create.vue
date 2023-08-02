@@ -23,7 +23,7 @@
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
                         </el-tooltip>
-                        <el-select v-model="form.company_branch_id" class="mt-2" placeholder="Selecciona un cliente">
+                        <el-select v-model="form.company_branch_id" class="mt-2" clearable filterable placeholder="Selecciona un cliente">
                             <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
                                 :value="item.id" />
                         </el-select>
