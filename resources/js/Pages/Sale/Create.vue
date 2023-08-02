@@ -140,7 +140,7 @@
                                 <p class="text-sm">
                                     <span class="text-primary">{{ index + 1 }}.</span>
                                     {{ company_branches.find(cb => cb.id ==
-                                        form.company_branch_id)?.company.catalog_products.find(prd => prd.id ===
+                                        form.company_branch_id)?.company.catalog_products.find(prd => prd.pivot.id ===
                                             item.catalog_product_company_id)?.name
                                     }}
                                     (x{{ item.quantity }} unidades)
@@ -176,7 +176,7 @@
                                 placeholder="Selecciona un producto *">
                                 <el-option
                                     v-for="item in company_branches.find(cb => cb.id == form.company_branch_id)?.company.catalog_products"
-                                    :key="item.id" :label="item.name" :value="item.id" />
+                                    :key="item.pivot.id" :label="item.name" :value="item.pivot.id" />
                             </el-select>
                         </div>
                         <div>
@@ -200,8 +200,8 @@
                                 placeholder="Notas de producto"></textarea>
                             <!-- <InputError :message="form.errors.notes" /> -->
                         </div>
-                        <div class="col-span-full" @click="addProduct">
-                            <SecondaryButton
+                        <div class="col-span-full">
+                            <SecondaryButton @click="addProduct"
                                 :disabled="form.processing || !product.catalog_product_company_id || !product.quantity || alertMaxQuantity !== null">
                                 {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
                             </SecondaryButton>

@@ -405,7 +405,7 @@ export default {
         },
         async getCurrentPayroll() {
             try {
-                const response = axios.post(route('payrolls.get-current-payroll'));
+                const response = await axios.post(route('payrolls.get-current-payroll'));
 
                 if (response.status === 200) {
                     this.payrollId = response.data.item.id;
