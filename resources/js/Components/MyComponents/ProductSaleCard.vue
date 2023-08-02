@@ -9,10 +9,10 @@
 
     <!-- card -->
     <p class="text-center font-bold mt-4 text-sm">
-      {{ catalog_product_company_sale.catalog_product_company.catalog_product.name }}
+      {{ catalog_product_company_sale.catalog_product_company?.catalog_product?.name }}
     </p>
     <span class="font-bold absolute right-5 top-2">{{
-      catalog_product_company_sale.catalog_product_company.catalog_product.part_number
+      catalog_product_company_sale.catalog_product_company?.catalog_product?.part_number
     }}</span>
     <el-tooltip content="Número de parte" placement="top">
       <i
@@ -22,7 +22,7 @@
     <div class="grid grid-cols-2 gap-x-4">
       <figure class="bg-[#D9D9D9] w-full h-28 my-3 rounded-[10px]">
         <el-image style="height: 100%; border-radius: 10px;"
-          :src="catalog_product_company_sale.catalog_product_company.catalog_product.media[0]?.original_url"
+          :src="catalog_product_company_sale.catalog_product_company?.catalog_product?.media[0]?.original_url"
           fit="contain">
           <template #error>
             <div class="flex justify-center items-center text-[#ababab]">
@@ -33,7 +33,7 @@
       </figure>
       <div>
         <p class="text-primary text-left">Caracteristicas</p>
-        <li v-for="(feature, index) in catalog_product_company_sale.catalog_product_company.catalog_product.features"
+        <li v-for="(feature, index) in catalog_product_company_sale.catalog_product_company?.catalog_product?.features"
           :key="index" class="text-gray-800 list-disc">{{ feature }}</li>
       </div>
     </div>
