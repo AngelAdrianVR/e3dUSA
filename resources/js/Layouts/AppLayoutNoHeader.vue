@@ -203,7 +203,7 @@ const currentTime = ref(new Date().getHours());
 
                                 <p class="mr-24">
                                     <i :class="greeting.class"></i>
-                                    {{ greeting.text }} <strong>{{ $page.props.auth.user.name }}</strong>
+                                    {{ greeting.text }} <strong>{{ $page.props.auth.user.name.split(' ')[0] }}</strong>
                                 </p>
 
                                 <el-popconfirm

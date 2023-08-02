@@ -60,7 +60,7 @@
                     <el-table-column prop="quantity" label="Stock" />
                     <el-table-column align="right" fixed="right" width="120">
                         <template #header>
-                            <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
+                            <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">

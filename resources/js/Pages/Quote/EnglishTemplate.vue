@@ -37,7 +37,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(item, index) in quote.data.products" :key="index" class="bg-gray-200 text-gray-700">
+                <tr v-for="(item, index) in quote.data.products" :key="index" class="bg-gray-200 text-gray-700 uppercase">
                     <td class="px-2 py-px">{{ item.name }}</td>
                     <td class="px-2 py-px">{{ item.pivot.notes ?? '--' }}</td>
                     <td class="px-2 py-px">{{ item.pivot.price }} {{ quote.data.currency }}</td>

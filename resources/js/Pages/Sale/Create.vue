@@ -278,7 +278,7 @@ export default {
         },
         validateQuantity() {
             const catalogProducts = this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.company.catalog_products;
-            const components = catalogProducts.find(item => this.product.catalog_product_company_id == item.pivot.id).raw_materials;
+            const components = catalogProducts.find(item => this.product.catalog_product_company_id == item.pivot.id)?.raw_materials;
 
             let maxQuantity = null;
             components.forEach(element => {
@@ -288,7 +288,7 @@ export default {
                 }
             });
 
-            if (this.product.quantity > maxQuantity) {
+            if (maxQuantity !== null && this.product.quantity > maxQuantity) {
                 this.alertMaxQuantity = maxQuantity;
             } else {
                 this.alertMaxQuantity = null;

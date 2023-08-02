@@ -130,7 +130,7 @@
                                 <li class="flex justify-between items-center">
                                     <p class="text-sm">
                                         <span class="text-primary">{{ index + 1 }}.</span>
-                                        {{ catalog_products.find(prd => prd.id === item.id)?.name }}
+                                        {{ catalog_products.find(prd => prd.id === item.catalog_product_id)?.name }}
                                         (x{{ item.quantity }} unidades)
                                     </p>
                                     <div class="flex space-x-2 items-center">
@@ -157,7 +157,7 @@
                                     <i class="fa-solid fa-magnifying-glass"></i>
                                 </span>
                             </el-tooltip>
-                            <el-select v-model="product.id" clearable filterable placeholder="Busca el producto"
+                            <el-select v-model="product.catalog_product_id" clearable filterable placeholder="Busca el producto"
                                 no-data-text="No hay productos registrados" no-match-text="No se encontraron coincidencias">
                                 <el-option v-for="item in catalog_products" :key="item.id" :label="item.name"
                                     :value="item.id" />
@@ -207,7 +207,7 @@
                         <div>
                             <div>
                                 <SecondaryButton @click="addProduct" type="button"
-                                    :disabled="!product.id || !product.quantity || !product.price || form.processing">
+                                    :disabled="!product.catalog_product_id || !product.quantity || !product.price || form.processing">
                                     {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
                                 </SecondaryButton>
                             </div>
