@@ -66,7 +66,7 @@
                 v-if="$page.props.auth.user.permissions.includes('Crear insumos')">
                 Agregar nuevo insumo
               </DropdownLink>
-                <DropdownLink @click="console.log('No funciona')" as="button"
+                <DropdownLink @click="scrapModal = true" as="button"
                   v-if="$page.props.auth.user.permissions.includes('Crear scrap')">
                   Mandar a scrap
                 </DropdownLink>
@@ -291,6 +291,49 @@
         </template>
       </DialogModal>
       <!-- --------------------------- Dialog Modal ends ------------------------------------ -->
+
+
+      <!-- -------------- scrapModal starts----------------------- -->
+      <Modal :show="scrapModal" @close="scrapModal = false">
+      <form @submit.prevent="sentToScrap">
+        <div class="mx-7 my-4 space-y-4 relative">
+          <section v-if="scrapModal">
+              <h2 class="font-bold text-center mr-2">
+                Mandar {{ currentStorage?.storageable.name }} a scrap
+              </h2>
+            <div class="flex flex-col justify-center mt-7">
+              <div @click="scrapModal = false"
+                class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
+                <i class="fa-solid fa-xmark"></i>
+              </div>
+              <div>
+              <IconInput v-model="form.quantity" inputPlaceholder="Cantidad" inputType="number">
+                <el-tooltip content="Cantidad" placement="top">
+                  123
+                </el-tooltip>
+              </IconInput>
+              <InputError :message="form.errors.quantity" />
+            </div>
+              <div>
+              <IconInput v-model="form.location" inputPlaceholder="Ubicación" inputType="text">
+                <el-tooltip content="Ubicación" placement="top">
+                  U
+                </el-tooltip>
+                <InputError :message="form.errors.location" />
+              </IconInput>
+            </div>
+            </div>
+          </section>
+          <!-- -------------- scrapModal ends----------------------- -->
+
+          <div class="flex justify-end space-x-3 pt-5 pb-1">
+            <PrimaryButton>Mandar a scrap</PrimaryButton>
+          </div>
+          </div>
+      </form>
+      </Modal>
+
+
     </AppLayoutNoHeader>
   </div>
 </template>
@@ -307,12 +350,16 @@ import IconInput from "@/Components/MyComponents/IconInput.vue";
 import InputError from "@/Components/InputError.vue";
 import moment from "moment";
 import { Link, useForm } from "@inertiajs/vue3";
+import Modal from "@/Components/Modal.vue";
 
 export default {
   data() {
     const form = useForm({
       quantity: null,
       notes: null,
+      location: null,
+      type: 'scrap',
+      storage_id: null,
     });
     return {
       form,
@@ -322,6 +369,7 @@ export default {
       imageHovered: false,
       showConfirmModal: false,
       showDialogModal: false,
+      scrapModal: false,
       is_add: null,
       errorMessage: null,
       currentIndexStorage: null,
@@ -339,12 +387,25 @@ export default {
     DialogModal,
     IconInput,
     InputError,
+    Modal
   },
   props: {
     storage: Object,
     storages: Array,
   },
   methods: {
+    sentToScrap() {
+      this.form.storage_id = this.currentStorage.id;
+      this.form.post(route("storages.scraps.store"), {
+        onSuccess: () => {
+          this.$notify({
+            title: "Éxito",
+            message: "Producto mandado a scrap",
+            type: "success",
+          });
+        },
+      });
+    },
     showOverlay() {
       this.imageHovered = true;
     },

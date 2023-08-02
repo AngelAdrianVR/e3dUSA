@@ -302,6 +302,18 @@ export default {
                     value: 'TP',
                 },
                 {
+                    label: 'Manta',
+                    value: 'MT',
+                },
+                {
+                    label: 'Carpeta',
+                    value: 'CP',
+                },
+                {
+                    label: 'Separador',
+                    value: 'SP',
+                },
+                {
                     label: 'Porta-documento',
                     value: 'PD',
                 },

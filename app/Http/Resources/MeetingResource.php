@@ -24,7 +24,7 @@ class MeetingResource extends JsonResource
             'subject' => $this->subject,
             'location' => $this->location,
             'url' => $this->url?? '--',
-            'authorized_at' => $this->authorized_at?->isoFormat('YYYY MMM DD'),
+            'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'status' => $status,
             'description' => $this->description,
             'date' => $this->date?->isoFormat('dddd, DD MMMM'),
@@ -36,8 +36,8 @@ class MeetingResource extends JsonResource
                         ],
             'user' => $this->whenLoaded('user'),
             'participants' => $this->participants,
-            'created_at' => $this->created_at?->isoFormat('YYYY MMM DD'),
-            'updated_at' => $this->updated_at?->isoFormat('YYYY MMM DD'),
+            'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+            'updated_at' => $this->updated_at?->isoFormat('DD MMM, YYYY h:mm A'),
         ];
     }
 }

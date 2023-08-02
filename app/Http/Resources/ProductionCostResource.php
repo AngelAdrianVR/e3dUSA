@@ -21,8 +21,8 @@ class ProductionCostResource extends JsonResource
             'cost'=> ['raw' => $this->cost,
                       'format' => '$' . number_format($this->cost,2)
                         ],
-            'created_at'=> $this->created_at?->isoFormat('YYYY MMM DD'),
-            'updated_at'=> $this->created_at?->isoFormat('YYYY MMM DD'),
+            'created_at'=> $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+            'updated_at'=> $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
         ];
     }
 }

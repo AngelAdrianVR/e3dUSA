@@ -126,10 +126,10 @@
           <span>{{ currentSale?.created_at }}</span>
           <span class="text-gray-500 my-2">Medio de petición</span>
           <span>{{ currentSale?.order_via }}</span>
-          <span class="text-gray-500 my-2">Prioridad</span>
+          <!-- <span class="text-gray-500 my-2">Prioridad</span>
           <span>{{ "currentSale?.status" }}</span>
           <span class="text-gray-500 my-2">Operadores</span>
-          <span>{{ "currentSale?.authorized_at" }}</span>
+          <span>{{ "currentSale?.authorized_at" }}</span> -->
           <span class="text-gray-500 my-2">OCE</span>
           <span>{{ currentSale?.oce_name }}</span>
           <span class="text-gray-500 my-2">Factura</span>
@@ -145,11 +145,11 @@
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
           <p class="text-secondary col-span-2 mb-2">Datos del cliente</p>
 
-          <span class="text-gray-500">Matriz</span>
-          <span>{{ Matriz }}</span>
+          <span class="text-gray-500 mb-6">Razón solcial</span>
+          <span class="mb-6">{{ currentSale?.company_branch?.company?.business_name }}</span>
           <span class="text-gray-500">ID</span>
           <span>{{ currentSale?.company_branch?.id }}</span>
-          <span class="text-gray-500 my-2">Nombre</span>
+          <span class="text-gray-500 my-2">Sucursal</span>
           <span>{{ currentSale?.company_branch?.name }}</span>
           <span class="text-gray-500 my-2">Dirección</span>
           <span>{{ currentSale?.company_branch?.address }}</span>
