@@ -24,6 +24,7 @@ class QuoteResource extends JsonResource
             'receiver' => $this->receiver,
             'department' => $this->department,
             'tooling_cost' => $this->tooling_cost,
+            'tooling_cost_stroked' => $this->tooling_cost_stroked,
             'freight_cost' => $this->freight_cost,
             'first_production_days' => $this->first_production_days,
             'notes' => $this->notes ?? '--',

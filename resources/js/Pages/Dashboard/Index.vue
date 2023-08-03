@@ -54,8 +54,7 @@
             <div
                 v-if="$page.props.auth.user.permissions.some(item => ['Reuniones personal', 'Reuniones todas'].includes(item))">
                 <div class="flex justify-between items-center lg:mt-14 mt-0">
-                    <h2 class="text-primary lg:text-xl text-lg">Reuniones {{ $page.props.auth.user.permissions.some(item =>
-                        ['Reuniones personal', 'Reuniones todas'].includes(item)) }}</h2>
+                    <h2 class="text-primary lg:text-xl text-lg">Reuniones</h2>
                     <Link :href="route('meetings.create')">
                     <thirthButton>Registrar reunion</thirthButton>
                     </Link>

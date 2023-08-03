@@ -696,8 +696,8 @@ onMounted(() => {
       <form @submit.prevent="scanForm">
         <div style="margin-top: 20px">
           <el-radio-group v-model="form.scanType">
-            <el-radio-button label="Entrada" />
-            <el-radio-button label="Salida" />
+            <el-radio-button v-if="$page.props.auth.user.permissions.includes('Crear entradas')" label="Entrada" />
+            <el-radio-button v-if="$page.props.auth.user.permissions.includes('Crear salidas')" label="Salida" />
             <el-radio-button label="Buscar producto" />
           </el-radio-group>
         </div>

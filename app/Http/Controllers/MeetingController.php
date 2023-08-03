@@ -19,7 +19,7 @@ class MeetingController extends Controller
     
     public function create()
     {
-        $users = User::all();
+        $users = User::where('is_active', 1)->get();
         $meetings = Meeting::all();
 
         // return $meetings;
