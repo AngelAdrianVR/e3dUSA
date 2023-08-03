@@ -246,8 +246,8 @@ class StorageController extends Controller
             'barCode' => 'required|string'
         ]);
 
-        $part_number = explode('|', $request->barCode)[0];
-        $quantity = explode('|', $request->barCode)[1];
+        $part_number = explode('#', $request->barCode)[0];
+        $quantity = explode('#', $request->barCode)[1];
 
         $storage = Storage::whereHas('storageable', function ($query) use ($part_number) {
             $query->where('part_number', $part_number);
@@ -272,5 +272,22 @@ class StorageController extends Controller
 
 
         return response()->json(['message' => "Se ha generado un movimiento para el producto {$storage->storageable->name}"]);
+    }
+
+    public function QRSearchProduct(Request $request)
+    {
+
+        $request->validate([
+            'barCode' => 'required|string'
+        ]);
+
+        $part_number = explode('#', $request->barCode)[0];
+
+        $storage = Storage::with('storageable.media')->whereHas('storageable', function ($query) use ($part_number) {
+            $query->where('part_number', $part_number);
+        })->first();
+
+
+        return response()->json(['item' => $storage]);
     }
 }
