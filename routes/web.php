@@ -146,7 +146,6 @@ Route::post('holidays/massive-delete', [HolidayController::class, 'massiveDelete
 // ------- Almacen routes---------
 Route::get('/storage-raw-materials', [StorageController::class, 'index'])->middleware('auth')->name('storages.raw-materials.index');
 Route::get('/storage-consumables', [StorageController::class, 'index'])->middleware('auth')->name('storages.consumables.index');
-Route::get('/storage-show-consumables/{storage}', [StorageController::class, 'showConsumable'])->middleware('auth')->name('storages.consumables.show');
 Route::get('/storage-finished-products', [StorageController::class, 'index'])->middleware('auth')->name('storages.finished-products.index');
 Route::get('/storage-finished-products/create', [StorageController::class, 'create'])->middleware('auth')->name('storages.finished-products.create');
 Route::get('/storage-finished-products/{storage}/edit', [StorageController::class, 'edit'])->middleware('auth')->name('storages.finished-products.edit');
@@ -157,10 +156,12 @@ Route::post('/storage-scraps/store', [StorageController::class, 'scrapStore'])->
 Route::post('storages/scrap/massive-delete', [StorageController::class, 'scrapMassiveDelete'])->name('storages.scraps.massive-delete');
 Route::post('storages/massive-delete', [StorageController::class, 'massiveDelete'])->name('storages.massive-delete');
 Route::get('storages/{storage}/show', [StorageController::class, 'show'])->name('storages.show');
+Route::get('/storage-show-consumables/{storage}', [StorageController::class, 'showConsumable'])->middleware('auth')->name('storages.consumables.show');
 Route::delete('storages/{storage}/destroy', [StorageController::class, 'destroy'])->name('storages.destroy');
 Route::post('storages/{storage}/add-storage', [StorageController::class, 'addStorage'])->name('storages.add');
 Route::post('storages/{storage}/sub-storage', [StorageController::class, 'subStorage'])->name('storages.sub');
 Route::post('storages/QR-storage', [StorageController::class, 'QRStorage'])->name('storages.QR');
+Route::post('storages/QR-search-product', [StorageController::class, 'QRSearchProduct'])->name('storages.QR-search-product');
 
 // ----------------MUESTRAS-----------------------
 Route::resource('samples', SampleController::class)->middleware('auth');

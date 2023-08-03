@@ -27,6 +27,7 @@ const showingNavigationDropdown = ref(false);
 const nextAttendance = ref("");
 const temporalFlag = ref(false);
 const qrScan = ref(false);
+const loading = ref(false);
 
 const form = useForm({
   barCode: null,
@@ -34,27 +35,64 @@ const form = useForm({
 });
 
 const partNumberInput = ref(null);
+const productFound = ref(null);
 
 const scanForm = async () => {
-  try {
-    const response = await axios.post(route("storages.QR"), {
-      barCode: form.barCode,
-      scanType: form.scanType,
-    });
-
-    if (response.status === 200) {
-      ElNotification.success({
-        title: "Éxito",
-        message: response.data.message,
+  if (form.scanType == "Buscar producto") {
+    try {
+      productFound.value = null;
+      loading.value = true;
+      const response = await axios.post(route("storages.QR-search-product"), {
+        barCode: form.barCode,
+        scanType: form.scanType,
       });
-      form.reset();
-      partNumberInput.value.focus();
+
+      if (response.status === 200) {
+        if (response.data.item == null) {
+          ElNotification.error({
+            title: "Error",
+            message: "No se encontró ningun producto",
+          });
+        } else {
+          productFound.value = response.data.item;
+          form.barCode = null;
+          partNumberInput.value.focus();
+        }
+      }
+    } catch (error) {
+      ElNotification.error({
+        title: "Error",
+        message: "Formato de código inválido",
+      });
+      console.log(error);
+    } finally {
+      form.barCode = null;
+      loading.value = false;
     }
-  } catch (error) {
-    ElNotification.error({
-      title: "Error",
-      message: 'Formato de código inválido',
-    });
+  } else {
+    try {
+      const response = await axios.post(route("storages.QR"), {
+        barCode: form.barCode,
+        scanType: form.scanType,
+      });
+
+      if (response.status === 200) {
+        ElNotification.success({
+          title: "Éxito",
+          message: response.data.message,
+        });
+        form.barCode = null;
+        partNumberInput.value.focus();
+      }
+    } catch (error) {
+      ElNotification.error({
+        title: "Error",
+        message: "Formato de código inválido",
+      });
+      console.log(error);
+    }finally {
+      form.barCode = null;
+    }
   }
 };
 
@@ -684,28 +722,63 @@ onMounted(() => {
             <InputError :message="form.errors.barCode" />
           </div>
         </div>
-        <!-- {{barCodeRef}} <br>
-        {{form}} -->
-
-        <!-- <div class="flex col-span-full ml-3 mt-2">
-          <el-tooltip content="Cantidad *" placement="top">
-            <span
-              class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
+        <div
+          v-if="loading"
+          class="mt-5 z-20 rounded-lg flex items-center justify-center"
+        >
+          <i class="fa-solid fa-spinner fa-spin text-3xl text-primary"></i>
+        </div>
+        <div v-if="productFound && !loading" class="flex space-x-2 mt-4">
+          <figure
+            class="w-1/3 h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center border"
+          >
+            <el-image
+              style="height: 100%"
+              :src="productFound.storageable?.media[0]?.original_url"
+              fit="contain"
             >
-              123
-            </span>
-          </el-tooltip>
-          <input
-            id="quantityInput"
-            ref="quantityInput"
-            v-model="form.quantity"
-            class="input"
-            autocomplete="off"
-            placeholder="Cantidad *"
-            type="number"
-          />
-          <InputError :message="form.errors.quantity" />
-        </div> -->
+              <template #error>
+                <div class="flex justify-center items-center text-[#ababab]">
+                  <i class="fa-solid fa-image text-6xl"></i>
+                </div>
+              </template>
+            </el-image>
+          </figure>
+          <div class="w-2/3 border">
+            <h1 class="text-sm font-bold text-center mt-1">
+              {{ productFound.storageable?.name }}
+            </h1>
+            <ul class="px-4 mt-2">
+              <li>
+                <label class="text-primary">Número de parte: </label>
+                {{ productFound.storageable?.part_number }}
+              </li>
+              <li>
+                <label class="text-primary">Ubicación: </label>
+                {{ productFound.location }}
+              </li>
+              <li>
+                <label class="text-primary">Descripción: </label>
+                {{ productFound.storageable?.description }}
+              </li>
+              <li>
+                <label class="text-primary">Stock: </label>
+                {{ productFound.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
+                {{ productFound.storageable?.measure_unit }}
+              </li>
+              <li>
+                <label class="text-primary">costo: </label> ${{
+                  productFound.storageable?.cost
+                    .toFixed(2)
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }}
+              </li>
+            </ul>
+            <Link class="text-center mt-5" :href="route('storages.show', productFound.id)">
+              <p class="text-primary hover:underline cursor-pointer">Ver producto</p>
+            </Link>
+          </div>
+        </div>
 
         <div class="flex justify-end space-x-3 pt-5 pb-1">
           <PrimaryButton :disabled="form.processing">Enviar</PrimaryButton>

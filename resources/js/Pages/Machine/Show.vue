@@ -62,7 +62,7 @@
             {{ currentMachine?.name }}
           </h2>
           <div class="flex items-center justify-center">
-          <!-- <i :class="currentIndexMachine == 0 ? 'hidden' : 'block'" @click="previus" class="fa-solid fa-chevron-left mr-4 text-lg text-gray-600 cursor-pointer p-1 rounded-full"></i> -->
+          <i :class="currentIndexMachine == 0 ? 'hidden' : 'block'" @click="previus" class="fa-solid fa-chevron-left mr-4 text-lg text-gray-600 cursor-pointer p-1 rounded-full"></i>
           <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
             :class="currentMachine?.media?.length ? 'bg-transparent' : 'bg-[#D9D9D9]'"
             class="w-full h-60 rounded-lg relative flex items-center justify-center">
