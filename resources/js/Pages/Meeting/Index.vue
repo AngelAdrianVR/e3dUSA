@@ -107,11 +107,13 @@
             </div>
           </div>
 
-          <div class="flex items-center mb-3">
+          <div class="flex mb-3">
             <el-tooltip content="Participantes de la reunion" placement="left">
               <i class="fa-solid fa-users text-gray-700 mr-3"></i>
             </el-tooltip>
-            <p class="text-gray-600">{{ participants }}</p>
+            <ul class="pl-5">
+                <li v-for="participant in participants" :key="participant.id" class="text-gray-600 text-sm list-disc">{{ participant.name }} ({{ participant.pivot.attendance_confirmation }})</li>
+            </ul>
           </div>
 
           <div class="flex items-center w-3/5 mb-3">

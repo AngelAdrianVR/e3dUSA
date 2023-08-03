@@ -88,10 +88,21 @@ class User extends Authenticatable
 
     public function production(): HasMany
     {
-        return $this-> hasMany(Production::class);
+        return $this->hasMany(Production::class);
     }
 
-    public function samples():HasMany
+    public function meetings()
+    {
+        return $this->belongsToMany(Meeting::class)
+            ->withPivot([
+                'id',
+                'comments',
+                'attendance_confirmation',
+            ])
+            ->withTimestamps();
+    }
+
+    public function samples(): HasMany
     {
         return $this->hasMany(Sample::class);
     }
@@ -171,7 +182,7 @@ class User extends Authenticatable
 
     public function getWeekTime()
     {
-        if ( is_null($this->employee_properties) ) return 0;
+        if (is_null($this->employee_properties)) return 0;
 
         $payroll = Payroll::getCurrent();
         $processed_attendances = collect($payroll->getProcessedAttendances($this->id));
@@ -186,6 +197,4 @@ class User extends Authenticatable
             'hours' => round($week_time / 60, 2),
         ];
     }
-
-   
 }

@@ -12,7 +12,8 @@ class MeetingController extends Controller
     
     public function index()
     {
-        $meetings = MeetingResource::collection(Meeting::with('user')->latest()->get()); //Traer solo reuniones agendadas por el usuario logueado.
+        $meetings = MeetingResource::collection(Meeting::with('user', 'users')->latest()->get()); //Traer solo reuniones agendadas por el usuario logueado.
+
         return inertia('Meeting/Index', compact('meetings'));
     }
 
@@ -38,14 +39,22 @@ class MeetingController extends Controller
             'date' => 'required|date|after:today',
             'start' => 'required|string',
             'end' => 'required|string',
-            'participants' => 'required',
+            'participants' => 'array|min:0',
         ]);
 
         // return $request;
 
-        Meeting::create($validated + [
+        $meeting = Meeting::create($validated + [
             'user_id' => auth()->id()
         ]);
+
+        if ($validated['participants']) {
+            $meeting->users()->sync($validated['participants']);
+        }
+
+        // foreach ($validated['participants'] as $participant_id) {
+        //     $meeting->users()->attach()
+        // }
 
         return to_route('meetings.index');
     }

@@ -20,7 +20,15 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $meetings = MeetingResource::collection(Meeting::with('user', 'users')->whereDate('date', '>', today())->whereDate('date', '<=', today()->addDays(3))->latest()->get());
+        $meetings = MeetingResource::collection(Meeting::with('user', 'users')
+            ->whereDate('date', '>', today())
+            ->whereDate('date', '<=', today()->addDays(3))
+            ->where('user_id', auth()->id())
+            ->orWhere(function ($query) {
+                $query->whereHas('users', function ($query) {
+                    $query->where('meeting_user.user_id', auth()->id());
+                });
+            })->latest()->get());
         $counts[] = Quote::whereNull('authorized_at')->get()->count();
         $counts[] = Sale::whereNull('authorized_at')->get()->count();
         $counts[] = Purchase::whereNull('authorized_at')->get()->count();

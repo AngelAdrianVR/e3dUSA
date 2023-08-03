@@ -36,6 +36,20 @@ const form = useForm({
 
 const partNumberInput = ref(null);
 const productFound = ref(null);
+const unseenMessages = ref(null);
+
+const getUnseenMessages = async () => {
+  try {
+    const response = await axios.post(route('users.get-unseen-messages'));
+    
+    if (response.status === 200) {
+      unseenMessages.value = response.data.count;
+    }
+
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 const scanForm = async () => {
   if (form.scanType == "Buscar producto") {
@@ -189,6 +203,7 @@ const greeting = computed(() => {
 
 onMounted(() => {
   getAttendanceTextButton();
+  getUnseenMessages();
 
   setInterval(() => {
     currentTime.value = new Date().getHours();
@@ -336,7 +351,7 @@ onMounted(() => {
                   ></PrimaryButton>
                 </el-tooltip>
 
-                <p class="mr-24">
+                <p class="mr-14">
                   <i :class="greeting.class"></i>
                   {{ greeting.text }}
                   <strong>{{
@@ -401,15 +416,18 @@ onMounted(() => {
                   </template>
                 </el-popconfirm>
 
-                <el-tooltip
-                  v-if="$page.props.auth.user.permissions.includes('Chatear')"
-                  content="Chat"
-                  placement="bottom"
-                >
-                  <a :href="route('chatify')" target="_blank" class="mr-8">
-                    <i class="fa-solid fa-comments text-[#9A9A9A]"></i>
-                  </a>
-                </el-tooltip>
+                <div class="relative">
+                  <el-tooltip
+                    v-if="$page.props.auth.user.permissions.includes('Chatear')"
+                    content="Chat"
+                    placement="bottom"
+                  >
+                    <a :href="route('chatify')" target="_blank" class="mr-8">
+                      <i class="fa-solid fa-comments text-[#9A9A9A]"></i>
+                    </a>
+                  </el-tooltip>
+                  <div v-if="unseenMessages > 0" class="absolute bottom-4 right-5 bg-primary text-white w-4 h-4 flex items-center justify-center text-[10px] rounded-full">{{ unseenMessages }}</div>
+                </div>
 
                 <!-- <i class="fa-solid fa-bell text-[#9A9A9A] mr-8"></i> -->
 
