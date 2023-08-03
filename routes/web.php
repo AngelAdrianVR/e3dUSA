@@ -160,6 +160,7 @@ Route::get('storages/{storage}/show', [StorageController::class, 'show'])->name(
 Route::delete('storages/{storage}/destroy', [StorageController::class, 'destroy'])->name('storages.destroy');
 Route::post('storages/{storage}/add-storage', [StorageController::class, 'addStorage'])->name('storages.add');
 Route::post('storages/{storage}/sub-storage', [StorageController::class, 'subStorage'])->name('storages.sub');
+Route::post('storages/QR-storage', [StorageController::class, 'QRStorage'])->name('storages.QR');
 
 // ----------------MUESTRAS-----------------------
 Route::resource('samples', SampleController::class)->middleware('auth');

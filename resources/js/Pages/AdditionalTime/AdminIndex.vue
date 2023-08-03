@@ -235,7 +235,7 @@
             </div>
 
             <div class="flex justify-start space-x-3 pt-5 pb-1">
-                <PrimaryButton>{{editFlag == true ? 'Actualizar' : 'Enviar'}}</PrimaryButton>
+                <PrimaryButton :disabled="form.processing">{{editFlag == true ? 'Actualizar' : 'Enviar'}}</PrimaryButton>
               <CancelButton
                 @click="
                   createRequestModal = false;

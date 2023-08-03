@@ -12,38 +12,36 @@ use Illuminate\Support\Facades\Route;
 
 class StorageController extends Controller
 {
-    
+
     public function index()
     {
-        if(Route::currentRouteName() == 'storages.raw-materials.index'){
+        if (Route::currentRouteName() == 'storages.raw-materials.index') {
             $raw_materials = StorageResource::collection(Storage::with('storageable')->where('type', 'materia-prima')->latest()->get());
             // return $raw_materials;
             // Calcular la suma de costo de todo el materia prima
             $totalRawMaterialMoney = collect($raw_materials)->sum(function ($item) {
                 return $item->storageable?->cost * $item->quantity;
-                });
+            });
 
             return inertia('Storage/Index/RawMaterial', compact('raw_materials', 'totalRawMaterialMoney'));
-
-        }elseif(Route::currentRouteName() == 'storages.consumables.index'){
+        } elseif (Route::currentRouteName() == 'storages.consumables.index') {
             $raw_materials = Storage::with('storageable')->where('type', 'consumible')->latest()->get();
 
             // Calcular la suma de costo de todo el materia prima
             $totalConsumableMoney = collect($raw_materials)->sum(function ($item) {
                 return $item->storageable?->cost * $item->quantity;
-                });
-            return inertia('Storage/Index/Consumable', compact('raw_materials','totalConsumableMoney'));
-
-        }elseif(Route::currentRouteName() == 'storages.finished-products.index'){
+            });
+            return inertia('Storage/Index/Consumable', compact('raw_materials', 'totalConsumableMoney'));
+        } elseif (Route::currentRouteName() == 'storages.finished-products.index') {
             $finished_products = Storage::with('storageable.media')->where('type', 'producto-terminado')->latest()->get();
 
             // Calcular la suma de costo de todo el scrap
             $totalFinishedProductMoney = collect($finished_products)->sum(function ($item) {
-            return $item->storageable?->cost * $item->quantity;
+                return $item->storageable?->cost * $item->quantity;
             });
 
-            return inertia('Storage/Index/FinishedProduct',compact('finished_products', 'totalFinishedProductMoney'));
-        }else {
+            return inertia('Storage/Index/FinishedProduct', compact('finished_products', 'totalFinishedProductMoney'));
+        } else {
 
             $scraps = Storage::with('storageable.media')->where('type', 'scrap')->latest()->get();
 
@@ -56,18 +54,17 @@ class StorageController extends Controller
         }
     }
 
-    
+
     public function create()
     {
 
-        if(Route::currentRouteName() == 'storages.scraps.create'){
+        if (Route::currentRouteName() == 'storages.scraps.create') {
             $storages = Storage::with('storageable.media')->get();
             return inertia('Storage/Create/Scrap', compact('storages'));
-        }elseif(Route::currentRouteName() == 'storages.finished-products.create'){
+        } elseif (Route::currentRouteName() == 'storages.finished-products.create') {
             $catalog_products = CatalogProduct::with('media')->latest()->get();
             return inertia('Storage/Create/FinishedProduct', compact('catalog_products'));
         }
-        
     }
 
     public function store(Request $request)
@@ -86,7 +83,7 @@ class StorageController extends Controller
             'location' => $request->location,
             'type' => $request->type,
         ]);
-        
+
         return to_route('storages.finished-products.index');
     }
 
@@ -99,45 +96,43 @@ class StorageController extends Controller
             'quantity' => 'required|numeric|min:1|max:' . $stock,
             'location' => 'required|string',
             'type' => 'required',
-            
+
         ]);
-        
-        if($storage->type == 'materia-prima' || $storage->type == 'consumible' ){
-            
+
+        if ($storage->type == 'materia-prima' || $storage->type == 'consumible') {
+
             $raw_material = RawMaterial::find($storage->storageable_id);
             $raw_material->storages()->create([
                 'quantity' => $request->quantity,
                 'location' => $request->location,
                 'type' => $request->type,
             ]);
-            
-        }else{
-            
+        } else {
+
             $finished_products = CatalogProduct::find($storage->storageable_id);
             $finished_products->storages()->create([
                 'quantity' => $request->quantity,
                 'location' => $request->location,
                 'type' => $request->type,
             ]);
-            
         }
 
         $storage->quantity -= $request->quantity;
         $storage->save();
-        
+
         return to_route('storages.scraps.index');
     }
 
-    
+
     public function show($storage_id)
     {
         $storage = Storage::with('storageable.media', 'movements.user')->find($storage_id);
         $storages = Storage::with('storageable.media', 'movements.user')->where('type', '!=', 'scrap')->where('type', '!=', 'consumible')->get();
-       
+
         // Calcular la suma de la variable "cost" de todos los objetos
-    $totalStorageMoney = collect($storages)->sum(function ($item) {
-        return $item->storageable?->cost * $item->quantity;
-    });
+        $totalStorageMoney = collect($storages)->sum(function ($item) {
+            return $item->storageable?->cost * $item->quantity;
+        });
         // return $totalStorageMoney;
 
         return inertia('Storage/Show', compact('storage', 'storages', 'totalStorageMoney'));
@@ -147,25 +142,25 @@ class StorageController extends Controller
     {
         $storage = Storage::with('storageable.media', 'movements.user')->find($storage_id);
         $storages = Storage::with('storageable.media', 'movements.user')->where('type', '!=', 'scrap')->where('type', '!=', 'materia-prima')->get();
-       
+
 
         return inertia('Storage/ShowConsumable', compact('storage', 'storages'));
     }
 
-    
+
     public function edit(Storage $storage)
     {
         $catalog_products = CatalogProduct::with('media')->latest()->get();
         return inertia('Storage/Edit/FinishedProduct', compact('catalog_products', 'storage'));
     }
 
-    
+
     public function update(Request $request, Storage $storage)
     {
         //
     }
 
-    
+
     public function destroy(Storage $storage)
     {
         $storage->storageable->delete();
@@ -186,17 +181,17 @@ class StorageController extends Controller
     {
         foreach ($request->scraps as $scrap) {
             $scrap = Storage::find($scrap['id']);
-            if($scrap->storageable_type == 'App\Models\RawMaterial'){
+            if ($scrap->storageable_type == 'App\Models\RawMaterial') {
                 $scrap_restored = Storage::where('storageable_id', $scrap->storageable_id)
-                ->where('type', '!=', 'scrap')
-                ->where('type', '!=', 'producto-terminado')
-                ->first();
-            }else{
+                    ->where('type', '!=', 'scrap')
+                    ->where('type', '!=', 'producto-terminado')
+                    ->first();
+            } else {
                 $scrap_restored = Storage::where('storageable_id', $scrap->storageable_id)
-                ->where('type', '!=', 'scrap')
-                ->where('type', '!=', 'consumible')
-                ->where('type', '!=', 'materia-prima')
-                ->first();
+                    ->where('type', '!=', 'scrap')
+                    ->where('type', '!=', 'consumible')
+                    ->where('type', '!=', 'materia-prima')
+                    ->first();
             }
             $scrap_restored->increment('quantity', $scrap->quantity);
             $scrap?->delete();
@@ -216,7 +211,7 @@ class StorageController extends Controller
         // Add movement to history
         $history = StockMovementHistory::Create($validated + ['storage_id' => $storage->id, 'user_id' => auth()->id()]);
         $history = StockMovementHistory::with('user')->find($history->id);
-        
+
         // update stock
         $storage->update([
             'quantity' => $storage->quantity += $request->quantity
@@ -243,5 +238,39 @@ class StorageController extends Controller
         ]);
 
         return response()->json(['item' => $storage, 'movement' => $history]);
+    }
+
+    public function QRStorage(Request $request)
+    {
+        $request->validate([
+            'barCode' => 'required|string'
+        ]);
+
+        $part_number = explode('|', $request->barCode)[0];
+        $quantity = explode('|', $request->barCode)[1];
+
+        $storage = Storage::whereHas('storageable', function ($query) use ($part_number) {
+            $query->where('part_number', $part_number);
+        })->first();
+
+        if (!$storage) {
+            return response()->json(['message' => 'No se encontró ningun producto con el número de parte ' . $part_number]);
+        }
+
+        if ($request->scanType == 'Entrada') {
+            $storage->increment('quantity', $quantity);
+        }else{
+            $storage->decrement('quantity', $quantity);
+        }
+
+        $history = StockMovementHistory::Create([
+            'storage_id' => $storage->id, 'user_id' => auth()->id(),
+            'quantity' => $quantity,
+            'type' => $request->scanType,
+            'notes' => 'Movimiento generado mediante QR.',
+        ]);
+
+
+        return response()->json(['message' => "Se ha generado un movimiento para el producto {$storage->storageable->name}"]);
     }
 }
