@@ -131,6 +131,7 @@ class User extends Authenticatable
     {
         $next = '';
         $bonuses = [];
+        $discounts = [];
         foreach ($this->employee_properties['bonuses'] as $bonus_id) {
             $bonus = Bonus::find($bonus_id);
             $bonuses[] = [
@@ -140,12 +141,20 @@ class User extends Authenticatable
                     : $bonus->half_time
             ];
         }
+        foreach ($this->employee_properties['discounts'] as $discount_id) {
+            // $discount = Discount::find($discount_id);
+            $discounts[] = [
+                'id' => $discount_id,
+                'amount' => $discount_id == 1 ? 100 : 32
+            ];
+        }
 
         $today_attendance = PayrollUser::firstOrCreate(['date' => today()->toDateString(), 'user_id' => $this->id], [
             'payroll_id' => Payroll::getCurrent()->id,
             'additionals' => [
                 'salary' =>  $this->employee_properties['salary'],
                 'bonuses' => $bonuses,
+                'discounts' => $discounts,
                 'hours_per_week' => $this->employee_properties['hours_per_week'],
             ],
         ]);

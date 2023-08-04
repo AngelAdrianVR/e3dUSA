@@ -182,6 +182,7 @@ export default {
         //   },
         birthdate: this.user.employee_properties.birthdate.raw,
         bonuses: this.user.employee_properties.bonuses,
+        discounts: this.user.employee_properties.discounts,
         job_position: this.user.employee_properties.job_position,
         department: this.user.employee_properties.department,
         work_days: [

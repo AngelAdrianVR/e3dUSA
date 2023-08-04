@@ -95,6 +95,11 @@
           <span class="text-center"></span>
           <span>${{ bonus.amount.number_format }}</span>
         </p>
+        <p v-for="(discount, index) in discounts" :key="index" class="grid grid-cols-3 gap-x-1 text-red-500">
+          <span>{{ discount.name }}</span>
+          <span class="text-center"></span>
+          <span>-${{ discount.amount.number_format }}</span>
+        </p>
         <p v-if="extras" class="grid grid-cols-3 gap-x-1">
           <span>Horas extras</span>
           <span class="text-center">{{ extras.formatted }}</span>
@@ -130,6 +135,7 @@ export default {
       processedAttendances: [],
       payroll: null,
       bonuses: null,
+      discounts: null,
       extras: null,
       additionalTime: null,
     }
@@ -191,6 +197,20 @@ export default {
         console.log(error);
       }
     },
+    async getDiscounts() {
+      try {
+        const response = await axios.post(route('payrolls.get-discounts'), {
+          payroll_id: this.payrollId,
+          user_id: this.user.id
+        });
+
+        if (response.status === 200) {
+          this.discounts = response.data.item;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
     async getExtras() {
       try {
         const response = await axios.post(route('payrolls.get-extras'), {
@@ -233,7 +253,7 @@ export default {
     },
     getWorkedDaysSalary() {
       let totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
-      let totalWeekHoursAllowed = this.processedAttendances.find(item => item.check_in)?.additionals.hours_per_week;
+      let totalWeekHoursAllowed = this.processedAttendances.find(item => item.check_in)?.additionals?.hours_per_week;
 
       if (this.additionalTime) {
         const time = this.additionalTime.time_requested;
@@ -249,7 +269,7 @@ export default {
       return totalWeekHours * this.user.employee_properties.salary.hour;
     },
     getTotal() {
-      const dayly_salary = this.processedAttendances.find(item => item.check_in)?.additionals.salary.day;
+      const dayly_salary = this.processedAttendances.find(item => item.check_in)?.additionals?.salary.day;
       const vacations = this.getVacations().length * 1.25 * dayly_salary;
       const workedDays = this.getWorkedDaysSalary();
       const holyDays = dayly_salary * this.getHolidays().length;
@@ -257,10 +277,15 @@ export default {
         return accumulator + bonus.amount.raw;
       }, 0);
 
+      const discounts = this.discounts.reduce((accumulator, discount) => {
+        return accumulator + discount.amount.raw;
+      }, 0);
+
       return vacations
         + workedDays
         + holyDays
         + bonuses
+        - discounts
         + this.extras.amount.raw;
     }
   },
@@ -268,6 +293,7 @@ export default {
     this.getAttendances();
     this.getPayroll();
     this.getBonuses();
+    this.getDiscounts();
     this.getExtras();
     this.getAuthorizedAdditionalTime();
   }

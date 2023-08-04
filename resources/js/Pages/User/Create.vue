@@ -195,6 +195,7 @@ export default {
         },
         birthdate: null,
         bonuses: [],
+        discounts: [],
         job_position: null,
         department: null,
         password: null,
