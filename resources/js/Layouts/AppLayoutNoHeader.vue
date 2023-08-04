@@ -66,8 +66,8 @@ const scanForm = async () => {
       });
       console.log(error);
     } finally {
-      loading.value = false;
       form.barCode = null;
+      loading.value = false;
     }
   } else {
     try {
@@ -75,7 +75,6 @@ const scanForm = async () => {
         barCode: form.barCode,
         scanType: form.scanType,
       });
-
       if (response.status === 200) {
         ElNotification.success({
           title: "Éxito",
@@ -85,12 +84,19 @@ const scanForm = async () => {
         partNumberInput.value.focus();
       }
     } catch (error) {
-      ElNotification.error({
-        title: "Error",
-        message: "Formato de código inválido",
-      });
-      console.log(error);
-    }finally {
+      if (error.response.status === 422) {
+        ElNotification.error({
+          title: "Error",
+          message: error.response.data.message,
+        });
+      } else {
+        ElNotification.error({
+          title: "Error",
+          message: "Formato de código inválido",
+        });
+        console.log('error:', error);
+      }
+    } finally {
       form.barCode = null;
     }
   }

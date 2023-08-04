@@ -75,7 +75,6 @@ const scanForm = async () => {
         barCode: form.barCode,
         scanType: form.scanType,
       });
-
       if (response.status === 200) {
         ElNotification.success({
           title: "Éxito",
@@ -85,12 +84,19 @@ const scanForm = async () => {
         partNumberInput.value.focus();
       }
     } catch (error) {
-      ElNotification.error({
-        title: "Error",
-        message: "Formato de código inválido",
-      });
-      console.log(error);
-    }finally {
+      if (error.response.status === 422) {
+        ElNotification.error({
+          title: "Error",
+          message: error.response.data.message,
+        });
+      } else {
+        ElNotification.error({
+          title: "Error",
+          message: "Formato de código inválido",
+        });
+        console.log('error:', error);
+      }
+    } finally {
       form.barCode = null;
     }
   }
@@ -763,7 +769,11 @@ onMounted(() => {
               </li>
               <li>
                 <label class="text-primary">Stock: </label>
-                {{ productFound.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
+                {{
+                  productFound.quantity
+                    .toFixed(2)
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }}
                 {{ productFound.storageable?.measure_unit }}
               </li>
               <li>
@@ -774,8 +784,13 @@ onMounted(() => {
                 }}
               </li>
             </ul>
-            <Link class="text-center mt-5" :href="route('storages.show', productFound.id)">
-              <p class="text-primary hover:underline cursor-pointer">Ver producto</p>
+            <Link
+              class="text-center mt-5"
+              :href="route('storages.show', productFound.id)"
+            >
+              <p class="text-primary hover:underline cursor-pointer">
+                Ver producto
+              </p>
             </Link>
           </div>
         </div>
