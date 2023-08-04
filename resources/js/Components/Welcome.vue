@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="p-6 lg:p-8 bg-white border-b border-gray-200">
-        <div class="my-5 flex flex-col space-y-3">
+        <div class="my-5 flex flex-col space-y-3 border-amber-500">
             <MeetingCard />
             <DashboardCard />
             <ProductionPerformanceCard />
@@ -12,7 +12,7 @@
                Aniversarios 
             </template>
              <template v-slot:icon>
-               <i class="fa-solid fa-champagne-glasses ml-2"></i>
+               <i class="fa-solid fa-champagne-glasses ml-2 border-green-500"></i>
             </template>
              <template v-slot:subtitle>
                ¡Gracias por un año más de compromiso en la familia Emblems 3D!

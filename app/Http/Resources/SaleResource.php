@@ -14,22 +14,41 @@ class SaleResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $hasStarted = $this->productions?->whereNotNull('started_at')->count();
+        $hasNotFinished = $this->productions?->whereNull('finished_at')->count();
 
-        $status = ['label' => 'Esperando autorización',
-                    'text-color' => 'text-amber-500',
-                    'border-color' => 'border-amber-500',               
-                    ];
-        if($this->authorized_at){
-            $status = ['label' => 'Autorizado. Sin Iniciar',
-            'text-color' => 'text-[#0355B5]',
-            'border-color' => 'border-[#0355B5]',               
+        if ($this->authorized_at == null) {
+            $status = [
+                'label' => 'Esperando autorización',
+                'text-color' => 'text-amber-500',
+                'border-color' => 'border-amber-500',
             ];
-            if ($this->recieved_at) {
-                $status = ['label' => 'Terminado',
-                'text-color' => 'text-green-600',
-                'border-color' => 'border-green-600',               
+        } elseif ($this->productions) {
+            if (!$hasStarted) {
+                $status = [
+                    'label' => 'Producción sin iniciar',
+                    'text-color' => 'text-gray-500',
+                    'border-color' => 'border-gray-500',
+                ];
+            } elseif ($hasStarted && $hasNotFinished) {
+                $status = [
+                    'label' => 'Producción en proceso',
+                    'text-color' => 'text-blue-500',
+                    'border-color' => 'border-blue-500',
+                ];
+            } else {
+                $status = [
+                    'label' => 'Producción terminada',
+                    'text-color' => 'text-green-500',
+                    'border-color' => 'border-green-500',
                 ];
             }
+        } else {
+            $status = [
+                'label' => 'Autorizado sin orden de producción',
+                'text-color' => 'text-amber-500',
+                'border-color' => 'border-amber-500',
+            ];
         }
 
         return [

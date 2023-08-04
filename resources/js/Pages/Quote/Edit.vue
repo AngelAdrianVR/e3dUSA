@@ -92,6 +92,13 @@
                             </IconInput>
                             <InputError :message="form.errors.tooling_cost" />
                         </div>
+                        <label class="flex items-center text-gray-600">
+                            <input type="checkbox" v-model="form.tooling_cost_stroked"
+                                class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
+                            <span class="ml-2 text-sm">Tachar:</span>
+                            <span class="text-gray-600 ml-3" :class="form.tooling_cost_stroked ? 'line-through' : ''">{{
+                                form.tooling_cost }}</span>
+                        </label>
                         <div>
                             <IconInput v-model="form.freight_cost" inputPlaceholder="Costo de flete *" inputType="number">
                                 <el-tooltip content="Costo de flete" placement="top">
@@ -238,6 +245,7 @@ export default {
             receiver: this.quote.receiver,
             department: this.quote.department,
             tooling_cost: this.quote.tooling_cost,
+            tooling_cost_stroked: Boolean(this.quote.tooling_cost_stroked),
             freight_cost: this.quote.freight_cost,
             first_production_days: this.quote.first_production_days,
             notes: this.quote.notes,

@@ -35,6 +35,7 @@ class Meeting extends Model
     {
         return $this->belongsToMany(User::class)
             ->withPivot([
+                'id',
                 'comments',
                 'attendance_confirmation',
             ])

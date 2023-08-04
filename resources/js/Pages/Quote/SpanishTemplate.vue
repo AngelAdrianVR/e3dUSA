@@ -40,9 +40,9 @@
                 <tr v-for="(item, index) in quote.data.products" :key="index" class="bg-gray-200 text-gray-700 uppercase">
                     <td class="px-2 py-px">{{ item.name }}</td>
                     <td class="px-2 py-px">{{ item.pivot.notes ?? '--' }}</td>
-                    <td class="px-2 py-px">{{ item.pivot.price }} {{ quote.data.currency }}</td>
-                    <td class="px-2 py-px">{{ item.pivot.quantity }} {{ item.measure_unit }}</td>
-                    <td class="px-2 py-px text-right">{{ item.pivot.quantity * item.pivot.price }} {{ quote.data.currency }}
+                    <td class="px-2 py-px">{{ item.pivot.price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ quote.data.currency }}</td>
+                    <td class="px-2 py-px">{{ item.pivot.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ item.measure_unit }}</td>
+                    <td class="px-2 py-px text-right">{{ (item.pivot.quantity * item.pivot.price).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ quote.data.currency }}
                     </td>
                 </tr>
             </tbody>
@@ -80,7 +80,7 @@
             <ol class="list-decimal mx-2 mb-2">
                 <li v-if="quote.data.notes !== '--'" class="font-bold text-blue-500">{{ quote.data.notes }}</li>
                 <li>PRECIOS ANTES DE IVA</li>
-                <li>COSTO DE HERRAMENTAL: <span class="font-bold text-blue-500">{{ quote.data.tooling_cost }} {{
+                <li>COSTO DE HERRAMENTAL: <span class="font-bold text-blue-500" :class="quote.data.tooling_cost_stroked ? 'line-through' : ''">{{ quote.data.tooling_cost }} {{
                     quote.data.currency }}</span></li>
                 <li>TIEMPO DE ENTREGA PARA LA PRIMER PRODUCCIÓN <span class="font-bold text-blue-500">{{
                     quote.data.first_production_days }}</span>.

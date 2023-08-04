@@ -156,14 +156,13 @@ class QuoteController extends Controller
             'authorized_at' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? now() : null,
             'user_id' => auth()->id(),
             'company_branch_id' => $quote->company_branch_id,
-            'contact_id' => 1
         ]);
 
         $sale_folio = 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT);
 
         // add products for sale to sale
         foreach ($quote->catalogProducts as $product) {
-            $catalog_product_company = $branch->company->catalogProducts->first(fn ($item) => $item->catalog_product_id == $product->catalog_product_id);
+            $catalog_product_company = $branch->company->catalogProducts->first(fn ($item) => $item->id == $product->id);
             if (!$catalog_product_company) {
                 // register products to company if any required
                 $pivot = [
@@ -177,7 +176,7 @@ class QuoteController extends Controller
             }
 
             CatalogProductCompanySale::create([
-                'catalog_product_company_id' => $catalog_product_company->id,
+                'catalog_product_company_id' => $catalog_product_company->pivot->id,
                 'sale_id' => $sale->id,
                 'quantity' => $product->pivot->quantity,
                 'notes' => $product->pivot->notes,

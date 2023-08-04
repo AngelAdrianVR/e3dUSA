@@ -15,6 +15,7 @@ class Quote extends Model
         'receiver',
         'department',
         'tooling_cost',
+        'tooling_cost_stroked',
         'freight_cost',
         'first_production_days',
         'notes',

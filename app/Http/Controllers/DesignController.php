@@ -22,7 +22,7 @@ class DesignController extends Controller
             $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->where('user_id', auth()->id())->latest()->get());
             return inertia('Design/Index', compact('designs'));
         } else {
-            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->where('designer_id', auth()->id())->latest()->get());
+            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->whereNotNull('authorized_at')->where('designer_id', auth()->id())->latest()->get());
             return inertia('Design/Index', compact('designs'));
         }
     }

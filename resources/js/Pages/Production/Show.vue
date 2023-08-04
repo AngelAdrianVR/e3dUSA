@@ -14,7 +14,7 @@
                         <el-select v-model="selectedSale" clearable filterable placeholder="Buscar orden de producción"
                             no-data-text="No hay órdenes registradas" no-match-text="No se encontraron coincidencias">
                             <el-option v-for="item in sales.data" :key="item.id"
-                                :label="item.folio.replace('OV', 'OP') + ' | ' + item.company_branch.name"
+                                :label="item.folio.replace('OV', 'OP') + ' | ' + item.company_branch?.name"
                                 :value="item.id" />
                         </el-select>
                     </div>
@@ -29,7 +29,7 @@
                 </div>
             </div>
             <p class="text-center font-bold text-lg mb-4">
-                {{ currentSale?.folio.replace('OV', 'OP') + ' | ' + currentSale?.company_branch.name }}
+                {{ currentSale?.folio.replace('OV', 'OP') + ' | ' + currentSale?.company_branch?.name }}
             </p>
             <!-- ------------- tabs section starts ------------- -->
             <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2">
@@ -64,9 +64,9 @@
 
                     <h2 class="text-secondary col-span-full mt-6">Datos de la orden</h2>
                     <span class="text-gray-500 my-2">Solicitada por</span>
-                    <span>{{ currentSale?.productions[0].user.name }}</span>
+                    <span>{{ currentSale?.productions[0].user?.name }}</span>
                     <span class="text-gray-500 my-2">Solicitada el</span>
-                    <span>{{ currentSale?.productions[0].created_at }}</span>
+                    <span>{{ getDateFormtted(currentSale?.productions[0].created_at) }}</span>
                     <span class="text-gray-500 my-2">Medio de petición</span>
                     <span>{{ currentSale?.order_via }}</span>
                     <span class="text-gray-500 my-2">Factura</span>
@@ -104,11 +104,11 @@
 
                     <h2 class="text-secondary mt-6 col-span-full">Contacto</h2>
                     <span class="text-gray-500 my-2">Nombre</span>
-                    <span>{{ currentSale?.contact.name }}</span>
+                    <span>{{ currentSale?.contact?.name }}</span>
                     <span class="text-gray-500 my-2">Correo electronico</span>
-                    <span>{{ currentSale?.contact.email }}</span>
+                    <span>{{ currentSale?.contact?.email }}</span>
                     <span class="text-gray-500 my-2">Teléfono</span>
-                    <span>{{ currentSale?.contact.phone }}</span>
+                    <span>{{ currentSale?.contact?.phone }}</span>
 
                 </div>
             </div>
@@ -151,6 +151,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import InputError from "@/Components/InputError.vue";
 // import Modal from "@/Components/Modal.vue";
 import { Link, useForm } from "@inertiajs/vue3";
+import moment from "moment";
 
 export default {
     data() {
@@ -195,6 +196,10 @@ export default {
                 const opsIndex = this.orderedProductsSelected.findIndex(item => item == this.currentSale.catalogProductCompanySales[index].id)
                 this.orderedProductsSelected.splice(opsIndex, 1);
             }
+        },
+        getDateFormtted(dateTime) {
+            if (!dateTime) return null;
+            return moment(dateTime).format("DD MMM YYYY, hh:mmA");
         },
     },
 

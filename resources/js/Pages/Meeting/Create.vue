@@ -66,10 +66,10 @@
               <i class="fa-solid fa-users text-gray-700 mr-3"></i>
             </el-tooltip>
             <el-select v-model="form.participants" multiple placeholder="Participantes" style="width: 240px">
-              <el-option v-for="item in users" :key="item.id" :label="item.name" :value="item.name" />
+              <el-option v-for="item in users" :key="item.id" :label="item.name" :value="item.id" />
             </el-select>
             <InputError :message="form.errors.participants" />
-            <p @click="availableModal = true" class="text-primary ml-4 text-sm cursor-pointer">
+            <p v-if="form.participants?.includes(2)" @click="availableModal = true" class="text-primary ml-4 text-sm cursor-pointer">
               Ver disponibilidad de sherman
             </p>
           </div>
