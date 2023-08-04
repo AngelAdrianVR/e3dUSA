@@ -251,6 +251,7 @@
       <DialogModal :show="showDialogModal" @close="
         showDialogModal = false;
       is_add = null;
+      form.reset();
       ">
         <template #title>
           <p>Ingresa la cantidad</p>
@@ -266,6 +267,7 @@
               <p v-if="errorMessage" class="text-red-600 text-xs">
                 {{ errorMessage }}
               </p>
+              <InputError :message="form.errors.quantity" />
             </div>
             <div class="flex">
               <el-tooltip content="Notas" placement="top">

@@ -202,6 +202,7 @@ class StorageController extends Controller
 
     public function addStorage(Request $request, Storage $storage)
     {
+
         $validated = $request->validate([
             'quantity' => 'required|numeric|min:1',
             'notes' => 'nullable',
@@ -222,8 +223,9 @@ class StorageController extends Controller
 
     public function subStorage(Request $request, Storage $storage)
     {
+        
         $validated = $request->validate([
-            'quantity' => 'required|numeric|min:1',
+            'quantity' => 'required|numeric|min:1|max:' . $storage->quantity,
             'notes' => 'nullable',
             'type' => 'required|string'
         ]);
@@ -260,7 +262,14 @@ class StorageController extends Controller
         if ($request->scanType == 'Entrada') {
             $storage->increment('quantity', $quantity);
         }else{
-            $storage->decrement('quantity', $quantity);
+            if ($quantity > $storage->quantity ) {
+                return response()->json([
+                    'message' => 'Solo hay ' . $storage->quantity . ' ' . $storage->storageable->measure_unit . ' en almacén'
+                ], 422);
+            }else{
+
+                $storage->decrement('quantity', $quantity);
+            }
         }
 
         $history = StockMovementHistory::Create([
