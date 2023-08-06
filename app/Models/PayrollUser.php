@@ -68,7 +68,20 @@ class PayrollUser extends Pivot
      public function totalWorkedTime()
      {
         if($this->check_in) {
-            $time = $this->check_in->diffInMinutes($this->check_out ?? now());
+            // date has passed (isPast also return true if date is today)
+            if ($this->date->addDays(1)->isPast()) {
+                $last_check = $this->check_in;
+                if ($this->check_out) {
+                    $last_check = $this->check_out;
+                }elseif ($this->end_break) {
+                    $last_check = $this->end_break;
+                }elseif ($this->start_break) {
+                    $last_check = $this->start_break;
+                }
+                $time = $this->check_in->diffInMinutes($last_check);
+            } else {
+                $time = $this->check_in->diffInMinutes($this->check_out ?? now());
+            }
             if ($this->start_break) {
                 $break = $this->start_break->diffInMinutes($this->end_break ?? $this->start_break);
             } else {

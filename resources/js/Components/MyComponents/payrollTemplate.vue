@@ -68,9 +68,9 @@
           <span class="text-center">{{ getWorkedDays().length }}</span>
           <span>${{ getWorkedDaysSalary().toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
         </p>
-        <p v-if="additionalTime" class="grid grid-cols-3 gap-x-1">
+        <p class="grid grid-cols-3 gap-x-1">
           <span>Tiempo adicional</span>
-          <span class="text-center">{{ additionalTime.time_requested }}</span>
+          <span class="text-center">{{ additionalTime?.time_requested ?? '00:00' }}</span>
           <span class=""></span>
         </p>
         <p v-if="getHolidays().length" class="grid grid-cols-3 gap-x-1">
