@@ -45,6 +45,7 @@ class UserController extends Controller
             'employee_properties.department' => 'required|string',
             'employee_properties.work_days' => 'array',
             'employee_properties.bonuses' => 'nullable',
+            'employee_properties.discounts' => 'nullable',
             'employee_properties.vacations' => 'nullable',
         ]);
         $work_days = 0;
@@ -104,6 +105,7 @@ class UserController extends Controller
             'employee_properties.department' => 'required|string',
             'employee_properties.work_days' => 'array',
             'employee_properties.bonuses' => 'nullable',
+            'employee_properties.discounts' => 'nullable',
         ]);
 
         $work_days = 0;
