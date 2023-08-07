@@ -220,6 +220,8 @@ Route::get('spare-parts/create/{selectedMachine}',[ SparePartController::class, 
 //------------------ Meetings routes ----------------
 Route::resource('meetings', MeetingController::class)->middleware('auth');
 Route::post('meetings/massive-delete', [MeetingController::class, 'massiveDelete'])->name('meetings.massive-delete');
+Route::put('meetings/set-attendance-confirmation/{meeting_id}', [MeetingController::class, 'SetAttendanceConfirmation'])->name('meetings.set-attendance-confirmation');
+Route::post('meetings/get-by-date-and-user', [MeetingController::class, 'getMeetingsByDateAndUser'])->name('meetings.get-by-date-and-user');
 
 
 //------------------ Meetings routes ----------------
