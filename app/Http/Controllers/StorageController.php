@@ -127,13 +127,13 @@ class StorageController extends Controller
     public function show($storage_id)
     {
         $storage = Storage::with('storageable.media', 'movements.user')->find($storage_id);
-        $storages = Storage::with('storageable.media', 'movements.user')->where('type', '!=', 'scrap')->where('type', '!=', 'consumible')->get();
+        $storages = Storage::with('storageable.media', 'movements.user')->where('type', 'materia-prima')->get();
 
         // Calcular la suma de la variable "cost" de todos los objetos
         $totalStorageMoney = collect($storages)->sum(function ($item) {
             return $item->storageable?->cost * $item->quantity;
         });
-        // return $totalStorageMoney;
+        // return $storage;
 
         return inertia('Storage/Show', compact('storage', 'storages', 'totalStorageMoney'));
     }
@@ -141,7 +141,7 @@ class StorageController extends Controller
     public function showConsumable($storage_id)
     {
         $storage = Storage::with('storageable.media', 'movements.user')->find($storage_id);
-        $storages = Storage::with('storageable.media', 'movements.user')->where('type', '!=', 'scrap')->where('type', '!=', 'materia-prima')->get();
+        $storages = Storage::with('storageable.media', 'movements.user')->where('type', 'consumible')->get();
 
 
         return inertia('Storage/ShowConsumable', compact('storage', 'storages'));

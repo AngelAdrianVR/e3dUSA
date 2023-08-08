@@ -215,7 +215,7 @@
                     {{ index + 1 }}
                   </td>
                   <td class="text-center pb-3">
-                    {{ movement.user.name }}
+                    {{ movement.user?.name }}
                   </td>
                   <td class="text-center pb-3">
                     {{ getDateFormtted(movement.created_at) }}
