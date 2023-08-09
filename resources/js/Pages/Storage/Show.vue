@@ -209,7 +209,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(movement, index) in currentStorage?.movements.reverse()" :key="index"
+                <tr v-for="(movement, index) in reversedMovements" :key="index"
                   class="text-[#9A9A9A] mb-4 text-xs">
                   <td class="text-left pb-3">
                     {{ index + 1 }}
@@ -375,6 +375,7 @@ export default {
       errorMessage: null,
       currentIndexStorage: null,
       tabs: 1,
+      reversedMovements: null,
     };
   },
   components: {
@@ -562,12 +563,14 @@ export default {
   watch: {
     selectedStorage(newVal) {
       this.currentStorage = this.storages.find((item) => item.id == newVal);
+      this.reversedMovements = this.currentStorage.movements.reverse();
     },
   },
   mounted() {
     this.selectedStorage = this.storage.id;
     this.selectedRawMaterial = this.storage.storageable.id;
     this.currentIndexStorage = this.storages.findIndex((obj) => obj.id == this.selectedStorage);
+
   },
 };
 </script>
