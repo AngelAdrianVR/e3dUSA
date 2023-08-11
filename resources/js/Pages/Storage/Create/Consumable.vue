@@ -44,7 +44,7 @@
               <InputError :message="form.errors.part_number" />
             </div> 
             <div>
-              <IconInput v-model="form.min_quantity" inputPlaceholder="Stock mínimo" inputType="number">
+              <IconInput v-model="form.min_quantity" inputPlaceholder="Stock mínimo" inputType="number" inputStep="0.01">
                 <el-tooltip content="Cantidad mínima que puede haber en stock" placement="top">
                   <i class="fa-solid fa-minus"></i>
                 </el-tooltip>
@@ -52,7 +52,7 @@
               <InputError :message="form.errors.min_quantity" />
             </div>
             <div>
-              <IconInput v-model="form.max_quantity" inputPlaceholder="Stock máximo" inputType="number">
+              <IconInput v-model="form.max_quantity" inputPlaceholder="Stock máximo" inputType="number" inputStep="0.01">
                 <el-tooltip content="Cantidad máxima que puede haber en stock" placement="top">
                   <i class="fa-solid fa-plus"></i>
                 </el-tooltip>
@@ -60,7 +60,7 @@
               <InputError :message="form.errors.max_quantity" />
             </div>
             <div>
-              <IconInput v-model="form.initial_stock" inputPlaceholder="Stock de apertura" inputType="number">
+              <IconInput v-model="form.initial_stock" inputPlaceholder="Stock de apertura" inputType="number" inputStep="0.01">
                 <el-tooltip content="Stock inicial" placement="top">
                   123
                 </el-tooltip>

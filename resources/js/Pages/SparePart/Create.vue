@@ -51,6 +51,7 @@
               v-model="form.quantity"
               inputPlaceholder="Cantidad *"
               inputType="number"
+              inputStep="0.01"
             >
               <el-tooltip content="Cantidad de refacciones en stock" placement="top">
                 123
@@ -75,6 +76,7 @@
               v-model="form.cost"
               inputPlaceholder="Costo *"
               inputType="number"
+              inputStep="0.01"
             >
               <el-tooltip content="Costo unitario" placement="top">
                 <i class="fa-solid fa-sack-dollar"></i>

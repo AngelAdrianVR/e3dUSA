@@ -77,7 +77,7 @@
             <InputError :message="form.errors.name" />
           </div>
             <div>
-              <IconInput v-model="form.quantity" inputPlaceholder="Cantidad de muestras enviadas *" inputType="number">
+              <IconInput v-model="form.quantity" inputPlaceholder="Cantidad de muestras enviadas *" inputType="number" inputStep="0.01">
                 <el-tooltip content="Cantidad de muestras enviadas *" placement="top">
                   #
                 </el-tooltip>

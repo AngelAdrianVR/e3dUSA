@@ -181,12 +181,12 @@
                         </div>
                         <div>
                             <IconInput @change="validateQuantity()" v-model="product.quantity" inputPlaceholder="Cantidad *"
-                                inputType="number">
+                                inputType="number" inputStep="0.01">
                                 <el-tooltip content="Cantidad" placement="top">
                                     #
                                 </el-tooltip>
                             </IconInput>
-                            <p v-if="alertMaxQuantity" class="text-red-600 text-xs"> La cantidad maxima que se puede generar es de {{ alertMaxQuantity }} unidades </p>
+                            <p v-if="alertMaxQuantity" class="text-red-600 text-xs"> Sólo hay material para producir {{ alertMaxQuantity }} unidades. No olvides reportar la adquisición de más mercancía </p>
                             <!-- <InputError :message="form.errors.fiscal_address" /> -->
                         </div>
                         <div class="flex col-span-full">
@@ -202,7 +202,7 @@
                         </div>
                         <div class="col-span-full">
                             <SecondaryButton @click="addProduct"
-                                :disabled="form.processing || !product.catalog_product_company_id || !product.quantity || alertMaxQuantity !== null">
+                                :disabled="form.processing || !product.catalog_product_company_id || !product.quantity">
                                 {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
                             </SecondaryButton>
                         </div>

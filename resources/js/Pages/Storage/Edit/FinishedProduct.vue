@@ -51,6 +51,7 @@
                 v-model="form.quantity"
                 inputPlaceholder="Cantidad en stock"
                 inputType="number"
+                inputStep="0.01"
               >
               <el-tooltip content="Cantidad en stock del producto terminado" placement="top">
                 123

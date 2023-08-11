@@ -169,7 +169,7 @@
                             </el-select>
                         </div>
                         <div>
-                            <IconInput v-model="product.quantity" inputPlaceholder="Cantidad *" inputType="number">
+                            <IconInput v-model="product.quantity" inputPlaceholder="Cantidad *" inputType="number" inputStep="0.01">
                                 #
                             </IconInput>
                             <!-- <InputError :message="form.errors.fiscal_address" /> -->
