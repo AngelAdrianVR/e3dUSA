@@ -193,7 +193,7 @@
 
                         <div>
                             <IconInput v-model="product.price" inputPlaceholder="Precio unitario *" inputType="number"
-                                inputStep="0.1">
+                                inputStep="0.01">
                                 <el-tooltip content="Precio unitario" placement="top">
                                     <i class="fa-solid fa-dollar-sign"></i>
                                 </el-tooltip>

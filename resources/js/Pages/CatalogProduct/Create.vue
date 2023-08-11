@@ -228,7 +228,7 @@
 
                 <el-divider />
                 <div class="md:text-right">
-                    <PrimaryButton :disabled="form.processing"> Crear producto </PrimaryButton>
+                    <PrimaryButton :disabled="form.processing || !form.raw_materials.length"> Crear producto </PrimaryButton>
                 </div>
             </div>
         </form>
@@ -405,7 +405,7 @@ export default {
             });
         },
         generatePartNumber() {
-            const partNumber = 'C-' + this.productType + '-' + this.brand?.toUpperCase().substr(0, 3) + '-' + this.consecutive;
+            const partNumber = 'C-' + this.productType + '-' + this.brand?.toUpperCase().substr(0, 3) + '-';
             this.form.part_number = partNumber;
         },
         addProduct() {
