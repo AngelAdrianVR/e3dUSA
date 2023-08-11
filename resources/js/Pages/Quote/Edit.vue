@@ -85,7 +85,7 @@
                         </div>
                         <div>
                             <IconInput v-model="form.tooling_cost" inputPlaceholder="Costo de herramental *"
-                                inputType="number">
+                                inputType="number" inputStep="0.01">
                                 <el-tooltip content="Costo de herramental" placement="top">
                                     <i class="fa-solid fa-hammer"></i>
                                 </el-tooltip>
@@ -100,7 +100,7 @@
                                 form.tooling_cost }}</span>
                         </label>
                         <div>
-                            <IconInput v-model="form.freight_cost" inputPlaceholder="Costo de flete *" inputType="number">
+                            <IconInput v-model="form.freight_cost" inputPlaceholder="Costo de flete *" inputType="number" inputStep="0.01">
                                 <el-tooltip content="Costo de flete" placement="top">
                                     <i class="fa-solid fa-truck-fast"></i>
                                 </el-tooltip>

@@ -36,6 +36,13 @@
                 </p>
             </div>
             <div class="mt-2 text-sm">
+                <p class="text-primary">Paquetería:
+                    <span class="text-black ml-3">
+                        {{ product.sale?.shipping_company }}
+                    </span>
+                </p>
+            </div>
+            <div class="mt-2 text-sm">
                 <p class="text-primary">Notas:
                     <span class="text-black ml-3">
                         {{ product.notes }}
