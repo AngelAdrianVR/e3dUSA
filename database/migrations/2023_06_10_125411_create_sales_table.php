@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
             $table->string('shipping_company')->nullable();
-            $table->unsignedMediumInteger('freight_cost');
+            $table->unsignedFloat('freight_cost');
             $table->string('oce_name')->nullable();
             $table->string('order_via');
             $table->string('tracking_guide')->nullable();
