@@ -15,15 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('receiver');
             $table->string('department');
-<<<<<<< HEAD
-            $table->float('tooling_cost');
-            $table->boolean('tooling_cost')->default(0);
-            $table->float('freight_cost');
-=======
             $table->unsignedMediumInteger('tooling_cost');
             $table->boolean('tooling_cost_stroked')->default(0);
             $table->unsignedMediumInteger('freight_cost');
->>>>>>> 5bebe41ec6a9421f73567647784ec209876a6cdf
             $table->string('first_production_days');
             $table->text('notes')->nullable();
             $table->string('currency');
