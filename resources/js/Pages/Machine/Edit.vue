@@ -48,6 +48,7 @@
                 v-model="form.weight"
                 inputPlaceholder="Peso(Kg)"
                 inputType="number"
+                inputStep="0.01"
               >
                 <el-tooltip content="Peso(Kg)" placement="top">
                   <i class="fa-solid fa-weight-hanging"></i>
@@ -60,6 +61,7 @@
                 v-model="form.width"
                 inputPlaceholder="Ancho(Cm)"
                 inputType="number"
+                inputStep="0.01"
               >
                 <el-tooltip content="Ancho(Cm)" placement="top">
                   <i class="fa-solid fa-text-width"></i>
@@ -72,6 +74,7 @@
                 v-model="form.large"
                 inputPlaceholder="Largo(Cm)"
                 inputType="number"
+                inputStep="0.01"
               >
                 <el-tooltip content="Largo(Cm)" placement="top">
                   <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
@@ -84,6 +87,7 @@
                 v-model="form.height"
                 inputPlaceholder="Alto(Cm)"
                 inputType="number"
+                inputStep="0.01"
               >
                 <el-tooltip content="Alto(Cm)" placement="top">
                   <i class="fa-solid fa-arrows-up-down"></i>
@@ -97,6 +101,7 @@
               v-model="form.cost"
               inputPlaceholder="Costo"
               inputType="number"
+              inputStep="0.01"
             >
               <el-tooltip content="Costo" placement="top">
                 <i class="fa-solid fa-sack-dollar"></i>

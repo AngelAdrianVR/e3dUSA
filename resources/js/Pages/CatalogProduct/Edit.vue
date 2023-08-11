@@ -122,6 +122,7 @@
               v-model="form.min_quantity"
               inputPlaceholder="Cantidad mínima"
               inputType="number"
+              inputStep="0.01"
             >
               <el-tooltip content="Cantidad mínima" placement="top">
                 <i class="fa-solid fa-minus"></i>
@@ -134,6 +135,7 @@
               v-model="form.max_quantity"
               inputPlaceholder="Cantidad máxima"
               inputType="number"
+              inputStep="0.01"
             >
               <el-tooltip content="Cantidad máxima" placement="top">
                 <i class="fa-solid fa-plus"></i>
@@ -313,7 +315,7 @@
               v-model="rawMaterial.quantity"
               inputPlaceholder="Cantidad necesaria *"
               inputType="number"
-              inputStep="0.1"
+              inputStep="0.01"
               class="col-span-2"
             >
               <el-tooltip

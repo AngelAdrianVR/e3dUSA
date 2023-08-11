@@ -183,6 +183,7 @@
                   v-model="form.quantity"
                   inputPlaceholder="Cantidad *"
                   inputType="number"
+                  inputStep="0.01"
                 >
                   <el-tooltip
                     content="Cantidad requerida del producto seleccionado"
