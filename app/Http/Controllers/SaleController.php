@@ -10,7 +10,7 @@ use App\Models\Sale;
 use Illuminate\Http\Request;
 
 
-class SaleController extends Controller 
+class SaleController extends Controller
 {
 
     public function index()
@@ -45,10 +45,10 @@ class SaleController extends Controller
         $sale = Sale::create($request->except('products') + ['user_id' => auth()->id()]);
         $can_authorize = auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin');
 
-        if($can_authorize) {
+        if ($can_authorize) {
             $sale->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
         }
-        
+
         // store media
         $sale->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection('oce'));
 
@@ -92,10 +92,18 @@ class SaleController extends Controller
         ]);
 
         $sale->update($request->except('products'));
-        $sale->catalogProductCompanySales()->delete();
 
         foreach ($request->products as $product) {
-            CatalogProductCompanySale::create($product + ['sale_id' => $sale->id]);
+            $productData = $product + ['sale_id', $sale->id];
+
+            if (isset($product['id'])) {
+                // Actualizar la relación existente en catalogProductCompanySales
+                $existingRelation = CatalogProductCompanySale::findOrFail($product['id']);
+                $existingRelation->update($productData);
+            } else {
+                // Crear una nueva relación en catalogProductCompanySales
+                CatalogProductCompanySale::create($productData);
+            }
         }
 
         return to_route('sales.index');
@@ -166,6 +174,4 @@ class SaleController extends Controller
                 'message' => "Orden de venta clonada: $new_item_folio", 'newItem' => saleResource::make(Sale::with('companyBranch', 'user')->find($clone->id))
             ]);
     }
-
-    
 }

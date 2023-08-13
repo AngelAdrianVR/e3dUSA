@@ -23,7 +23,8 @@
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
                         </el-tooltip>
-                        <el-select v-model="form.company_branch_id" class="mt-2" clearable filterable placeholder="Selecciona un cliente">
+                        <el-select v-model="form.company_branch_id" class="mt-2" clearable filterable
+                            placeholder="Selecciona un cliente">
                             <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
                                 :value="item.id" />
                         </el-select>
@@ -89,7 +90,9 @@
                         </div>
                         <div class="col-span-full">
                             <div class="mb-2">
-                                <a class="text-primary cursor-pointer hover:underline text-sm" target="_blank" v-for="(file, index) in media" :key="index" :href="file.original_url">{{ file.file_name }}</a>
+                                <a class="text-primary cursor-pointer hover:underline text-sm" target="_blank"
+                                    v-for="(file, index) in media" :key="index" :href="file.original_url">{{ file.file_name
+                                    }}</a>
                             </div>
                             <div class="flex items-center">
                                 <span
@@ -128,7 +131,7 @@
                                 <p class="text-sm">
                                     <span class="text-primary">{{ index + 1 }}.</span>
                                     {{ company_branches.find(cb => cb.id ==
-                                        form.company_branch_id)?.company.catalog_products.find(prd => prd.id ===
+                                        form.company_branch_id)?.company.catalog_products.find(prd => prd.pivot.id ==
                                             item.catalog_product_company_id)?.name
                                     }}
                                     (x{{ item.quantity }} unidades)
@@ -169,7 +172,8 @@
                             </el-select>
                         </div>
                         <div>
-                            <IconInput v-model="product.quantity" inputPlaceholder="Cantidad *" inputType="number" inputStep="0.01">
+                            <IconInput v-model="product.quantity" inputPlaceholder="Cantidad *" inputType="number"
+                                inputStep="0.01">
                                 #
                             </IconInput>
                             <!-- <InputError :message="form.errors.fiscal_address" /> -->
@@ -226,6 +230,7 @@ export default {
         return {
             form,
             product: {
+                id: null,
                 catalog_product_company_id: null,
                 quantity: null,
                 notes: null,
@@ -261,7 +266,6 @@ export default {
         },
         addProduct() {
             const product = { ...this.product };
-
             if (this.editIndex !== null) {
                 this.form.products[this.editIndex] = product;
                 this.editIndex = null;
@@ -280,6 +284,7 @@ export default {
             this.editIndex = index;
         },
         resetProductForm() {
+            this.product.id = null;
             this.product.catalog_product_company_id = null;
             this.product.quantity = null;
             this.product.notes = null;
@@ -288,6 +293,7 @@ export default {
     mounted() {
         this.catalog_products_company_sale.forEach(element => {
             const product = {
+                id: element.id,
                 catalog_product_company_id: element.catalog_product_company_id,
                 quantity: element.quantity,
                 notes: element.notes,
