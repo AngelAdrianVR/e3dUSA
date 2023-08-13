@@ -77,12 +77,12 @@
                   <el-button @click="editBranch(index)" type="primary" circle>
                     <i class="fa-sharp fa-solid fa-pen-to-square"></i>
                   </el-button>
-                  <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+                  <!-- <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
                     @confirm="deleteBranch(index)">
                     <template #reference>
                       <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>
                     </template>
-                  </el-popconfirm>
+                  </el-popconfirm> -->
                 </div>
               </li>
             </template>
@@ -170,22 +170,6 @@
               </el-select>
               <!-- <InputError :message="form.errors.sat_types" /> -->
             </div>
-            <div class="pb-7">
-              <SecondaryButton @click="addBranch" :disabled="contacts.length == 0 ||
-                !branch.name ||
-                !branch.address ||
-                !branch.post_code ||
-                !branch.sat_method ||
-                !branch.sat_type ||
-                !branch.sat_way
-                ">
-                {{
-                  editBranchIndex !== null
-                  ? "Actualizar sucursal"
-                  : "Agregar sucursal a lista"
-                }}
-              </SecondaryButton>
-            </div>
             <!-- ---------------- Company Branch ends ----------------- -->
 
             <!-- ---------------- Company Contacts starts ----------------- -->
@@ -202,17 +186,17 @@
                     <el-button @click="editContact(index)" type="primary" circle>
                       <i class="fa-sharp fa-solid fa-pen-to-square"></i>
                     </el-button>
-                    <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                    <!-- <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
                       title="¿Continuar?" @confirm="deleteContact(index)">
                       <template #reference>
                         <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>
                       </template>
-                    </el-popconfirm>
+                    </el-popconfirm> -->
                   </div>
                 </li>
               </template>
             </ol>
-            <div class="md:w-[92%] mx-auto pt-3 md:space-y-3 rounded-lg p-5">
+            <div class="md:w-[92%] mx-auto pt-3 md:space-y-3 rounded-lg p-5 border-2 border-[#b8b7b7]">
               <div>
                 <IconInput v-model="contact.name" inputPlaceholder="Nombre de contacto *" inputType="text">
                   <el-tooltip content="Nombre de contacto" placement="top">
@@ -259,15 +243,31 @@
                 </div>
                 <!-- <InputError :message="form.errors.birthdate" /> -->
               </div>
+              <SecondaryButton @click="addContact" :disabled="!this.contact.name || !this.contact.email || !this.contact.phone
+                ">
+                {{
+                  editContactIndex !== null
+                  ? "Actualizar contacto"
+                  : "Agregar Contacto a lista"
+                }}
+              </SecondaryButton>
             </div>
-            <SecondaryButton @click="addContact" :disabled="!this.contact.name || !this.contact.email || !this.contact.phone
-              ">
-              {{
-                editContactIndex !== null
-                ? "Actualizar contacto"
-                : "Agregar Contacto a lista"
-              }}
-            </SecondaryButton>
+            <div>
+              <SecondaryButton @click="addBranch" :disabled="contacts.length == 0 ||
+                !branch.name ||
+                !branch.address ||
+                !branch.post_code ||
+                !branch.sat_method ||
+                !branch.sat_type ||
+                !branch.sat_way
+                ">
+                {{
+                  editBranchIndex !== null
+                  ? "Actualizar sucursal"
+                  : "Agregar sucursal a lista"
+                }}
+              </SecondaryButton>
+            </div>
           </div>
           <!-- ---------------- Company Contacts ends ----------------- -->
 
@@ -424,6 +424,7 @@ export default {
       editProductIndex: null,
       editBranchIndex: null,
       contact: {
+        id: null,
         name: null,
         email: null,
         phone: null,
@@ -431,6 +432,7 @@ export default {
         birthdate_month: null,
       },
       branch: {
+        id: null,
         name: null,
         address: null,
         post_code: null,
@@ -580,6 +582,7 @@ export default {
         this.contacts.push(contact);
       }
 
+      this.contact.id = null;
       this.contact.name = null;
       this.contact.email = null;
       this.contact.phone = null;
@@ -607,6 +610,7 @@ export default {
       }
 
       // reser branch form & list of contacts
+      this.branch.id = null;
       this.branch.name = null;
       this.branch.address = null;
       this.branch.post_code = null;
@@ -623,6 +627,7 @@ export default {
 
       this.form.company_branches[index].contacts.forEach((element) => {
         const contact = {
+          id: element.id,
           name: element.name,
           email: element.email,
           phone: element.phone,
@@ -669,6 +674,7 @@ export default {
   mounted() {
     this.company.company_branches.forEach((element) => {
       let branch = {
+        id: element.id,
         name: element.name,
         address: element.address,
         post_code: element.post_code,
@@ -680,6 +686,7 @@ export default {
 
       element.contacts.forEach((item) => {
         const contact = {
+          id: item.id,
           name: item.name,
           email: item.email,
           phone: item.phone,
