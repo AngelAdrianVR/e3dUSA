@@ -118,9 +118,21 @@
             @mouseleave="hideOverlay"
             class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center"
           >
-            <el-image
+            <el-image v-if="currentSample?.catalog_product"
               style="height: 100%"
               :src="currentSample?.catalog_product?.media[0]?.original_url"
+              fit="fit"
+            >
+              <template #error>
+                <div class="flex justify-center items-center text-[#ababab]">
+                  <i class="fa-solid fa-image text-6xl"></i>
+                </div>
+              </template>
+            </el-image>
+
+            <el-image v-else
+              style="height: 100%"
+              :src="currentSample?.media[0]?.original_url"
               fit="fit"
             >
               <template #error>
@@ -230,6 +242,12 @@
               </p>
             </div>
             <div class="flex mb-2 space-x-2">
+              <p class="w-1/3 text-[#9A9A9A]">Producto(s)</p>
+              <p>
+                <span v-for="product in currentSample?.products" :key="product">{{ product ?? "--" }}, </span>
+              </p>
+            </div>
+            <div class="flex mb-2 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Comentarios/notas</p>
               <p>
                 {{ currentSample?.comments ?? "--" }}
@@ -259,7 +277,7 @@
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Características</p>
               <p>
-                {{ currentSample?.catalog_product?.features.raw.join(", ") }}
+                {{ currentSample?.catalog_product?.features?.raw?.join(", ") ?? '--' }}
               </p>
             </div>
             <div class="flex mb-2 space-x-2">

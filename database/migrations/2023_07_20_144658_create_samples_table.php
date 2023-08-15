@@ -19,7 +19,8 @@ return new class extends Migration
             $table->timestamp('returned_at')->nullable();
             $table->timestamp('sale_order_at')->nullable();
             $table->text('comments')->nullable();
-            $table->foreignId('catalog_product_id')->constrained()->cascadeOnDelete();
+            $table->json('products')->nullable();
+            $table->foreignId('catalog_product_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('company_branch_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('contact_id')->constrained()->cascadeOnDelete();

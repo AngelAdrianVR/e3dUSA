@@ -37,14 +37,18 @@ class SampleController extends Controller
             'quantity' => 'required|numeric',
             'sent_at' => 'required|date|before:tomorrow',
             'comments' => 'nullable|string',
-            'catalog_product_id' => 'required',
+            'catalog_product_id' => 'nullable',
             'company_branch_id' => 'required',
-            'contact_id' => 'required'
+            'contact_id' => 'required',
+            'products' => 'nullable|array|min:0',
         ]);
 
-        $sample = Sample::create($request->all() + [
+        $sample = Sample::create($request->except('media') + [
             'user_id' => auth()->id()
         ]);
+
+        $sample->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+
         $can_authorize = auth()->user()->can('Autorizar muestra') || auth()->user()->hasRole('Super admin');
 
         if ($can_authorize) {
@@ -79,12 +83,13 @@ class SampleController extends Controller
             'quantity' => 'required|numeric',
             'sent_at' => 'required|date|before:tomorrow',
             'comments' => 'nullable|string',
-            'catalog_product_id' => 'required',
+            'catalog_product_id' => 'nullable',
             'company_branch_id' => 'required',
-            'contact_id' => 'required'
+            'contact_id' => 'required',
+            'products' => 'nullable|array|min:0',
         ]);
 
-        $sample->update($request->all() + [
+        $sample->update($request->except('media') + [
             'user_id' => auth()->id()
         ]);
 

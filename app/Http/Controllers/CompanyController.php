@@ -19,8 +19,9 @@ class CompanyController extends Controller
 
     public function index()
     {
-        $companies = CompanyResource::collection(Company::latest()->get());
+        $companies = CompanyResource::collection(Company::with('companyBranches')->latest()->get());
 
+        // return $companies;
         return inertia('Company/Index', compact('companies'));
     }
 

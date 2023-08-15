@@ -176,7 +176,7 @@
                     {{ maintenance.created_at }}
                   </td>
                   <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
-                    ${{ maintenance.cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
+                    ${{ maintenance.cost }}
                   </td>
                   <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
                     {{ maintenance.responsible }}
@@ -224,7 +224,7 @@
                     {{ spare_part.quantity }}
                   </td>
                   <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
-                    ${{ spare_part.cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
+                    ${{ spare_part.cost }}
                   </td>
                   <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
                     {{ spare_part.created_at }}
