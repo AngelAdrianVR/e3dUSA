@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Sample extends Model
+class Sample extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'name',
@@ -23,6 +25,7 @@ class Sample extends Model
         'authorized_user_name',
         'authorized_at',
         'user_id',
+        'products',
         'contact_id'
     ];
 
@@ -31,6 +34,7 @@ class Sample extends Model
         'returned_at' => 'datetime',
         'sale_order_at' => 'datetime',
         'authorized_at' => 'datetime',
+        'products' => 'array',
     ];
 
     //relationships
