@@ -412,6 +412,10 @@ export default {
           label: "Impresión",
           value: "IM",
         },
+        {
+          label: "Paraguas",
+          value: "PG",
+        },
       ],
     };
   },
