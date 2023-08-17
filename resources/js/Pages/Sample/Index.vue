@@ -41,9 +41,10 @@
                     <el-table-column prop="name" label="Nombre" width="150" />
                     <el-table-column prop="company_branch.name" label="Cliente" width="160" />
                     <el-table-column prop="quantity" label="Cantidad" width="85" />
-                    <el-table-column prop="sent_at" label="Enviado el" width="100" />
-                    <el-table-column prop="returned_at" label="devuelto el" widh="100" />
-                    <el-table-column prop="status.label" label="Estatus" width="220" />
+                    <el-table-column prop="sent_at" label="Enviado el" width="120" />
+                    <el-table-column prop="returned_at" label="devuelto el" widh="120" />
+                    <el-table-column prop="comments" label="Comentarios" widh="150" />
+                    <el-table-column prop="status.label" label="Estatus" width="150" />
                     <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
