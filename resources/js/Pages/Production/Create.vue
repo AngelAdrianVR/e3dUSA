@@ -31,6 +31,16 @@
                 :value="item.id" />
             </el-select>
           </div>
+
+          <!-- -----------------Extra info in productions -------------------- -->
+
+          <div class="my-3 flex flex-col text-primary text-sm p-4 rounded-lg border border-[#b8b7b7]" v-if="saleId">
+            <div v-for="product in orderedProducts" :key="product">
+              <p>Cantidad: <span class="text-secondary">{{ product?.quantity }} unidades</span></p>
+              <p>Notas: <span class="text-secondary">{{ product?.notes ?? '--' }}</span></p>
+              <div class="border-b border-gray-500"></div>
+            </div>
+          </div>
           <!-- products ordered to generate production -->
           <div v-if="saleId">
 
