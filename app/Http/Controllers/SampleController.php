@@ -96,10 +96,32 @@ class SampleController extends Controller
         return to_route('samples.index');
     }
 
+    public function updateWithMedia(Request $request, Sample $sample)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'quantity' => 'required|numeric',
+            'sent_at' => 'required|date|before:tomorrow',
+            'comments' => 'nullable|string',
+            'catalog_product_id' => 'nullable',
+            'company_branch_id' => 'required',
+            'contact_id' => 'required',
+            'products' => 'nullable|array|min:0',
+        ]);
+
+        $sample->update($request->all());
+          // update image
+        $sample->clearMediaCollection();
+        $sample->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+
+        return to_route('samples.index');
+
+    }
+
     
     public function destroy(Sample $sample)
     {
-        //
+        $sample->delete();
     }
 
     public function returned(Request $request, Sample $sample)
@@ -112,5 +134,16 @@ class SampleController extends Controller
             'comments' => $request->comments,
             'returned_at' => now(),
         ]);
+
+        return to_route('samples.index');
+    }
+
+    public function saleOrder(Sample $sample)
+    {
+
+        $sample->update([
+            'sale_order_at' => now(),
+        ]);
+
     }
 }

@@ -24,8 +24,9 @@
                     <el-table-column prop="user.name" label="Creador" />
                     <el-table-column prop="company_branch.name" label="Cliente" />
                     <el-table-column prop="created_at" label="Creada el" />
-                    <el-table-column prop="productions.length" label="Operadores" />
-                    <el-table-column align="right" fixed="right" width="200">
+                    <el-table-column prop="status['label']" label="Estatus" />
+                    <el-table-column prop="productions.length" label="N° Operadores" />
+                    <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
                         </template>
@@ -144,7 +145,14 @@ export default {
             }
         },
         tableRowClassName({ row, rowIndex }) {
-
+            
+            if(row.status['label'] == 'Producción sin iniciar'){
+                return 'cursor-pointer text-amber-600';
+            }else if(row.status['label'] == 'Producción en proceso'){
+                return 'cursor-pointer text-blue-600';
+            }else if(row.status['label'] == 'Producción terminada'){
+                return 'cursor-pointer text-green-600';
+            }
             return 'cursor-pointer';
         },
         handleRowClick(row) {

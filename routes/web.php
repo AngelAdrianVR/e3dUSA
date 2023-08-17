@@ -169,6 +169,8 @@ Route::post('storages/QR-search-product', [StorageController::class, 'QRSearchPr
 Route::resource('samples', SampleController::class)->middleware('auth');
 Route::post('samples/massive-delete', [SampleController::class, 'massiveDelete'])->name('samples.massive-delete');
 Route::put('samples/returned-sample/{sample}', [SampleController::class, 'returned'])->name('samples.returned');
+Route::put('samples/sale-order-sample/{sample}', [SampleController::class, 'saleOrder'])->name('samples.sale-order');
+Route::post('samples/update-with-media/{sample}', [SampleController::class, 'updateWithMedia'])->name('samples.update-with-media')->middleware('auth');
 
 // ------- Design department routes  ---------
 Route::resource('designs', DesignController::class)->middleware('auth');

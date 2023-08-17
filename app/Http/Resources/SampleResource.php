@@ -42,9 +42,9 @@ class SampleResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'quantity' => $this->quantity,
-            'sent_at' => $this->sent_at?->isoFormat('YYYY MMM DD'),
-            'returned_at' => $this->returned_at?->isoFormat('YYYY MMM DD'),
-            'sale_order_at' => $this->sale_order_at?->isoFormat('YYYY MMM DD'),
+            'sent_at' => $this->sent_at?->isoFormat('DD MMM, YYYY h:mm A'),
+            'returned_at' => $this->returned_at?->isoFormat('DD MMM, YYYY h:mm A'),
+            'sale_order_at' => $this->sale_order_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'comments' => $this->comments,
             'products' => $this->products,
             'status' => $status,
@@ -52,8 +52,8 @@ class SampleResource extends JsonResource
             'catalog_product' => CatalogProductResource::make($this->whenLoaded('catalogProduct')),
             'company_branch' => $this->whenLoaded('companyBranch'),
             'contact' => Contact::find($this->contact_id),
-            'created_at' => $this->created_at?->isoFormat('YYYY MMM DD H:i'),
-            'updated_at' => $this->updated_at?->isoFormat('YYYY MMM DD H:i'),
+            'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+            'updated_at' => $this->updated_at?->isoFormat('DD MMM, YYYY h:mm A'),
         ];
     }
 }

@@ -139,7 +139,7 @@
           </div>
           <div class="mt-9 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing">
-              Registrar muestra
+              Actualizar muestra
             </PrimaryButton>
           </div>
         </div>
@@ -191,17 +191,28 @@ export default {
   },
   methods: {
     update() {
-      this.form.put(route("samples.update", this.sample.id), {
-        onSuccess: () => {
-          this.$notify({
-            title: "Éxito",
-            message: "Muestra Editada",
-            type: "success",
-          });
-
-          this.form.reset();
-        },
-      });
+      if (this.form.media !== null) {
+        this.form.post(route("samples.update-with-media", this.sample.id), {
+          method: '_put',
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Se actualizó correctamente",
+              type: "success",
+            });
+          },
+        });
+      } else {
+        this.form.put(route("samples.update", this.sample.id), {
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Se actualizó correctamente",
+              type: "success",
+            });
+          },
+        });
+      }
     },
     disabledDate(time) {
       const today = new Date();
