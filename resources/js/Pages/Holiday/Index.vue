@@ -12,6 +12,11 @@
                 </div>
             </template>
 
+            <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+                <p class="text-gray-500"><i class="fa-solid fa-circle mr-1"></i>Activo</p>
+                <p class="text-red-500"><i class="fa-solid fa-circle mr-1"></i>Inactivo</p>
+            </div>
+
             <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
                 <div class="flex justify-between">

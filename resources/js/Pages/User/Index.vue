@@ -14,6 +14,11 @@
                 </div>
             </template>
 
+            <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+                <p class="text-red-500"><i class="fa-solid fa-circle mr-1"></i>Inactivo</p>
+                <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Activo</p>
+            </div>
+
             <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
                 <div class="flex justify-between">
@@ -117,9 +122,9 @@ export default {
         },
         tableRowClassName({ row, rowIndex }) {
             if (row.is_active.bool) {
-                return 'text-green-600 cursor-pointer';
+                return 'text-green-500 cursor-pointer';
             } else {
-                return 'text-red-600 cursor-pointer';
+                return 'text-red-500 cursor-pointer';
             }
         },
         handleRowClick(row) {

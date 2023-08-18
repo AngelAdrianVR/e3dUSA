@@ -16,6 +16,11 @@
         </div>
       </template>
 
+      <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+        <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Esperando autorización</p>
+        <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Autorizado</p>
+      </div>
+
       <!-- tabla -->
       <div class="lg:w-5/6 mx-auto mt-6">
         <div class="flex justify-between">
@@ -378,9 +383,9 @@ export default {
     },
     tableRowClassName({ row, rowIndex }) {
       if (row.status === "Autorizado") {
-        return "text-green-600 cursor-pointer";
+        return "text-green-500 cursor-pointer";
       } else {
-        return "text-amber-600 cursor-pointer";
+        return "text-amber-500 cursor-pointer";
       }
 
     },

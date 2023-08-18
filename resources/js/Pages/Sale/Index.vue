@@ -11,6 +11,14 @@
                     </Link>
                 </div>
             </template>
+            
+            <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+                <p class="text-red-500"><i class="fa-solid fa-circle mr-1"></i>Esperando Autorización</p>
+                <p class="text-gray-500"><i class="fa-solid fa-circle mr-1"></i>Autorizado. Sin orden de producción</p>
+                <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Producción sin iniciar</p>
+                <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Producción en proceso</p>
+                <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Producción terminada</p>
+            </div>
 
             <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
@@ -174,7 +182,17 @@ export default {
             }
         },
         tableRowClassName({ row, rowIndex }) {
-            return 'cursor-pointer';
+            if (row.status['label'] == 'Esperando autorización') {
+                 return 'cursor-pointer text-red-500';
+            }else if(row.status['label'] == 'Producción sin iniciar'){
+                return 'cursor-pointer text-amber-500';
+            }else if(row.status['label'] == 'Producción en proceso'){
+                return 'cursor-pointer text-blue-500';
+            }else if(row.status['label'] == 'Producción terminada'){
+                return 'cursor-pointer text-green-500';
+            }else if(row.status['label'] == 'Autorizado sin orden de producción'){
+                return 'cursor-pointer text-gray-500';
+            }
         },
         handleRowClick(row) {
             this.$inertia.get(route('sales.show', row));
