@@ -14,6 +14,13 @@
                 </div>
             </template>
 
+
+            <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+                <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Producción sin iniciar</p>
+                <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Producción en proceso</p>
+                <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Producción terminada</p>
+            </div>
+
             <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
                 <div class="flex justify-between">
@@ -163,11 +170,11 @@ export default {
         tableRowClassName({ row, rowIndex }) {
             
             if(row.status['label'] == 'Producción sin iniciar'){
-                return 'cursor-pointer text-amber-600';
+                return 'cursor-pointer text-amber-500';
             }else if(row.status['label'] == 'Producción en proceso'){
-                return 'cursor-pointer text-blue-600';
+                return 'cursor-pointer text-blue-500';
             }else if(row.status['label'] == 'Producción terminada'){
-                return 'cursor-pointer text-green-600';
+                return 'cursor-pointer text-green-500';
             }
             return 'cursor-pointer';
         },

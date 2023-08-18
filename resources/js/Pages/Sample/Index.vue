@@ -15,6 +15,12 @@
                 </div>
             </template>
 
+            <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+                <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Enviado. Esperando respuesta </p>
+                <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Muestra devuelta</p>
+                <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Venta cerrada</p>
+            </div>
+
             <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
                 <div class="flex justify-between">
@@ -44,7 +50,7 @@
                     <el-table-column prop="sent_at" label="Enviado el" width="120" />
                     <el-table-column prop="returned_at" label="devuelto el" widh="120" />
                     <el-table-column prop="comments" label="Comentarios" widh="150" />
-                    <el-table-column prop="status.label" label="Estatus" width="150" />
+                    <!-- <el-table-column prop="status.label" label="Estatus" width="150" /> -->
                     <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
@@ -113,7 +119,7 @@ export default {
             }else if(row.status['label'] == 'Muestra devuelta'){
                 return 'cursor-pointer text-blue-500';
             }else{
-                return 'cursor-pointer text-green-600';
+                return 'cursor-pointer text-green-500';
             }
 
         },

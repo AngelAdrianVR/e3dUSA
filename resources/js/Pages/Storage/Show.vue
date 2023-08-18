@@ -44,12 +44,21 @@
             <el-tooltip
               v-if="$page.props.auth.user.permissions.includes('Editar materia prima') && currentStorage?.type != 'producto-terminado'"
               content="Editar" placement="top">
-              <Link :href="route('raw-materials.edit', selectedRawMaterial)">
+              <Link :href="route('raw-materials.edit', selectedStorage)">
               <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
                 <i class="fa-solid fa-pen text-sm"></i>
               </button>
               </Link>
             </el-tooltip>
+            <!-- <el-tooltip
+              v-if="$page.props.auth.user.permissions.includes('Editar materia prima') && currentStorage?.type != 'producto-terminado' && currentStorage"
+              content="Editar" placement="top">
+              <Link :href="route('raw-materials.edit', currentStorage?.id)">
+              <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
+                <i class="fa-solid fa-pen text-sm"></i>
+              </button>
+              </Link>
+            </el-tooltip> -->
 
             <Dropdown align="right" width="48" v-if="$page.props.auth.user.permissions.includes('Crear scrap') &&
               $page.props.auth.user.permissions.includes(

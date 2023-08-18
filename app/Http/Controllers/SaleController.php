@@ -17,6 +17,8 @@ class SaleController extends Controller
     {
         $sales = SaleResource::collection(Sale::with('companyBranch', 'user')->latest()->get());
 
+        // return $sales;
+
         return inertia('Sale/Index', compact('sales'));
     }
 

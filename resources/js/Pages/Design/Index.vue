@@ -14,6 +14,13 @@
                 </div>
             </template>
 
+            <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+                <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Esperando autorización</p>
+                <p class="text-amber-700"><i class="fa-solid fa-circle mr-1"></i>Autorizado. Sin iniciar</p>
+                <p class="text-[#0355B5]"><i class="fa-solid fa-circle mr-1"></i>En proceso</p>
+                <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Terminado</p>
+            </div>
+
             <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
                 <div class="flex justify-between">
@@ -164,7 +171,15 @@ export default {
         },
         tableRowClassName({ row, rowIndex }) {
 
-            return 'cursor-pointer';
+            if (row.status['label'] == 'Esperando Autorización') {
+                 return 'cursor-pointer text-amber-500';
+            }else if(row.status['label'] == 'Autorizado. Sin iniciar'){
+                return 'cursor-pointer text-amber-700';
+            }else if(row.status['label'] == 'En proceso'){
+                return 'cursor-pointer text-[#0355B5]';
+            }else if(row.status['label'] == 'Terminado'){
+                return 'cursor-pointer text-green-500';
+            }
         },
         handleRowClick(row) {
             this.$inertia.get(route('designs.show', row));
