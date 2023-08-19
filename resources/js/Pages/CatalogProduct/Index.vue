@@ -41,11 +41,11 @@
                     <el-table-column prop="name" label="Nombre" width="200" />
                     <el-table-column prop="cost.number_format" label="Costo $" width="150" />
                     <el-table-column prop="description" label="Descripción" />
-                    <el-table-column align="right" fixed="right" width="170">
+                    <el-table-column align="right" fixed="right" width="190">
                         <template #header>
                         <div class="flex space-x-2">
-                            <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
-                            <el-button @click="console.log('Filtrar tabla')" type="primary" plain class="mb-3" :disabled="search == ''"><i class="fa-solid fa-magnifying-glass"></i></el-button>
+                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
                         </div>
                         </template>
                         <template #default="scope">
@@ -87,8 +87,8 @@ export default {
 
 
         return {
-            tableData: [],
             disableMassiveActions: true,
+            inputSearch: '',
             search: '',
             // pagination
             itemsPerPage: 10,
@@ -106,6 +106,9 @@ export default {
         catalog_products: Object
     },
     methods: {
+        handleSearch(){
+            this.search = this.inputSearch;
+        },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
 
