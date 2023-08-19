@@ -3,6 +3,11 @@
         <div class="px-9 pt-3 lg:px-14 lg:pt-8">
             <h1>Inicio</h1>
 
+            <div class="my-5">
+                <h2 class="text-primary lg:text-xl text-lg  mb-3">Avisos</h2>
+                <p class="font-bold text-lg text-center border-2 border-red-600 rounded-lg py-2 text-white bg-red-600">¡ATENCIÓN! <hr> Tu horario de trabajo se cierra automáticamente a la hora de tu salida contratada</p>
+            </div>
+
             <!-- attendance -->
             <div class="lg:hidden mx-auto w-4/5 rounded-[20px] bg-[#d9d9d9] py-3 px-5 flex flex-col space-y-2 mt-4">
                 <!-- <figure class="flex justify-center">
