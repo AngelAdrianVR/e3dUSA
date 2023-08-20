@@ -48,9 +48,12 @@
                     <el-table-column prop="storageable.min_quantity" label="Min. Stock" />
                     <el-table-column prop="storageable.max_quantity" label="Max. Stock" />
                     <el-table-column prop="quantity" label="Stock" />
-                    <el-table-column align="right" fixed="right" width="120">
+                    <el-table-column align="right" fixed="right" width="190">
                         <template #header>
-                            <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
+                            <div class="flex space-x-2">
+                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
+                        </div>
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
@@ -90,6 +93,7 @@ export default {
     data() {
         return {
             disableMassiveActions: true,
+            inputSearch: '',
             search: '',
             // pagination
             itemsPerPage: 10,
@@ -108,6 +112,9 @@ export default {
         totalFinishedProductMoney: Number
     },
     methods: {
+        handleSearch(){
+            this.search = this.inputSearch;
+        },
         tableRowClassName({ row, rowIndex }) {
             if (row.quantity <= row.storageable.min_quantity) {
                 return 'text-red-600 cursor-pointer';

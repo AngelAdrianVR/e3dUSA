@@ -49,9 +49,12 @@
                     <el-table-column prop="created_at" label="Creada el" />
                     <el-table-column prop="status['label']" label="Estatus" />
                     <el-table-column prop="productions.length" label="Operadores" />
-                    <el-table-column align="right" fixed="right" width="120">
+                    <el-table-column align="right" fixed="right" width="190">
                         <template #header>
-                            <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <div class="flex space-x-2">
+                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
+                        </div>
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
@@ -91,6 +94,7 @@ export default {
 
         return {
             disableMassiveActions: true,
+            inputSearch: '',
             search: '',
             // pagination
             itemsPerPage: 10,
@@ -108,6 +112,9 @@ export default {
         productions: Array
     },
     methods: {
+        handleSearch(){
+            this.search = this.inputSearch;
+        },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
 

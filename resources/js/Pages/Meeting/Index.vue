@@ -49,9 +49,12 @@
                     <el-table-column prop="location" label="lugar" width="150" />
                     <el-table-column prop="url" label="URL" width="150" />
                     <el-table-column prop="status" label="Estatus" width="100" />
-                    <el-table-column align="right" fixed="right" width="120">
+                    <el-table-column align="right" fixed="right" width="190">
                         <template #header>
-                            <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <div class="flex space-x-2">
+                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
+                        </div>
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
@@ -180,6 +183,8 @@ export default {
     data(){
 
         return{
+          inputSearch: '',
+            search: '',
             showMeetingModal: false,
             subject: null,
             location: null,
@@ -192,7 +197,7 @@ export default {
         }
     },
     props:{
-        meetings: Array,
+        meetings: Object,
     },
     components:{
         AppLayout,
@@ -203,6 +208,9 @@ export default {
         Modal,
     },
     methods:{
+      handleSearch(){
+            this.search = this.inputSearch;
+        },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
 
