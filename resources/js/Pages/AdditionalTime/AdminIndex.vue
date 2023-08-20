@@ -9,7 +9,12 @@
             </h2>
           </div>
           <div>
-            <SecondaryButton @click="createRequestModal = true;form.reset(); editFlag = false"
+            <SecondaryButton
+              @click="
+                createRequestModal = true;
+                form.reset();
+                editFlag = false;
+              "
               >+ Nuevo</SecondaryButton
             >
           </div>
@@ -17,7 +22,9 @@
       </template>
 
       <div class="flex space-x-6 items-center justify-center text-xs mt-2">
-        <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Esperando autorización</p>
+        <p class="text-amber-500">
+          <i class="fa-solid fa-circle mr-1"></i>Esperando autorización
+        </p>
         <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Autorizado</p>
       </div>
 
@@ -60,60 +67,71 @@
           max-height="450"
           style="width: 100%"
           @selection-change="handleSelectionChange"
-          @row-click="handleRowClick" 
+          @row-click="handleRowClick"
           ref="multipleTableRef"
           :row-class-name="tableRowClassName"
         >
           <el-table-column type="selection" width="45" />
           <el-table-column prop="id" label="ID" width="45" />
           <el-table-column prop="user.name" label="Creador" width="120" />
-          <el-table-column
-            prop="created_at"
-            label="Solicitado el"
-            width="120"
-          />
-          <el-table-column
-            prop="time_requested"
-            label="Tiempo solicitado"
-            width="100"
-          />
+          <el-table-column prop="created_at" label="Solicitado el" width="120" />
+          <el-table-column prop="time_requested" label="Tiempo solicitado" width="100" />
           <el-table-column prop="status" label="Estatus" width="100" />
           <el-table-column
             prop="authorized_user_name"
             label="Autorizado por"
             width="130"
           />
-          <el-table-column
-            prop="authorized_at"
-            label="Autorizado el"
-            width="120"
-          />
-          <el-table-column
-            prop="justification"
-            label="Justificación"
-            width="200"
-          />
-          <el-table-column align="right" fixed="right" width="120">
+          <el-table-column prop="authorized_at" label="Autorizado el" width="120" />
+          <el-table-column prop="justification" label="Justificación" width="200" />
+          <el-table-column align="right" fixed="right" width="190">
             <template #header>
-              <TextInput
-                v-model="search"
-                type="search"
-                class="w-full text-gray-600"
-                placeholder="Buscar"
-              />
+              <div class="flex space-x-2">
+                <TextInput
+                  v-model="inputSearch"
+                  type="search"
+                  class="w-full text-gray-600"
+                  placeholder="Buscar"
+                />
+                <el-button @click="handleSearch" type="primary" plain class="mb-3"
+                  ><i class="fa-solid fa-magnifying-glass"></i
+                ></el-button>
+              </div>
             </template>
             <template #default="scope">
               <el-dropdown trigger="click">
-                <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
+                <span
+                  @click.stop
+                  class="el-dropdown-link mr-3 justify-center items-center p-2"
+                >
                   <i class="fa-solid fa-ellipsis-vertical"></i>
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item v-if="scope.row.authorized_at == 'No autorizado'" @click="edit(scope.row)"
+                    <el-dropdown-item
+                      v-if="scope.row.authorized_at == 'No autorizado'"
+                      @click="edit(scope.row)"
                       ><i class="fa-solid fa-pen"></i> Editar</el-dropdown-item
                     >
-                    <el-dropdown-item @click="scope.row.authorized_at == 'No autorizado' ? authorize(scope.row) : unauthorize(scope.row)"
-                      ><i :class="scope.row.authorized_at != 'No autorizado' ? 'fa-xmark' : 'fa-check'" class="fa-solid"></i> {{scope.row.authorized_at != 'No autorizado' ? 'Quitar autorización' : 'Autorizar'}}</el-dropdown-item
+                    <el-dropdown-item
+                      @click="
+                        scope.row.authorized_at == 'No autorizado'
+                          ? authorize(scope.row)
+                          : unauthorize(scope.row)
+                      "
+                      ><i
+                        :class="
+                          scope.row.authorized_at != 'No autorizado'
+                            ? 'fa-xmark'
+                            : 'fa-check'
+                        "
+                        class="fa-solid"
+                      ></i>
+                      {{
+                        scope.row.authorized_at != "No autorizado"
+                          ? "Quitar autorización"
+                          : "Autorizar"
+                      }}</el-dropdown-item
                     >
                   </el-dropdown-menu>
                 </template>
@@ -142,41 +160,61 @@
               class="fa-solid fa-question text-[9px] text-secondary h-3 w-3 bg-sky-300 rounded-full text-center absolute left-3 top-3 cursor-pointer"
             ></i>
 
-            <p class="font-bold text-center mt-4 ">
+            <p class="font-bold text-center mt-4">
               Solicitar autorización de timepo adicional
             </p>
 
             <div class="md:w-1/3 ml-3 my-2 flex items-center">
-            <span
-              class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-              <el-tooltip content="Seleccionar nómina" placement="top">
-                <i class="fa-solid fa-file-invoice"></i>
-              </el-tooltip>
-            </span>
-                    <el-select :disabled="editFlag" v-model="form.payroll_id" clearable filterable placeholder="Buscar nómina"
-                        no-data-text="No hay nóminas registradas" no-match-text="No se encontraron coincidencias">
-                        <el-option v-for="item in payrolls" 
-                            :key="item.id" 
-                            :label="item.week"
-                            :value="item.id" />
-                    </el-select>
-                </div>
+              <span
+                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
+              >
+                <el-tooltip content="Seleccionar nómina" placement="top">
+                  <i class="fa-solid fa-file-invoice"></i>
+                </el-tooltip>
+              </span>
+              <el-select
+                :disabled="editFlag"
+                v-model="form.payroll_id"
+                clearable
+                filterable
+                placeholder="Buscar nómina"
+                no-data-text="No hay nóminas registradas"
+                no-match-text="No se encontraron coincidencias"
+              >
+                <el-option
+                  v-for="item in payrolls"
+                  :key="item.id"
+                  :label="item.week"
+                  :value="item.id"
+                />
+              </el-select>
+            </div>
 
             <div class="md:w-1/3 ml-3 mb-2 flex items-center">
-            <span
-              class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-              <el-tooltip content="Seleccionar nómina" placement="top">
-                <i class="fa-solid fa-user"></i>
-              </el-tooltip>
-            </span>
-                    <el-select :disabled="editFlag" v-model="form.user_id" clearable filterable placeholder="Buscar usuario"
-                        no-data-text="No hay usuarios registrados" no-match-text="No se encontraron coincidencias">
-                        <el-option v-for="item in users" 
-                            :key="item.id" 
-                            :label="item.name"
-                            :value="item.id" />
-                    </el-select>
-                </div>
+              <span
+                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
+              >
+                <el-tooltip content="Seleccionar nómina" placement="top">
+                  <i class="fa-solid fa-user"></i>
+                </el-tooltip>
+              </span>
+              <el-select
+                :disabled="editFlag"
+                v-model="form.user_id"
+                clearable
+                filterable
+                placeholder="Buscar usuario"
+                no-data-text="No hay usuarios registrados"
+                no-match-text="No se encontraron coincidencias"
+              >
+                <el-option
+                  v-for="item in users"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                />
+              </el-select>
+            </div>
 
             <div class="ml-7 flex space-x-3 items-center">
               <div class="md:w-1/6 mr-2">
@@ -202,24 +240,23 @@
                 <InputError :message="form.errors.minutes" />
               </div>
               <span class="ml-2">min</span>
-              
             </div>
-              <div class="flex col-span-full ml-3 mt-2">
-                <el-tooltip content="Justificación" placement="top">
-                  <span
-                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
-                  >
-                    =
-                  </span>
-                </el-tooltip>
-                <textarea
-                  v-model="form.justification"
-                  class="textarea"
-                  autocomplete="off"
-                  placeholder="Justificación"
-                ></textarea>
-                <InputError :message="form.errors.justification" />
-              </div>
+            <div class="flex col-span-full ml-3 mt-2">
+              <el-tooltip content="Justificación" placement="top">
+                <span
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
+                >
+                  =
+                </span>
+              </el-tooltip>
+              <textarea
+                v-model="form.justification"
+                class="textarea"
+                autocomplete="off"
+                placeholder="Justificación"
+              ></textarea>
+              <InputError :message="form.errors.justification" />
+            </div>
             <div
               v-if="helpDialog"
               class="border border-[#0355B5] rounded-lg px-6 py-2 mt-5 mx-7 relative"
@@ -232,20 +269,22 @@
                 class="fa-solid fa-xmark cursor-pointer w-3 h-3 rounded-full text-secondary flex items-center justify-center absolute right-3 top-3 text-xs"
               ></i>
               <p class="text-secondary text-sm">
-                Es necesario describir las actividades que justifiquen el tiempo
-                adicional que estas solicitando. Sólo se podrá realizar una
-                solicitud por semana, por lo que debes de ingresar las horas
-                semanales adicionales a tu jornada normal.
+                Es necesario describir las actividades que justifiquen el tiempo adicional
+                que estas solicitando. Sólo se podrá realizar una solicitud por semana,
+                por lo que debes de ingresar las horas semanales adicionales a tu jornada
+                normal.
               </p>
             </div>
 
             <div class="flex justify-start space-x-3 pt-5 pb-1">
-                <PrimaryButton :disabled="form.processing">{{editFlag == true ? 'Actualizar' : 'Enviar'}}</PrimaryButton>
+              <PrimaryButton :disabled="form.processing">{{
+                editFlag == true ? "Actualizar" : "Enviar"
+              }}</PrimaryButton>
               <CancelButton
                 @click="
                   createRequestModal = false;
                   form.reset();
-                  editFlag = false
+                  editFlag = false;
                 "
                 >Cancelar</CancelButton
               >
@@ -282,6 +321,7 @@ export default {
     return {
       form,
       disableMassiveActions: true,
+      inputSearch: "",
       search: "",
       createRequestModal: false,
       helpDialog: false,
@@ -311,6 +351,9 @@ export default {
     users: Array,
   },
   methods: {
+    handleSearch() {
+      this.search = this.inputSearch;
+    },
     store() {
       this.form.post(route("more-additional-times.store"), {
         onSuccess: () => {
@@ -325,25 +368,24 @@ export default {
         },
       });
     },
-    authorize(item){
-      
-      this.$inertia.put(route('admin-additional-times.authorize', item));
+    authorize(item) {
+      this.$inertia.put(route("admin-additional-times.authorize", item));
       this.$notify({
-            title: "Éxito",
-            message: "Solicitud autorizada",
-            type: "success",
-          });
+        title: "Éxito",
+        message: "Solicitud autorizada",
+        type: "success",
+      });
     },
-    unauthorize(item){
-      this.$inertia.put(route('admin-additional-times.unauthorize', item));
+    unauthorize(item) {
+      this.$inertia.put(route("admin-additional-times.unauthorize", item));
       this.$notify({
-            title: "Éxito",
-            message: "Solicitud revocada",
-            type: "success",
-          });
+        title: "Éxito",
+        message: "Solicitud revocada",
+        type: "success",
+      });
     },
     update() {
-      console.log('update');
+      console.log("update");
       this.form.put(route("more-additional-times.update", this.more_additional_time), {
         onSuccess: () => {
           this.$notify({
@@ -359,7 +401,7 @@ export default {
       });
     },
 
-    edit(obj){
+    edit(obj) {
       console.log(obj);
       var parts = obj.time_requested.split(":");
       this.editFlag = true;
@@ -387,16 +429,14 @@ export default {
       } else {
         return "text-amber-500 cursor-pointer";
       }
-
     },
 
     handleRowClick(row) {
-      if(row.status != 'Autorizado')
-            this.edit(row);
-            else{
-              return
-            }
-        },
+      if (row.status != "Autorizado") this.edit(row);
+      else {
+        return;
+      }
+    },
 
     handlePagination(val) {
       this.start = (val - 1) * this.itemsPerPage;
@@ -449,7 +489,6 @@ export default {
         console.log(err);
       }
     },
-
   },
   computed: {
     filteredTableData() {
@@ -461,6 +500,9 @@ export default {
         return this.admin_additional_times.data.filter(
           (admin_additional_time) =>
             admin_additional_time.status
+              .toLowerCase()
+              .includes(this.search.toLowerCase()) ||
+            admin_additional_time.user.name
               .toLowerCase()
               .includes(this.search.toLowerCase()) ||
             admin_additional_time.justification

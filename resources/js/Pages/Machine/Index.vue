@@ -42,9 +42,12 @@
                     <el-table-column prop="supplier" label="Proveedor" width="130" />
                     <el-table-column prop="days_next_maintenance" label="Mantenimiento cada" width="160" />
                     <el-table-column prop="aquisition_date" label="Fecha de adquisición" />
-                    <el-table-column align="right" fixed="right" width="120">
+                    <el-table-column align="right" fixed="right" width="190">
                         <template #header>
-                            <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <div class="flex space-x-2">
+                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
+                        </div>
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
@@ -81,6 +84,7 @@ export default {
     data() {
         return {
             disableMassiveActions: true,
+            inputSearch: '',
             search: '',
             // pagination
             itemsPerPage: 10,
@@ -98,6 +102,9 @@ export default {
         machines: Array
     },
     methods: {
+        handleSearch(){
+            this.search = this.inputSearch;
+        },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
 

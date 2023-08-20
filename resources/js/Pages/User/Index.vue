@@ -46,9 +46,12 @@
                     <el-table-column prop="is_active.string" label="Estatus" />
                     <el-table-column prop="employee_properties.job_position" label="Puesto" />
                     <el-table-column prop="employee_properties.join_date" label="Fecha ingreso" width="160" />
-                    <el-table-column align="right" fixed="right" width="120">
+                    <el-table-column align="right" fixed="right" width="190">
                         <template #header>
-                            <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <div class="flex space-x-2">
+                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
+                        </div>
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
@@ -90,6 +93,7 @@ export default {
 
         return {
             disableMassiveActions: true,
+            inputSearch: '',
             search: '',
             // pagination
             itemsPerPage: 10,
@@ -107,6 +111,9 @@ export default {
         users: Object,
     },
     methods: {
+        handleSearch(){
+            this.search = this.inputSearch;
+        },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
 

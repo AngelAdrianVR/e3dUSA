@@ -49,9 +49,12 @@
                     <el-table-column prop="designer.name" label="Diseñador(a)" />
                     <el-table-column prop="created_at" label="Solicitado el" />
                     <el-table-column prop="status[label]" label="Estatus" />
-                    <el-table-column align="right" fixed="right" width="120">
+                    <el-table-column align="right" fixed="right" width="190">
                         <template #header>
-                            <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <div class="flex space-x-2">
+                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
+                        </div>
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
@@ -93,6 +96,7 @@ export default {
 
         return {
             disableMassiveActions: true,
+            inputSearch: '',
             search: '',
             // pagination
             itemsPerPage: 10,
@@ -110,6 +114,9 @@ export default {
         designs: Array
     },
     methods: {
+        handleSearch(){
+            this.search = this.inputSearch;
+        },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
 
@@ -205,7 +212,7 @@ export default {
                 return this.designs.data.filter(
                     (design) =>
                         design.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                        design.status.toLowerCase().includes(this.search.toLowerCase()) ||
+                        design.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
                         design.user.name.toLowerCase().includes(this.search.toLowerCase())
                 )
             }
