@@ -252,6 +252,7 @@ export default {
       return this.processedAttendances.filter(item => item.incident?.id < 0);
     },
     getWorkedDaysSalary() {
+      console.log(this.getWorkedDays());
       let totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
       let totalWeekHoursAllowed = this.processedAttendances.find(item => item.check_in)?.additionals?.hours_per_week;
 
