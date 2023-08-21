@@ -74,6 +74,11 @@
       </p>
       <div class="flex flex-col mr-5">
         <p class="grid grid-cols-3 gap-x-1">
+          <span>Avance semana</span>
+          <span class="text-center">{{ getWeekProcessInPercentage() }}</span>
+          <span></span>
+        </p>
+        <p class="grid grid-cols-3 gap-x-1">
           <span>Días trabajados</span>
           <span class="text-center">{{ getWorkedDays().length }}</span>
           <span>${{ getWorkedDaysSalary().toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
@@ -286,6 +291,12 @@ export default {
       const minutes = Math.round((remainingHours - hours) * 60);
 
       return hours + 'h ' + minutes + 'm';
+    },
+    getWeekProcessInPercentage() {
+      const totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
+      const percentage = (totalWeekHours * 100) / this.user.employee_properties.hours_per_week;
+
+      return Math.round(percentage) + '%';
     },
     getTotal() {
       const dayly_salary = this.processedAttendances.find(item => item.check_in)?.additionals?.salary.day;
