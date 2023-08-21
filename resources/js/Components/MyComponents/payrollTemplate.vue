@@ -7,7 +7,7 @@
           <i class="fa-solid fa-circle-user mr-3 text-xl"></i>
           <p>{{ user.name }}</p>
         </div>
-        <p class="text-xs">{{ getRemainingHoursWeekly() }} para completar tu semana</p>
+        <p class="text-xs">{{ getRemainingHoursWeekly() }} para completar semana</p>
       </div>
       <div class="overflow-x-auto shadow-md mt-3 rounded-lg">
         <table class="items-center w-full bg-transparent">
@@ -27,8 +27,15 @@
                   <span class="ml-3 font-bold text-xs"> {{ attendance.date?.formatted }} </span>
                 </th>
                 <td class="px-6 text-xs py-px lg:py-2">
-                  <p class="bg-transparent text-sm" :class="attendance.late ? 'text-amber-600' : ''">{{
-                    attendance.check_in }}</p>
+                  <p class="bg-transparent text-sm" :class="{
+                    'text-amber-500': attendance.late > 0 && attendance.late < 15,
+                    'text-red-600': attendance.late >= 15,
+                  }">
+                    {{ attendance.check_in }}
+                    <i v-if="!attendance.late" class="fa-solid fa-face-smile text-yellow-400 ml-1"></i>
+                    <i v-else-if="attendance.late < 15" class="fa-solid fa-face-meh ml-1"></i>
+                    <i v-else class="fa-solid fa-face-sad-tear ml-1"></i>
+                  </p>
                 </td>
                 <td class="px-6 text-xs py-px lg:py-2">
                   <p class="bg-transparent text-sm">{{ attendance.check_out }}</p>
