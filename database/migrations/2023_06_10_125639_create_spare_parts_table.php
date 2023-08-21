@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('spare_parts', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->unsignedMediumInteger('quantity');
+            $table->unsignedFloat('quantity');
             $table->string('supplier')->nullable();
             $table->unsignedFloat('cost');
             $table->text('description')->nullable();

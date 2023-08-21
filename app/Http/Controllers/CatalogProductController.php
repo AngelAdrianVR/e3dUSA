@@ -38,7 +38,7 @@ class CatalogProductController extends Controller
         // total production cost
         $total_cost = 0;
 
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required',
             'part_number' => 'required|string|unique:catalog_products,part_number',
             'measure_unit' => 'required|string',
@@ -47,9 +47,13 @@ class CatalogProductController extends Controller
             'description' => 'nullable'
         ]);
 
-        // return $request;
-
-        $catalog_product = CatalogProduct::create($request->all());
+        // consecutive
+        $last = CatalogProduct::latest()->first();
+        $next_id = $last ? $last->id + 1 : 1;
+        $consecutive = str_pad($next_id, 4, "0", STR_PAD_LEFT);
+        $validated['part_number'] .= $consecutive;
+       
+        $catalog_product = CatalogProduct::create($validated);
         $catalog_product->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
 
         foreach ($request->raw_materials as $product) {

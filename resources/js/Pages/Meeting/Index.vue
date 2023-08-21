@@ -15,6 +15,11 @@
         </div>
       </template>
 
+      <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+        <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Pendiente</p>
+        <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Autorizada</p>
+    </div>
+
       <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
                 <div class="flex justify-between">
@@ -44,9 +49,12 @@
                     <el-table-column prop="location" label="lugar" width="150" />
                     <el-table-column prop="url" label="URL" width="150" />
                     <el-table-column prop="status" label="Estatus" width="100" />
-                    <el-table-column align="right" fixed="right" width="120">
+                    <el-table-column align="right" fixed="right" width="190">
                         <template #header>
-                            <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <div class="flex space-x-2">
+                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
+                        </div>
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
@@ -107,11 +115,13 @@
             </div>
           </div>
 
-          <div class="flex items-center mb-3">
+          <div class="flex mb-3">
             <el-tooltip content="Participantes de la reunion" placement="left">
               <i class="fa-solid fa-users text-gray-700 mr-3"></i>
             </el-tooltip>
-            <p class="text-gray-600">{{ participants }}</p>
+            <ul class="pl-5">
+                <li v-for="participant in participants" :key="participant.id" class="text-gray-600 text-sm list-disc">{{ participant.name }} ({{ participant.pivot.attendance_confirmation }})</li>
+            </ul>
           </div>
 
           <div class="flex items-center w-3/5 mb-3">
@@ -173,6 +183,8 @@ export default {
     data(){
 
         return{
+          inputSearch: '',
+            search: '',
             showMeetingModal: false,
             subject: null,
             location: null,
@@ -185,7 +197,7 @@ export default {
         }
     },
     props:{
-        meetings: Array,
+        meetings: Object,
     },
     components:{
         AppLayout,
@@ -196,6 +208,9 @@ export default {
         Modal,
     },
     methods:{
+      handleSearch(){
+            this.search = this.inputSearch;
+        },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
 
@@ -269,9 +284,9 @@ export default {
         },
         tableRowClassName({ row, rowIndex }) {
             if (row.status == 'Pendiente') {
-                return 'text-amber-600 cursor-pointer';
+                return 'text-amber-500 cursor-pointer';
             }else if(row.status == 'Autorizada'){
-                return 'text-green-600 cursor-pointer';
+                return 'text-green-500 cursor-pointer';
             }
 
             return '';

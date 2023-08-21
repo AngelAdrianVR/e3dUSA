@@ -17,6 +17,7 @@
       <form @submit.prevent="store">
         <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4">
 
+        <p class="text-xs text-secondary">En caso de estar registrado en catalogo de productos Seleccionarlo, si es nuevo producto dejar esa opcion en blanco</p>
             <div class="w-full flex items-center">
             <el-tooltip content="Producto de catálogo *" placement="top">
             <span
@@ -77,13 +78,52 @@
             <InputError :message="form.errors.name" />
           </div>
             <div>
-              <IconInput v-model="form.quantity" inputPlaceholder="Cantidad de muestras enviadas *" inputType="number">
+              <IconInput v-model="form.quantity" inputPlaceholder="Cantidad de muestras enviadas *" inputType="number" inputStep="0.01">
                 <el-tooltip content="Cantidad de muestras enviadas *" placement="top">
                   #
                 </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.quantity" />
             </div>
+            <div v-if="!form.catalog_product_id" class="col-span-full">
+                        <div class="flex space-x-2 mb-1">
+                            <IconInput v-model="newProduct" inputPlaceholder="Poducto(s) que lleva la muestra" inputType="text"
+                                class="w-full">
+                                <el-tooltip content="Producto(s) que contiene la muestra (Si es kit agregar todos los productos, si es uno solo, escribirlo)" placement="top">
+                                    <i class="fa-solid fa-box"></i>
+                                </el-tooltip>
+                            </IconInput>
+                            <SecondaryButton @click="addProduct" type="button">
+                                Agregar
+                                <i class="fa-solid fa-arrow-down ml-2"></i>
+                            </SecondaryButton>
+                        </div>
+                        <el-select v-model="form.products" multiple clearable placeholder="Productos"
+                            no-data-text="Agrega primero una caracteristica">
+                            <el-option v-for="product in form.products" :key="product" :label="product"
+                                :value="product"></el-option>
+                        </el-select>
+                        <InputError :message="form.errors.products" />
+                    </div>
+                    <div v-if="!form.catalog_product_id" class="col-span-full mt-2">
+                        <div class="flex items-center">
+                            <span
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                <el-tooltip content="Imagen del producto" placement="top">
+                                    <i class="fa-solid fa-images"></i>
+                                </el-tooltip>
+                            </span>
+                            <input @input="form.media = $event.target.files[0]" class="input h-12 rounded-lg
+                            file:mr-4 file:py-1 file:px-2
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-primary file:text-white
+                            file:cursor-pointer
+                            hover:file:bg-red-600" aria-describedby="file_input_help" id="file_input" type="file">
+                        </div>
+                        <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">SVG, PNG, JPG o
+                            GIF (MAX. 4 MB).</p>
+                    </div>
             <div class="flex col-span-2">
               <el-tooltip content="Comentarios/notas" placement="top">
                 <span
@@ -125,12 +165,15 @@ export default {
       company_branch_id: null,
       contact_id: null,
       sent_at: null,
+      products: [],
+      media: null,
       comments: null,
     });
 
     return {
       form,
       currentCompanyBranch: null,
+      newProduct: null,
     };
   },
   components: {
@@ -167,6 +210,13 @@ export default {
       today.setHours(0, 0, 0, 0);
       return time.getTime() > today.getTime();
     },
+    addProduct() {
+            if (this.newProduct.trim() !== '') {
+                this.form.products.push(this.newProduct);
+                // this.products.push(this.newProduct);
+                this.newProduct = '';
+            }
+        }
   },
 };
 </script>

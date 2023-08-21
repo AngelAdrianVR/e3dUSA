@@ -32,7 +32,7 @@
           </div>
           <div class="grid md:grid-cols-4 grid-cols-2">
             <div>
-              <IconInput v-model="form.weight" inputPlaceholder="Peso(Kg)" inputType="number">
+              <IconInput v-model="form.weight" inputPlaceholder="Peso(Kg)" inputType="number" inputStep="0.01">
                 <el-tooltip content="Peso(Kg)" placement="top">
                   <i class="fa-solid fa-weight-hanging"></i>
                 </el-tooltip>
@@ -40,7 +40,7 @@
               <InputError :message="form.errors.weight" />
             </div>
             <div>
-              <IconInput v-model="form.width" inputPlaceholder="Ancho(Cm)" inputType="number">
+              <IconInput v-model="form.width" inputPlaceholder="Ancho(Cm)" inputType="number" inputStep="0.01">
                 <el-tooltip content="Ancho(Cm)" placement="top">
                   <i class="fa-solid fa-text-width"></i>
                 </el-tooltip>
@@ -48,7 +48,7 @@
               <InputError :message="form.errors.width" />
             </div>
             <div>
-              <IconInput v-model="form.large" inputPlaceholder="Largo(Cm)" inputType="number">
+              <IconInput v-model="form.large" inputPlaceholder="Largo(Cm)" inputType="number" inputStep="0.01">
                 <el-tooltip content="Largo(Cm)" placement="top">
                   <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
                 </el-tooltip>
@@ -56,7 +56,7 @@
               <InputError :message="form.errors.large" />
             </div>
             <div>
-              <IconInput v-model="form.height" inputPlaceholder="Alto(Cm)" inputType="number">
+              <IconInput v-model="form.height" inputPlaceholder="Alto(Cm)" inputType="number" inputStep="0.01">
                 <el-tooltip content="Alto(Cm)" placement="top">
                   <i class="fa-solid fa-arrows-up-down"></i>
                 </el-tooltip>
@@ -65,7 +65,7 @@
             </div>
           </div>
           <div>
-            <IconInput v-model="form.cost" inputPlaceholder="Costo" inputType="number">
+            <IconInput v-model="form.cost" inputPlaceholder="Costo" inputType="number" inputStep="0.01">
               <el-tooltip content="Costo" placement="top">
                 <i class="fa-solid fa-sack-dollar"></i>
               </el-tooltip>
@@ -100,14 +100,6 @@
               format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
             <InputError :message="form.errors.aquisition_date" :disabled-date="disabledDate" />
           </div>
-          <!-- <div>
-            <IconInput v-model="form.aquisition_date" inputPlaceholder="Fecha de adquisición" inputType="date">
-              <el-tooltip content="Fecha de adquisición" placement="top">
-                <i class="fa-solid fa-calendar"></i>
-              </el-tooltip>
-            </IconInput>
-            <InputError :message="form.errors.aquisition_date" />
-          </div> -->
           <div class="col-span-full">
             <div class="flex items-center">
               <span

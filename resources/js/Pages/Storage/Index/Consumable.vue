@@ -13,8 +13,11 @@
                 </div>
             </template>
 
-            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de insumos')" class="text-center mt-3">
+            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de insumos')" class="text-center mt-3 hidden md:block">
                 <el-tag class="mt-3" style="font-size: 20px;" type="success">Costo total en almacén de insumos: ${{totalConsumableMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
+            </div>
+            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de insumos')" class="text-center mt-3 md:hidden block">
+                <el-tag class="mt-3" style="font-size: 17px;" type="success">Total almacén de insumos: ${{totalConsumableMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
             </div>
 
             <!-- tabla -->
@@ -53,9 +56,12 @@
                     <el-table-column prop="storageable.min_quantity" label="Min. Stock" />
                     <el-table-column prop="storageable.max_quantity" label="Max. Stock" />
                     <el-table-column prop="quantity" label="Stock" />
-                    <el-table-column align="right" fixed="right" width="120">
+                    <el-table-column align="right" fixed="right" width="190">
                         <template #header>
-                            <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
+                            <div class="flex space-x-2">
+                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
+                        </div>
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
@@ -97,6 +103,7 @@ export default {
 
         return {
             disableMassiveActions: true,
+            inputSearch: '',
             search: '',
             // pagination
             itemsPerPage: 10,
@@ -115,6 +122,9 @@ export default {
         totalConsumableMoney: Number
     },
     methods: {
+        handleSearch(){
+            this.search = this.inputSearch;
+        },
         tableRowClassName({ row, rowIndex }) {
             if (row.quantity <= row.storageable.min_quantity) {
                 return 'text-red-600 cursor-pointer';
@@ -141,10 +151,8 @@ export default {
 
             if (commandName == 'clone') {
                 this.clone(rowId);
-            } else if (commandName == 'make_so') {
-                console.log('SO');
             } else {
-                this.$inertia.get(route('storages.' + commandName, rowId));
+                this.$inertia.get(route('storages.consumables.' + commandName, rowId));
             }
         },
         handlePagination(val) {
@@ -201,7 +209,7 @@ export default {
             window.open(route('pdf.consumables-actual-stock'), '_blank');
         },
         handleRowClick(row) {
-            this.$inertia.get(route('storages.show', row));
+            this.$inertia.get(route('storages.consumables.show', row));
         },
 
         edit(index, raw_material) {

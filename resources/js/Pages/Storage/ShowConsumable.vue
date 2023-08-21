@@ -1,11 +1,11 @@
 <template>
   <div>
-    <AppLayoutNoHeader title="Almacén">
+    <AppLayoutNoHeader title="Almacén-insumos">
 
       <div class="flex justify-between text-lg mx-14 mt-11">
-        <span>Almacén</span>
+        <span>Almacén de insumos</span>
 
-        <Link :href="route('storages.raw-materials.index')"
+        <Link :href="route('storages.consumables.index')"
           class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
         <i class="fa-solid fa-xmark"></i>
         </Link>
@@ -44,21 +44,12 @@
             <el-tooltip
               v-if="$page.props.auth.user.permissions.includes('Editar materia prima') && currentStorage?.type != 'producto-terminado'"
               content="Editar" placement="top">
-              <Link :href="route('raw-materials.edit', selectedStorage)">
+              <Link :href="route('consumables.edit', selectedRawMaterial)">
               <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
                 <i class="fa-solid fa-pen text-sm"></i>
               </button>
               </Link>
             </el-tooltip>
-            <!-- <el-tooltip
-              v-if="$page.props.auth.user.permissions.includes('Editar materia prima') && currentStorage?.type != 'producto-terminado' && currentStorage"
-              content="Editar" placement="top">
-              <Link :href="route('raw-materials.edit', currentStorage?.id)">
-              <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
-                <i class="fa-solid fa-pen text-sm"></i>
-              </button>
-              </Link>
-            </el-tooltip> -->
 
             <Dropdown align="right" width="48" v-if="$page.props.auth.user.permissions.includes('Crear scrap') &&
               $page.props.auth.user.permissions.includes(
@@ -71,9 +62,9 @@
                 </button>
               </template>
               <template #content>
-              <DropdownLink :href="route('raw-materials.create')"
-                v-if="$page.props.auth.user.permissions.includes('Crear materia prima')">
-                Agregar nueva materia prima
+              <DropdownLink :href="route('consumables.create')"
+                v-if="$page.props.auth.user.permissions.includes('Crear insumos')">
+                Agregar nuevo insumo
               </DropdownLink>
                 <DropdownLink @click="scrapModal = true" as="button"
                   v-if="$page.props.auth.user.permissions.includes('Crear scrap')">
@@ -218,13 +209,13 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(movement, index) in reversedMovements" :key="index"
+                <tr v-for="(movement, index) in currentStorage?.movements.reverse()" :key="index"
                   class="text-[#9A9A9A] mb-4 text-xs">
                   <td class="text-left pb-3">
                     {{ index + 1 }}
                   </td>
                   <td class="text-center pb-3">
-                    {{ movement.user?.name }}
+                    {{ movement.user.name }}
                   </td>
                   <td class="text-center pb-3">
                     {{ getDateFormtted(movement.created_at) }}
@@ -303,6 +294,7 @@
       </DialogModal>
       <!-- --------------------------- Dialog Modal ends ------------------------------------ -->
 
+
       <!-- -------------- scrapModal starts----------------------- -->
       <Modal :show="scrapModal" @close="scrapModal = false">
       <form @submit.prevent="sentToScrap">
@@ -342,7 +334,8 @@
           </div>
       </form>
       </Modal>
-      
+
+
     </AppLayoutNoHeader>
   </div>
 </template>
@@ -369,7 +362,6 @@ export default {
       location: null,
       type: 'scrap',
       storage_id: null,
-
     });
     return {
       form,
@@ -384,7 +376,6 @@ export default {
       errorMessage: null,
       currentIndexStorage: null,
       tabs: 1,
-      reversedMovements: null,
     };
   },
   components: {
@@ -398,12 +389,11 @@ export default {
     DialogModal,
     IconInput,
     InputError,
-    Modal,
+    Modal
   },
   props: {
     storage: Object,
     storages: Array,
-    totalStorageMoney: Number
   },
   methods: {
     sentToScrap() {
@@ -557,7 +547,7 @@ export default {
           });
         }
       }
-          },
+    },
     previus(){
       this.currentIndexStorage -= 1;
       this.currentStorage = this.storages[this.currentIndexStorage];
@@ -572,14 +562,12 @@ export default {
   watch: {
     selectedStorage(newVal) {
       this.currentStorage = this.storages.find((item) => item.id == newVal);
-      this.reversedMovements = this.currentStorage.movements.reverse();
     },
   },
   mounted() {
     this.selectedStorage = this.storage.id;
     this.selectedRawMaterial = this.storage.storageable.id;
     this.currentIndexStorage = this.storages.findIndex((obj) => obj.id == this.selectedStorage);
-
   },
 };
 </script>

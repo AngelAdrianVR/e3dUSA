@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('company_product_sale', function (Blueprint $table) {
             $table->id();
-            $table->unsignedMediumInteger('quantity');
+            $table->unsignedFloat('quantity');
             $table->text('notes')->nullable();
             $table->unsignedTinyInteger('status');
             $table->json('assinged_jobs')->nullable();

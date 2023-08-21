@@ -7,13 +7,18 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
+    protected $commands = [
+        \App\Console\Commands\UpdatePartNumber::class,
+        \App\Console\Commands\TestCron::class,
+    ];
     /**
      * Define the application's command schedule.
      */
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command('app:close-payroll')->weekly()->fridays()->at('00:00');
+        // $schedule->command('app:close-payroll')->weekly()->fridays()->at('00:00');
+        $schedule->command('test:cron')->everyMinute();
     }
 
     /**

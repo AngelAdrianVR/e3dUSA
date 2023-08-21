@@ -15,6 +15,12 @@
                 </div>
             </template>
 
+            <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+                <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Enviado. Esperando respuesta </p>
+                <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Muestra devuelta</p>
+                <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Venta cerrada</p>
+            </div>
+
             <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
                 <div class="flex justify-between">
@@ -41,12 +47,16 @@
                     <el-table-column prop="name" label="Nombre" width="150" />
                     <el-table-column prop="company_branch.name" label="Cliente" width="160" />
                     <el-table-column prop="quantity" label="Cantidad" width="85" />
-                    <el-table-column prop="sent_at" label="Enviado el" width="100" />
-                    <el-table-column prop="returned_at" label="devuelto el" widh="100" />
-                    <el-table-column prop="status.label" label="Estatus" width="220" />
-                    <el-table-column align="right" fixed="right" width="120">
+                    <el-table-column prop="sent_at" label="Enviado el" width="120" />
+                    <el-table-column prop="returned_at" label="devuelto el" widh="120" />
+                    <el-table-column prop="comments" label="Comentarios" widh="150" />
+                    <!-- <el-table-column prop="status.label" label="Estatus" width="150" /> -->
+                    <el-table-column align="right" fixed="right" width="190">
                         <template #header>
-                            <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
+                            <div class="flex space-x-2">
+                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
+                        </div>
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
@@ -88,6 +98,7 @@ export default {
 
         return {
             disableMassiveActions: true,
+            inputSearch: '',
             search: '',
             // pagination
             itemsPerPage: 10,
@@ -105,6 +116,9 @@ export default {
         samples: Array
     },
     methods: {
+        handleSearch(){
+            this.search = this.inputSearch;
+        },
         tableRowClassName({ row, rowIndex }) {
 
             if (row.status['label'] == 'Enviado. Esperando respuesta') {
@@ -112,7 +126,7 @@ export default {
             }else if(row.status['label'] == 'Muestra devuelta'){
                 return 'cursor-pointer text-blue-500';
             }else{
-                return 'cursor-pointer text-green-600';
+                return 'cursor-pointer text-green-500';
             }
 
         },

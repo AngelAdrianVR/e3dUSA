@@ -13,8 +13,8 @@ class RawMaterial extends Model implements HasMedia
 {
     use HasFactory;
     use InteractsWithMedia;
-  
-  protected $fillable = [
+
+    protected $fillable = [
         'name',
         'part_number',
         'description',
@@ -42,8 +42,14 @@ class RawMaterial extends Model implements HasMedia
     public function catalogProducts(): BelongsToMany
     {
         return $this->belongsToMany(CatalogProduct::class)->using(CatalogProductRawMaterial::class)
-                ->withPivot([
-                    'quantity',
-                ])->withTimestamps();
+            ->withPivot([
+                'quantity',
+            ])->withTimestamps();
+    }
+
+    // methods
+    public function isInCatalogProduct()
+    {
+        return $this->catalogProducts()->exists();
     }
 }

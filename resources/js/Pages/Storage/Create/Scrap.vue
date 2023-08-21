@@ -34,6 +34,7 @@
               @change="storageableObj"
               class="my-2"
               placeholder="Selecciona el producto"
+              clearable filterable
             >
               <el-option
                 v-for="item in storages"
@@ -50,7 +51,7 @@
                 v-model="form.quantity"
                 inputPlaceholder="Cantidad para scrap"
                 inputType="number"
-                inputStep="0.1"
+                inputStep="0.01"
               >
               <el-tooltip content="Cantidad para scrap" placement="top">
                 123

@@ -34,6 +34,7 @@
                 @change="storageableObj"
                 class="my-2"
                 placeholder="Selecciona un producto del catálogo"
+                clearable filterable
               >
                 <el-option
                   v-for="item in catalog_products"
@@ -50,6 +51,7 @@
                 v-model="form.quantity"
                 inputPlaceholder="Cantidad en stock"
                 inputType="number"
+                inputStep="0.01"
               >
               <el-tooltip content="Cantidad en stock del producto terminado" placement="top">
                 123

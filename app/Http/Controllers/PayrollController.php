@@ -67,11 +67,10 @@ class PayrollController extends Controller
         //
     }
 
-    public function printTemplate(Request $request)
+    public function printTemplate($users_id_to_show, $payroll_id)
     {
         $users = User::all();
-        $payroll_id = $request->payroll_id;
-        $users_id_to_show = $request->users_id_to_show;
+        $users_id_to_show = json_decode($users_id_to_show);
 
         return inertia('Payroll/PrintTemplate', compact('users', 'payroll_id', 'users_id_to_show'));
     }
@@ -150,6 +149,7 @@ class PayrollController extends Controller
     {
         $user = User::find($request->user_id);
         $bonuses = [];
+        $discounts = [];
         foreach ($user->employee_properties['bonuses'] as $bonus_id) {
             $bonus = Bonus::find($bonus_id);
             $bonuses[] = [
@@ -157,6 +157,13 @@ class PayrollController extends Controller
                 'amount' => $user->employee_properties['hours_per_week'] >= 48
                     ? $bonus->full_time
                     : $bonus->half_time
+            ];
+        }
+        foreach ($user->employee_properties['discounts'] as $discount_id) {
+            // $discount = Discount::find($discount_id);
+            $discounts[] = [
+                'id' => $discount_id,
+                'amount' => $discount_id == 1 ? 100 : 32
             ];
         }
 
@@ -172,6 +179,7 @@ class PayrollController extends Controller
                     'additionals' => [
                         'salary' =>  $user->employee_properties['salary'],
                         'bonuses' => $bonuses,
+                        'discounts' => $discounts,
                         'hours_per_week' => $user->employee_properties['hours_per_week'],
                     ],
                 ]);
@@ -249,6 +257,40 @@ class PayrollController extends Controller
         return response()->json(['item' => $bonuses]);
     }
 
+    public function getDiscounts(Request $request)
+    {
+        $payroll = Payroll::find($request->payroll_id);
+        $processed = collect($payroll->getProcessedAttendances($request->user_id));
+        $user = User::find($request->user_id);
+
+        // discounts
+        $discounts = [];
+        $user_discounts = $user->employee_properties['discounts'];
+        foreach ($user_discounts as $user_discount_id) {
+            // $current_discount = Discount::find($user_discount_id);
+            // $amount = $user->employee_properties['hours_per_week'] >= 48
+            //     ? $current_discount->full_time
+            //     : $current_discount->half_time;
+            $amount = 0;
+
+            if ($user_discount_id === 1) { // puntualidad
+                $discount_name = 'Puntualidad';
+                $minutes_late = $processed->sum('late');
+                if ($minutes_late >= 15) {
+                    $amount = 100;
+                }
+            } elseif ($user_discount_id === 2) { //seguro
+                $discount_name = 'Seguro';
+                $amount = 32;
+            }
+
+            $discounts[] = ['name' => $discount_name, 'amount' => ['number_format' => number_format($amount, 2), 'raw' => $amount]];
+        }
+
+
+        return response()->json(['item' => $discounts]);
+    }
+
     public function getExtras(Request $request)
     {
         $payroll = Payroll::find($request->payroll_id);
@@ -288,6 +330,13 @@ class PayrollController extends Controller
         $current->update(['is_active' => 0]);
 
         return response()->json(['message' => "Nomina semana $current->week cerrada", 'item' => PayrollResource::make($new)]);
+    }
+
+    public function getCurrentPayroll()
+    {
+        $current = Payroll::getCurrent();
+
+        return response()->json(['item' => $current]);
     }
 
     public function getAdditionalTime(Request $request)

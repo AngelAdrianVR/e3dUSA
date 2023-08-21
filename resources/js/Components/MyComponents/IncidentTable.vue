@@ -298,7 +298,7 @@ export default {
 
         if (response.status === 200) {
           const index = this.processedAttendances.findIndex(item => item.id == payrollUserId);
-          this.processedAttendances[index] = response.data.item;
+          this.processedAttendances[index].incident = response.data.item.incident;
           this.$notify({
             title: 'Éxito',
             message: 'Asistencia registrada',

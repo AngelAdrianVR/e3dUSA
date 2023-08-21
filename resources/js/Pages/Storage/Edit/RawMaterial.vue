@@ -9,7 +9,7 @@
           </Link>
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">
-              Editar "{{ raw_material.data.name }}""
+              Editar "{{ raw_material.data.name }}"
             </h2>
           </div>
         </div>
@@ -18,6 +18,31 @@
       <!-- Form -->
       <form @submit.prevent="update">
         <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md md:space-y-4">
+        <div class="flex items-center">
+            <el-tooltip content="Tipo de producto (necesario para generar el número de parte)" placement="top">
+              <span
+                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                <i class="fa-solid fa-tag"></i>
+              </span>
+            </el-tooltip>
+            <el-select @change="generatePartNumber" v-model="productType" placeholder="Tipo de producto *">
+              <el-option v-for="item in productTypes" :key="item.value" :label="item.label" :value="item.value">
+                <span style="float: left">{{ item.label }}</span>
+                <span style="
+                  float: right;
+                  color: #cccccc;
+                  font-size: 13px;
+                  ">{{ item.value }}</span>
+              </el-option>
+            </el-select>
+          </div>
+          <div>
+            <IconInput v-model="brand" @change="generatePartNumber" inputPlaceholder="Marca del producto *" inputType="text">
+              <el-tooltip content="Marca del producto (si no tiene marca colocar 'Generico')" placement="top">
+                <i class="fa-solid fa-copyright"></i>
+              </el-tooltip>
+            </IconInput>
+          </div>
           <div>
             <IconInput v-model="form.name" inputPlaceholder="Nombre *" inputType="text">
               <el-tooltip content="Nombre" placement="top"> A </el-tooltip>
@@ -37,7 +62,7 @@
               <InputError :message="form.errors.part_number" />
             </div>
             <div>
-              <IconInput v-model="form.min_quantity" inputPlaceholder="Stock mínimo" inputType="number">
+              <IconInput v-model="form.min_quantity" inputPlaceholder="Stock mínimo" inputType="number" inputStep="0.01">
                 <el-tooltip content="Cantidad mínima que puede haber en stock" placement="top">
                   <i class="fa-solid fa-minus"></i>
                 </el-tooltip>
@@ -45,7 +70,7 @@
               <InputError :message="form.errors.min_quantity" />
             </div>
             <div>
-              <IconInput v-model="form.max_quantity" inputPlaceholder="Stock máximo" inputType="number">
+              <IconInput v-model="form.max_quantity" inputPlaceholder="Stock máximo" inputType="number" inputStep="0.01">
                 <el-tooltip content="Cantidad máxima que puede haber en stock" placement="top">
                   <i class="fa-solid fa-plus"></i>
                 </el-tooltip>
@@ -53,7 +78,7 @@
               <InputError :message="form.errors.max_quantity" />
             </div>
             <div>
-              <IconInput v-model="form.initial_stock" inputPlaceholder="Stock actual" inputType="number">
+              <IconInput v-model="form.initial_stock" inputPlaceholder="Stock actual" inputType="number" inputStep="0.01">
                 <el-tooltip content="Stock actual" placement="top">
                   123
                 </el-tooltip>
@@ -141,7 +166,7 @@
 
           <el-divider />
           <div class="mx-3 md:text-right">
-            <PrimaryButton :disabled="form.processing"> Agregar </PrimaryButton>
+            <PrimaryButton :disabled="form.processing"> Editar </PrimaryButton>
           </div>
         </div>
       </form>
@@ -172,6 +197,7 @@ export default {
       type: 'materia-prima',
       description: this.raw_material.data.description,
       features: this.raw_material.data.features,
+      media: null,
     });
 
     return {
@@ -189,6 +215,106 @@ export default {
         'Cubeta(s)',
         'Bote(s)',
       ],
+      productType: this.raw_material.data.part_number.split('-')[0],
+      brand: this.raw_material.data.part_number.split('-')[1],
+      productTypes: [
+        {
+          label: 'Porta-placa',
+          value: 'PP',
+        },
+        {
+          label: 'Emblema',
+          value: 'EM',
+        },
+        {
+          label: 'Llavero',
+          value: 'LL',
+        },
+        {
+          label: 'Parasol',
+          value: 'PS',
+        },
+        {
+          label: 'Tapete',
+          value: 'TP',
+        },
+        {
+          label: 'Porta-documento',
+          value: 'PD',
+        },
+        {
+                    label: 'Manta',
+                    value: 'MT',
+                },
+                {
+                    label: 'Carpeta',
+                    value: 'CP',
+                },
+                {
+                    label: 'Separador',
+                    value: 'SP',
+                },
+        {
+          label: 'Termo',
+          value: 'TM',
+        },
+        {
+          label: 'Placa de estireno',
+          value: 'PE',
+        },
+        {
+          label: 'Etiqueta',
+          value: 'ET',
+        },
+        {
+          label: 'Overlay',
+          value: 'OV',
+        },
+        {
+          label: 'Accesorio para llavero',
+          value: 'ALL',
+        },
+        {
+          label: 'Pin',
+          value: 'PI',
+        },
+        {
+          label: 'Prenda',
+          value: 'PR',
+        },
+        {
+          label: 'Botella',
+          value: 'BT',
+        },
+        {
+          label: 'Hielera',
+          value: 'HI',
+        },
+        {
+          label: 'Funda para auto',
+          value: 'FA',
+        },
+        {
+          label: 'Perfumero',
+          value: 'PF',
+        },
+        {
+          label: 'Funda para llave',
+          value: 'FLL',
+        },
+        {
+          label: 'Bocina',
+          value: 'BC',
+        },
+        {
+          label: 'Impresión',
+          value: 'IM',
+        },
+        {
+          label: "Paraguas",
+          value: "PG",
+        },
+      ],
     };
   },
   components: {
@@ -204,15 +330,32 @@ export default {
   },
   methods: {
     update() {
-      this.form.put(route("raw-materials.update", this.raw_material), {
-        onSuccess: () => {
-          this.$notify({
-            title: "Éxito",
-            message: "Se actualizó correctamente",
-            type: "success",
-          });
-        },
-      });
+      if (this.form.media !== null) {
+        this.form.post(route("raw-materials.update-with-media", this.raw_material.data), {
+          method: '_put',
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Se actualizó correctamente",
+              type: "success",
+            });
+          },
+        });
+      } else {
+        this.form.put(route("raw-materials.update", this.raw_material.data), {
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Se actualizó correctamente",
+              type: "success",
+            });
+          },
+        });
+      }
+    },
+    generatePartNumber() {
+      const partNumber = this.productType + '-' + this.brand?.toUpperCase().substr(0,3) + '-';
+      this.form.part_number = partNumber;
     },
     addFeature() {
       if (this.newFeature.trim() !== "") {

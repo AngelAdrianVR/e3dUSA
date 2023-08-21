@@ -37,12 +37,12 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(item, index) in quote.data.products" :key="index" class="bg-gray-200 text-gray-700">
+                <tr v-for="(item, index) in quote.data.products" :key="index" class="bg-gray-200 text-gray-700 uppercase">
                     <td class="px-2 py-px">{{ item.name }}</td>
                     <td class="px-2 py-px">{{ item.pivot.notes ?? '--' }}</td>
-                    <td class="px-2 py-px">{{ item.pivot.price }} {{ quote.data.currency }}</td>
-                    <td class="px-2 py-px">{{ item.pivot.quantity }} {{ item.measure_unit }}</td>
-                    <td class="px-2 py-px text-right">{{ item.pivot.quantity * item.pivot.price }} {{ quote.data.currency }}</td>
+                    <td class="px-2 py-px">{{ item.pivot.price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ quote.data.currency }}</td>
+                    <td class="px-2 py-px">{{ item.pivot.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ item.measure_unit }}</td>
+                    <td class="px-2 py-px text-right">{{ (item.pivot.quantity * item.pivot.price).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ quote.data.currency }}</td>
                 </tr>
             </tbody>
             <!-- <tfoot>
@@ -58,7 +58,7 @@
         <div class="w-11/12 mx-auto my-3 grid grid-cols-3 gap-4 ">
             <template v-for="item in quote.data.products" ::key="item.id">
                 <div class="bg-gray-200 rounded-t-xl rounded-b-md border" style="font-size: 8px;">
-                    <img class="rounded-t-xl max-h-52 mx-auto" :src="item.media[0].original_url">
+                    <img class="rounded-t-xl max-h-52 mx-auto" :src="item.media[0]?.original_url">
                     <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
                 </div>
             </template>
@@ -78,7 +78,7 @@
             <ol class="list-decimal mx-2 mb-2">
                 <li v-if="quote.data.notes !== '--'" class="font-bold text-blue-500">{{ quote.data.notes }}</li>
                 <li>PRICES WITHOUT TAXES</li>
-                <li>TOOLING COSTS: <span class="font-bold text-blue-500">{{ quote.data.tooling_cost }} {{ quote.data.currency }}</span></li>
+                <li>TOOLING COSTS: <span class="font-bold text-blue-500" :class="quote.data.tooling_cost_stroked ? 'line-through' : ''">{{ quote.data.tooling_cost }} {{ quote.data.currency }}</span></li>
                 <li>DELIVERY TIME FOR THE FIRST PRODUCTION <span class="font-bold text-blue-500">{{ quote.data.first_production_days }}</span>.
                     TIME RUNS ONCE PAYING 100% OF THE TOOLING AND THE 50% OF THE
                     PRODUCTS.</li>
@@ -115,14 +115,14 @@
             </div>
             <div>
                 Authorized by:
-                <span v-if="quote.authorized_user_name" class="text-green-600">{{ quote.data.authorized_user_name }}</span>
+                <span v-if="quote.data.authorized_user_name" class="text-green-600">{{ quote.data.authorized_user_name }}</span>
                 <!-- No authorized Banner -->
-                <div v-else class="absolute left-28 top-1/3 text-red-700 text-5xl border-4 border-red-700 p-6">
+                <span v-else class="text-amber-500">No authorized</span>
+                <div v-if="!quote.data.authorized_user_name" class="absolute left-28 top-1/3 text-red-700 text-5xl border-4 border-red-700 p-6">
                     <i class="fas fa-exclamation"></i>
                     <span class="ml-2">NO AUTHORIZED</span>
                 </div>
 
-                <span class="text-amber-500">No authorized</span>
             </div>
         </div>
 

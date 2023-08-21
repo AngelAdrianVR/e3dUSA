@@ -10,12 +10,14 @@ use App\Models\Sale;
 use Illuminate\Http\Request;
 
 
-class SaleController extends Controller 
+class SaleController extends Controller
 {
 
     public function index()
     {
         $sales = SaleResource::collection(Sale::with('companyBranch', 'user')->latest()->get());
+
+        // return $sales;
 
         return inertia('Sale/Index', compact('sales'));
     }
@@ -23,8 +25,9 @@ class SaleController extends Controller
 
     public function create()
     {
-        $company_branches = CompanyBranch::with('company.catalogProducts', 'contacts')->latest()->get();
+        $company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
 
+        // return $company_branches;
         return inertia('Sale/Create', compact('company_branches'));
     }
 
@@ -44,10 +47,10 @@ class SaleController extends Controller
         $sale = Sale::create($request->except('products') + ['user_id' => auth()->id()]);
         $can_authorize = auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin');
 
-        if($can_authorize) {
+        if ($can_authorize) {
             $sale->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
         }
-        
+
         // store media
         $sale->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection('oce'));
 
@@ -62,13 +65,14 @@ class SaleController extends Controller
     {
         $sales = SaleResource::collection(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator'], 'productions' => ['user', 'operator']])->latest()->get());
 
+        // return $sales;
         return inertia('Sale/Show', compact('sale', 'sales'));
     }
 
     public function edit(Sale $sale)
     {
         $sale = Sale::find($sale->id);
-        $catalog_products_company_sale = CatalogProductCompanySale::where('sale_id', $sale->id)->get();
+        $catalog_products_company_sale = CatalogProductCompanySale::with('catalogProductCompany')->where('sale_id', $sale->id)->get();
         $company_branches = CompanyBranch::with('company.catalogProducts', 'contacts')->get();
         $media = $sale->getMedia('oce')->all();
 
@@ -89,12 +93,27 @@ class SaleController extends Controller
             'products' => 'array|min:1'
         ]);
 
+        $updatedProductIds = [];
         $sale->update($request->except('products'));
-        $sale->catalogProductCompanySales()->delete();
 
         foreach ($request->products as $product) {
-            CatalogProductCompanySale::create($product + ['sale_id' => $sale->id]);
+            $productData = $product + ['sale_id' => $sale->id];
+
+            if (isset($product['id'])) {
+                // Actualizar la relación existente en catalogProductCompanySales
+                $existingRelation = CatalogProductCompanySale::findOrFail($product['id']);
+                $existingRelation->update($productData);
+                $updatedProductIds[] = $product['id'];
+            } else {
+                // Crear una nueva relación en catalogProductCompanySales
+                CatalogProductCompanySale::create($productData);
+            }
         }
+
+        // Eliminar los productos que no se actualizaron o crearon en esta solicitud
+        CatalogProductCompanySale::where('sale_id', $sale->id)
+            ->whereNotIn('id', $updatedProductIds)
+            ->delete();
 
         return to_route('sales.index');
     }
@@ -108,6 +127,10 @@ class SaleController extends Controller
     {
         foreach ($request->sales as $sale) {
             $sale = Sale::find($sale['id']);
+            foreach ($sale->productions as $production) {
+                $production->catalogProductCompanySale?->delete();
+                $production->delete();
+            }
             $sale?->delete();
         }
 
@@ -160,6 +183,4 @@ class SaleController extends Controller
                 'message' => "Orden de venta clonada: $new_item_folio", 'newItem' => saleResource::make(Sale::with('companyBranch', 'user')->find($clone->id))
             ]);
     }
-
-    
 }

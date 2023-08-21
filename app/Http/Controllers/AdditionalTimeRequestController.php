@@ -13,7 +13,7 @@ class AdditionalTimeRequestController extends Controller
     
     public function index()
     {
-        $more_additional_times = MoreAdditionalTimeResource::collection(AdditionalTimeRequest::latest()->get()); //que salgan solo las solicitudes del usuario autenticado
+        $more_additional_times = MoreAdditionalTimeResource::collection(AdditionalTimeRequest::where('user_id', auth()->id())->latest()->get()); //que salgan solo las solicitudes del usuario autenticado
         return inertia('AdditionalTime/Index', compact('more_additional_times'));
     }
 

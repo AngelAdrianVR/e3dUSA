@@ -59,7 +59,7 @@
             </div>
             <div>
               <IconInput v-model="form.employee_properties.salary.week" inputPlaceholder="Salario semanal *"
-                inputType="number">
+                inputType="number" inputStep="0.01">
                 <el-tooltip content="Salario semanal" placement="top">
                   <i class="fa-solid fa-hand-holding-dollar"></i>
                 </el-tooltip>
@@ -68,7 +68,7 @@
             </div>
             <div>
               <IconInput v-model="form.employee_properties.hours_per_week" inputPlaceholder="Horas semanales *"
-                inputType="number">
+                inputType="number" inputStep="0.01">
                 <el-tooltip content="Horas semanales" placement="top">
                   <i class="fa-solid fa-user-clock"></i>
                 </el-tooltip>
@@ -182,6 +182,7 @@ export default {
         //   },
         birthdate: this.user.employee_properties.birthdate.raw,
         bonuses: this.user.employee_properties.bonuses,
+        discounts: this.user.employee_properties.discounts,
         job_position: this.user.employee_properties.job_position,
         department: this.user.employee_properties.department,
         work_days: [

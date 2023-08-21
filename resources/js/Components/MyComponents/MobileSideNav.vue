@@ -256,7 +256,7 @@ export default {
                         },
                         {
                             label: 'Costos de producción',
-                            route: 'production-costs.index',
+                            route: route('production-costs.index'),
                             show: this.$page.props.auth.user.permissions.includes('Ver costos de produccion')
                         },
                     ],

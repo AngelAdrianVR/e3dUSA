@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->date('old_date')->nullable();
             $table->date('new_date');
-            $table->unsignedMediumInteger('old_price')->nullable();
-            $table->unsignedMediumInteger('new_price');
+            $table->unsignedFloat('old_price')->nullable();
+            $table->unsignedFloat('new_price');
             $table->string('old_currency')->nullable();
             $table->string('new_currency');
             $table->foreignId('catalog_product_id')->constrained()->cascadeOnDelete();

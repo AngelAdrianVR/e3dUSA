@@ -9,10 +9,10 @@
 
     <!-- card -->
     <p class="text-center font-bold mt-4 text-sm">
-      {{ catalog_product_company_sale.catalog_product_company.catalog_product.name }}
+      {{ catalog_product_company_sale.catalog_product_company?.catalog_product?.name }}
     </p>
     <span class="font-bold absolute right-5 top-2">{{
-      catalog_product_company_sale.catalog_product_company.catalog_product.part_number
+      catalog_product_company_sale.catalog_product_company?.catalog_product?.part_number
     }}</span>
     <el-tooltip content="Número de parte" placement="top">
       <i
@@ -22,7 +22,7 @@
     <div class="grid grid-cols-2 gap-x-4">
       <figure class="bg-[#D9D9D9] w-full h-28 my-3 rounded-[10px]">
         <el-image style="height: 100%; border-radius: 10px;"
-          :src="catalog_product_company_sale.catalog_product_company.catalog_product.media[0]?.original_url"
+          :src="catalog_product_company_sale.catalog_product_company?.catalog_product?.media[0]?.original_url"
           fit="contain">
           <template #error>
             <div class="flex justify-center items-center text-[#ababab]">
@@ -33,7 +33,7 @@
       </figure>
       <div>
         <p class="text-primary text-left">Caracteristicas</p>
-        <li v-for="(feature, index) in catalog_product_company_sale.catalog_product_company.catalog_product.features"
+        <li v-for="(feature, index) in catalog_product_company_sale.catalog_product_company?.catalog_product?.features"
           :key="index" class="text-gray-800 list-disc">{{ feature }}</li>
       </div>
     </div>
@@ -64,18 +64,18 @@
 
     <div class="bg-[#d9d9d9] rounded-lg p-2 grid grid-cols-2 my-3">
       <span class="">Precio Anterior:</span>
-      <span class="text-secondary ">{{ catalog_product_company_sale.catalog_product_company.old_price }}
-        {{ catalog_product_company_sale.catalog_product_company.old_currency }}</span>
-      <span class="">Establecido:</span>
+      <span class="text-secondary ">{{ catalog_product_company_sale.catalog_product_company?.old_price }}
+        {{ catalog_product_company_sale.catalog_product_company?.old_currency }}</span>
+      <span class="">Establecido el:</span>
       <span class="text-secondary  mb-3">{{
-        catalog_product_company_sale.catalog_product_company.old_date
+        catalog_product_company_sale.catalog_product_company?.old_date
       }}</span>
 
-      <span class="">Precio Anterior:</span>
-      <span class="text-secondary ">{{ catalog_product_company_sale.catalog_product_company.new_price }}
-        {{ catalog_product_company_sale.catalog_product_company.new_currency }}</span>
-      <span class="">Establecido:</span>
-      <span class="text-secondary ">{{ catalog_product_company_sale.catalog_product_company.new_date }}</span>
+      <span class="">Precio Actual:</span>
+      <span class="text-secondary ">{{ catalog_product_company_sale.catalog_product_company?.new_price }}
+        {{ catalog_product_company_sale.catalog_product_company?.new_currency }}</span>
+      <span class="">Establecido el:</span>
+      <span class="text-secondary ">{{ catalog_product_company_sale.catalog_product_company?.new_date }}</span>
     </div><br>
 
     <div class="flex items-center absolute bottom-3 left-4">
@@ -130,6 +130,8 @@ export default {
       const allTasksFinished = productions.every((order) => order.finished_at !== null);
       const someTasksStarted = productions.some((order) => order.started_at !== null && order.finished_at === null);
       const allTasksNotStarted = productions.every((order) => order.started_at === null);
+
+      if (!productions.length) return "Sin iniciar";
 
       if (allTasksFinished) {
         return "Terminado";

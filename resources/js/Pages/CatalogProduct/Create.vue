@@ -3,7 +3,7 @@
         <template #header>
             <div class="flex justify-between">
                 <Link :href="route('catalog-products.index')"
-                    class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
+                    class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center md:ml-5">
                 <i class="fa-solid fa-chevron-left"></i>
                 </Link>
                 <div class="flex items-center space-x-2">
@@ -228,7 +228,7 @@
 
                 <el-divider />
                 <div class="md:text-right">
-                    <PrimaryButton :disabled="form.processing"> Crear producto </PrimaryButton>
+                    <PrimaryButton :disabled="form.processing || !form.raw_materials.length"> Crear producto </PrimaryButton>
                 </div>
             </div>
         </form>
@@ -300,6 +300,18 @@ export default {
                 {
                     label: 'Tapete',
                     value: 'TP',
+                },
+                {
+                    label: 'Manta',
+                    value: 'MT',
+                },
+                {
+                    label: 'Carpeta',
+                    value: 'CP',
+                },
+                {
+                    label: 'Separador',
+                    value: 'SP',
                 },
                 {
                     label: 'Porta-documento',
@@ -393,7 +405,7 @@ export default {
             });
         },
         generatePartNumber() {
-            const partNumber = 'C-' + this.productType + '-' + this.brand?.toUpperCase().substr(0, 3) + '-' + this.consecutive;
+            const partNumber = 'C-' + this.productType + '-' + this.brand?.toUpperCase().substr(0, 3) + '-';
             this.form.part_number = partNumber;
         },
         addProduct() {

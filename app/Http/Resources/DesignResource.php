@@ -64,7 +64,7 @@ class DesignResource extends JsonResource
             'design_modifications' => $this->design_modifications,
             'started_at' => $this->started_at?->isoFormat('YYYY MMM DD') ?? 'No iniciado',
             'finished_at' => $this->finished_at?->isoFormat('YYYY MMM DD'),
-            'created_at' => $this->created_at?->isoFormat('YYYY MMM DD'),
+            'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'updated_at' => $this->updated_at?->isoFormat('YYYY MMM DD'),
         ];
     }

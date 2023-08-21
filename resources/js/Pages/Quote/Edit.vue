@@ -85,15 +85,22 @@
                         </div>
                         <div>
                             <IconInput v-model="form.tooling_cost" inputPlaceholder="Costo de herramental *"
-                                inputType="number">
+                                inputType="number" inputStep="0.01">
                                 <el-tooltip content="Costo de herramental" placement="top">
                                     <i class="fa-solid fa-hammer"></i>
                                 </el-tooltip>
                             </IconInput>
                             <InputError :message="form.errors.tooling_cost" />
                         </div>
+                        <label class="flex items-center text-gray-600">
+                            <input type="checkbox" v-model="form.tooling_cost_stroked"
+                                class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
+                            <span class="ml-2 text-sm">Tachar:</span>
+                            <span class="text-gray-600 ml-3" :class="form.tooling_cost_stroked ? 'line-through' : ''">{{
+                                form.tooling_cost }}</span>
+                        </label>
                         <div>
-                            <IconInput v-model="form.freight_cost" inputPlaceholder="Costo de flete *" inputType="number">
+                            <IconInput v-model="form.freight_cost" inputPlaceholder="Costo de flete *" inputType="number" inputStep="0.01">
                                 <el-tooltip content="Costo de flete" placement="top">
                                     <i class="fa-solid fa-truck-fast"></i>
                                 </el-tooltip>
@@ -130,7 +137,7 @@
                                 <li class="flex justify-between items-center">
                                     <p class="text-sm">
                                         <span class="text-primary">{{ index + 1 }}.</span>
-                                        {{ catalog_products.find(prd => prd.id === item.id)?.name }}
+                                        {{ catalog_products.find(prd => prd.id === item.catalog_product_id)?.name }}
                                         (x{{ item.quantity }} unidades)
                                     </p>
                                     <div class="flex space-x-2 items-center">
@@ -157,7 +164,7 @@
                                     <i class="fa-solid fa-magnifying-glass"></i>
                                 </span>
                             </el-tooltip>
-                            <el-select v-model="product.id" clearable filterable placeholder="Busca el producto"
+                            <el-select v-model="product.catalog_product_id" clearable filterable placeholder="Busca el producto"
                                 no-data-text="No hay productos registrados" no-match-text="No se encontraron coincidencias">
                                 <el-option v-for="item in catalog_products" :key="item.id" :label="item.name"
                                     :value="item.id" />
@@ -186,7 +193,7 @@
 
                         <div>
                             <IconInput v-model="product.price" inputPlaceholder="Precio unitario *" inputType="number"
-                                inputStep="0.1">
+                                inputStep="0.01">
                                 <el-tooltip content="Precio unitario" placement="top">
                                     <i class="fa-solid fa-dollar-sign"></i>
                                 </el-tooltip>
@@ -207,7 +214,7 @@
                         <div>
                             <div>
                                 <SecondaryButton @click="addProduct" type="button"
-                                    :disabled="!product.id || !product.quantity || !product.price || form.processing">
+                                    :disabled="!product.catalog_product_id || !product.quantity || !product.price || form.processing">
                                     {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
                                 </SecondaryButton>
                             </div>
@@ -238,6 +245,7 @@ export default {
             receiver: this.quote.receiver,
             department: this.quote.department,
             tooling_cost: this.quote.tooling_cost,
+            tooling_cost_stroked: Boolean(this.quote.tooling_cost_stroked),
             freight_cost: this.quote.freight_cost,
             first_production_days: this.quote.first_production_days,
             notes: this.quote.notes,

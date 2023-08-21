@@ -1,15 +1,19 @@
 <template>
   <div v-if="!loading" class="grid grid-cols-4 md:grid-cols-3 lg:py-6 lg:px-10 mb-6 lg:mb-0 text-[10px] md:text-sm">
-    <div class="bg-transparent rounded-lg lg:mx-auto mr-auto col-span-3 md:col-span-2 w-5/6">
-      <div class="flex items-center">
-        <i class="fa-solid fa-circle-user mr-3 text-xl"></i>
-        <p>{{ user.name }}</p>
+    <div class="bg-transparent rounded-lg lg:mx-auto"
+      :class="dontShowDetails ? 'col-span-full' : 'col-span-3 md:col-span-2 mr-auto w-5/6'">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <i class="fa-solid fa-circle-user mr-3 text-xl"></i>
+          <p>{{ user.name }}</p>
+        </div>
+        <p class="text-xs">{{ getRemainingHoursWeekly() }} para completar semana</p>
       </div>
       <div class="overflow-x-auto shadow-md mt-3 rounded-lg">
         <table class="items-center w-full bg-transparent">
           <thead class="text-primary bg-[#e6e6e6] px-3">
             <tr class="rounded-tl-lg rounded-tr-lg">
-              <th class="rounded-tl-lg w-48">Día</th>
+              <th class="rounded-tl-lg md:w-48">Día</th>
               <th>Entrada</th>
               <th>Salida</th>
               <th>Break</th>
@@ -23,8 +27,15 @@
                   <span class="ml-3 font-bold text-xs"> {{ attendance.date?.formatted }} </span>
                 </th>
                 <td class="px-6 text-xs py-px lg:py-2">
-                  <p class="bg-transparent text-sm" :class="attendance.late ? 'text-amber-600' : ''">{{
-                    attendance.check_in }}</p>
+                  <p class="bg-transparent text-sm" :class="{
+                    'text-amber-500': attendance.late > 0 && attendance.late < 15,
+                    'text-red-600': attendance.late >= 15,
+                  }">
+                    {{ attendance.check_in }}
+                    <i v-if="!attendance.late" class="fa-solid fa-face-smile text-yellow-400 ml-1"></i>
+                    <i v-else-if="attendance.late < 15" class="fa-solid fa-face-meh ml-1"></i>
+                    <i v-else class="fa-solid fa-face-sad-tear ml-1"></i>
+                  </p>
                 </td>
                 <td class="px-6 text-xs py-px lg:py-2">
                   <p class="bg-transparent text-sm">{{ attendance.check_out }}</p>
@@ -56,7 +67,7 @@
         </table>
       </div>
     </div>
-    <div class="mr-5">
+    <div v-if="!dontShowDetails" class="mr-5">
       <p class="mb-3">
         <strong class="mr-3"> Semana {{ payroll?.week }} </strong>
         {{ payroll?.start_date }} - {{ payroll?.end_date }}
@@ -67,9 +78,9 @@
           <span class="text-center">{{ getWorkedDays().length }}</span>
           <span>${{ getWorkedDaysSalary().toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
         </p>
-        <p v-if="additionalTime" class="grid grid-cols-3 gap-x-1">
+        <p class="grid grid-cols-3 gap-x-1">
           <span>Tiempo adicional</span>
-          <span class="text-center">{{ additionalTime.time_requested }}</span>
+          <span class="text-center">{{ additionalTime?.time_requested ?? '00:00' }}</span>
           <span class=""></span>
         </p>
         <p v-if="getHolidays().length" class="grid grid-cols-3 gap-x-1">
@@ -93,6 +104,11 @@
           <span>{{ bonus.name }}</span>
           <span class="text-center"></span>
           <span>${{ bonus.amount.number_format }}</span>
+        </p>
+        <p v-for="(discount, index) in discounts" :key="index" class="grid grid-cols-3 gap-x-1 text-red-500">
+          <span>{{ discount.name }}</span>
+          <span class="text-center"></span>
+          <span>-${{ discount.amount.number_format }}</span>
         </p>
         <p v-if="extras" class="grid grid-cols-3 gap-x-1">
           <span>Horas extras</span>
@@ -129,6 +145,7 @@ export default {
       processedAttendances: [],
       payroll: null,
       bonuses: null,
+      discounts: null,
       extras: null,
       additionalTime: null,
     }
@@ -136,6 +153,10 @@ export default {
   props: {
     user: Number,
     payrollId: Number,
+    dontShowDetails: {
+      type: Boolean,
+      default: false,
+    }
   },
   components: {
     PrimaryButton,
@@ -186,6 +207,20 @@ export default {
         console.log(error);
       }
     },
+    async getDiscounts() {
+      try {
+        const response = await axios.post(route('payrolls.get-discounts'), {
+          payroll_id: this.payrollId,
+          user_id: this.user.id
+        });
+
+        if (response.status === 200) {
+          this.discounts = response.data.item;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
     async getExtras() {
       try {
         const response = await axios.post(route('payrolls.get-extras'), {
@@ -228,7 +263,7 @@ export default {
     },
     getWorkedDaysSalary() {
       let totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
-      let totalWeekHoursAllowed = this.processedAttendances.find(item => item.check_in)?.additionals.hours_per_week;
+      let totalWeekHoursAllowed = this.processedAttendances.find(item => item.check_in)?.additionals?.hours_per_week;
 
       if (this.additionalTime) {
         const time = this.additionalTime.time_requested;
@@ -236,7 +271,6 @@ export default {
         const minutes = time.split(':')[1]
 
         totalWeekHoursAllowed += parseFloat(hours) + parseFloat(minutes / 60);
-        console.log(totalWeekHoursAllowed);
       }
 
       if (totalWeekHours > totalWeekHoursAllowed) {
@@ -244,8 +278,17 @@ export default {
       }
       return totalWeekHours * this.user.employee_properties.salary.hour;
     },
+    getRemainingHoursWeekly() {
+      const totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
+      const remainingHours = this.user.employee_properties.hours_per_week - totalWeekHours;
+
+      const hours = parseInt(remainingHours);
+      const minutes = Math.round((remainingHours - hours) * 60);
+
+      return hours + 'h ' + minutes + 'm';
+    },
     getTotal() {
-      const dayly_salary = this.processedAttendances.find(item => item.check_in)?.additionals.salary.day;
+      const dayly_salary = this.processedAttendances.find(item => item.check_in)?.additionals?.salary.day;
       const vacations = this.getVacations().length * 1.25 * dayly_salary;
       const workedDays = this.getWorkedDaysSalary();
       const holyDays = dayly_salary * this.getHolidays().length;
@@ -253,10 +296,15 @@ export default {
         return accumulator + bonus.amount.raw;
       }, 0);
 
+      const discounts = this.discounts.reduce((accumulator, discount) => {
+        return accumulator + discount.amount.raw;
+      }, 0);
+
       return vacations
         + workedDays
         + holyDays
         + bonuses
+        - discounts
         + this.extras.amount.raw;
     }
   },
@@ -264,6 +312,7 @@ export default {
     this.getAttendances();
     this.getPayroll();
     this.getBonuses();
+    this.getDiscounts();
     this.getExtras();
     this.getAuthorizedAdditionalTime();
   }

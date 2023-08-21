@@ -41,36 +41,51 @@
             </Link>
           </el-tooltip>
 
-          
-              <el-tooltip
-                v-if="
-                  $page.props.auth.user.permissions.includes(
-                    'Editar muestra'
-                  ) && !currentSample?.returned_at && currentSample
-                "
-                content="Marcar como muestra devuelta por el cliente"
-                placement="top"
-              >
-             
-                <button @click="returnedSampleModal = true" class="rounded-lg bg-primary text-white p-2 text-sm">
-                  Muestra devuelta
-                </button>
-
-              </el-tooltip>
-
           <el-tooltip
             v-if="
-              $page.props.auth.user.permissions.includes('Generar orden de venta en muestra') &&
-              currentSample?.returned_at &&
-              !currentSample?.sale_order_at
+              $page.props.auth.user.permissions.includes('Editar muestra') &&
+              !currentSample?.returned_at &&
+              currentSample
             "
             content="Marcar como muestra devuelta por el cliente"
             placement="top"
           >
-            <button class="rounded-lg bg-primary text-white p-2 text-sm">
-              Generar orden de venta
+            <button
+              @click="returnedSampleModal = true"
+              class="rounded-lg bg-primary text-white p-2 text-sm"
+            >
+              Muestra devuelta
             </button>
           </el-tooltip>
+
+          <el-tooltip
+            v-if="
+              $page.props.auth.user.permissions.includes(
+                'Generar orden de venta en muestra'
+              ) &&
+              currentSample?.returned_at &&
+              !currentSample?.sale_order_at
+            "
+            content="Generar orden de venta para marcar como venta cerrada"
+            placement="top"
+          >
+            <div>
+              <el-popconfirm
+                confirm-button-text="Si"
+                cancel-button-text="No"
+                icon-color="#FF0000"
+                title="¿Continuar?"
+                @confirm="saleOrder"
+              >
+                <template #reference>
+                  <button class="rounded-lg bg-primary text-white p-2 text-sm">
+                    Generar orden de venta
+                  </button>
+                </template>
+              </el-popconfirm>
+            </div>
+          </el-tooltip>
+
           <Dropdown
             align="right"
             width="48"
@@ -119,8 +134,22 @@
             class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center"
           >
             <el-image
+              v-if="currentSample?.catalog_product"
               style="height: 100%"
               :src="currentSample?.catalog_product?.media[0]?.original_url"
+              fit="fit"
+            >
+              <template #error>
+                <div class="flex justify-center items-center text-[#ababab]">
+                  <i class="fa-solid fa-image text-6xl"></i>
+                </div>
+              </template>
+            </el-image>
+
+            <el-image
+              v-else
+              style="height: 100%"
+              :src="currentSample?.media[0]?.original_url"
               fit="fit"
             >
               <template #error>
@@ -145,19 +174,39 @@
           </figure>
 
           <!-- ----------------------progress bar---------------------- -->
-          <el-tooltip v-if="currentSample" content="Progreso para cerrar venta" placement="top">
+          <el-tooltip
+            v-if="currentSample"
+            content="Progreso para cerrar venta"
+            placement="top"
+          >
             <div class="mt-8 ml-6 text-sm">
-              <p v-if="currentSample?.status['label'] == 'Orden generada. Venta exitosa'" class="text-secondary text-center text-xs mb-1">¡Venta cerrada!</p>
+              <p
+                v-if="
+                  currentSample?.status['label'] ==
+                  'Orden generada. Venta exitosa'
+                "
+                class="text-secondary text-center text-xs mb-1"
+              >
+                ¡Venta cerrada!
+              </p>
               <div class="mb-5 border-2 border-[#b3b3b3] rounded-full">
                 <div
-                  v-if="currentSample?.status['label'] == 'Enviado. Esperando respuesta'"
-                  class="h-[10px] bg-primary rounded-full w-1/3"></div>
+                  v-if="
+                    currentSample?.status['label'] ==
+                    'Enviado. Esperando respuesta'
+                  "
+                  class="h-[10px] bg-primary rounded-full w-1/3"
+                ></div>
                 <div
-                  v-else-if="currentSample?.status['label'] == 'Muestra devuelta'"
-                  class="h-[10px] bg-primary rounded-full w-2/3"></div>
+                  v-else-if="
+                    currentSample?.status['label'] == 'Muestra devuelta'
+                  "
+                  class="h-[10px] bg-primary rounded-full w-2/3"
+                ></div>
                 <div
                   v-else
-                  class="h-[10px] bg-green-600 rounded-full w-full"></div>
+                  class="h-[10px] bg-green-600 rounded-full w-full"
+                ></div>
               </div>
             </div>
           </el-tooltip>
@@ -230,6 +279,14 @@
               </p>
             </div>
             <div class="flex mb-2 space-x-2">
+              <p class="w-1/3 text-[#9A9A9A]">Producto(s)</p>
+              <p>
+                <span v-for="product in currentSample?.products" :key="product"
+                  >{{ product ?? "--" }},
+                </span>
+              </p>
+            </div>
+            <div class="flex mb-2 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Comentarios/notas</p>
               <p>
                 {{ currentSample?.comments ?? "--" }}
@@ -259,7 +316,10 @@
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Características</p>
               <p>
-                {{ currentSample?.catalog_product?.features.raw.join(", ") }}
+                {{
+                  currentSample?.catalog_product?.features?.raw?.join(", ") ??
+                  "--"
+                }}
               </p>
             </div>
             <div class="flex mb-2 space-x-2">
@@ -358,53 +418,74 @@
       <Modal :show="returnedSampleModal" @close="returnedSampleModal = false">
         <form @submit.prevent="returnedSample()">
           <div class="p-3 relative">
-            <i @click="
-              returnedSampleModal = false;
-            form.reset();
-            "
-              class="fa-solid fa-xmark cursor-pointer w-5 h-5 rounded-full border border-black flex items-center justify-center absolute right-3"></i>
-            <i v-if="!helpDialog" @click="helpDialog = true"
-              class="fa-solid fa-question text-[9px] text-secondary h-3 w-3 bg-sky-300 rounded-full text-center absolute left-3 top-3 cursor-pointer"></i>
+            <i
+              @click="
+                returnedSampleModal = false;
+                form.reset();
+              "
+              class="fa-solid fa-xmark cursor-pointer w-5 h-5 rounded-full border border-black flex items-center justify-center absolute right-3"
+            ></i>
+            <i
+              v-if="!helpDialog"
+              @click="helpDialog = true"
+              class="fa-solid fa-question text-[9px] text-secondary h-3 w-3 bg-sky-300 rounded-full text-center absolute left-3 top-3 cursor-pointer"
+            ></i>
 
             <p class="font-bold text-center my-3">
               Marcar como muestra devuelta por el cliente
             </p>
 
             <div class="flex ml-3 px-9">
-              <el-tooltip content="Comentarios de retroalinmentación" placement="top">
+              <el-tooltip
+                content="Comentarios de retroalinmentación"
+                placement="top"
+              >
                 <span
-                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
+                >
                   <i class="fa-solid fa-grip-lines"></i>
                 </span>
               </el-tooltip>
-              <textarea v-model="form.comments" class="textarea w-full" autocomplete="off"
-                placeholder="Comentarios de retroalinmentación"></textarea>
+              <textarea
+                v-model="form.comments"
+                class="textarea w-full"
+                autocomplete="off"
+                placeholder="Comentarios de retroalinmentación"
+              ></textarea>
               <InputError :message="form.errors.comments" />
             </div>
-            <div v-if="helpDialog" class="border border-[#0355B5] rounded-lg px-6 py-2 mt-5 mx-7 relative">
+            <div
+              v-if="helpDialog"
+              class="border border-[#0355B5] rounded-lg px-6 py-2 mt-5 mx-7 relative"
+            >
               <i
-                class="fa-solid fa-question text-[9px] text-secondary h-3 w-3 bg-sky-300 rounded-full text-center absolute left-2 top-3"></i>
-              <i @click="helpDialog = false"
-                class="fa-solid fa-xmark cursor-pointer w-3 h-3 rounded-full text-secondary flex items-center justify-center absolute right-3 top-3 text-xs"></i>
+                class="fa-solid fa-question text-[9px] text-secondary h-3 w-3 bg-sky-300 rounded-full text-center absolute left-2 top-3"
+              ></i>
+              <i
+                @click="helpDialog = false"
+                class="fa-solid fa-xmark cursor-pointer w-3 h-3 rounded-full text-secondary flex items-center justify-center absolute right-3 top-3 text-xs"
+              ></i>
               <p class="text-secondary text-sm">
-                Escribir un comentario de retroalimentación del cliente, como correcciones del producto o fecha esperada
-                de generación de orden de compra por parte del cliente.
+                Escribir un comentario de retroalimentación del cliente, como
+                correcciones del producto o fecha esperada de generación de
+                orden de compra por parte del cliente.
               </p>
             </div>
 
             <div class="flex justify-start space-x-3 pt-5 pb-1">
               <PrimaryButton>Enviar</PrimaryButton>
-              <CancelButton @click="
-                returnedSampleModal = false;
-              form.reset();
-                ">Cancelar</CancelButton>
+              <CancelButton
+                @click="
+                  returnedSampleModal = false;
+                  form.reset();
+                "
+                >Cancelar</CancelButton
+              >
             </div>
           </div>
         </form>
       </Modal>
       <!-- --------------------------- Modal ends ------------------------------------ -->
-
-
     </AppLayoutNoHeader>
   </div>
 </template>
@@ -424,7 +505,6 @@ export default {
   data() {
     const form = useForm({
       comments: null,
-
     });
 
     return {
@@ -447,7 +527,7 @@ export default {
     Dropdown,
     ConfirmationModal,
     Modal,
-    InputError
+    InputError,
   },
   props: {
     catalog_product: Object,
@@ -465,7 +545,7 @@ export default {
     openImage(url) {
       window.open(url, "_blank");
     },
-    returnedSample(){
+    returnedSample() {
       this.form.put(route("samples.returned", this.selectedSample), {
         onSuccess: () => {
           this.$notify({
@@ -478,6 +558,10 @@ export default {
           returnedSampleModal = false;
         },
       });
+    },
+    saleOrder() {
+      this.$inertia.put(route('samples.sale-order', this.selectedSample));
+      this.$inertia.visit('/sales/create', { method: 'get' });
     },
 
     async deleteItem() {

@@ -11,6 +11,14 @@
                     </Link>
                 </div>
             </template>
+            
+            <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+                <p class="text-red-500"><i class="fa-solid fa-circle mr-1"></i>Esperando Autorización</p>
+                <p class="text-gray-500"><i class="fa-solid fa-circle mr-1"></i>Autorizado. Sin orden de producción</p>
+                <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Producción sin iniciar</p>
+                <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Producción en proceso</p>
+                <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Producción terminada</p>
+            </div>
 
             <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
@@ -41,9 +49,12 @@
                     <el-table-column prop="company_branch.name" label="Cliente" />
                     <el-table-column prop="authorized_user_name" label="Autorizado por" />
                     <el-table-column prop="status['label']" label="Estatus" />
-                    <el-table-column align="right" fixed="right" width="120">
+                    <el-table-column align="right" fixed="right" width="190">
                         <template #header>
-                            <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <div class="flex space-x-2">
+                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
+                        </div>
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
@@ -85,6 +96,7 @@ export default {
     data() {
         return {
             disableMassiveActions: true,
+            inputSearch: '',
             search: '',
             // pagination
             itemsPerPage: 10,
@@ -105,6 +117,9 @@ export default {
     },
 
     methods: {
+        handleSearch(){
+            this.search = this.inputSearch;
+        },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
 
@@ -174,7 +189,17 @@ export default {
             }
         },
         tableRowClassName({ row, rowIndex }) {
-            return 'cursor-pointer';
+            if (row.status['label'] == 'Esperando autorización') {
+                 return 'cursor-pointer text-red-500';
+            }else if(row.status['label'] == 'Producción sin iniciar'){
+                return 'cursor-pointer text-amber-500';
+            }else if(row.status['label'] == 'Producción en proceso'){
+                return 'cursor-pointer text-blue-500';
+            }else if(row.status['label'] == 'Producción terminada'){
+                return 'cursor-pointer text-green-500';
+            }else if(row.status['label'] == 'Autorizado sin orden de producción'){
+                return 'cursor-pointer text-gray-500';
+            }
         },
         handleRowClick(row) {
             this.$inertia.get(route('sales.show', row));

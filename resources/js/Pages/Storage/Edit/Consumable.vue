@@ -9,7 +9,7 @@
           </Link>
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">
-              Editar "{{ raw_material.data.name }}""
+              Editar "{{ raw_material.data.name }}"
             </h2>
           </div>
         </div>
@@ -34,7 +34,7 @@
               <InputError :message="form.errors.part_number" />
             </div>
             <div>
-              <IconInput v-model="form.min_quantity" inputPlaceholder="Stock mínimo" inputType="number">
+              <IconInput v-model="form.min_quantity" inputPlaceholder="Stock mínimo" inputType="number" inputStep="0.01">
                 <el-tooltip content="Cantidad mínima que puede haber en stock" placement="top">
                   <i class="fa-solid fa-minus"></i>
                 </el-tooltip>
@@ -42,7 +42,7 @@
               <InputError :message="form.errors.min_quantity" />
             </div>
             <div>
-              <IconInput v-model="form.max_quantity" inputPlaceholder="Stock máximo" inputType="number">
+              <IconInput v-model="form.max_quantity" inputPlaceholder="Stock máximo" inputType="number" inputStep="0.01">
                 <el-tooltip content="Cantidad máxima que puede haber en stock" placement="top">
                   <i class="fa-solid fa-plus"></i>
                 </el-tooltip>
@@ -50,7 +50,7 @@
               <InputError :message="form.errors.max_quantity" />
             </div>
             <div>
-              <IconInput v-model="form.initial_stock" inputPlaceholder="Stock de actual" inputType="number">
+              <IconInput v-model="form.initial_stock" inputPlaceholder="Stock de actual" inputType="number" inputStep="0.01">
                 <el-tooltip content="Stock actual" placement="top">
                   123
                 </el-tooltip>
@@ -135,7 +135,7 @@
           </div>
 
           <div class="mt-2 mx-3 md:text-right">
-            <PrimaryButton :disabled="form.processing"> Agregar </PrimaryButton>
+            <PrimaryButton :disabled="form.processing"> Editar </PrimaryButton>
           </div>
         </div>
       </form>
@@ -155,6 +155,7 @@ import { ref } from "vue";
 export default {
   data() {
     const form = useForm({
+      type: 'consumible',
       name: this.raw_material.data.name,
       part_number: this.raw_material.data.part_number,
       measure_unit: this.raw_material.data.measure_unit,
@@ -163,7 +164,6 @@ export default {
       cost: this.raw_material.data.cost,
       initial_stock: this.raw_material.data.storages[0]?.quantity,
       location: this.raw_material.data.storages[0]?.location,
-      type: 'consumible',
       description: this.raw_material.data.description,
       features: this.raw_material.data.features,
     });
@@ -198,7 +198,7 @@ export default {
   },
   methods: {
     update() {
-      this.form.put(route("raw-materials.update", this.raw_material), {
+      this.form.put(route("raw-materials.update", this.raw_material.data), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",

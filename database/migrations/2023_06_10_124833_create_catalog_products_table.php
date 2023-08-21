@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('part_number');
             $table->string('measure_unit');
             $table->unsignedFloat('cost')->nullable();
-            $table->unsignedMediumInteger('min_quantity')->nullable();
-            $table->unsignedMediumInteger('max_quantity')->nullable();
+            $table->unsignedFloat('min_quantity')->nullable();
+            $table->unsignedFloat('max_quantity')->nullable();
             $table->json('features')->nullable();
             $table->timestamps();
         });

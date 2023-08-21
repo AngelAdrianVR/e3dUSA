@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <AppLayout title="Reuniones - Crear">
+    <AppLayout title="Crear reuniones">
       <template #header>
         <div class="flex justify-between">
           <Link :href="route('meetings.index')"
@@ -32,9 +31,23 @@
                 <i class="fa-solid fa-calendar"></i>
               </span>
             </el-tooltip>
-            <el-date-picker v-model="form.date" type="date" placeholder="Selecciona una fecha" :disabled-date="disabledDate" />
+            <el-date-picker @change="getShermansCalendar" v-model="form.date" type="date" placeholder="Selecciona una fecha" :disabled-date="disabledDate" />
             <InputError :message="form.errors.date" />
           </div>
+          
+          <div class="flex items-center">
+            <el-tooltip content="Participantes de la reunion" placement="top">
+              <i class="fa-solid fa-users text-gray-700 mr-3"></i>
+            </el-tooltip>
+            <el-select v-model="form.participants" multiple placeholder="Participantes" style="width: 240px">
+              <el-option v-for="item in users" :key="item.id" :label="item.name" :value="item.id" />
+            </el-select>
+            <InputError :message="form.errors.participants" />
+            <p v-if="form.participants?.includes(2)" @click="availableModal = true" class="text-primary ml-4 text-sm cursor-pointer">
+              Ver disponibilidad de sherman
+            </p>
+          </div>
+          
           <div class="flex">
             <div class="mr-3">
               <IconInput v-model="form.start" inputPlaceholder="Hora de comienzo *" inputType="time">
@@ -60,20 +73,6 @@
               <span class="ml-2 text-sm text-[#9A9A9A]">Repetir</span>
             </label> -->
           </div>
-
-          <div class="flex items-center">
-            <el-tooltip content="Participantes de la reunion" placement="top">
-              <i class="fa-solid fa-users text-gray-700 mr-3"></i>
-            </el-tooltip>
-            <el-select v-model="form.participants" multiple placeholder="Participantes" style="width: 240px">
-              <el-option v-for="item in users" :key="item.id" :label="item.name" :value="item.name" />
-            </el-select>
-            <InputError :message="form.errors.participants" />
-            <p @click="availableModal = true" class="text-primary ml-4 text-sm cursor-pointer">
-              Ver disponibilidad de sherman
-            </p>
-          </div>
-
           <div class="w-3/5">
             <IconInput v-model="form.location" inputPlaceholder="Ubicación *" inputType="text">
               <el-tooltip content="Lugar de la reunión. Si es en linea, indicarlo *" placement="top">
@@ -149,10 +148,9 @@
                 <i class="fa-solid fa-calendar"></i>
               </span>
             </el-tooltip>
-            <el-date-picker v-model="form.date" type="date" placeholder="Selecciona una fecha" :disabled-date="disabledDate" />
+            <el-date-picker @change="getShermansCalendar" v-model="form.date" type="date" placeholder="Selecciona una fecha" :disabled-date="disabledDate" />
             <p v-if="!form.date" class="text-xs">Selecciona una fecha</p>
           </div>
-
           <div v-if="helpDialog" class="border border-[#0355B5] rounded-lg px-6 py-2 mt-5 mx-7 relative">
             <i
               class="fa-solid fa-question text-[9px] text-secondary h-3 w-3 bg-sky-300 rounded-full text-center absolute left-2 top-3"></i>
@@ -164,22 +162,21 @@
             </p>
           </div>
 
-          <section v-if="form.date">
+          <div v-if="loading"
+            class="flex items-center justify-center my-5">
+            <i class="fa-solid fa-spinner fa-spin text-3xl text-primary"></i>
+          </div>
+          <section v-if="form.date && !loading">
             <p v-if="!start_selected" class="ml-7 my-6 text-secondary">Selecciona la hora de inicio</p>
             <p v-else class="ml-7 my-6 text-secondary">Selecciona la hora de terminación</p>
 
             <p class="ml-7 my-6 text-primary text-center">De {{ form.start ?? '____' }} a {{ form.end ?? '____' }}</p>
-
-
-
             <div class="text-center rounded-lg border border-[#9a9a9a] lg:w-1/3 mx-auto relative">
               <div @click="selectTime(meeting, index)" v-for="(meeting, index) in schedule" :key="meeting"
                 :class="meeting.bg + ' ' + meeting.text"
                 class="cursor-pointer border-b border-[#9a9a9a] h-[25px] hover:bg-secondary hover:text-white">{{ index % 2
                   ? '' : meeting.label }}</div>
             </div>
-
-
           </section>
 
           <div class="flex justify-start space-x-3 pt-5 pb-1">
@@ -190,7 +187,6 @@
       </Modal>
       <!-- --------------------------- Modal ends ------------------------------------ -->
     </AppLayout>
-  </div>
 </template>
 
 <script>
@@ -203,6 +199,7 @@ import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import Modal from "@/Components/Modal.vue";
+import axios from "axios";
 
 export default {
   data() {
@@ -224,6 +221,9 @@ export default {
       helpDialog: false,
       start_selected: false,
       start_index: null,
+
+      shermansMeetings: null,
+      loading: false,
 
       schedule: [
         {
@@ -395,6 +395,37 @@ export default {
       this.form.start = null;
       this.form.end = null;
       this.start_selected = false;
+    },
+    async getShermansCalendar() {
+      this.loading = true;
+      try {
+        const response = await axios.post(route('meetings.get-by-date-and-user'), {date: this.form.date, user_id: 2});
+
+        if (response.status === 200) {
+          this.shermansMeetings = response.data.items;
+          await this.blockBusySchedule()
+        }
+      } catch (error) {
+        console.log(error);
+      }finally {
+        this.loading = false;
+      }
+    },
+    async blockBusySchedule() {
+      this.shermansMeetings.forEach(meeting => {
+        const start = new Date(meeting.start).getHours();
+        const end = new Date(meeting.end).getHours();
+
+        // Encuentra los índices de inicio y fin en el array schedule
+        const startIndex = this.schedule.findIndex(item => parseInt(item.label) === start);
+        const endIndex = this.schedule.findIndex(item => parseInt(item.label) === end);
+
+        // Actualiza los bloques de hora dentro del rango de tiempo de la reunión
+        for (let i = startIndex; i <= endIndex; i++) {
+          this.schedule[i].bg = 'bg-red-600'; // Cambiar a la clase CSS que establece el color rojo de fondo
+          this.schedule[i].text = 'text-white'; // Cambiar a la clase CSS que establece el color blanco del texto
+        }
+      });
     }
   },
 };

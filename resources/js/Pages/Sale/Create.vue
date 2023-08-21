@@ -23,7 +23,7 @@
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
                         </el-tooltip>
-                        <el-select v-model="form.company_branch_id" class="mt-2" placeholder="Selecciona un cliente">
+                        <el-select v-model="form.company_branch_id" class="mt-2" clearable filterable placeholder="Selecciona un cliente">
                             <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
                                 :value="item.id" />
                         </el-select>
@@ -126,7 +126,8 @@
                                 ...
                             </span>
                         </el-tooltip>
-                        <textarea v-model="form.notes" class="textarea" autocomplete="off" placeholder="Notas de la órden"></textarea>
+                        <textarea v-model="form.notes" class="textarea" autocomplete="off"
+                            placeholder="Notas de la órden"></textarea>
                         <InputError :message="form.errors.notes" />
                     </div>
                     <!-- products -->
@@ -139,7 +140,7 @@
                                 <p class="text-sm">
                                     <span class="text-primary">{{ index + 1 }}.</span>
                                     {{ company_branches.find(cb => cb.id ==
-                                        form.company_branch_id)?.company.catalog_products.find(prd => prd.id ===
+                                        form.company_branch_id)?.company.catalog_products.find(prd => prd.pivot.id ===
                                             item.catalog_product_company_id)?.name
                                     }}
                                     (x{{ item.quantity }} unidades)
@@ -175,15 +176,17 @@
                                 placeholder="Selecciona un producto *">
                                 <el-option
                                     v-for="item in company_branches.find(cb => cb.id == form.company_branch_id)?.company.catalog_products"
-                                    :key="item.id" :label="item.name" :value="item.id" />
+                                    :key="item.pivot.id" :label="item.name" :value="item.pivot.id" />
                             </el-select>
                         </div>
                         <div>
-                            <IconInput v-model="product.quantity" inputPlaceholder="Cantidad *" inputType="number">
+                            <IconInput @change="validateQuantity()" v-model="product.quantity" inputPlaceholder="Cantidad *"
+                                inputType="number" inputStep="0.01">
                                 <el-tooltip content="Cantidad" placement="top">
                                     #
                                 </el-tooltip>
                             </IconInput>
+                            <p v-if="alertMaxQuantity" class="text-red-600 text-xs"> Sólo hay material para producir {{ alertMaxQuantity }} unidades. No olvides reportar la adquisición de más mercancía </p>
                             <!-- <InputError :message="form.errors.fiscal_address" /> -->
                         </div>
                         <div class="flex col-span-full">
@@ -197,8 +200,8 @@
                                 placeholder="Notas de producto"></textarea>
                             <!-- <InputError :message="form.errors.notes" /> -->
                         </div>
-                        <div class="col-span-full" @click="addProduct">
-                            <SecondaryButton
+                        <div class="col-span-full">
+                            <SecondaryButton @click="addProduct"
                                 :disabled="form.processing || !product.catalog_product_company_id || !product.quantity">
                                 {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
                             </SecondaryButton>
@@ -245,6 +248,7 @@ export default {
                 notes: null,
             },
             editIndex: null,
+            alertMaxQuantity: 0,
         };
     },
     components: {
@@ -271,6 +275,24 @@ export default {
                     this.form.reset();
                 }
             });
+        },
+        validateQuantity() {
+            const catalogProducts = this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.company.catalog_products;
+            const components = catalogProducts.find(item => this.product.catalog_product_company_id == item.pivot.id)?.raw_materials;
+
+            let maxQuantity = null;
+            components.forEach(element => {
+                const currentMax = element.storages[0].quantity / element.pivot.quantity;
+                if (maxQuantity === null || maxQuantity > currentMax) {
+                    maxQuantity = currentMax;
+                }
+            });
+
+            if (maxQuantity !== null && this.product.quantity > maxQuantity) {
+                this.alertMaxQuantity = maxQuantity;
+            } else {
+                this.alertMaxQuantity = null;
+            }
         },
         addProduct() {
             const product = { ...this.product };

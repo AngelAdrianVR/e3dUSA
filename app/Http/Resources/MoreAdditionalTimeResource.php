@@ -26,11 +26,11 @@ class MoreAdditionalTimeResource extends JsonResource
             'time_requested' => $this->time_requested,
             'comments' => $this->comments ?? '--',
             'authorized_user_name' => $this->authorized_user_name ?? '--',
-            'authorized_at' => $this->authorized_at?->isoFormat('YYYY MMM DD') ?? 'No autorizado',
+            'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:mm A') ?? 'No autorizado',
             'payroll' => $this->whenLoaded('payroll'),
             'user' => $this->whenLoaded('user'),
-            'created_at' => $this->created_at?->isoFormat('YYYY MMM DD') ?? '--',
-            'updated_at' => $this->updated_at?->isoFormat('YYYY MMM DD') ?? '--',
+            'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A') ?? '--',
+            'updated_at' => $this->updated_at?->isoFormat('DD MMM, YYYY h:mm A') ?? '--',
         ];
     }
 }

@@ -29,6 +29,7 @@ use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -97,6 +98,8 @@ Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseControlle
 // ------- Raw Material routes  ---------
 Route::resource('raw-materials', RawMaterialController::class)->middleware('auth');
 Route::post('raw-materials/massive-delete', [RawMaterialController::class, 'massiveDelete'])->name('raw-materials.massive-delete')->middleware('auth');
+Route::post('raw-materials/turn-into-catalog-product', [RawMaterialController::class, 'turnIntoCatalogProduct'])->name('raw-materials.turn-into-catalog-product')->middleware('auth');
+Route::post('raw-materials/update-with-media/{raw_material}', [RawMaterialController::class, 'updateWithMedia'])->name('raw-materials.update-with-media')->middleware('auth');
 Route::get('consumables/create', [RawMaterialController::class, 'create'])->name('consumables.create')->middleware('auth');
 Route::get('consumables-edit/{raw_material}', [RawMaterialController::class, 'editConsumable'])->name('consumables.edit')->middleware('auth');
 
@@ -110,11 +113,13 @@ Route::post('payrolls/handle-attendance', [PayrollController::class, 'handleAtte
 Route::post('payrolls/update-attendances', [PayrollController::class, 'updateAttendances'])->middleware('auth')->name('payrolls.update-attendances');
 Route::post('payrolls/get-payroll', [PayrollController::class, 'getPayroll'])->middleware('auth')->name('payrolls.get-payroll');
 Route::post('payrolls/get-bonuses', [PayrollController::class, 'getBonuses'])->middleware('auth')->name('payrolls.get-bonuses');
+Route::post('payrolls/get-discounts', [PayrollController::class, 'getDiscounts'])->middleware('auth')->name('payrolls.get-discounts');
 Route::post('payrolls/get-extras', [PayrollController::class, 'getExtras'])->middleware('auth')->name('payrolls.get-extras');
 Route::post('payrolls/get-payroll-users', [PayrollController::class, 'getPayrollUsers'])->middleware('auth')->name('payrolls.get-payroll-users');
-Route::post('payrolls/print-template', [PayrollController::class, 'printTemplate'])->middleware('auth')->name('payrolls.print-template');
+Route::get('payrolls/print-template/{users_id_to_show}/{payroll_id}', [PayrollController::class, 'printTemplate'])->middleware('auth')->name('payrolls.print-template');
 Route::post('payrolls/get-additional-time', [PayrollController::class, 'getAdditionalTime'])->middleware('auth')->name('payrolls.get-additional-time');
 Route::post('payrolls/close-current', [PayrollController::class, 'closeCurrent'])->middleware('auth')->name('payrolls.close-current');
+Route::post('payrolls/get-current-payroll', [PayrollController::class, 'getCurrentPayroll'])->middleware('auth')->name('payrolls.get-current-payroll');
 
 // ------- Recursos humanos(users routes)  ---------
 Route::resource('users', UserController::class)->middleware('auth');
@@ -122,6 +127,7 @@ Route::get('users-get-next-attendance', [UserController::class, 'getNextAttendan
 Route::get('users-set-attendance', [UserController::class, 'setAttendance'])->middleware('auth')->name('users.set-attendance');
 Route::put('users-reset-pass/{user}', [UserController::class, 'resetPass'])->middleware('auth')->name('users.reset-pass');
 Route::put('users-change-status/{user}', [UserController::class, 'changeStatus'])->middleware('auth')->name('users.change-status');
+Route::post('users-get-unseen-messages', [UserController::class, 'getUnseenMessages'])->middleware('auth')->name('users.get-unseen-messages');
 
 // ------- Recursos humanos(Roles and permissions Routes)  ---------
 Route::get('role-permission', [RolePermissionController::class, 'index'])->middleware('auth')->name('role-permission.index');
@@ -153,14 +159,19 @@ Route::post('/storage-scraps/store', [StorageController::class, 'scrapStore'])->
 Route::post('storages/scrap/massive-delete', [StorageController::class, 'scrapMassiveDelete'])->name('storages.scraps.massive-delete');
 Route::post('storages/massive-delete', [StorageController::class, 'massiveDelete'])->name('storages.massive-delete');
 Route::get('storages/{storage}/show', [StorageController::class, 'show'])->name('storages.show');
+Route::get('/storage-show-consumables/{storage}', [StorageController::class, 'showConsumable'])->middleware('auth')->name('storages.consumables.show');
 Route::delete('storages/{storage}/destroy', [StorageController::class, 'destroy'])->name('storages.destroy');
 Route::post('storages/{storage}/add-storage', [StorageController::class, 'addStorage'])->name('storages.add');
 Route::post('storages/{storage}/sub-storage', [StorageController::class, 'subStorage'])->name('storages.sub');
+Route::post('storages/QR-storage', [StorageController::class, 'QRStorage'])->name('storages.QR');
+Route::post('storages/QR-search-product', [StorageController::class, 'QRSearchProduct'])->name('storages.QR-search-product');
 
 // ----------------MUESTRAS-----------------------
 Route::resource('samples', SampleController::class)->middleware('auth');
 Route::post('samples/massive-delete', [SampleController::class, 'massiveDelete'])->name('samples.massive-delete');
 Route::put('samples/returned-sample/{sample}', [SampleController::class, 'returned'])->name('samples.returned');
+Route::put('samples/sale-order-sample/{sample}', [SampleController::class, 'saleOrder'])->name('samples.sale-order');
+Route::post('samples/update-with-media/{sample}', [SampleController::class, 'updateWithMedia'])->name('samples.update-with-media')->middleware('auth');
 
 // ------- Design department routes  ---------
 Route::resource('designs', DesignController::class)->middleware('auth');
@@ -183,6 +194,8 @@ Route::put('productions/change-status/{production}', [ProductionController::clas
 Route::resource('machines', MachineController::class)->middleware('auth');
 Route::post('machines/massive-delete', [MachineController::class, 'massiveDelete'])->name('machines.massive-delete');
 Route::post('machines/upload-files/{machine}', [MachineController::class, 'uploadFiles'])->name('machines.upload-files');
+Route::post('machines/update-with-media/{machine}', [MachineController::class, 'updateWithMedia'])->name('machines.update-with-media')->middleware('auth');
+
 
 
 // ------- aditional time request Routes  ---------
@@ -210,6 +223,8 @@ Route::get('spare-parts/create/{selectedMachine}',[ SparePartController::class, 
 //------------------ Meetings routes ----------------
 Route::resource('meetings', MeetingController::class)->middleware('auth');
 Route::post('meetings/massive-delete', [MeetingController::class, 'massiveDelete'])->name('meetings.massive-delete');
+Route::put('meetings/set-attendance-confirmation/{meeting_id}', [MeetingController::class, 'SetAttendanceConfirmation'])->name('meetings.set-attendance-confirmation');
+Route::post('meetings/get-by-date-and-user', [MeetingController::class, 'getMeetingsByDateAndUser'])->name('meetings.get-by-date-and-user');
 
 
 //------------------ Meetings routes ----------------
@@ -220,4 +235,20 @@ Route::post('production-costs/massive-delete', [ProductionCostController::class,
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
 
 Route::post('/upload-image',[FileUploadController::class, 'upload'])->name('upload-image');
+
+//artisan commands
+
+Route::get('/clear-all', function () {
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+    return 'cleared.';
+});
+
+Route::get('/clear-cache', function () {
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    return 'cleared.';
+});
 

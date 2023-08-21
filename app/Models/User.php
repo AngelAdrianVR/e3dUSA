@@ -88,10 +88,21 @@ class User extends Authenticatable
 
     public function production(): HasMany
     {
-        return $this-> hasMany(Production::class);
+        return $this->hasMany(Production::class);
     }
 
-    public function samples():HasMany
+    public function meetings()
+    {
+        return $this->belongsToMany(Meeting::class)
+            ->withPivot([
+                'id',
+                'comments',
+                'attendance_confirmation',
+            ])
+            ->withTimestamps();
+    }
+
+    public function samples(): HasMany
     {
         return $this->hasMany(Sample::class);
     }
@@ -120,6 +131,7 @@ class User extends Authenticatable
     {
         $next = '';
         $bonuses = [];
+        $discounts = [];
         foreach ($this->employee_properties['bonuses'] as $bonus_id) {
             $bonus = Bonus::find($bonus_id);
             $bonuses[] = [
@@ -129,12 +141,20 @@ class User extends Authenticatable
                     : $bonus->half_time
             ];
         }
+        foreach ($this->employee_properties['discounts'] as $discount_id) {
+            // $discount = Discount::find($discount_id);
+            $discounts[] = [
+                'id' => $discount_id,
+                'amount' => $discount_id == 1 ? 100 : 32
+            ];
+        }
 
         $today_attendance = PayrollUser::firstOrCreate(['date' => today()->toDateString(), 'user_id' => $this->id], [
             'payroll_id' => Payroll::getCurrent()->id,
             'additionals' => [
                 'salary' =>  $this->employee_properties['salary'],
                 'bonuses' => $bonuses,
+                'discounts' => $discounts,
                 'hours_per_week' => $this->employee_properties['hours_per_week'],
             ],
         ]);
@@ -171,7 +191,7 @@ class User extends Authenticatable
 
     public function getWeekTime()
     {
-        if ( is_null($this->employee_properties) ) return 0;
+        if (is_null($this->employee_properties)) return 0;
 
         $payroll = Payroll::getCurrent();
         $processed_attendances = collect($payroll->getProcessedAttendances($this->id));
@@ -186,6 +206,4 @@ class User extends Authenticatable
             'hours' => round($week_time / 60, 2),
         ];
     }
-
-   
 }

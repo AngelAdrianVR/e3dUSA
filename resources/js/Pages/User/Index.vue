@@ -14,6 +14,11 @@
                 </div>
             </template>
 
+            <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+                <p class="text-red-500"><i class="fa-solid fa-circle mr-1"></i>Inactivo</p>
+                <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Activo</p>
+            </div>
+
             <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
                 <div class="flex justify-between">
@@ -41,9 +46,12 @@
                     <el-table-column prop="is_active.string" label="Estatus" />
                     <el-table-column prop="employee_properties.job_position" label="Puesto" />
                     <el-table-column prop="employee_properties.join_date" label="Fecha ingreso" width="160" />
-                    <el-table-column align="right" fixed="right" width="120">
+                    <el-table-column align="right" fixed="right" width="190">
                         <template #header>
-                            <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <div class="flex space-x-2">
+                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
+                        </div>
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
@@ -85,6 +93,7 @@ export default {
 
         return {
             disableMassiveActions: true,
+            inputSearch: '',
             search: '',
             // pagination
             itemsPerPage: 10,
@@ -102,6 +111,9 @@ export default {
         users: Object,
     },
     methods: {
+        handleSearch(){
+            this.search = this.inputSearch;
+        },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
 
@@ -117,9 +129,9 @@ export default {
         },
         tableRowClassName({ row, rowIndex }) {
             if (row.is_active.bool) {
-                return 'text-green-600 cursor-pointer';
+                return 'text-green-500 cursor-pointer';
             } else {
-                return 'text-red-600 cursor-pointer';
+                return 'text-red-500 cursor-pointer';
             }
         },
         handleRowClick(row) {

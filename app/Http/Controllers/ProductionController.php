@@ -18,6 +18,7 @@ class ProductionController extends Controller
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de produccion todas')) {
             // $productions = ProductionResource::collection(Production::with('user', 'catalogProductCompanySale.catalogProductCompany.company')->latest()->get());
             $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale', 'companyBranch')->whereHas('productions')->latest()->get());
+            // return $productions;
             return inertia('Production/Admin', compact('productions'));
         } elseif (auth()->user()->can('Ordenes de produccion personal')) {
             $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale', 'companyBranch')->whereHas('productions')->where('user_id', auth()->id())->latest()->get());
@@ -32,7 +33,7 @@ class ProductionController extends Controller
 
     public function create()
     {
-        $operators = User::where('employee_properties->department', 'Producción')->get();
+        $operators = User::where('employee_properties->department', 'Producción')->where('is_active', 1)->get();
         $sales = SaleResource::collection(Sale::with('companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct')->whereNotNull('authorized_at')->whereDoesntHave('productions')->get());
 
         // return $sales;
@@ -113,9 +114,11 @@ class ProductionController extends Controller
     // methods
     public function massiveDelete(Request $request)
     {
-        foreach ($request->productions as $production) {
-            $production = Production::find($production['id']);
-            $production?->delete();
+        foreach ($request->sales as $sale) {
+            $sale = Sale::find($sale['id']);
+            foreach ($sale->productions as $production) {
+                $production->delete();
+            }
         }
 
         return response()->json(['message' => 'Producto(s) eliminado(s)']);

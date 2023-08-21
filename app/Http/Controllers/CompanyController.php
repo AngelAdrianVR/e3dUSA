@@ -9,21 +9,23 @@ use App\Models\CatalogProductCompany;
 use App\Models\Company;
 use App\Models\CompanyBranch;
 use App\Models\CompanyProduct;
+use App\Models\Contact;
 use App\Models\RawMaterial;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class CompanyController extends Controller
 {
-    
+
     public function index()
     {
-        $companies = CompanyResource::collection(Company::latest()->get());
+        $companies = CompanyResource::collection(Company::with('companyBranches')->latest()->get());
 
+        // return $companies;
         return inertia('Company/Index', compact('companies'));
     }
 
-    
+
     public function create()
     {
         $catalog_products = CatalogProduct::all();
@@ -32,7 +34,7 @@ class CompanyController extends Controller
         return inertia('Company/Create', compact('catalog_products', 'raw_materials'));
     }
 
-    
+
     public function store(Request $request)
     {
         $request->validate([
@@ -46,7 +48,7 @@ class CompanyController extends Controller
         ]);
 
         $company = Company::create($request->except(['company_branches', 'products']));
-         foreach ($request->company_branches as $branch) {
+        foreach ($request->company_branches as $branch) {
             $branch['company_id'] = $company->id;
             $compay_branch = CompanyBranch::create($branch);
             foreach ($branch['contacts'] as $contact) {
@@ -56,21 +58,21 @@ class CompanyController extends Controller
             foreach ($request->products as $product) {
                 $company->catalogProducts()->attach($product['catalog_product_id'], $product);
             }
-         }
+        }
 
         return to_route('companies.index');
     }
 
-    
+
     public function show($company_id)
     {
         $company = Company::with('companyBranches.contacts')->find($company_id);
         $companies = Company::with('companyBranches.contacts', 'catalogProducts.media')->get();
-        
+
         return inertia('Company/Show', compact('company', 'companies'));
     }
 
-    
+
     public function edit(Company $company)
     {
         $company = Company::with('catalogProducts', 'companyBranches.contacts')->find($company->id);
@@ -80,7 +82,7 @@ class CompanyController extends Controller
         return inertia('Company/Edit', compact('company', 'catalog_products', 'raw_materials'));
     }
 
-    
+
     public function update(Request $request, Company $company)
     {
         $request->validate([
@@ -94,25 +96,41 @@ class CompanyController extends Controller
         ]);
 
         $company->update($request->except(['company_branches', 'products']));
-        $company->companyBranches()->delete();
-        $company->catalogProducts()->detach();
-        
-        foreach ($request->company_branches as $branch) {
-            $branch['company_id'] = $company->id;
-            $compay_branch = CompanyBranch::create($branch);
-            foreach ($branch['contacts'] as $contact) {
-                $compay_branch->contacts()->create($contact);
+
+        // Actualizar sucursales y contactos existentes
+        foreach ($request->company_branches as $branchData) {
+            if (isset($branchData['id'])) {
+                $branch = CompanyBranch::findOrFail($branchData['id']);
+                $branch->update($branchData);
+                foreach ($branchData['contacts'] as $contactData) {
+                    if (isset($contactData['id'])) {
+                        $contact = Contact::findOrFail($contactData['id']);
+                        $contact->update($contactData);
+                    } else {
+                        $branch->contacts()->create($contactData);
+                    }
+                }
             }
         }
 
-        foreach ($request->products as $product) {
-            $company->catalogProducts()->attach($product['catalog_product_id'], $product);
+        // Crear nuevas sucursales y contactos
+        foreach ($request->company_branches as $branchData) {
+            if (!isset($branchData['id'])) {
+                $branch = $company->companyBranches()->create($branchData);
+
+                foreach ($branchData['contacts'] as $contactData) {
+                    $branch->contacts()->create($contactData);
+                }
+            }
         }
+
+        // Actualizar productos
+        $company->catalogProducts()->sync($request->products);
 
         return to_route('companies.index');
     }
 
-    
+
     public function destroy(Company $company)
     {
         $company_name = $company->business_name;
@@ -152,7 +170,6 @@ class CompanyController extends Controller
             foreach ($branch->contacts as $contact) {
                 $branch_clone->contacts()->create($contact->toArray());
             }
-
         }
 
         foreach ($company->catalogProducts as $product) {

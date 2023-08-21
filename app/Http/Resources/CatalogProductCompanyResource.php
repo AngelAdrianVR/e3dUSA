@@ -25,8 +25,8 @@ class CatalogProductCompanyResource extends JsonResource
             'new_currency' => $this->new_currency,
             'catalog_product' => CatalogProductResource::make($this->whenLoaded('catalogProduct')),
             'company' => $this->whenLoaded('company'),
-            'created_at' => $this->created_at?->isoFormat('YYYY MMM DD'),
-            'updated_at' => $this->updated_at?->isoFormat('YYYY MMM DD'),
+            'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+            'updated_at' => $this->updated_at?->isoFormat('DD MMM, YYYY h:mm A'),
         ];
     }
 }

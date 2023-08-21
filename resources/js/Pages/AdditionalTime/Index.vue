@@ -14,6 +14,11 @@
         </div>
       </template>
 
+      <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+        <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Esperando autorización</p>
+        <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Autorizado</p>
+      </div>
+
       <!-- tabla -->
       <div class="lg:w-5/6 mx-auto mt-6">
         <div class="flex justify-between">
@@ -46,9 +51,12 @@
           <el-table-column prop="authorized_user_name" label="Autorizado por" width="130" />
           <el-table-column prop="authorized_at" label="Autorizado el" width="120" />
           <el-table-column prop="justification" label="Justificación" width="200" />
-          <el-table-column align="right" fixed="right" width="120">
+          <el-table-column align="right" fixed="right" width="190">
             <template #header>
-              <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+              <div class="flex space-x-2">
+                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
+                        </div>
             </template>
             <template #default="scope">
               <el-dropdown v-if="scope.row.authorized_at == 'No autorizado'" trigger="click">
@@ -168,6 +176,7 @@ export default {
     return {
       form,
       disableMassiveActions: true,
+      inputSearch: '',
       search: "",
       createRequestModal: false,
       helpDialog: false,
@@ -195,6 +204,9 @@ export default {
     more_additional_times: Array,
   },
   methods: {
+    handleSearch(){
+            this.search = this.inputSearch;
+        },
     store() {
       this.form.post(route("more-additional-times.store"), {
         onSuccess: () => {
@@ -248,9 +260,9 @@ export default {
     },
     tableRowClassName({ row, rowIndex }) {
       if (row.status === "Autorizado") {
-        return "text-green-600 cursor-pointer";
+        return "text-green-500 cursor-pointer";
       } else {
-        return "text-amber-600 cursor-pointer";
+        return "text-amber-500 cursor-pointer";
       }
     },
 

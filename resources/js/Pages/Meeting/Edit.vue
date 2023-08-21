@@ -48,6 +48,28 @@
             />
             <InputError :message="form.errors.date" />
           </div>
+          <div class="flex items-center">
+            <el-tooltip content="Participantes de la reunion" placement="top">
+              <i class="fa-solid fa-users text-gray-700 mr-3"></i>
+            </el-tooltip>
+            <el-select
+              v-model="form.participants"
+              multiple
+              placeholder="Participantes"
+              style="width: 240px"
+            >
+              <el-option
+                v-for="item in users"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+            <InputError :message="form.errors.participants" />
+            <p @click="availableModal = true" class="text-primary ml-4 text-sm cursor-pointer">
+              Ver disponibilidad de sherman
+            </p>
+          </div>
           <div class="md:flex">
             <div class="mr-3">
               <IconInput
@@ -81,30 +103,6 @@
               <span class="ml-2 text-sm text-[#9A9A9A]">Repetir</span>
             </label> -->
           </div>
-
-          <div class="flex items-center">
-            <el-tooltip content="Participantes de la reunion" placement="top">
-              <i class="fa-solid fa-users text-gray-700 mr-3"></i>
-            </el-tooltip>
-            <el-select
-              v-model="form.participants"
-              multiple
-              placeholder="Participantes"
-              style="width: 240px"
-            >
-              <el-option
-                v-for="item in users"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              />
-            </el-select>
-            <InputError :message="form.errors.participants" />
-            <p @click="availableModal = true" class="text-primary ml-4 text-sm cursor-pointer">
-              Ver disponibilidad de sherman
-            </p>
-          </div>
-
           <div class="w-3/5">
             <IconInput
               v-model="form.location"

@@ -14,6 +14,13 @@
                 </div>
             </template>
 
+            <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+                <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Esperando autorización</p>
+                <p class="text-amber-700"><i class="fa-solid fa-circle mr-1"></i>Autorizado. Sin iniciar</p>
+                <p class="text-[#0355B5]"><i class="fa-solid fa-circle mr-1"></i>En proceso</p>
+                <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Terminado</p>
+            </div>
+
             <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
                 <div class="flex justify-between">
@@ -42,9 +49,12 @@
                     <el-table-column prop="designer.name" label="Diseñador(a)" />
                     <el-table-column prop="created_at" label="Solicitado el" />
                     <el-table-column prop="status[label]" label="Estatus" />
-                    <el-table-column align="right" fixed="right" width="120">
+                    <el-table-column align="right" fixed="right" width="190">
                         <template #header>
-                            <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <div class="flex space-x-2">
+                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
+                        </div>
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
@@ -55,8 +65,8 @@
                                     <el-dropdown-menu>
                                         <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
                                             Ver</el-dropdown-item>
-                                        <el-dropdown-item v-if="scope.row.status['label'] == 'Esperando Autorización' &&
-                                            scope.row.user.id == $page.props.auth.user.id"
+                                        <el-dropdown-item v-if="(scope.row.status['label'] != 'Terminado' && scope.row.user.id == $page.props.auth.user.id) || 
+                                            ($page.props.auth.user.permissions.includes('Ordenes de diseño todas') && scope.row.status['label'] != 'Terminado')"
                                             :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
                                     </el-dropdown-menu>
@@ -86,6 +96,7 @@ export default {
 
         return {
             disableMassiveActions: true,
+            inputSearch: '',
             search: '',
             // pagination
             itemsPerPage: 10,
@@ -103,6 +114,9 @@ export default {
         designs: Array
     },
     methods: {
+        handleSearch(){
+            this.search = this.inputSearch;
+        },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
 
@@ -164,7 +178,15 @@ export default {
         },
         tableRowClassName({ row, rowIndex }) {
 
-            return 'cursor-pointer';
+            if (row.status['label'] == 'Esperando Autorización') {
+                 return 'cursor-pointer text-amber-500';
+            }else if(row.status['label'] == 'Autorizado. Sin iniciar'){
+                return 'cursor-pointer text-amber-700';
+            }else if(row.status['label'] == 'En proceso'){
+                return 'cursor-pointer text-[#0355B5]';
+            }else if(row.status['label'] == 'Terminado'){
+                return 'cursor-pointer text-green-500';
+            }
         },
         handleRowClick(row) {
             this.$inertia.get(route('designs.show', row));
@@ -190,7 +212,7 @@ export default {
                 return this.designs.data.filter(
                     (design) =>
                         design.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                        design.status.toLowerCase().includes(this.search.toLowerCase()) ||
+                        design.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
                         design.user.name.toLowerCase().includes(this.search.toLowerCase())
                 )
             }
