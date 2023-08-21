@@ -35,7 +35,7 @@ class RawMaterialController extends Controller
     {
         $validated = $request->validate([ 
             'name' => 'required|string',
-            'part_number' => 'required|string|unique:raw_materials,part_number',
+            'part_number' => 'required',
             'measure_unit' => 'required',
             'min_quantity' => 'required|numeric|min:0',
             'max_quantity' => 'required|numeric|min:0',

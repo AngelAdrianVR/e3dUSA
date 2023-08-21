@@ -152,7 +152,6 @@
                             </li>
                         </template>
                     </ol>
-
                     <div v-if="form.company_branch_id"
                         class="md:grid gap-6 mb-6 grid-cols-3 rounded-lg border-2 border-[#b8b7b7] px-5 py-3 col-span-full space-y-1 my-7">
                         <div class="flex items-center col-span-2">
@@ -168,7 +167,7 @@
                                 placeholder="Selecciona un producto *">
                                 <el-option
                                     v-for="item in company_branches.find(cb => cb.id == form.company_branch_id)?.company.catalog_products"
-                                    :key="item.id" :label="item.name" :value="item.id" />
+                                    :key="item.id" :label="item.name" :value="item.pivot.id" />
                             </el-select>
                         </div>
                         <div>

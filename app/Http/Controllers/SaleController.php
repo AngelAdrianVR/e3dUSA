@@ -72,7 +72,7 @@ class SaleController extends Controller
     public function edit(Sale $sale)
     {
         $sale = Sale::find($sale->id);
-        $catalog_products_company_sale = CatalogProductCompanySale::where('sale_id', $sale->id)->get();
+        $catalog_products_company_sale = CatalogProductCompanySale::with('catalogProductCompany')->where('sale_id', $sale->id)->get();
         $company_branches = CompanyBranch::with('company.catalogProducts', 'contacts')->get();
         $media = $sale->getMedia('oce')->all();
 
@@ -93,20 +93,27 @@ class SaleController extends Controller
             'products' => 'array|min:1'
         ]);
 
+        $updatedProductIds = [];
         $sale->update($request->except('products'));
 
         foreach ($request->products as $product) {
-            $productData = $product + ['sale_id', $sale->id];
+            $productData = $product + ['sale_id' => $sale->id];
 
             if (isset($product['id'])) {
                 // Actualizar la relación existente en catalogProductCompanySales
                 $existingRelation = CatalogProductCompanySale::findOrFail($product['id']);
                 $existingRelation->update($productData);
+                $updatedProductIds[] = $product['id'];
             } else {
                 // Crear una nueva relación en catalogProductCompanySales
                 CatalogProductCompanySale::create($productData);
             }
         }
+
+        // Eliminar los productos que no se actualizaron o crearon en esta solicitud
+        CatalogProductCompanySale::where('sale_id', $sale->id)
+            ->whereNotIn('id', $updatedProductIds)
+            ->delete();
 
         return to_route('sales.index');
     }
