@@ -20,11 +20,15 @@
                 <p class="text-amber-600"><i class="fa-solid fa-circle mr-1"></i>Stock sobre lo permitido</p>
             </div>
 
-            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de materia prima')" class="text-center mt-3 hidden md:block">
-                <el-tag class="mt-3" style="font-size: 20px;" type="success">Costo total en almacén de materia prima: ${{totalRawMaterialMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
+            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de materia prima')"
+                class="text-center mt-3 hidden md:block">
+                <el-tag class="mt-3" style="font-size: 20px;" type="success">Costo total en almacén de materia prima:
+                    ${{ totalRawMaterialMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} MXN</el-tag>
             </div>
-            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de materia prima')" class="text-center mt-3 md:hidden block">
-                <el-tag class="mt-3" style="font-size: 17px;" type="success">Total Almacén materia prima: ${{totalRawMaterialMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
+            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de materia prima')"
+                class="text-center mt-3 md:hidden block">
+                <el-tag class="mt-3" style="font-size: 17px;" type="success">Total Almacén materia prima:
+                    ${{ totalRawMaterialMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} MXN</el-tag>
             </div>
 
             <!-- tabla -->
@@ -48,8 +52,7 @@
                             confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
                             @confirm="deleteSelections">
                             <template #reference>
-                                <el-button type="danger" plain
-                                    :disabled="disableMassiveActions">Eliminar</el-button>
+                                <el-button type="danger" plain :disabled="disableMassiveActions">Eliminar</el-button>
                             </template>
                         </el-popconfirm>
                     </div>
@@ -66,9 +69,11 @@
                     <el-table-column align="right" fixed="right" width="190">
                         <template #header>
                             <div class="flex space-x-2">
-                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
-                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
-                        </div>
+                                <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600"
+                                    placeholder="Buscar" />
+                                <el-button @click="handleSearch" type="primary" plain class="mb-3"><i
+                                        class="fa-solid fa-magnifying-glass"></i></el-button>
+                            </div>
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
@@ -84,6 +89,12 @@
                                             @click="$inertia.get(route('raw-materials.edit', scope.row.storageable))"
                                             :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
+                                        <el-dropdown-item
+                                            v-if="$page.props.auth.user.permissions.includes('Crear catalogo de productos')"
+                                            :command="'turn-' + scope.row.id"><i
+                                                class="fa-solid fa-arrows-turn-to-dots"></i>
+                                            Convertir a producto de catalogo
+                                        </el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -129,7 +140,7 @@ export default {
         totalRawMaterialMoney: Number
     },
     methods: {
-        handleSearch(){
+        handleSearch() {
             this.search = this.inputSearch;
         },
         tableRowClassName({ row, rowIndex }) {
@@ -158,12 +169,42 @@ export default {
 
         handleCommand(command) {
             const commandName = command.split('-')[0];
-            const rowId = command.split('-')[1];
+            const rowId = parseInt(command.split('-')[1]) - 1;
 
-            if (commandName == 'clone') {
-                this.clone(rowId);
-            }else {
+            if (commandName == 'turn') {
+                this.turnIntoCatalogProduct(rowId);
+            } else {
                 this.$inertia.get(route('storages.' + commandName, rowId));
+            }
+        },
+        async turnIntoCatalogProduct(rawMaterialId) {
+            try {
+                const response = await axios.post(route('raw-materials.turn-into-catalog-product', {
+                    raw_material_id: rawMaterialId
+                }));
+
+                if (response.status == 200) {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+
+                } else {
+                    this.$notify({
+                        title: 'Algo salió mal',
+                        message: response.data.message,
+                        type: 'error'
+                    });
+                }
+
+            } catch (err) {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
+                console.log(err);
             }
         },
         generatePdf() {
@@ -229,9 +270,9 @@ export default {
             } else {
                 return this.raw_materials.data.filter(
                     (raw_material) =>
-                    !this.search ||
-                    raw_material.storageable.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                    raw_material.storageable.part_number.toLowerCase().includes(this.search.toLowerCase())
+                        !this.search ||
+                        raw_material.storageable.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                        raw_material.storageable.part_number.toLowerCase().includes(this.search.toLowerCase())
                 );
             }
         }

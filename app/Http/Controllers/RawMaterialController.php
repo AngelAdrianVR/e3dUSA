@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\RawMaterialResource;
+use App\Models\CatalogProduct;
 use App\Models\RawMaterial;
 use App\Models\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\File;
 
 class RawMaterialController extends Controller
 {
@@ -30,10 +32,9 @@ class RawMaterialController extends Controller
         }
     }
 
-
     public function store(Request $request)
     {
-        $validated = $request->validate([ 
+        $validated = $request->validate([
             'name' => 'required|string',
             'part_number' => 'required',
             'measure_unit' => 'required',
@@ -71,10 +72,9 @@ class RawMaterialController extends Controller
         //
     }
 
-
     public function edit($raw_material)
     {
-       $raw_material = RawMaterialResource::make(RawMaterial::with('storages')->find($raw_material));
+        $raw_material = RawMaterialResource::make(RawMaterial::with('storages')->find($raw_material));
         // return $raw_material;
 
         return inertia('Storage/Edit/RawMaterial', compact('raw_material'));
@@ -87,7 +87,6 @@ class RawMaterialController extends Controller
         // return $raw_material;
         return inertia('Storage/Edit/Consumable', compact('raw_material'));
     }
-
 
     public function update(Request $request, RawMaterial $raw_material)
     {
@@ -134,7 +133,7 @@ class RawMaterialController extends Controller
             'location' => $request->location,
         ]);
 
-          // update image
+        // update image
         $raw_material->clearMediaCollection();
         $raw_material->addAllMediaFromRequest('media')->each(fn ($file) => $file->toMediaCollection());
 
@@ -160,5 +159,57 @@ class RawMaterialController extends Controller
         }
 
         return response()->json(['message' => 'Producto(s) eliminado(s)']);
+    }
+
+    public function turnIntoCatalogProduct(Request $request)
+    {
+        $rawMaterial = RawMaterial::findOrFail($request->raw_material_id);
+
+        // Verificar si ya está en el catálogo
+        if (!$rawMaterial->isInCatalogProduct()) {
+            // part number
+            $last = CatalogProduct::latest()->first();
+            $next_id = $last ? $last->id + 1 : 1;
+            $consecutive = str_pad($next_id, 4, "0", STR_PAD_LEFT);
+            $family = explode('-', $rawMaterial->part_number)[0];
+            $part_number = "C-$family-GEN-$consecutive";
+
+            // Crear un nuevo producto de catálogo
+            $catalogProduct = CatalogProduct::create([
+                'name' => $rawMaterial->name,
+                'description' => $rawMaterial->description,
+                'part_number' => $part_number,
+                'measure_unit' => $rawMaterial->measure_unit,
+                'cost' => $rawMaterial->cost,
+                'min_quantity' => $rawMaterial->min_quantity,
+                'max_quantity' => $rawMaterial->max_quantity,
+                'features' => $rawMaterial->features,
+            ]);
+
+             // Clonar la imagen
+             $rawMaterialImage = $rawMaterial->getFirstMedia('images');
+
+             if ($rawMaterialImage) {
+                 // Obtener la ruta de la imagen
+                 $imagePath = $rawMaterialImage->getPath();
+     
+                 // Crear una copia de la imagen en una ubicación temporal
+                 $clonedImagePath = tempnam(sys_get_temp_dir(), 'cloned_image');
+                 File::copy($imagePath, $clonedImagePath);
+          
+                 // Adjuntar la imagen clonada al nuevo producto
+                 $catalogProduct->addMedia($clonedImagePath)
+                     ->preservingOriginal()
+                     ->toMediaCollection();
+             }
+
+            // Agregar el material al producto de catálogo
+            $catalogProduct->rawMaterials()->attach($rawMaterial, [
+                'quantity' => 1,
+                'production_costs' => [],
+            ]);
+        }
+
+        return response()->json(['message' => 'Producto agregado al catálogo con éxito.']);
     }
 }

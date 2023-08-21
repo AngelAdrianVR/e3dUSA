@@ -352,7 +352,7 @@
 
         <el-divider />
         <div class="md:text-right">
-          <PrimaryButton :disabled="form.processing">
+          <PrimaryButton :disabled="form.processing || !form.raw_materials.length">
             Actualizar producto
           </PrimaryButton>
         </div>
