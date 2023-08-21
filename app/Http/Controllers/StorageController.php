@@ -286,7 +286,7 @@ class StorageController extends Controller
     public function QRSearchProduct(Request $request)
     {
 
-        $request->validate([
+        $request->validate([ 
             'barCode' => 'required|string'
         ]);
 

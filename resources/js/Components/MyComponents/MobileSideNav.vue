@@ -146,7 +146,8 @@ export default {
                         || route().current('users.*')
                         || route().current('role-permission.*')
                         || route().current('bonuses.*')
-                        || route().current('holidays.*'),
+                        || route().current('holidays.*')
+                        || route().current('discounts.*'),
                     options: [
                         {
                             label: 'Nóminas',
@@ -177,6 +178,11 @@ export default {
                             route: route('bonuses.index'),
                             active: route().current('bonuses.*'),
                             show: this.$page.props.auth.user.permissions.includes('Ver bonos')
+                        },
+                        {
+                            label: 'Descuentos',
+                            route: 'discounts.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver descuentos')
                         },
                         {
                             label: 'Dias festivos',

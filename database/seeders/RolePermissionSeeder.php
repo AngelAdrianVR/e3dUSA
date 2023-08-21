@@ -118,6 +118,11 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Editar bonos', 'category' => 'RRHH']);
         Permission::create(['name' => 'Eliminar bonos', 'category' => 'RRHH']);
 
+        Permission::create(['name' => 'Ver descuentos', 'category' => 'RRHH']);
+        Permission::create(['name' => 'Crear descuentos', 'category' => 'RRHH']);
+        Permission::create(['name' => 'Editar descuentos', 'category' => 'RRHH']);
+        Permission::create(['name' => 'Eliminar descuentos', 'category' => 'RRHH']);
+
         Permission::create(['name' => 'Ver dias festivos', 'category' => 'RRHH']);
         Permission::create(['name' => 'Crear dias festivos', 'category' => 'RRHH']);
         Permission::create(['name' => 'Editar dias festivos', 'category' => 'RRHH']);
@@ -145,6 +150,7 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Eliminar medios', 'category' => 'Generales']);
         Permission::create(['name' => 'Reuniones todas', 'category' => 'Generales']);
         Permission::create(['name' => 'Registrar asistencia', 'category' => 'Generales']);
+        Permission::create(['name' => 'QR producto de catalogo', 'category' => 'Generales']);
         Permission::create(['name' => 'Chatear', 'category' => 'Generales']);
         Permission::create(['name' => 'Solicitudes de tiempo adicional personal', 'category' => 'Generales']);
         Permission::create(['name' => 'Reuniones personal', 'category' => 'Generales']);

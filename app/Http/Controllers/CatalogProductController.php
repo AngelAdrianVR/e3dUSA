@@ -212,4 +212,21 @@ class CatalogProductController extends Controller
 
         return response()->json(['message' => "Producto clonado: {$clone->part_number}", 'newItem' => catalogProductResource::make(CatalogProduct::with('storages')->find($clone->id))]);
     }
+
+    public function QRSearchCatalogProduct(Request $request)
+    {
+
+        $request->validate([ 
+            'barCode' => 'required|string'
+        ]);
+
+        $part_number = explode('#', $request->barCode)[0];
+
+        $storage = Storage::with('storageable.media')->whereHas('storageable', function ($query) use ($part_number) {
+            $query->where('part_number', $part_number);
+        })->first();
+
+
+        return response()->json(['item' => $storage]);
+    }
 }

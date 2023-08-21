@@ -8,6 +8,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\DesignModificationController;
+use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\KioskDeviceController;
@@ -67,6 +68,7 @@ Route::resource('catalog-products', CatalogProductController::class)->middleware
 Route::post('catalog-products/massive-delete', [CatalogProductController::class, 'massiveDelete'])->name('catalog-products.massive-delete');
 Route::post('catalog-products/clone', [CatalogProductController::class, 'clone'])->name('catalog-products.clone');
 Route::post('catalog-products/update-with-media/{catalog_product}', [CatalogProductController::class, 'updateWithMedia'])->name('catalog-products.update-with-media');
+Route::post('catalog-products/QR-search-catalog-product', [CatalogProductController::class, 'QRSearchCatalogProduct'])->name('storages.QR-search-catalog-product');
 
 
 // ------- Ventas(Clients Routes)  ---------
@@ -140,6 +142,11 @@ Route::delete('role-permission/{permission}/destroy-permission', [RolePermission
 // ------- Recursos humanos(Bonuses Routes)  ---------
 Route::resource('bonuses', BonusController::class)->middleware('auth');
 Route::post('bonuses/massive-delete', [BonusController::class, 'massiveDelete'])->name('bonuses.massive-delete');
+
+
+// ------- Recursos humanos(Discounts Routes)  ---------
+Route::resource('discounts', DiscountController::class)->middleware('auth');
+Route::post('discounts/massive-delete', [DiscountController::class, 'massiveDelete'])->name('discounts.massive-delete');
 
 // ------- Recursos humanos(Holidays Routes)  ---------
 Route::resource('holidays', HolidayController::class)->middleware('auth');
