@@ -2,9 +2,12 @@
   <div v-if="!loading" class="grid grid-cols-4 md:grid-cols-3 lg:py-6 lg:px-10 mb-6 lg:mb-0 text-[10px] md:text-sm">
     <div class="bg-transparent rounded-lg lg:mx-auto"
       :class="dontShowDetails ? 'col-span-full' : 'col-span-3 md:col-span-2 mr-auto w-5/6'">
-      <div class="flex items-center">
-        <i class="fa-solid fa-circle-user mr-3 text-xl"></i>
-        <p>{{ user.name }}</p>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <i class="fa-solid fa-circle-user mr-3 text-xl"></i>
+          <p>{{ user.name }}</p>
+        </div>
+        <p class="text-xs">{{ getRemainingHoursWeekly() }} para completar tu semana</p>
       </div>
       <div class="overflow-x-auto shadow-md mt-3 rounded-lg">
         <table class="items-center w-full bg-transparent">
@@ -252,7 +255,6 @@ export default {
       return this.processedAttendances.filter(item => item.incident?.id < 0);
     },
     getWorkedDaysSalary() {
-      console.log(this.getWorkedDays());
       let totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
       let totalWeekHoursAllowed = this.processedAttendances.find(item => item.check_in)?.additionals?.hours_per_week;
 
@@ -268,6 +270,15 @@ export default {
         totalWeekHours = totalWeekHoursAllowed;
       }
       return totalWeekHours * this.user.employee_properties.salary.hour;
+    },
+    getRemainingHoursWeekly() {
+      const totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
+      const remainingHours = this.user.employee_properties.hours_per_week - totalWeekHours;
+
+      const hours = parseInt(remainingHours);
+      const minutes = Math.round((remainingHours - hours) * 60);
+
+      return hours + 'h ' + minutes + 'm';
     },
     getTotal() {
       const dayly_salary = this.processedAttendances.find(item => item.check_in)?.additionals?.salary.day;
