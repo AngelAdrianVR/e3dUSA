@@ -268,7 +268,7 @@
         <template #content>
           <form ref="myForm" @submit.prevent="is_add ? addStorage() : subStorage()">
             <div>
-              <IconInput v-model="form.quantity" inputPlaceholder="Cantidad" inputType="number">
+              <IconInput v-model="form.quantity" inputPlaceholder="Cantidad" inputType="number" inputStep="0.01">
                 <el-tooltip content="Cantidad" placement="top">
                   123
                 </el-tooltip>
@@ -317,7 +317,7 @@
                 <i class="fa-solid fa-xmark"></i>
               </div>
               <div>
-              <IconInput v-model="form.quantity" inputPlaceholder="Cantidad" inputType="number">
+              <IconInput v-model="form.quantity" inputPlaceholder="Cantidad" inputType="number" inputStep="0.01">
                 <el-tooltip content="Cantidad" placement="top">
                   123
                 </el-tooltip>

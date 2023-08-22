@@ -51,7 +51,7 @@
                 v-model="form.quantity"
                 inputPlaceholder="Cantidad para scrap"
                 inputType="number"
-                inputStep="0.1"
+                inputStep="0.01"
               >
               <el-tooltip content="Cantidad para scrap" placement="top">
                 123

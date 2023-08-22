@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('catalog_product_raw_material', function (Blueprint $table) {
             $table->id();
-            $table->unsignedMediumInteger('quantity');
+            $table->unsignedFloat('quantity');
             $table->foreignId('raw_material_id')->constrained()->cascadeOnDelete();
             $table->foreignId('catalog_product_id')->constrained()->cascadeOnDelete();
             $table->json('production_costs')->nullable();

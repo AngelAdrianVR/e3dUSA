@@ -2,9 +2,12 @@
   <div v-if="!loading" class="grid grid-cols-4 md:grid-cols-3 lg:py-6 lg:px-10 mb-6 lg:mb-0 text-[10px] md:text-sm">
     <div class="bg-transparent rounded-lg lg:mx-auto"
       :class="dontShowDetails ? 'col-span-full' : 'col-span-3 md:col-span-2 mr-auto w-5/6'">
-      <div class="flex items-center">
-        <i class="fa-solid fa-circle-user mr-3 text-xl"></i>
-        <p>{{ user.name }}</p>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <i class="fa-solid fa-circle-user mr-3 text-xl"></i>
+          <p>{{ user.name }}</p>
+        </div>
+        <p class="text-xs">{{ getRemainingHoursWeekly() }} para completar semana</p>
       </div>
       <div class="overflow-x-auto shadow-md mt-3 rounded-lg">
         <table class="items-center w-full bg-transparent">
@@ -24,8 +27,15 @@
                   <span class="ml-3 font-bold text-xs"> {{ attendance.date?.formatted }} </span>
                 </th>
                 <td class="px-6 text-xs py-px lg:py-2">
-                  <p class="bg-transparent text-sm" :class="attendance.late ? 'text-amber-600' : ''">{{
-                    attendance.check_in }}</p>
+                  <p class="bg-transparent text-sm" :class="{
+                    'text-amber-500': attendance.late > 0 && attendance.late < 15,
+                    'text-red-600': attendance.late >= 15,
+                  }">
+                    {{ attendance.check_in }}
+                    <i v-if="!attendance.late" class="fa-solid fa-face-smile text-yellow-400 ml-1"></i>
+                    <i v-else-if="attendance.late < 15" class="fa-solid fa-face-meh ml-1"></i>
+                    <i v-else class="fa-solid fa-face-sad-tear ml-1"></i>
+                  </p>
                 </td>
                 <td class="px-6 text-xs py-px lg:py-2">
                   <p class="bg-transparent text-sm">{{ attendance.check_out }}</p>
@@ -267,6 +277,15 @@ export default {
         totalWeekHours = totalWeekHoursAllowed;
       }
       return totalWeekHours * this.user.employee_properties.salary.hour;
+    },
+    getRemainingHoursWeekly() {
+      const totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
+      const remainingHours = this.user.employee_properties.hours_per_week - totalWeekHours;
+
+      const hours = parseInt(remainingHours);
+      const minutes = Math.round((remainingHours - hours) * 60);
+
+      return hours + 'h ' + minutes + 'm';
     },
     getTotal() {
       const dayly_salary = this.processedAttendances.find(item => item.check_in)?.additionals?.salary.day;

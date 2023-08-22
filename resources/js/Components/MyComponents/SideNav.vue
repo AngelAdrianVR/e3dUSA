@@ -36,7 +36,7 @@
     <DialogModal :show="showModal" @close="showModal = false">
         <template #title>
             Nómina semanal
-        <p class="text-sm text-primary">Recuerda que tu horario de trabajo se cierra automáticamente a la hora de tu salida contratada</p>
+        <p class="text-sm text-primary mt-3 mx-20">Recuerda que tu horario de trabajo se cierra automáticamente a la hora de tu salida contratada</p>
         </template>
         <template #content>
             <PayrollTemplate :user="$page.props.auth.user" :payrollId="payrollId" dontShowDetails />

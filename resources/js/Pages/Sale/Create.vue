@@ -181,7 +181,7 @@
                         </div>
                         <div>
                             <IconInput @change="validateQuantity()" v-model="product.quantity" inputPlaceholder="Cantidad *"
-                                inputType="number">
+                                inputType="number" inputStep="0.01">
                                 <el-tooltip content="Cantidad" placement="top">
                                     #
                                 </el-tooltip>

@@ -43,10 +43,12 @@
                     <el-table-column prop="description" label="Descripción" />
                     <el-table-column align="right" fixed="right" width="190">
                         <template #header>
-                        <div class="flex space-x-2">
-                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
-                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
-                        </div>
+                            <div class="flex space-x-2">
+                                <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600"
+                                    placeholder="Buscar" />
+                                <el-button @click="handleSearch" type="primary" plain class="mb-3"><i
+                                        class="fa-solid fa-magnifying-glass"></i></el-button>
+                            </div>
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
@@ -57,10 +59,13 @@
                                     <el-dropdown-menu>
                                         <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
                                             Ver</el-dropdown-item>
-                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar catalogo de productos')" :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                        <el-dropdown-item
+                                            v-if="$page.props.auth.user.permissions.includes('Editar catalogo de productos')"
+                                            :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
-                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear catalogo de productos')" :command="'clone-' + scope.row.id"><i
-                                                class="fa-solid fa-clone"></i>
+                                        <el-dropdown-item
+                                            v-if="$page.props.auth.user.permissions.includes('Crear catalogo de productos')"
+                                            :command="'clone-' + scope.row.id"><i class="fa-solid fa-clone"></i>
                                             Clonar</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
@@ -106,7 +111,7 @@ export default {
         catalog_products: Object
     },
     methods: {
-        handleSearch(){
+        handleSearch() {
             this.search = this.inputSearch;
         },
         handleSelectionChange(val) {
@@ -211,7 +216,7 @@ export default {
         handleRowClick(row) {
             this.$inertia.get(route('catalog-products.show', row));
         },
-        
+
         handleCommand(command) {
             const commandName = command.split('-')[0];
             const rowId = command.split('-')[1];
@@ -240,7 +245,7 @@ export default {
             }
         }
     },
-    mounted(){
+    mounted() {
     }
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <AppLayoutNoHeader title="Gestión de dias festivos">
+    <AppLayoutNoHeader title="Inicio">
         <div class="px-9 pt-3 lg:px-14 lg:pt-8">
             <h1>Inicio</h1>
 

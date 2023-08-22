@@ -97,6 +97,16 @@ class PayrollUser extends Pivot
                 'formatted' => "{$hours}h {$minutes}m",
                 'hours' => round($time / 60, 2),
             ];
+        } else if($this->justification_event_id === 2) {
+            $time = $this->user->employee_properties['hours_per_day'] * 60;
+    
+            $hours = intval($time / 60);
+            $minutes = $time % 60;
+
+            return [
+                'formatted' => "{$hours}h {$minutes}m",
+                'hours' => round($time / 60, 2),
+            ];
         }
 
         return null;

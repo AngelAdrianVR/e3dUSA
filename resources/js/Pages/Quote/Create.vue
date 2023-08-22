@@ -183,7 +183,7 @@
                         </div>
                         <div>
                             <IconInput v-model="product.quantity" inputPlaceholder="Cantidad a cotizar *"
-                                inputType="number">
+                                inputType="number" inputStep="0.01">
                                 <el-tooltip content="Cantidad a cotizar" placement="top">
                                     #
                                 </el-tooltip>

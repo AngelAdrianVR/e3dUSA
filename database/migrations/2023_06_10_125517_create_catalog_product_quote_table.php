@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('catalog_product_quote', function (Blueprint $table) {
             $table->id();
-            $table->unsignedMediumInteger('quantity');
+            $table->unsignedFloat('quantity');
             $table->float('price');
             $table->boolean('show_image')->default(true);
             $table->text('notes')->nullable();

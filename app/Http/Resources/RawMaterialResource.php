@@ -25,6 +25,7 @@ class RawMaterialResource extends JsonResource
             'cost' => $this->cost,
             'features' => $this->features,
             'storages' => $this->whenLoaded('storages'),
+            'isInCatalogProduct' => $this->isInCatalogProduct(),
             'media' => $this->getMedia()->all(),
             'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'updated_at' => $this->updated_at?->isoFormat('DD MMM, YYYY h:mm A'),
