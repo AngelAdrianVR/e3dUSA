@@ -134,4 +134,21 @@ class MachineController extends Controller
 
        return to_route('machines.show', ['machine'=> $machine]);
     }
+
+    public function QRSearchMachine(Request $request)
+    {
+
+        $request->validate([ 
+            'barCode' => 'required|string'
+        ]);
+
+        $serial_number = $request->barCode;
+
+
+        $machine = MachineResource::make(Machine::with('maintenances', 'spareParts', 'media')->where('serial_number', $serial_number)->first());
+
+        // dd($machine);
+
+        return response()->json(['item' => $machine]);
+    }
 }

@@ -68,7 +68,7 @@ Route::resource('catalog-products', CatalogProductController::class)->middleware
 Route::post('catalog-products/massive-delete', [CatalogProductController::class, 'massiveDelete'])->name('catalog-products.massive-delete');
 Route::post('catalog-products/clone', [CatalogProductController::class, 'clone'])->name('catalog-products.clone');
 Route::post('catalog-products/update-with-media/{catalog_product}', [CatalogProductController::class, 'updateWithMedia'])->name('catalog-products.update-with-media');
-Route::post('catalog-products/QR-search-catalog-product', [CatalogProductController::class, 'QRSearchCatalogProduct'])->name('storages.QR-search-catalog-product');
+Route::post('catalog-products/QR-search-catalog-product', [CatalogProductController::class, 'QRSearchCatalogProduct'])->name('catalog-products.QR-search-catalog-product');
 
 
 // ------- Ventas(Clients Routes)  ---------
@@ -202,6 +202,7 @@ Route::resource('machines', MachineController::class)->middleware('auth');
 Route::post('machines/massive-delete', [MachineController::class, 'massiveDelete'])->name('machines.massive-delete');
 Route::post('machines/upload-files/{machine}', [MachineController::class, 'uploadFiles'])->name('machines.upload-files');
 Route::post('machines/update-with-media/{machine}', [MachineController::class, 'updateWithMedia'])->name('machines.update-with-media')->middleware('auth');
+Route::post('machines/QR-search-machine', [MachineController::class, 'QRSearchMachine'])->name('machines.QR-search-machine');
 
 
 

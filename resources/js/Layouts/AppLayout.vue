@@ -21,22 +21,25 @@ defineProps({
   title: String,
 });
 
-// const scanType = ref("Entrada");
 const barCodeRef = ref("");
 const showingNavigationDropdown = ref(false);
 const nextAttendance = ref("");
 const temporalFlag = ref(false);
 const qrScan = ref(false);
+const is_product = ref(true);
 const loading = ref(false);
+const partNumberInput = ref(null);
+const machineFound = ref(null);
+const productFound = ref(null);
+const catalogProductFound = ref(null);
+const unseenMessages = ref(null);
+
 
 const form = useForm({
   barCode: null,
   scanType: "Entrada",
 });
 
-const partNumberInput = ref(null);
-const productFound = ref(null);
-const unseenMessages = ref(null);
 
 const getUnseenMessages = async () => {
   try {
@@ -49,6 +52,38 @@ const getUnseenMessages = async () => {
     console.log(error);
   }
 };
+
+const scanMachineForm = async () =>{
+  try {
+      machineFound.value = null;
+      loading.value = true;
+      const response = await axios.post(route("machines.QR-search-machine"), {
+        barCode: form.barCode,
+      });
+
+      if (response.status === 200) {
+        if (response.data.item == null) {
+          ElNotification.error({
+            title: "Error",
+            message: "No se encontró ninguna máquina",
+          });
+        } else {
+          machineFound.value = response.data.item;
+          form.barCode = null;
+          partNumberInput.value.focus();
+        }
+      }
+    } catch (error) {
+      ElNotification.error({
+        title: "Error",
+        message: "Formato de código inválido",
+      });
+      console.log(error);
+    } finally {
+      form.barCode = null;
+      loading.value = false;
+    }
+}
 
 const scanForm = async () => {
   if (form.scanType == "Buscar materia prima") {
@@ -82,8 +117,37 @@ const scanForm = async () => {
       form.barCode = null;
       loading.value = false;
     }
-  } else if(form.scanType == "Producto de catálogo"){
-    console.log('Producto de catálogo');
+  } else if(form.scanType == "Producto de catalogo"){
+    try {
+      productFound.value = null;
+      loading.value = true;
+      const response = await axios.post(route("catalog-products.QR-search-catalog-product"), {
+        barCode: form.barCode,
+        scanType: form.scanType,
+      });
+
+      if (response.status === 200) {
+        if (response.data.item == null) {
+          ElNotification.error({
+            title: "Error",
+            message: "No se encontró ningun producto de catálogo",
+          });
+        } else {
+          catalogProductFound.value = response.data.item;
+          form.barCode = null;
+          partNumberInput.value.focus();
+        }
+      }
+    } catch (error) {
+      ElNotification.error({
+        title: "Error",
+        message: "Formato de código inválido",
+      });
+      console.log(error);
+    } finally {
+      form.barCode = null;
+      loading.value = false;
+    }
   } else {
     try {
       const response = await axios.post(route("storages.QR"), {
@@ -185,6 +249,12 @@ const setAttendance = async () => {
 
 const QRScan = () => {
   qrScan.value = true;
+  is_product.value = true;
+};
+
+const QRMachineScan = () => {
+  qrScan.value = true;
+  is_product.value = false;
 };
 
 const currentTime = ref(new Date().getHours());
@@ -352,9 +422,15 @@ onMounted(() => {
                   </Dropdown>
                 </div>
 
+                <el-tooltip content="Escanear máquina con código QR">
+                  <SecondaryButton @click="QRMachineScan" class="mr-10">
+                    <i class="fa-solid fa-qrcode mr-1"></i> Máquinas
+                  </SecondaryButton>
+                </el-tooltip>
+
                 <el-tooltip content="Escanear producto con código QR">
                   <PrimaryButton @click="QRScan" class="mr-10">
-                    <i class="fa-solid fa-qrcode"></i>
+                    <i class="fa-solid fa-qrcode mr-1"></i> Productos
                   </PrimaryButton>
                 </el-tooltip>
 
@@ -719,7 +795,8 @@ onMounted(() => {
   <Modal :show="qrScan" @close="qrScan = false">
     <div class="mx-7 my-4 space-y-4 relative">
       <div class="flex justify-center mb-4">
-        <h2 class="font-bold text-center mr-2">Movimientos de materia prima</h2>
+        <h2 v-if="is_product" class="font-bold text-center mr-2">Movimientos de materia prima</h2>
+        <h2 v-else class="font-bold text-center mr-2">Búsqueda de maquinaria</h2>
         <div
           @click="
             qrScan = false;
@@ -731,7 +808,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <form @submit.prevent="scanForm">
+      <form v-if="is_product" @submit.prevent="scanForm">
         <div style="margin-top: 20px">
           <el-radio-group v-model="form.scanType">
             <el-radio-button
@@ -751,7 +828,7 @@ onMounted(() => {
                   'QR producto de catalogo'
                 )
               "
-              label="Producto de catálogo"
+              label="Producto de catalogo"
             />
           </el-radio-group>
         </div>
@@ -784,7 +861,7 @@ onMounted(() => {
         </div>
 
         <!-- -------------- Product found in search raw material starts--------------------- -->
-        <div v-if="productFound && !loading" class="flex space-x-2 mt-4">
+        <div v-if="(productFound && !loading) && form.scanType == 'Buscar materia prima' " class="flex space-x-2 mt-4">
           <figure
             class="w-1/3 h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center border"
           >
@@ -800,7 +877,7 @@ onMounted(() => {
               </template>
             </el-image>
           </figure>
-          <div class="w-2/3 border">
+          <div class="w-2/3 border text-sm">
             <h1 class="text-sm font-bold text-center mt-1">
               {{ productFound.storageable?.name }}
             </h1>
@@ -846,6 +923,67 @@ onMounted(() => {
         </div>
         <!-- -------------- Product found in search raw material ends--------------------- -->
 
+
+        <!-- -------------- Catalog Product found in search starts--------------------- -->
+        <div v-if="(catalogProductFound && !loading) && form.scanType == 'Producto de catalogo' " class="flex space-x-2 mt-4">
+          <figure
+            class="w-1/3 h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center border"
+          >
+            <el-image
+              style="height: 100%"
+              :src="catalogProductFound.media[0]?.original_url"
+              fit="contain"
+            >
+              <template #error>
+                <div class="flex justify-center items-center text-[#ababab]">
+                  <i class="fa-solid fa-image text-6xl"></i>
+                </div>
+              </template>
+            </el-image>
+          </figure>
+          <div class="w-2/3 border text-sm">
+            <h1 class="text-sm font-bold text-center mt-1">
+              {{ catalogProductFound.name }}
+            </h1>
+            <ul class="px-4 mt-2">
+              <li>
+                <label class="text-primary">Número de parte: </label>
+                {{ catalogProductFound.part_number }}
+              </li>
+              <li>
+                <label class="text-primary">Descripción: </label>
+                {{ catalogProductFound.description }}
+              </li>
+              <li>
+                <label class="text-primary">Características: </label>
+                {{ catalogProductFound.features?.raw }}
+              </li>
+              <li>
+                <label class="text-primary">Unidad de medida: </label>
+                {{ catalogProductFound.measure_unit }}
+              </li>
+              <li>
+                <label class="text-primary">costo: </label> ${{
+                  catalogProductFound.cost.number_format
+                }}
+              </li>
+            </ul>
+            <h1 class="text-sm font-bold text-center mt-1">
+              Clientes
+            </h1>
+            
+            <Link
+              class="text-center mt-5"
+              :href="route('catalog-products.show', catalogProductFound.id)"
+            >
+              <p class="text-secondary hover:underline cursor-pointer">
+                Ver producto
+              </p>
+            </Link>
+          </div>
+        </div>
+        <!-- -------------- Catalog Product found in search ends--------------------- -->
+
         <div class="flex justify-end space-x-3 pt-5 pb-1">
           <PrimaryButton :disabled="form.processing">Enviar</PrimaryButton>
           <CancelButton
@@ -857,6 +995,132 @@ onMounted(() => {
           >
         </div>
       </form>
+
+      <!-- ---------------------- Machine form starts ---------------------- -->
+      <form v-if="!is_product" @submit.prevent="scanMachineForm">
+      <div class="mt-6">
+          <div class="flex col-span-full ml-3 mt-2">
+            <el-tooltip content="Código QR *" placement="top">
+              <span
+                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
+              >
+                <i class="fa-solid fa-qrcode ml-2"></i>
+              </span>
+            </el-tooltip>
+            <input
+              ref="partNumberInput"
+              v-model="form.barCode"
+              class="input"
+              autocomplete="off"
+              placeholder="Código QR *"
+              type="text"
+            />
+            <InputError :message="form.errors.barCode" />
+          </div>
+        </div>
+
+        <div
+          v-if="loading"
+          class="mt-5 z-20 rounded-lg flex items-center justify-center"
+        >
+          <i class="fa-solid fa-spinner fa-spin text-3xl text-primary"></i>
+        </div>
+
+        <div v-if="machineFound" class="flex space-x-2 mt-4">
+          <figure
+            class="w-1/3 h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center border"
+          >
+            <el-image
+              style="height: 100%"
+              :src="machineFound.media[0]?.original_url"
+              fit="contain"
+            >
+              <template #error>
+                <div class="flex justify-center items-center text-[#ababab]">
+                  <i class="fa-solid fa-image text-6xl"></i>
+                </div>
+              </template>
+            </el-image>
+          </figure>
+          <div class="w-2/3 border text-sm">
+            <h1 class="text-sm font-bold text-center mt-1">
+              {{ machineFound.name }}
+            </h1>
+            <ul class="px-4 mt-2">
+              <li>
+                <label class="text-primary">ID: </label>
+                {{ machineFound.id }}
+              </li>
+              <li>
+                <label class="text-primary">Número de serie: </label>
+                {{ machineFound.serial_number }}
+              </li>
+              <li>
+                <label class="text-primary">Peso: </label>
+                {{ machineFound.weight }} kg.
+              </li>
+              <li>
+                <label class="text-primary">Alto: </label>
+                {{ machineFound.height }} cm.
+              </li>
+              <li>
+                <label class="text-primary">Largo: </label>
+                {{ machineFound.large }} cm.
+              </li>
+              <li>
+                <label class="text-primary">Ancho: </label>
+                {{ machineFound.width }} cm.
+              </li>
+              <li>
+                <label class="text-primary">Mantenimiento cada: </label>
+                {{ machineFound.days_next_maintenance }}
+              </li>
+              <li>
+                <label class="text-primary">Proveedor: </label>
+                {{ machineFound.supplier }}
+              </li>
+              <li>
+                <label class="text-primary">Fecha de adquisición: </label>
+                {{ machineFound.aquisition_date }}
+              </li>
+              <li>
+                <label class="text-primary">costo: </label> ${{
+                  machineFound.cost
+                    .toFixed(2)
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }}
+              </li>
+              <li>
+                <label class="text-primary mt-2">Archivos: </label>
+                <div class="flex flex-col">
+                 <p class="text-secondary hover:underline" v-for="file in machineFound.files" :key="file"><a :href="file.original_url" target="_blank">{{ file.name ?? 'No hay archivos de esta máquina' }}</a></p>
+                </div>
+              </li>
+            </ul>
+            <Link
+              class="text-center mt-5"
+              :href="route('machines.show', machineFound.id)"
+            >
+              <p class="text-secondary hover:underline cursor-pointer mt-4">
+                Ver máquina
+              </p>
+            </Link>
+          </div>
+        </div>
+
+      <div class="flex justify-end space-x-3 pt-5 pb-1">
+          <PrimaryButton :disabled="form.processing">Buscar</PrimaryButton>
+          <CancelButton
+            @click="
+              qrScan = false;
+              form.reset();
+            "
+            >Cancelar</CancelButton
+          >
+        </div>
+
+      </form>
+      <!-- ---------------------- Machine form ends ---------------------- -->
     </div>
   </Modal>
 </template>

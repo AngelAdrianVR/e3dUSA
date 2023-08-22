@@ -222,11 +222,11 @@ class CatalogProductController extends Controller
 
         $part_number = explode('#', $request->barCode)[0];
 
-        $storage = Storage::with('storageable.media')->whereHas('storageable', function ($query) use ($part_number) {
-            $query->where('part_number', $part_number);
-        })->first();
+        $catalog_product = CatalogProductResource::make(CatalogProduct::with('storages')->where('part_number', $part_number)->first());
+
+        // return $catalog_product;
 
 
-        return response()->json(['item' => $storage]);
+        return response()->json(['item' => $catalog_product]);
     }
 }

@@ -34,6 +34,7 @@ class CatalogProductResource extends JsonResource
             ],
             'rawMaterials' => $this->rawMaterials,
             'storages' => $this->whenLoaded('storages'),
+            'companies' => $this->whenLoaded('companies'),
             'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'updated_at' => $this->updated_at?->isoFormat('DD MMM, YYYY h:mm A'),
         ];
