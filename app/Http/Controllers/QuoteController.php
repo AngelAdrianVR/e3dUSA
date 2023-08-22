@@ -10,6 +10,8 @@ use App\Models\Company;
 use App\Models\CompanyBranch;
 use App\Models\Quote;
 use App\Models\Sale;
+use App\Models\User;
+use App\Notifications\NewQuoteNotification;
 use Illuminate\Http\Request;
 
 class QuoteController extends Controller
@@ -48,6 +50,10 @@ class QuoteController extends Controller
 
         if($can_authorize) {
             $quote->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
+        } else {
+            // notify to Maribel
+            $maribel = User::find(3);
+            $maribel->notify(new NewQuoteNotification());
         }
 
         foreach ($request->products as $product) {
