@@ -56,7 +56,7 @@
               </template>
               <template #content>
                 <DropdownLink :href="route('users.create')">
-                  Geberar recibo de vacaciones
+                  Generar recibo de vacaciones
                 </DropdownLink>
                 <DropdownLink :href="route('users.create')">
                   Reporte de actividades
@@ -70,7 +70,7 @@
                 </DropdownLink>
 
                 <DropdownLink @click="resetPassword" as="button">
-                  Reseetear contraseña
+                  Resetear contraseña
                 </DropdownLink>
                 <DropdownLink @click="showConfirmModal = true" as="button">
                   Eliminar
@@ -94,7 +94,7 @@
       <div
         class="border-y-2 border-[#cccccc] flex justify-between items-center py-2"
       >
-        <!-- <div class="flex">
+        <div class="flex">
           <p
             @click="tabs = 1"
             :class="
@@ -102,7 +102,7 @@
             "
             class="h-10 p-2 cursor-pointer md:ml-5 transition duration-300 ease-in-out text-sm md:text-base"
           >
-            Datos de la órden
+            Información general
           </p>
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
           <p
@@ -112,9 +112,9 @@
             "
             class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base"
           >
-            Modificaciones
+            Desempeño
           </p>
-        </div> -->
+        </div>
       </div>
       <!-- ------------- tabs section ends ------------- -->
 
@@ -187,16 +187,76 @@
       </div>
       <!-- ------------- Informacion general ends 1 ------------- -->
 
-      <!-- -------------tab 2 modifications starts ------------- -->
+      <!-- -------------tab 2 desempeño starts ------------- -->
 
-      <!-- <div v-if="tabs == 2" class="p-7">
-        <p class="text-secondary">Modificaciones</p>
-        <div>
+      <div
+        v-if="tabs == 2"
+        class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm"
+      >
+        <div
+          class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center"
+        >
+          <p class="text-secondary col-span-2 mt-4 mb-2">Datos personales</p>
 
+          <span class="text-gray-500">Nombre</span>
+          <span>{{ currentUser?.name }}</span>
+          <span class="text-gray-500 my-2">Fecha de nacimiento</span>
+          <span>{{ currentUser?.employee_properties?.birthdate.raw }}</span>
+          <span class="text-gray-500 my-2">Dependientes económicos</span>
+          <span>{{ "--" }}</span>
+          <span class="text-gray-500 my-2">Dirección</span>
+          <span>{{ "--" }}</span>
+          <span class="text-gray-500 my-2">Teléfono</span>
+          <span>{{ "--" }}</span>
+          <span class="text-gray-500 my-2">Correo personal</span>
+          <span>{{ currentUser?.email }}</span>
+
+          <p class="text-secondary col-span-2 mt-7">Datos laborales</p>
+
+          <span class="text-gray-500 my-2">ID</span>
+          <span>{{ currentUser?.id }}</span>
+          <span class="text-gray-500 my-2">Fecha de ingreso</span>
+          <span>{{ currentUser?.created_at }}</span>
+          <span class="text-gray-500 my-2">Correo corporativo</span>
+          <span>{{ "--" }}</span>
+          <span class="text-gray-500 my-2">Departamento</span>
+          <span>{{ currentUser?.employee_properties?.department }}</span>
         </div>
-      </div> -->
 
-      <!-- ------------- tab 2 modifications ends ------------ -->
+        <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
+          <span class="text-gray-500 my-2">Puesto</span>
+          <span>{{ currentUser?.employee_properties?.job_position }}</span>
+          <span class="text-gray-500">NSS</span>
+          <span>{{ "--" }}</span>
+          <span class="text-gray-500 my-2">RFC</span>
+          <span>{{ "--" }}</span>
+          <span class="text-gray-500 my-2">Curp</span>
+          <span>{{ "--" }}</span>
+          <span class="text-gray-500 my-2">Nivel académico</span>
+          <span>{{ "--" }}</span>
+          <span class="text-gray-500 my-2">Salario semanal</span>
+          <span
+            >${{
+              currentUser?.employee_properties?.salary.week
+                .toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+            }}</span
+          >
+          <span class="text-gray-500 my-2">Horas laborales por semana</span>
+          <span>{{ currentUser?.employee_properties?.hours_per_week }}</span>
+
+          <p class="text-secondary col-span-2 mt-7">Contacto de emergencia</p>
+
+          <span class="text-gray-500 my-2">Nombre</span>
+          <span>{{ "--" }}</span>
+
+          <span class="text-gray-500 my-2">Parentezco</span>
+          <span>{{ "--" }}</span>
+          <span class="text-gray-500 my-2">Teléfono</span>
+          <span>{{ "--" }}</span>
+        </div>
+      </div>
+
+      <!-- ------------- tab 2 desempeño ends ------------ -->
 
       <ConfirmationModal
         :show="showConfirmModal"

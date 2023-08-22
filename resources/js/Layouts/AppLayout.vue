@@ -430,7 +430,7 @@ onMounted(() => {
 
                 <el-tooltip content="Escanear producto con código QR">
                   <PrimaryButton @click="QRScan" class="mr-10">
-                    <i class="fa-solid fa-qrcode mr-1"></i> Productos
+                    <i class="fa-solid fa-qrcode mr-1"></i> Almacén
                   </PrimaryButton>
                 </el-tooltip>
 
