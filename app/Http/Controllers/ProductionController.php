@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\ProductionResource;
 use App\Http\Resources\SaleResource;
@@ -125,6 +126,8 @@ class ProductionController extends Controller
             $sale = Sale::find($sale['id']);
             foreach ($sale->productions as $production) {
                 $production->delete();
+
+                event(new RecordDeleted($production));
             }
         }
 

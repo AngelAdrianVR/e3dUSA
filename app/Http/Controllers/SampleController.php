@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Models\Sample;
 use App\Http\Resources\SampleResource;
@@ -131,6 +132,20 @@ class SampleController extends Controller
     public function destroy(Sample $sample)
     {
         $sample->delete();
+
+        event(new RecordDeleted($sample));
+    }
+
+    public function massiveDelete(Request $request)
+    {
+        foreach ($request->samples as $sample) {
+            $sample = Sample::find($sample['id']);
+            $sample?->delete();
+
+            event(new RecordDeleted($sample));
+        }
+
+        return response()->json(['message' => 'reunion(es) eliminada(s)']);
     }
 
     public function returned(Request $request, Sample $sample)

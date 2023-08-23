@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\MachineResource;
 use App\Models\Machine;
@@ -118,6 +119,8 @@ class MachineController extends Controller
     public function destroy(Machine $machine)
     {
         $machine->delete();
+
+        event(new RecordDeleted($machine));
     }
 
     public function massiveDelete(Request $request)
@@ -125,6 +128,8 @@ class MachineController extends Controller
         foreach ($request->machines as $machine) {
             $machine = Machine::find($machine['id']);
             $machine?->delete();
+
+            event(new RecordDeleted($machine));
         }
 
         return response()->json(['message' => 'Maquina(s) eliminada(s)']);

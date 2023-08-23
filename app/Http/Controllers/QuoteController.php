@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\QuoteResource;
 use App\Models\CatalogProduct;
@@ -116,6 +117,8 @@ class QuoteController extends Controller
         foreach ($request->quotes as $quote) {
             $quote = Quote::find($quote['id']);
             $quote?->delete();
+
+            event(new RecordDeleted($quote));
         }
 
         return response()->json(['message' => 'Cotización(es) eliminada(s)']);

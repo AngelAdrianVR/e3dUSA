@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\SupplierResource;
 use App\Models\Supplier;
@@ -87,6 +88,8 @@ class SupplierController extends Controller
         $supplier_name = $supplier->name;
         $supplier->delete();
 
+        event(new RecordDeleted($supplier));
+
         return response()->json(['message' => "Producto eliminado: $supplier_name"]);
     }
 
@@ -96,6 +99,8 @@ class SupplierController extends Controller
         foreach ($request->suppliers as $supplier) {
             $supplier = Supplier::find($supplier['id']);
             $supplier?->delete();
+
+            event(new RecordDeleted($supplier));
         }
 
         return response()->json(['message' => 'proveedor(es) eliminado(s)']);

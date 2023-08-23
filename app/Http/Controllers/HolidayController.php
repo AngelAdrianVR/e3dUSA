@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\HolidayResource;
 use App\Models\Holiday;
@@ -99,6 +100,8 @@ class HolidayController extends Controller
         foreach ($request->holidays as $holiday) {
             $holiday = Holiday::find($holiday['id']);
             $holiday?->delete();
+
+            event(new RecordDeleted($holiday));
         }
 
         return response()->json(['message' => 'Dia(s) eliminado(s)']);

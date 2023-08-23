@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\CatalogProductCompanyResource;
 use App\Http\Resources\CompanyResource;
@@ -142,6 +143,8 @@ class CompanyController extends Controller
         $company_name = $company->business_name;
         $company->delete();
 
+        event(new RecordDeleted($company));
+
         return response()->json(['message' => "Producto eliminado: $company_name"]);
     }
 
@@ -150,6 +153,8 @@ class CompanyController extends Controller
         foreach ($request->companies as $company) {
             $company = Company::find($company['id']);
             $company?->delete();
+
+            event(new RecordDeleted($company));
         }
 
         return response()->json(['message' => 'Cliente(s) eliminado(s)']);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Http\Resources\StorageResource;
 use App\Models\CatalogProduct;
 use App\Models\RawMaterial;
@@ -172,6 +173,8 @@ class StorageController extends Controller
     {
         $storage->storageable->delete();
         $storage->delete();
+
+        event(new RecordDeleted($storage));
     }
 
     public function massiveDelete(Request $request)
@@ -179,6 +182,8 @@ class StorageController extends Controller
         foreach ($request->finished_products as $finished_product) {
             $finished_product = Storage::find($finished_product['id']);
             $finished_product?->delete();
+
+            event(new RecordDeleted($finished_product));
         }
 
         return response()->json(['message' => 'Producto(s) eliminado(s)']);
@@ -202,6 +207,8 @@ class StorageController extends Controller
             }
             $scrap_restored->increment('quantity', $scrap->quantity);
             $scrap?->delete();
+
+            event(new RecordDeleted($scrap));
         }
 
         return response()->json(['message' => 'Producto(s) retirado(s) de scrap']);

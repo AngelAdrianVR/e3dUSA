@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\MoreAdditionalTimeResource;
 use App\Models\AdditionalTimeRequest;
@@ -117,6 +118,8 @@ class AdditionalTimeRequestController extends Controller
         foreach ($request->more_additional_times as $more_additional_time) {
             $more_additional_time = AdditionalTimeRequest::find($more_additional_time['id']);
             $more_additional_time?->delete();
+
+            event(new RecordDeleted($more_additional_time));
         }
 
         return response()->json(['message' => 'Solicitud(es) eliminada(s)']);
@@ -127,6 +130,8 @@ class AdditionalTimeRequestController extends Controller
         foreach ($request->admin_additional_times as $admin_additional_time) {
             $admin_additional_time = AdditionalTimeRequest::find($admin_additional_time['id']);
             $admin_additional_time?->delete();
+
+            event(new RecordDeleted($admin_additional_time));
         }
 
         return response()->json(['message' => 'Solicitud(es) eliminada(s)']);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Models\Machine;
 use App\Models\Maintenance;
@@ -89,6 +90,8 @@ class MaintenanceController extends Controller
     public function destroy(Maintenance $maintenance)
     {
         $maintenance->delete();
+
+        event(new RecordDeleted($maintenance));
 
     }
 }

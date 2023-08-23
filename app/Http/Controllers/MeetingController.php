@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\MeetingResource;
 use App\Models\Meeting;
@@ -106,6 +107,8 @@ class MeetingController extends Controller
         foreach ($request->meetings as $meeting) {
             $meeting = Meeting::find($meeting['id']);
             $meeting?->delete();
+
+            event(new RecordDeleted($meeting));
         }
 
         return response()->json(['message' => 'reunion(es) eliminada(s)']);

@@ -172,7 +172,7 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.samples.forEach((sample, index) => {
+                    this.samples.data.forEach((sample, index) => {
                         if (this.$refs.multipleTableRef.value.includes(sample)) {
                             deletedIndexes.push(index);
                         }
@@ -183,7 +183,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.samples.splice(index, 1);
+                        this.samples.data.splice(index, 1);
                     }
 
                 } else {

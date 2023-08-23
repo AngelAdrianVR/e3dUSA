@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Listeners\RecordCreatedListener;
+use App\Listeners\RecordDeletedListener;
 use App\Listeners\RecordEditedListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -27,6 +29,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         RecordEdited::class => [
             RecordEditedListener::class,
+        ],
+        RecordDeleted::class => [
+            RecordDeletedListener::class,
         ],
     ];
 

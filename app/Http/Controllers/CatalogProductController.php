@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\CatalogProductResource;
 use App\Models\CatalogProduct;
@@ -161,6 +162,8 @@ class CatalogProductController extends Controller
 
         $catalog_product->update(['cost' => $total_cost]);
 
+        event(new RecordEdited($catalog_product));
+
         return to_route('catalog-products.index');
     }
 
@@ -170,6 +173,8 @@ class CatalogProductController extends Controller
         $catalog_product_name = $catalog_product->name;
         $catalog_product->delete();
 
+        event(new RecordDeleted($catalog_product));
+
         return response()->json(['message' => "Producto eliminado: $catalog_product_name"]);
     }
 
@@ -178,6 +183,8 @@ class CatalogProductController extends Controller
         foreach ($request->catalog_products as $catalog_product) {
             $catalog_product = CatalogProduct::find($catalog_product['id']);
             $catalog_product?->delete();
+            
+            event(new RecordDeleted($catalog_product));
         }
 
         return response()->json(['message' => 'Producto(s) eliminado(s)']);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Models\SparePart;
 use Illuminate\Http\Request;
@@ -85,5 +86,7 @@ class SparePartController extends Controller
     public function destroy(SparePart $spare_part)
     {
         $spare_part->delete();
+
+        event(new RecordDeleted($spare_part));
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\PurchaseResource;
 use App\Http\Resources\RawMaterialResource;
@@ -124,6 +125,8 @@ class PurchaseController extends Controller
         foreach ($request->purchases as $purchase) {
             $purchase = Purchase::find($purchase['id']);
             $purchase?->delete();
+
+            event(new RecordDeleted($purchase));
         }
 
         return response()->json(['message' => 'Órden(es) eliminada(s)']);

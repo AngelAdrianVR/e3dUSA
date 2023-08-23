@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\RawMaterialResource;
 use App\Models\CatalogProduct;
@@ -164,6 +165,8 @@ class RawMaterialController extends Controller
             $raw_material?->delete();
             $raw_material = RawMaterial::find($raw_material['storageable_id']);
             $raw_material?->delete();
+
+            event(new RecordDeleted($raw_material));
         }
 
         return response()->json(['message' => 'Producto(s) eliminado(s)']);

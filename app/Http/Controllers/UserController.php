@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\UserResource;
 use App\Models\Bonus;
@@ -141,6 +142,8 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $user->delete();
+
+        event(new RecordDeleted($user));
     }
 
     // other methods

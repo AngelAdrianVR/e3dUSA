@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\BonusResource;
 use App\Models\Bonus;
@@ -96,6 +97,8 @@ class BonusController extends Controller
         foreach ($request->bonuses as $bonus) {
             $bonus = Bonus::find($bonus['id']);
             $bonus?->delete();
+
+            event(new RecordDeleted($bonus));
         }
 
         return response()->json(['message' => 'Bono(s) eliminado(s)']);
