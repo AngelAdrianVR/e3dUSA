@@ -156,7 +156,7 @@ export default {
     }
   },
   props: {
-    user: Number,
+    user: Object,
     payrollId: Number,
     dontShowDetails: {
       type: Boolean,
@@ -170,6 +170,14 @@ export default {
     DropdownLink,
   },
   methods: {
+    fetchData() {
+      this.getAttendances();
+      this.getPayroll();
+      this.getBonuses();
+      this.getDiscounts();
+      this.getExtras();
+      this.getAuthorizedAdditionalTime();
+    },
     async getAttendances() {
       this.loading = true;
       try {
@@ -319,13 +327,13 @@ export default {
         + this.extras.amount.raw;
     }
   },
+  watch: {
+    payrollId(newPayrollId) {
+      this.fetchData();
+    },
+  },
   mounted() {
-    this.getAttendances();
-    this.getPayroll();
-    this.getBonuses();
-    this.getDiscounts();
-    this.getExtras();
-    this.getAuthorizedAdditionalTime();
+    this.fetchData();
   }
 }
 </script>

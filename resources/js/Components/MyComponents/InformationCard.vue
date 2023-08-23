@@ -19,7 +19,7 @@
         <div class="px-2 h-4/6 absolute lg:top-12 lg:left-5 top-14 left-1">
             <div class="relative">
                 <img class="lg:h-32 lg:w-32 h-16 z-20" src="@/../../public/images/aniversario.png">
-                <strong v-if="years" class="lg:text-6xl text-4xl z-10 absolute lg:left-[49px] lg:top-[18px] left-[46px] top-1">{{ user[0].years }}</strong>
+                <strong v-if="users[0]?.years" class="lg:text-6xl text-4xl z-10 absolute lg:left-[49px] lg:top-[18px] left-[46px] top-1">{{ users[0].years }}</strong>
             </div>
         </div>
         <p v-if="!users?.length" class="h-full w-full col-start-2 col-span-2 text-center text-primary">No hay
