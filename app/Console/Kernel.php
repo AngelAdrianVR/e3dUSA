@@ -17,8 +17,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
-        // $schedule->command('app:close-payroll')->weekly()->fridays()->at('00:00');
-        $schedule->command('test:cron')->everyMinute();
+        $schedule->command('app:close-payroll')->weekly()->fridays()->at('00:00');
+        // $schedule->command('test:cron')->everyMinute();
     }
 
     /**

@@ -135,7 +135,7 @@ class RawMaterialController extends Controller
 
         // update image
         $raw_material->clearMediaCollection();
-        $raw_material->addAllMediaFromRequest('media')->each(fn ($file) => $file->toMediaCollection());
+        $raw_material->addMediaFromRequest('media')->toMediaCollection();
 
         if ($request->type == 'materia-prima')
             return to_route('storages.raw-materials.index');
@@ -203,7 +203,7 @@ class RawMaterialController extends Controller
             // Agregar el material al producto de catálogo
             $catalogProduct->rawMaterials()->attach($rawMaterial, [
                 'quantity' => 1,
-                'production_costs' => [],
+                'production_costs' => [15],
             ]);
             return response()->json(['message' => 'Producto agregado al catálogo con éxito.']);
         }

@@ -122,16 +122,30 @@
               Dejar en blanco la hora de entrada si ese dia descansa el colaborador
             </p>
           </div>
-          <div class="lg:grid grid-cols-2 gap-y-2">
-            <div v-for="(day, index) in weekDays" :key="index" class="flex items-center">
-              <span class="w-28 text-sm">{{ day }}</span>
-              <div class="col-span-3">
-                <IconInput v-model="form.employee_properties.work_days[index].check_in"
-                  inputPlaceholder="Hora de entrada *" inputType="time">
-                </IconInput>
-              </div>
-            </div>
-          </div>
+          <table class="w-full">
+            <thead>
+              <tr>
+                <th>Dia</th>
+                <th>Entrada</th>
+                <th>Salida</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(day, index) in weekDays" :key="index">
+                <td>{{ day }}</td>
+                <td>
+                  <IconInput v-model="form.employee_properties.work_days[index].check_in"
+                    inputPlaceholder="Hora de entrada *" inputType="time" class="w-28 md:w-full">
+                  </IconInput>
+                </td>
+                <td>
+                  <IconInput v-model="form.employee_properties.work_days[index].check_out"
+                    inputPlaceholder="Hora de salida *" inputType="time" class="w-28 md:w-full">
+                  </IconInput>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
           <br><el-divider content-position="left" class="col-span-full">Roles</el-divider>
           <br>
@@ -189,30 +203,37 @@ export default {
           {
             day: 0,
             check_in: this.user.employee_properties.work_days[0].check_in,
+            check_out: this.user.employee_properties.work_days[0].check_out,
           },
           {
             day: 1,
             check_in: this.user.employee_properties.work_days[1].check_in,
+            check_out: this.user.employee_properties.work_days[1].check_out,
           },
           {
             day: 2,
             check_in: this.user.employee_properties.work_days[2].check_in,
+            check_out: this.user.employee_properties.work_days[2].check_out,
           },
           {
             day: 3,
             check_in: this.user.employee_properties.work_days[3].check_in,
+            check_out: this.user.employee_properties.work_days[3].check_out,
           },
           {
             day: 4,
             check_in: this.user.employee_properties.work_days[4].check_in,
+            check_out: this.user.employee_properties.work_days[4].check_out,
           },
           {
             day: 5,
             check_in: this.user.employee_properties.work_days[5].check_in,
+            check_out: this.user.employee_properties.work_days[5].check_out,
           },
           {
             day: 6,
             check_in: this.user.employee_properties.work_days[6].check_in,
+            check_out: this.user.employee_properties.work_days[6].check_out,
           },
         ],
         join_date: this.user.employee_properties.join_date,
