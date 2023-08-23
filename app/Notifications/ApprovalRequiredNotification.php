@@ -33,8 +33,14 @@ class ApprovalRequiredNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line("Hay una nueva $this->concept que requiere de su aprobacion")
-            ->action('Ver en ERP', route($this->route_name));
+            ->subject('Solicitud de Aprobación')
+            ->markdown('emails.approbal-required', [
+                'greeting' => '¡Hola!',
+                'intro' => "Hay una nueva $this->concept que requiere de su aprobación.",
+                'outro' => 'Por favor, revisa la solicitud y toma las medidas necesarias.',
+                'url' => route($this->route_name),
+                'salutation' => 'Saludos,',
+            ]);
     }
 
     /**

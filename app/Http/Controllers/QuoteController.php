@@ -54,7 +54,7 @@ class QuoteController extends Controller
         } else {
             // notify to Maribel
             $maribel = User::find(3);
-            // $maribel->notify(new ApprovalRequiredNotification('cotización', 'quotes.index'));
+            $maribel->notify(new ApprovalRequiredNotification('cotización', 'quotes.index'));
         }
 
         foreach ($request->products as $product) {
@@ -141,6 +141,16 @@ class QuoteController extends Controller
 
         $clone->save();
 
+        $can_authorize = auth()->user()->can('Autorizar cotizaciones') || auth()->user()->hasRole('Super admin');
+
+        if ($can_authorize) {
+            $clone->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
+        } else {
+            // notify to Maribel
+            $maribel = User::find(3);
+            $maribel->notify(new ApprovalRequiredNotification('cotización', 'quotes.index'));
+        }
+
         foreach ($quote->catalogProducts as $product) {
             $pivot = [
                 'quantity' => $product->pivot->quantity,
@@ -150,8 +160,8 @@ class QuoteController extends Controller
             ];
 
             $clone->catalogProducts()->attach($product->pivot->catalog_product_id, $pivot);
-            $new_item_folio = 'COT-' . str_pad($clone->id, 4, "0", STR_PAD_LEFT);
         }
+        $new_item_folio = 'COT-' . str_pad($clone->id, 4, "0", STR_PAD_LEFT);
 
         return response()->json(['message' => "Cotización clonada: $new_item_folio", 'newItem' => QuoteResource::make($clone)]);
     }
