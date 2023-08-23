@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Models\Machine;
 use App\Models\Maintenance;
 use Illuminate\Http\Request;
@@ -78,6 +79,8 @@ class MaintenanceController extends Controller
          $maintenance->clearMediaCollection();
          $maintenance->addMediaFromRequest('media')->toMediaCollection();
          $maintenance->save();
+
+         event(new RecordEdited($maintenance));
 
         return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
     }

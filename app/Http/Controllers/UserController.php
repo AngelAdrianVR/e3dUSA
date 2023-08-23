@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Http\Resources\UserResource;
 use App\Models\Bonus;
 use App\Models\ChMessage;
@@ -130,6 +131,8 @@ class UserController extends Controller
 
         $user->update($validated);
         $user->syncRoles($request->roles);
+
+        event(new RecordEdited($user));
 
         return to_route('users.index');
     }

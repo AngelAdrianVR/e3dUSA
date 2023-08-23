@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Http\Resources\PurchaseResource;
 use App\Http\Resources\RawMaterialResource;
 use App\Models\Contact;
@@ -88,6 +89,8 @@ class PurchaseController extends Controller
             ]);
     
             $purchase->update($validation + ['user_id' => auth()->user()->id]);
+            
+            event(new RecordEdited($purchase));
     
             return to_route('purchases.index');
     }

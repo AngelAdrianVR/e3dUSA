@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Http\Resources\QuoteResource;
 use App\Models\CatalogProduct;
 use App\Models\CatalogProductCompany;
@@ -99,6 +100,8 @@ class QuoteController extends Controller
         foreach ($request->products as $product) {
             $quote->catalogProducts()->attach($product['catalog_product_id'], $product);
         }
+
+        event(new RecordEdited($quote));
 
         return to_route('quotes.index');
     }

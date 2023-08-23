@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Http\Resources\DesignResource;
 use App\Models\Company;
 use App\Models\CompanyBranch;
@@ -128,6 +129,8 @@ class DesignController extends Controller
         $design->update($request->except('original_design_id') + [
             'user_id' => auth()->id()
         ]);
+
+        event(new RecordEdited($design));
 
         return to_route('designs.index');
     }

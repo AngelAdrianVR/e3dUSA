@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Models\SparePart;
 use Illuminate\Http\Request;
 
@@ -74,6 +75,8 @@ class SparePartController extends Controller
         $spare_part->clearMediaCollection();
         $spare_part->addMediaFromRequest('media')->toMediaCollection();
         $spare_part->save();
+
+        event(new RecordEdited($spare_part));
 
         return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
     }

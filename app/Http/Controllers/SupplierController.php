@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Http\Resources\SupplierResource;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -74,6 +75,8 @@ class SupplierController extends Controller
         ]);
 
        $supplier->update($request->all());
+
+       event(new RecordEdited($supplier));
 
         return to_route('suppliers.index');
     }

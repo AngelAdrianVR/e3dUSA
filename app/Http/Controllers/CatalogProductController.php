@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Http\Resources\CatalogProductResource;
 use App\Models\CatalogProduct;
 use App\Models\ProductionCost;
@@ -122,6 +123,8 @@ class CatalogProductController extends Controller
         }
 
         $catalog_product->update(['cost' => $total_cost]);
+
+        event(new RecordEdited($catalog_product));
 
         return to_route('catalog-products.index');
     }

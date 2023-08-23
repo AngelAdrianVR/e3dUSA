@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Http\Resources\CatalogProductCompanyResource;
 use App\Http\Resources\CompanyResource;
 use App\Models\CatalogProduct;
@@ -129,6 +130,8 @@ class CompanyController extends Controller
 
         // Actualizar productos
         $company->catalogProducts()->sync($request->products);
+
+        event(new RecordEdited($company));
 
         return to_route('companies.index');
     }

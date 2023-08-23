@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Http\Resources\RawMaterialResource;
 use App\Models\CatalogProduct;
 use App\Models\RawMaterial;
@@ -110,6 +111,8 @@ class RawMaterialController extends Controller
             'location' => $request->location,
         ]);
 
+        event(new RecordEdited($raw_material));
+
 
         if ($request->type == 'materia-prima')
             return to_route('storages.raw-materials.index');
@@ -139,6 +142,8 @@ class RawMaterialController extends Controller
         // update image
         $raw_material->clearMediaCollection();
         $raw_material->addAllMediaFromRequest('media')->each(fn ($file) => $file->toMediaCollection());
+
+        event(new RecordEdited($raw_material));
 
         if ($request->type == 'materia-prima')
             return to_route('storages.raw-materials.index');

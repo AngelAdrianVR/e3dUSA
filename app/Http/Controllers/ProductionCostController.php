@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Http\Resources\ProductionCostResource;
 use App\Models\ProductionCost;
 use Illuminate\Http\Request;
@@ -61,6 +62,8 @@ class ProductionCostController extends Controller
         ]);
 
         $production_cost->update($request->all());
+
+        event(new RecordEdited($production_cost));
         
         return to_route('production-costs.index');
     }

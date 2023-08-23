@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Http\Resources\MeetingResource;
 use App\Models\Meeting;
 use App\Models\User;
@@ -88,6 +89,8 @@ class MeetingController extends Controller
         $meeting->update($validated + [
             'user_id' => auth()->id()
         ]);
+
+        event(new RecordEdited($meeting));
 
         return to_route('meetings.index');
     }

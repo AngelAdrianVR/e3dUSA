@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Http\Resources\SaleResource;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Company;
@@ -117,6 +118,8 @@ class SaleController extends Controller
         CatalogProductCompanySale::where('sale_id', $sale->id)
             ->whereNotIn('id', $updatedProductIds)
             ->delete();
+
+            event(new RecordEdited($sale));
 
         return to_route('sales.index');
     }

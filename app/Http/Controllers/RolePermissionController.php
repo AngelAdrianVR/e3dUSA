@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Http\Resources\PermissionResource;
 use App\Http\Resources\RoleResource;
 use Illuminate\Http\Request;
@@ -50,6 +51,8 @@ class RolePermissionController extends Controller
     {
         $role->delete();
 
+        event(new RecordEdited($role));
+
         return response()->json(['message' => "Rol: *$role->name* eliminado"]);
     }
 
@@ -75,6 +78,8 @@ class RolePermissionController extends Controller
         ]);
 
         $permission->update($request->all());
+
+        event(new RecordEdited($permission));
 
         return response()->json(['item' => PermissionResource::make($permission)]);
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Http\Resources\MoreAdditionalTimeResource;
 use App\Models\AdditionalTimeRequest;
 use App\Models\Payroll;
@@ -102,6 +103,7 @@ class AdditionalTimeRequestController extends Controller
             'payroll_id' => $request->payroll_id ? $request->payroll_id : Payroll::getCurrent()->id,
         ]);
 
+        event(new RecordEdited($more_additional_time));
     }
 
     

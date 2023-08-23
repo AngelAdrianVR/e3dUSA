@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Http\Resources\MachineResource;
 use App\Models\Machine;
 use Illuminate\Http\Request;
@@ -81,7 +82,8 @@ class MachineController extends Controller
         ]);
 
         $machine->update($request->all());
-
+        
+        event(new RecordEdited($machine));
 
         return to_route('machines.index');
     }
@@ -105,6 +107,8 @@ class MachineController extends Controller
           // update image
         $machine->clearMediaCollection('images');
         $machine->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection('images'));
+
+        event(new RecordEdited($machine));
 
         return to_route('machines.index');
 

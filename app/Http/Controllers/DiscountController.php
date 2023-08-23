@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Http\Resources\DiscountResource;
 use App\Models\Discount;
 use Illuminate\Http\Request;
@@ -63,6 +64,8 @@ class DiscountController extends Controller
         ]);
 
         $discount->update($request->all());
+
+        event(new RecordEdited($discount));
 
         return to_route('discounts.index');
     }
