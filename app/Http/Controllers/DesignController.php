@@ -8,6 +8,7 @@ use App\Models\CompanyBranch;
 use App\Models\Design;
 use App\Models\DesignType;
 use App\Models\User;
+use App\Notifications\ApprovalRequiredNotification;
 use Illuminate\Http\Request;
 
 class DesignController extends Controller
@@ -58,6 +59,10 @@ class DesignController extends Controller
 
         if ($can_authorize) {
             $design->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
+        }else {
+            // notify to Maribel
+            $maribel = User::find(3);
+            $maribel->notify(new ApprovalRequiredNotification('orden de diseño', 'designs.index'));
         }
 
         // Guardar el archivo en la colección 'plano'

@@ -11,6 +11,7 @@ use App\Models\CompanyBranch;
 use App\Models\Quote;
 use App\Models\Sale;
 use App\Models\User;
+use App\Notifications\ApprovalRequiredNotification;
 use App\Notifications\NewQuoteNotification;
 use Illuminate\Http\Request;
 
@@ -48,16 +49,22 @@ class QuoteController extends Controller
         $quote = Quote::create($request->except('products') + ['user_id' => auth()->id()]);
         $can_authorize = auth()->user()->can('Autorizar cotizaciones') || auth()->user()->hasRole('Super admin');
 
-        if($can_authorize) {
+        if ($can_authorize) {
             $quote->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
         } else {
             // notify to Maribel
             $maribel = User::find(3);
-            $maribel->notify(new NewQuoteNotification());
+            // $maribel->notify(new ApprovalRequiredNotification('cotización', 'quotes.index'));
         }
 
         foreach ($request->products as $product) {
-            $quote->catalogProducts()->attach($product['id'], $product);
+            $quoted_product = [
+                "quantity" => $product['quantity'],
+                "price" => $product['price'],
+                "show_image" => $product['show_image'],
+                "notes" => $product['notes'],
+            ];
+            $quote->catalogProducts()->attach($product['id'], $quoted_product);
         }
 
         return to_route('quotes.index');
@@ -192,13 +199,13 @@ class QuoteController extends Controller
         return response()->json(['message' => "Cotización convertida en orden de venta con folio: {$sale_folio}"]);
     }
 
-   public function authorizeQuote(Quote $quote)
-   {
+    public function authorizeQuote(Quote $quote)
+    {
         $quote->update([
             'authorized_at' => now(),
             'authorized_user_name' => auth()->user()->name,
         ]);
 
         return response()->json(['message' => 'Cotizacion autorizadda', 'item' => $quote]);
-   }
+    }
 }

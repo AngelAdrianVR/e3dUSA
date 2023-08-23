@@ -7,17 +7,15 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NewQuoteNotification extends Notification
+class ApprovalRequiredNotification extends Notification
 {
     use Queueable;
 
-    /**
-     * Create a new notification instance.
-     */
-    public function __construct()
+    public function __construct(public $concept, public $route_name)
     {
         //
     }
+
 
     /**
      * Get the notification's delivery channels.
@@ -35,8 +33,8 @@ class NewQuoteNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('Hay una nueva cotizacion que requiere de su aprobacion')
-                    ->action('Ir a cotizaciones', route('quotes.index'));
+            ->line("Hay una nueva $this->concept que requiere de su aprobacion")
+            ->action('Ver en ERP', route($this->route_name));
     }
 
     /**

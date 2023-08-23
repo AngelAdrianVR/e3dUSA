@@ -7,6 +7,8 @@ use App\Models\CatalogProductCompanySale;
 use App\Models\Company;
 use App\Models\CompanyBranch;
 use App\Models\Sale;
+use App\Models\User;
+use App\Notifications\ApprovalRequiredNotification;
 use Illuminate\Http\Request;
 
 
@@ -49,6 +51,10 @@ class SaleController extends Controller
 
         if ($can_authorize) {
             $sale->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
+        } else {
+            // notify to Maribel
+            $maribel = User::find(3);
+            $maribel->notify(new ApprovalRequiredNotification('orden de venta', 'sales.index'));
         }
 
         // store media
