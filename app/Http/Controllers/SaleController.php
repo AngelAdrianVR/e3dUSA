@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Http\Resources\SaleResource;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Company;
@@ -57,6 +58,8 @@ class SaleController extends Controller
         foreach ($request->products as $product) {
             CatalogProductCompanySale::create($product + ['sale_id' => $sale->id]);
         }
+
+        event(new RecordCreated($sale));
 
         return to_route('sales.index');
     }

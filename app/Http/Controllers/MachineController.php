@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Http\Resources\MachineResource;
 use App\Models\Machine;
 use Illuminate\Http\Request;
@@ -40,6 +41,8 @@ class MachineController extends Controller
 
         $machine = Machine::create($request->all());
         $machine->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection('images'));
+
+        event(new RecordCreated($machine));
 
         return to_route('machines.index');
     }

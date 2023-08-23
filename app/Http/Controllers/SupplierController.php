@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Http\Resources\SupplierResource;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -39,6 +40,8 @@ class SupplierController extends Controller
        foreach ($request->contacts as $contact ) {
             $supplier->contacts()->create($contact);
        }
+
+       event(new RecordCreated($supplier));
 
         return to_route('suppliers.index');
     }

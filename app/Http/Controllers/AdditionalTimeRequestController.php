@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Http\Resources\MoreAdditionalTimeResource;
 use App\Models\AdditionalTimeRequest;
 use App\Models\Payroll;
@@ -63,12 +64,14 @@ class AdditionalTimeRequestController extends Controller
             'user_id' => $request->user_id ? 'required' : 'nullable',
         ]);
 
-        AdditionalTimeRequest::create([
+       $additional_time = AdditionalTimeRequest::create([
             'time_requested' => $request->hours . ':' . $request->minutes,
             'justification' => $request->justification,
             'user_id' => $request->user_id ? $request->user_id : auth()->id(),
             'payroll_id' => $request->payroll_id ? $request->payroll_id : Payroll::getCurrent()->id,
         ]);
+
+        event(new RecordCreated($additional_time));
     }
 
     

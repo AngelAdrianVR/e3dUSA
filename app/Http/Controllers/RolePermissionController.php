@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Http\Resources\PermissionResource;
 use App\Http\Resources\RoleResource;
 use Illuminate\Http\Request;
@@ -29,6 +30,8 @@ class RolePermissionController extends Controller
 
         $role = Role::create(['name' => $request->name]);
         $role->syncPermissions($request->permissions);
+
+        event(new RecordCreated($role));
 
         return response()->json(['item' => RoleResource::make($role)]);
     }
@@ -58,6 +61,8 @@ class RolePermissionController extends Controller
         ]);
 
         $permission = Permission::create($request->all());
+
+        event(new RecordCreated($permission));
 
         return response()->json(['item' => PermissionResource::make($permission)]);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Http\Resources\DesignResource;
 use App\Models\Company;
 use App\Models\CompanyBranch;
@@ -69,6 +70,8 @@ class DesignController extends Controller
         if ($request->hasFile('media_logo')) {
             $design->addMediaFromRequest('media_logo')->toMediaCollection('logo');
         }
+
+        event(new RecordCreated($design));
 
         return to_route('designs.index');
     }

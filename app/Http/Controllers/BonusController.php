@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Http\Resources\BonusResource;
 use App\Models\Bonus;
 use Illuminate\Http\Request;
@@ -39,6 +40,8 @@ class BonusController extends Controller
         ]);
 
         $bonus = Bonus::create($request->all());
+
+        event(new RecordCreated($bonus));
 
         return to_route('bonuses.index');
     }

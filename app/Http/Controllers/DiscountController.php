@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Http\Resources\DiscountResource;
 use App\Models\Discount;
 use Illuminate\Http\Request;
@@ -33,6 +34,8 @@ class DiscountController extends Controller
         ]);
 
         $discount = Discount::create($request->all());
+
+        event(new RecordCreated($discount));
 
         return to_route('discounts.index');
     }

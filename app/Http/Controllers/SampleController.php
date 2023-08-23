@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Models\Sample;
 use App\Http\Resources\SampleResource;
 use App\Models\CatalogProduct;
@@ -54,6 +55,8 @@ class SampleController extends Controller
         if ($can_authorize) {
             $sample->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
         }
+
+        event(new RecordCreated($sample));
 
         return to_route('samples.index');
     }

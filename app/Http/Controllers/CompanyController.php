@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Http\Resources\CatalogProductCompanyResource;
 use App\Http\Resources\CompanyResource;
 use App\Models\CatalogProduct;
@@ -59,6 +60,8 @@ class CompanyController extends Controller
                 $company->catalogProducts()->attach($product['catalog_product_id'], $product);
             }
         }
+
+        event(new RecordCreated($company));
 
         return to_route('companies.index');
     }

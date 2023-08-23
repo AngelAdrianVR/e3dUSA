@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Models\Machine;
 use App\Models\Maintenance;
 use Illuminate\Http\Request;
@@ -37,6 +38,8 @@ class MaintenanceController extends Controller
         ]);
 
         $maintenance->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+
+        event(new RecordCreated($maintenance));
         
         return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
     }

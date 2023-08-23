@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Http\Resources\MeetingResource;
 use App\Models\Meeting;
 use App\Models\User;
@@ -50,6 +51,8 @@ class MeetingController extends Controller
         if ($validated['participants']) {
             $meeting->users()->sync($validated['participants']);
         }
+
+        event(new RecordCreated($meeting));
 
         return to_route('meetings.index');
     }

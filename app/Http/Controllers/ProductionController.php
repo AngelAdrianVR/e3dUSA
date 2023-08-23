@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Http\Resources\ProductionResource;
 use App\Http\Resources\SaleResource;
 use App\Models\CatalogProductCompanySale;
@@ -55,9 +56,12 @@ class ProductionController extends Controller
             foreach ($production['tasks'] as $task) {
                 $data = $task + $foreigns;
 
-                Production::create($data);
+               $produ = Production::create($data);
+                event(new RecordCreated($produ));
             }
         }
+
+        
 
         return to_route('productions.index');
     }

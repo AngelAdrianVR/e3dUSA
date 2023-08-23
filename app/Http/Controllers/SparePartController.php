@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Models\SparePart;
 use Illuminate\Http\Request;
 
@@ -34,6 +35,8 @@ class SparePartController extends Controller
 
         $spare_part = SparePart::create($request->all());
         $spare_part->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+
+        event(new RecordCreated($spare_part));
 
         return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
     }

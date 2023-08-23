@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Http\Resources\HolidayResource;
 use App\Models\Holiday;
 use Illuminate\Http\Request;
@@ -34,11 +35,13 @@ class HolidayController extends Controller
             'month' => 'required|numeric|min:1',
         ]);
 
-        Holiday::create([
+        $holiday = Holiday::create([
             'name' => $request->name,
             'date' => "2023-$request->month-$request->day",
             'is_active' => $request->is_active,
         ]);
+
+        event(new RecordCreated($holiday));
 
         return to_route('holidays.index');
     }

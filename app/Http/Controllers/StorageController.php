@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Http\Resources\StorageResource;
 use App\Models\CatalogProduct;
 use App\Models\RawMaterial;
@@ -84,6 +85,8 @@ class StorageController extends Controller
             'type' => $request->type,
         ]);
 
+        event(new RecordCreated($finished_products));
+
         return to_route('storages.finished-products.index');
     }
 
@@ -107,6 +110,7 @@ class StorageController extends Controller
                 'location' => $request->location,
                 'type' => $request->type,
             ]);
+            event(new RecordCreated($raw_material));
         } else {
 
             $finished_products = CatalogProduct::find($storage->storageable_id);
@@ -115,10 +119,13 @@ class StorageController extends Controller
                 'location' => $request->location,
                 'type' => $request->type,
             ]);
+            event(new RecordCreated($finished_products));
         }
 
         $storage->quantity -= $request->quantity;
         $storage->save();
+
+        
 
         return to_route('storages.scraps.index');
     }

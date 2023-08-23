@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Http\Resources\PurchaseResource;
 use App\Http\Resources\RawMaterialResource;
 use App\Models\Contact;
@@ -51,6 +52,8 @@ class PurchaseController extends Controller
         if ($can_authorize) {
             $purchase->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
         }
+
+        event(new RecordCreated($purchase));
 
         return to_route('purchases.index');
     }

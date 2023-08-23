@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Http\Resources\RawMaterialResource;
 use App\Models\CatalogProduct;
 use App\Models\RawMaterial;
@@ -59,6 +60,8 @@ class RawMaterialController extends Controller
             'type' => $request->type,
             'location' => $request->location,
         ]);
+
+        event(new RecordCreated($raw_material));
 
         if ($request->type == 'materia-prima')
             return to_route('storages.raw-materials.index');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Http\Resources\UserResource;
 use App\Models\Bonus;
 use App\Models\ChMessage;
@@ -67,6 +68,8 @@ class UserController extends Controller
         
         $user = User::create($validated);
         $user->syncRoles($request->roles);
+
+        event(new RecordCreated($user));
 
         return to_route('users.index');
     }
