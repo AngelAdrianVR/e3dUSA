@@ -44,7 +44,7 @@
             <el-tooltip
               v-if="$page.props.auth.user.permissions.includes('Editar materia prima') && currentStorage?.type != 'producto-terminado'"
               content="Editar" placement="top">
-              <Link :href="route('raw-materials.edit', selectedStorage)">
+              <Link :href="route('raw-materials.edit', selectedRawMaterial)">
               <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
                 <i class="fa-solid fa-pen text-sm"></i>
               </button>
@@ -159,7 +159,7 @@
               </div>
               <div class="flex mb-2 space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">ID del producto</p>
-                <p>{{ currentStorage?.id }}</p>
+                <p>{{ selectedRawMaterial }}</p>
               </div>
               <div class="flex mb-6 space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">Características</p>
@@ -407,7 +407,7 @@ export default {
   },
   methods: {
     sentToScrap() {
-      this.form.storage_id = this.currentStorage.id;
+      this.form.storage_id = this.selectedRawMaterial;
       this.form.post(route("storages.scraps.store"), {
         onSuccess: () => {
           this.$notify({

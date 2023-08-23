@@ -32,7 +32,7 @@
                     'text-red-600': attendance.late >= 15,
                   }">
                     {{ attendance.check_in }}
-                    <i v-if="!attendance.late" class="fa-solid fa-face-smile text-yellow-400 ml-1"></i>
+                    <i v-if="!attendance.late" class="fa-solid fa-face-smile text-green-600 ml-1"></i>
                     <i v-else-if="attendance.late < 15" class="fa-solid fa-face-meh ml-1"></i>
                     <i v-else class="fa-solid fa-face-sad-tear ml-1"></i>
                   </p>
