@@ -237,7 +237,7 @@ export default {
                     label: 'Más',
                     icon: '<i class="fa-solid fa-ellipsis text-xs"></i>',
                     active: route().current('machines.*') || route().current('more-additional-times.*') || route().current('meetings.*') ||
-                        route().current('samples.*') || route().current('production-costs.*'),
+                        route().current('samples.*') || route().current('production-costs.*') || route().current('audits.*'),
                     options: [
                         {
                             label: 'Máquinas',
@@ -270,12 +270,18 @@ export default {
                             route: 'production-costs.index',
                             show: this.$page.props.auth.user.permissions.includes('Ver costos de produccion')
                         },
+                        {
+                            label: 'Historial de acciones',
+                            route: 'audits.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver historial de acciones')
+                        },
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver maquinas') ||
                         this.$page.props.auth.user.permissions.includes('Solicitudes de tiempo adicional personal') ||
                         this.$page.props.auth.user.permissions.includes('Reuniones personal') ||
                         this.$page.props.auth.user.permissions.includes('Ver biblioteca de medios') ||
+                        this.$page.props.auth.user.permissions.includes('Ver historial de acciones') ||
                         this.$page.props.auth.user.permissions.includes('Ver costos de produccion')
                 },
                 {

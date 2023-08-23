@@ -154,6 +154,7 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Chatear', 'category' => 'Generales']);
         Permission::create(['name' => 'Solicitudes de tiempo adicional personal', 'category' => 'Generales']);
         Permission::create(['name' => 'Reuniones personal', 'category' => 'Generales']);
+        Permission::create(['name' => 'Ver historial de acciones', 'category' => 'Generales']);
 
         Permission::create(['name' => 'Ordenes de diseño todas', 'category' => 'Diseño']);
         Permission::create(['name' => 'Autorizar ordenes de diseño', 'category' => 'Diseño']);

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdditionalTimeRequestController;
+use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\CompanyBranchController;
@@ -238,6 +239,11 @@ Route::post('meetings/get-by-date-and-user', [MeetingController::class, 'getMeet
 //------------------ Meetings routes ----------------
 Route::resource('production-costs', ProductionCostController::class)->middleware('auth');
 Route::post('production-costs/massive-delete', [ProductionCostController::class, 'massiveDelete'])->name('production-costs.massive-delete');
+
+
+//------------------ Actions history routes ----------------
+Route::resource('audits', AuditController::class)->middleware('auth');
+
 
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');

@@ -38,8 +38,8 @@ class RecordCreatedListener
              'action' => 'Creación', 
              'table_name' =>  $tableName, 
              'record_id' => $recordCreated->id,
-            //  'old_data' => null,
-            //  'new_data' => $recordCreated, // Suponiendo que $registroCreado es un array o objeto con los datos del registro
+             'old_data' => null,
+             'new_data' => $recordCreated
          ]);
     }
 }

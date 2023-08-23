@@ -38,8 +38,8 @@ class RecordDeletedListener
              'action' => 'Eliminación', 
              'table_name' =>  $tableName, 
              'record_id' => $recordDeleted->id,
-            //  'old_data' => null,
-            //  'new_data' => $recordDeleted, // Suponiendo que $registroCreado es un array o objeto con los datos del registro
+             'old_data' => $recordDeleted,
+             'new_data' => null, // Suponiendo que $registroCreado es un array o objeto con los datos del registro
          ]);
     }
 }

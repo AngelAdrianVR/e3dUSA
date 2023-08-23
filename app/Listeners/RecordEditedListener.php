@@ -34,8 +34,8 @@ class RecordEditedListener
             'action' => 'Edición', 
             'table_name' =>  $tableName, 
             'record_id' => $recordEdited->id,
-           //  'old_data' => null,
-           //  'new_data' => $recordCreated, // Suponiendo que $registroCreado es un array o objeto con los datos del registro
+            // 'old_data' => $recordEdited->getOriginal(),
+            'new_data' => $recordEdited, 
         ]);
     }
 }
