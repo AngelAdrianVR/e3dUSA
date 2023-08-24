@@ -102,17 +102,20 @@ class SaleController extends Controller
         $updatedProductIds = [];
         $sale->update($request->except('products'));
 
+       
         foreach ($request->products as $product) {
             $productData = $product + ['sale_id' => $sale->id];
 
             if (isset($product['id'])) {
-                // Actualizar la relación existente en catalogProductCompanySales
+                // Actualizar la relaci贸n existente en catalogProductCompanySales
                 $existingRelation = CatalogProductCompanySale::findOrFail($product['id']);
                 $existingRelation->update($productData);
                 $updatedProductIds[] = $product['id'];
+                
             } else {
-                // Crear una nueva relación en catalogProductCompanySales
-                CatalogProductCompanySale::create($productData);
+                // Crear una nueva relaci贸n en catalogProductCompanySales
+                $new = CatalogProductCompanySale::create($productData);
+                $updatedProductIds[] = $new->id;
             }
         }
 
