@@ -8,6 +8,9 @@ use App\Events\RecordEdited;
 use App\Http\Resources\UserResource;
 use App\Models\Bonus;
 use App\Models\ChMessage;
+use App\Models\Design;
+use App\Models\Production;
+use App\Models\Sale;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -53,7 +56,7 @@ class UserController extends Controller
         ]);
         $work_days = 0;
         foreach ($validated['employee_properties']['work_days'] as $day) {
-            if ($day['check_in'] != 0) $work_days ++;
+            if ($day['check_in'] != 0) $work_days++;
         }
 
         $validated['employee_properties']['birthdate'] = [
@@ -62,12 +65,12 @@ class UserController extends Controller
         ];
         $validated['employee_properties']['salary']['week'] =  floatval($validated['employee_properties']['salary']['week']);
         $validated['employee_properties']['hours_per_week'] =  intval($validated['employee_properties']['hours_per_week']);
-        $hours_per_day = $validated['employee_properties']['hours_per_week'] / $work_days; 
-        $validated['employee_properties']['salary']['hour'] = 
+        $hours_per_day = $validated['employee_properties']['hours_per_week'] / $work_days;
+        $validated['employee_properties']['salary']['hour'] =
             round($validated['employee_properties']['salary']['week'] / $validated['employee_properties']['hours_per_week'], 2);
-        $validated['employee_properties']['salary']['day'] = round($validated['employee_properties']['salary']['hour'] * $hours_per_day, 2);   
+        $validated['employee_properties']['salary']['day'] = round($validated['employee_properties']['salary']['hour'] * $hours_per_day, 2);
         $validated['password'] = bcrypt($request['employee_properties']['password']);
-        
+
         $user = User::create($validated);
         $user->syncRoles($request->roles);
 
@@ -79,10 +82,69 @@ class UserController extends Controller
 
     public function show(User $user)
     {
+        $user_id = $user->id;
         $users = UserResource::collection(User::latest()->get());
         $roles = Role::all();
+        //PRODUCTION
+        $asigned_production_orders = Production::where('operator_id', $user_id)->get();
+        $finished_production_orders = Production::where('operator_id', $user_id)->whereNotNull('finished_at')->get();
+        $total_hours_production = $finished_production_orders->sum('estimated_time_hours');
+        $total_minutes_production = $finished_production_orders->sum('estimated_time_minutes');
+        //Designer
+        $asigned_design_orders = Design::where('designer_id', $user_id)->get();
+        $finished_design_orders = Design::where('designer_id', $user_id)->whereNotNull('finished_at')->get();
+        // $total_hours_design = null;
+        // $total_minutes_design = null;
 
-        return inertia('User/Show', compact('user', 'users', 'roles'));
+        // if (isset($finished_design_orders)) {
+
+        //     $totalSeconds = 0;
+        //     foreach ($finished_design_orders as $item) {
+        //         $startedAt = Carbon::parse($item->started_at);
+        //         $finishedAt = Carbon::parse($item->finished_at);
+
+        //         if ($startedAt && $finishedAt) {
+        //             $differenceInSeconds = $finishedAt->diffInSeconds($startedAt);
+        //             $totalSeconds += $differenceInSeconds;
+        //         }
+        //     }
+        //     // Convertir los segundos totales en horas, minutos y segundos
+        //     $total_hours_design = intdiv($totalSeconds, 3600);
+        //     $total_minutes_design = $totalSeconds % 3600;
+        // }
+
+        //Seller
+        $sale_orders_created = Sale::with('catalogProductCompanySales.catalogProductCompany')->where('user_id', $user_id)->get();
+        $total_money_sold = 0;
+        
+        $sale_orders_created->each(function ($sale) use (&$totalMoneySold) {
+            if (isset($sale['catalog_product_company_sales']) && is_array($sale['catalog_product_company_sales'])) {
+                foreach ($sale['catalog_product_company_sales'] as $productSale) {
+                    $quantity = $productSale['quantity'] ?? 0;
+                    $newPrice = $productSale['catalog_product_company']['new_price'] ?? 0;
+                    $totalMoneySold += $quantity * $newPrice;
+                }
+            }
+        });
+            
+
+        // return $total_money_sold;
+
+        return inertia('User/Show', compact(
+            'user',
+            'users',
+            'roles',
+            'finished_production_orders',
+            'asigned_production_orders',
+            'total_hours_production',
+            'total_minutes_production',
+            'finished_design_orders',
+            'asigned_design_orders',
+            // 'total_hours_design',
+            // 'total_minutes_design',
+            'sale_orders_created',
+            'total_money_sold',
+        ));
     }
 
 
@@ -100,7 +162,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required',
-            'email' => 'required|string|unique:users,email,'.$user->id,
+            'email' => 'required|string|unique:users,email,' . $user->id,
             'roles' => 'array|min:1',
             'employee_properties.salary.week' => 'required|numeric|min:1',
             'employee_properties.hours_per_week' => 'required|numeric|min:1',
@@ -115,7 +177,7 @@ class UserController extends Controller
 
         $work_days = 0;
         foreach ($validated['employee_properties']['work_days'] as $day) {
-            if ($day['check_in'] != 0) $work_days ++;
+            if ($day['check_in'] != 0) $work_days++;
         }
 
         $validated['employee_properties']['birthdate'] = [
@@ -124,10 +186,10 @@ class UserController extends Controller
         ];
         $validated['employee_properties']['salary']['week'] =  floatval($validated['employee_properties']['salary']['week']);
         $validated['employee_properties']['hours_per_week'] =  intval($validated['employee_properties']['hours_per_week']);
-        $hours_per_day = $validated['employee_properties']['hours_per_week'] / $work_days; 
-        $validated['employee_properties']['salary']['hour'] = 
+        $hours_per_day = $validated['employee_properties']['hours_per_week'] / $work_days;
+        $validated['employee_properties']['salary']['hour'] =
             round($validated['employee_properties']['salary']['week'] / $validated['employee_properties']['hours_per_week'], 2);
-        $validated['employee_properties']['salary']['day'] = round($validated['employee_properties']['salary']['hour'] * $hours_per_day, 2);   
+        $validated['employee_properties']['salary']['day'] = round($validated['employee_properties']['salary']['hour'] * $hours_per_day, 2);
         $validated['employee_properties']['hours_per_day'] = round($hours_per_day, 2);
 
         $user->update($validated);
@@ -171,17 +233,16 @@ class UserController extends Controller
     public function changeStatus(User $user)
     {
         if ($user->is_active) {
-            
+
             $user->update([
                 'is_active' => false
             ]);
-        }else{
+        } else {
 
             $user->update([
                 'is_active' => true
             ]);
         }
-
     }
 
     public function getUnseenMessages()

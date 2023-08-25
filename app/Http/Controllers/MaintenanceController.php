@@ -86,6 +86,28 @@ class MaintenanceController extends Controller
         return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
     }
 
+    public function updateWithMedia(Request $request, Maintenance $maintenance)
+    {
+        $request->validate([
+            'maintenance_type' => 'required',
+            'problems' => $request->maintenance_type =='Correctivo' ? 'required' : 'nullable' . '|string',
+            'actions' => 'required|string',
+            'cost' => 'required|numeric|min:0',
+            'responsible' => 'required|string',
+            'machine_id' => 'required|numeric',
+        ]);
+
+        $maintenance->update($request->all());
+          // update image
+        $maintenance->clearMediaCollection();
+        $maintenance->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+
+        event(new RecordEdited($maintenance));
+
+        return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
+
+    }
+
     
     public function destroy(Maintenance $maintenance)
     {

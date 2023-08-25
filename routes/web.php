@@ -218,15 +218,21 @@ Route::post('admin-additional-times/massive-delete', [AdditionalTimeRequestContr
 // ------- PDF routes -------------------
 Route::get('/raw-material-actual-stock', [PdfController::class, 'RawMaterialActualStock'])->name('pdf.raw-material-actual-stock')->middleware('auth');
 Route::get('/consumables-actual-stock', [PdfController::class, 'consumablesActualStock'])->name('pdf.consumables-actual-stock')->middleware('auth');
+Route::get('/raw-material-info', [PdfController::class, 'RawMaterialInfo'])->name('pdf.raw-material-info')->middleware('auth');
+
 
 // ------- Maintenances routes  -------------
 Route::resource('maintenances', MaintenanceController::class)->except('create')->middleware('auth');
 Route::get('maintenances/create/{selectedMachine}',[ MaintenanceController::class, 'create'])->name('maintenances.create')->middleware('auth');
+Route::post('maintenances/update-with-media/{maintenance}', [MaintenanceController::class, 'updateWithMedia'])->name('maintenances.update-with-media')->middleware('auth');
+
 
 
 // ---------- spare parts routes  ---------------
 Route::resource('spare-parts', SparePartController::class)->except('create')->middleware('auth');
 Route::get('spare-parts/create/{selectedMachine}',[ SparePartController::class, 'create'])->name('spare-parts.create')->middleware('auth');
+Route::post('spare-parts/update-with-media/{spare_part}', [SparePartController::class, 'updateWithMedia'])->name('spare-parts.update-with-media')->middleware('auth');
+
 
 
 //------------------ Meetings routes ----------------
@@ -265,4 +271,6 @@ Route::get('/clear-cache', function () {
     Artisan::call('config:clear');
     return 'cleared.';
 });
+
+
 

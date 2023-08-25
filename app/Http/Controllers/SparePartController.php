@@ -82,6 +82,29 @@ class SparePartController extends Controller
         return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
     }
 
+    public function updateWithMedia(Request $request, SparePart $spare_part)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'supplier' => 'nullable|string',
+            'quantity' => 'required|numeric|min:1',
+            'cost' => 'required|numeric|min:0',
+            'location' => 'required',
+            'description' => 'nullable',
+            'machine_id' => 'required',
+        ]); 
+
+        $spare_part->update($request->all());
+          // update image
+        $spare_part->clearMediaCollection();
+        $spare_part->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+
+        event(new RecordEdited($spare_part));
+
+        return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
+
+    }
+
     
     public function destroy(SparePart $spare_part)
     {
