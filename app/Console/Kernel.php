@@ -9,6 +9,9 @@ class Kernel extends ConsoleKernel
 {
     protected $commands = [
         \App\Console\Commands\UpdatePartNumber::class,
+        \App\Console\Commands\IncreaseProductPrice::class,
+        \App\Console\Commands\ReactivateProductSale::class,
+        \App\Console\Commands\closePayrollCommand::class,
         \App\Console\Commands\TestCron::class,
     ];
     /**
@@ -17,8 +20,10 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
-        // $schedule->command('app:close-payroll')->weekly()->fridays()->at('00:00');
-        $schedule->command('test:cron')->everyMinute();
+        $schedule->command('app:close-payroll')->weekly()->fridays()->at('00:00');
+        $schedule->command('app:increase-product-price')->weekly();
+        $schedule->command('app:reactivate-product-sale')->weekly();
+        // $schedule->command('test:cron')->everyMinute();
     }
 
     /**

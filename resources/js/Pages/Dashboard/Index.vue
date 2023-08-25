@@ -5,7 +5,12 @@
 
             <div class="my-5">
                 <h2 class="text-primary lg:text-xl text-lg  mb-3">Avisos</h2>
-                <p class="font-bold text-lg text-center border-2 border-red-600 rounded-lg py-2 text-white bg-red-600">¡ATENCIÓN! <hr> Tu horario de trabajo se cierra automáticamente a la hora de tu salida contratada</p>
+                <p class="font-bold text-lg text-center border-2 border-red-600 rounded-lg py-2 text-white bg-red-600">
+                    ¡ATENCIÓN!
+                    <hr>
+                    Recuerda que tu tiempo trabajado deja de contar a la hora de tu
+                    salida. Si registras después de esta hora ya no se tomará en cuenta
+                </p>
             </div>
 
             <!-- attendance -->
@@ -108,7 +113,15 @@
             @close="showMeetingModal = false; showPayrollModal = false">
             <template #title>
                 <p v-if="showMeetingModal">Crear reunion</p>
-                <p v-else>Nómina semanal</p>
+                <div v-else>
+                    <p>Nómina semanal</p>
+                    <div class="w-full mb-5">
+                        <select class="input h-10" v-model="payrollId" filterable placeholder="Buscar nómina">
+                            <option v-for="item in payrolls" :key="item.id" :label="'Nómina semana: ' + item.week"
+                                :value="item.id" />
+                        </select>
+                    </div>
+                </div>
             </template>
             <template #content>
                 <!-- Form -->
@@ -320,6 +333,7 @@ export default {
             greeting: null,
             showPayrollModal: false,
             payrollId: null,
+            payrolls: null,
         }
     },
     props: {
@@ -410,12 +424,13 @@ export default {
                 this.greeting = { text: "Buenas noches ", class: "fa-solid fa-moon text-purple-500 text-6xl" };
             }
         },
-        async getCurrentPayroll() {
+        async getAllPayrolls() {
             try {
-                const response = await axios.post(route('payrolls.get-current-payroll'));
+                const response = await axios.post(route('payrolls.get-all-payrolls'));
 
                 if (response.status === 200) {
-                    this.payrollId = response.data.item.id;
+                    this.payrolls = response.data.items;
+                    this.payrollId = this.payrolls[0].id;
                 }
             } catch (error) {
                 console.log(error.message);
@@ -432,7 +447,7 @@ export default {
             this.updateGreeting();
         }, 60000); // 60000 ms = 1 minuto
 
-        this.getCurrentPayroll();
+        this.getAllPayrolls();
     }
 }
 </script>

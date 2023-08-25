@@ -132,18 +132,30 @@
               Dejar en blanco la hora de entrada si ese dia descansa el colaborador
             </p>
           </div>
-          <div class="lg:grid grid-cols-2 gap-y-2">
-            <div v-for="(day, index) in weekDays" :key="index" class="flex items-center">
-              <span class="w-28 text-sm">{{ day }}</span>
-              <div class="col-span-3">
-                <!-- <el-time-picker v-model="form.employee_properties.work_days[index].check_in" format="hh:mm a"
-                  placeholder="Hora de entrada *" /> -->
-                <IconInput v-model="form.employee_properties.work_days[index].check_in"
-                  inputPlaceholder="Hora de entrada *" inputType="time">
-                </IconInput>
-              </div>
-            </div>
-          </div>
+          <table class="w-full">
+            <thead>
+              <tr>
+                <th>Dia</th>
+                <th>Entrada</th>
+                <th>Salida</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(day, index) in weekDays" :key="index">
+                <td>{{ day }}</td>
+                <td>
+                  <IconInput v-model="form.employee_properties.work_days[index].check_in"
+                    inputPlaceholder="Hora de entrada *" inputType="time" class="w-28 md:w-full">
+                  </IconInput>
+                </td>
+                <td>
+                  <IconInput v-model="form.employee_properties.work_days[index].check_out"
+                    inputPlaceholder="Hora de salida *" inputType="time" class="w-28 md:w-full">
+                  </IconInput>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
           <br><el-divider content-position="left" class="col-span-full">Roles</el-divider>
           <br>
@@ -203,30 +215,37 @@ export default {
           {
             day: 0,
             check_in: 0,
+            check_out: 0,
           },
           {
             day: 1,
             check_in: 0,
+            check_out: 0,
           },
           {
             day: 2,
             check_in: 0,
+            check_out: 0,
           },
           {
             day: 3,
             check_in: 0,
+            check_out: 0,
           },
           {
             day: 4,
             check_in: 0,
+            check_out: 0,
           },
           {
             day: 5,
             check_in: 0,
+            check_out: 0,
           },
           {
             day: 6,
             check_in: 0,
+            check_out: 0,
           },
         ],
         join_date: null,

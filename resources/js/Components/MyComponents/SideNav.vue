@@ -36,7 +36,16 @@
     <DialogModal :show="showModal" @close="showModal = false">
         <template #title>
             Nómina semanal
-        <p class="text-sm text-primary mt-3 mx-20">Recuerda que tu horario de trabajo se cierra automáticamente a la hora de tu salida contratada</p>
+            <p class="text-sm text-primary mt-3 mx-20">Recuerda que tu tiempo trabajado deja de contar a la hora de tu
+                salida. Si registras después de esta hora ya no se tomará en cuenta</p>
+            <div class="w-1/2 mt-5 mx-10">
+                <el-select v-model="payrollId" filterable
+                    :reserve-keyword="false" placeholder="Buscar nómina">
+                    <el-option v-for="item in payrolls" :key="item.id" :label="'Nómina semana: ' + item.week"
+                        :value="item.id" />
+                </el-select>
+            </div>
+
         </template>
         <template #content>
             <PayrollTemplate :user="$page.props.auth.user" :payrollId="payrollId" dontShowDetails />
@@ -294,6 +303,7 @@ export default {
             ],
             showModal: false,
             payrollId: null,
+            payrolls: null,
         }
     },
     components: {
@@ -304,12 +314,13 @@ export default {
         PayrollTemplate
     },
     methods: {
-        async getCurrentPayroll() {
+        async getAllPayrolls() {
             try {
-                const response = await axios.post(route('payrolls.get-current-payroll'));
+                const response = await axios.post(route('payrolls.get-all-payrolls'));
 
                 if (response.status === 200) {
-                    this.payrollId = response.data.item.id;
+                    this.payrolls = response.data.items;
+                    this.payrollId = this.payrolls[0].id;
                 }
 
             } catch (error) {
@@ -318,7 +329,7 @@ export default {
         }
     },
     mounted() {
-        this.getCurrentPayroll();
+        this.getAllPayrolls();
     }
 }
 </script>

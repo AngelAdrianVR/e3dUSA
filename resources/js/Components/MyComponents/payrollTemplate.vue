@@ -32,7 +32,7 @@
                     'text-red-600': attendance.late >= 15,
                   }">
                     {{ attendance.check_in }}
-                    <i v-if="!attendance.late" class="fa-solid fa-face-smile text-yellow-400 ml-1"></i>
+                    <i v-if="!attendance.late" class="fa-solid fa-face-smile text-green-600 ml-1"></i>
                     <i v-else-if="attendance.late < 15" class="fa-solid fa-face-meh ml-1"></i>
                     <i v-else class="fa-solid fa-face-sad-tear ml-1"></i>
                   </p>
@@ -73,6 +73,11 @@
         {{ payroll?.start_date }} - {{ payroll?.end_date }}
       </p>
       <div class="flex flex-col mr-5">
+        <p class="grid grid-cols-3 gap-x-1">
+          <span>Avance semana</span>
+          <span class="text-center">{{ getWeekProcessInPercentage() }}</span>
+          <span></span>
+        </p>
         <p class="grid grid-cols-3 gap-x-1">
           <span>Días trabajados</span>
           <span class="text-center">{{ getWorkedDays().length }}</span>
@@ -151,7 +156,7 @@ export default {
     }
   },
   props: {
-    user: Number,
+    user: Object,
     payrollId: Number,
     dontShowDetails: {
       type: Boolean,
@@ -165,6 +170,14 @@ export default {
     DropdownLink,
   },
   methods: {
+    fetchData() {
+      this.getAttendances();
+      this.getPayroll();
+      this.getBonuses();
+      this.getDiscounts();
+      this.getExtras();
+      this.getAuthorizedAdditionalTime();
+    },
     async getAttendances() {
       this.loading = true;
       try {
@@ -287,6 +300,12 @@ export default {
 
       return hours + 'h ' + minutes + 'm';
     },
+    getWeekProcessInPercentage() {
+      const totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
+      const percentage = (totalWeekHours * 100) / this.user.employee_properties.hours_per_week;
+
+      return Math.round(percentage) + '%';
+    },
     getTotal() {
       const dayly_salary = this.processedAttendances.find(item => item.check_in)?.additionals?.salary.day;
       const vacations = this.getVacations().length * 1.25 * dayly_salary;
@@ -308,13 +327,13 @@ export default {
         + this.extras.amount.raw;
     }
   },
+  watch: {
+    payrollId(newPayrollId) {
+      this.fetchData();
+    },
+  },
   mounted() {
-    this.getAttendances();
-    this.getPayroll();
-    this.getBonuses();
-    this.getDiscounts();
-    this.getExtras();
-    this.getAuthorizedAdditionalTime();
+    this.fetchData();
   }
 }
 </script>

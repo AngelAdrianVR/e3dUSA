@@ -47,7 +47,8 @@ class CatalogProductController extends Controller
             'measure_unit' => 'required|string',
             'min_quantity' => 'required|min:0',
             'max_quantity' => 'required|min:0',
-            'description' => 'nullable'
+            'description' => 'nullable',
+            'raw_materials.*.production_cost' => 'array|min:1'
         ]);
 
         // consecutive

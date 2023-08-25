@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('company_branches', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('address');
+            $table->text('address');
             $table->string('post_code');
             $table->string('sat_method');
             $table->string('sat_type');

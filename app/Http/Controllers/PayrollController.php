@@ -339,6 +339,13 @@ class PayrollController extends Controller
         return response()->json(['item' => $current]);
     }
 
+    public function getAllPayrolls()
+    {
+        $all = Payroll::latest()->get();
+
+        return response()->json(['items' => $all]);
+    }
+
     public function getAdditionalTime(Request $request)
     {
         $additiona_time = AdditionalTimeRequest::where('user_id', $request->user_id)->where('payroll_id', $request->payroll_id)->whereNotNull('authorized_at')->first();
