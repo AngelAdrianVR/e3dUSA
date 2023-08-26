@@ -219,7 +219,7 @@ class QuoteController extends Controller
 
         // notify to requester user
         $quote_folio = 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT);
-        $quote->user->notify(new RequestApprovedNotification('Cotización', $quote_folio, "Cliente {$quote->companyBranch->name}"));
+        $quote->user->notify(new RequestApprovedNotification('Cotización', $quote_folio, "Cliente {$quote->companyBranch->name}", 'quote'));
 
         return response()->json(['message' => 'Cotizacion autorizadda', 'item' => $quote]);
     }

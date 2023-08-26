@@ -18,11 +18,13 @@
                                 <span class="leading-none font-normal text-center">
                                     {{ menu.label }}
                                 </span>
-                                <div class="bg-primary w-[5px] h-[5px] rounded-full absolute top-3 right-7"></div>
+                                <div v-if="menu.notifications"
+                                    class="bg-primary w-[5px] h-[5px] rounded-full absolute top-3 right-7"></div>
                             </template>
                             <template #content>
                                 <template v-for="option in menu.options" :key="option">
-                                    <DropdownNavLink v-if="option.show" :href="route(option.route)" :notifications="option.notifications">
+                                    <DropdownNavLink v-if="option.show" :href="route(option.route)"
+                                        :notifications="option.notifications">
                                         {{ option.label }}
                                     </DropdownNavLink>
                                 </template>
@@ -93,7 +95,7 @@ export default {
                     icon: '<i class="fa-solid fa-shop text-xs"></i>',
                     active: route().current('quotes.*') || route().current('companies.*') || route().current('sales.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                        return notification.data.module === 'quote' || notification.data.module === 'sale';
+                        return ['quote', 'sale'].includes(notification.data.module);
                     }),
                     options: [
                         {
@@ -128,7 +130,7 @@ export default {
                     icon: '<i class="fa-solid fa-cart-shopping text-xs"></i>',
                     active: route().current('suppliers.*') || route().current('purchases.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                        return notification.data.module === 'po' || notifications.data.module === 'suppliers';
+                        return ['po', 'suppliers'].includes(notification.data.module);
                     }),
                     options: [
                         {
@@ -138,6 +140,7 @@ export default {
                             notifications: this.$page.props.auth.user?.notifications?.some(notification => {
                                 return notification.data.module === 'suppler';
                             }),
+                            notifications: false,
                         },
                         {
                             label: 'Órdenes de compra',
@@ -158,8 +161,7 @@ export default {
                     icon: '<i class="fa-solid fa-warehouse text-xs"></i>',
                     active: route().current('storages.*') || route().current('raw-materials.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                        return notification.data.module === 'raw-material' || notification.data.module === 'consumable'
-                            || notification.data.module === 'finished-product' || notification.data.module === 'scrap';
+                        return ['raw-material', 'consumable', 'finished-product', 'scrap'].includes(notification.data.module);
                     }),
                     options: [
                         {
@@ -212,8 +214,7 @@ export default {
                         || route().current('bonuses.*')
                         || route().current('holidays.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                        return notification.data.module === 'payroll' || notification.data.module === 'admin-additional-time'
-                            || notification.data.module === 'user';
+                        return ['payroll', 'admin-additional-time', 'user'].includes(notification.data.module);
                     }),
                     options: [
                         {
@@ -302,8 +303,7 @@ export default {
                     active: route().current('machines.*') || route().current('more-additional-times.*') || route().current('meetings.*') ||
                         route().current('samples.*') || route().current('production-costs.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                        return notification.data.module === 'machine' || notifications.data.module === 'meeting' ||
-                            notification.data.module === 'sample' || notification.data.module === 'media-library';
+                        return ['machine', 'meeting', 'sample', 'media-library'].includes(notification.data.module);
                     }),
                     options: [
                         {

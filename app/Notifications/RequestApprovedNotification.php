@@ -14,7 +14,7 @@ class RequestApprovedNotification extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(public $concept, public $item_id, public $additional_info)
+    public function __construct(public $concept, public $item_id, public $additional_info, public $module)
     {
         //
     }
@@ -50,6 +50,7 @@ class RequestApprovedNotification extends Notification
         return [
             'description' => "$this->concept <b>$this->item_id</b> ha sido autorizada(o)",
             'additional_info' => "$this->additional_info",
+            'module' => "$this->module",
         ];
     }
 }

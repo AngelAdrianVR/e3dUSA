@@ -68,7 +68,7 @@ class HandleInertiaRequests extends Middleware
             },
             'auth.user.notifications' => function () use ($request) {
                 if ($request->user()) {
-                    return $request->user()->notifications;
+                    return $request->user()->unreadNotifications;
                 }
 
                 return null;

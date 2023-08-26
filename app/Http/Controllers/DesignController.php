@@ -187,7 +187,7 @@ class DesignController extends Controller
         ]);
 
         // notify to requester user
-        $design->user->notify(new RequestApprovedNotification('Diseño', $design->name, ""));
+        $design->user->notify(new RequestApprovedNotification('Diseño', $design->name, "", 'design'));
 
         return response()->json(['item' => DesignResource::make($design)]);
     }

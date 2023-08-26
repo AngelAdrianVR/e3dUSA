@@ -468,7 +468,7 @@ onMounted(() => {
             block: showingNavigationDropdown,
             hidden: !showingNavigationDropdown,
           }"
-            class="sm:hidden bg-[#d9d9d9] w-4/6 absolute right-0 top-14 z-10 max-h-[90%] overflow-y-scroll overflow-x-hidden shadow-lg border border-[#cccccc] pt-4">
+            class="z-40 sm:hidden bg-[#d9d9d9] w-4/6 absolute right-0 top-14 max-h-[90%] overflow-y-scroll overflow-x-hidden shadow-lg border border-[#cccccc] pt-4">
             <MobileSideNav />
 
             <!-- Responsive Settings Options -->

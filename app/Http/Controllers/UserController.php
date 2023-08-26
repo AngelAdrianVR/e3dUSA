@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\NotificationResource;
 use App\Http\Resources\UserResource;
 use App\Models\Bonus;
 use App\Models\ChMessage;
@@ -180,5 +181,13 @@ class UserController extends Controller
         $unseen_messages = ChMessage::where('to_id', auth()->id())->where('seen', 0)->get()->count();
 
         return response()->json(['count' => $unseen_messages]);
+    }
+
+    
+    public function getNotifications()
+    {
+        $notifications = auth()->user()->notifications;
+
+        return response()->json(['items' => NotificationResource::collection($notifications)]);
     }
 }
