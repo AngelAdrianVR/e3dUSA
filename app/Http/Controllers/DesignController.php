@@ -9,6 +9,7 @@ use App\Models\Design;
 use App\Models\DesignType;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
+use App\Notifications\RequestApprovedNotification;
 use Illuminate\Http\Request;
 
 class DesignController extends Controller
@@ -184,6 +185,9 @@ class DesignController extends Controller
             'authorized_at' => now(),
             'authorized_user_name' => auth()->user()->name,
         ]);
+
+        // notify to requester user
+        $design->user->notify(new RequestApprovedNotification('Diseño', $design->name, ""));
 
         return response()->json(['item' => DesignResource::make($design)]);
     }

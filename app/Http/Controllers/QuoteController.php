@@ -13,6 +13,7 @@ use App\Models\Sale;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
 use App\Notifications\NewQuoteNotification;
+use App\Notifications\RequestApprovedNotification;
 use Illuminate\Http\Request;
 
 class QuoteController extends Controller
@@ -215,6 +216,10 @@ class QuoteController extends Controller
             'authorized_at' => now(),
             'authorized_user_name' => auth()->user()->name,
         ]);
+
+        // notify to requester user
+        $quote_folio = 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT);
+        $quote->user->notify(new RequestApprovedNotification('Cotización', $quote_folio, "Cliente {$quote->companyBranch->name}"));
 
         return response()->json(['message' => 'Cotizacion autorizadda', 'item' => $quote]);
     }

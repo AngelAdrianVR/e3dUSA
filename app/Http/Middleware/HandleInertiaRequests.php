@@ -54,7 +54,7 @@ class HandleInertiaRequests extends Middleware
             },
             'auth.user.nextAttendance' => function () use ($request) {
                 if ($request->user()) {
-                    $request->user()->getNextAttendance();
+                    return $request->user()->getNextAttendance();
                 }
 
                 return null;
@@ -66,7 +66,13 @@ class HandleInertiaRequests extends Middleware
 
                 return !is_null($kiosk);
             },
+            'auth.user.notifications' => function () use ($request) {
+                if ($request->user()) {
+                    return $request->user()->notifications;
+                }
 
+                return null;
+            },
         ]);
     }
 }
