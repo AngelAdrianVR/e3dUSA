@@ -183,11 +183,25 @@ class UserController extends Controller
         return response()->json(['count' => $unseen_messages]);
     }
 
-    
     public function getNotifications()
     {
         $notifications = auth()->user()->notifications;
 
         return response()->json(['items' => NotificationResource::collection($notifications)]);
+    }
+
+    public function readNotifications(Request $request)
+    {
+        $notifications = auth()->user()->notifications()->whereIn('id', $request->notifications_ids)->get();
+        $notifications->markAsRead();
+
+        return response()->json([]);
+    }
+    
+    public function deleteNotifications(Request $request)
+    {
+        $notifications = auth()->user()->notifications()->whereIn('id', $request->notifications_ids)->delete();
+
+        return response()->json([]);
     }
 }

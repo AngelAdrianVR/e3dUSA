@@ -28,16 +28,16 @@
                             Notificaciones
                         </h2>
                         <div class="mx-5 mt-2 flex justify-between items-center border-b border-[#9A9A9A] pb-3">
-                            <Checkbox v-model="selectAll" name="select-all" class="bg-transparent" />
+                            <Checkbox v-if="userNotifications.length" v-model="selectAll" name="select-all" class="bg-transparent ml-3 border-gray-600" />
                             <div>
-                                <button v-if="selectedNotifications.length" class="text-primary text-xs mr-1 w-6 border-[#d90537] border rounded-[5px] px-[2px] py-[2px]">
+                                <button @click="markNotificationsAsRead" v-if="selectedNotifications.length" class="text-primary text-xs mr-1 w-6 border-[#d90537] border rounded-[5px] px-[2px] py-[2px]">
                                     <el-tooltip content="Marcar como leído" placement="top">
                                         <i class="fa-regular fa-eye"></i>
                                     </el-tooltip>
                                 </button>
                                 <el-popconfirm v-if="selectedNotifications.length" confirm-button-text="Si"
                                     cancel-button-text="No" icon-color="#FF0000" title="Seguro(a) que desea eliminar?"
-                                    @confirm="deleteSelections">
+                                    @confirm="deleteNotifications">
                                     <template #reference>
                                         <button v-if="selectedNotifications.length" class="text-primary text-xs border-[#d90537] w-6 border rounded-[5px] px-[2px] py-[2px]">
                                             <i class="fa-regular fa-trash-can"></i>
@@ -51,20 +51,22 @@
                             <i class="fa-solid fa-spinner fa-spin text-2xl text-primary"></i>
                         </div>
                         <!-- content of notifications -->
-                        <div v-else class="overflow-y-auto overflow-x-hidden divide-y-2 h-[215px]">
+                        <div v-else class="overflow-y-auto overflow-x-hidden h-[215px]">
                             <div v-for="notification in userNotifications" :key="notification.id"
-                                :class="notification.read_at ? '' : 'bg-red-300'"
-                                class="px-2 mx-3 mt-1 py-1 rounded-[10px]">
-                                <label class="flex">
+                                class="px-2 mx-3 mt-1 mb-2 py-1 hover:bg-[#cccccc] rounded-[10px] relative">
+                                <label class="flex cursor-pointer ml-3">
+                                    <i v-if="!notification.read_at" class="absolute top-1 left-1 fa-solid fa-circle text-primary text-[8px] mt-1"></i>
                                     <input type="checkbox" v-model="selectedNotifications" :value="notification.id"
-                                        class="rounded border-gray-600 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
-                                    <div class="ml-3">
+                                        class="rounded border-gray-600 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent"
+                                         />
+                                    <div class="ml-3" :class="!notification.read_at ? 'font-bold' : ''">
                                         <p class="text-xs">{{ notification.data.description }}</p>
                                         <p class="text-xs">{{ notification.data.additional_info }}</p>
                                         <p class="text-[10px]">{{ notification.created_at.humans }}</p>
                                     </div>
                                 </label>
                             </div>
+                            <p v-if="!userNotifications.length" class="text-xs text-[#9a9a9a] text-center px-6 py-4">No hay notificaciones para mostrar</p>
                         </div>
                     </div>
                 </transition>
@@ -388,7 +390,29 @@ export default {
                 console.log(error);
             }
             this.loading = false;
-        }
+        },
+        async markNotificationsAsRead() {
+            try {
+                const response = await axios.post(route('users.read-notifications'), {notifications_ids: this.selectedNotifications});
+
+                if(response.status === 200) {
+                    this.getNotifications();
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async deleteNotifications() {
+            try {
+                const response = await axios.post(route('users.delete-notifications'), {notifications_ids: this.selectedNotifications});
+
+                if(response.status === 200) {
+                    this.getNotifications();
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
     },
     computed: {
         filteredTableData() {
