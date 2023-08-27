@@ -105,6 +105,16 @@
                             <p class="w-1/3 text-[#9A9A9A]">Unidad de medida</p>
                             <p>{{ currentCatalogProduct?.measure_unit }}</p>
                         </div>
+                        <div class="flex mb-4 space-x-2">
+                            <p class="w-1/3 text-[#9A9A9A]">Materia(s) prima(s)</p>
+                            <div class="flex flex-col">
+                                <p v-for="raw_material in currentCatalogProduct?.rawMaterials" :key="raw_material">- {{ raw_material.name }},</p>
+                            </div>
+                        </div>
+                        <div class="flex mb-6 space-x-2">
+                            <p class="w-1/3 text-[#9A9A9A]">Descripción</p>
+                            <p>{{ currentCatalogProduct?.description }}</p>
+                        </div>
                         <div class="flex mb-6 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Costo de producción</p>
                             <p class="text-[#4FC03D]">{{ currentCatalogProduct?.cost.number_format }}</p>

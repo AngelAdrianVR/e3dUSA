@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\QuoteResource;
 use App\Models\CatalogProduct;
 use App\Models\CatalogProductCompany;
@@ -13,6 +16,7 @@ use App\Models\Sale;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
 use App\Notifications\NewQuoteNotification;
+use App\Notifications\RequestApprovedNotification;
 use Illuminate\Http\Request;
 
 class QuoteController extends Controller
@@ -67,6 +71,8 @@ class QuoteController extends Controller
             $quote->catalogProducts()->attach($product['id'], $quoted_product);
         }
 
+        event(new RecordCreated($quote));
+
         return to_route('quotes.index');
     }
 
@@ -110,6 +116,8 @@ class QuoteController extends Controller
             $quote->catalogProducts()->attach($product['catalog_product_id'], $product);
         }
 
+        event(new RecordEdited($quote));
+
         return to_route('quotes.index');
     }
 
@@ -123,6 +131,8 @@ class QuoteController extends Controller
         foreach ($request->quotes as $quote) {
             $quote = Quote::find($quote['id']);
             $quote?->delete();
+
+            event(new RecordDeleted($quote));
         }
 
         return response()->json(['message' => 'Cotización(es) eliminada(s)']);
@@ -148,7 +158,7 @@ class QuoteController extends Controller
         } else {
             // notify to Maribel
             $maribel = User::find(3);
-            $maribel->notify(new ApprovalRequiredNotification('cotización', 'quotes.index'));
+            // $maribel->notify(new ApprovalRequiredNotification('cotización', 'quotes.index'));
         }
 
         foreach ($quote->catalogProducts as $product) {
@@ -215,6 +225,10 @@ class QuoteController extends Controller
             'authorized_at' => now(),
             'authorized_user_name' => auth()->user()->name,
         ]);
+
+        // notify to requester user
+        $quote_folio = 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT);
+        $quote->user->notify(new RequestApprovedNotification('Cotización', $quote_folio, "Cliente {$quote->companyBranch->name}", 'quote'));
 
         return response()->json(['message' => 'Cotizacion autorizadda', 'item' => $quote]);
     }

@@ -40,7 +40,7 @@ class DashboardController extends Controller
         $counts[] = AdditionalTimeRequest::whereNull('authorized_at')->get()->count();
 
         // week performance collaborators
-        $collaborators_performance = [];
+        $collaborators_production_performance = ['Samuel Espinoza', 'Diego Gollaz', 'Gustavo Zandejas'];
 
         // birthdates
         $collaborators_birthdays = User::whereDate('employee_properties->birthdate', today())->get();
@@ -70,7 +70,7 @@ class DashboardController extends Controller
         return inertia('Dashboard/Index', compact(
             'meetings',
             'counts',
-            'collaborators_performance',
+            'collaborators_production_performance',
             'collaborators_birthdays',
             'collaborators_added',
             'collaborators_anniversaires',

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\CatalogProductResource;
 use App\Models\CatalogProduct;
 use App\Models\ProductionCost;
@@ -70,6 +73,8 @@ class CatalogProductController extends Controller
 
         $catalog_product->update(['cost' => $total_cost]);
 
+        event(new RecordCreated($catalog_product));
+
         return to_route('catalog-products.index');
     }
 
@@ -121,6 +126,8 @@ class CatalogProductController extends Controller
 
         $catalog_product->update(['cost' => $total_cost]);
 
+        event(new RecordEdited($catalog_product));
+
         return to_route('catalog-products.index');
     }
 
@@ -156,6 +163,8 @@ class CatalogProductController extends Controller
 
         $catalog_product->update(['cost' => $total_cost]);
 
+        event(new RecordEdited($catalog_product));
+
         return to_route('catalog-products.index');
     }
 
@@ -165,6 +174,8 @@ class CatalogProductController extends Controller
         $catalog_product_name = $catalog_product->name;
         $catalog_product->delete();
 
+        event(new RecordDeleted($catalog_product));
+
         return response()->json(['message' => "Producto eliminado: $catalog_product_name"]);
     }
 
@@ -173,6 +184,8 @@ class CatalogProductController extends Controller
         foreach ($request->catalog_products as $catalog_product) {
             $catalog_product = CatalogProduct::find($catalog_product['id']);
             $catalog_product?->delete();
+            
+            event(new RecordDeleted($catalog_product));
         }
 
         return response()->json(['message' => 'Producto(s) eliminado(s)']);
@@ -212,5 +225,22 @@ class CatalogProductController extends Controller
         $clone->save();
 
         return response()->json(['message' => "Producto clonado: {$clone->part_number}", 'newItem' => catalogProductResource::make(CatalogProduct::with('storages')->find($clone->id))]);
+    }
+
+    public function QRSearchCatalogProduct(Request $request)
+    {
+
+        $request->validate([ 
+            'barCode' => 'required|string'
+        ]);
+
+        $part_number = explode('#', $request->barCode)[0];
+
+        $catalog_product = CatalogProductResource::make(CatalogProduct::with('storages')->where('part_number', $part_number)->first());
+
+        // return $catalog_product;
+
+
+        return response()->json(['item' => $catalog_product]);
     }
 }

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\ProductionResource;
 use App\Http\Resources\SaleResource;
 use App\Models\CatalogProductCompanySale;
@@ -55,9 +58,12 @@ class ProductionController extends Controller
             foreach ($production['tasks'] as $task) {
                 $data = $task + $foreigns;
 
-                Production::create($data);
+               $produ = Production::create($data);
+                event(new RecordCreated($produ));
             }
         }
+
+        
 
         return to_route('productions.index');
     }
@@ -99,9 +105,11 @@ class ProductionController extends Controller
             foreach ($production['tasks'] as $task) {
                 $data = $task + $foreigns;
 
-                Production::create($data);
+                $prod = Production::create($data);
+                event(new RecordEdited($prod));
             }
         }
+
 
         return to_route('productions.index');
     }
@@ -118,6 +126,8 @@ class ProductionController extends Controller
             $sale = Sale::find($sale['id']);
             foreach ($sale->productions as $production) {
                 $production->delete();
+
+                event(new RecordDeleted($production));
             }
         }
 

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\BonusResource;
 use App\Models\Bonus;
 use Illuminate\Http\Request;
@@ -40,6 +43,8 @@ class BonusController extends Controller
 
         $bonus = Bonus::create($request->all());
 
+        event(new RecordCreated($bonus));
+
         return to_route('bonuses.index');
     }
 
@@ -73,6 +78,8 @@ class BonusController extends Controller
 
         $bonus->update($request->all());
 
+        event(new RecordEdited($bonus));
+
         return to_route('bonuses.index');
     }
 
@@ -90,6 +97,8 @@ class BonusController extends Controller
         foreach ($request->bonuses as $bonus) {
             $bonus = Bonus::find($bonus['id']);
             $bonus?->delete();
+
+            event(new RecordDeleted($bonus));
         }
 
         return response()->json(['message' => 'Bono(s) eliminado(s)']);

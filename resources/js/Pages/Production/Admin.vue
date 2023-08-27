@@ -206,6 +206,7 @@ export default {
                 return this.productions.data.filter(
                     (production) =>
                         production.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                        production.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
                         production.company_branch.name.toLowerCase().includes(this.search.toLowerCase())
                 )
             }

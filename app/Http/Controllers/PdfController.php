@@ -25,4 +25,19 @@ class PdfController extends Controller
 
         return $pdf->download("reporte_insumos_$date.pdf");
     }
+
+    public function RawMaterialInfo()
+{
+    $data = Storage::with(['storageable' => function ($query) {
+        $query->select('id', 'name', 'part_number');
+    }, 'storageable.media'])->where('type', 'materia-prima')->whereHas('storageable', function ($query) {
+        $query->where('part_number', 'LIKE', 'OV%');
+    })->get();
+
+    $date = today()->isoFormat('DD-MM-YYYY');
+    $pdf = Pdf::loadView('PDF.raw-material-info', compact('data'));
+
+    // return $data;
+    return $pdf->download("reporte_productos_$date.pdf");
+}
 }

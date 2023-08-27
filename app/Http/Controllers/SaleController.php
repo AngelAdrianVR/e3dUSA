@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\SaleResource;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Company;
@@ -54,7 +57,7 @@ class SaleController extends Controller
         } else {
             // notify to Maribel
             $maribel = User::find(3);
-            $maribel->notify(new ApprovalRequiredNotification('orden de venta', 'sales.index'));
+            // $maribel->notify(new ApprovalRequiredNotification('orden de venta', 'sales.index'));
         }
 
         // store media
@@ -63,6 +66,8 @@ class SaleController extends Controller
         foreach ($request->products as $product) {
             CatalogProductCompanySale::create($product + ['sale_id' => $sale->id]);
         }
+
+        event(new RecordCreated($sale));
 
         return to_route('sales.index');
     }
@@ -102,17 +107,20 @@ class SaleController extends Controller
         $updatedProductIds = [];
         $sale->update($request->except('products'));
 
+       
         foreach ($request->products as $product) {
             $productData = $product + ['sale_id' => $sale->id];
 
             if (isset($product['id'])) {
-                // Actualizar la relación existente en catalogProductCompanySales
+                // Actualizar la relaci贸n existente en catalogProductCompanySales
                 $existingRelation = CatalogProductCompanySale::findOrFail($product['id']);
                 $existingRelation->update($productData);
                 $updatedProductIds[] = $product['id'];
+                
             } else {
-                // Crear una nueva relación en catalogProductCompanySales
-                CatalogProductCompanySale::create($productData);
+                // Crear una nueva relaci贸n en catalogProductCompanySales
+                $new = CatalogProductCompanySale::create($productData);
+                $updatedProductIds[] = $new->id;
             }
         }
 
@@ -121,12 +129,16 @@ class SaleController extends Controller
             ->whereNotIn('id', $updatedProductIds)
             ->delete();
 
+            event(new RecordEdited($sale));
+
         return to_route('sales.index');
     }
 
     public function destroy(Sale $sale)
     {
         $sale->delete();
+
+        event(new RecordDeleted($sale));
     }
 
     public function massiveDelete(Request $request)
@@ -138,9 +150,11 @@ class SaleController extends Controller
                 $production->delete();
             }
             $sale?->delete();
+
+            event(new RecordDeleted($sale));
         }
 
-        return response()->json(['message' => 'OV(s) eliminada(s)']);
+        return to_route('sales.index');
     }
 
     public function authorizeOrder(Sale $sale)

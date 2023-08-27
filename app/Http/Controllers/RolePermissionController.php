@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\PermissionResource;
 use App\Http\Resources\RoleResource;
 use Illuminate\Http\Request;
@@ -30,6 +33,8 @@ class RolePermissionController extends Controller
         $role = Role::create(['name' => $request->name]);
         $role->syncPermissions($request->permissions);
 
+        event(new RecordCreated($role));
+
         return response()->json(['item' => RoleResource::make($role)]);
     }
 
@@ -40,12 +45,16 @@ class RolePermissionController extends Controller
         ]);
         $role->syncPermissions($request->permissions);
 
+        event(new RecordEdited($role));
+
         return response()->json(['item' => RoleResource::make($role)]);
     }
 
     public function deleteRole(Role $role)
     {
         $role->delete();
+
+        event(new RecordDeleted($role));
 
         return response()->json(['message' => "Rol: *$role->name* eliminado"]);
     }
@@ -59,6 +68,8 @@ class RolePermissionController extends Controller
 
         $permission = Permission::create($request->all());
 
+        event(new RecordCreated($permission));
+
         return response()->json(['item' => PermissionResource::make($permission)]);
     }
 
@@ -71,12 +82,16 @@ class RolePermissionController extends Controller
 
         $permission->update($request->all());
 
+        event(new RecordEdited($permission));
+
         return response()->json(['item' => PermissionResource::make($permission)]);
     }
 
     public function deletePermission(Permission $permission)
     {
         $permission->delete();
+
+        event(new RecordDeleted($permission));
 
         return response()->json(['message' => "Permiso: *$permission->name* eliminado"]);
     }

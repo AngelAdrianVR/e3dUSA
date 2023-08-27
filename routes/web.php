@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdditionalTimeRequestController;
+use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\CompanyBranchController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\DesignModificationController;
+use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\KioskDeviceController;
@@ -67,6 +69,7 @@ Route::resource('catalog-products', CatalogProductController::class)->middleware
 Route::post('catalog-products/massive-delete', [CatalogProductController::class, 'massiveDelete'])->name('catalog-products.massive-delete');
 Route::post('catalog-products/clone', [CatalogProductController::class, 'clone'])->name('catalog-products.clone');
 Route::post('catalog-products/update-with-media/{catalog_product}', [CatalogProductController::class, 'updateWithMedia'])->name('catalog-products.update-with-media');
+Route::post('catalog-products/QR-search-catalog-product', [CatalogProductController::class, 'QRSearchCatalogProduct'])->name('catalog-products.QR-search-catalog-product');
 
 
 // ------- Ventas(Clients Routes)  ---------
@@ -120,6 +123,7 @@ Route::get('payrolls/print-template/{users_id_to_show}/{payroll_id}', [PayrollCo
 Route::post('payrolls/get-additional-time', [PayrollController::class, 'getAdditionalTime'])->middleware('auth')->name('payrolls.get-additional-time');
 Route::post('payrolls/close-current', [PayrollController::class, 'closeCurrent'])->middleware('auth')->name('payrolls.close-current');
 Route::post('payrolls/get-current-payroll', [PayrollController::class, 'getCurrentPayroll'])->middleware('auth')->name('payrolls.get-current-payroll');
+Route::post('payrolls/get-all-payrolls', [PayrollController::class, 'getAllPayrolls'])->middleware('auth')->name('payrolls.get-all-payrolls');
 
 // ------- Recursos humanos(users routes)  ---------
 Route::resource('users', UserController::class)->middleware('auth');
@@ -128,6 +132,9 @@ Route::get('users-set-attendance', [UserController::class, 'setAttendance'])->mi
 Route::put('users-reset-pass/{user}', [UserController::class, 'resetPass'])->middleware('auth')->name('users.reset-pass');
 Route::put('users-change-status/{user}', [UserController::class, 'changeStatus'])->middleware('auth')->name('users.change-status');
 Route::post('users-get-unseen-messages', [UserController::class, 'getUnseenMessages'])->middleware('auth')->name('users.get-unseen-messages');
+Route::post('users-get-notifications', [UserController::class, 'getNotifications'])->middleware('auth')->name('users.get-notifications');
+Route::post('users-read-notifications', [UserController::class, 'readNotifications'])->middleware('auth')->name('users.read-notifications');
+Route::post('users-delete-notifications', [UserController::class, 'deleteNotifications'])->middleware('auth')->name('users.delete-notifications');
 
 // ------- Recursos humanos(Roles and permissions Routes)  ---------
 Route::get('role-permission', [RolePermissionController::class, 'index'])->middleware('auth')->name('role-permission.index');
@@ -142,6 +149,11 @@ Route::delete('role-permission/{permission}/destroy-permission', [RolePermission
 Route::resource('bonuses', BonusController::class)->middleware('auth');
 Route::post('bonuses/massive-delete', [BonusController::class, 'massiveDelete'])->name('bonuses.massive-delete');
 
+
+// ------- Recursos humanos(Discounts Routes)  ---------
+Route::resource('discounts', DiscountController::class)->middleware('auth');
+Route::post('discounts/massive-delete', [DiscountController::class, 'massiveDelete'])->name('discounts.massive-delete');
+
 // ------- Recursos humanos(Holidays Routes)  ---------
 Route::resource('holidays', HolidayController::class)->middleware('auth');
 Route::post('holidays/massive-delete', [HolidayController::class, 'massiveDelete'])->name('holidays.massive-delete');
@@ -152,7 +164,7 @@ Route::get('/storage-consumables', [StorageController::class, 'index'])->middlew
 Route::get('/storage-finished-products', [StorageController::class, 'index'])->middleware('auth')->name('storages.finished-products.index');
 Route::get('/storage-finished-products/create', [StorageController::class, 'create'])->middleware('auth')->name('storages.finished-products.create');
 Route::get('/storage-finished-products/{storage}/edit', [StorageController::class, 'edit'])->middleware('auth')->name('storages.finished-products.edit');
-Route::post('/storage/store', [StorageController::class, 'store'])->middleware('auth')->name('storages.store');
+Route::post('/storage-store', [StorageController::class, 'store'])->middleware('auth')->name('storages.store');
 Route::get('/storage-scraps', [StorageController::class, 'index'])->middleware('auth')->name('storages.scraps.index');
 Route::get('/storage-scraps/create', [StorageController::class, 'create'])->middleware('auth')->name('storages.scraps.create');
 Route::post('/storage-scraps/store', [StorageController::class, 'scrapStore'])->middleware('auth')->name('storages.scraps.store');
@@ -195,6 +207,7 @@ Route::resource('machines', MachineController::class)->middleware('auth');
 Route::post('machines/massive-delete', [MachineController::class, 'massiveDelete'])->name('machines.massive-delete');
 Route::post('machines/upload-files/{machine}', [MachineController::class, 'uploadFiles'])->name('machines.upload-files');
 Route::post('machines/update-with-media/{machine}', [MachineController::class, 'updateWithMedia'])->name('machines.update-with-media')->middleware('auth');
+Route::post('machines/QR-search-machine', [MachineController::class, 'QRSearchMachine'])->name('machines.QR-search-machine');
 
 
 
@@ -209,15 +222,21 @@ Route::post('admin-additional-times/massive-delete', [AdditionalTimeRequestContr
 // ------- PDF routes -------------------
 Route::get('/raw-material-actual-stock', [PdfController::class, 'RawMaterialActualStock'])->name('pdf.raw-material-actual-stock')->middleware('auth');
 Route::get('/consumables-actual-stock', [PdfController::class, 'consumablesActualStock'])->name('pdf.consumables-actual-stock')->middleware('auth');
+Route::get('/raw-material-info', [PdfController::class, 'RawMaterialInfo'])->name('pdf.raw-material-info')->middleware('auth');
+
 
 // ------- Maintenances routes  -------------
 Route::resource('maintenances', MaintenanceController::class)->except('create')->middleware('auth');
 Route::get('maintenances/create/{selectedMachine}',[ MaintenanceController::class, 'create'])->name('maintenances.create')->middleware('auth');
+Route::post('maintenances/update-with-media/{maintenance}', [MaintenanceController::class, 'updateWithMedia'])->name('maintenances.update-with-media')->middleware('auth');
+
 
 
 // ---------- spare parts routes  ---------------
 Route::resource('spare-parts', SparePartController::class)->except('create')->middleware('auth');
 Route::get('spare-parts/create/{selectedMachine}',[ SparePartController::class, 'create'])->name('spare-parts.create')->middleware('auth');
+Route::post('spare-parts/update-with-media/{spare_part}', [SparePartController::class, 'updateWithMedia'])->name('spare-parts.update-with-media')->middleware('auth');
+
 
 
 //------------------ Meetings routes ----------------
@@ -230,6 +249,11 @@ Route::post('meetings/get-by-date-and-user', [MeetingController::class, 'getMeet
 //------------------ Meetings routes ----------------
 Route::resource('production-costs', ProductionCostController::class)->middleware('auth');
 Route::post('production-costs/massive-delete', [ProductionCostController::class, 'massiveDelete'])->name('production-costs.massive-delete');
+
+
+//------------------ Actions history routes ----------------
+Route::resource('audits', AuditController::class)->middleware('auth');
+
 
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
@@ -251,4 +275,6 @@ Route::get('/clear-cache', function () {
     Artisan::call('config:clear');
     return 'cleared.';
 });
+
+
 

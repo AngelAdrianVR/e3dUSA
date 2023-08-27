@@ -4,7 +4,7 @@
       <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
         <div class="flex justify-between">
           <label class="text-lg">Usuarios</label>
-          
+
           <Link
             :href="route('users.index')"
             class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center"
@@ -41,7 +41,9 @@
             </el-tooltip>
             <el-tooltip content="Crear nuevo usuario" placement="top">
               <Link :href="route('users.create')">
-                <button class="rounded-lg bg-primary py-2 px-3 text-sm text-white">
+                <button
+                  class="rounded-lg bg-primary py-2 px-3 text-sm text-white"
+                >
                   +
                 </button>
               </Link>
@@ -56,7 +58,7 @@
               </template>
               <template #content>
                 <DropdownLink :href="route('users.create')">
-                  Geberar recibo de vacaciones
+                  Generar recibo de vacaciones
                 </DropdownLink>
                 <DropdownLink :href="route('users.create')">
                   Reporte de actividades
@@ -70,7 +72,7 @@
                 </DropdownLink>
 
                 <DropdownLink @click="resetPassword" as="button">
-                  Reseetear contraseña
+                  Resetear contraseña
                 </DropdownLink>
                 <DropdownLink @click="showConfirmModal = true" as="button">
                   Eliminar
@@ -82,19 +84,22 @@
       </div>
 
       <div class="flex flex-col items-center justify-center mb-4">
-        <img v-if="currentUser"
-          :class="currentUser?.is_active.bool ? 'border-green-600' : 'border-red-600'"
-            class="h-32 w-32 rounded-full object-cover hidden md:block border-2"
-            :src="currentUser?.profile_photo_url"
-            :alt="currentUser?.name"
-          />
+        <img
+          v-if="currentUser"
+          :class="
+            currentUser?.is_active.bool ? 'border-green-600' : 'border-red-600'
+          "
+          class="h-32 w-32 rounded-full object-cover hidden md:block border-2"
+          :src="currentUser?.profile_photo_url"
+          :alt="currentUser?.name"
+        />
         <p class="font-bold text-lg">{{ currentUser?.name }}</p>
       </div>
       <!-- ------------- tabs section starts ------------- -->
       <div
         class="border-y-2 border-[#cccccc] flex justify-between items-center py-2"
       >
-        <!-- <div class="flex">
+        <div class="flex">
           <p
             @click="tabs = 1"
             :class="
@@ -102,7 +107,7 @@
             "
             class="h-10 p-2 cursor-pointer md:ml-5 transition duration-300 ease-in-out text-sm md:text-base"
           >
-            Datos de la órden
+            Información general
           </p>
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
           <p
@@ -112,9 +117,9 @@
             "
             class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base"
           >
-            Modificaciones
+            Desempeño
           </p>
-        </div> -->
+        </div>
       </div>
       <!-- ------------- tabs section ends ------------- -->
 
@@ -168,7 +173,8 @@
           <span
             >${{
               currentUser?.employee_properties?.salary.week
-                .toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                .toFixed(2)
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
             }}</span
           >
           <span class="text-gray-500 my-2">Horas laborales por semana</span>
@@ -187,16 +193,157 @@
       </div>
       <!-- ------------- Informacion general ends 1 ------------- -->
 
-      <!-- -------------tab 2 modifications starts ------------- -->
+      <!-- -------------tab 2 desempeño starts ------------- -->
+      <div v-if="tabs == 2" class="border-b-2 border-[#cccccc] text-sm">
+        <div v-if="currentUser?.is_active?.bool">
+          <!-- --------------------------- production performance starts --------------------------- -->
+          <div
+            v-if="asigned_production_orders?.length"
+            class="text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] "
+          >
+            <p class="text-secondary col-span-2 mt-4 mb-2">
+              Información general
+            </p>
 
-      <!-- <div v-if="tabs == 2" class="p-7">
-        <p class="text-secondary">Modificaciones</p>
-        <div>
+            <div class="flex items-center space-x-3">
+              <span class="text-gray-500">N° de ordenes asignadas:</span>
+              <span>{{ asigned_production_orders?.length }}</span>
+            </div>
+            <div class="flex items-center space-x-3">
+              <span class="text-gray-500">N° de ordenes terminadas:</span>
+              <span>{{ finished_production_orders?.length }}</span>
+            </div>
+            <div class="flex items-center space-x-3">
+              <span class="text-gray-500 my-1"
+                >Tiempo total de producción:</span
+              >
+              <span>{{
+                total_hours_production +
+                parseInt(total_minutes_production / 60) +
+                " hrs " +
+                (total_minutes_production % 60) +
+                " min"
+              }}</span>
+            </div>
+            <div class="flex items-center space-x-3">
+              <span class="text-gray-500 my-1">Eficiencia:</span>
+              <span>{{
+                total_hours_production +
+                parseInt(total_minutes_production / 60) +
+                " hrs " +
+                (total_minutes_production % 60) +
+                " min"
+              }}</span>
+            </div>
+          </div>
+          <!-- --------------------------- production performance ends --------------------------- -->
 
+          <!-- --------------------------- Designer performance starts --------------------------- -->
+          <div
+            v-if="asigned_design_orders?.length"
+            class="text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center"
+          >
+            <p class="text-secondary col-span-2 mt-4 mb-2">
+              Información general
+            </p>
+
+            <div class="flex space-x-3">
+              <span class="text-gray-500">N° de ordenes asignadas:</span>
+              <span>{{ asigned_design_orders?.length }}</span>
+            </div>
+            <div class="flex space-x-3">
+              <span class="text-gray-500">N° de ordenes terminadas:</span>
+              <span>{{ finished_design_orders?.length }}</span>
+            </div>
+            <!-- <div class="flex space-x-3">
+            <span class="text-gray-500 my-1">Tiempo total de diseño:</span>
+            <span>{{
+              total_hours_design +
+              parseInt(total_minutes_design / 60) +
+              " hrs " +
+              (total_minutes_design % 60) +
+              " min"
+            }}</span>
+          </div> -->
+            <div class="flex space-x-3">
+              <span class="text-gray-500">Eficiencia:</span>
+              <span>{{ finished_design_orders?.length }}%</span>
+            </div>
+          </div>
+          <!-- --------------------------- Designer performance ends --------------------------- -->
+
+
+          <!-- --------------------------- Seller performance starts --------------------------- -->
+          <div
+            v-if="sale_orders_created?.length"
+            class="text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center"
+          >
+            <p class="text-secondary col-span-2 mt-4 mb-2">
+              Información general
+            </p>
+
+            <div class="flex space-x-3">
+              <span class="text-gray-500">N° de ordenes asignadas:</span>
+              <span>{{ sale_orders_created.length }}</span>
+            </div>
+            <div class="flex space-x-3">
+              <span class="text-gray-500">Cantidad de dinero vendido:</span>
+              <span>${{ total_money_sold }}</span>
+            </div>
+          </div>
+          <!-- --------------------------- Seller performance ends --------------------------- -->
+
+          <!-- ------------------------------ General Info starts ---------------------------------- -->
+          <div class="flex space-x-3">
+            <span class="text-gray-500 my-1">N° faltas:</span>
+            <span>{{ "--" }}</span>
+          </div>
+          <div class="flex space-x-3">
+            <span class="text-gray-500 my-1">Tiempo total de retardo:</span>
+            <span>{{ "--" }}</span>
+          </div>
+          <!-- ------------------------------ General Info ends ---------------------------------- -->
+
+          <!-- ------------------------------ Performance table ------------------------ -->
+          <p class="text-secondary col-span-2 mt-4 mb-4 text-center">
+            Tabla de desempeño
+          </p>
+          <div class="lg:grid grid-cols-3 px-5 overflow-auto pb-12">
+            <div class="col-span-2">
+              <PerformanceTable />
+            </div>
+
+            <div class="text-center">
+              <p class="mb-5">Tabla de puntuaciones</p>
+
+              <div
+                class="grid grid-cols-2 rounded-xl lg:mx-10 border-2 border-[#cccccc]"
+              >
+                <div class="py-1 rounded-xl">70 - 100</div>
+                <div
+                  class="py-1 bg-green-500 rounded-xl border-2 border-[#cccccc]"
+                >
+                  Sobresaliente
+                </div>
+                <div class="py-1 rounded-xl">40 - 69</div>
+                <div
+                  class="py-1 bg-orange-500 rounded-xl border-2 border-[#cccccc]"
+                >
+                  Falta mejorar
+                </div>
+                <div class="py-1 rounded-xl">0 - 39</div>
+                <div
+                  class="py-1 bg-red-500 rounded-xl border-2 border-[#cccccc]"
+                >
+                  Deficiente
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div> -->
-
-      <!-- ------------- tab 2 modifications ends ------------ -->
+        <div v-else><p class="text-primary text-center text-xl">El usuario se encuentra inactivo actualmente</p></div>
+      </div>
+      <!-- ------------- tab 2 desempeño ends ------------ -->
 
       <ConfirmationModal
         :show="showConfirmModal"
@@ -222,6 +369,7 @@ import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+import PerformanceTable from "@/Components/MyComponents/PerformanceTable.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import InputError from "@/Components/InputError.vue";
 import Modal from "@/Components/Modal.vue";
@@ -247,6 +395,18 @@ export default {
   props: {
     user: Object,
     users: Array,
+    //PRODUCTION
+    finished_production_orders: Array,
+    asigned_production_orders: Array,
+    total_hours_production: Number,
+    total_minutes_production: Number,
+    //Design
+    finished_design_orders: Array,
+    asigned_design_orders: Array,
+    // total_hours_design: Number,
+    // total_minutes_design: Number,
+    sale_orders_created: Array,
+    total_money_sold: Number,
   },
   components: {
     AppLayoutNoHeader,
@@ -259,6 +419,7 @@ export default {
     CancelButton,
     InputError,
     ConfirmationModal,
+    PerformanceTable,
   },
   methods: {
     async deleteItem() {
@@ -323,6 +484,7 @@ export default {
       this.currentUser = this.users.data.find(
         (item) => item.id == this.userSelected
       );
+      this.$inertia.visit("/users/" + this.currentUser.id);
     },
   },
 

@@ -178,17 +178,28 @@ export default {
   },
   methods: {
     update() {
-      this.form.put(route("spare-parts.update", this.spare_part), {
-        onSuccess: () => {
-          this.$notify({
-            title: "Éxito",
-            message: "Refacción Actualizada",
-            type: "success",
-          });
-
-          this.form.reset();
-        },
-      });
+      if (this.form.media !== null) {
+        this.form.post(route("spare-parts.update-with-media", this.spare_part), {
+          method: '_put',
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Se actualizó correctamente",
+              type: "success",
+            });
+          },
+        });
+      } else {
+        this.form.put(route("spare-parts.update", this.spare_part), {
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Se actualizó correctamente",
+              type: "success",
+            });
+          },
+        });
+      }
     },
   },
 };

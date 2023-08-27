@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\DesignResource;
 use App\Models\Company;
 use App\Models\CompanyBranch;
@@ -9,6 +12,7 @@ use App\Models\Design;
 use App\Models\DesignType;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
+use App\Notifications\RequestApprovedNotification;
 use Illuminate\Http\Request;
 
 class DesignController extends Controller
@@ -62,7 +66,7 @@ class DesignController extends Controller
         }else {
             // notify to Maribel
             $maribel = User::find(3);
-            $maribel->notify(new ApprovalRequiredNotification('orden de diseño', 'designs.index'));
+            // $maribel->notify(new ApprovalRequiredNotification('orden de diseño', 'designs.index'));
         }
 
         // Guardar el archivo en la colección 'plano'
@@ -74,6 +78,8 @@ class DesignController extends Controller
         if ($request->hasFile('media_logo')) {
             $design->addMediaFromRequest('media_logo')->toMediaCollection('logo');
         }
+
+        event(new RecordCreated($design));
 
         return to_route('designs.index');
     }
@@ -131,6 +137,8 @@ class DesignController extends Controller
             'user_id' => auth()->id()
         ]);
 
+        event(new RecordEdited($design));
+
         return to_route('designs.index');
     }
 
@@ -145,6 +153,8 @@ class DesignController extends Controller
         foreach ($request->designs as $design) {
             $design = Design::find($design['id']);
             $design?->delete();
+
+            event(new RecordDeleted($design));
         }
 
         return response()->json(['message' => 'Cliente(s) eliminado(s)']);
@@ -184,6 +194,9 @@ class DesignController extends Controller
             'authorized_at' => now(),
             'authorized_user_name' => auth()->user()->name,
         ]);
+
+        // notify to requester user
+        $design->user->notify(new RequestApprovedNotification('Diseño', $design->name, "", 'design'));
 
         return response()->json(['item' => DesignResource::make($design)]);
     }

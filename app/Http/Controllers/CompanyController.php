@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\CatalogProductCompanyResource;
 use App\Http\Resources\CompanyResource;
 use App\Models\CatalogProduct;
@@ -59,6 +62,8 @@ class CompanyController extends Controller
                 $company->catalogProducts()->attach($product['catalog_product_id'], $product);
             }
         }
+
+        event(new RecordCreated($company));
 
         return to_route('companies.index');
     }
@@ -127,6 +132,8 @@ class CompanyController extends Controller
         // Actualizar productos
         $company->catalogProducts()->sync($request->products);
 
+        event(new RecordEdited($company));
+
         return to_route('companies.index');
     }
 
@@ -136,6 +143,8 @@ class CompanyController extends Controller
         $company_name = $company->business_name;
         $company->delete();
 
+        event(new RecordDeleted($company));
+
         return response()->json(['message' => "Producto eliminado: $company_name"]);
     }
 
@@ -144,6 +153,8 @@ class CompanyController extends Controller
         foreach ($request->companies as $company) {
             $company = Company::find($company['id']);
             $company?->delete();
+
+            event(new RecordDeleted($company));
         }
 
         return response()->json(['message' => 'Cliente(s) eliminado(s)']);
