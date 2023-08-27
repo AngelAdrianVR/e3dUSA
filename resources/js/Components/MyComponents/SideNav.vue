@@ -14,14 +14,17 @@
                         <SideNavLink v-if="menu.show" :href="menu.route" :active="menu.active" :dropdown="menu.dropdown"
                             class="mb-px">
                             <template #trigger>
-                                <span v-html="menu.icon"></span>
+                                <span v-html="menu.icon" class="relative"></span>
                                 <span class="leading-none font-normal text-center">
                                     {{ menu.label }}
                                 </span>
+                                <div v-if="menu.notifications"
+                                    class="bg-primary w-[5px] h-[5px] rounded-full absolute top-3 right-7"></div>
                             </template>
                             <template #content>
                                 <template v-for="option in menu.options" :key="option">
-                                    <DropdownNavLink v-if="option.show" :href="route(option.route)">
+                                    <DropdownNavLink v-if="option.show" :href="route(option.route)"
+                                        :notifications="option.notifications">
                                         {{ option.label }}
                                     </DropdownNavLink>
                                 </template>
@@ -39,8 +42,7 @@
             <p class="text-sm text-primary mt-3 mx-20">Recuerda que tu tiempo trabajado deja de contar a la hora de tu
                 salida. Si registras después de esta hora ya no se tomará en cuenta</p>
             <div class="w-1/2 mt-5 mx-10">
-                <el-select v-model="payrollId" filterable
-                    :reserve-keyword="false" placeholder="Buscar nómina">
+                <el-select v-model="payrollId" filterable :reserve-keyword="false" placeholder="Buscar nómina">
                     <el-option v-for="item in payrolls" :key="item.id" :label="'Nómina semana: ' + item.week"
                         :value="item.id" />
                 </el-select>
@@ -73,6 +75,7 @@ export default {
                     icon: '<i class="fa-solid fa-house text-xs"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboard'),
+                    notifications: false,
                     options: [],
                     dropdown: false,
                     show: true
@@ -82,6 +85,7 @@ export default {
                     icon: '<i class="fa-solid fa-book-open text-xs"></i>',
                     route: route('catalog-products.index'),
                     active: route().current('catalog-products.*'),
+                    notifications: false,
                     options: [],
                     dropdown: false,
                     show: this.$page.props.auth.user.permissions.includes('Ver catalogo de productos')
@@ -90,21 +94,29 @@ export default {
                     label: 'Ventas',
                     icon: '<i class="fa-solid fa-shop text-xs"></i>',
                     active: route().current('quotes.*') || route().current('companies.*') || route().current('sales.*'),
+                    notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                        return ['quote', 'sale'].includes(notification.data.module);
+                    }),
                     options: [
                         {
                             label: 'Cotizaciones',
                             route: 'quotes.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones')
+                            show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'quote';
+                            }),
                         },
                         {
                             label: 'Clientes',
                             route: 'companies.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver clientes')
+                            show: this.$page.props.auth.user.permissions.includes('Ver clientes'),
+                            notifications: false,
                         },
                         {
                             label: 'Órdenes de venta',
                             route: 'sales.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver ordenes de venta')
+                            show: this.$page.props.auth.user.permissions.includes('Ver ordenes de venta'),
+                            notifications: false,
                         },
 
                     ],
@@ -117,16 +129,26 @@ export default {
                     label: 'Compras',
                     icon: '<i class="fa-solid fa-cart-shopping text-xs"></i>',
                     active: route().current('suppliers.*') || route().current('purchases.*'),
+                    notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                        return ['po', 'suppliers'].includes(notification.data.module);
+                    }),
                     options: [
                         {
                             label: 'Proveedores',
                             route: 'suppliers.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver proveedores')
+                            show: this.$page.props.auth.user.permissions.includes('Ver proveedores'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'suppler';
+                            }),
+                            notifications: false,
                         },
                         {
                             label: 'Órdenes de compra',
                             route: 'purchases.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver ordenes de compra')
+                            show: this.$page.props.auth.user.permissions.includes('Ver ordenes de compra'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'po';
+                            }),
                         },
 
                     ],
@@ -138,26 +160,41 @@ export default {
                     label: 'Almacén',
                     icon: '<i class="fa-solid fa-warehouse text-xs"></i>',
                     active: route().current('storages.*') || route().current('raw-materials.*'),
+                    notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                        return ['raw-material', 'consumable', 'finished-product', 'scrap'].includes(notification.data.module);
+                    }),
                     options: [
                         {
                             label: 'Materia prima',
                             route: 'storages.raw-materials.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver materia prima')
+                            show: this.$page.props.auth.user.permissions.includes('Ver materia prima'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'raw-material';
+                            }),
                         },
                         {
                             label: 'Insumos',
                             route: 'storages.consumables.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver insumos')
+                            show: this.$page.props.auth.user.permissions.includes('Ver insumos'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'consumable';
+                            }),
                         },
                         {
                             label: 'Producto terminado',
                             route: 'storages.finished-products.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver producto terminado')
+                            show: this.$page.props.auth.user.permissions.includes('Ver producto terminado'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'finished-product';
+                            }),
                         },
                         {
                             label: 'Scrap',
                             route: 'storages.scraps.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver scrap')
+                            show: this.$page.props.auth.user.permissions.includes('Ver scrap'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'scrap';
+                            }),
                         },
 
                     ],
@@ -177,31 +214,45 @@ export default {
                         || route().current('bonuses.*')
                         || route().current('holidays.*')
                         || route().current('discounts.*'),
+                    notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                        return ['payroll', 'admin-additional-time', 'user'].includes(notification.data.module);
+                    }),
                     options: [
                         {
                             label: 'Nóminas',
                             route: 'payrolls.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver nominas')
+                            show: this.$page.props.auth.user.permissions.includes('Ver nominas'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'payroll';
+                            }),
                         },
                         {
                             label: 'Solicitudes de tiempo adicional',
                             route: 'admin-additional-times.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver solicitudes de tiempo adicional')
+                            show: this.$page.props.auth.user.permissions.includes('Ver solicitudes de tiempo adicional'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'admin-additional-time';
+                            }),
                         },
                         {
                             label: 'Personal',
                             route: 'users.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver personal')
+                            show: this.$page.props.auth.user.permissions.includes('Ver personal'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'user';
+                            }),
                         },
                         {
                             label: 'Roles y permisos',
                             route: 'role-permission.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver roles y permisos')
+                            show: this.$page.props.auth.user.permissions.includes('Ver roles y permisos'),
+                            notifications: false,
                         },
                         {
                             label: 'Bonos',
                             route: 'bonuses.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver bonos')
+                            show: this.$page.props.auth.user.permissions.includes('Ver bonos'),
+                            notifications: false,
                         },
                         {
                             label: 'Descuentos',
@@ -211,7 +262,8 @@ export default {
                         {
                             label: 'Dias festivos',
                             route: 'holidays.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver dias festivos')
+                            show: this.$page.props.auth.user.permissions.includes('Ver dias festivos'),
+                            notifications: false,
                         },
                     ],
                     dropdown: true,
@@ -226,6 +278,9 @@ export default {
                     icon: '<i class="fa-solid fa-pen-ruler text-xs"></i>',
                     route: route('designs.index'),
                     active: route().current('designs.*'),
+                    notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                        return notification.data.module === 'design';
+                    }),
                     show: true
                 },
                 {
@@ -233,6 +288,9 @@ export default {
                     icon: '<i class="fa-solid fa-helmet-safety text-xs"></i>',
                     route: route('productions.index'),
                     active: route().current('productions.*'),
+                    notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                        return notification.data.module === 'production';
+                    }),
                     show: true
                 },
                 {
@@ -240,44 +298,64 @@ export default {
                     icon: '<i class="fa-solid fa-lightbulb text-xs"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboar'),
+                    notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                        return notification.data.module === 'marketing';
+                    }),
                     show: false
                 },
                 {
                     label: 'Más',
                     icon: '<i class="fa-solid fa-ellipsis text-xs"></i>',
                     active: route().current('machines.*') || route().current('more-additional-times.*') || route().current('meetings.*') ||
-                        route().current('samples.*') || route().current('production-costs.*') || route().current('audits.*'),
+                        route().current('samples.*') || route().current('production-costs.*'),
+                    notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                        return ['machine', 'meeting', 'sample', 'media-library'].includes(notification.data.module);
+                    }),
                     options: [
                         {
                             label: 'Máquinas',
                             route: 'machines.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver maquinas')
+                            show: this.$page.props.auth.user.permissions.includes('Ver maquinas'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'machine';
+                            }),
                         },
                         {
                             label: 'Solicitudes de tiempo adicional',
                             route: 'more-additional-times.index',
-                            show: this.$page.props.auth.user.permissions.includes('Solicitudes de tiempo adicional personal')
+                            show: this.$page.props.auth.user.permissions.includes('Solicitudes de tiempo adicional personal'),
+                            notifications: false,
                         },
                         {
                             label: 'Reuniones',
                             route: 'meetings.index',
-                            show: this.$page.props.auth.user.permissions.includes('Reuniones personal')
+                            show: this.$page.props.auth.user.permissions.includes('Reuniones personal'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'meeting';
+                            }),
                         },
                         {
                             label: 'Biblioteca de medios',
                             route: 'dashboard',
                             // show: this.$page.props.auth.user.permissions.includes('Ver medios')
-                            show: false
+                            show: false,
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'media-library';
+                            }),
                         },
                         {
                             label: 'Seguimiento de muestras',
                             route: 'samples.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver scrap')
+                            show: this.$page.props.auth.user.permissions.includes('Ver scrap'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'sample';
+                            }),
                         },
                         {
                             label: 'Costos de producción',
                             route: 'production-costs.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver costos de produccion')
+                            show: this.$page.props.auth.user.permissions.includes('Ver costos de produccion'),
+                            notifications: false,
                         },
                         {
                             label: 'Historial de acciones',
@@ -298,6 +376,7 @@ export default {
                     icon: '<i class="fa-solid fa-gears text-sm"></i>',
                     route: route('dashboard'),
                     active: route().current('dashboar'),
+                    notifications: false,
                     show: false
                 },
             ],

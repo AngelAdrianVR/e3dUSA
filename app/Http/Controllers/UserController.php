@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
+use App\Http\Resources\NotificationResource;
 use App\Http\Resources\UserResource;
 use App\Models\Bonus;
 use App\Models\ChMessage;
@@ -250,5 +251,27 @@ class UserController extends Controller
         $unseen_messages = ChMessage::where('to_id', auth()->id())->where('seen', 0)->get()->count();
 
         return response()->json(['count' => $unseen_messages]);
+    }
+
+    public function getNotifications(Request $request)
+    {
+        $notifications = auth()->user()->notifications()->where('data->module', $request->module)->get();
+
+        return response()->json(['items' => NotificationResource::collection($notifications)]);
+    }
+
+    public function readNotifications(Request $request)
+    {
+        $notifications = auth()->user()->notifications()->whereIn('id', $request->notifications_ids)->get();
+        $notifications->markAsRead();
+
+        return response()->json([]);
+    }
+    
+    public function deleteNotifications(Request $request)
+    {
+        $notifications = auth()->user()->notifications()->whereIn('id', $request->notifications_ids)->delete();
+
+        return response()->json([]);
     }
 }

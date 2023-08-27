@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\User;
+use App\Notifications\RequestApprovedNotification;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
