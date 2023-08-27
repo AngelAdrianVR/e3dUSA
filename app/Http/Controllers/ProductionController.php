@@ -10,6 +10,7 @@ use App\Http\Resources\SaleResource;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Production;
 use App\Models\Sale;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -27,7 +28,7 @@ class ProductionController extends Controller
             $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale', 'companyBranch')->whereHas('productions')->where('user_id', auth()->id())->latest()->get());
             return inertia('Production/Index', compact('productions'));
         } else {
-            $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale', 'companyBranch')->whereHas('productions', function ($query){
+            $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale', 'companyBranch')->whereHas('productions', function ($query) {
                 $query->where('productions.operator_id', auth()->id());
             })->latest()->get());
             return inertia('Production/Operator', compact('productions'));
@@ -43,31 +44,67 @@ class ProductionController extends Controller
         return inertia('Production/Create', compact('operators', 'sales'));
     }
 
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'productions' => 'array|min:1',
+    //     ]);
+
+    //     foreach ($request->productions as $production) {
+    //         $foreigns = [
+    //             'user_id' => $production['user_id'],
+    //             'catalog_product_company_sale_id' => $production['catalog_product_company_sale_id']
+    //         ];
+
+    //         foreach ($production['tasks'] as $task) {
+    //             $data = $task + $foreigns;
+
+    //            $produ = Production::create($data);
+    //             event(new RecordCreated($produ));
+    //         }
+    //     }
+
+    //     return to_route('productions.index');
+    // }
+
     public function store(Request $request)
     {
         $request->validate([
             'productions' => 'array|min:1',
         ]);
 
+        $is_automatic_assignment = Setting::where('key', 'AUTOMATIC_PRODUCTION_ASSIGNMENT')->first()->value;
+
         foreach ($request->productions as $production) {
             $foreigns = [
                 'user_id' => $production['user_id'],
                 'catalog_product_company_sale_id' => $production['catalog_product_company_sale_id']
             ];
-
+            
             foreach ($production['tasks'] as $task) {
+                // Calculate total estimated time for the production
+                $totalEstimatedTime = ($task['estimated_time_hours'] * 60) + $task['estimated_time_minutes'];
+                
+                // Find suitable employees based on criteria
+                $selectedEmployees = $this->findSuitableEmployees($totalEstimatedTime);
+                
                 $data = $task + $foreigns;
+                if ($is_automatic_assignment) {
+                    foreach ($selectedEmployees as $employeeId) {
+                        $data['operator_id'] = $employeeId;
 
-               $produ = Production::create($data);
-                event(new RecordCreated($produ));
+                        $produ = Production::create($data);
+                        event(new RecordCreated($produ));
+                    }
+                } else {
+                    $produ = Production::create($data);
+                    event(new RecordCreated($produ));
+                }
             }
         }
 
-        
-
-        return to_route('productions.index');
+        return redirect()->route('productions.index');
     }
-
 
     public function show($sale_id)
     {
@@ -134,7 +171,7 @@ class ProductionController extends Controller
         return response()->json(['message' => 'Producto(s) eliminado(s)']);
     }
 
-    public function print($productions) 
+    public function print($productions)
     {
         $ordered_products = CatalogProductCompanySale::with(['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'user'], 'sale' => ['user', 'companyBranch']])->whereIn('id', json_decode($productions))->get();
         // return $ordered_products;
@@ -154,5 +191,42 @@ class ProductionController extends Controller
         $production = Production::with(['operator', 'user'])->find($production->id);
 
         return response()->json(['message' => $message, 'item' => $production]);
+    }
+
+    // private methods
+    private function findSuitableEmployees($totalEstimatedTime)
+    {
+        $employees = User::where('is_active', 1)->where('employee_properties->department', 'Producción')->get();
+        
+        // Filter employees based on total time they can work
+        $suitableEmployees = $employees->filter(function ($employee) use ($totalEstimatedTime) {
+            return ($employee->employee_properties['hours_per_day'] ?? 8 * 60) >= $totalEstimatedTime;
+        });
+
+        // Calculate required employee count based on production time
+        $requiredEmployeeCount = ceil($totalEstimatedTime / 240); // 240 minutes per employee
+
+        // If required employee count is greater than suitable employees, assign all suitable employees
+        if ($requiredEmployeeCount >= $suitableEmployees->count()) {
+            return $suitableEmployees->pluck('id')->toArray();
+        }
+
+        // Select the most optimal employees based on their total estimated time
+        $sortedEmployees = $suitableEmployees->sortBy(function ($employee) {
+            return $this->getTotalEstimatedTime($employee);
+        });
+
+        return $sortedEmployees->take($requiredEmployeeCount)->pluck('id')->toArray();
+    }
+
+    private function getTotalEstimatedTime($employee)
+    {
+        $productions = $employee->productions;
+
+        $totalEstimatedTime = $productions->sum(function ($production) {
+            return ($production->estimated_time_hours * 60) + $production->estimated_time_minutes;
+        });
+
+        return $totalEstimatedTime;
     }
 }
