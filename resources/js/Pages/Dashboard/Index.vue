@@ -95,7 +95,8 @@
             <!-- Collaborators -->
             <h2 class="text-primary lg:text-xl text-lg lg:mt-16 mt-6">Colaboradores</h2>
             <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 space-y-5 lg:space-y-0 mt-4">
-                <ProductionPerformanceCard :users="collaborators_performance" />
+                <ProductionPerformanceCard :users="collaborators_production_performance" />
+                <DesignPerformanceCard :users="collaborators_production_performance" />
                 <BirthdateCard :users="collaborators_birthdays" />
                 <RecentlyAddedCard :users="collaborators_added" />
                 <InformationCard :users="collaborators_anniversaires" />
@@ -227,6 +228,7 @@ import DialogModal from '@/Components/DialogModal.vue';
 import MeetingCard from '@/Components/MyComponents/MeetingCard.vue';
 import DashboardCard from '@/Components/MyComponents/DashboardCard.vue';
 import ProductionPerformanceCard from '@/Components/MyComponents/ProductionPerformanceCard.vue';
+import DesignPerformanceCard from '@/Components/MyComponents/DesignPerformanceCard.vue';
 import BirthdateCard from '@/Components/MyComponents/BirthdateCard.vue';
 import BirthdateCardCustomer from '@/Components/MyComponents/BirthdateCardCustomer.vue';
 import RecentlyAddedCard from '@/Components/MyComponents/RecentlyAddedCard.vue';
@@ -337,7 +339,7 @@ export default {
     props: {
         meetings: Object,
         counts: Array,
-        collaborators_performance: Array,
+        collaborators_production_performance: Array,
         collaborators_birthdays: Array,
         collaborators_added: Array,
         collaborators_anniversaires: Array,
@@ -350,6 +352,7 @@ export default {
         PrimaryButton,
         SecondaryButton,
         ProductionPerformanceCard,
+        DesignPerformanceCard,
         InformationCard,
         RecentlyAddedCard,
         BirthdateCard,

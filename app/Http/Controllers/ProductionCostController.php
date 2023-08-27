@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\ProductionCostResource;
 use App\Models\ProductionCost;
 use Illuminate\Http\Request;
@@ -31,7 +34,9 @@ class ProductionCostController extends Controller
             'description' => 'required|string',
         ]);
 
-        ProductionCost::create($request->all());
+        $production_cost = ProductionCost::create($request->all());
+
+        event(new RecordCreated($production_cost));
         
         return to_route('production-costs.index');
     }
@@ -58,6 +63,8 @@ class ProductionCostController extends Controller
         ]);
 
         $production_cost->update($request->all());
+
+        event(new RecordEdited($production_cost));
         
         return to_route('production-costs.index');
     }
@@ -73,6 +80,8 @@ class ProductionCostController extends Controller
         foreach ($request->production_costs as $production_cost) {
             $production_cost = ProductionCost::find($production_cost['id']);
             $production_cost?->delete();
+
+            event(new RecordDeleted($production_cost));
         }
 
         return response()->json(['message' => 'Costo(s) de producci+on eliminado(s)']);

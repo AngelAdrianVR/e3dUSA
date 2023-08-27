@@ -201,11 +201,7 @@
                             <el-option v-for="item in production_costs" :key="item.id" :label="item.name"
                                 :value="item.id" />
                         </el-select>
-                        <!-- <el-tooltip content="Agregar proceso de producción" placement="top">
-                            <Link class="ml-3" :href="route('production-costs.create')">
-                            <PrimaryButton class="!rounded-lg">+</PrimaryButton>
-                            </Link>
-                        </el-tooltip> -->
+
                     </div>
                     <div class="grid grid-cols-3 gap-x-1">
                         <IconInput v-model="rawMaterial.quantity" inputPlaceholder="Cantidad necesaria *" inputType="number"
@@ -219,7 +215,7 @@
                     </div>
                     <div calss="col-span-full">
                         <SecondaryButton @click="addProduct" type="button"
-                            :disabled="!rawMaterial.raw_material_id || !rawMaterial.quantity || form.processing">
+                            :disabled="!rawMaterial.raw_material_id || !rawMaterial.quantity || form.processing || !rawMaterial.production_costs.length">
                             {{ editIndex !== null ? 'Actualizar componente' : 'Agregar componente a lista' }}
                         </SecondaryButton>
                     </div>

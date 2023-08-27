@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\HolidayResource;
 use App\Models\Holiday;
 use Illuminate\Http\Request;
@@ -34,11 +37,13 @@ class HolidayController extends Controller
             'month' => 'required|numeric|min:1',
         ]);
 
-        Holiday::create([
+        $holiday = Holiday::create([
             'name' => $request->name,
             'date' => "2023-$request->month-$request->day",
             'is_active' => $request->is_active,
         ]);
+
+        event(new RecordCreated($holiday));
 
         return to_route('holidays.index');
     }
@@ -76,6 +81,8 @@ class HolidayController extends Controller
             'is_active' => $request->is_active,
         ]);
 
+        event(new RecordEdited($holiday));
+
         return to_route('holidays.index');
     }
 
@@ -93,6 +100,8 @@ class HolidayController extends Controller
         foreach ($request->holidays as $holiday) {
             $holiday = Holiday::find($holiday['id']);
             $holiday?->delete();
+
+            event(new RecordDeleted($holiday));
         }
 
         return response()->json(['message' => 'Dia(s) eliminado(s)']);

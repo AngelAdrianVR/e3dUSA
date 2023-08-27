@@ -212,7 +212,8 @@ export default {
                         || route().current('users.*')
                         || route().current('role-permission.*')
                         || route().current('bonuses.*')
-                        || route().current('holidays.*'),
+                        || route().current('holidays.*')
+                        || route().current('discounts.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
                         return ['payroll', 'admin-additional-time', 'user'].includes(notification.data.module);
                     }),
@@ -252,6 +253,11 @@ export default {
                             route: 'bonuses.index',
                             show: this.$page.props.auth.user.permissions.includes('Ver bonos'),
                             notifications: false,
+                        },
+                        {
+                            label: 'Descuentos',
+                            route: 'discounts.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver descuentos')
                         },
                         {
                             label: 'Dias festivos',
@@ -351,12 +357,18 @@ export default {
                             show: this.$page.props.auth.user.permissions.includes('Ver costos de produccion'),
                             notifications: false,
                         },
+                        {
+                            label: 'Historial de acciones',
+                            route: 'audits.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver historial de acciones')
+                        },
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver maquinas') ||
                         this.$page.props.auth.user.permissions.includes('Solicitudes de tiempo adicional personal') ||
                         this.$page.props.auth.user.permissions.includes('Reuniones personal') ||
                         this.$page.props.auth.user.permissions.includes('Ver biblioteca de medios') ||
+                        this.$page.props.auth.user.permissions.includes('Ver historial de acciones') ||
                         this.$page.props.auth.user.permissions.includes('Ver costos de produccion')
                 },
                 {

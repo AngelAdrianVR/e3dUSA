@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Http\Resources\StorageResource;
 use App\Models\CatalogProduct;
 use App\Models\RawMaterial;
@@ -84,6 +86,8 @@ class StorageController extends Controller
             'type' => $request->type,
         ]);
 
+        event(new RecordCreated($finished_products));
+
         return to_route('storages.finished-products.index');
     }
 
@@ -107,6 +111,7 @@ class StorageController extends Controller
                 'location' => $request->location,
                 'type' => $request->type,
             ]);
+            event(new RecordCreated($raw_material));
         } else {
 
             $finished_products = CatalogProduct::find($storage->storageable_id);
@@ -115,10 +120,13 @@ class StorageController extends Controller
                 'location' => $request->location,
                 'type' => $request->type,
             ]);
+            event(new RecordCreated($finished_products));
         }
 
         $storage->quantity -= $request->quantity;
         $storage->save();
+
+        
 
         return to_route('storages.scraps.index');
     }
@@ -165,6 +173,8 @@ class StorageController extends Controller
     {
         $storage->storageable->delete();
         $storage->delete();
+
+        event(new RecordDeleted($storage));
     }
 
     public function massiveDelete(Request $request)
@@ -172,6 +182,8 @@ class StorageController extends Controller
         foreach ($request->finished_products as $finished_product) {
             $finished_product = Storage::find($finished_product['id']);
             $finished_product?->delete();
+
+            event(new RecordDeleted($finished_product));
         }
 
         return response()->json(['message' => 'Producto(s) eliminado(s)']);
@@ -195,6 +207,8 @@ class StorageController extends Controller
             }
             $scrap_restored->increment('quantity', $scrap->quantity);
             $scrap?->delete();
+
+            event(new RecordDeleted($scrap));
         }
 
         return response()->json(['message' => 'Producto(s) retirado(s) de scrap']);
@@ -286,7 +300,7 @@ class StorageController extends Controller
     public function QRSearchProduct(Request $request)
     {
 
-        $request->validate([
+        $request->validate([ 
             'barCode' => 'required|string'
         ]);
 

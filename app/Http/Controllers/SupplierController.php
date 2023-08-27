@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\SupplierResource;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -40,6 +43,8 @@ class SupplierController extends Controller
             $supplier->contacts()->create($contact);
        }
 
+       event(new RecordCreated($supplier));
+
         return to_route('suppliers.index');
     }
 
@@ -72,6 +77,8 @@ class SupplierController extends Controller
 
        $supplier->update($request->all());
 
+       event(new RecordEdited($supplier));
+
         return to_route('suppliers.index');
     }
 
@@ -80,6 +87,8 @@ class SupplierController extends Controller
     {
         $supplier_name = $supplier->name;
         $supplier->delete();
+
+        event(new RecordDeleted($supplier));
 
         return response()->json(['message' => "Producto eliminado: $supplier_name"]);
     }
@@ -90,6 +99,8 @@ class SupplierController extends Controller
         foreach ($request->suppliers as $supplier) {
             $supplier = Supplier::find($supplier['id']);
             $supplier?->delete();
+
+            event(new RecordDeleted($supplier));
         }
 
         return response()->json(['message' => 'proveedor(es) eliminado(s)']);

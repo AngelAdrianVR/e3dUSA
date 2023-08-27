@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\RawMaterialResource;
 use App\Models\CatalogProduct;
 use App\Models\RawMaterial;
@@ -60,6 +63,8 @@ class RawMaterialController extends Controller
             'location' => $request->location,
         ]);
 
+        event(new RecordCreated($raw_material));
+
         if ($request->type == 'materia-prima')
             return to_route('storages.raw-materials.index');
         else
@@ -107,6 +112,8 @@ class RawMaterialController extends Controller
             'location' => $request->location,
         ]);
 
+        event(new RecordEdited($raw_material));
+
 
         if ($request->type == 'materia-prima')
             return to_route('storages.raw-materials.index');
@@ -137,6 +144,8 @@ class RawMaterialController extends Controller
         $raw_material->clearMediaCollection();
         $raw_material->addMediaFromRequest('media')->toMediaCollection();
 
+        event(new RecordEdited($raw_material));
+
         if ($request->type == 'materia-prima')
             return to_route('storages.raw-materials.index');
         else
@@ -156,6 +165,8 @@ class RawMaterialController extends Controller
             $raw_material?->delete();
             $raw_material = RawMaterial::find($raw_material['storageable_id']);
             $raw_material?->delete();
+
+            event(new RecordDeleted($raw_material));
         }
 
         return response()->json(['message' => 'Producto(s) eliminado(s)']);

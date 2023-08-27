@@ -28,6 +28,7 @@
               <el-radio-button label="Correctivo" />
             </el-radio-group>
           </div>
+          <InputError :message="form.errors.maintenance_type" />
           <div v-if="form.maintenance_type == 'Correctivo'">
             <div class="flex col-span-full">
               <el-tooltip
@@ -146,7 +147,7 @@ import IconInput from "@/Components/MyComponents/IconInput.vue";
 export default {
   data() {
     const form = useForm({
-      maintenance_type: 'Correctivo',
+      maintenance_type: null,
       problems: this.maintenance.problems,
       actions: this.maintenance.actions,
       cost: this.maintenance.cost,
@@ -172,17 +173,28 @@ export default {
   },
   methods: {
     update() {
-      this.form.put(route("maintenances.update", this.maintenance), {
-        onSuccess: () => {
-          this.$notify({
-            title: "Éxito",
-            message: "Mantenimiento Actualizado",
-            type: "success",
-          });
-
-          this.form.reset();
-        },
-      });
+      if (this.form.media !== null) {
+        this.form.post(route("maintenances.update-with-media", this.maintenance), {
+          method: '_put',
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Se actualizó correctamente",
+              type: "success",
+            });
+          },
+        });
+      } else {
+        this.form.put(route("maintenances.update", this.maintenance), {
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Se actualizó correctamente",
+              type: "success",
+            });
+          },
+        });
+      }
     },
   },
 };

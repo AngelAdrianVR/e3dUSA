@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Models\Sample;
 use App\Http\Resources\SampleResource;
 use App\Models\CatalogProduct;
@@ -55,6 +58,8 @@ class SampleController extends Controller
             $sample->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
         }
 
+        event(new RecordCreated($sample));
+
         return to_route('samples.index');
     }
 
@@ -93,6 +98,8 @@ class SampleController extends Controller
             'user_id' => auth()->id()
         ]);
 
+        event(new RecordEdited($sample));
+
         return to_route('samples.index');
     }
 
@@ -114,6 +121,9 @@ class SampleController extends Controller
         $sample->clearMediaCollection();
         $sample->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
 
+        event(new RecordEdited($sample));
+
+
         return to_route('samples.index');
 
     }
@@ -122,6 +132,20 @@ class SampleController extends Controller
     public function destroy(Sample $sample)
     {
         $sample->delete();
+
+        event(new RecordDeleted($sample));
+    }
+
+    public function massiveDelete(Request $request)
+    {
+        foreach ($request->samples as $sample) {
+            $sample = Sample::find($sample['id']);
+            $sample?->delete();
+
+            event(new RecordDeleted($sample));
+        }
+
+        return response()->json(['message' => 'reunion(es) eliminada(s)']);
     }
 
     public function returned(Request $request, Sample $sample)

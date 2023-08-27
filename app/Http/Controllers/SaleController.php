@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\SaleResource;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Company;
@@ -64,6 +67,8 @@ class SaleController extends Controller
             CatalogProductCompanySale::create($product + ['sale_id' => $sale->id]);
         }
 
+        event(new RecordCreated($sale));
+
         return to_route('sales.index');
     }
 
@@ -124,12 +129,16 @@ class SaleController extends Controller
             ->whereNotIn('id', $updatedProductIds)
             ->delete();
 
+            event(new RecordEdited($sale));
+
         return to_route('sales.index');
     }
 
     public function destroy(Sale $sale)
     {
         $sale->delete();
+
+        event(new RecordDeleted($sale));
     }
 
     public function massiveDelete(Request $request)
@@ -141,9 +150,11 @@ class SaleController extends Controller
                 $production->delete();
             }
             $sale?->delete();
+
+            event(new RecordDeleted($sale));
         }
 
-        return response()->json(['message' => 'OV(s) eliminada(s)']);
+        return to_route('sales.index');
     }
 
     public function authorizeOrder(Sale $sale)

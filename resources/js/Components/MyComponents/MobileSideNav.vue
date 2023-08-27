@@ -146,7 +146,8 @@ export default {
                         || route().current('users.*')
                         || route().current('role-permission.*')
                         || route().current('bonuses.*')
-                        || route().current('holidays.*'),
+                        || route().current('holidays.*')
+                        || route().current('discounts.*'),
                     options: [
                         {
                             label: 'Nóminas',
@@ -177,6 +178,11 @@ export default {
                             route: route('bonuses.index'),
                             active: route().current('bonuses.*'),
                             show: this.$page.props.auth.user.permissions.includes('Ver bonos')
+                        },
+                        {
+                            label: 'Descuentos',
+                            route: 'discounts.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver descuentos')
                         },
                         {
                             label: 'Dias festivos',
@@ -222,7 +228,8 @@ export default {
                 {
                     label: 'Más',
                     icon: '<i class="fa-solid fa-ellipsis text-xs"></i>',
-                    active: route().current('machines.*') || route().current('more-additional-times.*') || route().current('meetings.*'),
+                    active: route().current('machines.*') || route().current('more-additional-times.*') || route().current('meetings.*') || route().current('audits.*')
+                    || route().current('samples.*') || route().current('production-costs.*'),
                     options: [
                         {
                             label: 'Máquinas',
@@ -251,13 +258,18 @@ export default {
                         {
                             label: 'Seguimiento de muestras',
                             route: route('samples.index'),
-                            active: route().current('samples.*'),
+                            active: route().current('samples'),
                             show: this.$page.props.auth.user.permissions.includes('Ver muestra')
                         },
                         {
                             label: 'Costos de producción',
                             route: route('production-costs.index'),
                             show: this.$page.props.auth.user.permissions.includes('Ver costos de produccion')
+                        },
+                        {
+                            label: 'Historial de acciones',
+                            route: 'audits.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver historial de acciones')
                         },
                     ],
                     dropdown: true,
@@ -266,7 +278,8 @@ export default {
                         this.$page.props.auth.user.permissions.includes('Reuniones personal') ||
                         this.$page.props.auth.user.permissions.includes('Ver muestra') ||
                         this.$page.props.auth.user.permissions.includes('Ver biblioteca de medios') ||
-                          this.$page.props.auth.user.permissions.includes('Ver costos de produccion')
+                        this.$page.props.auth.user.permissions.includes('Ver historial de acciones') ||
+                        this.$page.props.auth.user.permissions.includes('Ver costos de produccion')
                 },
                 {
                     label: 'Configuración',

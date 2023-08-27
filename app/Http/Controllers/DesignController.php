@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\DesignResource;
 use App\Models\Company;
 use App\Models\CompanyBranch;
@@ -76,6 +79,8 @@ class DesignController extends Controller
             $design->addMediaFromRequest('media_logo')->toMediaCollection('logo');
         }
 
+        event(new RecordCreated($design));
+
         return to_route('designs.index');
     }
 
@@ -132,6 +137,8 @@ class DesignController extends Controller
             'user_id' => auth()->id()
         ]);
 
+        event(new RecordEdited($design));
+
         return to_route('designs.index');
     }
 
@@ -146,6 +153,8 @@ class DesignController extends Controller
         foreach ($request->designs as $design) {
             $design = Design::find($design['id']);
             $design?->delete();
+
+            event(new RecordDeleted($design));
         }
 
         return response()->json(['message' => 'Cliente(s) eliminado(s)']);

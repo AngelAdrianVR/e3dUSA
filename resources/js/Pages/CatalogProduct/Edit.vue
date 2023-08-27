@@ -405,8 +405,8 @@ export default {
         "Cubeta(s)",
         "Bote(s)",
       ],
-      productType: 'PP',
-            brand: null,
+      productType: this.catalog_product.part_number.split('-')[1],
+      brand: this.catalog_product.part_number.split('-')[2],
             productTypes: [
                 {
                     label: 'Porta-placa',
