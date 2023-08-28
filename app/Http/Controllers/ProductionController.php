@@ -39,33 +39,10 @@ class ProductionController extends Controller
     {
         $operators = User::where('employee_properties->department', 'Producción')->where('is_active', 1)->get();
         $sales = SaleResource::collection(Sale::with('companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct')->whereNotNull('authorized_at')->whereDoesntHave('productions')->get());
+        $is_automatic_assignment = boolval(Setting::where('key', 'AUTOMATIC_PRODUCTION_ASSIGNMENT')->first()->value);
 
-        // return $sales;
-        return inertia('Production/Create', compact('operators', 'sales'));
+        return inertia('Production/Create', compact('operators', 'sales', 'is_automatic_assignment'));
     }
-
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'productions' => 'array|min:1',
-    //     ]);
-
-    //     foreach ($request->productions as $production) {
-    //         $foreigns = [
-    //             'user_id' => $production['user_id'],
-    //             'catalog_product_company_sale_id' => $production['catalog_product_company_sale_id']
-    //         ];
-
-    //         foreach ($production['tasks'] as $task) {
-    //             $data = $task + $foreigns;
-
-    //            $produ = Production::create($data);
-    //             event(new RecordCreated($produ));
-    //         }
-    //     }
-
-    //     return to_route('productions.index');
-    // }
 
     public function store(Request $request)
     {
@@ -92,6 +69,8 @@ class ProductionController extends Controller
                 if ($is_automatic_assignment) {
                     foreach ($selectedEmployees as $employeeId) {
                         $data['operator_id'] = $employeeId;
+                        $data['estimated_time_hours'] = intval(($totalEstimatedTime / count($selectedEmployees)) / 60);
+                        $data['estimated_time_minutes'] = round($totalEstimatedTime / count($selectedEmployees)) % 60;
 
                         $produ = Production::create($data);
                         event(new RecordCreated($produ));
@@ -198,35 +177,19 @@ class ProductionController extends Controller
     {
         $employees = User::where('is_active', 1)->where('employee_properties->department', 'Producción')->get();
         
-        // Filter employees based on total time they can work
-        $suitableEmployees = $employees->filter(function ($employee) use ($totalEstimatedTime) {
-            return ($employee->employee_properties['hours_per_day'] ?? 8 * 60) >= $totalEstimatedTime;
-        });
-
         // Calculate required employee count based on production time
         $requiredEmployeeCount = ceil($totalEstimatedTime / 240); // 240 minutes per employee
 
         // If required employee count is greater than suitable employees, assign all suitable employees
-        if ($requiredEmployeeCount >= $suitableEmployees->count()) {
-            return $suitableEmployees->pluck('id')->toArray();
+        if ($requiredEmployeeCount >= $employees->count()) {
+            return $employees->pluck('id')->toArray();
         }
-
+        
         // Select the most optimal employees based on their total estimated time
-        $sortedEmployees = $suitableEmployees->sortBy(function ($employee) {
-            return $this->getTotalEstimatedTime($employee);
+        $sortedEmployees = $employees->sortBy(function ($employee) {
+            return $employee->getTotalEstimatedTime();
         });
-
+        
         return $sortedEmployees->take($requiredEmployeeCount)->pluck('id')->toArray();
-    }
-
-    private function getTotalEstimatedTime($employee)
-    {
-        $productions = $employee->productions;
-
-        $totalEstimatedTime = $productions->sum(function ($production) {
-            return ($production->estimated_time_hours * 60) + $production->estimated_time_minutes;
-        });
-
-        return $totalEstimatedTime;
     }
 }
