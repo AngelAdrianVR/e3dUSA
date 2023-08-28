@@ -254,8 +254,8 @@
               <p>{{ currentSample?.sent_at }}</p>
             </div>
             <div class="flex mb-2 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">ID de muestra</p>
-              <p>{{ currentSample?.id }}</p>
+              <p class="w-1/3 text-[#9A9A9A]">Folio de muestra</p>
+              <p>{{ currentSample?.folio }}</p>
             </div>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Nombre de la muestra</p>

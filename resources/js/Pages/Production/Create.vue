@@ -129,7 +129,7 @@
                   </el-select>
                 </div>
                 <div v-else class="text-xs text-secondary">
-                  La asignación automatica de operadores está activa. Si quieres cambiarlo a manual, ve a <Link :href="route('dashboard')" class="text-primary hover:underline">configuraciones</Link>
+                  La asignación automatica de operadores está activa. Si quieres cambiarlo a manual, ve a <Link :href="route('settings.index')" class="text-primary hover:underline">configuraciones</Link>
                 </div>
                 <div class="flex items-center">
                   <el-tooltip content="Tareas" placement="top">

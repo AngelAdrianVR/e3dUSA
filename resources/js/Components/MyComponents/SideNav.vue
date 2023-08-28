@@ -374,10 +374,10 @@ export default {
                 {
                     label: 'Configuración',
                     icon: '<i class="fa-solid fa-gears text-sm"></i>',
-                    route: route('dashboard'),
-                    active: route().current('dashboar'),
+                    route: route('settings.index'),
+                    active: route().current('settings.*'),
                     notifications: false,
-                    show: false
+                    show: this.$page.props.auth.user.permissions.includes('Ver configuraciones')
                 },
             ],
             showModal: false,

@@ -26,6 +26,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SampleController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
@@ -254,6 +255,8 @@ Route::post('production-costs/massive-delete', [ProductionCostController::class,
 //------------------ Actions history routes ----------------
 Route::resource('audits', AuditController::class)->middleware('auth');
 
+//------------------ Settings routes ----------------
+Route::resource('settings', SettingController::class)->middleware('auth');
 
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
