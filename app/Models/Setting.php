@@ -10,8 +10,14 @@ class Setting extends Model
     use HasFactory;
 
     public $fillable = [
+        'label',
         'key',
         'value',
-        'type'
+        'type',
+        'options',
+    ];
+
+    protected $casts = [
+        'options' => 'array',
     ];
 }

@@ -87,9 +87,9 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
-    public function production(): HasMany
+    public function productions(): HasMany
     {
-        return $this->hasMany(Production::class);
+        return $this->hasMany(Production::class, 'operator_id', 'id');
     }
 
     public function meetings()
@@ -206,5 +206,19 @@ class User extends Authenticatable
             'formatted' => "{$hours}h {$minutes}m",
             'hours' => round($week_time / 60, 2),
         ];
+    }
+
+    public function getTotalEstimatedTime()
+    {
+        $productions = $this->productions;
+        if ($productions->count()) {
+            $totalEstimatedTime = $productions->sum(function ($production) {
+                return ($production->estimated_time_hours * 60) + $production->estimated_time_minutes;
+            });
+    
+            return $totalEstimatedTime;
+        }
+
+        return 0;
     }
 }

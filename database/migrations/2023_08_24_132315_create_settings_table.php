@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
+            $table->string('label');
             $table->string('key');
             $table->string('value');
             $table->string('type')->nullable();
+            $table->json('options')->nullable();
             $table->timestamps();
         });
     }

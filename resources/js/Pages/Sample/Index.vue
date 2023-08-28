@@ -44,6 +44,7 @@
                 <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="450" style="width: 100%"
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
+                    <el-table-column prop="folio" label="Folio" width="150" />
                     <el-table-column prop="name" label="Nombre" width="150" />
                     <el-table-column prop="company_branch.name" label="Cliente" width="160" />
                     <el-table-column prop="quantity" label="Cantidad" width="85" />

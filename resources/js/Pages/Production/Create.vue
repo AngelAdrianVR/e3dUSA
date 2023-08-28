@@ -52,8 +52,8 @@
                 <li class="flex justify-between items-center">
                   <p class="text-sm">
                     <span class="text-primary">{{ index + 1 }}.</span>
-                    {{ sales.data.find(item2 => item2.id == saleId).catalogProductCompanySales.find(cpcs => cpcs.id == item.catalog_product_company_sale_id).catalog_product_company.catalog_product.name }} | {{ item.tasks?.length }} operador(es)
-                    asignado(s)
+                    {{ sales.data.find(item2 => item2.id == saleId).catalogProductCompanySales.find(cpcs => cpcs.id == item.catalog_product_company_sale_id).catalog_product_company.catalog_product.name }}
+                     | {{ is_automatic_assignment ? 'Asignación de operdores automática' : item.tasks?.length + ' operador(es) asignado(s)' }}
                   </p>
                   <div class="flex space-x-2 items-center">
                     <el-tag v-if="editProductionIndex == index">En edición</el-tag>
@@ -116,7 +116,7 @@
 
               <div v-if="production.catalog_product_company_sale_id"
                 class="space-y-3 md:w-[92%] mx-auto border-2 border-[#b8b7b7] rounded-lg p-5 my-3">
-                <div class="flex items-center">
+                <div v-if="!is_automatic_assignment" class="flex items-center">
                   <el-tooltip content="Seleccionar a operador(es)" placement="top">
                     <span
                       class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
@@ -127,6 +127,9 @@
                     no-data-text="No hay operadores registrados" no-match-text="No se encontraron coincidencias">
                     <el-option v-for="item in operators" :key="item.id" :label="item.name" :value="item.id" />
                   </el-select>
+                </div>
+                <div v-else class="text-xs text-secondary">
+                  La asignación automatica de operadores está activa. Si quieres cambiarlo a manual, ve a <Link :href="route('settings.index')" class="text-primary hover:underline">configuraciones</Link>
                 </div>
                 <div class="flex items-center">
                   <el-tooltip content="Tareas" placement="top">
@@ -166,8 +169,12 @@
                 </div>
 
                 <div calss="col-span-full">
-                  <SecondaryButton @click="addTask" type="button"
-                    :disabled="form.processing || !task.operator_id || !task.tasks">
+                  <SecondaryButton v-if="is_automatic_assignment" @click="addTask" type="button"
+                    :disabled="form.processing || !task.tasks || (task.estimated_time_hours + task.estimated_time_minutes) == 0">
+                    {{ editTaskIndex !== null ? 'Actualizar tareas' : 'Agregar tareas' }}
+                  </SecondaryButton>
+                  <SecondaryButton v-else @click="addTask" type="button"
+                    :disabled="form.processing || !task.operator_id || !task.tasks || (task.estimated_time_hours + task.estimated_time_minutes) == 0">
                     {{ editTaskIndex !== null ? 'Actualizar tareas' : 'Agregar tareas' }}
                   </SecondaryButton>
                 </div>
@@ -185,7 +192,7 @@
           <el-divider />
 
           <div class="md:text-right">
-            <PrimaryButton :disabled="form.processing || orderedProducts.length != 0"> Crear órden de producción
+            <PrimaryButton :disabled="form.processing || orderedProducts.length != 0 || saleId === null"> Crear órden de producción
             </PrimaryButton>
           </div>
         </div>
@@ -240,6 +247,7 @@ export default {
   props: {
     operators: Array,
     sales: Object,
+    is_automatic_assignment: Boolean,
   },
   methods: {
     store() {
