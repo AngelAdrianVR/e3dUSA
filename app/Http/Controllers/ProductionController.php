@@ -163,13 +163,20 @@ class ProductionController extends Controller
             $production->update(['started_at' => now()]);
             $message = 'Se ha registrado el inicio';
         } else {
-            $production->update(['finished_at' => now()]);
+            $production->update(['finished_at' => now(), 'is_paused' => 0]);
             $message = 'Se ha registrado el final';
         }
 
         $production = Production::with(['operator', 'user'])->find($production->id);
 
         return response()->json(['message' => $message, 'item' => $production]);
+    }
+
+    public function continueProduction(Production $production)
+    {
+        $production->update(['is_paused' => 0]);
+
+        return response()->json(['message' => 'Producción reanudada']);
     }
 
     // private methods

@@ -23,6 +23,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('estimated_time_minutes')->default(0);
             $table->timestamp('started_at')->nullable();
             $table->timestamp('finished_at')->nullable();
+            $table->timestamp('is_paused')->default(false);
             $table->json('additionals')->nullable();
             $table->timestamps();
         });
