@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class Production extends Model
@@ -21,6 +22,7 @@ class Production extends Model
         'estimated_time_minutes',
         'started_at',
         'finished_at',
+        'is_paused',
         'additionals',
     ];
 
@@ -49,5 +51,10 @@ class Production extends Model
     public function sale() :HasOneThrough
     {
         return $this->hasOneThrough(Sale::class, CatalogProductCompanySale::class, 'id', 'catalog_product_company_sale_id', 'catalog_product_company_sale_id', 'sale_id');
+    }
+
+    public function Progress() :HasMany
+    {
+        return $this->hasMany(ProductionProgress::class, 'production_id', 'id');
     }
 }

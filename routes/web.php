@@ -20,6 +20,7 @@ use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\ProductionCostController;
+use App\Http\Controllers\ProductionProgressController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RoleController;
@@ -202,6 +203,7 @@ Route::resource('productions', ProductionController::class)->middleware('auth');
 Route::post('productions/massive-delete', [ProductionController::class, 'massiveDelete'])->name('productions.massive-delete');
 Route::get('productions/print/{productions}', [ProductionController::class, 'print'])->name('productions.print');
 Route::put('productions/change-status/{production}', [ProductionController::class, 'changeStatus'])->name('productions.change-status');
+Route::put('productions/continue-production/{production}', [ProductionController::class, 'continueProduction'])->name('productions.continue-production');
 
 // ------- Machines Routes  ---------
 Route::resource('machines', MachineController::class)->middleware('auth');
@@ -257,6 +259,9 @@ Route::resource('audits', AuditController::class)->middleware('auth');
 
 //------------------ Settings routes ----------------
 Route::resource('settings', SettingController::class)->middleware('auth');
+
+//------------------ Production progress routes ----------------
+Route::resource('production-progress', ProductionProgressController::class)->middleware('auth');
 
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
