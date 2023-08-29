@@ -45,7 +45,11 @@
     </div>
 
     <div v-if="!is_view_for_seller" class="border-b-2 border-[#9a9a9a] pb-1 mt-2">
-      <p class="text-primary ">Operadores asignados:</p>
+      <div class="flex justify-between items-center">
+        <p class="text-primary ">Operadores asignados:</p>
+        <button @click="showProgressDetailsModal = true"
+          class="bg-primary rounded-full px-1 py-px text-white text-[10px]">Avances</button>
+      </div>
       <p v-for="production in catalog_product_company_sale.productions" :key="production.id"
         class="mt-1 flex justify-between items-center">
         <span :class="$page.props.auth.user.id == production.operator.id ? 'text-green-600' : null">-{{
@@ -113,6 +117,7 @@
       </el-popconfirm>
     </div>
   </div>
+
   <DialogModal :show="showProgressModal" @close="showProgressModal = false">
     <template #title>
       <h1>Pausar producción</h1>
@@ -142,8 +147,8 @@
             </el-tooltip>
             <textarea v-model="form.pause_justification" class="textarea mb-1" autocomplete="off"
               placeholder="Razón de pausa en producción *"></textarea>
-            </div>
-            <InputError :message="form.errors.pause_justification" />
+          </div>
+          <InputError :message="form.errors.pause_justification" />
         </div>
       </form>
     </template>
@@ -151,6 +156,21 @@
       <CancelButton @click="showProgressModal = false; form.reset();" :disabled="form.processing">
         Cancelar</CancelButton>
       <PrimaryButton @click="submitForm" :disabled="form.processing">Pausar</PrimaryButton>
+    </template>
+  </DialogModal>
+
+  <!-- prpogress details modal -->
+  <DialogModal :show="showProgressDetailsModal" @close="showProgressDetailsModal = false">
+    <template #title>
+      <h1>Avances registrados</h1>
+    </template>
+    <template #content>
+      <div v-for="(production, index) in catalog_product_company_sale.productions" :key="index">
+        <li v-for="progress in production.progress" :key="progress.id">{{production.operator.name}} - {{ progress }}</li>
+      </div>
+    </template>
+    <template #footer>
+      <CancelButton @click="showProgressDetailsModal = false">Cerrar</CancelButton>
     </template>
   </DialogModal>
 </template>
@@ -178,6 +198,7 @@ export default {
       form,
       selected: false,
       showProgressModal: false,
+      showProgressDetailsModal: false,
     };
   },
   emits: ['selected'],

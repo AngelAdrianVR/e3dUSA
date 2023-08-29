@@ -220,10 +220,17 @@ const setAttendance = async () => {
     }
   } catch (error) {
     console.error(error);
-    ElNotification.error({
-      message: "error:" + error.message,
-      type: "error",
-    });
+    if (error?.response.status === 422) {
+      ElNotification.error({
+        message: error.response.data.message,
+        type: "error",
+      });
+    } else {
+      ElNotification.error({
+        message: 'Hubo algún problema en el servior, repórtalo con soporte',
+        type: "error",
+      });
+    }
   }
 };
 

@@ -117,7 +117,7 @@ class UserController extends Controller
         //Seller
         $sale_orders_created = Sale::with('catalogProductCompanySales.catalogProductCompany')->where('user_id', $user_id)->get();
         $total_money_sold = 0;
-        
+
         $sale_orders_created->each(function ($sale) use (&$totalMoneySold) {
             if (isset($sale['catalog_product_company_sales']) && is_array($sale['catalog_product_company_sales'])) {
                 foreach ($sale['catalog_product_company_sales'] as $productSale) {
@@ -127,7 +127,7 @@ class UserController extends Controller
                 }
             }
         });
-            
+
 
         // return $total_money_sold;
 
@@ -219,9 +219,22 @@ class UserController extends Controller
 
     public function setAttendance()
     {
-        $next = auth()->user()->setAttendance();
+        $user = auth()->user();
 
-        return response()->json(compact('next'));
+        $productions_in_progress = $user->productions()
+            ->where('is_paused', false)
+            ->whereNotNull('started_at')
+            ->whereNull('finished_at')
+            ->exists();
+
+        if ($productions_in_progress) {
+            return response()->json(['message' => 'Tienes órden(es) de producción en proceso. Primero debes pausarla(s)'], 422);
+        } else {
+            $next = auth()->user()->setAttendance();
+    
+            return response()->json(compact('next'));
+        }
+
     }
 
     public function resetPass(User $user)
@@ -267,7 +280,7 @@ class UserController extends Controller
 
         return response()->json([]);
     }
-    
+
     public function deleteNotifications(Request $request)
     {
         $notifications = auth()->user()->notifications()->whereIn('id', $request->notifications_ids)->delete();
