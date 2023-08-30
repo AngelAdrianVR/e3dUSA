@@ -173,9 +173,8 @@ class PayrollController extends Controller
             if ($payroll_user) {
                 $payroll_user->update([
                     'check_in' => $attendance['check_in'],
-                    'start_break' => $attendance['start_break'],
-                    'end_break' => $attendance['end_break'],
                     'check_out' => $attendance['check_out'],
+                    'pausas' => $attendance['pausas'],
                     'additionals' => [
                         'salary' =>  $user->employee_properties['salary'],
                         'bonuses' => $bonuses,

@@ -75,8 +75,7 @@ class User extends Authenticatable
                 'id',
                 'date',
                 'check_in',
-                'start_break',
-                'end_break',
+                'pausas',
                 'check_out',
                 'late',
                 'extras_enabled',
@@ -115,10 +114,6 @@ class User extends Authenticatable
         $today_attendance = PayrollUser::where('user_id', $this->id)->whereDate('date', today())->first();
         if (is_null($today_attendance)) {
             $next = 'Registrar entrada';
-        } elseif (is_null($today_attendance->start_break)) {
-            $next = 'Registrar inicio break';
-        } elseif (is_null($today_attendance->end_break)) {
-            $next = 'Registrar fin break';
         } elseif (is_null($today_attendance->check_out)) {
             $next = 'Registrar salida';
         } else {
@@ -170,16 +165,6 @@ class User extends Authenticatable
                 'late' => $today_attendance->getLateTime(),
             ]);
             $next = 'Registrar inicio break';
-        } elseif (is_null($today_attendance->start_break)) {
-            $today_attendance->update([
-                'start_break' => $now_time,
-            ]);
-            $next = 'Registrar fin break';
-        } elseif (is_null($today_attendance->end_break)) {
-            $today_attendance->update([
-                'end_break' => $now_time,
-            ]);
-            $next = 'Registrar salida';
         } elseif (is_null($today_attendance->check_out)) {
             $today_attendance->update([
                 'check_out' => $now_time,
@@ -188,6 +173,27 @@ class User extends Authenticatable
         }
 
         return $next;
+    }
+
+    public function setPause()
+    {
+        $today_attendance = PayrollUser::where('date', today()->toDateString())->where('user_id', $this->id)->first();
+        $new_record = ['start' => now(), 'finish' => null];
+
+        $pausas = $today_attendance->pausas;
+        if ($pausas) {
+            $last_record = end($pausas);
+            if ($last_record['finish']) {
+                // create new record
+                $pausas[] = $new_record;
+            } else {
+                $last_record['finish'] = now();
+            }
+        } else {
+            $today_attendance->update([
+                'pausas' => [$new_record]
+            ]);
+        }
     }
 
     public function getWeekTime()
@@ -215,7 +221,7 @@ class User extends Authenticatable
             $totalEstimatedTime = $productions->sum(function ($production) {
                 return ($production->estimated_time_hours * 60) + $production->estimated_time_minutes;
             });
-    
+
             return $totalEstimatedTime;
         }
 

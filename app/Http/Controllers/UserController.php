@@ -19,14 +19,12 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-
     public function index()
     {
         $users = UserResource::collection(User::latest()->get());
 
         return inertia('User/Index', compact('users'));
     }
-
 
     public function create()
     {
@@ -36,7 +34,6 @@ class UserController extends Controller
 
         return inertia('User/Create', compact('employee_number', 'bonuses', 'roles'));
     }
-
 
     public function store(Request $request)
     {
@@ -80,7 +77,6 @@ class UserController extends Controller
         return to_route('users.index');
     }
 
-
     public function show(User $user)
     {
         $user_id = $user->id;
@@ -94,26 +90,7 @@ class UserController extends Controller
         //Designer
         $asigned_design_orders = Design::where('designer_id', $user_id)->get();
         $finished_design_orders = Design::where('designer_id', $user_id)->whereNotNull('finished_at')->get();
-        // $total_hours_design = null;
-        // $total_minutes_design = null;
-
-        // if (isset($finished_design_orders)) {
-
-        //     $totalSeconds = 0;
-        //     foreach ($finished_design_orders as $item) {
-        //         $startedAt = Carbon::parse($item->started_at);
-        //         $finishedAt = Carbon::parse($item->finished_at);
-
-        //         if ($startedAt && $finishedAt) {
-        //             $differenceInSeconds = $finishedAt->diffInSeconds($startedAt);
-        //             $totalSeconds += $differenceInSeconds;
-        //         }
-        //     }
-        //     // Convertir los segundos totales en horas, minutos y segundos
-        //     $total_hours_design = intdiv($totalSeconds, 3600);
-        //     $total_minutes_design = $totalSeconds % 3600;
-        // }
-
+       
         //Seller
         $sale_orders_created = Sale::with('catalogProductCompanySales.catalogProductCompany')->where('user_id', $user_id)->get();
         $total_money_sold = 0;
@@ -128,9 +105,6 @@ class UserController extends Controller
             }
         });
 
-
-        // return $total_money_sold;
-
         return inertia('User/Show', compact(
             'user',
             'users',
@@ -141,13 +115,10 @@ class UserController extends Controller
             'total_minutes_production',
             'finished_design_orders',
             'asigned_design_orders',
-            // 'total_hours_design',
-            // 'total_minutes_design',
             'sale_orders_created',
             'total_money_sold',
         ));
     }
-
 
     public function edit(User $user)
     {
@@ -157,7 +128,6 @@ class UserController extends Controller
 
         return inertia('User/Edit', compact('bonuses', 'user', 'roles', 'user_roles'));
     }
-
 
     public function update(Request $request, User $user)
     {
@@ -200,7 +170,6 @@ class UserController extends Controller
 
         return to_route('users.index');
     }
-
 
     public function destroy(User $user)
     {

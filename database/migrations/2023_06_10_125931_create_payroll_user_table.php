@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->date('date');
             $table->time('check_in')->nullable();
-            $table->time('start_break')->nullable();
-            $table->time('end_break')->nullable();
+            $table->json('pausas')->nullable();
             $table->time('check_out')->nullable();
             $table->unsignedSmallInteger('late')->default(0);
             $table->boolean('extras_enabled')->default(0);
