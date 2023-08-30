@@ -346,7 +346,7 @@ export default {
                         {
                             label: 'Seguimiento de muestras',
                             route: 'samples.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver scrap'),
+                            show: this.$page.props.auth.user.permissions.includes('Ver muestra'),
                             notifications: this.$page.props.auth.user?.notifications?.some(notification => {
                                 return notification.data.module === 'sample';
                             }),

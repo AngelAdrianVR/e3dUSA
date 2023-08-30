@@ -66,30 +66,24 @@ class PayrollUser extends Pivot
 
         return null;
     }
-    
+
     public function totalWorkedTime()
     {
-        $user = $this->user;
-
-        if (isset($user?->employee_properties['work_days'][$this->date->dayOfWeek]['check_out'])) {
-            $user_leave_time = Carbon::parse($user?->employee_properties['work_days'][$this->date->dayOfWeek]['check_out']);
-        } else {
-            $user_leave_time = Carbon::parse('15:00:00');
-        }
-
         if ($this->check_in) {
-            $last_check = $this->getLastCheckTime();
-            $totalWorkedTime = $this->calculateWorkedTime($this->check_in, $last_check, $user_leave_time);
+            $workedTime = $this->calculateWorkedTime();
 
             $breakTime = $this->calculateTotalBreakTime();
-            $totalWorkedTime -= $breakTime;
+            $workedTime -= $breakTime;
 
-            $hours = intval($totalWorkedTime / 60);
-            $minutes = $totalWorkedTime % 60;
+            $maxWorkedTime = $this->user->employee_properties['hours_per_day'] * 60;
+            $workedTime = min($workedTime, $maxWorkedTime);
+
+            $hours = intval($workedTime / 60);
+            $minutes = $workedTime % 60;
 
             return [
                 'formatted' => "{$hours}h {$minutes}m",
-                'hours' => round($totalWorkedTime / 60, 2),
+                'hours' => round($workedTime / 60, 2),
             ];
         } elseif ($this->justification_event_id === 2) {
             $time = $this->user->employee_properties['hours_per_day'] * 60;
@@ -105,7 +99,7 @@ class PayrollUser extends Pivot
 
         return null;
     }
-
+    
     public function getLateTime()
     {
         if ($this->check_in) {
@@ -163,42 +157,34 @@ class PayrollUser extends Pivot
 
     private function getLastCheckTime()
     {
-        $last_check = $this->check_in;
+        $last_check = now();
 
         if ($this->check_out) {
             $last_check = $this->check_out;
-        } elseif ($this->end_break) {
-            $last_check = $this->end_break;
-        } elseif ($this->start_break) {
-            $last_check = $this->start_break;
         }
 
         return $last_check;
     }
 
-    private function calculateWorkedTime($check_in, $last_check, $user_leave_time)
+    private function calculateWorkedTime()
     {
-        if ($this->date->addDays(1)->isPast() && $last_check->greaterThan($user_leave_time)) {
-            $last_check = $user_leave_time->isoFormat('HH:mm');
-        }
+        $lastCheck = $this->getLastCheckTime();
 
-        if (now()->greaterThan($user_leave_time)) {
-            return $check_in->diffInMinutes($last_check);
-        } else {
-            return $check_in->diffInMinutes($last_check > now() ? now() : $last_check);
-        }
+        return $this->check_in->diffInMinutes($lastCheck);
     }
 
     private function calculateTotalBreakTime()
     {
         $totalBreakTime = 0;
 
-        foreach ($this->pausas as $pausa) {
-            $start = Carbon::parse($pausa['start']);
-            $finish = $pausa['finish'] ? Carbon::parse($pausa['finish']) : now();
+        if ($this->pausas) {
+            foreach ($this->pausas as $pausa) {
+                $start = Carbon::parse($pausa['start']);
+                $finish = $pausa['finish'] ? Carbon::parse($pausa['finish']) : now();
 
-            $breakTime = $start->diffInMinutes($finish);
-            $totalBreakTime += $breakTime;
+                $breakTime = $start->diffInMinutes($finish);
+                $totalBreakTime += $breakTime;
+            }
         }
 
         return $totalBreakTime;

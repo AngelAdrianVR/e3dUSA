@@ -31,7 +31,7 @@
 
                     <!-- buttons -->
                     <div>
-                        <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar ordenes de venta')" confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                        <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar ordenes de venta')" confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
                             title="¿Continuar?" @confirm="deleteSelections">
                             <template #reference>
                                 <el-button type="danger" plain class="mb-3"

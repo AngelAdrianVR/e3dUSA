@@ -16,7 +16,7 @@
               <th class="rounded-tl-lg md:w-48">Día</th>
               <th>Entrada</th>
               <th>Salida</th>
-              <th>Break</th>
+              <th>Pausas</th>
               <th class="rounded-tr-lg py-px lg:py-2">Hrs x dia</th>
             </tr>
           </thead>
@@ -24,7 +24,7 @@
             <template v-for="(attendance, index) in processedAttendances" :key="attendance.id">
               <tr v-if="!attendance.incident" class="text-gray-600 text-center border-b border-[#a9a9a9]">
                 <th class="py-px lg:py-2 text-left text-sm">
-                  <span class="ml-3 font-bold text-xs"> {{ attendance.date?.formatted }} </span>
+                  <span class="ml-3 text-xs"> {{ attendance.date?.formatted }} </span>
                 </th>
                 <td class="px-6 text-xs py-px lg:py-2">
                   <p class="bg-transparent text-sm" :class="{
@@ -54,7 +54,7 @@
               </tr>
               <tr v-else class="text-gray-600 text-center border-b border-[#a9a9a9]">
                 <th class="py-1 text-left mt-3 text-sm">
-                  <span class="ml-3 font-bold"> {{ attendance.date?.formatted }} </span>
+                  <span class="ml-3 text-xs"> {{ attendance.date?.formatted }} </span>
                 </th>
                 <td class="px-6 py-2" colspan="4">
                   <p class="text-xs lg:text-sm rounded-xl py-px lg:py-2"

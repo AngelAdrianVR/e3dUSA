@@ -23,7 +23,7 @@
                     <i :class="greeting?.class"></i>
                 </div>
                 <el-popconfirm v-if="nextAttendance && $page.props.auth.user.permissions.includes('Registrar asistencia')"
-                    confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+                    confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
                     @confirm="setAttendance">
                     <template #reference>
                         <SecondaryButton v-if="nextAttendance != 'Dia terminado'" class="self-center">
@@ -35,7 +35,7 @@
                     </template>
                 </el-popconfirm>
                 <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear kiosco')" confirm-button-text="Si"
-                    cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?" @confirm="createKiosk">
+                    cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?" @confirm="createKiosk">
                     <template #reference>
                         <el-tooltip v-if="$page.props.isKiosk || temporalFlag"
                             content="Se puede registrar asistencias desde este dispositivo">

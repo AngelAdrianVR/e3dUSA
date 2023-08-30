@@ -17,13 +17,13 @@
                     <p>Descripción:</p> <span class="lg:col-span-4 truncate">{{ meeting.description }}</span>
                     <p v-if="meeting.user.id !== $page.props.auth.user.id">Asistenca:</p> <span v-if="meeting.user.id !== $page.props.auth.user.id" class="lg:col-span-4 flex space-x-2">
                         <div v-if="meeting.participants.find(item => item.id == $page.props.auth.user.id)?.pivot?.attendance_confirmation == 'Revisando'">
-                            <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                            <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
                             title="¿Continuar?" @confirm="setAttendanceConfirmation('Confirmado', index)">
                             <template #reference>
                                 <button class="text-sm text-white bg-green-500 rounded-[10px] py-px px-2 mr-3 disabled:opacity-25 disabled:cursor-not-allowed" :disabled="loading">Aceptar</button>
                             </template>
                         </el-popconfirm>
-                        <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar ordenes de venta')" confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                        <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar ordenes de venta')" confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
                             title="¿Continuar?" @confirm="setAttendanceConfirmation('Rechazado', index)">
                             <template #reference>
                                 <button class="text-sm text-white bg-red-500 rounded-[10px] py-px px-2 mr-3 disabled:opacity-25 disabled:cursor-not-allowed" :disabled="loading">Rechazar</button>

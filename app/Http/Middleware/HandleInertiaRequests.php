@@ -59,6 +59,13 @@ class HandleInertiaRequests extends Middleware
 
                 return null;
             },
+            'auth.user.pauseStatus' => function () use ($request) {
+                if ($request->user()) {
+                    return $request->user()->getPauseStatus();
+                }
+
+                return null;
+            },
             'isKiosk' => function () use ($request) {
                 $token = $_COOKIE['kioskToken'] ?? 'noToken';
                 $kiosk = KioskDevice::where('token', $token)

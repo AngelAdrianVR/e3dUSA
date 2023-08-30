@@ -31,14 +31,14 @@
                     <!-- buttons -->
                     <div class="mb-3">
                         <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Generar reportes insumos')"
-                            confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+                            confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
                             @confirm="generatePdf">
                             <template #reference>
                                 <el-button type="primary" plain>Reporte PDF</el-button>
                             </template>
                         </el-popconfirm>
                         <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar insumos')"
-                            confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+                            confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
                             @confirm="deleteSelections">
                             <template #reference>
                                 <el-button type="danger" plain

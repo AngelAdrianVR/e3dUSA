@@ -24,6 +24,7 @@ defineProps({
 const barCodeRef = ref("");
 const showingNavigationDropdown = ref(false);
 const nextAttendance = ref("");
+const isPaused = ref(null);
 const temporalFlag = ref(false);
 const qrScan = ref(false);
 const is_product = ref(true);
@@ -206,6 +207,15 @@ const getAttendanceTextButton = async () => {
   }
 };
 
+const getPauseStatus = async () => {
+  try {
+    const response = await axios.get(route("users.get-pause-status"));
+    isPaused.value = response.data.status;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const createKiosk = async () => {
   try {
     const response = await axios.post(route("kiosk.store"));
@@ -236,6 +246,32 @@ const setAttendance = async () => {
       ElNotification.success({
         title: "Éxito",
         message: "Registro correcto",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    if (error?.response.status === 422) {
+      ElNotification.error({
+        message: error.response.data.message,
+        type: "error",
+      });
+    } else {
+      ElNotification.error({
+        message: 'Hubo algún problema en el servior, repórtalo con soporte',
+        type: "error",
+      });
+    }
+  }
+};
+
+const setPause = async () => {
+  try {
+    const response = await axios.get(route("users.set-pause"));
+    if (response.status === 200) {
+      isPaused.value = response.data.status;
+      ElNotification.success({
+        title: "Éxito",
+        message: response.data.message,
       });
     }
   } catch (error) {
@@ -287,6 +323,7 @@ const greeting = computed(() => {
 
 onMounted(() => {
   getAttendanceTextButton();
+  getPauseStatus();
   getUnseenMessages();
 
   setInterval(() => {
@@ -394,7 +431,7 @@ onMounted(() => {
                 </div>
 
                 <el-tooltip content="Escanear máquina con código QR">
-                  <SecondaryButton @click="QRMachineScan" class="mr-10">
+                  <SecondaryButton @click="QRMachineScan" class="mr-2">
                     <i class="fa-solid fa-qrcode mr-1"></i> Máquinas
                   </SecondaryButton>
                 </el-tooltip>
@@ -405,7 +442,7 @@ onMounted(() => {
                   </PrimaryButton>
                 </el-tooltip>
 
-                <p class="mr-14">
+                <p class="mr-4">
                   <i :class="greeting.class"></i>
                   {{ greeting.text }}
                   <strong>{{
@@ -413,12 +450,30 @@ onMounted(() => {
                   }}</strong>
                 </p>
 
-                <el-popconfirm v-if="$page.props.isKiosk &&
+                <!-- pause work time -->
+                <el-popconfirm v-if="$page.props.isKiosk && isPaused !== null &&
                     nextAttendance &&
                     $page.props.auth.user.permissions.includes(
                       'Registrar asistencia'
                     )
-                    " confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+                    " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                  :title="isPaused ? '¿Reanudar tiempo?' : 'Pausar tiempo?'" @confirm="setPause">
+                  <template #reference>
+                    <button v-if="nextAttendance == 'Registrar salida'"
+                      class="w-8 h-8 mr-5 rounded-full border-2 border-[#0355B5] text-secondary">
+                      <i v-if="isPaused" class="fa-solid fa-play"></i>
+                      <i v-else class="fa-solid fa-pause"></i>
+                    </button>
+                  </template>
+                </el-popconfirm>
+
+                <!-- attendances -->
+                <el-popconfirm v-if="$page.props.isKiosk &&
+                  nextAttendance &&
+                  $page.props.auth.user.permissions.includes(
+                    'Registrar asistencia'
+                  )
+                  " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
                   @confirm="setAttendance">
                   <template #reference>
                     <SecondaryButton v-if="nextAttendance != 'Dia terminado'" class="mr-14">
@@ -431,7 +486,7 @@ onMounted(() => {
                 </el-popconfirm>
 
                 <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear kiosco')
-                  " confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+                  " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
                   @confirm="createKiosk">
                   <template #reference>
                     <el-tooltip v-if="$page.props.isKiosk || temporalFlag"

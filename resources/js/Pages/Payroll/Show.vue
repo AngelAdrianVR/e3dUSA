@@ -31,7 +31,7 @@
             {{ currentPayroll?.start_date }} - {{ currentPayroll?.end_date }}
             <el-tag v-if="currentPayroll?.is_active">Nómina en curso</el-tag>
           </p>
-          <!-- <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+          <!-- <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
             title="Seguro que deseas eliminar?" @confirm="deleteIncident">
             <template #reference>
               <i class="fa-regular fa-trash-can text-red-600 hover:text-red-500 ml-3 cursor-pointer"></i>
@@ -41,7 +41,7 @@
             <!-- <ThirthButton @click="incidentModal = true" class="ml-9">
               Registrar incidencia
             </ThirthButton> -->
-            <!-- <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+            <!-- <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
               title="Seguro que deseas eliminar?" @confirm="deleteIncident">
               <template #reference>
                 <el-tooltip content="Eliminar nómina" placement="top">

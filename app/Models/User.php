@@ -123,6 +123,19 @@ class User extends Authenticatable
         return $next;
     }
 
+    public function getPauseStatus()
+    {
+        $today_attendance = PayrollUser::where('user_id', $this->id)->whereDate('date', today())->first();
+
+        $pausas = $today_attendance?->pausas;
+
+        if ($pausas && !isset(end($pausas)['finish'])) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function setAttendance()
     {
         $next = '';
@@ -178,22 +191,30 @@ class User extends Authenticatable
     public function setPause()
     {
         $today_attendance = PayrollUser::where('date', today()->toDateString())->where('user_id', $this->id)->first();
-        $new_record = ['start' => now(), 'finish' => null];
-
+        $new_record = ['start' => now()->toTimeString(), 'finish' => null];
+        $is_paused = true;
         $pausas = $today_attendance->pausas;
+
         if ($pausas) {
-            $last_record = end($pausas);
+            $last_record_key = array_key_last($pausas);
+            $last_record = &$pausas[$last_record_key]; // Obtén una referencia al último registro
+
             if ($last_record['finish']) {
                 // create new record
                 $pausas[] = $new_record;
             } else {
-                $last_record['finish'] = now();
+                $last_record['finish'] = now()->toTimeString();
+                $is_paused = false;
             }
         } else {
-            $today_attendance->update([
-                'pausas' => [$new_record]
-            ]);
+            $pausas = [$new_record];
         }
+
+        $today_attendance->update([
+            'pausas' => $pausas
+        ]);
+
+        return $is_paused;
     }
 
     public function getWeekTime()

@@ -104,7 +104,7 @@
         {{ catalog_product_company_sale.productions.find(item => item.operator_id == $page.props.auth.user.id)?.is_paused
           ? 'Continuar' : 'Pausar' }}
       </button>
-      <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+      <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
         @confirm="changeTaskStatus">
         <template #reference>
           <button

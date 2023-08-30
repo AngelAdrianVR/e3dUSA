@@ -90,7 +90,7 @@ class UserController extends Controller
         //Designer
         $asigned_design_orders = Design::where('designer_id', $user_id)->get();
         $finished_design_orders = Design::where('designer_id', $user_id)->whereNotNull('finished_at')->get();
-       
+
         //Seller
         $sale_orders_created = Sale::with('catalogProductCompanySales.catalogProductCompany')->where('user_id', $user_id)->get();
         $total_money_sold = 0;
@@ -186,6 +186,13 @@ class UserController extends Controller
         return response()->json(compact('next'));
     }
 
+    public function getPauseStatus()
+    {
+        $status = auth()->user()->getPauseStatus();
+
+        return response()->json(compact('status'));
+    }
+
     public function setAttendance()
     {
         $user = auth()->user();
@@ -199,12 +206,26 @@ class UserController extends Controller
         if ($productions_in_progress) {
             return response()->json(['message' => 'Tienes órden(es) de producción en proceso. Primero debes pausarla(s)'], 422);
         } else {
-            $next = auth()->user()->setAttendance();
-    
+            $next = $user->setAttendance();
+
             return response()->json(compact('next'));
         }
-
     }
+
+    public function setPause()
+    {
+        $user = auth()->user();
+
+        $is_paused = $user->setPause();
+
+        $message = $is_paused
+        ? "Se ha pausado tu tiempo laboral"
+        : "Se ha reanudado tu tiempo laboral";
+
+        return response()->json(['message' => $message, 'status' => $is_paused]);
+    }
+
+
 
     public function resetPass(User $user)
     {

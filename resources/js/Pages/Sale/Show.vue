@@ -32,7 +32,7 @@
 
             <el-popconfirm
               v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de venta') && currentSale?.authorized_at == 'No autorizado'"
-              confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+              confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
               @confirm="authorizeOrder">
               <template #reference>
                 <button class="rounded-lg bg-primary text-white py-1 px-2">
