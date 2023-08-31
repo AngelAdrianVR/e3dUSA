@@ -12,8 +12,14 @@ class ProductionProgress extends Model
 
     protected $fillable = [
         'production_id',
+        'task',
         'progress',
-        'pause_justification',
+        'notes',
+        'finished_at',
+    ];
+
+    protected $casts = [
+        'finished_at' => 'datetime',
     ];
 
     // relationships

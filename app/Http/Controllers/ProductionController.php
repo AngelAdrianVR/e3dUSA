@@ -174,6 +174,7 @@ class ProductionController extends Controller
 
     public function continueProduction(Production $production)
     {
+        $production->progress->last()->update(['finished_at' => now()->toDateTimeString()]);
         $production->update(['is_paused' => 0]);
 
         return response()->json(['message' => 'Producción reanudada']);

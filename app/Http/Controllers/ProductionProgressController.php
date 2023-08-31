@@ -21,8 +21,9 @@ class ProductionProgressController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'task' => 'required|string|max:255',
             'progress' => 'required|string',
-            'pause_justification' => 'required|string',
+            'notes' => 'nullable|string',
             'production_id' => 'required|numeric|min:1',
         ]);
 

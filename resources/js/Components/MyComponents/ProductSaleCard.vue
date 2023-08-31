@@ -52,11 +52,11 @@
       </div>
       <p v-for="production in catalog_product_company_sale.productions" :key="production.id"
         class="mt-1 flex justify-between items-center">
-        <span :class="$page.props.auth.user.id == production.operator.id ? 'text-green-600' : null">-{{
-          production.operator.name }} {{ $page.props.auth.user.id == production.operator.id ? '(Tú)' : '' }}
+        <span :class="{
+          'text-green-600': $page.props.auth.user.id == production.operator.id,
+          'text-yellow-600': production.is_paused,
+        }">-{{ production.operator.name }} {{ production.is_paused ? ' (pausado)' : '' }}
         </span>
-        <span v-if="production.is_paused"
-          class="text-[10px] text-yellow-600 bg-yellow-200 rounded-full px-1">pausado</span>
         <el-tooltip placement="right">
           <template #content>
             <p> <strong class="text-yellow-500">Tareas: </strong>{{ production.tasks }}</p>
@@ -69,6 +69,18 @@
           </template>
           <i class="fa-solid fa-list-check"></i>
         </el-tooltip>
+
+        <!-- pause alert -->
+      <div v-if="production.is_paused"
+        class="absolute w-[90%] top-10 left-[5%] px-2 py-4 text-primary text-2xl flex items-center bg-[#D9D9D9] rounded-[10px] border-4 border-[#D90537]">
+        <p class="mr-3 text-center">Producción Pausada</p>
+        <el-tooltip content="Reanudar producción" placement="top">
+          <button @click="pauseProduction"
+            class="border-2 border-[#D90537] rounded-full w-7 h-7 flex items-center justify-center mr-5">
+            <i class="fa-solid fa-play text-sm"></i>
+          </button>
+        </el-tooltip>
+      </div>
       </p>
     </div>
 
@@ -98,19 +110,24 @@
     </div>
 
     <div class="absolute bottom-3 right-4">
-      <button @click="pauseProduction"
-        v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id) && getNextAction() == 'Finalizar'"
-        class="bg-secondary px-2 mr-2 rounded-md text-white disabled:opacity-25 disabled:cursor-not-allowed">
-        {{ catalog_product_company_sale.productions.find(item => item.operator_id == $page.props.auth.user.id)?.is_paused
-          ? 'Continuar' : 'Pausar' }}
-      </button>
+      <el-tooltip
+        :content="catalog_product_company_sale.productions.find(item => item.operator_id == $page.props.auth.user.id)?.is_paused ? 'Reanudar producción' : 'Pausar producción'"
+        placement="top">
+        <button @click="pauseProduction"
+          v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id) && getNextAction() == 'Finalizar'"
+          class="border-[#D90537] border-2 w-5 h-5 text-[9px] mr-2 rounded-full text-primary disabled:opacity-25 disabled:cursor-not-allowed">
+          <i v-if="catalog_product_company_sale.productions.find(item => item.operator_id == $page.props.auth.user.id)?.is_paused"
+            class="fa-solid fa-play"></i>
+          <i v-else class="fa-solid fa-pause"></i>
+        </button>
+      </el-tooltip>
       <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
         @confirm="changeTaskStatus">
         <template #reference>
           <button
             v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id)"
             :disabled="getNextAction() == 'Finalizado'"
-            class="bg-secondary px-2 rounded-md text-white disabled:opacity-25 disabled:cursor-not-allowed">
+            class="bg-primary px-2 rounded-md text-white disabled:opacity-25 disabled:cursor-not-allowed">
             {{ getNextAction() }}
           </button>
         </template>
@@ -125,30 +142,35 @@
     <template #content>
       <form @submit.prevent="storeProgress()" ref="myForm">
         <div>
-          <div class="flex">
-            <el-tooltip content="Progreso/avances de producción *" placement="top">
-              <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                ...
-              </span>
+          <IconInput v-model="form.task" inputPlaceholder="Tarea en proceso *" inputType="text">
+            <el-tooltip content="Ingreasa la tarea que esta en proceso (empaque, grabado, serigrafía, etc.)"
+              placement="top">
+              <i class="fa-solid fa-thumbtack"></i>
             </el-tooltip>
-            <textarea v-model="form.progress" class="textarea mb-1" autocomplete="off"
-              placeholder="Progreso/avances de producción *"></textarea>
-          </div>
+          </IconInput>
+          <InputError :message="form.errors.task" />
+        </div>
+        <div class="mt-2">
+          <IconInput v-model="form.progress" inputPlaceholder="Progreso *" inputType="number">
+            <el-tooltip content="Ingreasa la cantidad de piezas que llevas al momento"
+              placement="top">
+              <i class="fa-solid fa-bars-progress"></i>
+            </el-tooltip>
+          </IconInput>
           <InputError :message="form.errors.progress" />
         </div>
-        <div class="mt-4">
+        <div class="mt-2">
           <div class="flex">
-            <el-tooltip content="Razón de pausa en producción *" placement="top">
+            <el-tooltip content="Notas" placement="top">
               <span
                 class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                ...
+                <i class="fa-solid fa-grip-lines"></i>
               </span>
             </el-tooltip>
-            <textarea v-model="form.pause_justification" class="textarea mb-1" autocomplete="off"
-              placeholder="Razón de pausa en producción *"></textarea>
+            <textarea v-model="form.notes" class="textarea mb-1" autocomplete="off"
+              placeholder="Notas "></textarea>
           </div>
-          <InputError :message="form.errors.pause_justification" />
+          <InputError :message="form.errors.notes" />
         </div>
       </form>
     </template>
@@ -166,7 +188,8 @@
     </template>
     <template #content>
       <div v-for="(production, index) in catalog_product_company_sale.productions" :key="index">
-        <li v-for="progress in production.progress" :key="progress.id">{{production.operator.name}} - {{ progress }}</li>
+        <li v-for="progress in production.progress" :key="progress.id">{{ production.operator.name }} - {{ progress }}
+        </li>
       </div>
     </template>
     <template #footer>
@@ -189,8 +212,9 @@ import { useForm } from "@inertiajs/vue3";
 export default {
   data() {
     const form = useForm({
+      task: null,
       progress: null,
-      pause_justification: null,
+      notes: null,
       production_id: null,
     });
 
