@@ -119,6 +119,18 @@
                 <el-option v-for="item in bonuses" :key="item.id" :label="item.name" :value="item.id" />
               </el-select>
             </div>
+            <div class="flex items-center col-span-full">
+              <el-tooltip content="Descuentos" placement="top">
+                <span
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                  <i class="fa-solid fa-coins"></i>
+                </span>
+              </el-tooltip>
+              <el-select v-model="form.employee_properties.discounts" multiple clearable placeholder="Selecciona descuentos"
+                no-data-text="No hay descuentos registradas" no-match-text="No se encontraron coincidencias">
+                <el-option v-for="item in discounts" :key="item.id" :label="item.name" :value="item.id" />
+              </el-select>
+            </div>
           </div>
 
           <br><el-divider content-position="left" class="col-span-full">Días de trabajo y hora de entrada</el-divider>
@@ -293,6 +305,7 @@ export default {
   props: {
     employee_number: Number,
     bonuses: Array,
+    discounts: Array,
     roles: Array,
   },
   methods: {

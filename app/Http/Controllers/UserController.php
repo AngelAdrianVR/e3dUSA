@@ -10,6 +10,7 @@ use App\Http\Resources\UserResource;
 use App\Models\Bonus;
 use App\Models\ChMessage;
 use App\Models\Design;
+use App\Models\Discount;
 use App\Models\Production;
 use App\Models\Sale;
 use App\Models\User;
@@ -30,9 +31,10 @@ class UserController extends Controller
     {
         $employee_number = User::orderBy('id', 'desc')->first()->id + 1;
         $bonuses = Bonus::where('is_active', 1)->get();
+        $discounts = Discount::where('is_active', 1)->get();
         $roles = Role::all();
 
-        return inertia('User/Create', compact('employee_number', 'bonuses', 'roles'));
+        return inertia('User/Create', compact('employee_number', 'bonuses', 'discounts', 'roles'));
     }
 
     public function store(Request $request)
@@ -123,10 +125,11 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $bonuses = Bonus::where('is_active', 1)->get();
+        $discounts = Discount::where('is_active', 1)->get();
         $roles = Role::all();
         $user_roles = $user->roles->pluck('id');
 
-        return inertia('User/Edit', compact('bonuses', 'user', 'roles', 'user_roles'));
+        return inertia('User/Edit', compact('bonuses', 'user', 'roles', 'discounts', 'user_roles'));
     }
 
     public function update(Request $request, User $user)

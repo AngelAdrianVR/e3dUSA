@@ -151,10 +151,10 @@ class User extends Authenticatable
             ];
         }
         foreach ($this->employee_properties['discounts'] as $discount_id) {
-            // $discount = Discount::find($discount_id);
+            $discount = Discount::find($discount_id);
             $discounts[] = [
                 'id' => $discount_id,
-                'amount' => $discount_id == 1 ? 100 : 32
+                'amount' => $discount->amount
             ];
         }
 
