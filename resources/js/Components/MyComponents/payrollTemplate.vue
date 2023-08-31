@@ -41,7 +41,17 @@
                   <p class="bg-transparent text-sm">{{ attendance.check_out }}</p>
                 </td>
                 <td v-if="attendance.total_break_time" class="px-6 text-xs py-px lg:py-2 w-32">
-                  {{ attendance.total_break_time }}
+                  <el-tooltip placement="right">
+                    <template #content>
+                      <ol>
+                        <li v-for="(pausa, index) in attendance.pausas" :key="index">
+                          <span class="text-yellow-500">{{ index + 1 }}.</span> De {{ formatTimeTo12Hour(pausa.start) }} a {{ formatTimeTo12Hour(pausa.finish) ??
+                            'Sin reanudar' }}
+                        </li>
+                      </ol>
+                    </template>
+                    <p>{{ attendance.total_break_time }} <i class="fa-solid fa-circle-info"></i></p>
+                  </el-tooltip>
                 </td>
                 <td v-else class="px-6 text-xs py-px lg:py-2 w-32">
                   <i class="fa-solid fa-minus"></i>
@@ -142,6 +152,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
+import moment from 'moment';
 
 export default {
   data() {
@@ -177,6 +188,11 @@ export default {
       this.getDiscounts();
       this.getExtras();
       this.getAuthorizedAdditionalTime();
+    },
+    formatTimeTo12Hour(time) {
+      if (time === null) return null;
+      const formatted = moment(time, 'HH:mm:ss').format('h:mma');
+      return formatted;
     },
     async getAttendances() {
       this.loading = true;
