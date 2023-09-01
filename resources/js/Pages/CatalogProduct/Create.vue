@@ -159,7 +159,7 @@
                                     <el-button @click="editProduct(index)" type="primary" circle>
                                         <i class="fa-sharp fa-solid fa-pen-to-square"></i>
                                     </el-button>
-                                    <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                                    <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
                                         title="¿Continuar?" @confirm="deleteProduct(index)">
                                         <template #reference>
                                             <el-button type="danger" circle><i

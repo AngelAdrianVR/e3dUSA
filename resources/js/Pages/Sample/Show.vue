@@ -73,7 +73,7 @@
               <el-popconfirm
                 confirm-button-text="Si"
                 cancel-button-text="No"
-                icon-color="#FF0000"
+                icon-color="#0355B5"
                 title="¿Continuar?"
                 @confirm="saleOrder"
               >

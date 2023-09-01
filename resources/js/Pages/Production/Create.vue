@@ -60,7 +60,7 @@
                     <el-button @click="editProduction(index)" type="primary" circle>
                       <i class="fa-sharp fa-solid fa-pen-to-square"></i>
                     </el-button>
-                    <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                    <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
                       title="¿Continuar?" @confirm="deleteProduction(index)">
                       <template #reference>
                         <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>
@@ -103,7 +103,7 @@
                       <el-button @click="editTask(index)" type="primary" circle>
                         <i class="fa-sharp fa-solid fa-pen-to-square"></i>
                       </el-button>
-                      <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000"
+                      <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
                         title="¿Continuar?" @confirm="deleteTask(index)">
                         <template #reference>
                           <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>

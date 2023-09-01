@@ -23,7 +23,7 @@
 
           <!-- buttons -->
           <div>
-            <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear nominas')" confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
+            <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear nominas')" confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
               @confirm="closePayroll">
               <template #reference>
                 <PrimaryButton :disabled="!isThursdayAfter8PM">

@@ -7,6 +7,7 @@ use App\Http\Resources\PayrollUserResource;
 use App\Http\Resources\UserResource;
 use App\Models\AdditionalTimeRequest;
 use App\Models\Bonus;
+use App\Models\Discount;
 use App\Models\JustificationEvent;
 use App\Models\Payroll;
 use App\Models\PayrollUser;
@@ -160,10 +161,10 @@ class PayrollController extends Controller
             ];
         }
         foreach ($user->employee_properties['discounts'] as $discount_id) {
-            // $discount = Discount::find($discount_id);
+            $discount = Discount::find($discount_id);
             $discounts[] = [
                 'id' => $discount_id,
-                'amount' => $discount_id == 1 ? 100 : 32
+                'amount' => $discount->amount
             ];
         }
 
@@ -173,9 +174,8 @@ class PayrollController extends Controller
             if ($payroll_user) {
                 $payroll_user->update([
                     'check_in' => $attendance['check_in'],
-                    'start_break' => $attendance['start_break'],
-                    'end_break' => $attendance['end_break'],
                     'check_out' => $attendance['check_out'],
+                    'pausas' => $attendance['pausas'],
                     'additionals' => [
                         'salary' =>  $user->employee_properties['salary'],
                         'bonuses' => $bonuses,
@@ -267,26 +267,20 @@ class PayrollController extends Controller
         $discounts = [];
         $user_discounts = $user->employee_properties['discounts'];
         foreach ($user_discounts as $user_discount_id) {
-            // $current_discount = Discount::find($user_discount_id);
-            // $amount = $user->employee_properties['hours_per_week'] >= 48
-            //     ? $current_discount->full_time
-            //     : $current_discount->half_time;
+            $current_discount = Discount::find($user_discount_id);
             $amount = 0;
 
             if ($user_discount_id === 1) { // puntualidad
-                $discount_name = 'Puntualidad';
                 $minutes_late = $processed->sum('late');
                 if ($minutes_late >= 15) {
-                    $amount = 100;
+                    $amount = $current_discount->amount;
                 }
             } elseif ($user_discount_id === 2) { //seguro
-                $discount_name = 'Seguro';
-                $amount = 32;
+                $amount = $current_discount->amount;
             }
 
-            $discounts[] = ['name' => $discount_name, 'amount' => ['number_format' => number_format($amount, 2), 'raw' => $amount]];
+            $discounts[] = ['name' => $current_discount->name, 'amount' => ['number_format' => number_format($amount, 2), 'raw' => $amount]];
         }
-
 
         return response()->json(['item' => $discounts]);
     }

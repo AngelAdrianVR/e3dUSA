@@ -75,8 +75,7 @@ class User extends Authenticatable
                 'id',
                 'date',
                 'check_in',
-                'start_break',
-                'end_break',
+                'pausas',
                 'check_out',
                 'late',
                 'extras_enabled',
@@ -115,10 +114,6 @@ class User extends Authenticatable
         $today_attendance = PayrollUser::where('user_id', $this->id)->whereDate('date', today())->first();
         if (is_null($today_attendance)) {
             $next = 'Registrar entrada';
-        } elseif (is_null($today_attendance->start_break)) {
-            $next = 'Registrar inicio break';
-        } elseif (is_null($today_attendance->end_break)) {
-            $next = 'Registrar fin break';
         } elseif (is_null($today_attendance->check_out)) {
             $next = 'Registrar salida';
         } else {
@@ -126,6 +121,19 @@ class User extends Authenticatable
         }
 
         return $next;
+    }
+
+    public function getPauseStatus()
+    {
+        $today_attendance = PayrollUser::where('user_id', $this->id)->whereDate('date', today())->first();
+
+        $pausas = $today_attendance?->pausas;
+
+        if ($pausas && !isset(end($pausas)['finish'])) {
+            return true;
+        }
+
+        return false;
     }
 
     public function setAttendance()
@@ -143,10 +151,10 @@ class User extends Authenticatable
             ];
         }
         foreach ($this->employee_properties['discounts'] as $discount_id) {
-            // $discount = Discount::find($discount_id);
+            $discount = Discount::find($discount_id);
             $discounts[] = [
                 'id' => $discount_id,
-                'amount' => $discount_id == 1 ? 100 : 32
+                'amount' => $discount->amount
             ];
         }
 
@@ -170,16 +178,6 @@ class User extends Authenticatable
                 'late' => $today_attendance->getLateTime(),
             ]);
             $next = 'Registrar inicio break';
-        } elseif (is_null($today_attendance->start_break)) {
-            $today_attendance->update([
-                'start_break' => $now_time,
-            ]);
-            $next = 'Registrar fin break';
-        } elseif (is_null($today_attendance->end_break)) {
-            $today_attendance->update([
-                'end_break' => $now_time,
-            ]);
-            $next = 'Registrar salida';
         } elseif (is_null($today_attendance->check_out)) {
             $today_attendance->update([
                 'check_out' => $now_time,
@@ -188,6 +186,35 @@ class User extends Authenticatable
         }
 
         return $next;
+    }
+
+    public function setPause()
+    {
+        $today_attendance = PayrollUser::where('date', today()->toDateString())->where('user_id', $this->id)->first();
+        $new_record = ['start' => now()->toTimeString(), 'finish' => null];
+        $is_paused = true;
+        $pausas = $today_attendance->pausas;
+
+        if ($pausas) {
+            $last_record_key = array_key_last($pausas);
+            $last_record = &$pausas[$last_record_key]; // Obtén una referencia al último registro
+
+            if ($last_record['finish']) {
+                // create new record
+                $pausas[] = $new_record;
+            } else {
+                $last_record['finish'] = now()->toTimeString();
+                $is_paused = false;
+            }
+        } else {
+            $pausas = [$new_record];
+        }
+
+        $today_attendance->update([
+            'pausas' => $pausas
+        ]);
+
+        return $is_paused;
     }
 
     public function getWeekTime()
@@ -215,7 +242,7 @@ class User extends Authenticatable
             $totalEstimatedTime = $productions->sum(function ($production) {
                 return ($production->estimated_time_hours * 60) + $production->estimated_time_minutes;
             });
-    
+
             return $totalEstimatedTime;
         }
 

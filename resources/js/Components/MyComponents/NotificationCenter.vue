@@ -23,7 +23,7 @@
                             </el-tooltip>
                         </button>
                         <el-popconfirm v-if="selectedNotifications.length" confirm-button-text="Si" cancel-button-text="No"
-                            icon-color="#FF0000" title="Seguro(a) que desea eliminar?" @confirm="deleteNotifications">
+                            icon-color="#0355B5" title="Seguro(a) que desea eliminar?" @confirm="deleteNotifications">
                             <template #reference>
                                 <button v-if="selectedNotifications.length"
                                     class="text-primary text-xs border-[#d90537] w-6 border rounded-[5px] px-[2px] py-[2px]">

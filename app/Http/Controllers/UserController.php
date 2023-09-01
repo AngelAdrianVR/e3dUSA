@@ -10,6 +10,7 @@ use App\Http\Resources\UserResource;
 use App\Models\Bonus;
 use App\Models\ChMessage;
 use App\Models\Design;
+use App\Models\Discount;
 use App\Models\Production;
 use App\Models\Sale;
 use App\Models\User;
@@ -19,7 +20,6 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-
     public function index()
     {
         $users = UserResource::collection(User::latest()->get());
@@ -27,16 +27,15 @@ class UserController extends Controller
         return inertia('User/Index', compact('users'));
     }
 
-
     public function create()
     {
         $employee_number = User::orderBy('id', 'desc')->first()->id + 1;
         $bonuses = Bonus::where('is_active', 1)->get();
+        $discounts = Discount::where('is_active', 1)->get();
         $roles = Role::all();
 
-        return inertia('User/Create', compact('employee_number', 'bonuses', 'roles'));
+        return inertia('User/Create', compact('employee_number', 'bonuses', 'discounts', 'roles'));
     }
-
 
     public function store(Request $request)
     {
@@ -80,7 +79,6 @@ class UserController extends Controller
         return to_route('users.index');
     }
 
-
     public function show(User $user)
     {
         $user_id = $user->id;
@@ -94,30 +92,11 @@ class UserController extends Controller
         //Designer
         $asigned_design_orders = Design::where('designer_id', $user_id)->get();
         $finished_design_orders = Design::where('designer_id', $user_id)->whereNotNull('finished_at')->get();
-        // $total_hours_design = null;
-        // $total_minutes_design = null;
-
-        // if (isset($finished_design_orders)) {
-
-        //     $totalSeconds = 0;
-        //     foreach ($finished_design_orders as $item) {
-        //         $startedAt = Carbon::parse($item->started_at);
-        //         $finishedAt = Carbon::parse($item->finished_at);
-
-        //         if ($startedAt && $finishedAt) {
-        //             $differenceInSeconds = $finishedAt->diffInSeconds($startedAt);
-        //             $totalSeconds += $differenceInSeconds;
-        //         }
-        //     }
-        //     // Convertir los segundos totales en horas, minutos y segundos
-        //     $total_hours_design = intdiv($totalSeconds, 3600);
-        //     $total_minutes_design = $totalSeconds % 3600;
-        // }
 
         //Seller
         $sale_orders_created = Sale::with('catalogProductCompanySales.catalogProductCompany')->where('user_id', $user_id)->get();
         $total_money_sold = 0;
-        
+
         $sale_orders_created->each(function ($sale) use (&$totalMoneySold) {
             if (isset($sale['catalog_product_company_sales']) && is_array($sale['catalog_product_company_sales'])) {
                 foreach ($sale['catalog_product_company_sales'] as $productSale) {
@@ -127,9 +106,6 @@ class UserController extends Controller
                 }
             }
         });
-            
-
-        // return $total_money_sold;
 
         return inertia('User/Show', compact(
             'user',
@@ -141,23 +117,20 @@ class UserController extends Controller
             'total_minutes_production',
             'finished_design_orders',
             'asigned_design_orders',
-            // 'total_hours_design',
-            // 'total_minutes_design',
             'sale_orders_created',
             'total_money_sold',
         ));
     }
 
-
     public function edit(User $user)
     {
         $bonuses = Bonus::where('is_active', 1)->get();
+        $discounts = Discount::where('is_active', 1)->get();
         $roles = Role::all();
         $user_roles = $user->roles->pluck('id');
 
-        return inertia('User/Edit', compact('bonuses', 'user', 'roles', 'user_roles'));
+        return inertia('User/Edit', compact('bonuses', 'user', 'roles', 'discounts', 'user_roles'));
     }
-
 
     public function update(Request $request, User $user)
     {
@@ -201,7 +174,6 @@ class UserController extends Controller
         return to_route('users.index');
     }
 
-
     public function destroy(User $user)
     {
         $user->delete();
@@ -217,12 +189,46 @@ class UserController extends Controller
         return response()->json(compact('next'));
     }
 
+    public function getPauseStatus()
+    {
+        $status = auth()->user()->getPauseStatus();
+
+        return response()->json(compact('status'));
+    }
+
     public function setAttendance()
     {
-        $next = auth()->user()->setAttendance();
+        $user = auth()->user();
 
-        return response()->json(compact('next'));
+        $productions_in_progress = $user->productions()
+            ->where('is_paused', false)
+            ->whereNotNull('started_at')
+            ->whereNull('finished_at')
+            ->exists();
+
+        if ($productions_in_progress) {
+            return response()->json(['message' => 'Tienes órden(es) de producción en proceso. Primero debes pausarla(s)'], 422);
+        } else {
+            $next = $user->setAttendance();
+
+            return response()->json(compact('next'));
+        }
     }
+
+    public function setPause()
+    {
+        $user = auth()->user();
+
+        $is_paused = $user->setPause();
+
+        $message = $is_paused
+        ? "Se ha pausado tu tiempo laboral"
+        : "Se ha reanudado tu tiempo laboral";
+
+        return response()->json(['message' => $message, 'status' => $is_paused]);
+    }
+
+
 
     public function resetPass(User $user)
     {
@@ -267,7 +273,7 @@ class UserController extends Controller
 
         return response()->json([]);
     }
-    
+
     public function deleteNotifications(Request $request)
     {
         $notifications = auth()->user()->notifications()->whereIn('id', $request->notifications_ids)->delete();

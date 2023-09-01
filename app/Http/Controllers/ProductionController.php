@@ -87,8 +87,8 @@ class ProductionController extends Controller
 
     public function show($sale_id)
     {
-        $sale = SaleResource::make(Sale::with(['contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator'], 'productions' => ['user', 'operator']])->find($sale_id));
-        $sales = SaleResource::collection(Sale::with(['contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator'], 'productions' => ['user', 'operator']])->whereHas('productions')->get());
+        $sale = SaleResource::make(Sale::with(['contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress']], 'productions' => ['user', 'operator', 'progress']])->find($sale_id));
+        $sales = SaleResource::collection(Sale::with(['contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress']], 'productions' => ['user', 'operator', 'progress']])->whereHas('productions')->get());
 
         // return compact('sale', 'sales');
         return inertia('Production/Show', compact('sale', 'sales'));
@@ -174,6 +174,7 @@ class ProductionController extends Controller
 
     public function continueProduction(Production $production)
     {
+        $production->progress->last()->update(['finished_at' => now()->toDateTimeString()]);
         $production->update(['is_paused' => 0]);
 
         return response()->json(['message' => 'Producción reanudada']);

@@ -16,7 +16,7 @@
               <th class="rounded-tl-lg md:w-48">Día</th>
               <th>Entrada</th>
               <th>Salida</th>
-              <th>Break</th>
+              <th>Pausas</th>
               <th class="rounded-tr-lg py-px lg:py-2">Hrs x dia</th>
             </tr>
           </thead>
@@ -24,7 +24,7 @@
             <template v-for="(attendance, index) in processedAttendances" :key="attendance.id">
               <tr v-if="!attendance.incident" class="text-gray-600 text-center border-b border-[#a9a9a9]">
                 <th class="py-px lg:py-2 text-left text-sm">
-                  <span class="ml-3 font-bold text-xs"> {{ attendance.date?.formatted }} </span>
+                  <span class="ml-3 text-xs"> {{ attendance.date?.formatted }} </span>
                 </th>
                 <td class="px-6 text-xs py-px lg:py-2">
                   <p class="bg-transparent text-sm" :class="{
@@ -41,7 +41,17 @@
                   <p class="bg-transparent text-sm">{{ attendance.check_out }}</p>
                 </td>
                 <td v-if="attendance.total_break_time" class="px-6 text-xs py-px lg:py-2 w-32">
-                  {{ attendance.total_break_time }}
+                  <el-tooltip placement="right">
+                    <template #content>
+                      <ol>
+                        <li v-for="(pausa, index) in attendance.pausas" :key="index">
+                          <span class="text-yellow-500">{{ index + 1 }}.</span> De {{ formatTimeTo12Hour(pausa.start) }} a {{ formatTimeTo12Hour(pausa.finish) ??
+                            'Sin reanudar' }}
+                        </li>
+                      </ol>
+                    </template>
+                    <p>{{ attendance.total_break_time }} <i class="fa-solid fa-circle-info"></i></p>
+                  </el-tooltip>
                 </td>
                 <td v-else class="px-6 text-xs py-px lg:py-2 w-32">
                   <i class="fa-solid fa-minus"></i>
@@ -54,7 +64,7 @@
               </tr>
               <tr v-else class="text-gray-600 text-center border-b border-[#a9a9a9]">
                 <th class="py-1 text-left mt-3 text-sm">
-                  <span class="ml-3 font-bold"> {{ attendance.date?.formatted }} </span>
+                  <span class="ml-3 text-xs"> {{ attendance.date?.formatted }} </span>
                 </th>
                 <td class="px-6 py-2" colspan="4">
                   <p class="text-xs lg:text-sm rounded-xl py-px lg:py-2"
@@ -142,6 +152,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
+import moment from 'moment';
 
 export default {
   data() {
@@ -177,6 +188,11 @@ export default {
       this.getDiscounts();
       this.getExtras();
       this.getAuthorizedAdditionalTime();
+    },
+    formatTimeTo12Hour(time) {
+      if (time === null) return null;
+      const formatted = moment(time, 'HH:mm:ss').format('h:mma');
+      return formatted;
     },
     async getAttendances() {
       this.loading = true;

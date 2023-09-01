@@ -9,7 +9,8 @@
     <div>
       <div class="flex items-center justify-between">
         <span class="text-secondary">Incidencias</span>
-        <el-tag v-if="additionalTime" type="success">Tiempo adicional autorizado {{ additionalTime.time_requested }}</el-tag>
+        <el-tag v-if="additionalTime" type="success">Tiempo adicional autorizado {{ additionalTime.time_requested
+        }}</el-tag>
       </div>
       <div class="flex justify-center items-center">
         <i class="fa-solid fa-circle-user mr-3 text-xl"></i>
@@ -22,10 +23,8 @@
             <tr>
               <th>Día</th>
               <th>Entrada</th>
-              <th>Inicio break</th>
-              <th>Fin break</th>
               <th>Salida</th>
-              <th>Hrs break</th>
+              <th>Hrs pausadas</th>
               <th>Total</th>
               <th></th>
             </tr>
@@ -46,19 +45,21 @@
                     class="bg-transparent text-sm rounded-md border-gray-400">
                 </td>
                 <td class="px-6 text-xs py-2">
-                  <input v-model="attendance.start_break" type="time"
-                    class="bg-transparent text-sm rounded-md border-gray-400">
-                </td>
-                <td class="px-6 text-xs py-2">
-                  <input v-model="attendance.end_break" type="time"
-                    class="bg-transparent text-sm rounded-md border-gray-400">
-                </td>
-                <td class="px-6 text-xs py-2">
                   <input v-model="attendance.check_out" type="time"
                     class="bg-transparent text-sm rounded-md border-gray-400">
                 </td>
                 <td v-if="attendance.total_break_time" class="px-6 text-xs py-2 w-32">
-                  {{ attendance.total_break_time }}
+                  <el-tooltip placement="right">
+                    <template #content>
+                      <ol>
+                        <li v-for="(pausa, index) in attendance.pausas" :key="index">
+                          <span class="text-yellow-500">{{ index + 1 }}.</span> De {{ formatTimeTo12Hour(pausa.start) }} a {{ formatTimeTo12Hour(pausa.finish) ??
+                            'Sin reanudar' }}
+                        </li>
+                      </ol>
+                    </template>
+                    <p>{{ attendance.total_break_time }} <i class="fa-solid fa-circle-info"></i></p>
+                  </el-tooltip>
                 </td>
                 <td v-else class="px-6 text-xs py-2 w-32">
                   <i class="fa-solid fa-minus"></i>
@@ -99,7 +100,7 @@
                 <th class="py-2 text-left mt-3 text-sm">
                   <span class="ml-3 font-bold"> {{ attendance.date?.formatted }} </span>
                 </th>
-                <td class="px-6 py-2" colspan="4">
+                <td class="px-6 py-2" colspan="2">
                   <p class="text-lg rounded-xl py-2"
                     :class="'bg-' + attendance.incident.additionals.color + '-100 text-' + attendance.incident.additionals.color + '-600'">
                     {{ attendance.incident.name }}</p>
@@ -149,6 +150,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
+import moment from "moment";
 
 export default {
   data() {
@@ -180,10 +182,15 @@ export default {
     }
   },
   methods: {
+    formatTimeTo12Hour(time) {
+      if (time === null) return null;
+      const formatted = moment(time, 'HH:mm:ss').format('h:mma');
+      return formatted;
+    },
     handleCommand(command) {
       const commandName = command.split('-')[0];
       const rowId = command.split('-')[1];
-      
+
       if (commandName == 'late') {
         this.handleLate(rowId);
       } else if (commandName == 'extras') {

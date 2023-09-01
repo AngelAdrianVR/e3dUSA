@@ -15,7 +15,7 @@
                     </div>
                     <div class="flex space-x-2 items-center">
                         <i class="fa-regular fa-building"></i>
-                        <span>{{ contact.contactable.name }}</span>
+                        <span>{{ contact.contactable?.name }}</span>
                     </div>
                     <div class="flex space-x-2 items-center">
                         <i class="fa-regular fa-envelope"></i>
