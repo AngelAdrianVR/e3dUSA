@@ -168,7 +168,7 @@
               </span>
             </el-tooltip>
             <textarea v-model="form.notes" class="textarea mb-1" autocomplete="off"
-              placeholder="Notas "></textarea>
+              placeholder="Notas"></textarea>
           </div>
           <InputError :message="form.errors.notes" />
         </div>
@@ -187,10 +187,26 @@
       <h1>Avances registrados</h1>
     </template>
     <template #content>
-      <div v-for="(production, index) in catalog_product_company_sale.productions" :key="index">
-        <li v-for="progress in production.progress" :key="progress.id">{{ production.operator.name }} - {{ progress }}
-        </li>
-      </div>
+      <table class="w-full">
+        <thead class="text-left">
+          <tr>
+            <th>Colaborador</th>
+            <th>Tarea</th>
+            <th>Progreso</th>
+            <th>Notas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template v-for="(production, index) in catalog_product_company_sale.productions" :key="index">
+            <tr v-for="progress in production.progress" :key="progress.id">
+              <td>{{ production.operator.name }}</td>  
+              <td>{{ progress.task }}</td>  
+              <td>{{ progress.progress }} unidades</td>  
+              <td>{{ progress.notes ?? '-' }}</td>  
+            </tr>              
+          </template>
+        </tbody>
+      </table>
     </template>
     <template #footer>
       <CancelButton @click="showProgressDetailsModal = false">Cerrar</CancelButton>
