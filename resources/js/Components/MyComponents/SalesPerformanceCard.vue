@@ -2,7 +2,7 @@
     <div class="lg:h-56 h-52 bg-[#D9D9D9] rounded-[30px] lg:rounded-xl lg:p-5 py-2 px-4 relative text-xs lg:text-sm">
         <img class="lg:h-16 h-6 absolute top-4 left-14 lg:top-2 lg:left-32" src="@/../../public/images/star.png">
         <h3 class="text-center text-gray-700 my-3">
-            Desempeño de Producción <i class="fa-solid fa-helmet-safety ml-2"></i>
+            Desempeño de Ventas<i class="fa-solid fa-shop ml-2"></i>
         </h3>
         <div v-if="users?.length" class="mb-28 px-2 w-full h-full">
             <p class="text-end w-1/2 text-primary text-xs mb-3">Puntos</p>

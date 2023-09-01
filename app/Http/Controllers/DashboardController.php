@@ -40,7 +40,12 @@ class DashboardController extends Controller
         $counts[] = AdditionalTimeRequest::whereNull('authorized_at')->get()->count();
 
         // week performance collaborators
-        $collaborators_production_performance = ['Samuel Espinoza', 'Diego Gollaz', 'Gustavo Zandejas'];
+        $collaborators_production_performance = [
+            ['name' => 'Samuel Antonio Espinoza Cruz', 'points' => 1200],
+            ['name' => 'Fernando Maldonado Torres', 'points' => 1008],
+            ['name' => 'Cesar Gustavo Gómez Zendejas', 'points' => 780],
+            ['name' => 'Felix Ulises Espinoza Cruz', 'points' => 521],
+        ];
 
         // birthdates
         $collaborators_birthdays = User::whereDate('employee_properties->birthdate', today())->get();
