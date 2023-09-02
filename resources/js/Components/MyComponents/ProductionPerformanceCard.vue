@@ -1,5 +1,5 @@
 <template>
-    <div class="lg:h-56 h-52 bg-[#D9D9D9] rounded-[30px] lg:rounded-xl lg:p-5 py-2 px-4 relative text-xs lg:text-sm">
+    <div class="lg:h-64 h-52 bg-[#D9D9D9] rounded-[30px] lg:rounded-xl lg:p-5 py-2 px-4 relative text-xs lg:text-sm">
         <img class="lg:h-16 h-6 absolute top-4 left-14 lg:top-2 lg:left-32" src="@/../../public/images/star.png">
         <h3 class="text-center text-gray-700 my-3">
             Desempeño de Producción <i class="fa-solid fa-helmet-safety ml-2"></i>
@@ -13,10 +13,11 @@
                         <span class="mr-2 justify-self-end">{{ user.points }}</span>
                     </div>
                     <div class="w-1/2">
-                        <div :style="{
+                        <div v-if="user.percentage > 0" :style="{
                             width: user.percentage + '%',
                             backgroundColor: index === 0 ? '#44E536' : index === users.length - 1 ? '#D90537' : '#EC8B1F'
                         }" class="h-5 bg-[#44E536] rounded-tr-full rounded-br-full"></div>
+                        <div v-else class="h-5 w-[1%] bg-[#D90537] rounded-tr-full rounded-br-full"></div>
                     </div>
                 </li>
             </ol>

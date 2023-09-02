@@ -6,11 +6,12 @@
             <div class="my-5">
                 <h2 class="text-primary lg:text-xl text-lg mb-3">Avisos</h2>
                 <div class="rounded-xl border border-[#D90537]">
-                    <p class="bg-primary text-white text-center px-5 py-3 rounded-tl-xl rounded-tr-xl text-xl">
+                    <p
+                        class="bg-primary text-white text-center px-5 py-3 rounded-tl-xl rounded-tr-xl text-[16px] lg:text-xl">
                         <i class="fa-solid fa-bullhorn mr-7"></i>
                         Ajustes en registros de salidas
                     </p>
-                    <p class="text-justify px-12 py-4">
+                    <p class="text-sm text-justify px-12 py-4">
                         Se notifica a todos los colaboradores de emblems3d que a partir del 8 de Septiembre del 2023,
                         los registros de salida después de las horas de su jornada diaria no contarán como horas adicionales
                         a menos que se apruebe una solicitud de tiempo adicional.
@@ -20,9 +21,6 @@
 
             <!-- attendance -->
             <div class="lg:hidden mx-auto w-4/5 rounded-[20px] bg-[#d9d9d9] py-3 px-5 flex flex-col space-y-2 mt-4">
-                <!-- <figure class="flex justify-center">
-                    <img class="w-[40%]" src="@/../../public/images/rainbow.png">
-                </figure> -->
                 <div class="flex flex-col items-center space-y-2">
                     <p class="text-center">{{ greeting?.text }} <strong>{{ $page.props.auth.user.name }}</strong></p>
                     <i :class="greeting?.class"></i>
@@ -53,6 +51,17 @@
                         </SecondaryButton>
                     </template>
                 </el-popconfirm>
+                <!-- <button v-if="nextAttendance == 'Registrar salida'"
+                    class="rounded-full border-2 border-[#0355B5] text-secondary px-3 py-px mt-2">
+                    <p v-if="isPaused" class="flex items-center">
+                        <i class="fa-solid fa-play w-5 h-5 text-xs rounded-full border-2 border-[#0355B5] mr-4"></i>
+                        <span>Reanudar labores</span>
+                    </p>
+                    <p v-else class="flex items-center">
+                        <i class="fa-solid fa-pause w-5 h-5 text-xs rounded-full border-2 border-[#0355B5] mr-4"></i>
+                        <span>Pausar labores</span>
+                    </p>
+                </button> -->
                 <div v-if="$page.props.auth.user?.employee_properties"
                     class="text-xs text-[#0355B5] flex justify-around px-6">
                     <span>Horas / semana</span>
@@ -101,8 +110,8 @@
             <h2 class="text-primary lg:text-xl text-lg lg:mt-16 mt-6">Colaboradores</h2>
             <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 space-y-5 lg:space-y-0 mt-4">
                 <ProductionPerformanceCard :users="collaborators_production_performance" />
-                <DesignPerformanceCard :users="collaborators_production_performance" />
-                <SalesPerformanceCard :users="collaborators_production_performance" />
+                <DesignPerformanceCard :users="collaborators_design_performance" />
+                <SalesPerformanceCard :users="collaborators_sales_performance" />
                 <BirthdateCard :users="collaborators_birthdays" />
                 <RecentlyAddedCard :users="collaborators_added" />
                 <InformationCard :users="collaborators_anniversaires" />
@@ -347,6 +356,8 @@ export default {
         meetings: Object,
         counts: Array,
         collaborators_production_performance: Array,
+        collaborators_design_performance: Array,
+        collaborators_sales_performance: Array,
         collaborators_birthdays: Array,
         collaborators_added: Array,
         collaborators_anniversaires: Array,

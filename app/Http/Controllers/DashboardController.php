@@ -8,13 +8,16 @@ use App\Models\AdditionalTimeRequest;
 use App\Models\Contact;
 use App\Models\Design;
 use App\Models\Meeting;
+use App\Models\Payroll;
 use App\Models\Production;
 use App\Models\Purchase;
 use App\Models\Quote;
 use App\Models\Sale;
 use App\Models\Storage;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -39,13 +42,10 @@ class DashboardController extends Controller
         $counts[] = Sale::whereDoesntHave('productions')->get()->count();
         $counts[] = AdditionalTimeRequest::whereNull('authorized_at')->get()->count();
 
-        // week performance collaborators
-        $collaborators_production_performance = [
-            ['name' => 'Samuel Antonio Espinoza Cruz', 'points' => 1200],
-            ['name' => 'Fernando Maldonado Torres', 'points' => 1008],
-            ['name' => 'Cesar Gustavo Gómez Zendejas', 'points' => 780],
-            ['name' => 'Felix Ulises Espinoza Cruz', 'points' => 521],
-        ];
+        // production performance
+        $collaborators_production_performance = $this->getProductionPerformace();
+        $collaborators_design_performance = $this->getDesignPerformace();
+        $collaborators_sales_performance = $this->getSalesPerformace();
 
         // birthdates
         $collaborators_birthdays = User::whereDate('employee_properties->birthdate', today())->get();
@@ -76,10 +76,140 @@ class DashboardController extends Controller
             'meetings',
             'counts',
             'collaborators_production_performance',
+            'collaborators_design_performance',
+            'collaborators_sales_performance',
             'collaborators_birthdays',
             'collaborators_added',
             'collaborators_anniversaires',
             'customers_birthdays'
         ));
+    }
+
+    private function getProductionPerformace()
+    {
+        $current_payroll = Payroll::getCurrent();
+        $weekStart = $current_payroll->start_date;
+        $weekEnd = $current_payroll->start_date->addDays(6);
+
+        $users = User::where('employee_properties->department', 'Producción')
+            ->with(['productions.catalogProductCompanySale'])
+            ->where('is_active', true)
+            ->get();
+
+
+        foreach ($users as $user) {
+            $points = 0;
+
+            foreach ($user->productions as $production) {
+                if ($production->finished_at && $production->created_at->between($weekStart, $weekEnd)) {
+                    // Calcular el tiempo estimado en minutos y agregarlo a los puntos
+                    $estimatedTimeInMinutes = ($production->estimated_time_hours * 60) + $production->estimated_time_minutes;
+                    $points += $estimatedTimeInMinutes;
+
+                    // Restar el valor de la propiedad scrap o sumar 10 puntos si no hay merma
+                    $points += $production->scrap ? -$production->scrap : 10;
+                }
+            }
+
+            // Obtener los registros de PayrollUser para el usuario en la semana en curso
+            $payrolls = $user->payrolls()->wherePivotBetween('date', [$weekStart, $weekEnd])->get();
+
+            foreach ($payrolls as $payroll) {
+                // Restar el valor de 'late' o sumar 10 puntos si no hay retardo
+                $points += $payroll->pivot->late > 0 ? -$payroll->pivot->late : 10;
+            }
+
+            $user->points = $points;
+        }
+
+        // Ordenar los usuarios de mayor a menor según los puntos
+        $users = $users->sortByDesc('points')->values();
+
+        return $users;
+    }
+
+    private function getDesignPerformace()
+    {
+        $current_payroll = Payroll::getCurrent();
+        $weekStart = $current_payroll->start_date;
+        $weekEnd = $current_payroll->start_date->addDays(6);
+
+        $users = User::where('employee_properties->department', 'Diseño')
+            ->where('is_active', true)
+            ->get();
+
+
+        foreach ($users as $user) {
+            $points = 0;
+
+            foreach ($user->productions as $production) {
+                if ($production->finished_at && $production->created_at->between($weekStart, $weekEnd)) {
+                    // Calcular el tiempo estimado en minutos y agregarlo a los puntos
+                    $estimatedTimeInMinutes = ($production->estimated_time_hours * 60) + $production->estimated_time_minutes;
+                    $points += $estimatedTimeInMinutes;
+
+                    // Restar el valor de la propiedad scrap o sumar 10 puntos si no hay merma
+                    $points += $production->scrap ? -$production->scrap : 10;
+                }
+            }
+
+            // Obtener los registros de PayrollUser para el usuario en la semana en curso
+            $payrolls = $user->payrolls()->wherePivotBetween('date', [$weekStart, $weekEnd])->get();
+
+            foreach ($payrolls as $payroll) {
+                // Restar el valor de 'late' o sumar 10 puntos si no hay retardo
+                $points += $payroll->pivot->late > 0 ? -$payroll->pivot->late : 10;
+            }
+
+            $user->points = $points;
+        }
+
+        // Ordenar los usuarios de mayor a menor según los puntos
+        $users = $users->sortByDesc('points')->values();
+
+        return $users;
+    }
+
+    private function getSalesPerformace()
+    {
+        $current_payroll = Payroll::getCurrent();
+        $weekStart = $current_payroll->start_date;
+        $weekEnd = $current_payroll->start_date->addDays(6);
+
+        $users = User::where('employee_properties->department', 'Producción')
+            ->with(['productions.catalogProductCompanySale'])
+            ->where('is_active', true)
+            ->get();
+
+
+        foreach ($users as $user) {
+            $points = 0;
+
+            foreach ($user->productions as $production) {
+                if ($production->finished_at && $production->created_at->between($weekStart, $weekEnd)) {
+                    // Calcular el tiempo estimado en minutos y agregarlo a los puntos
+                    $estimatedTimeInMinutes = ($production->estimated_time_hours * 60) + $production->estimated_time_minutes;
+                    $points += $estimatedTimeInMinutes;
+
+                    // Restar el valor de la propiedad scrap o sumar 10 puntos si no hay merma
+                    $points += $production->scrap ? -$production->scrap : 10;
+                }
+            }
+
+            // Obtener los registros de PayrollUser para el usuario en la semana en curso
+            $payrolls = $user->payrolls()->wherePivotBetween('date', [$weekStart, $weekEnd])->get();
+
+            foreach ($payrolls as $payroll) {
+                // Restar el valor de 'late' o sumar 10 puntos si no hay retardo
+                $points += $payroll->pivot->late > 0 ? -$payroll->pivot->late : 10;
+            }
+
+            $user->points = $points;
+        }
+
+        // Ordenar los usuarios de mayor a menor según los puntos
+        $users = $users->sortByDesc('points')->values();
+
+        return $users;
     }
 }

@@ -15,7 +15,6 @@ class Production extends Model
     protected $fillable = [
         'operator_id',
         'user_id',
-        // 'sale_id',
         'catalog_product_company_sale_id',
         'tasks',
         'estimated_time_hours',
@@ -24,6 +23,7 @@ class Production extends Model
         'finished_at',
         'is_paused',
         'additionals',
+        'scrap',
     ];
 
     protected $casts = [
