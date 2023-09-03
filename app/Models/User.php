@@ -22,11 +22,6 @@ class User extends Authenticatable
     use TwoFactorAuthenticatable;
     use HasRoles;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -35,11 +30,6 @@ class User extends Authenticatable
         'employee_properties',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
@@ -47,21 +37,11 @@ class User extends Authenticatable
         'two_factor_secret',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'employee_properties' => 'array',
     ];
 
-    /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array<int, string>
-     */
     protected $appends = [
         'profile_photo_url',
     ];
@@ -84,6 +64,16 @@ class User extends Authenticatable
                 'additionals',
             ])
             ->withTimestamps();
+    }
+
+    public function designs() 
+    {
+        return $this->hasMany(Design::class, 'designer_id', 'id');
+    }
+
+    public function sales() 
+    {
+        return $this->hasMany(Sale::class, 'user_id', 'id');
     }
 
     public function productions(): HasMany

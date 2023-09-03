@@ -27,8 +27,8 @@ class PayrollUserResource extends JsonResource
         return [
             'id' => $this->id,
             'date' => [
-                'estandard' => $this->date->isoFormat('DD-MM-YYYY'),
-                'formatted' => $this->date->isoFormat('ddd, DD MMM'),
+                'estandard' => $this->date?->isoFormat('DD-MM-YYYY'),
+                'formatted' => $this->date?->isoFormat('ddd, DD MMM'),
             ],
             'check_in' => $this->check_in?->isoFormat('HH:mm'),
             'pausas' => $this->pausas,

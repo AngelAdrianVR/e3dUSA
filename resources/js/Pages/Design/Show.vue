@@ -90,6 +90,8 @@
           <span>{{ currentDesign?.designer.name }}</span>
           <span class="text-gray-500 my-2">Estimado de entrega</span>
           <span>{{ currentDesign?.expected_end_at }}</span>
+          <span class="text-gray-500 my-2">Iniciado el</span>
+          <span>{{ currentDesign?.started_at }}</span>
           <span class="text-gray-500 my-2">Estatus</span>
           <span class="rounded-full border text-center" :class="currentDesign?.status['text-color'] +
             ' ' +
@@ -187,19 +189,19 @@
               <el-tooltip content="Fecha estimada de finalización" placement="top">
                 <i class="fa-solid fa-calendar-days mr-3"></i>
               </el-tooltip>
-              <el-date-picker v-model="form.expected_end_at" type="date" placeholder="Selecciona una fecha"
+              <el-date-picker v-model="form.expected_end_at" type="datetime" placeholder="Selecciona fecha y hora"
                 :disabled-date="disabledDate" />
               <InputError :message="form.errors.expected_end_at" />
             </div>
 
-            <div v-if="helpDialog" class="border border-[#0355B5] rounded-lg px-6 py-2 mt-5 mx-7 relative">
+            <div v-if="helpDialog" class="border border-[#0355B5] rounded-lg px-6 py-2 mt-5 mb-3 mx-7 relative">
               <i
                 class="fa-solid fa-question text-[9px] text-secondary h-3 w-3 bg-sky-300 rounded-full text-center absolute left-2 top-3"></i>
               <i @click="helpDialog = false"
                 class="fa-solid fa-xmark cursor-pointer w-3 h-3 rounded-full text-secondary flex items-center justify-center absolute right-3 top-3 text-xs"></i>
 
               <p v-if="startOrderModal" class="text-secondary text-sm">
-                Una vez dando una fecha estimada de finalización, se entenderá que
+                Una vez dando una fecha y hora estimada de finalización, se entenderá que
                 el trabajo estará en proceso.
               </p>
               <p v-if="finishOrderModal" class="text-secondary text-sm">
@@ -360,7 +362,7 @@ export default {
       finishOrderModal: false,
       showModificationsModal: false,
       showModificationsResultsModal: false,
-      helpDialog: false,
+      helpDialog: true,
       tabs: 1,
       modificationsMedia: null,
       modifications: null,
