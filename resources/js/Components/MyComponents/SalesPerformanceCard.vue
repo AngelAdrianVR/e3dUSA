@@ -7,10 +7,11 @@
         <div v-if="users?.length" class="mb-28 px-2 w-full h-full">
             <p class="text-end w-1/2 text-primary text-xs mb-3">Puntos</p>
             <ol class="text-xs h-[65%] overflow-y-auto">
-                <li v-for="(user, index) in users" :key="index" class="flex items-center mb-2">
+                <li @click="showModal = true; selectedUser = user" v-for="(user, index) in users" :key="index"
+                    class="flex items-center mb-2 cursor-pointer">
                     <div class="w-1/2 flex justify-between items-center">
                         <p><strong class="text-primary mr-1">{{ index + 1 }}</strong> {{ user.name }}</p>
-                        <span class="mr-2 justify-self-end">{{ user.points }}</span>
+                        <span class="mr-2 justify-self-end">{{ user.total_points }}</span>
                     </div>
                     <div class="w-1/2">
                         <div v-if="user.percentage > 0" :style="{
@@ -26,24 +27,80 @@
             No hay usuarios para mostrar
         </p>
     </div>
+    <DialogModal :show="showModal" @close="showModal = false">
+        <template #title>
+            <h1>Detalles de puntuacion</h1>
+        </template>
+        <template #content>
+            <table class="w-full">
+                <thead>
+                    <tr>
+                        <th class="bg-[#9a9a9a] rounded-tl-lg text-start px-6">Días</th>
+                        <th class="bg-[#9a9a9a] text-start">Ventas</th>
+                        <th class="bg-[#9a9a9a] rounded-tr-lg text-end pr-6">Puntos Totales</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(dayPoints, day) in selectedUser.weekly_points" :key="day">
+                        <td class="bg-white py-1 text-xs px-6">{{ day }}</td>
+                        <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.sales == 0 }">${{
+                            dayPoints.sales.toLocaleString('en-US', { minimumFractionDigits: 2 })
+                        }}</td>
+                        <td class="bg-white py-1 px-2 text-xs text-end pr-6"
+                            :class="{ 'text-red-500': dayPoints.sales == 0 }">{{
+                                dayPoints.sales / 100 }}</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs"></td>
+                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs"></td>
+                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs text-end pr-6">{{ calculateGrandTotal() / 100 }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="text-xs text-secondary px-10 mt-5">
+                <li><strong>Ventas: </strong>Este concepto se trata de calcular las ventas totales que realizaste durante la
+                    semana. Luego, tomamos ese total y lo dividimos entre 100 para obtener tus puntos. Así que, cuanto más
+                    vendas, más puntos ganarás. </li>
+            </div>
+        </template>
+        <template #footer>
+            <CancelButton @click="showModal = false">Cerrar</CancelButton>
+        </template>
+    </DialogModal>
 </template>
 
 <script>
+import DialogModal from "@/Components/DialogModal.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+
 export default {
+    data() {
+        return {
+            showModal: false,
+            selectedUser: null,
+        }
+    },
     components: {
+        DialogModal,
+        CancelButton
     },
     props: {
         users: Array,
     },
     methods: {
         calculatePercentage() {
-            const maxPoints = Math.max(...this.users.map(user => user.points));
+            const maxPoints = Math.max(...this.users.map(user => user.total_points));
 
             this.users.forEach(user => {
-                const percentage = (user.points / maxPoints) * 100;
+                const percentage = (user.total_points / maxPoints) * 100;
                 user.percentage = percentage.toFixed(2);
             });
-        }
+        },
+        calculateGrandTotal() {
+            return Object.values(this.selectedUser.weekly_points).reduce((total, dayPoints) => total + dayPoints.sales, 0);
+        },
     },
     mounted() {
         this.calculatePercentage();

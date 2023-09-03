@@ -33,40 +33,55 @@
             <h1>Detalles de puntuacion</h1>
         </template>
         <template #content>
-            <table class="w-full border-collapse">
+            <table class="w-full">
                 <thead>
                     <tr>
-                        <th class="bg-gray-300">Días</th>
-                        <th class="bg-gray-300" colspan="3">Criterios</th>
-                        <th class="bg-gray-300">Puntos Totales</th>
+                        <th class="bg-[#9a9a9a] rounded-tl-lg">Días</th>
+                        <th class="bg-[#9a9a9a] border" colspan="3">Criterios</th>
+                        <th class="bg-[#9a9a9a] rounded-tr-lg">Puntos Totales</th>
                     </tr>
                     <tr>
-                        <th class="text-left"></th>
-                        <th class="text-left">Puntualidad</th>
-                        <th class="text-left">Tiempo</th>
-                        <th class="text-left">Merma</th>
-                        <th class="text-left"></th>
+                        <th class="text-left bg-[#9a9a9a] border"></th>
+                        <th class="text-left bg-[#9a9a9a] border">Puntualidad</th>
+                        <th class="text-left bg-[#9a9a9a] border">Tiempo</th>
+                        <th class="text-left bg-[#9a9a9a] border">Merma</th>
+                        <th class="text-left bg-[#9a9a9a] border"></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(dayPoints, day) in selectedUser.weekly_points" :key="day">
-                        <td class="border">{{ day }}</td>
-                        <td class="border" :class="{ 'text-red-500': dayPoints.punctuality < 0 }">{{ dayPoints.punctuality
+                        <td class="bg-white py-1 px-2 text-xs">{{ day }}</td>
+                        <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.punctuality < 0 }">{{
+                            dayPoints.punctuality
                         }}</td>
-                        <td class="border" :class="{ 'text-red-500': dayPoints.time < 0 }">{{ dayPoints.time }}</td>
-                        <td class="border" :class="{ 'text-red-500': dayPoints.scrap < 0 }">{{ dayPoints.scrap }}</td>
+                        <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.time < 0 }">{{
+                            dayPoints.time }}</td>
+                        <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.scrap < 0 }">{{
+                            dayPoints.scrap }}</td>
                     </tr>
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td class="border">Total</td>
-                        <td class="border">{{ calculateTotal('punctuality') }}</td>
-                        <td class="border">{{ calculateTotal('time') }}</td>
-                        <td class="border">{{ calculateTotal('scrap') }}</td>
-                        <td class="border">{{ calculateGrandTotal() }}</td>
+                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs">Total</td>
+                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateTotal('punctuality') }}</td>
+                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateTotal('time') }}</td>
+                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateTotal('scrap') }}</td>
+                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateGrandTotal() }}</td>
                     </tr>
                 </tfoot>
             </table>
+            <div class="text-xs text-secondary px-10 mt-5">
+                <li><strong>Puntualidad: </strong>Este se refiere a llegar a tiempo para trabajar. Si llegas a tiempo, ganas
+                    10 puntos. Si llegas tarde, perderás puntos equivalentes a los minutos de retraso. Así que, ¡llegar a
+                    tiempo es clave para obtener una buena calificación! </li>
+                <li><strong>Tiempo: </strong>El tiempo se trata de cuánto trabajaste de manera efectiva en la producción.
+                    Cada minuto que trabajas se convierte en puntos, y estos se suman a tu puntaje total. Así que, cuantos
+                    más minutos de trabajo productivo tengas, mejor será tu calificación.</li>
+                <li><strong>Merma: </strong>La merma se refiere a productos defectuosos o piezas que salieron mal durante la
+                    producción. Si tienes merma, perderás 10 puntos. Pero si logras evitar cualquier problema y no hay
+                    merma, ganarás 10 puntos extra. Así que, tratar de reducir los errores en el trabajo es importante para
+                    tu calificación.</li>
+            </div>
         </template>
         <template #footer>
             <CancelButton @click="showModal = false">Cerrar</CancelButton>
@@ -94,9 +109,6 @@ export default {
         users: Array,
     },
     methods: {
-        formattedDate(date) {
-            return moment(date).format('ddd DD MMM');
-        },
         calculatePercentage() {
             const maxPoints = Math.max(...this.users.map(user => user.total_points));
 
