@@ -84,41 +84,55 @@ class UserController extends Controller
         $user_id = $user->id;
         $users = UserResource::collection(User::latest()->get());
         $roles = Role::all();
+
         //PRODUCTION
-        $asigned_production_orders = Production::where('operator_id', $user_id)->get();
-        $finished_production_orders = Production::where('operator_id', $user_id)->whereNotNull('finished_at')->get();
-        $total_hours_production = $finished_production_orders->sum('estimated_time_hours');
-        $total_minutes_production = $finished_production_orders->sum('estimated_time_minutes');
+        $productions = $user->productions;
+        $performances = [
+            ["label" => "Total de órdenes", "value" => $productions->count()],
+            ["label" => "Órdenes terminadas", "value" => $productions->filter(fn ($production) => $production->finished_at !== null)->count()],
+            ["label" => "Tiempo invertido en órdenes terminadas", "value" => $this->formatTime($productions->sum(function ($production) {
+                return $production->getTotalTimeInMinutes() - $production->getPausaTimeInMinutes();
+            }))],
+            ["label" => "Tiempo estimado en órdenes terminadas", "value" => $this->formatTime($productions->sum(function ($production) {
+                return  ($production->estimated_time_hours * 60) + $production->estimated_time_minutes;
+            }))],
+        ];
+        return $performances;
+
+        // $asigned_production_orders = Production::where('operator_id', $user_id)->get();
+        // $finished_production_orders = Production::where('operator_id', $user_id)->whereNotNull('finished_at')->get();
+        // $total_hours_production = $finished_production_orders->sum('estimated_time_hours');
+        // $total_minutes_production = $finished_production_orders->sum('estimated_time_minutes');
         //Designer
-        $asigned_design_orders = Design::where('designer_id', $user_id)->get();
-        $finished_design_orders = Design::where('designer_id', $user_id)->whereNotNull('finished_at')->get();
+        // $asigned_design_orders = Design::where('designer_id', $user_id)->get();
+        // $finished_design_orders = Design::where('designer_id', $user_id)->whereNotNull('finished_at')->get();
 
         //Seller
-        $sale_orders_created = Sale::with('catalogProductCompanySales.catalogProductCompany')->where('user_id', $user_id)->get();
-        $total_money_sold = 0;
+        // $sale_orders_created = Sale::with('catalogProductCompanySales.catalogProductCompany')->where('user_id', $user_id)->get();
+        // $total_money_sold = 0;
 
-        $sale_orders_created->each(function ($sale) use (&$totalMoneySold) {
-            if (isset($sale['catalog_product_company_sales']) && is_array($sale['catalog_product_company_sales'])) {
-                foreach ($sale['catalog_product_company_sales'] as $productSale) {
-                    $quantity = $productSale['quantity'] ?? 0;
-                    $newPrice = $productSale['catalog_product_company']['new_price'] ?? 0;
-                    $totalMoneySold += $quantity * $newPrice;
-                }
-            }
-        });
+        // $sale_orders_created->each(function ($sale) use (&$totalMoneySold) {
+        //     if (isset($sale['catalog_product_company_sales']) && is_array($sale['catalog_product_company_sales'])) {
+        //         foreach ($sale['catalog_product_company_sales'] as $productSale) {
+        //             $quantity = $productSale['quantity'] ?? 0;
+        //             $newPrice = $productSale['catalog_product_company']['new_price'] ?? 0;
+        //             $totalMoneySold += $quantity * $newPrice;
+        //         }
+        //     }
+        // });
 
         return inertia('User/Show', compact(
             'user',
             'users',
             'roles',
             'finished_production_orders',
-            'asigned_production_orders',
-            'total_hours_production',
-            'total_minutes_production',
-            'finished_design_orders',
-            'asigned_design_orders',
-            'sale_orders_created',
-            'total_money_sold',
+            // 'asigned_production_orders',
+            // 'total_hours_production',
+            // 'total_minutes_production',
+            // 'finished_design_orders',
+            // 'asigned_design_orders',
+            // 'sale_orders_created',
+            // 'total_money_sold',
         ));
     }
 
@@ -222,8 +236,8 @@ class UserController extends Controller
         $is_paused = $user->setPause();
 
         $message = $is_paused
-        ? "Se ha pausado tu tiempo laboral"
-        : "Se ha reanudado tu tiempo laboral";
+            ? "Se ha pausado tu tiempo laboral"
+            : "Se ha reanudado tu tiempo laboral";
 
         return response()->json(['message' => $message, 'status' => $is_paused]);
     }
@@ -279,5 +293,23 @@ class UserController extends Controller
         $notifications = auth()->user()->notifications()->whereIn('id', $request->notifications_ids)->delete();
 
         return response()->json([]);
+    }
+
+    private function formatTime($minutes)
+    {
+        $hours = floor($minutes / 60);
+        $remainingMinutes = $minutes % 60;
+
+        $formattedTime = '';
+
+        if ($hours > 0) {
+            $formattedTime .= $hours . 'h ';
+        }
+
+        if ($remainingMinutes > 0 || empty($formattedTime)) {
+            $formattedTime .= $remainingMinutes . 'm';
+        }
+
+        return $formattedTime;
     }
 }

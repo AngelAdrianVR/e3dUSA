@@ -29,7 +29,7 @@
     </div>
     <DialogModal :show="showModal" @close="showModal = false">
         <template #title>
-            <h1>Detalles de puntuacion</h1>
+            <h1>Detalles de puntuacion: <strong>{{ selectedUser.name }}</strong></h1>
         </template>
         <template #content>
             <table class="w-full">

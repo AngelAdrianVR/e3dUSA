@@ -1,6 +1,6 @@
 <template>
     <div class="lg:h-64 h-52 bg-[#D9D9D9] rounded-[30px] lg:rounded-xl lg:p-5 py-2 px-4 relative text-xs lg:text-sm">
-        <img class="lg:h-16 h-6 absolute top-4 left-14 lg:top-2 lg:left-32" src="@/../../public/images/star.png">
+        <img class="lg:h-16 h-6 absolute top-4 left-14 lg:top-2 lg:left-24" src="@/../../public/images/star.png">
         <h3 class="text-center text-gray-700 my-3">
             Desempeño de Producción <i class="fa-solid fa-helmet-safety ml-2"></i>
         </h3>
@@ -30,7 +30,7 @@
 
     <DialogModal :show="showModal" @close="showModal = false">
         <template #title>
-            <h1>Detalles de puntuacion</h1>
+            <h1>Detalles de puntuacion: <strong>{{ selectedUser.name }}</strong></h1>
         </template>
         <template #content>
             <table class="w-full">

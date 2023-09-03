@@ -202,10 +202,10 @@
             class="text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] "
           >
             <p class="text-secondary col-span-2 mt-4 mb-2">
-              Información general
+              Información general de producción
             </p>
 
-            <div class="flex items-center space-x-3">
+            <!-- <div class="flex items-center space-x-3">
               <span class="text-gray-500">N° de ordenes asignadas:</span>
               <span>{{ asigned_production_orders?.length }}</span>
             </div>
@@ -224,17 +224,7 @@
                 (total_minutes_production % 60) +
                 " min"
               }}</span>
-            </div>
-            <div class="flex items-center space-x-3">
-              <span class="text-gray-500 my-1">Eficiencia:</span>
-              <span>{{
-                total_hours_production +
-                parseInt(total_minutes_production / 60) +
-                " hrs " +
-                (total_minutes_production % 60) +
-                " min"
-              }}</span>
-            </div>
+            </div> -->
           </div>
           <!-- --------------------------- production performance ends --------------------------- -->
 
@@ -305,7 +295,7 @@
           <!-- ------------------------------ General Info ends ---------------------------------- -->
 
           <!-- ------------------------------ Performance table ------------------------ -->
-          <p class="text-secondary col-span-2 mt-4 mb-4 text-center">
+          <!-- <p class="text-secondary col-span-2 mt-4 mb-4 text-center">
             Tabla de desempeño
           </p>
           <div class="lg:grid grid-cols-3 px-5 overflow-auto pb-12">
@@ -339,7 +329,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
         </div>
         <div v-else><p class="text-primary text-center text-xl">El usuario se encuentra inactivo actualmente</p></div>
       </div>
