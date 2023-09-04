@@ -11,6 +11,7 @@ use App\Models\Bonus;
 use App\Models\ChMessage;
 use App\Models\Design;
 use App\Models\Discount;
+use App\Models\PayrollUser;
 use App\Models\Production;
 use App\Models\Sale;
 use App\Models\User;
@@ -85,41 +86,55 @@ class UserController extends Controller
         $users = UserResource::collection(User::latest()->get());
         $roles = Role::all();
 
+        // PERSONAL
+        $payroll_user = PayrollUser::where('user_id', $user_id)->get();
+        $personal = [
+            ["label" => "Dias laborados", "value" => $payroll_user->count()],
+            ["label" => "Tiempo total laborado", "value" => $this->formatTime($payroll_user->sum(function ($payrollUser) {
+                $result = $payrollUser->totalWorkedTime();
+                // Verificar si el resultado es un array con clave 'hours' y sumar el valor 'hours' al total
+                if (is_array($result) && isset($result['hours'])) {
+                    return $result['hours'] * 60;
+                }
+                return 0; // En caso de que el resultado no sea válido
+            }))],
+            ["label" => "Total pagado sin bonos", "value" => '$' . number_format($payroll_user->sum(function ($payrollUser) {
+                $result = $payrollUser->totalWorkedTime();
+                // Verificar si el resultado es un array con clave 'hours' y sumar el valor 'hours' al total
+                if (is_array($result) && isset($result['hours'])) {
+                    return $result['hours'] * $payrollUser->additionals["salary"]["hour"];
+                }
+                return 0; // En caso de que el resultado no sea válido
+            }))],
+            ["label" => "Tiempo total de retardos", "value" => $this->formatTime($payroll_user->sum(function ($payrollUser) {
+                return $payrollUser->late;
+            }))],
+        ];
+
         //PRODUCTION
         $productions = $user->productions;
-        $performances = [
+        $production_performances = [
             ["label" => "Total de órdenes", "value" => $productions->count()],
             ["label" => "Órdenes terminadas", "value" => $productions->filter(fn ($production) => $production->finished_at !== null)->count()],
             ["label" => "Tiempo invertido en órdenes terminadas", "value" => $this->formatTime($productions->sum(function ($production) {
                 return $production->getTotalTimeInMinutes() - $production->getPausaTimeInMinutes();
             }))],
             ["label" => "Tiempo estimado en órdenes terminadas", "value" => $this->formatTime($productions->sum(function ($production) {
-                return  ($production->estimated_time_hours * 60) + $production->estimated_time_minutes;
+                return ($production->estimated_time_hours * 60) + $production->estimated_time_minutes;
             }))],
         ];
-        return $performances;
 
-        // $asigned_production_orders = Production::where('operator_id', $user_id)->get();
-        // $finished_production_orders = Production::where('operator_id', $user_id)->whereNotNull('finished_at')->get();
-        // $total_hours_production = $finished_production_orders->sum('estimated_time_hours');
-        // $total_minutes_production = $finished_production_orders->sum('estimated_time_minutes');
-        //Designer
-        // $asigned_design_orders = Design::where('designer_id', $user_id)->get();
-        // $finished_design_orders = Design::where('designer_id', $user_id)->whereNotNull('finished_at')->get();
+        //DESIGN
+        $designs = $user->designs;
+        $design_performances = [
+            ["label" => "Total de órdenes", "value" => $designs->count()],
+            ["label" => "Órdenes terminadas", "value" => $designs->filter(fn ($design) => $design->finished_at !== null)->count()],
+            ["label" => "Órdenes con retraso", "value" => $designs->filter(fn ($design) => $design->finished_at?->greaterThan($design->expected_end_at))->count()],
+        ];
+        return $design_performances;
 
-        //Seller
-        // $sale_orders_created = Sale::with('catalogProductCompanySales.catalogProductCompany')->where('user_id', $user_id)->get();
-        // $total_money_sold = 0;
-
-        // $sale_orders_created->each(function ($sale) use (&$totalMoneySold) {
-        //     if (isset($sale['catalog_product_company_sales']) && is_array($sale['catalog_product_company_sales'])) {
-        //         foreach ($sale['catalog_product_company_sales'] as $productSale) {
-        //             $quantity = $productSale['quantity'] ?? 0;
-        //             $newPrice = $productSale['catalog_product_company']['new_price'] ?? 0;
-        //             $totalMoneySold += $quantity * $newPrice;
-        //         }
-        //     }
-        // });
+        // SALES
+        
 
         return inertia('User/Show', compact(
             'user',
