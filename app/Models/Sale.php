@@ -54,14 +54,6 @@ class Sale extends Model implements HasMedia
         return $this->belongsTo(CompanyBranch::class);
     }
 
-    // public function catalogProductsCompany(): BelongsToMany
-    // {
-    //     return $this->belongsToMany(CatalogProductCompany::class, 'catalog_product_company_sale', 'sale_id', 'catalog_product_company_id')
-    //         ->withPivot('id', 'quantity', 'notes', 'status', 'assigned_jobs')
-    //         ->withTimestamps()
-    //         ->using(CatalogProductCompanySale::class);
-    // }
-
     public function catalogProductCompanySales(): HasMany
     {
         return $this->hasMany(CatalogProductCompanySale::class);
@@ -70,5 +62,34 @@ class Sale extends Model implements HasMedia
     public function productions()
     {
         return $this->hasManyThrough(Production::class, CatalogProductCompanySale::class, 'sale_id', 'catalog_product_company_sale_id');
+    }
+
+    // methods
+    public function getTotalSoldAmount()
+    {
+        $totalAmount = 0;
+
+        if ($this->authorized_at) { // solo si la orden esta autorizada
+            // Obtén todas las relaciones de CatalogProductCompanySale asociadas a esta venta
+            $catalogProductCompanySales = CatalogProductCompanySale::where('sale_id', $this->id)->get();
+    
+            foreach ($catalogProductCompanySales as $catalogProductCompanySale) {
+                // Accede al modelo CatalogProductCompany a través de la relación
+                $catalogProductCompany = $catalogProductCompanySale->catalogProductCompany;
+    
+                if ($catalogProductCompany) {
+                    // Calcula el monto total para este producto
+                    $quantity = $catalogProductCompanySale->quantity;
+                    $price = $catalogProductCompany->new_price;
+    
+                    $totalProductAmount = $quantity * $price;
+    
+                    // Agrega el monto total de este producto al total general
+                    $totalAmount += $totalProductAmount;
+                }
+            }
+        }
+
+        return $totalAmount;
     }
 }

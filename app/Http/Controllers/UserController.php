@@ -131,23 +131,25 @@ class UserController extends Controller
             ["label" => "Órdenes terminadas", "value" => $designs->filter(fn ($design) => $design->finished_at !== null)->count()],
             ["label" => "Órdenes con retraso", "value" => $designs->filter(fn ($design) => $design->finished_at?->greaterThan($design->expected_end_at))->count()],
         ];
-        return $design_performances;
 
         // SALES
-        
+        $sales = $user->sales;
+        $sale_performances = [
+            ["label" => "Total de órdenes", "value" => $sales->count()],
+            ["label" => "Total vendido de órdenes autorizadas", "value" => '$' . number_format($sales->sum(function ($sale) {
+                return $sale->getTotalSoldAmount();
+            }), 2)],
+            ["label" => "Total de cotizaciones creadas", "value" => $user->quotes->count()],
+        ];
 
         return inertia('User/Show', compact(
             'user',
             'users',
             'roles',
-            'finished_production_orders',
-            // 'asigned_production_orders',
-            // 'total_hours_production',
-            // 'total_minutes_production',
-            // 'finished_design_orders',
-            // 'asigned_design_orders',
-            // 'sale_orders_created',
-            // 'total_money_sold',
+            'personal',
+            'production_performances',
+            'design_performances',
+            'sale_performances',    
         ));
     }
 

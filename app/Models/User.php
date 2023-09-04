@@ -71,6 +71,11 @@ class User extends Authenticatable
         return $this->hasMany(Design::class, 'designer_id', 'id');
     }
 
+    public function quotes() 
+    {
+        return $this->hasMany(Quote::class, 'user_id', 'id');
+    }
+
     public function sales() 
     {
         return $this->hasMany(Sale::class, 'user_id', 'id');

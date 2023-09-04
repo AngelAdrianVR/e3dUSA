@@ -5,54 +5,37 @@
         <div class="flex justify-between">
           <label class="text-lg">Usuarios</label>
 
-          <Link
-            :href="route('users.index')"
-            class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center"
-          >
-            <i class="fa-solid fa-xmark"></i>
+          <Link :href="route('users.index')"
+            class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
           </Link>
         </div>
         <div class="flex justify-between">
           <div class="w-1/3">
-            <el-select
-              @change="userSelection"
-              v-model="userSelected"
-              clearable
-              filterable
-              placeholder="Buscar órden de diseño"
-              no-data-text="No hay órdenes registradas"
-              no-match-text="No se encontraron coincidencias"
-            >
-              <el-option
-                v-for="item in users.data"
-                :key="item.id"
-                :label="item.id + '. ' + item.name"
-                :value="item.id"
-              />
+            <el-select @change="userSelection" v-model="userSelected" clearable filterable
+              placeholder="Buscar órden de diseño" no-data-text="No hay órdenes registradas"
+              no-match-text="No se encontraron coincidencias">
+              <el-option v-for="item in users.data" :key="item.id" :label="item.id + '. ' + item.name" :value="item.id" />
             </el-select>
           </div>
           <div class="flex items-center space-x-2">
             <el-tooltip content="Editar" placement="top">
               <Link :href="route('users.edit', userSelected)">
-                <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
-                  <i class="fa-solid fa-pen text-sm"></i>
-                </button>
+              <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
+                <i class="fa-solid fa-pen text-sm"></i>
+              </button>
               </Link>
             </el-tooltip>
             <el-tooltip content="Crear nuevo usuario" placement="top">
               <Link :href="route('users.create')">
-                <button
-                  class="rounded-lg bg-primary py-2 px-3 text-sm text-white"
-                >
-                  +
-                </button>
+              <button class="rounded-lg bg-primary py-2 px-3 text-sm text-white">
+                +
+              </button>
               </Link>
             </el-tooltip>
             <Dropdown align="right" width="48">
               <template #trigger>
-                <button
-                  class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm"
-                >
+                <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
                   Más <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
                 </button>
               </template>
@@ -66,8 +49,8 @@
                 <DropdownLink @click="changeUserStatus" as="button">
                   {{
                     currentUser?.is_active.bool
-                      ? "Desactivar usuario"
-                      : "Activar usuario"
+                    ? "Desactivar usuario"
+                    : "Activar usuario"
                   }}
                 </DropdownLink>
 
@@ -84,39 +67,21 @@
       </div>
 
       <div class="flex flex-col items-center justify-center mb-4">
-        <img
-          v-if="currentUser"
-          :class="
-            currentUser?.is_active.bool ? 'border-green-600' : 'border-red-600'
-          "
-          class="h-32 w-32 rounded-full object-cover hidden md:block border-2"
-          :src="currentUser?.profile_photo_url"
-          :alt="currentUser?.name"
-        />
+        <img v-if="currentUser" :class="currentUser?.is_active.bool ? 'border-green-600' : 'border-red-600'
+          " class="h-32 w-32 rounded-full object-cover hidden md:block border-2" :src="currentUser?.profile_photo_url"
+          :alt="currentUser?.name" />
         <p class="font-bold text-lg">{{ currentUser?.name }}</p>
       </div>
       <!-- ------------- tabs section starts ------------- -->
-      <div
-        class="border-y-2 border-[#cccccc] flex justify-between items-center py-2"
-      >
+      <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2">
         <div class="flex">
-          <p
-            @click="tabs = 1"
-            :class="
-              tabs == 1 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            "
-            class="h-10 p-2 cursor-pointer md:ml-5 transition duration-300 ease-in-out text-sm md:text-base"
-          >
+          <p @click="tabs = 1" :class="tabs == 1 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="h-10 p-2 cursor-pointer md:ml-5 transition duration-300 ease-in-out text-sm md:text-base">
             Información general
           </p>
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
-          <p
-            @click="tabs = 2"
-            :class="
-              tabs == 2 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            "
-            class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base"
-          >
+          <p @click="tabs = 2" :class="tabs == 2 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Desempeño
           </p>
         </div>
@@ -124,13 +89,8 @@
       <!-- ------------- tabs section ends ------------- -->
 
       <!-- ------------- Informacion general Starts 1 ------------- -->
-      <div
-        v-if="tabs == 1"
-        class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm"
-      >
-        <div
-          class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center"
-        >
+      <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
+        <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
           <p class="text-secondary col-span-2 mt-4 mb-2">Datos personales</p>
 
           <span class="text-gray-500">Nombre</span>
@@ -170,13 +130,11 @@
           <span class="text-gray-500 my-2">Nivel académico</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Salario semanal</span>
-          <span
-            >${{
-              currentUser?.employee_properties?.salary.week
-                .toFixed(2)
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-            }}</span
-          >
+          <span>${{
+            currentUser?.employee_properties?.salary.week
+              .toFixed(2)
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          }}</span>
           <span class="text-gray-500 my-2">Horas laborales por semana</span>
           <span>{{ currentUser?.employee_properties?.hours_per_week }}</span>
 
@@ -195,105 +153,45 @@
 
       <!-- -------------tab 2 desempeño starts ------------- -->
       <div v-if="tabs == 2" class="border-b-2 border-[#cccccc] text-sm">
-        <div v-if="currentUser?.is_active?.bool">
-          <!-- --------------------------- production performance starts --------------------------- -->
-          <div
-            v-if="asigned_production_orders?.length"
-            class="text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] "
-          >
-            <p class="text-secondary col-span-2 mt-4 mb-2">
-              Información general de producción
-            </p>
-
-            <!-- <div class="flex items-center space-x-3">
-              <span class="text-gray-500">N° de ordenes asignadas:</span>
-              <span>{{ asigned_production_orders?.length }}</span>
+        <div v-if="currentUser?.is_active?.bool" class="px-12 pb-12 pt-6">
+          <!-- --------------------------- performance tab starts --------------------------- -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <h2 class="text-secondary">General</h2>
+              <div class="px-6">
+                <li v-for="(item, index) in personal" :key="index">
+                  {{ item.label }}: {{ item.value }}
+                </li>
+              </div>
             </div>
-            <div class="flex items-center space-x-3">
-              <span class="text-gray-500">N° de ordenes terminadas:</span>
-              <span>{{ finished_production_orders?.length }}</span>
+            <div>
+              <h2 class="text-secondary">Producción</h2>
+              <div class="px-6">
+                <li v-for="(item, index) in production_performances" :key="index">
+                  {{ item.label }}: {{ item.value }}
+                </li>
+              </div>
             </div>
-            <div class="flex items-center space-x-3">
-              <span class="text-gray-500 my-1"
-                >Tiempo total de producción:</span
-              >
-              <span>{{
-                total_hours_production +
-                parseInt(total_minutes_production / 60) +
-                " hrs " +
-                (total_minutes_production % 60) +
-                " min"
-              }}</span>
-            </div> -->
-          </div>
-          <!-- --------------------------- production performance ends --------------------------- -->
-
-          <!-- --------------------------- Designer performance starts --------------------------- -->
-          <div
-            v-if="asigned_design_orders?.length"
-            class="text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center"
-          >
-            <p class="text-secondary col-span-2 mt-4 mb-2">
-              Información general
-            </p>
-
-            <div class="flex space-x-3">
-              <span class="text-gray-500">N° de ordenes asignadas:</span>
-              <span>{{ asigned_design_orders?.length }}</span>
+            <div>
+              <h2 class="text-secondary">Diseño</h2>
+              <div class="px-6">
+                <li v-for="(item, index) in design_performances" :key="index">
+                  {{ item.label }}: {{ item.value }}
+                </li>
+              </div>
             </div>
-            <div class="flex space-x-3">
-              <span class="text-gray-500">N° de ordenes terminadas:</span>
-              <span>{{ finished_design_orders?.length }}</span>
-            </div>
-            <!-- <div class="flex space-x-3">
-            <span class="text-gray-500 my-1">Tiempo total de diseño:</span>
-            <span>{{
-              total_hours_design +
-              parseInt(total_minutes_design / 60) +
-              " hrs " +
-              (total_minutes_design % 60) +
-              " min"
-            }}</span>
-          </div> -->
-            <div class="flex space-x-3">
-              <span class="text-gray-500">Eficiencia:</span>
-              <span>{{ finished_design_orders?.length }}%</span>
+            <div>
+              <h2 class="text-secondary">Ventas</h2>
+              <div class="px-6">
+                <li v-for="(item, index) in sale_performances" :key="index">
+                  {{ item.label }}: {{ item.value }}
+                </li>
+              </div>
             </div>
           </div>
-          <!-- --------------------------- Designer performance ends --------------------------- -->
 
-
-          <!-- --------------------------- Seller performance starts --------------------------- -->
-          <div
-            v-if="sale_orders_created?.length"
-            class="text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center"
-          >
-            <p class="text-secondary col-span-2 mt-4 mb-2">
-              Información general
-            </p>
-
-            <div class="flex space-x-3">
-              <span class="text-gray-500">N° de ordenes asignadas:</span>
-              <span>{{ sale_orders_created.length }}</span>
-            </div>
-            <div class="flex space-x-3">
-              <span class="text-gray-500">Cantidad de dinero vendido:</span>
-              <span>${{ total_money_sold }}</span>
-            </div>
-          </div>
-          <!-- --------------------------- Seller performance ends --------------------------- -->
-
-          <!-- ------------------------------ General Info starts ---------------------------------- -->
-          <div class="flex space-x-3">
-            <span class="text-gray-500 my-1">N° faltas:</span>
-            <span>{{ "--" }}</span>
-          </div>
-          <div class="flex space-x-3">
-            <span class="text-gray-500 my-1">Tiempo total de retardo:</span>
-            <span>{{ "--" }}</span>
-          </div>
-          <!-- ------------------------------ General Info ends ---------------------------------- -->
-
+          <!-- --------------------------- performance tab ends --------------------------- -->
+          
           <!-- ------------------------------ Performance table ------------------------ -->
           <!-- <p class="text-secondary col-span-2 mt-4 mb-4 text-center">
             Tabla de desempeño
@@ -331,21 +229,18 @@
             </div>
           </div> -->
         </div>
-        <div v-else><p class="text-primary text-center text-xl">El usuario se encuentra inactivo actualmente</p></div>
+        <div v-else>
+          <p class="text-primary text-center text-xl">El usuario se encuentra inactivo actualmente</p>
+        </div>
       </div>
       <!-- ------------- tab 2 desempeño ends ------------ -->
 
-      <ConfirmationModal
-        :show="showConfirmModal"
-        @close="showConfirmModal = false"
-      >
+      <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar usuario </template>
         <template #content> Continuar con la eliminación? </template>
         <template #footer>
           <div class="">
-            <CancelButton @click="showConfirmModal = false" class="mr-2"
-              >Cancelar</CancelButton
-            >
+            <CancelButton @click="showConfirmModal = false" class="mr-2">Cancelar</CancelButton>
             <PrimaryButton @click="deleteItem">Eliminar</PrimaryButton>
           </div>
         </template>
@@ -385,18 +280,10 @@ export default {
   props: {
     user: Object,
     users: Array,
-    //PRODUCTION
-    finished_production_orders: Array,
-    asigned_production_orders: Array,
-    total_hours_production: Number,
-    total_minutes_production: Number,
-    //Design
-    finished_design_orders: Array,
-    asigned_design_orders: Array,
-    // total_hours_design: Number,
-    // total_minutes_design: Number,
-    sale_orders_created: Array,
-    total_money_sold: Number,
+    personal: Array,
+    production_performances: Array,
+    design_performances: Array,
+    sale_performances: Array,
   },
   components: {
     AppLayoutNoHeader,
