@@ -100,15 +100,26 @@
                 ">
                 <h2 class="text-primary lg:text-xl text-lg lg:mt-16 mt-6">Operativo</h2>
                 <!-- sellers -->
-                <div v-if="this.$page.props.auth.user.permissions.includes('Crear ordenes de venta')" class="">
-                    <h2 class="text-secondary lg:text-xl text-lg lg:mt-16 mt-6">Órdenes de venta hechas por ti sin
-                        producción</h2>
-                    <ul class="lg:grid grid-cols-2 gap-x-16 gap-y-14 space-y-5 lg:space-y-0 mt-4">
+                <div v-if="this.$page.props.auth.user.permissions.includes('Crear ordenes de venta')"
+                    class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] py-4 px-6 mt-4 text-sm w-full lg:w-1/2">
+                    <h2 class="text-black lg:text-xl font-bold text-lg flex items-center">
+                        <i class="fa-solid fa-triangle-exclamation mr-3"></i>
+                        <p>Órdenes de venta hechas por ti sin
+                        producción</p>
+                    </h2>
+                    <div class="grid grid-cols-3 gap-3 pb-2 border-b-2 border-[#9A9A9A] pt-5">
+                        <span>Folio de orden</span>
+                        <span>Creado el</span>
+                    </div>
+                    <ul>
                         <li v-for="sale in current_user_sales_without_production.data" :key="sale.id"
-                            class="ml-6 list-disc">
-                            {{ sale.folio }} creada el {{ sale.created_at }}
+                            class="grid grid-cols-3 gap-3 mt-4">
+                            <span>{{ sale.folio }}</span>
+                            <span>{{ sale.created_at }}</span>
+                            <Link :href="route('sales.show', sale.id)" class="text-primary underline ml-auto">Ver orden</Link>
                         </li>
                     </ul>
+                    <p class="text-primary text-center mt-8">¡Es necesario dar seguimiento!</p>
                 </div>
                 <div class="grid lg:grid-cols-4 grid-cols-2 gap-3 mt-4">
                     <template v-for="(quickCard, index) in quickCards" :key="index">
