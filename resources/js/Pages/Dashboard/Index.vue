@@ -93,11 +93,23 @@
                 this.$page.props.auth.user.permissions.includes('Autorizar ordenes de compra') ||
                 this.$page.props.auth.user.permissions.includes('Autorizar ordenes de diseño') ||
                 this.$page.props.auth.user.permissions.includes('Autorizar Crear materia prima') ||
-                this.$page.props.auth.user.permissions.includes('Autorizar Ordenes de produccion todas') ||
-                this.$page.props.auth.user.permissions.includes('Autorizar Ordenes de diseño todas') ||
+                this.$page.props.auth.user.permissions.includes('Ordenes de produccion todas') ||
+                this.$page.props.auth.user.permissions.includes('Ordenes de diseño todas') ||
+                this.$page.props.auth.user.permissions.includes('Crear ordenes de venta') ||
                 this.$page.props.auth.user.permissions.includes('Autorizar solicitudes de tiempo adicional')
                 ">
                 <h2 class="text-primary lg:text-xl text-lg lg:mt-16 mt-6">Operativo</h2>
+                <!-- sellers -->
+                <div v-if="this.$page.props.auth.user.permissions.includes('Crear ordenes de venta')" class="">
+                    <h2 class="text-secondary lg:text-xl text-lg lg:mt-16 mt-6">Órdenes de venta hechas por ti sin
+                        producción</h2>
+                    <ul class="lg:grid grid-cols-2 gap-x-16 gap-y-14 space-y-5 lg:space-y-0 mt-4">
+                        <li v-for="sale in current_user_sales_without_production.data" :key="sale.id"
+                            class="ml-6 list-disc">
+                            {{ sale.folio }} creada el {{ sale.created_at }}
+                        </li>
+                    </ul>
+                </div>
                 <div class="grid lg:grid-cols-4 grid-cols-2 gap-3 mt-4">
                     <template v-for="(quickCard, index) in quickCards" :key="index">
                         <DashboardCard v-if="quickCard.show" :title="quickCard.title" :counter="quickCard.counter"
@@ -362,6 +374,7 @@ export default {
         collaborators_added: Array,
         collaborators_anniversaires: Array,
         customers_birthdays: Array,
+        current_user_sales_without_production: Object,
     },
     components: {
         ThirthButton,

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\MeetingResource;
 use App\Http\Resources\PayrollUserResource;
+use App\Http\Resources\SaleResource;
 use App\Http\Resources\UserResource;
 use App\Models\AdditionalTimeRequest;
 use App\Models\Contact;
@@ -42,12 +43,15 @@ class DashboardController extends Controller
         $counts[] = Design::whereNull('started_at')->get()->count();
         $counts[] = Sale::whereDoesntHave('productions')->get()->count();
         $counts[] = AdditionalTimeRequest::whereNull('authorized_at')->get()->count();
+        $current_user_sales_without_production = SaleResource::collection(Sale::where('user_id', auth()->id())->whereDoesntHave('productions')->get());
+
+
+        // return $current_user_sales_whidout_production;
 
         // production performance
         $collaborators_production_performance = $this->getProductionPerformance();
         $collaborators_design_performance = $this->getDesignPerformance();
         $collaborators_sales_performance = $this->getSalesPerformance();
-        // return $collaborators_sales_performance;
 
         // birthdates
         $collaborators_birthdays = User::whereDate('employee_properties->birthdate', today())->get();
@@ -83,7 +87,8 @@ class DashboardController extends Controller
             'collaborators_birthdays',
             'collaborators_added',
             'collaborators_anniversaires',
-            'customers_birthdays'
+            'customers_birthdays',
+            'current_user_sales_without_production',
         ));
     }
 
