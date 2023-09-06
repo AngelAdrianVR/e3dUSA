@@ -176,6 +176,7 @@ class UserController extends Controller
             'employee_properties.job_position' => 'required|string',
             'employee_properties.department' => 'required|string',
             'employee_properties.work_days' => 'array',
+            'employee_properties.vacations' => 'array',
             'employee_properties.bonuses' => 'nullable',
             'employee_properties.discounts' => 'nullable',
         ]);

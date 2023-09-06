@@ -102,24 +102,32 @@
                 <!-- sellers -->
                 <div v-if="this.$page.props.auth.user.permissions.includes('Crear ordenes de venta')"
                     class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] py-4 px-6 mt-4 text-sm w-full lg:w-1/2">
-                    <h2 class="text-black lg:text-xl font-bold text-lg flex items-center">
-                        <i class="fa-solid fa-triangle-exclamation mr-3"></i>
+                    <h2 class="text-black font-bold flex items-center">
                         <p>Órdenes de venta hechas por ti sin
-                        producción</p>
+                            producción</p>
+                        <i class="fa-solid fa-triangle-exclamation ml-3"></i>
                     </h2>
-                    <div class="grid grid-cols-3 gap-3 pb-2 border-b-2 border-[#9A9A9A] pt-5">
-                        <span>Folio de orden</span>
-                        <span>Creado el</span>
+                    <div v-if="current_user_sales_without_production.data.length">
+                        <div class="grid grid-cols-3 gap-3 pb-2 border-b-2 border-[#9A9A9A] pt-5">
+                            <span>Folio de orden</span>
+                            <span>Creado el</span>
+                        </div>
+                        <ul>
+                            <li v-for="sale in current_user_sales_without_production.data" :key="sale.id"
+                                class="grid grid-cols-3 gap-3 mt-4">
+                                <span>{{ sale.folio }}</span>
+                                <span>{{ sale.created_at }}</span>
+                                <Link :href="route('sales.show', sale.id)" class="text-primary underline ml-auto">Ver orden
+                                </Link>
+                            </li>
+                        </ul>
+                        <p class="text-primary text-center mt-8">¡Es necesario dar seguimiento!</p>
                     </div>
-                    <ul>
-                        <li v-for="sale in current_user_sales_without_production.data" :key="sale.id"
-                            class="grid grid-cols-3 gap-3 mt-4">
-                            <span>{{ sale.folio }}</span>
-                            <span>{{ sale.created_at }}</span>
-                            <Link :href="route('sales.show', sale.id)" class="text-primary underline ml-auto">Ver orden</Link>
-                        </li>
-                    </ul>
-                    <p class="text-primary text-center mt-8">¡Es necesario dar seguimiento!</p>
+                    <p v-else class="text-xs text-black text-center my-6">
+                        Nos complace informarte que todas las órdenes que has realizado están actualmente en proceso de producción. 
+                        Para que puedas dar seguimiento detallado a tus órdenes, te invitamos a acceder a la sección "ventas"<br>
+                        <span class="text-2xl">&#128521;</span>
+                    </p>
                 </div>
                 <div class="grid lg:grid-cols-4 grid-cols-2 gap-3 mt-4">
                     <template v-for="(quickCard, index) in quickCards" :key="index">

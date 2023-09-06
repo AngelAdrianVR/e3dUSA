@@ -223,7 +223,11 @@ class DashboardController extends Controller
             }
 
             // Calcular el promedio de tiempo en minutos ajustado a las horas por día del usuario
-            $hoursPerDay = $user->employee_properties['hours_per_day'];
+            if (isset($user->employee_properties['hours_per_day'])) {
+                $hoursPerDay = $user->employee_properties['hours_per_day'];
+            } else {
+                $hoursPerDay = 8;
+            }
             $totalTimeDifference = $totalTimeDifference % (1440 * $hoursPerDay); // Tomar solo las horas trabajadas
             $averageTimeDifference = $totalTimeDifference > 0 ? $totalTimeDifference / count($designs) : 0;
 
@@ -267,7 +271,6 @@ class DashboardController extends Controller
             $user->weekly_points = $userPoints["weekly_points"]; // Asignar weekly_points al usuario
             $user->total_points = $userPoints["total_points"]; // Asignar total_points al usuario
         }
-        return $users;
 
         // Ordenar los usuarios de mayor a menor según los puntos
         $users = $users->sortByDesc('total_points')->values();
