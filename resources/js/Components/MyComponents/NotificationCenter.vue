@@ -47,7 +47,7 @@
                             <input type="checkbox" v-model="selectedNotifications" :value="notification.id"
                                 class="rounded border-gray-600 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
                             <div class="ml-3" :class="!notification.read_at ? 'font-bold' : ''">
-                                <p class="text-xs">{{ notification.data.description }}</p>
+                                <p class="text-xs" v-html="notification.data.description"></p>
                                 <p class="text-xs">{{ notification.data.additional_info }}</p>
                                 <p class="text-[10px]">{{ notification.created_at.humans }}</p>
                             </div>

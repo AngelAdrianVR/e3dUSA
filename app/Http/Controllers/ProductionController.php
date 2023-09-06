@@ -12,6 +12,7 @@ use App\Models\Production;
 use App\Models\Sale;
 use App\Models\Setting;
 use App\Models\User;
+use App\Notifications\ProductionCompletedNotification;
 use Illuminate\Http\Request;
 
 class ProductionController extends Controller
@@ -157,14 +158,29 @@ class ProductionController extends Controller
         return inertia('Production/PrintTemplate', compact('ordered_products'));
     }
 
-    public function changeStatus(Production $production)
+    public function changeStatus(Request $request, Production $production)
     {
         if (!$production->started_at) {
             $production->update(['started_at' => now()]);
             $message = 'Se ha registrado el inicio';
         } else {
-            $production->update(['finished_at' => now(), 'is_paused' => 0]);
+            $request->validate([
+                'scrap' => 'required|numeric|min:0'
+            ]);
+            $production->update([
+                'finished_at' => now(), 'is_paused' => 0,
+                'scrap' => $request->scrap,
+            ]);
+
+            $user = User::where('employee_properties->job_position', 'Jefe de producción')->first();
+            $user->notify(new ProductionCompletedNotification(
+                $production->catalogProductCompanySale->catalogProductCompany->catalogProduct->name, 
+                'OP-' . str_pad($production->catalogProductCompanySale->sale->id, 4, "0", STR_PAD_LEFT),
+                 "", 'production')
+            );
+
             $message = 'Se ha registrado el final';
+            
         }
 
         $production = Production::with(['operator', 'user'])->find($production->id);
