@@ -137,6 +137,8 @@
           }}</span>
           <span class="text-gray-500 my-2">Horas laborales por semana</span>
           <span>{{ currentUser?.employee_properties?.hours_per_week }}</span>
+          <span class="text-gray-500 my-2">Vacaciones disponibles</span>
+          <span>{{ currentUser?.employee_properties?.vacations.available_days.toFixed(3) }} dias</span>
 
           <p class="text-secondary col-span-2 mt-7">Contacto de emergencia</p>
 
