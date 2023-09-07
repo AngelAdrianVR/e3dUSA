@@ -150,7 +150,6 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
-import { ref } from "vue";
 
 export default {
   data() {
@@ -166,6 +165,7 @@ export default {
       location: this.raw_material.data.storages[0]?.location,
       description: this.raw_material.data.description,
       features: this.raw_material.data.features,
+      media: null,
     });
 
     return {
@@ -198,15 +198,28 @@ export default {
   },
   methods: {
     update() {
-      this.form.put(route("raw-materials.update", this.raw_material.data), {
-        onSuccess: () => {
-          this.$notify({
-            title: "Éxito",
-            message: "Se actualizó correctamente",
-            type: "success",
-          });
-        },
-      });
+      if (this.form.media !== null) {
+        this.form.post(route("raw-materials.update-with-media", this.raw_material.data), {
+          method: '_put',
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Se actualizó correctamente",
+              type: "success",
+            });
+          },
+        });
+      } else {
+        this.form.put(route("raw-materials.update", this.raw_material.data), {
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Se actualizó correctamente",
+              type: "success",
+            });
+          },
+        });
+      }
     },
     addFeature() {
       if (this.newFeature.trim() !== "") {
