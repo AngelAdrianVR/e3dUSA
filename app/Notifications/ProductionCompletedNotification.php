@@ -7,14 +7,14 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class RequestApprovedNotification extends Notification
+class ProductionCompletedNotification extends Notification
 {
     use Queueable;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(public $concept, public $item_id, public $additional_info, public $module)
+    public function __construct(public $item_id, public $production_folio, public $additional_info, public $module)
     {
         //
     }
@@ -48,7 +48,7 @@ class RequestApprovedNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'description' => "$this->concept <b>$this->item_id</b> ha sido autorizada(o)",
+            'description' => "Se ha marcado como finalizada la producción del producto <b>$this->item_id</b> de la venta con folio <b>$this->production_folio</b>. Revisar la cantidad de merma especificada por el operador.",
             'additional_info' => "$this->additional_info",
             'module' => "$this->module",
         ];

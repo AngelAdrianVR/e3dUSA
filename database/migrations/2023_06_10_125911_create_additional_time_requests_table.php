@@ -18,8 +18,9 @@ return new class extends Migration
             $table->text('comments')->nullable();
             $table->string('authorized_user_name')->nullable();
             $table->timestamp('authorized_at')->nullable();
-            $table->foreignId('payroll_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('payroll_id')->constrained()->cascadeOnDelete(); //quitar*
+            $table->foreignId('payroll_user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete(); //quitar*
             $table->timestamps();
         });
     }

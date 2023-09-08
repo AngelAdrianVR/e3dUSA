@@ -218,6 +218,7 @@ export default {
                     (design) =>
                         design.name.toLowerCase().includes(this.search.toLowerCase()) ||
                         design.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
+                        design.designer.name.toLowerCase().includes(this.search.toLowerCase()) ||
                         design.user.name.toLowerCase().includes(this.search.toLowerCase())
                 )
             }

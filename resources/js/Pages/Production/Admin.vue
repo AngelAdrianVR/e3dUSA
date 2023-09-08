@@ -21,57 +21,66 @@
             </div>
 
             <!-- tabla -->
-            <div class="lg:w-5/6 mx-auto mt-6">
-                <div class="flex justify-between">
-                    <!-- pagination -->
-                    <div>
-                        <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                            :total="productions.data.length" />
-                    </div>
-
-                    <!-- buttons -->
-                    <div>
-                        <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
-                            title="¿Continuar?" @confirm="deleteSelections">
-                            <template #reference>
-                                <el-button type="danger" plain class="mb-3"
-                                    :disabled="disableMassiveActions">Eliminar</el-button>
-                            </template>
-                        </el-popconfirm>
-                    </div>
-                </div>
-                <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="450" style="width: 100%"
-                    @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
-                    <el-table-column type="selection" width="55" />
-                    <el-table-column prop="user.name" label="Creador" />
-                    <el-table-column prop="company_branch.name" label="Cliente" />
-                    <el-table-column prop="created_at" label="Creada el" />
-                    <el-table-column prop="status['label']" label="Estatus" />
-                    <el-table-column prop="productions.length" label="N° operadores" width="120"  />
-                    <el-table-column align="right" fixed="right" width="190">
-                        <template #header>
-                            <div class="flex space-x-2">
-                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
-                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
+            <div class="relative overflow-hidden">
+                <NotificationCenter module="production" />
+                <div class="lg:w-5/6 mx-auto mt-6">
+                    <div class="flex justify-between">
+                        <!-- pagination -->
+                        <div>
+                            <el-pagination @current-change="handlePagination" layout="prev, pager, next"
+                                :total="productions.data.length" />
                         </div>
-                        </template>
-                        <template #default="scope">
-                            <el-dropdown trigger="click" @command="handleCommand">
-                                <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                </span>
-                                <template #dropdown>
-                                    <el-dropdown-menu>
-                                        <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
-                                            Ver</el-dropdown-item>
-                                        <el-dropdown-item :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
-                                            Editar</el-dropdown-item>
-                                    </el-dropdown-menu>
+
+                        <!-- buttons -->
+                        <div>
+                            <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                                title="¿Continuar?" @confirm="deleteSelections">
+                                <template #reference>
+                                    <el-button type="danger" plain class="mb-3"
+                                        :disabled="disableMassiveActions">Eliminar</el-button>
                                 </template>
-                            </el-dropdown>
-                        </template>
-                    </el-table-column>
-                </el-table>
+                            </el-popconfirm>
+                        </div>
+                    </div>
+                    <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="450" style="width: 100%"
+                        @selection-change="handleSelectionChange" ref="multipleTableRef"
+                        :row-class-name="tableRowClassName">
+                        <el-table-column type="selection" width="55" />
+                        <el-table-column prop="p_folio" label="Folio" />
+                        <el-table-column prop="user.name" label="Creador" />
+                        <el-table-column prop="company_branch.name" label="Cliente" />
+                        <el-table-column prop="created_at" label="Creada el" />
+                        <el-table-column prop="status['label']" label="Estatus" />
+                        <el-table-column prop="productions.length" label="N° operadores" width="120" />
+                        <el-table-column align="right" fixed="right" width="190">
+                            <template #header>
+                                <div class="flex space-x-2">
+                                    <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600"
+                                        placeholder="Buscar" />
+                                    <el-button @click="handleSearch" type="primary" plain class="mb-3"><i
+                                            class="fa-solid fa-magnifying-glass"></i></el-button>
+                                </div>
+                            </template>
+                            <template #default="scope">
+                                <el-dropdown trigger="click" @command="handleCommand">
+                                    <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
+                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    </span>
+                                    <template #dropdown>
+                                        <el-dropdown-menu>
+                                            <el-dropdown-item :command="'show-' + scope.row.id"><i
+                                                    class="fa-solid fa-eye"></i>
+                                                Ver</el-dropdown-item>
+                                            <el-dropdown-item :command="'edit-' + scope.row.id"><i
+                                                    class="fa-solid fa-pen"></i>
+                                                Editar</el-dropdown-item>
+                                        </el-dropdown-menu>
+                                    </template>
+                                </el-dropdown>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
             </div>
             <!-- tabla -->
 
@@ -83,6 +92,7 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
+import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 
@@ -106,12 +116,13 @@ export default {
         SecondaryButton,
         Link,
         TextInput,
+        NotificationCenter,
     },
     props: {
         productions: Array
     },
     methods: {
-        handleSearch(){
+        handleSearch() {
             this.search = this.inputSearch;
         },
         handleSelectionChange(val) {
@@ -172,12 +183,12 @@ export default {
             }
         },
         tableRowClassName({ row, rowIndex }) {
-            
-            if(row.status['label'] == 'Producción sin iniciar'){
+
+            if (row.status['label'] == 'Producción sin iniciar') {
                 return 'cursor-pointer text-amber-500';
-            }else if(row.status['label'] == 'Producción en proceso'){
+            } else if (row.status['label'] == 'Producción en proceso') {
                 return 'cursor-pointer text-blue-500';
-            }else if(row.status['label'] == 'Producción terminada'){
+            } else if (row.status['label'] == 'Producción terminada') {
                 return 'cursor-pointer text-green-500';
             }
             return 'cursor-pointer';

@@ -116,8 +116,9 @@
                   <i class="fa-solid fa-coins"></i>
                 </span>
               </el-tooltip>
-              <el-select v-model="form.employee_properties.discounts" multiple clearable placeholder="Selecciona descuentos"
-                no-data-text="No hay descuentos registradas" no-match-text="No se encontraron coincidencias">
+              <el-select v-model="form.employee_properties.discounts" multiple clearable
+                placeholder="Selecciona descuentos" no-data-text="No hay descuentos registradas"
+                no-match-text="No se encontraron coincidencias">
                 <el-option v-for="item in discounts" :key="item.id" :label="item.name" :value="item.id" />
               </el-select>
             </div>
@@ -202,10 +203,10 @@ export default {
           week: this.user.employee_properties.salary.week
         },
         hours_per_week: this.user.employee_properties.hours_per_week,
-        //   vacations: {
-        //     available_days: 0.00,
-        //     updated_date: null,
-        //   },
+        vacations: {
+          available_days: this.user.employee_properties.vacations?.available_days ?? 0,
+          updated_date: this.user.employee_properties.vacations?.updated_date ?? null,
+        },
         birthdate: this.user.employee_properties.birthdate.raw,
         bonuses: this.user.employee_properties.bonuses,
         discounts: this.user.employee_properties.discounts,

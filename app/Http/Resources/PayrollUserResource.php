@@ -27,8 +27,8 @@ class PayrollUserResource extends JsonResource
         return [
             'id' => $this->id,
             'date' => [
-                'estandard' => $this->date->isoFormat('DD-MM-YYYY'),
-                'formatted' => $this->date->isoFormat('ddd, DD MMM'),
+                'estandard' => $this->date?->isoFormat('DD-MM-YYYY'),
+                'formatted' => $this->date?->isoFormat('ddd, DD MMM'),
             ],
             'check_in' => $this->check_in?->isoFormat('HH:mm'),
             'pausas' => $this->pausas,
@@ -40,6 +40,7 @@ class PayrollUserResource extends JsonResource
             'total_break_time' => $this->totalBreakTime(),
             'total_worked_time' => $this->totalWorkedTime(),
             'incident' => $holiday ?? $this->justificationEvent,
+            'additional_time' => $this->additionalTimeRequest,
             // 'roles' => $this->user?->roles,
             'user_id' => $this->user_id,
             // 'incident' => in_array($this->justification_event_id, $no_attendance) ? $this->justification_event_id : $this->justificationEvent?->name ,

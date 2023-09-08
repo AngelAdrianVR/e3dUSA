@@ -66,6 +66,7 @@
               getDateFormtted(production.started_at) : 'Sin iniciar' }}</p>
             <p> <strong class="text-yellow-500">Terminado el: </strong>{{ production.finished_at ?
               getDateFormtted(production.finished_at) : 'Sin terminar' }}</p>
+            <p> <strong class="text-red-400">Unidades malas: </strong>{{ production.scrap }}</p>
           </template>
           <i class="fa-solid fa-list-check"></i>
         </el-tooltip>
@@ -122,7 +123,7 @@
         </button>
       </el-tooltip>
       <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
-        @confirm="changeTaskStatus">
+        @confirm="getNextAction() == 'Finalizar' ? showScrapModal = true : changeTaskStatus">
         <template #reference>
           <button
             v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id)"
@@ -151,9 +152,9 @@
           <InputError :message="form.errors.task" />
         </div>
         <div class="mt-2">
-          <IconInput v-model="form.progress" inputPlaceholder="Progreso *" inputType="number">
-            <el-tooltip content="Ingreasa la cantidad de piezas que llevas al momento"
-              placement="top">
+          <IconInput v-model="form.progress" inputPlaceholder="Ingreasa la cantidad de piezas que llevas al momento *"
+            inputType="number">
+            <el-tooltip content="Ingreasa la cantidad de piezas que llevas al momento (progreso)" placement="top">
               <i class="fa-solid fa-bars-progress"></i>
             </el-tooltip>
           </IconInput>
@@ -167,8 +168,7 @@
                 <i class="fa-solid fa-grip-lines"></i>
               </span>
             </el-tooltip>
-            <textarea v-model="form.notes" class="textarea mb-1" autocomplete="off"
-              placeholder="Notas"></textarea>
+            <textarea v-model="form.notes" class="textarea mb-1" autocomplete="off" placeholder="Notas"></textarea>
           </div>
           <InputError :message="form.errors.notes" />
         </div>
@@ -181,7 +181,7 @@
     </template>
   </DialogModal>
 
-  <!-- prpogress details modal -->
+  <!-- progress details modal -->
   <DialogModal :show="showProgressDetailsModal" @close="showProgressDetailsModal = false">
     <template #title>
       <h1>Avances registrados</h1>
@@ -199,17 +199,43 @@
         <tbody>
           <template v-for="(production, index) in catalog_product_company_sale.productions" :key="index">
             <tr v-for="progress in production.progress" :key="progress.id">
-              <td>{{ production.operator.name }}</td>  
-              <td>{{ progress.task }}</td>  
-              <td>{{ progress.progress }} unidades</td>  
-              <td>{{ progress.notes ?? '-' }}</td>  
-            </tr>              
+              <td>{{ production.operator.name }}</td>
+              <td>{{ progress.task }}</td>
+              <td>{{ progress.progress }} unidades</td>
+              <td>{{ progress.notes ?? '-' }}</td>
+            </tr>
           </template>
         </tbody>
       </table>
     </template>
     <template #footer>
       <CancelButton @click="showProgressDetailsModal = false">Cerrar</CancelButton>
+    </template>
+  </DialogModal>
+
+  <!-- scrap modal -->
+  <DialogModal :show="showScrapModal" @close="showScrapModal = false">
+    <template #title>
+      <h1>Registro de merma</h1>
+    </template>
+    <template #content>
+      <div class="border border-[#0355B5] rounded-lg px-6 py-2 mt-5 mb-3 mx-7 relative">
+        <p class="text-secondary text-sm">
+          Es importante que seas honesto con esta cantidad porque se notifica a jefe de producción y a dirección.
+        </p>
+      </div>
+      <div>
+        <IconInput v-model="scrap" inputPlaceholder="Piezas malas *" inputType="number" class="w-1/2">
+          <el-tooltip content="Ingreasa la cantidad de piezas malas" placement="top">
+            <i class="fa-solid fa-prescription-bottle-medical"></i>
+          </el-tooltip>
+        </IconInput>
+        <p :message="!scrap" class="text-xs text-red-500 ml-6">Este campo es requerido</p>
+      </div>
+    </template>
+    <template #footer>
+      <CancelButton @click="showScrapModal = false">Cerrar</CancelButton>
+      <PrimaryButton @click="changeTaskStatus" :disabled="!scrap">Finalizar producción</PrimaryButton>
     </template>
   </DialogModal>
 </template>
@@ -239,6 +265,8 @@ export default {
       selected: false,
       showProgressModal: false,
       showProgressDetailsModal: false,
+      showScrapModal: false,
+      scrap: null,
     };
   },
   emits: ['selected'],
@@ -336,11 +364,13 @@ export default {
     async changeTaskStatus() {
       try {
         let task = this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id);
-        const response = await axios.put(route('productions.change-status', task.id));
+        const response = await axios.put(route('productions.change-status', task.id), { scrap: this.scrap });
 
         if (response.status === 200) {
           this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id).started_at = response.data.item.started_at;
           this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id).finished_at = response.data.item.finished_at;
+          this.showScrapModal = false;
+          this.scrap = null;
 
           this.$notify({
             title: 'Éxito',

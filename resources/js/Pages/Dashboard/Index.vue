@@ -6,11 +6,12 @@
             <div class="my-5">
                 <h2 class="text-primary lg:text-xl text-lg mb-3">Avisos</h2>
                 <div class="rounded-xl border border-[#D90537]">
-                    <p class="bg-primary text-white text-center px-5 py-3 rounded-tl-xl rounded-tr-xl text-xl">
+                    <p
+                        class="bg-primary text-white text-center px-5 py-3 rounded-tl-xl rounded-tr-xl text-[16px] lg:text-xl">
                         <i class="fa-solid fa-bullhorn mr-7"></i>
                         Ajustes en registros de salidas
                     </p>
-                    <p class="text-justify px-12 py-4">
+                    <p class="text-sm text-justify px-12 py-4">
                         Se notifica a todos los colaboradores de emblems3d que a partir del 8 de Septiembre del 2023,
                         los registros de salida después de las horas de su jornada diaria no contarán como horas adicionales
                         a menos que se apruebe una solicitud de tiempo adicional.
@@ -20,9 +21,6 @@
 
             <!-- attendance -->
             <div class="lg:hidden mx-auto w-4/5 rounded-[20px] bg-[#d9d9d9] py-3 px-5 flex flex-col space-y-2 mt-4">
-                <!-- <figure class="flex justify-center">
-                    <img class="w-[40%]" src="@/../../public/images/rainbow.png">
-                </figure> -->
                 <div class="flex flex-col items-center space-y-2">
                     <p class="text-center">{{ greeting?.text }} <strong>{{ $page.props.auth.user.name }}</strong></p>
                     <i :class="greeting?.class"></i>
@@ -53,6 +51,17 @@
                         </SecondaryButton>
                     </template>
                 </el-popconfirm>
+                <!-- <button v-if="nextAttendance == 'Registrar salida'"
+                    class="rounded-full border-2 border-[#0355B5] text-secondary px-3 py-px mt-2">
+                    <p v-if="isPaused" class="flex items-center">
+                        <i class="fa-solid fa-play w-5 h-5 text-xs rounded-full border-2 border-[#0355B5] mr-4"></i>
+                        <span>Reanudar labores</span>
+                    </p>
+                    <p v-else class="flex items-center">
+                        <i class="fa-solid fa-pause w-5 h-5 text-xs rounded-full border-2 border-[#0355B5] mr-4"></i>
+                        <span>Pausar labores</span>
+                    </p>
+                </button> -->
                 <div v-if="$page.props.auth.user?.employee_properties"
                     class="text-xs text-[#0355B5] flex justify-around px-6">
                     <span>Horas / semana</span>
@@ -84,11 +93,42 @@
                 this.$page.props.auth.user.permissions.includes('Autorizar ordenes de compra') ||
                 this.$page.props.auth.user.permissions.includes('Autorizar ordenes de diseño') ||
                 this.$page.props.auth.user.permissions.includes('Autorizar Crear materia prima') ||
-                this.$page.props.auth.user.permissions.includes('Autorizar Ordenes de produccion todas') ||
-                this.$page.props.auth.user.permissions.includes('Autorizar Ordenes de diseño todas') ||
+                this.$page.props.auth.user.permissions.includes('Ordenes de produccion todas') ||
+                this.$page.props.auth.user.permissions.includes('Ordenes de diseño todas') ||
+                this.$page.props.auth.user.permissions.includes('Crear ordenes de venta') ||
                 this.$page.props.auth.user.permissions.includes('Autorizar solicitudes de tiempo adicional')
                 ">
                 <h2 class="text-primary lg:text-xl text-lg lg:mt-16 mt-6">Operativo</h2>
+                <!-- sellers -->
+                <div v-if="this.$page.props.auth.user.permissions.includes('Crear ordenes de venta')"
+                    class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] py-4 px-6 mt-4 text-sm w-full lg:w-1/2">
+                    <h2 class="text-black font-bold flex items-center">
+                        <p>Órdenes de venta hechas por ti sin
+                            producción</p>
+                        <i class="fa-solid fa-triangle-exclamation ml-3"></i>
+                    </h2>
+                    <div v-if="current_user_sales_without_production.data.length">
+                        <div class="grid grid-cols-3 gap-3 pb-2 border-b-2 border-[#9A9A9A] pt-5">
+                            <span>Folio de orden</span>
+                            <span>Creado el</span>
+                        </div>
+                        <ul>
+                            <li v-for="sale in current_user_sales_without_production.data" :key="sale.id"
+                                class="grid grid-cols-3 gap-3 mt-4">
+                                <span>{{ sale.folio }}</span>
+                                <span>{{ sale.created_at }}</span>
+                                <Link :href="route('sales.show', sale.id)" class="text-primary underline ml-auto">Ver orden
+                                </Link>
+                            </li>
+                        </ul>
+                        <p class="text-primary text-center mt-8">¡Es necesario dar seguimiento!</p>
+                    </div>
+                    <p v-else class="text-xs text-black text-center my-6">
+                        Nos complace informarte que todas las órdenes que has realizado están actualmente en proceso de producción. 
+                        Para que puedas dar seguimiento detallado a tus órdenes, te invitamos a acceder a la sección "ventas"<br>
+                        <span class="text-2xl">&#128521;</span>
+                    </p>
+                </div>
                 <div class="grid lg:grid-cols-4 grid-cols-2 gap-3 mt-4">
                     <template v-for="(quickCard, index) in quickCards" :key="index">
                         <DashboardCard v-if="quickCard.show" :title="quickCard.title" :counter="quickCard.counter"
@@ -101,8 +141,8 @@
             <h2 class="text-primary lg:text-xl text-lg lg:mt-16 mt-6">Colaboradores</h2>
             <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 space-y-5 lg:space-y-0 mt-4">
                 <ProductionPerformanceCard :users="collaborators_production_performance" />
-                <DesignPerformanceCard :users="collaborators_production_performance" />
-                <SalesPerformanceCard :users="collaborators_production_performance" />
+                <DesignPerformanceCard :users="collaborators_design_performance" />
+                <SalesPerformanceCard :users="collaborators_sales_performance" />
                 <BirthdateCard :users="collaborators_birthdays" />
                 <RecentlyAddedCard :users="collaborators_added" />
                 <InformationCard :users="collaborators_anniversaires" />
@@ -347,10 +387,13 @@ export default {
         meetings: Object,
         counts: Array,
         collaborators_production_performance: Array,
+        collaborators_design_performance: Array,
+        collaborators_sales_performance: Array,
         collaborators_birthdays: Array,
         collaborators_added: Array,
         collaborators_anniversaires: Array,
         customers_birthdays: Array,
+        current_user_sales_without_production: Object,
     },
     components: {
         ThirthButton,

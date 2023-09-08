@@ -22,11 +22,6 @@ class User extends Authenticatable
     use TwoFactorAuthenticatable;
     use HasRoles;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -35,11 +30,6 @@ class User extends Authenticatable
         'employee_properties',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
@@ -47,21 +37,11 @@ class User extends Authenticatable
         'two_factor_secret',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'employee_properties' => 'array',
     ];
 
-    /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array<int, string>
-     */
     protected $appends = [
         'profile_photo_url',
     ];
@@ -84,6 +64,21 @@ class User extends Authenticatable
                 'additionals',
             ])
             ->withTimestamps();
+    }
+
+    public function designs()
+    {
+        return $this->hasMany(Design::class, 'designer_id', 'id');
+    }
+
+    public function quotes()
+    {
+        return $this->hasMany(Quote::class, 'user_id', 'id');
+    }
+
+    public function sales()
+    {
+        return $this->hasMany(Sale::class, 'user_id', 'id');
     }
 
     public function productions(): HasMany
@@ -173,11 +168,14 @@ class User extends Authenticatable
         $now_time = now()->isoFormat('HH:mm');
 
         if (is_null($today_attendance->check_in)) {
+            // revisar vacaciones y actualizar si ya es requerido
+            $this->updateVacationProperties();
+
             $today_attendance->update([
                 'check_in' => $now_time,
                 'late' => $today_attendance->getLateTime(),
             ]);
-            $next = 'Registrar inicio break';
+            $next = 'Registrar salida';
         } elseif (is_null($today_attendance->check_out)) {
             $today_attendance->update([
                 'check_out' => $now_time,
@@ -247,5 +245,62 @@ class User extends Authenticatable
         }
 
         return 0;
+    }
+
+    public function updateVacationProperties()
+    {
+        $update_vacations = false;
+        $employee_properties = $this->employee_properties;
+        // Verificar si existe algo en 'updated_date'
+        if (is_null($employee_properties['vacations']['updated_date'])) {
+            $employee_properties['vacations']['updated_date'] = now()->toDateString();
+            $update_vacations = true;
+        } else {
+            // Obtener la fecha almacenada y calcular la diferencia con la fecha actual
+            $lastUpdateDate = Carbon::parse($employee_properties['vacations']['updated_date']);
+            $currentDate = now();
+            $daysSinceLastUpdate = $currentDate->diffInDays($lastUpdateDate);
+
+            // Verificar si ha pasado al menos una semana (7 días)
+            if ($daysSinceLastUpdate >= 7) {
+                $update_vacations = true;
+                // sumar 7 días a la fecha anterior
+                $employee_properties['vacations']['updated_date'] = Carbon::parse($employee_properties['vacations']['updated_date'])
+                    ->addDays(7)
+                    ->toDateString();
+            }
+        }
+
+        if ($update_vacations) {
+            // Calcular el proporcional por semana correspondiente según la antigüedad
+            $joinDate = Carbon::parse($this->employee_properties['join_date']);
+            $currentDate = now();
+            $yearsOfWorking = $currentDate->diffInYears($joinDate);
+            $daysToAdd = 0;
+
+            if ($yearsOfWorking >= 0 && $yearsOfWorking < 1) {
+                $daysToAdd = 10 / 52;
+            } elseif ($yearsOfWorking >= 1 && $yearsOfWorking < 2) {
+                $daysToAdd = 12 / 52;
+            } elseif ($yearsOfWorking >= 2 && $yearsOfWorking < 3) {
+                $daysToAdd = 14 / 52;
+            } elseif ($yearsOfWorking >= 3 && $yearsOfWorking < 4) {
+                $daysToAdd = 16 / 52;
+            } elseif ($yearsOfWorking >= 4 && $yearsOfWorking < 5) {
+                $daysToAdd = 18 / 52;
+            } elseif ($yearsOfWorking >= 5 && $yearsOfWorking < 10) {
+                $daysToAdd = 20 / 52;
+            } elseif ($yearsOfWorking >= 10 && $yearsOfWorking < 15) {
+                $daysToAdd = 22 / 52;
+            } elseif ($yearsOfWorking >= 15 && $yearsOfWorking < 20) {
+                $daysToAdd = 24 / 52;
+            }
+
+            // Acumular el proporcional de días a 'vacations'
+            $employee_properties['vacations']['available_days'] += $daysToAdd;
+
+            // Guardar los cambios en la base de datos
+            $this->update(['employee_properties' => $employee_properties]);
+        }
     }
 }

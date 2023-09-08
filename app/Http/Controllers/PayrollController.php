@@ -342,8 +342,8 @@ class PayrollController extends Controller
 
     public function getAdditionalTime(Request $request)
     {
-        $additiona_time = AdditionalTimeRequest::where('user_id', $request->user_id)->where('payroll_id', $request->payroll_id)->whereNotNull('authorized_at')->first();
+        $additiona_times = AdditionalTimeRequest::where('user_id', $request->user_id)->where('payroll_id', $request->payroll_id)->whereNotNull('authorized_at')->get();
 
-        return response()->json(['item' => $additiona_time]);
+        return response()->json(['items' => $additiona_times]);
     }
 }

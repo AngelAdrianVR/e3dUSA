@@ -54,6 +54,7 @@ class SaleResource extends JsonResource
         return [
             'id' => $this->id,
             'folio' => 'OV-' . str_pad($this->id, 4, "0", STR_PAD_LEFT),
+            'p_folio' => 'OP-' . str_pad($this->id, 4, "0", STR_PAD_LEFT),
             'shipping_company' => $this->shipping_company,
             'freight_cost' => $this->freight_cost,
             'status' => $status,
