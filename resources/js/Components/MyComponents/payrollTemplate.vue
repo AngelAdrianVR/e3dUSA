@@ -13,7 +13,8 @@
         <table class="items-center w-full bg-transparent">
           <thead class="text-primary bg-[#e6e6e6] px-3">
             <tr class="rounded-tl-lg rounded-tr-lg">
-              <th class="rounded-tl-lg md:w-48">Día</th>
+              <th class="rounded-tl-lg">Día</th>
+              <th>T. autorizado</th>
               <th>Entrada</th>
               <th>Salida</th>
               <th>Pausas</th>
@@ -24,8 +25,15 @@
             <template v-for="(attendance, index) in processedAttendances" :key="attendance.id">
               <tr v-if="!attendance.incident" class="text-gray-600 text-center border-b border-[#a9a9a9]">
                 <th class="py-px lg:py-2 text-left text-sm">
-                  <span class="ml-3 text-xs"> {{ attendance.date?.formatted }} </span>
+                  <span class="ml-3 text-xs">
+                    {{ attendance.date?.formatted }}
+                    <!-- <el-tag v-if="attendance.additional_time?.authorized_at" type="success" style="font-size: 9px;">Tiempo Autorizado {{ attendance.additional_time.time_requested }}</el-tag> -->
+                  </span>
                 </th>
+                <td class="px-6 text-xs py-px lg:py-2">
+                  <span v-if="attendance.additional_time?.authorized_at">{{ attendance.additional_time.time_requested }}</span>
+                  <i v-else class="fa-solid fa-minus"></i>
+                </td>
                 <td class="px-6 text-xs py-px lg:py-2">
                   <p class="bg-transparent text-sm" :class="{
                     'text-amber-500': attendance.late > 0 && attendance.late < 15,
@@ -45,7 +53,8 @@
                     <template #content>
                       <ol>
                         <li v-for="(pausa, index) in attendance.pausas" :key="index">
-                          <span class="text-yellow-500">{{ index + 1 }}.</span> De {{ formatTimeTo12Hour(pausa.start) }} a {{ formatTimeTo12Hour(pausa.finish) ??
+                          <span class="text-yellow-500">{{ index + 1 }}.</span> De {{ formatTimeTo12Hour(pausa.start) }} a
+                          {{ formatTimeTo12Hour(pausa.finish) ??
                             'Sin reanudar' }}
                         </li>
                       </ol>
@@ -66,7 +75,7 @@
                 <th class="py-1 text-left mt-3 text-sm">
                   <span class="ml-3 text-xs"> {{ attendance.date?.formatted }} </span>
                 </th>
-                <td class="px-6 py-2" colspan="4">
+                <td class="px-6 py-2" colspan="5">
                   <p class="text-xs lg:text-sm rounded-xl py-px lg:py-2"
                     :class="'bg-' + attendance.incident.additionals.color + '-100 text-' + attendance.incident.additionals.color + '-600'">
                     {{ attendance.incident.name }}</p>
@@ -95,7 +104,7 @@
         </p>
         <p class="grid grid-cols-3 gap-x-1">
           <span>Tiempo adicional</span>
-          <span class="text-center">{{ additionalTime?.time_requested ?? '00:00' }}</span>
+          <span class="text-center">{{ formattedTotalAdditionalTime() }}</span>
           <span class=""></span>
         </p>
         <p v-if="getHolidays().length" class="grid grid-cols-3 gap-x-1">
@@ -163,7 +172,8 @@ export default {
       bonuses: null,
       discounts: null,
       extras: null,
-      additionalTime: null,
+      additionalTimes: null,
+      totalAdditionalTime: 0,
     }
   },
   props: {
@@ -187,7 +197,7 @@ export default {
       this.getBonuses();
       this.getDiscounts();
       this.getExtras();
-      this.getAuthorizedAdditionalTime();
+      this.getAuthorizedAdditionalTimes();
     },
     formatTimeTo12Hour(time) {
       if (time === null) return null;
@@ -266,14 +276,14 @@ export default {
         this.loading = false;
       }
     },
-    async getAuthorizedAdditionalTime() {
+    async getAuthorizedAdditionalTimes() {
       try {
         const response = await axios.post(route('payrolls.get-additional-time'), {
           payroll_id: this.payrollId,
           user_id: this.user.id
         });
         if (response.status === 200) {
-          this.additionalTime = response.data.item;
+          this.additionalTimes = response.data.items;
         }
       } catch (error) {
         console.log(error);
@@ -294,18 +304,26 @@ export default {
       let totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
       let totalWeekHoursAllowed = this.processedAttendances.find(item => item.check_in)?.additionals?.hours_per_week;
 
-      if (this.additionalTime) {
-        const time = this.additionalTime.time_requested;
-        const hours = time.split(':')[0];
-        const minutes = time.split(':')[1]
+      this.additionalTimes?.forEach(element => {
+          const time = element.time_requested;
+          const hours = time.split(':')[0];
+          const minutes = time.split(':')[1];
+  
+          console.log('total', this.totalAdditionalTime);
+          this.totalAdditionalTime += parseFloat(hours) + parseFloat(minutes / 60);
+      });
 
-        totalWeekHoursAllowed += parseFloat(hours) + parseFloat(minutes / 60);
-      }
+      totalWeekHoursAllowed += this.totalAdditionalTime;
 
       if (totalWeekHours > totalWeekHoursAllowed) {
         totalWeekHours = totalWeekHoursAllowed;
       }
       return totalWeekHours * this.user.employee_properties.salary.hour;
+    },
+    formattedTotalAdditionalTime() {
+      const hours = Math.floor(this.totalAdditionalTime / 60); // Calcular las horas
+      const minutes = Math.round(this.totalAdditionalTime % 60); // Calcular los minutos
+      return `${hours}h ${minutes}m`; // Formatear como "Xh Ym"
     },
     getRemainingHoursWeekly() {
       const totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
@@ -327,13 +345,13 @@ export default {
       const vacations = this.getVacations().length * 1.25 * dayly_salary;
       const workedDays = this.getWorkedDaysSalary();
       const holyDays = dayly_salary * this.getHolidays().length;
-      const bonuses = this.bonuses.reduce((accumulator, bonus) => {
+      const bonuses = this.bonuses?.reduce((accumulator, bonus) => {
         return accumulator + bonus.amount.raw;
-      }, 0);
+      }, 0) ?? 0;
 
-      const discounts = this.discounts.reduce((accumulator, discount) => {
+      const discounts = this.discounts?.reduce((accumulator, discount) => {
         return accumulator + discount.amount.raw;
-      }, 0);
+      }, 0) ?? 0;
 
       return vacations
         + workedDays

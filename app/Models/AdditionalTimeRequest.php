@@ -16,8 +16,9 @@ class AdditionalTimeRequest extends Model
         'comments',
         'authorized_user_name',
         'authorized_at',
-        'payroll_id',
-        'user_id',
+        'payroll_id', // quitar*
+        'user_id', //quitar*
+        'payroll_user_id',
     ];
 
     protected $casts = [
@@ -25,12 +26,12 @@ class AdditionalTimeRequest extends Model
     ];
 
     // relationships
-    public function payroll() :BelongsTo
+    public function payrollUser() :BelongsTo
     {
-        return $this->belongsTo(Payroll::class);
+        return $this->belongsTo(PayrollUser::class);
     }
 
-    public function user() :BelongsTo
+    public function user() :BelongsTo //quitar*
     {
         return $this->belongsTo(User::class);
     }

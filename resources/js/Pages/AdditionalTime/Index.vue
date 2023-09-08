@@ -54,9 +54,10 @@
           <el-table-column align="right" fixed="right" width="190">
             <template #header>
               <div class="flex space-x-2">
-                            <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
-                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
-                        </div>
+                <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                <el-button @click="handleSearch" type="primary" plain class="mb-3"><i
+                    class="fa-solid fa-magnifying-glass"></i></el-button>
+              </div>
             </template>
             <template #default="scope">
               <el-dropdown v-if="scope.row.authorized_at == 'No autorizado'" trigger="click">
@@ -94,7 +95,22 @@
             </p>
 
             <p class="ml-7 my-4 text-secondary">Nómina en curso</p>
-
+            <div class="mb-2">
+              <div class="flex items-center">
+                <el-tooltip content="Día de la semana laboral" placement="top">
+                  <span
+                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </span>
+                </el-tooltip>
+                <el-select @change="validateDay()" v-model="form.payroll_user_id" clearable placeholder="Selecciona día de la semana laboral"
+                  no-data-text="No hay dias registrados" no-match-text="No se encontraron coincidencias">
+                  <el-option v-for="item in payrolls_user" :key="item.pivot.id" :label="formatDate(item.pivot.date)"
+                    :value="item.pivot.id" />
+                </el-select> <br>
+              </div>
+              <p v-if="invalidDay" class="text-xs text-red-500 ml-7">Este día ya tiene solicitud. Selecciona otro</p>
+            </div>
             <div class="ml-7 flex space-x-3 items-center">
               <div class="w-1/3 mr-2">
                 <IconInput v-model="form.hours" inputPlaceholder="Horas *" inputType="number">
@@ -112,7 +128,7 @@
               </div>
               <span class="ml-1">min</span>
             </div>
-            <div class="flex ml-3 w-1/2">
+            <div class="flex ml-7 mt-2 w-3/4">
               <el-tooltip content="Justificación" placement="top">
                 <span
                   class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
@@ -130,14 +146,14 @@
                 class="fa-solid fa-xmark cursor-pointer w-3 h-3 rounded-full text-secondary flex items-center justify-center absolute right-3 top-3 text-xs"></i>
               <p class="text-secondary text-sm">
                 Es necesario describir las actividades que justifiquen el tiempo
-                adicional que estas solicitando. Sólo se podrá realizar una
-                solicitud por semana, por lo que debes de ingresar las horas
-                semanales adicionales a tu jornada normal.
+                adicional que estás solicitando. Sólo se podrá realizar una
+                solicitud por dia, por lo que debes de ingresar las horas
+                adicionales a tu jornada normal.
               </p>
             </div>
 
             <div class="flex justify-start space-x-3 pt-5 pb-1">
-              <PrimaryButton>{{ editFlag == true ? 'Actualizar' : 'Enviar' }}</PrimaryButton>
+              <PrimaryButton :disabled="invalidDay">{{ editFlag == true ? 'Actualizar' : 'Enviar' }}</PrimaryButton>
               <CancelButton @click="
                 createRequestModal = false;
               form.reset();
@@ -163,14 +179,16 @@ import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import axios from "axios";
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default {
   data() {
-
     const form = useForm({
       hours: null,
       minutes: null,
       justification: null,
+      payroll_user_id: null,
     });
 
     return {
@@ -182,6 +200,7 @@ export default {
       helpDialog: false,
       editFlag: false,
       more_additional_time: null,
+      invalidDay: false,
       // pagination
       itemsPerPage: 10,
       start: 0,
@@ -199,14 +218,26 @@ export default {
     InputError,
     IconInput,
   },
-
   props: {
     more_additional_times: Array,
+    payrolls_user: Array,
+    requested_payrolls_user: Array,
   },
   methods: {
-    handleSearch(){
-            this.search = this.inputSearch;
-        },
+    validateDay() {
+      if (this.requested_payrolls_user?.some(item => item.pivot.id === this.form.payroll_user_id)) {
+        this.invalidDay = true;
+      } else {
+        this.invalidDay = false;
+      }
+    },
+    formatDate(date) {
+      const parsedDate = new Date(date);
+      return format(parsedDate, 'EEEE d \'de\' MMMM', { locale: es }); // Formato personalizado
+    },
+    handleSearch() {
+      this.search = this.inputSearch;
+    },
     store() {
       this.form.post(route("more-additional-times.store"), {
         onSuccess: () => {
@@ -221,9 +252,7 @@ export default {
         },
       });
     },
-
     update() {
-      console.log('update');
       this.form.put(route("more-additional-times.update", this.more_additional_time), {
         onSuccess: () => {
           this.$notify({
@@ -238,7 +267,6 @@ export default {
         },
       });
     },
-
     edit(obj) {
       var parts = obj.time_requested.split(":");
       this.editFlag = true;
@@ -247,6 +275,8 @@ export default {
       this.form.hours = parts[0];
       this.form.minutes = parts[1];
       this.form.justification = obj.justification;
+      this.form.payroll_user_id = obj.payroll_user_id;
+      this.invalidDay = false;
     },
 
     handleSelectionChange(val) {
@@ -267,11 +297,11 @@ export default {
     },
 
     handleRowClick(row) {
-      if(row.status != 'Autorizado')
-            this.edit(row);
-            else{
-              return
-            }
+      if (row.status != 'Autorizado')
+        this.edit(row);
+      else {
+        return
+      }
     },
 
     handlePagination(val) {

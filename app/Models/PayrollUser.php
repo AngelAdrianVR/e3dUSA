@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class PayrollUser extends Pivot
@@ -52,6 +53,11 @@ class PayrollUser extends Pivot
         return $this->belongsTo(JustificationEvent::class);
     }
 
+    public function additionalTimeRequest(): HasOne
+    {
+        return $this->hasOne(AdditionalTimeRequest::class, 'payroll_user_id', 'id');
+    }
+
     //  methods
     public function totalBreakTime()
     {
@@ -76,6 +82,15 @@ class PayrollUser extends Pivot
             $workedTime -= $breakTime;
 
             $maxWorkedTime = $this->user->employee_properties['hours_per_day'] * 60;
+
+            // aumentar el maximo permitido por dia si existe una solicitud de tiempo adicional autorizada
+            $additional_time = $this->additionalTimeRequest;
+            if ($additional_time && $additional_time?->authorized_at) {
+                $requested = explode(':', $additional_time->time_requested);
+                $requested_in_minutes = intval($requested[0]) * 60 + intval($requested[1]);
+                $maxWorkedTime += $requested_in_minutes;
+            }
+
             $workedTime = min($workedTime, $maxWorkedTime);
 
             $hours = intval($workedTime / 60);
@@ -99,7 +114,7 @@ class PayrollUser extends Pivot
 
         return null;
     }
-    
+
     public function getLateTime()
     {
         if ($this->check_in) {
