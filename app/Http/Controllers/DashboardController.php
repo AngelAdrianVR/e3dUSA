@@ -220,6 +220,26 @@ class DashboardController extends Controller
                 // Calcular la diferencia en minutos entre started_at y expected_end_at
                 $timeDifferenceMinutes = $design->started_at->diffInMinutes($design->expected_end_at);
                 $totalTimeDifference += $timeDifferenceMinutes;
+
+                // Obtener los registros de PayrollUser para el usuario en la semana en curso
+                $payrolls = $user->payrolls()->wherePivotBetween('date', [$weekStart, $weekEnd])->get();
+
+                foreach ($payrolls as $payroll) {
+                    $day = $design->finished_at->isoFormat('ddd DD MMM'); // para la clave
+
+                    // Agregar el día al arreglo de weekly_points
+                    if (!isset($userPoints["weekly_points"][$day])) {
+                        $userPoints["weekly_points"][$day] = [
+                            "punctuality" => 0,
+                            "on_time" => 0,
+                            "average" => 0,
+                        ];
+                    }
+
+                    // Restar el valor de 'late' o sumar 10 puntos si no hay retardo
+                    $userPoints["punctuality"] += $payroll->pivot->late > 0 ? -$payroll->pivot->late : 10;
+                    $userPoints["weekly_points"][$day]["punctuality"] += $payroll->pivot->late > 0 ? -$payroll->pivot->late : 10;
+                }
             }
 
             // Calcular el promedio de tiempo en minutos ajustado a las horas por día del usuario
@@ -237,27 +257,6 @@ class DashboardController extends Controller
             foreach ($userPoints["weekly_points"] as $day => $value) {
                 $userPoints["weekly_points"][$day]["average"] = round($daily_average);
             }
-
-            // Obtener los registros de PayrollUser para el usuario en la semana en curso
-            $payrolls = $user->payrolls()->wherePivotBetween('date', [$weekStart, $weekEnd])->get();
-
-            foreach ($payrolls as $payroll) {
-                $day = $design->finished_at->isoFormat('ddd DD MMM'); // para la clave
-
-                // Agregar el día al arreglo de weekly_points
-                if (!isset($userPoints["weekly_points"][$day])) {
-                    $userPoints["weekly_points"][$day] = [
-                        "punctuality" => 0,
-                        "on_time" => 0,
-                        "average" => 0,
-                    ];
-                }
-
-                // Restar el valor de 'late' o sumar 10 puntos si no hay retardo
-                $userPoints["punctuality"] += $payroll->pivot->late > 0 ? -$payroll->pivot->late : 10;
-                $userPoints["weekly_points"][$day]["punctuality"] += $payroll->pivot->late > 0 ? -$payroll->pivot->late : 10;
-            }
-
 
             // Calcular el total de puntos
             $totalPointsArray = [];

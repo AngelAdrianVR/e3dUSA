@@ -27,18 +27,19 @@
                 <th class="py-px lg:py-2 text-left text-sm">
                   <span class="ml-3 text-xs">
                     {{ attendance.date?.formatted }}
-                    <!-- <el-tag v-if="attendance.additional_time?.authorized_at" type="success" style="font-size: 9px;">Tiempo Autorizado {{ attendance.additional_time.time_requested }}</el-tag> -->
                   </span>
                 </th>
                 <td class="px-6 text-xs py-px lg:py-2">
-                  <span v-if="attendance.additional_time?.authorized_at">{{ attendance.additional_time.time_requested }}</span>
+                  <span v-if="attendance.additional_time?.authorized_at">
+                  {{ formattedTimeToHoursAndMinutes(attendance.additional_time.time_requested) }}
+                  </span>
                   <i v-else class="fa-solid fa-minus"></i>
                 </td>
                 <td class="px-6 text-xs py-px lg:py-2">
                   <p class="bg-transparent text-sm" :class="{
-                    'text-amber-500': attendance.late > 0 && attendance.late < 15,
-                    'text-red-600': attendance.late >= 15,
-                  }">
+                      'text-amber-500': attendance.late > 0 && attendance.late < 15,
+                      'text-red-600': attendance.late >= 15,
+                    }">
                     {{ attendance.check_in }}
                     <i v-if="!attendance.late" class="fa-solid fa-face-smile text-green-600 ml-1"></i>
                     <i v-else-if="attendance.late < 15" class="fa-solid fa-face-meh ml-1"></i>
@@ -103,7 +104,7 @@
           <span>${{ getWorkedDaysSalary().toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
         </p>
         <p class="grid grid-cols-3 gap-x-1">
-          <span>Tiempo adicional</span>
+          <span>T. adicional autorizado</span>
           <span class="text-center">{{ formattedTotalAdditionalTime() }}</span>
           <span class=""></span>
         </p>
@@ -284,6 +285,7 @@ export default {
         });
         if (response.status === 200) {
           this.additionalTimes = response.data.items;
+          this.getTotalAditionalTimeInHours();
         }
       } catch (error) {
         console.log(error);
@@ -304,15 +306,7 @@ export default {
       let totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
       let totalWeekHoursAllowed = this.processedAttendances.find(item => item.check_in)?.additionals?.hours_per_week;
 
-      this.additionalTimes?.forEach(element => {
-          const time = element.time_requested;
-          const hours = time.split(':')[0];
-          const minutes = time.split(':')[1];
-  
-          console.log('total', this.totalAdditionalTime);
-          this.totalAdditionalTime += parseFloat(hours) + parseFloat(minutes / 60);
-      });
-
+      // si hay tiempo adicional autorizado 
       totalWeekHoursAllowed += this.totalAdditionalTime;
 
       if (totalWeekHours > totalWeekHoursAllowed) {
@@ -321,9 +315,15 @@ export default {
       return totalWeekHours * this.user.employee_properties.salary.hour;
     },
     formattedTotalAdditionalTime() {
-      const hours = Math.floor(this.totalAdditionalTime / 60); // Calcular las horas
-      const minutes = Math.round(this.totalAdditionalTime % 60); // Calcular los minutos
+      const hours = parseInt(this.totalAdditionalTime); // Calcular las horas
+      const minutes = Math.round((this.totalAdditionalTime - hours) * 60); // Calcular los minutos
       return `${hours}h ${minutes}m`; // Formatear como "Xh Ym"
+    },
+    formattedTimeToHoursAndMinutes(time) {
+        const hours = time.split(':')[0];
+        const minutes = time.split(':')[1];
+
+        return `${parseInt(hours)}h ${parseInt(minutes)}m`;
     },
     getRemainingHoursWeekly() {
       const totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
@@ -359,7 +359,17 @@ export default {
         + bonuses
         - discounts
         + this.extras.amount.raw;
-    }
+    },
+    getTotalAditionalTimeInHours() {
+      this.additionalTimes?.forEach(element => {
+        const time = element.time_requested;
+        const hours = time.split(':')[0];
+        const minutes = time.split(':')[1];
+
+        this.totalAdditionalTime += parseFloat(hours) + parseFloat(minutes / 60);
+      });
+      console.log(this.additionalTimes);
+    },
   },
   watch: {
     payrollId(newPayrollId) {
