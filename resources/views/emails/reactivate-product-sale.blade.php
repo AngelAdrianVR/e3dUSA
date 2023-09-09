@@ -4,10 +4,11 @@
 {{ $intro }}
 
 @foreach ($products as $product)
-{{-- <li><strong>{{ $product }}</strong></li> --}}
+@php
+ $catalog_product = App\Models\CatalogProduct::find($product->catalog_product_id);   
+@endphp
+<li><strong>{{ $catalog_product->name }}</strong></li>
 @endforeach
-
-{{$products}}
 
 {{ $salutation }}
 

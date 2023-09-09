@@ -19,17 +19,21 @@ class IncreaseProductPrice extends Command
         $nineMonthsAgo = Carbon::now()->subMonths(9);
         $products = CatalogProductCompany::whereDate('new_date', '<=', $nineMonthsAgo)->get();
 
-        $super_admins = User::whereIn('id', [1,2,3])->get();
-        $sellers = User::where('employee_properties->department', 'Ventas')->where('is_active', 1)->get();
+        if ($products->count()) {
+            $super_admins = User::whereIn('id', [1, 2, 3])->get();
+            $sellers = User::where('employee_properties->department', 'Ventas')->where('is_active', 1)->get();
 
-        // notify users
-        foreach ($sellers as $seller) {
-            $seller->notify(new IncreaseProductPriceNotification($products));
+            // notify users
+            foreach ($sellers as $seller) {
+                $seller->notify(new IncreaseProductPriceNotification($products));
+            }
+            foreach ($super_admins as $super) {
+                $super->notify(new IncreaseProductPriceNotification($products));
+            }
+
+            Log::info('app:increase-product-price executed successfully. There where ' . $products->count() . ' product(s)');
+        } else {
+            Log::info('app:increase-product-price executed successfully. There where 0 product(s)');
         }
-        foreach ($super_admins as $super) {
-            $super->notify(new IncreaseProductPriceNotification($products));
-        }
-        
-        Log::info('app:increase-product-price executed successfully.');
     }
 }
