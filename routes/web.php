@@ -195,6 +195,7 @@ Route::post('designs/massive-delete', [DesignController::class, 'massiveDelete']
 Route::put('designs/start-order/{design}', [DesignController::class, 'startOrder'])->name('designs.start-order');
 Route::post('designs/finish-order', [DesignController::class, 'finishOrder'])->name('designs.finish-order');
 Route::put('designs/authorize/{design}', [DesignController::class, 'authorizeOrder'])->name('designs.authorize');
+Route::post('designs/update-with-media/{design}', [DesignController::class, 'updateWithMedia'])->name('designs.update-with-media');
 
 // ------- Design modifications routes  ---------
 Route::resource('design-modifications', DesignModificationController::class)->middleware('auth');

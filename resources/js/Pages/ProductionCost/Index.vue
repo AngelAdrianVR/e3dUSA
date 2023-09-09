@@ -33,7 +33,7 @@
                     </div>
                 </div>
 
-                <el-table :data="filteredTableData" @row-click="handleRowClick"  max-height="450" style="width: 100%"
+                <el-table :data="filteredTableData" @row-click="handleRowClick"  max-height="670" style="width: 100%"
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="id" label="ID" width="45" />

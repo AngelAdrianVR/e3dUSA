@@ -236,7 +236,12 @@ class CatalogProductController extends Controller
 
         $part_number = explode('#', $request->barCode)[0];
 
-        $catalog_product = CatalogProductResource::make(CatalogProduct::with('storages')->where('part_number', $part_number)->first());
+        $catalog_product = CatalogProductResource::make(CatalogProduct::with(['storages', 'companies'])->where('part_number', $part_number)->first());
+
+        $companies = $catalog_product->companies;
+
+        // Verifica si $companies contiene datos
+        // dd($catalog_product);
 
         // return $catalog_product;
 
