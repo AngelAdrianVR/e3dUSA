@@ -121,11 +121,12 @@ Route::post('payrolls/get-bonuses', [PayrollController::class, 'getBonuses'])->m
 Route::post('payrolls/get-discounts', [PayrollController::class, 'getDiscounts'])->middleware('auth')->name('payrolls.get-discounts');
 Route::post('payrolls/get-extras', [PayrollController::class, 'getExtras'])->middleware('auth')->name('payrolls.get-extras');
 Route::post('payrolls/get-payroll-users', [PayrollController::class, 'getPayrollUsers'])->middleware('auth')->name('payrolls.get-payroll-users');
-Route::get('payrolls/print-template/{users_id_to_show}/{payroll_id}', [PayrollController::class, 'printTemplate'])->middleware('auth')->name('payrolls.print-template');
 Route::post('payrolls/get-additional-time', [PayrollController::class, 'getAdditionalTime'])->middleware('auth')->name('payrolls.get-additional-time');
 Route::post('payrolls/close-current', [PayrollController::class, 'closeCurrent'])->middleware('auth')->name('payrolls.close-current');
 Route::post('payrolls/get-current-payroll', [PayrollController::class, 'getCurrentPayroll'])->middleware('auth')->name('payrolls.get-current-payroll');
 Route::post('payrolls/get-all-payrolls', [PayrollController::class, 'getAllPayrolls'])->middleware('auth')->name('payrolls.get-all-payrolls');
+Route::get('payrolls/print-template/{users_id_to_show}/{payroll_id}', [PayrollController::class, 'printTemplate'])->middleware('auth')->name('payrolls.print-template');
+Route::get('payrolls/get-users/{payroll_id}', [PayrollController::class, 'getUsers'])->middleware('auth')->name('payrolls.get-users');
 
 // ------- Recursos humanos(users routes)  ---------
 Route::resource('users', UserController::class)->middleware('auth');
@@ -133,6 +134,7 @@ Route::get('users-get-next-attendance', [UserController::class, 'getNextAttendan
 Route::get('users-get-pause-status', [UserController::class, 'getPauseStatus'])->middleware('auth')->name('users.get-pause-status');
 Route::get('users-set-attendance', [UserController::class, 'setAttendance'])->middleware('auth')->name('users.set-attendance');
 Route::get('users-set-pause', [UserController::class, 'setPause'])->middleware('auth')->name('users.set-pause');
+Route::get('users-get-additional-time-requested-days/{user_id}/{payroll_id}', [UserController::class, 'getRequestedDays'])->middleware('auth')->name('users.get-additional-time-requested-days');
 Route::put('users-reset-pass/{user}', [UserController::class, 'resetPass'])->middleware('auth')->name('users.reset-pass');
 Route::put('users-change-status/{user}', [UserController::class, 'changeStatus'])->middleware('auth')->name('users.change-status');
 Route::post('users-get-unseen-messages', [UserController::class, 'getUnseenMessages'])->middleware('auth')->name('users.get-unseen-messages');
@@ -214,8 +216,6 @@ Route::post('machines/massive-delete', [MachineController::class, 'massiveDelete
 Route::post('machines/upload-files/{machine}', [MachineController::class, 'uploadFiles'])->name('machines.upload-files');
 Route::post('machines/update-with-media/{machine}', [MachineController::class, 'updateWithMedia'])->name('machines.update-with-media')->middleware('auth');
 Route::post('machines/QR-search-machine', [MachineController::class, 'QRSearchMachine'])->name('machines.QR-search-machine');
-
-
 
 // ------- aditional time request Routes  ---------
 Route::resource('more-additional-times', AdditionalTimeRequestController::class)->middleware('auth');

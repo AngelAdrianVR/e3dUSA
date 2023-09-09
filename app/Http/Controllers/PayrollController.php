@@ -346,4 +346,12 @@ class PayrollController extends Controller
 
         return response()->json(['items' => $additiona_times]);
     }
+
+    public function getUsers($payroll_id)
+    {
+        $payroll = Payroll::find($payroll_id);
+        $users = $payroll->users->unique('name');
+        
+        return response()->json(['items' => $users]);
+    }
 }

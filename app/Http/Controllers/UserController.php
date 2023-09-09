@@ -149,7 +149,7 @@ class UserController extends Controller
             'personal',
             'production_performances',
             'design_performances',
-            'sale_performances',    
+            'sale_performances',
         ));
     }
 
@@ -311,6 +311,17 @@ class UserController extends Controller
         $notifications = auth()->user()->notifications()->whereIn('id', $request->notifications_ids)->delete();
 
         return response()->json([]);
+    }
+
+    public function getRequestedDays($user_id, $payroll_id)
+    {
+        $user = User::find($user_id);
+        $payrolls_user = $user->payrolls()->wherePivot('payroll_id', $payroll_id)->get();
+        $requested_payrolls_user = $payrolls_user->filter(function ($payroll) {
+            return !$payroll->pivot->additionalTimeRequest()->doesntExist();
+        })->values();
+
+        return response()->json(['requested' => $requested_payrolls_user, 'all' => $payrolls_user]);    
     }
 
     private function formatTime($minutes)

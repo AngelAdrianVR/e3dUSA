@@ -28,7 +28,7 @@ class AdditionalTimeRequestController extends Controller
 
     public function adminIndex()
     {
-        $admin_additional_times = MoreAdditionalTimeResource::collection(AdditionalTimeRequest::with('user', 'payroll')->latest()->get());
+        $admin_additional_times = MoreAdditionalTimeResource::collection(AdditionalTimeRequest::with('user', 'payrollUser')->latest()->get());
         $payrolls = Payroll::latest()->get();
         $users = User::all();
         
