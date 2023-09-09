@@ -1,4 +1,5 @@
 <template>
+    <Head :title="quote.data.folio" />
     <!-- logo -->
     <div class="text-center">
         <ApplicationLogo class="h-auto w-3/12 inline-block" />
@@ -57,8 +58,8 @@
 
         <!-- Images -->
         <div class="w-11/12 mx-auto my-3 grid grid-cols-3 gap-4 ">
-            <template v-for="item in quote.data.products" ::key="item.id">
-                <div class="bg-gray-200 rounded-t-xl rounded-b-md border" style="font-size: 8px;">
+            <template v-for="item in quote.data.products" :key="item.id">
+                <div v-if="item.show_image" class="bg-gray-200 rounded-t-xl rounded-b-md border" style="font-size: 8px;">
                     <img class="rounded-t-xl max-h-52 mx-auto" :src="item.media[0]?.original_url">
                     <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
                 </div>
@@ -170,6 +171,8 @@
 <script>
 
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import { Head } from '@inertiajs/vue3';
+
 export default {
     data() {
         return {
@@ -178,6 +181,7 @@ export default {
     },
     components: {
         ApplicationLogo,
+        Head,
     },
     props: {
         quote: Object
