@@ -142,6 +142,40 @@ class DesignController extends Controller
         return to_route('designs.index');
     }
 
+    public function updateWithMedia(Request $request, Design $design)
+    {
+        $request->validate([
+            'company_branch_name' => 'required',
+            'contact_name' => 'nullable',
+            'designer_id' => 'required',
+            'name' => 'required',
+            'design_type_id' => 'required',
+            'dimensions' => 'nullable',
+            'measure_unit' => 'required',
+            'pantones' => 'nullable',
+            'specifications' => 'required',
+        ]);
+
+        $design->update($request->except('original_design_id') + [
+            'user_id' => auth()->id()
+        ]);
+
+        // update image
+        $design->clearMediaCollection('plano');
+        $design->clearMediaCollection('logo');
+        if ($request->hasFile('media_plano')) {
+            $design->addMediaFromRequest('media_plano')->toMediaCollection('plano');
+        }
+        if ($request->hasFile('media_logo')) {
+            $design->addMediaFromRequest('media_logo')->toMediaCollection('logo');
+        }
+        $design->save();
+
+        event(new RecordEdited($design));
+
+        return to_route('designs.index');
+    }
+
 
     public function destroy(Design $design)
     {

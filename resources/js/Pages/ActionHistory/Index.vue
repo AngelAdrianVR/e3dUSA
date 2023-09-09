@@ -42,6 +42,11 @@
 
           <!-- --------------------- Tab 1 Creaciones starts------------------ -->
           <div v-if="tabs == 1" class="px-7 py-7 text-sm">
+            <!-- pagination -->
+                    <!-- <div class="mt-6">
+                        <el-pagination @current-change="handlePagination" layout="prev, pager, next"
+                            :total="audits_created.data.length" />
+                    </div> -->
             <table class="w-full">
               <thead>
                 <tr class="text-left">
@@ -220,8 +225,11 @@ export default {
     return {
     showModal: false,
     current_audit: null,
-      tabs: 1,
-    };
+    tabs: 1,
+    itemsPerPage: 10,
+    start: 0,
+    end: 10,
+};
   },
   components: {
     AppLayoutNoHeader,
@@ -288,8 +296,11 @@ export default {
         
        return this.users.find((item) => item.id == user_id).name;
         // return user.name;
-    }
-   
+    },
+    handlePagination(val) {
+            this.start = (val - 1) * this.itemsPerPage;
+            this.end = val * this.itemsPerPage;
+        },   
   },
 };
 </script>

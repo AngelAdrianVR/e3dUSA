@@ -61,7 +61,7 @@ class CatalogProduct extends Model implements HasMedia
 
     public function companies(): BelongsToMany
     {
-      return $this->belongsToMany(Quote::class)
+      return $this->belongsToMany(Company::class, 'catalog_product_company', 'catalog_product_id', 'company_id')
             ->withPivot([
                 'id',
                 'old_price',
