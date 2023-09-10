@@ -848,23 +848,25 @@ onMounted(() => {
                 }}
               </li>
             </ul>
+            <Link class="text-center my-5" :href="route('catalog-products.show', catalogProductFound.id)">
+            <p class="text-secondary hover:underline cursor-pointer">
+              Ver producto
+            </p>
+            </Link>
             <h1 class="text-sm font-bold text-center mt-1">
               Clientes
             </h1>
 
             <div>
-              <div v-for="company_info in catalogProductFound.companies" :key="company_info" class="p-3 flex flex-col">
+              <div v-for="company_info in catalogProductFound.companies" :key="company_info" class="p-3 flex flex-col border rounde-lg">
                 <p class="text-secondary font-bold">Razon social: <span class="text-gray-600 font-thin">{{company_info.business_name}}</span></p>
+                <p class="text-secondary font-bold">Precio anterior: <span class="text-gray-600 font-thin">{{company_info.pivot.old_price}} {{ company_info.pivot.new_currency }}</span></p>
+                <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{company_info.pivot.old_date}}</span></p>
                 <p class="text-secondary font-bold">Precio actual: <span class="text-gray-600 font-thin">{{company_info.pivot.new_price}} {{ company_info.pivot.new_currency }}</span></p>
                 <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{company_info.pivot.new_date}}</span></p>
               </div>
             </div>
 
-            <Link class="text-center mt-5" :href="route('catalog-products.show', catalogProductFound.id)">
-            <p class="text-secondary hover:underline cursor-pointer">
-              Ver producto
-            </p>
-            </Link>
           </div>
         </div>
         <!-- -------------- Catalog Product found in search ends--------------------- -->

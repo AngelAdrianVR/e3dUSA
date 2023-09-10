@@ -240,12 +240,6 @@ class CatalogProductController extends Controller
 
         $companies = $catalog_product->companies;
 
-        // Verifica si $companies contiene datos
-        // dd($catalog_product);
-
-        // return $catalog_product;
-
-
         return response()->json(['item' => $catalog_product]);
     }
 }

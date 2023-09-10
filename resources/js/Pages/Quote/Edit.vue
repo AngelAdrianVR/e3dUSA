@@ -85,20 +85,34 @@
                         </div>
                         <div>
                             <IconInput v-model="form.tooling_cost" inputPlaceholder="Costo de herramental *"
-                                inputType="number" inputStep="0.01">
+                                inputType="text">
                                 <el-tooltip content="Costo de herramental" placement="top">
                                     <i class="fa-solid fa-hammer"></i>
                                 </el-tooltip>
                             </IconInput>
                             <InputError :message="form.errors.tooling_cost" />
                         </div>
-                        <label class="flex items-center text-gray-600">
-                            <input type="checkbox" v-model="form.tooling_cost_stroked"
-                                class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
-                            <span class="ml-2 text-sm">Tachar:</span>
-                            <span class="text-gray-600 ml-3" :class="form.tooling_cost_stroked ? 'line-through' : ''">{{
-                                form.tooling_cost }}</span>
-                        </label>
+                        <div class="flex space-x-3">
+                            <el-select v-model="form.tooling_currency" placeholder="Moneda *" :fit-input-width="true">
+                                    <el-option v-for="item in toolingCurrencies" :key="item.value" :label="item.label"
+                                        :value="item.value">
+                                        <span style="float: left">{{ item.label }}</span>
+                                        <span style="
+                                            float: right;
+                                            color: #cccccc;
+                                            font-size: 13px;
+                                            ">{{ item.value }}</span>
+                                    </el-option>
+                                </el-select>
+                                <InputError :message="form.errors.tooling_currency" />
+                            <label class="flex items-center text-gray-600">
+                                <input type="checkbox" v-model="form.tooling_cost_stroked"
+                                    class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
+                                <span class="ml-2 text-sm">Tachar:</span>
+                                <span class="text-gray-600 ml-3" :class="form.tooling_cost_stroked ? 'line-through' : ''">{{
+                                    form.tooling_cost }} {{ form.tooling_currency }}</span>
+                            </label>
+                        </div>
                         <div>
                             <IconInput v-model="form.freight_cost" inputPlaceholder="Costo de flete *" inputType="number" inputStep="0.01">
                                 <el-tooltip content="Costo de flete" placement="top">
@@ -246,6 +260,7 @@ export default {
             department: this.quote.department,
             tooling_cost: this.quote.tooling_cost,
             tooling_cost_stroked: Boolean(this.quote.tooling_cost_stroked),
+            tooling_currency: this.quote.tooling_currency,
             freight_cost: this.quote.freight_cost,
             first_production_days: this.quote.first_production_days,
             notes: this.quote.notes,
@@ -274,7 +289,21 @@ export default {
                     label: 'Dólar estadounidense',
                     value: '$USD'
                 }
-            ]
+            ],
+            toolingCurrencies: [
+                {
+                    label: 'No colocar moneda',
+                    value: ''
+                },
+                {
+                    label: 'Peso mexicano',
+                    value: '$MXN'
+                },
+                {
+                    label: 'Dólar EUA',
+                    value: '$USD'
+                }
+            ],
         };
     },
     components: {

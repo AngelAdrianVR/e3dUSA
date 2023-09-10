@@ -79,7 +79,7 @@
             <ol class="list-decimal mx-2 mb-2">
                 <li v-if="quote.data.notes !== '--'" class="font-bold text-blue-500">{{ quote.data.notes }}</li>
                 <li>PRICES WITHOUT TAXES</li>
-                <li>TOOLING COSTS: <span class="font-bold text-blue-500" :class="quote.data.tooling_cost_stroked ? 'line-through' : ''">{{ quote.data.tooling_cost }} {{ quote.data.currency }}</span></li>
+                <li>TOOLING COSTS: <span class="font-bold text-blue-500" :class="quote.data.tooling_cost_stroked ? 'line-through' : ''">{{ quote.data.tooling_cost }} {{ quote.data.tooling_currency }}</span></li>
                 <li>DELIVERY TIME FOR THE FIRST PRODUCTION <span class="font-bold text-blue-500">{{ quote.data.first_production_days }}</span>.
                     TIME RUNS ONCE PAYING 100% OF THE TOOLING AND THE 50% OF THE
                     PRODUCTS.</li>
