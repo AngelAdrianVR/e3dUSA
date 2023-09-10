@@ -82,7 +82,7 @@
                 <li v-if="quote.data.notes !== '--'" class="font-bold text-blue-500">{{ quote.data.notes }}</li>
                 <li>PRECIOS ANTES DE IVA</li>
                 <li>COSTO DE HERRAMENTAL: <span class="font-bold text-blue-500" :class="quote.data.tooling_cost_stroked ? 'line-through' : ''">{{ quote.data.tooling_cost }} {{
-                    quote.data.currency }}</span></li>
+                    quote.data.tooling_currency }}</span></li>
                 <li>TIEMPO DE ENTREGA PARA LA PRIMER PRODUCCIÓN <span class="font-bold text-blue-500">{{
                     quote.data.first_production_days }}</span>.
                     EL TIEMPO CORRE UNA VEZ PAGANDO EL 100% DEL HERRAMENTAL Y EL 50% DE LOS PRODUCTOS.</li>
