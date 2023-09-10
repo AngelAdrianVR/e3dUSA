@@ -98,10 +98,13 @@ class UserController extends Controller
                 }
                 return 0; // En caso de que el resultado no sea válido
             }))],
-            ["label" => "Total pagado sin bonos", "value" => '$' . number_format($payroll_user->sum(function ($payrollUser) {
+            ["label" => "Total pagado sin bonos", "value" => '$' . number_format($payroll_user->sum(function ($payrollUser) use ($user_id){
                 $result = $payrollUser->totalWorkedTime();
                 // Verificar si el resultado es un array con clave 'hours' y sumar el valor 'hours' al total
                 if (is_array($result) && isset($result['hours'])) {
+                    if($user_id == 34) { //solo para santiago porque causa problemas
+                        return $result['hours'] * 52.08;
+                    }
                     return $result['hours'] * $payrollUser->additionals["salary"]["hour"];
                 }
                 return 0; // En caso de que el resultado no sea válido

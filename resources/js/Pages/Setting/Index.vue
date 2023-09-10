@@ -84,7 +84,7 @@
                                 </IconInput>
                                 <InputError :message="settingForm.errors.key" />
                             </div>
-                            <div v-if="currentSetting?.options.length">
+                            <div v-if="currentSetting?.options?.length">
                                 <el-select v-model="settingForm.value" placeholder="Valor de configuración *"
                                     no-data-text="No hay valores">
                                     <el-option v-for="option in currentSetting.options" :key="option.value" :label="option.name"
@@ -216,7 +216,7 @@ export default {
                 this.settingForm.key = setting.key;
                 this.settingForm.value = setting.value;
                 this.settingForm.type = setting.type;
-                this.settingForm.options = setting.options.map(item => `${item.name}-${item.value}`);
+                this.settingForm.options = setting.options?.map(item => `${item.name}-${item.value}`);
             }
         },
         createSetting() {
