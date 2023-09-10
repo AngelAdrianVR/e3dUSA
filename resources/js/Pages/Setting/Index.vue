@@ -84,7 +84,7 @@
                                 </IconInput>
                                 <InputError :message="settingForm.errors.key" />
                             </div>
-                            <div v-if="currentSetting?.options">
+                            <div v-if="currentSetting?.options.length">
                                 <el-select v-model="settingForm.value" placeholder="Valor de configuración *"
                                     no-data-text="No hay valores">
                                     <el-option v-for="option in currentSetting.options" :key="option.value" :label="option.name"
@@ -202,7 +202,7 @@ export default {
 
             const option = options.find(opt => opt.value == value);
 
-            return option ? option.name : 'Desconocido';
+            return option ? option.name : value;
         },
         editSetting(setting, index) {
             if (this.$page.props.auth.user.permissions.includes('Editar configuraciones')) {
