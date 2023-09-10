@@ -133,7 +133,7 @@
                   <i class="fa-solid fa-user"></i>
                 </el-tooltip>
               </span>
-              <el-select @change="searchRequestedDays()" :disabled="editFlag" v-model="form.user_id" clearable filterable
+              <el-select @change="searchRequestedDays" :disabled="editFlag" v-model="form.user_id" clearable filterable
                 placeholder="Buscar usuario" no-data-text="No hay usuarios registrados"
                 no-match-text="No se encontraron coincidencias">
                 <el-option v-for="item in selectedPayrollUsers" :key="item.id" :label="item.name" :value="item.id" />
@@ -329,19 +329,22 @@ export default {
           this.form.reset();
           this.createRequestModal = false;
           this.editFlag = false;
-        }, post
+        },
       });
     },
     edit(obj) {
-      // var parts = obj.time_requested.split(":");
+      var parts = obj.time_requested.split(":");
       this.editFlag = true;
       this.more_additional_time = obj;
       this.createRequestModal = true;
       this.form.hours = parts[0];
       this.form.minutes = parts[1];
       this.form.justification = obj.justification;
-      this.form.payroll_id = obj.payroll.id;
-      this.form.user_id = obj.user.id;
+      this.form.payroll_id = obj.payroll_user.payroll_id;
+      this.form.payroll_user_id = obj.payroll_user.id;
+      this.form.user_id = obj.payroll_user.user_id;
+      this.searchUsers();
+      this.searchRequestedDays();
     },
     handleSelectionChange(val) {
       this.$refs.multipleTableRef.value = val;
