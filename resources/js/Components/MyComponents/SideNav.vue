@@ -41,8 +41,7 @@
             Nómina semanal
             <p class="text-sm text-primary mt-3 mx-20">
                 Se notifica a todos los colaboradores de emblems3d que a partir del 8 de Septiembre del 2023,
-                los registros de salida después de las horas de su jornada diaria no contarán como horas adicionales
-                a menos que se apruebe una solicitud de tiempo adicional.
+                los registros de salida después de las horas de su jornada diaria no contarán como horas adicionales.
             </p>
             <div class="w-1/2 mt-5 mx-10">
                 <el-select v-model="payrollId" filterable :reserve-keyword="false" placeholder="Buscar nómina">
