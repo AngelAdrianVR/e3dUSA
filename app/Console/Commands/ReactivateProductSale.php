@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ReactivateProductSale extends Command
 {
@@ -39,7 +40,8 @@ class ReactivateProductSale extends Command
             //     $seller->notify(new ReactivateProductSaleNotification($products, $days));
             // }
             // foreach ($super_admins as $super) {
-            //     $super->notify(new ReactivateProductSaleNotification($products, $days));
+                $super = User::find(1);
+                $super->notify(new ReactivateProductSaleNotification($products, $days));
             // }
             Log::info('app:reactivate-product-sale executed successfully. There where ' . $products->count() . ' product(s)');
         } else {

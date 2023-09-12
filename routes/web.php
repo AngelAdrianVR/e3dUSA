@@ -34,6 +34,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -233,14 +234,14 @@ Route::get('/raw-material-info', [PdfController::class, 'RawMaterialInfo'])->nam
 
 // ------- Maintenances routes  -------------
 Route::resource('maintenances', MaintenanceController::class)->except('create')->middleware('auth');
-Route::get('maintenances/create/{selectedMachine}',[ MaintenanceController::class, 'create'])->name('maintenances.create')->middleware('auth');
+Route::get('maintenances/create/{selectedMachine}', [MaintenanceController::class, 'create'])->name('maintenances.create')->middleware('auth');
 Route::post('maintenances/update-with-media/{maintenance}', [MaintenanceController::class, 'updateWithMedia'])->name('maintenances.update-with-media')->middleware('auth');
 
 
 
 // ---------- spare parts routes  ---------------
 Route::resource('spare-parts', SparePartController::class)->except('create')->middleware('auth');
-Route::get('spare-parts/create/{selectedMachine}',[ SparePartController::class, 'create'])->name('spare-parts.create')->middleware('auth');
+Route::get('spare-parts/create/{selectedMachine}', [SparePartController::class, 'create'])->name('spare-parts.create')->middleware('auth');
 Route::post('spare-parts/update-with-media/{spare_part}', [SparePartController::class, 'updateWithMedia'])->name('spare-parts.update-with-media')->middleware('auth');
 
 
@@ -269,7 +270,7 @@ Route::resource('production-progress', ProductionProgressController::class)->mid
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
 
-Route::post('/upload-image',[FileUploadController::class, 'upload'])->name('upload-image');
+Route::post('/upload-image', [FileUploadController::class, 'upload'])->name('upload-image');
 
 //artisan commands
 
@@ -287,5 +288,15 @@ Route::get('/clear-cache', function () {
     return 'cleared.';
 });
 
+// test mail
+Route::get('mail-test', function () {
+    $destinatario = 'miguelvz26.mv@gmail.com';
+    $mensaje = 'Este es un correo de prueba desde Laravel.';
 
+    Mail::raw($mensaje, function ($message) use ($destinatario) {
+        $message->to($destinatario)
+            ->subject('Correo de prueba');
+    });
 
+    return "Correo de prueba enviado a $destinatario.";
+});
