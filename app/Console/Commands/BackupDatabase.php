@@ -15,8 +15,12 @@ class BackupDatabase extends Command
     public function handle()
     {
         // Hacer una copia de seguridad de la base de datos
+        $databaseName = env('DB_DATABASE');
+        $databaseUser = env('DB_USERNAME');
+        $databasePassword = env('DB_PASSWORD');
         $databaseBackupPath = storage_path('app/backups/database.sql');
-        exec("mysqldump -u " . env('DB_USERNAME') . " -p" . env('DB_PASSWORD') . " " . env('DB_DATABASE') . " > $databaseBackupPath");
+
+        exec("mysqldump -u$databaseUser -p$databasePassword $databaseName > $databaseBackupPath");
 
         // Comprimir la carpeta storage/app/public
         $storageBackupPath = storage_path('app/backups/storage.zip');
@@ -24,13 +28,13 @@ class BackupDatabase extends Command
 
         // Envía los archivos por correo electrónico
         Mail::send([], [], function ($message) use ($databaseBackupPath, $storageBackupPath) {
-            $message->to('destinatario@correo.com')
-                ->subject('Archivos de respaldo')
-                ->attach($databaseBackupPath)
-                ->attach($storageBackupPath);
+            $message->to('miguel@gmail.com')
+                ->subject('Archivos de respaldo diario')
+                ->attach($databaseBackupPath);
+                // ->attach($storageBackupPath);
         });
 
         $this->info('Backup realizado y enviado por correo.');
-        Log::info('Backup realizado y enviado por correo.');
+        Log::info("Backup realizado y enviado por correo. $databaseName $databaseUser $databasePassword");
     }
 }
