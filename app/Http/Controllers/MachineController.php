@@ -148,19 +148,27 @@ class MachineController extends Controller
     }
 
     public function QRSearchMachine(Request $request)
-    {
+{
+    $request->validate([ 
+        'barCode' => 'required|string'
+    ]);
 
-        $request->validate([ 
-            'barCode' => 'required|string'
-        ]);
+    // Obtén el número de serie
+    $serial_number = $request->barCode;
 
-        $serial_number = $request->barCode;
-
-
-        $machine = MachineResource::make(Machine::with('maintenances', 'spareParts', 'media')->where('serial_number', $serial_number)->first());
-
-        // dd($machine);
-
-        return response()->json(['item' => $machine]);
+    // Verifica si el formato es incorrecto (contiene "'") y realiza el reemplazo solo en ese caso
+    if (strpos($serial_number, "'") !== false) {
+        $serial_number = str_replace("'", "-", $serial_number);
     }
+
+    if (strpos($serial_number, "´") !== false) {
+        $serial_number = str_replace("´", "-", $serial_number);
+    }
+
+    // Realiza la búsqueda en la base de datos
+    $machine = MachineResource::make(Machine::with('maintenances', 'spareParts', 'media')->where('serial_number', $serial_number)->first());
+
+    return response()->json(['item' => $machine]);
+}
+
 }
