@@ -288,6 +288,11 @@ Route::get('/clear-cache', function () {
     return 'cleared.';
 });
 
+Route::get('/backup', function () {
+    Artisan::call('app:backup-database');
+    return 'backup created.';
+});
+
 // test mail
 Route::get('mail-test', function () {
     $destinatario = 'miguelvz26.mv@gmail.com';
