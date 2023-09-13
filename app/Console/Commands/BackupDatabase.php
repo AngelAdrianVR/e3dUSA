@@ -18,12 +18,13 @@ class BackupDatabase extends Command
         $databaseName = env('DB_DATABASE');
         $databaseUser = env('DB_USERNAME');
         $databasePassword = env('DB_PASSWORD');
-        $databaseBackupPath = storage_path('app/backups/database.sql');
+        $backupDate = now()->format('j_F_Y'); // Ejemplo: 13_septiembre_2023
+        $databaseBackupPath = storage_path("app/backups/database_$backupDate.sql");
 
         exec("mysqldump -u$databaseUser -p$databasePassword $databaseName > $databaseBackupPath");
 
         // Comprimir la carpeta storage/app/public
-        $storageBackupPath = storage_path('app/backups/storage.zip');
+        $storageBackupPath = storage_path("app/backups/storage_$backupDate.zip");
         exec("zip -r $storageBackupPath storage/app/public");
 
         // Envía los archivos por correo electrónico
@@ -35,6 +36,6 @@ class BackupDatabase extends Command
         });
 
         $this->info('Backup realizado y enviado por correo.');
-        Log::info("Backup realizado y enviado por correo. $databaseName $databaseUser $databasePassword");
+        Log::info("Backup realizado y enviado por correo.");
     }
 }
