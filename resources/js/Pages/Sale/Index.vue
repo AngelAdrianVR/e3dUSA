@@ -258,6 +258,7 @@ export default {
                     (sale) =>
                         // sale.id.toLowerCase().includes(this.search.toLowerCase()) ||
                         sale.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                        sale.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
                         sale.company_branch.name.toLowerCase().includes(this.search.toLowerCase())
                 );
             }
