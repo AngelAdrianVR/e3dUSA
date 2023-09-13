@@ -78,8 +78,8 @@
                     Cada minuto que trabajas se convierte en puntos, y estos se suman a tu puntaje total. Así que, cuantos
                     más minutos de trabajo productivo tengas, mejor será tu calificación.</li>
                 <li><strong>Merma: </strong>La merma se refiere a productos defectuosos o piezas que salieron mal durante la
-                    producción. Si tienes merma, perderás 10 puntos. Pero si logras evitar cualquier problema y no hay
-                    merma, ganarás 10 puntos extra. Así que, tratar de reducir los errores en el trabajo es importante para
+                    producción. Si tienes merma, perderás puntos equivalentes a la cantidad de merma. Pero si logras evitar cualquier problema y no hay
+                    merma, ganarás 1 punto extra. Así que, tratar de reducir los errores en el trabajo es importante para
                     tu calificación.</li>
             </div>
         </template>

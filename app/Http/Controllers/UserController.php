@@ -71,6 +71,7 @@ class UserController extends Controller
             round($validated['employee_properties']['salary']['week'] / $validated['employee_properties']['hours_per_week'], 2);
         $validated['employee_properties']['salary']['day'] = round($validated['employee_properties']['salary']['hour'] * $hours_per_day, 2);
         $validated['password'] = bcrypt($request['employee_properties']['password']);
+        $validated['employee_properties']['hours_per_day'] = round($hours_per_day, 2);
 
         $user = User::create($validated);
         $user->syncRoles($request->roles);

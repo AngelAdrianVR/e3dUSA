@@ -66,7 +66,7 @@ class DesignController extends Controller
         }else {
             // notify to Maribel
             $maribel = User::find(3);
-            // $maribel->notify(new ApprovalRequiredNotification('orden de diseño', 'designs.index'));
+            $maribel->notify(new ApprovalRequiredNotification('orden de diseño', 'designs.index'));
         }
 
         // Guardar el archivo en la colección 'plano'

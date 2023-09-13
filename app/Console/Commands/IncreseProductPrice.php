@@ -24,12 +24,12 @@ class IncreaseProductPrice extends Command
             $sellers = User::where('employee_properties->department', 'Ventas')->where('is_active', 1)->get();
 
             // notify users
-            // foreach ($sellers as $seller) {
-            //     $seller->notify(new IncreaseProductPriceNotification($products));
-            // }
-            // foreach ($super_admins as $super) {
-            //     $super->notify(new IncreaseProductPriceNotification($products));
-            // }
+            foreach ($sellers as $seller) {
+                $seller->notify(new IncreaseProductPriceNotification($products));
+            }
+            foreach ($super_admins as $super) {
+                $super->notify(new IncreaseProductPriceNotification($products));
+            }
 
             Log::info('app:increase-product-price executed successfully. There where ' . $products->count() . ' product(s)');
         } else {

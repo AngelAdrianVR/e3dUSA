@@ -57,7 +57,7 @@ class SaleController extends Controller
         } else {
             // notify to Maribel
             $maribel = User::find(3);
-            // $maribel->notify(new ApprovalRequiredNotification('orden de venta', 'sales.index'));
+            $maribel->notify(new ApprovalRequiredNotification('orden de venta', 'sales.index'));
         }
 
         // store media

@@ -59,7 +59,7 @@ class QuoteController extends Controller
         } else {
             // notify to Maribel
             $maribel = User::find(3);
-            // $maribel->notify(new ApprovalRequiredNotification('cotización', 'quotes.index'));
+            $maribel->notify(new ApprovalRequiredNotification('cotización', 'quotes.index'));
         }
 
         foreach ($request->products as $product) {
@@ -159,7 +159,7 @@ class QuoteController extends Controller
         } else {
             // notify to Maribel
             $maribel = User::find(3);
-            // $maribel->notify(new ApprovalRequiredNotification('cotización', 'quotes.index'));
+            $maribel->notify(new ApprovalRequiredNotification('cotización', 'quotes.index'));
         }
 
         foreach ($quote->catalogProducts as $product) {

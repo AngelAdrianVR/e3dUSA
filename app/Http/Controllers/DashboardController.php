@@ -130,8 +130,8 @@ class DashboardController extends Controller
                     $userPoints["weekly_points"][$day]["time"] += $estimatedTimeInMinutes;
 
                     // Restar el valor de la propiedad scrap o sumar 10 puntos si no hay merma
-                    $userPoints["scrap"] += $production->scrap ? -$production->scrap : 10;
-                    $userPoints["weekly_points"][$day]["scrap"] += $production->scrap ? -$production->scrap : 10;
+                    $userPoints["scrap"] += $production->scrap ? -$production->scrap : 1;
+                    $userPoints["weekly_points"][$day]["scrap"] += $production->scrap ? -$production->scrap : 1;
                 }
             }
 
