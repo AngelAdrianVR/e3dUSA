@@ -23,16 +23,32 @@ class BackupDatabase extends Command
 
         exec("mysqldump -u$databaseUser -p$databasePassword $databaseName > $databaseBackupPath");
 
-        // Comprimir la carpeta storage/app/public
-        $storageBackupPath = storage_path("app/backups/storage_$backupDate.zip");
-        exec("zip -r $storageBackupPath storage/app/public");
+        // Comprimir cada subdirectorio por separado
+        $publicPath = storage_path('app/public');
+        $storageFolderPath = storage_path("app/backups/storage_$backupDate");
+
+        // Asegurarse de que la carpeta de respaldo exista
+        if (!file_exists($storageFolderPath)) {
+            mkdir($storageFolderPath, 0755, true);
+        }
+
+        $directoriesToCompress = scandir($publicPath);
+
+        foreach ($directoriesToCompress as $directory) {
+            if ($directory !== '.' && $directory !== '..' && is_dir("$publicPath/$directory")) {
+                $zipFileName = "storage_$directory.zip";
+                $zipFilePath = "$storageFolderPath/$zipFileName";
+
+                exec("zip -r $zipFilePath $publicPath/$directory");
+            }
+        }
 
         // Envía los archivos por correo electrónico
-        Mail::send([], [], function ($message) use ($databaseBackupPath, $storageBackupPath) {
-            $message->to('miguel@gmail.com')
+        Mail::send([], [], function ($message) use ($databaseBackupPath, $storageFolderPath) {
+            $message->to('miguel@emblemas3d.com')
                 ->subject('Archivos de respaldo diario')
                 ->attach($databaseBackupPath);
-                // ->attach($storageBackupPath);
+            // ->attach($storageBackupPath);
         });
 
         $this->info('Backup realizado y enviado por correo.');
