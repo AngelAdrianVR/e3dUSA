@@ -156,7 +156,11 @@ class User extends Authenticatable
         $today_attendance = PayrollUser::firstOrCreate(['date' => today()->toDateString(), 'user_id' => $this->id], [
             'payroll_id' => Payroll::getCurrent()->id,
             'additionals' => [
-                'salary' =>  $this->employee_properties['salary'],
+                'salary' =>  [
+                    "week" => $this->employee_properties['salary']['week'],
+                    "day" => $this->employee_properties['work_days'][today()->dayOfWeek]["salary"],
+                    "hour" => $this->employee_properties['salary']['hour'],
+                ],
                 'bonuses' => $bonuses,
                 'discounts' => $discounts,
                 'hours_per_week' => $this->employee_properties['hours_per_week'],
