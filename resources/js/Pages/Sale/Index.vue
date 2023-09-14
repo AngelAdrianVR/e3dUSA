@@ -253,7 +253,7 @@ export default {
         filteredTableData() {
             if (!this.search) {
                 return this.sales.data.filter((item, index) => index >= this.start && index < this.end);
-            } else {
+             } else {
                 return this.sales.data.filter(
                     (sale) =>
                         // sale.id.toLowerCase().includes(this.search.toLowerCase()) ||
