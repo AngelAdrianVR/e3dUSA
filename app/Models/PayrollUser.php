@@ -81,7 +81,8 @@ class PayrollUser extends Pivot
             $breakTime = $this->calculateTotalBreakTime();
             $workedTime -= $breakTime;
 
-            $maxWorkedTime = $this->user->employee_properties['hours_per_day'] * 60;
+            if (!isset($this->user->employee_properties['work_days'][$this->date->dayOfWeek]['hours'])) dd($this->user->name);
+            $maxWorkedTime = $this->user->employee_properties['work_days'][$this->date->dayOfWeek]['hours'] * 60;
 
             // aumentar el maximo permitido por dia si existe una solicitud de tiempo adicional autorizada
             $additional_time = $this->additionalTimeRequest;
@@ -101,7 +102,7 @@ class PayrollUser extends Pivot
                 'hours' => round($workedTime / 60, 2),
             ];
         } elseif ($this->justification_event_id === 2) {
-            $time = $this->user->employee_properties['hours_per_day'] * 60;
+            $time = $this->user->employee_properties['work_days'][$this->date->dayOfWeek]['hours'] * 60;
 
             $hours = intval($time / 60);
             $minutes = $time % 60;

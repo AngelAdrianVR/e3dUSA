@@ -76,7 +76,7 @@
               </IconInput>
               <InputError :message="form.errors.employee_properties?.salary?.week" />
             </div>
-            <div>
+            <!-- <div>
               <IconInput v-model="form.employee_properties.hours_per_week" inputPlaceholder="Horas semanales *"
                 inputType="number" inputStep="0.01">
                 <el-tooltip content="Horas semanales" placement="top">
@@ -84,7 +84,7 @@
                 </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.employee_properties?.hours_per_week" />
-            </div>
+            </div> -->
             <div class="flex items-center">
               <el-tooltip content="Fecha de nacimiento" placement="top">
                 <span

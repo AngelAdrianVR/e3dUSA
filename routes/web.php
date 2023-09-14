@@ -295,7 +295,7 @@ Route::get('/backup', function () {
 
 // test mail
 Route::get('mail-test', function () {
-    $destinatario = 'miguelvz26.mv@gmail.com';
+    $destinatario = 'maribel@emblemas3d.com';
     $mensaje = 'Este es un correo de prueba desde Laravel.';
 
     Mail::raw($mensaje, function ($message) use ($destinatario) {

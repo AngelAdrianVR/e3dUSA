@@ -45,7 +45,7 @@ class BackupDatabase extends Command
 
         // Envía los archivos por correo electrónico
         Mail::send([], [], function ($message) use ($databaseBackupPath, $storageFolderPath) {
-            $message->to('miguel@emblemas3d.com')
+            $message->to('maribel@emblemas3d.com')
                 ->subject('Archivos de respaldo diario')
                 ->attach($databaseBackupPath);
             // ->attach($storageBackupPath);
