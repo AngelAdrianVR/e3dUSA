@@ -52,6 +52,7 @@ class SampleResource extends JsonResource
             'media' => $this->getMedia()->all(),
             'catalog_product' => CatalogProductResource::make($this->whenLoaded('catalogProduct')),
             'company_branch' => $this->whenLoaded('companyBranch'),
+            'user' => $this->whenLoaded('user'),
             'contact' => Contact::find($this->contact_id),
             'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'updated_at' => $this->updated_at?->isoFormat('DD MMM, YYYY h:mm A'),

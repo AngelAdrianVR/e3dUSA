@@ -16,7 +16,7 @@ class SampleController extends Controller
     
     public function index()
     {
-        $samples = SampleResource::collection(Sample::with('catalogProduct', 'companyBranch')->latest()->get());
+        $samples = SampleResource::collection(Sample::with('catalogProduct', 'companyBranch', 'user')->latest()->get());
         // return $samples;
         return inertia('Sample/Index', compact('samples'));
     }
