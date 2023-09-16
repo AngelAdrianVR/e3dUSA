@@ -76,31 +76,38 @@ class PayrollUser extends Pivot
     public function totalWorkedTime()
     {
         if ($this->check_in) {
-            $workedTime = $this->calculateWorkedTime();
+            if ($this->date->addDays(1)->isPast() && !$this->check_out) {
+                return [
+                    'formatted' => "0h 0m",
+                    'hours' => 0,
+                ];
+            } else {
+                $workedTime = $this->calculateWorkedTime();
+    
+                $breakTime = $this->calculateTotalBreakTime();
+                $workedTime -= $breakTime;
+    
+                $maxWorkedTime = $this->user->employee_properties['work_days'][$this->date->dayOfWeek]['hours'] * 60;
 
-            $breakTime = $this->calculateTotalBreakTime();
-            $workedTime -= $breakTime;
-
-            if (!isset($this->user->employee_properties['work_days'][$this->date->dayOfWeek]['hours'])) dd($this->user->name);
-            $maxWorkedTime = $this->user->employee_properties['work_days'][$this->date->dayOfWeek]['hours'] * 60;
-
-            // aumentar el maximo permitido por dia si existe una solicitud de tiempo adicional autorizada
-            $additional_time = $this->additionalTimeRequest;
-            if ($additional_time && $additional_time?->authorized_at) {
-                $requested = explode(':', $additional_time->time_requested);
-                $requested_in_minutes = intval($requested[0]) * 60 + intval($requested[1]);
+                // aumentar el maximo permitido por dia si existe una solicitud de tiempo adicional autorizada
+                $additional_time = $this->additionalTimeRequest;
+                $requested_in_minutes = 0;
+                if ($additional_time && $additional_time?->authorized_at ) {
+                    $requested = explode(':', $additional_time->time_requested);
+                    $requested_in_minutes = intval($requested[0]) * 60 + intval($requested[1]);
+                }
+                
                 $maxWorkedTime += $requested_in_minutes;
+                $workedTime = min($workedTime, $maxWorkedTime);
+    
+                $hours = intval($workedTime / 60);
+                $minutes = $workedTime % 60;
+    
+                return [
+                    'formatted' => "{$hours}h {$minutes}m",
+                    'hours' => round($workedTime / 60, 2),
+                ];
             }
-
-            $workedTime = min($workedTime, $maxWorkedTime);
-
-            $hours = intval($workedTime / 60);
-            $minutes = $workedTime % 60;
-
-            return [
-                'formatted' => "{$hours}h {$minutes}m",
-                'hours' => round($workedTime / 60, 2),
-            ];
         } elseif ($this->justification_event_id === 2) {
             $time = $this->user->employee_properties['work_days'][$this->date->dayOfWeek]['hours'] * 60;
 
