@@ -170,6 +170,21 @@
               </el-select>
               <!-- <InputError :message="form.errors.sat_types" /> -->
             </div>
+            <div class="mt-2">
+              <div class="flex">
+                <el-tooltip
+                  content="Estas notas se mostraran cuando se seleccione esta sucursal para crear cotizacion, orden de venta u otro movimiento"
+                  placement="top">
+                  <span
+                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                    <i class="fa-solid fa-grip-lines"></i>
+                  </span>
+                </el-tooltip>
+                <textarea v-model="branch.important_notes" rows="4" class="textarea mb-1" autocomplete="off"
+                  placeholder="Notas. Ejemplo: Precio acordado de 'x' producto en siguiente cotizacion $45.30"></textarea>
+              </div>
+              <InputError :message="branch.errors.important_notes" />
+            </div>
             <!-- ---------------- Company Branch ends ----------------- -->
 
             <!-- ---------------- Company Contacts starts ----------------- -->
@@ -217,7 +232,7 @@
                 <div>
                   <IconInput v-model="contact.phone" inputPlaceholder="Teléfono *" inputType="text">
                     <el-tooltip content="Teléfono" placement="top">
-                      <i class="fa-solid fa-phone"></i>
+                      important_notes    <i class="fa-solid fa-phone"></i>
                     </el-tooltip>
                   </IconInput>
                   <!-- <InputError :message="form.errors.phone" /> -->
@@ -254,13 +269,13 @@
             </div>
             <div>
               <SecondaryButton @click="addBranch" :disabled="contacts.length == 0 ||
-                !branch.name ||
-                !branch.address ||
-                !branch.post_code ||
-                !branch.sat_method ||
-                !branch.sat_type ||
-                !branch.sat_way
-                ">
+                  !branch.name ||
+                  !branch.address ||
+                  !branch.post_code ||
+                  !branch.sat_method ||
+                  !branch.sat_type ||
+                  !branch.sat_way
+                  ">
                 {{
                   editBranchIndex !== null
                   ? "Actualizar sucursal"
@@ -439,6 +454,7 @@ export default {
         sat_method: null,
         sat_type: null,
         sat_way: null,
+        important_notes: null,
       },
       product: {
         catalog_product_id: null,
@@ -617,6 +633,7 @@ export default {
       this.branch.sat_method = null;
       this.branch.sat_type = null;
       this.branch.sat_way = null;
+      this.branch.important_notes = null;
       this.contacts = [];
     },
     deleteBranch(index) {
@@ -681,6 +698,7 @@ export default {
         sat_method: element.sat_method,
         sat_type: element.sat_type,
         sat_way: element.sat_way,
+        important_notes: element.important_notes,
         contacts: [],
       };
 
