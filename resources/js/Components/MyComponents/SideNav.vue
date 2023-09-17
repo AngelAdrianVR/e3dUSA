@@ -159,6 +159,13 @@ export default {
                         this.$page.props.auth.user.permissions.includes('Ver ordenes de compra')
                 },
                 {
+                    label: 'Proyectos',
+                    icon: '<i class="fa-solid fa-check"></i>',
+                    route: route('projects.index'),
+                    active: route().current('projects.*'),
+                    show: this.$page.props.auth.user.permissions.includes('Ver proyectos')
+                },
+                {
                     label: 'Almacén',
                     icon: '<i class="fa-solid fa-warehouse text-xs"></i>',
                     active: route().current('storages.*') || route().current('raw-materials.*'),
