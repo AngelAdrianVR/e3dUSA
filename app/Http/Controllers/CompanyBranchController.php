@@ -42,27 +42,19 @@ class CompanyBranchController extends Controller
 
     }
 
-    
-    public function show(CompanyBranch $companyBranch)
+    public function clearImportantNotes(CompanyBranch $company_branch)
     {
-        //
+        $company_branch->important_notes = null;
+        $company_branch->save();
+
+        return response()->json(['message' => 'Notas borradas']);
     }
 
-    
-    public function edit(CompanyBranch $companyBranch)
+    public function storeImportantNotes(CompanyBranch $company_branch, Request $request)
     {
-        //
-    }
+        $company_branch->important_notes = $request->notes;
+        $company_branch->save();
 
-    
-    public function update(Request $request, CompanyBranch $companyBranch)
-    {
-        //
-    }
-
-    
-    public function destroy(CompanyBranch $companyBranch)
-    {
-        //
+        return response()->json(['message' => 'Notas guardadas']);
     }
 }

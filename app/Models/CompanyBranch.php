@@ -19,7 +19,8 @@ class CompanyBranch extends Model
         'sat_method',
         'sat_type',
         'sat_way',
-        'company_id'
+        'company_id',
+        'important_notes',
     ];
 
     //relationships

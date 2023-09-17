@@ -14,7 +14,25 @@
             </template>
 
             <!-- Form -->
-            <form @submit.prevent="store">
+            <form @submit.prevent="store" class="relative">
+                <!-- company branch important notes -->
+                <div class="absolute top-5 right-5">
+                    <div v-if="importantNotes">
+                        <p style="white-space: pre-line;">{{ importantNotes }}</p>
+                        <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                            title="¿Borrar notas?" @confirm="clearImportantNotes()">
+                            <template #reference>
+                                <button type="button"><i class="fa-solid fa-broom"></i></button>
+                            </template>
+                        </el-popconfirm>
+                    </div>
+                    <div v-else-if="form.company_branch_id">
+                        <button @click="showImportantNotesModal = true" type="button">
+                            <i class="fa-solid fa-plus mr-2"></i>
+                            Agregar nota para esta sucursal
+                        </button>
+                    </div>
+                </div>
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
                     <div class="flex items-center">
                         <el-tooltip content="Cliente: Seleccione para poder habilitar sus productos" placement="top">
@@ -23,7 +41,8 @@
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
                         </el-tooltip>
-                        <el-select v-model="form.company_branch_id" class="mt-2" clearable filterable placeholder="Selecciona un cliente">
+                        <el-select v-model="form.company_branch_id" class="mt-2" clearable filterable
+                            placeholder="Selecciona un cliente">
                             <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
                                 :value="item.id" />
                         </el-select>
@@ -186,7 +205,8 @@
                                     #
                                 </el-tooltip>
                             </IconInput>
-                            <p v-if="alertMaxQuantity" class="text-red-600 text-xs"> Sólo hay material para producir {{ alertMaxQuantity }} unidades. No olvides reportar la adquisición de más mercancía </p>
+                            <p v-if="alertMaxQuantity" class="text-red-600 text-xs"> Sólo hay material para producir {{
+                                alertMaxQuantity }} unidades. No olvides reportar la adquisición de más mercancía </p>
                             <!-- <InputError :message="form.errors.fiscal_address" /> -->
                         </div>
                         <div class="flex col-span-full">
@@ -212,6 +232,31 @@
                     </div>
                 </div>
             </form>
+            <DialogModal :show="showImportantNotesModal" @close="showImportantNotesModal = false">
+                <template #title>
+                    Agregar notas importantes para {{ company_branches.find(item => item.id == form.company_branch_id).name
+                    }}
+                </template>
+                <template #content>
+                    <div class="flex mt-6">
+                        <el-tooltip
+                            content="Estas notas se mostraran cuando se seleccione esta sucursal para crear cotizacion, orden de venta u otro movimiento"
+                            placement="top">
+                            <span
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                <i class="fa-solid fa-grip-lines"></i>
+                            </span>
+                        </el-tooltip>
+                        <textarea v-model="importantNotesToStore" rows="4" class="textarea mb-1" autocomplete="off"
+                            placeholder="Notas. Ejemplo: Precio acordado de 'x' producto en siguiente cotizacion $45.30"></textarea>
+                    </div>
+                </template>
+                <template #footer>
+                    <PrimaryButton @click="storeImportantNotes()" :disabled="!importantNotesToStore">Guardar notas
+                    </PrimaryButton>
+                    <CancelButton @click="showImportantNotesModal = false">Cancelar</CancelButton>
+                </template>
+            </DialogModal>
         </AppLayout>
     </div>
 </template>
@@ -223,6 +268,8 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
+import DialogModal from "@/Components/DialogModal.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 
 export default {
     data() {
@@ -242,6 +289,9 @@ export default {
 
         return {
             form,
+            importantNotes: null,
+            showImportantNotesModal: false,
+            importantNotesToStore: null,
             product: {
                 catalog_product_company_id: null,
                 quantity: null,
@@ -258,6 +308,8 @@ export default {
         Link,
         InputError,
         IconInput,
+        CancelButton,
+        DialogModal,
     },
     props: {
         company_branches: Array
@@ -275,6 +327,46 @@ export default {
                     this.form.reset();
                 }
             });
+        },
+        getImportantNotes() {
+            this.importantNotes = this.company_branches.find(item => item.id == this.form.company_branch_id)?.important_notes;
+        },
+        async clearImportantNotes() {
+            try {
+                const response = await axios.put(route('company-branches.clear-important-notes', this.form.company_branch_id));
+
+                if (response.status === 200) {
+                    this.importantNotes = null;
+                    this.company_branches.find(item => item.id == this.form.company_branch_id).important_notes = null;
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async storeImportantNotes() {
+            try {
+                const response = await axios.put(route('company-branches.store-important-notes', this.form.company_branch_id));
+
+                if (response.status === 200) {
+                    this.importantNotes = this.importantNotesToStore;
+                    this.company_branches.find(item => item.id == this.form.company_branch_id).important_notes = this.importantNotesToStore;
+                    this.importantNotesToStore = null;
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                this.showImportantNotesModal = false;
+            }
         },
         validateQuantity() {
             const catalogProducts = this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.company.catalog_products;
