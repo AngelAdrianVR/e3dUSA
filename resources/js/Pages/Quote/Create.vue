@@ -14,7 +14,26 @@
             </template>
 
             <!-- Form -->
-            <form @submit.prevent="store">
+            <form @submit.prevent="store" class="relative">
+                <!-- company branch important notes -->
+                <div class="absolute top-5 right-5">
+                    <div v-if="importantNotes">
+                        <p style="white-space: pre-line;">{{ importantNotes }}</p>
+                        <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                            title="¿Borrar notas?" @confirm="clearImportantNotes()">
+                            <template #reference>
+                                <button type="button"><i class="fa-solid fa-broom"></i></button>
+                            </template>
+                        </el-popconfirm>
+                    </div>
+                    <div v-else-if="form.company_branch_id">
+                        <button @click="showImportantNotesModal = true" type="button">
+                            <i class="fa-solid fa-plus mr-2"></i>
+                            Agregar nota para esta sucursal
+                        </button>
+                    </div>
+                </div>
+
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg px-9 py-5 shadow-md">
                     <div class="md:grid gap-6 mb-6 grid-cols-2">
                         <div class="col-span-2">
@@ -57,8 +76,8 @@
                                         <i class="fa-solid fa-magnifying-glass"></i>
                                     </span>
                                 </el-tooltip>
-                                <el-select v-model="form.company_branch_id" clearable filterable
-                                    placeholder="Busca el cliente" no-data-text="No hay clientes registrados"
+                                <el-select @change="getImportantNotes()" v-model="form.company_branch_id" clearable
+                                    filterable placeholder="Busca el cliente" no-data-text="No hay clientes registrados"
                                     no-match-text="No se encontraron coincidencias">
                                     <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
                                         :value="item.id" />
@@ -94,17 +113,17 @@
                         </div>
                         <div class="flex space-x-3">
                             <el-select v-model="form.tooling_currency" placeholder="Moneda *" :fit-input-width="true">
-                                    <el-option v-for="item in toolingCurrencies" :key="item.value" :label="item.label"
-                                        :value="item.value">
-                                        <span style="float: left">{{ item.label }}</span>
-                                        <span style="
+                                <el-option v-for="item in toolingCurrencies" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                    <span style="float: left">{{ item.label }}</span>
+                                    <span style="
                                             float: right;
                                             color: #cccccc;
                                             font-size: 13px;
                                             ">{{ item.value }}</span>
-                                    </el-option>
-                                </el-select>
-                                <InputError :message="form.errors.tooling_currency" />
+                                </el-option>
+                            </el-select>
+                            <InputError :message="form.errors.tooling_currency" />
                             <label class="flex items-center text-gray-600">
                                 <input type="checkbox" v-model="form.tooling_cost_stroked"
                                     class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
@@ -114,7 +133,8 @@
                             </label>
                         </div>
                         <div>
-                            <IconInput v-model="form.freight_cost" inputPlaceholder="Costo de flete *" inputType="number" inputStep="0.01">                                <el-tooltip content="Costo de flete" placement="top">
+                            <IconInput v-model="form.freight_cost" inputPlaceholder="Costo de flete *" inputType="number"
+                                inputStep="0.01"> <el-tooltip content="Costo de flete" placement="top">
                                     <i class="fa-solid fa-truck-fast"></i>
                                 </el-tooltip>
                             </IconInput>
@@ -196,8 +216,8 @@
                                 inactive-text="No mostrar imagen en cotización" />
                         </div>
                         <div>
-                            <IconInput v-model="product.quantity" inputPlaceholder="Cantidad a cotizar *"
-                                inputType="number" inputStep="0.01">
+                            <IconInput v-model="product.quantity" inputPlaceholder="Cantidad a cotizar *" inputType="number"
+                                inputStep="0.01">
                                 <el-tooltip content="Cantidad a cotizar" placement="top">
                                     #
                                 </el-tooltip>
@@ -240,6 +260,30 @@
                     </div>
                 </div>
             </form>
+            <DialogModal :show="showImportantNotesModal" @close="showImportantNotesModal = false">
+                <template #title>
+                    Agregar notas importantes para {{ company_branches.find(item => item.id == form.company_branch_id).name
+                    }}
+                </template>
+                <template #content>
+                    <div class="flex mt-6">
+                        <el-tooltip
+                            content="Estas notas se mostraran cuando se seleccione esta sucursal para crear cotizacion, orden de venta u otro movimiento"
+                            placement="top">
+                            <span
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                <i class="fa-solid fa-grip-lines"></i>
+                            </span>
+                        </el-tooltip>
+                        <textarea v-model="importantNotesToStore" rows="4" class="textarea mb-1" autocomplete="off"
+                            placeholder="Notas. Ejemplo: Precio acordado de 'x' producto en siguiente cotizacion $45.30"></textarea>
+                    </div>
+                </template>
+                <template #footer>
+                    <PrimaryButton @click="storeImportantNotes()" :disabled="!importantNotesToStore">Guardar notas</PrimaryButton>
+                    <CancelButton @click="showImportantNotesModal = false">Cancelar</CancelButton>
+                </template>
+            </DialogModal>
         </AppLayout>
     </div>
 </template>
@@ -250,7 +294,10 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
+import DialogModal from "@/Components/DialogModal.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
+import axios from "axios";
 
 export default {
     data() {
@@ -268,9 +315,11 @@ export default {
             company_branch_id: null,
             products: [],
         });
-        
         return {
             form,
+            importantNotes: null,
+            showImportantNotesModal: false,
+            importantNotesToStore: null,
             editIndex: null,
             product: {
                 id: null,
@@ -313,6 +362,8 @@ export default {
         Link,
         InputError,
         IconInput,
+        CancelButton,
+        DialogModal,
     },
     props: {
         catalog_products: Array,
@@ -331,6 +382,46 @@ export default {
                     this.form.reset();
                 }
             });
+        },
+        getImportantNotes() {
+            this.importantNotes = this.company_branches.find(item => item.id == this.form.company_branch_id)?.important_notes;
+        },
+        async clearImportantNotes() {
+            try {
+                const response = await axios.put(route('company-branches.clear-important-notes', this.form.company_branch_id));
+
+                if (response.status === 200) {
+                    this.importantNotes = null;
+                    this.company_branches.find(item => item.id == this.form.company_branch_id).important_notes = null;
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async storeImportantNotes() {
+            try {
+                const response = await axios.put(route('company-branches.store-important-notes', this.form.company_branch_id));
+
+                if (response.status === 200) {
+                    this.importantNotes = this.importantNotesToStore;
+                    this.company_branches.find(item => item.id == this.form.company_branch_id).important_notes = this.importantNotesToStore;
+                    this.importantNotesToStore = null;
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                this.showImportantNotesModal = false;
+            }
         },
         addProduct() {
             const product = { ...this.product };

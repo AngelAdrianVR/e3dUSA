@@ -180,7 +180,7 @@
                 </el-tooltip>
                 <textarea v-model="branch.important_notes" rows="4" class="textarea mb-1" autocomplete="off" placeholder="Notas. Ejemplo: Precio acordado de 'x' producto en siguiente cotizacion $45.30"></textarea>
               </div>
-              <InputError :message="branch.errors.important_notes" />
+              <InputError :message="branch.errors?.important_notes" />
             </div>
             <!-- ---------------- Company Branch ends ----------------- -->
 
