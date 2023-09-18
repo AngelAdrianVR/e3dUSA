@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use Illuminate\Http\Request;
 
@@ -10,7 +11,10 @@ class ProjectController extends Controller
     
     public function index()
     {
-        return inertia('Project/Index');
+        $projects = ProjectResource::collection(Project::with('tasks')->latest()->get());
+
+        // return $projects;
+        return inertia('Project/Index', compact('projects'));
     }
 
     
@@ -28,7 +32,11 @@ class ProjectController extends Controller
     
     public function show(Project $project)
     {
-        //
+
+        $projects = ProjectResource::collection(Project::with('tasks.users')->latest()->get());
+
+        // return $projects;
+        return inertia('Project/Show', compact('project', 'projects'));
     }
 
     

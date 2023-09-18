@@ -13,6 +13,16 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
+            $table->string('project_name');
+            $table->string('owner');
+            $table->string('group');
+            $table->string('status');
+            $table->boolean('is_strict_project')->default(false);
+            $table->unsignedFloat('budget');
+            $table->string('type_access_project');
+            $table->date('start_date');
+            $table->date('limit_date');
+            $table->date('finished_at')->nullable();
             $table->timestamps();
         });
     }
