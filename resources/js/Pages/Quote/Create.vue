@@ -14,22 +14,33 @@
             </template>
 
             <!-- Form -->
-            <form @submit.prevent="store" class="relative">
+            <form @submit.prevent="store" class="relative overflow-x-hidden">
                 <!-- company branch important notes -->
-                <div class="absolute top-5 right-5">
-                    <div v-if="importantNotes">
-                        <p style="white-space: pre-line;">{{ importantNotes }}</p>
-                        <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
-                            title="¿Borrar notas?" @confirm="clearImportantNotes()">
-                            <template #reference>
-                                <button type="button"><i class="fa-solid fa-broom"></i></button>
-                            </template>
-                        </el-popconfirm>
+                <div class="absolute top-5 -right-1">
+                    <div v-if="importantNotes" class="text-xs border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-72">
+                        <div class="absolute bg-primary top-1 -left-3 h-2 w-10 transform -rotate-45"></div>
+                        <div class="absolute bg-primary top-1 -right-3 h-2 w-10 transform rotate-45"></div>
+                        <h3 class="flex items-center justify-center mb-2">
+                            Este cliente tiene nota
+                            <i class="fa-regular fa-note-sticky ml-3"></i>
+                        </h3>
+                        <p style="white-space: pre-line;" class="px-1">{{ importantNotes }}</p>
+                        <div class="mt-3">
+                            <button @click="editImportantNotes()" type="button" class="text-[#9A9A9A] pr-2">Editar</button>
+                            <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                                title="¿Borrar notas?" @confirm="clearImportantNotes()">
+                                <template #reference>
+                                    <button type="button"
+                                        class="text-[#9A9A9A] border-l border-[#9A9A9A] px-2">Eliminar</button>
+                                </template>
+                            </el-popconfirm>
+                        </div>
                     </div>
                     <div v-else-if="form.company_branch_id">
-                        <button @click="showImportantNotesModal = true" type="button">
+                        <button @click="showImportantNotesModal = true" type="button"
+                            class="text-primary text-xs border border-[#9A9A9A] rounded-[5px] py-2 px-3">
                             <i class="fa-solid fa-plus mr-2"></i>
-                            Agregar nota para esta sucursal
+                            Agregar nota para este cliente
                         </button>
                     </div>
                 </div>
@@ -262,7 +273,8 @@
             </form>
             <DialogModal :show="showImportantNotesModal" @close="showImportantNotesModal = false">
                 <template #title>
-                    Agregar notas importantes para {{ company_branches.find(item => item.id == form.company_branch_id).name
+                    {{ editIMportantNotes ? 'Editar' : 'Agregar' }} notas importantes para {{ company_branches.find(item =>
+                        item.id == form.company_branch_id).name
                     }}
                 </template>
                 <template #content>
@@ -280,7 +292,8 @@
                     </div>
                 </template>
                 <template #footer>
-                    <PrimaryButton @click="storeImportantNotes()" :disabled="!importantNotesToStore">Guardar notas</PrimaryButton>
+                    <PrimaryButton @click="storeImportantNotes()" :disabled="!importantNotesToStore">Guardar notas
+                    </PrimaryButton>
                     <CancelButton @click="showImportantNotesModal = false">Cancelar</CancelButton>
                 </template>
             </DialogModal>
@@ -320,6 +333,7 @@ export default {
             importantNotes: null,
             showImportantNotesModal: false,
             importantNotesToStore: null,
+            isEditImportantNotes: false,
             editIndex: null,
             product: {
                 id: null,
@@ -405,7 +419,7 @@ export default {
         },
         async storeImportantNotes() {
             try {
-                const response = await axios.put(route('company-branches.store-important-notes', this.form.company_branch_id));
+                const response = await axios.put(route('company-branches.store-important-notes', this.form.company_branch_id), { notes: this.importantNotesToStore });
 
                 if (response.status === 200) {
                     this.importantNotes = this.importantNotesToStore;
@@ -422,6 +436,11 @@ export default {
             } finally {
                 this.showImportantNotesModal = false;
             }
+        },
+        editImportantNotes() {
+            this.isEditImportantNotes = true;
+            this.showImportantNotesModal = true;
+            this.importantNotesToStore = this.importantNotes;
         },
         addProduct() {
             const product = { ...this.product };
