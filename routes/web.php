@@ -21,6 +21,7 @@ use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\ProductionCostController;
 use App\Http\Controllers\ProductionProgressController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RoleController;
@@ -102,6 +103,11 @@ Route::post('purchases/massive-delete', [PurchaseController::class, 'massiveDele
 Route::post('purchases/clone', [PurchaseController::class, 'clone'])->name('purchases.clone');
 Route::put('purchases/mark-order-done/{currentPurchase}', [PurchaseController::class, 'markOrderDone'])->name('purchases.done');
 Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseController::class, 'markOrderRecieved'])->name('purchases.recieved');
+
+
+//-------------- Projects routes ------------------
+Route::resource('projects', ProjectController::class)->middleware('auth');
+
 
 // ------- Raw Material routes  ---------
 Route::resource('raw-materials', RawMaterialController::class)->middleware('auth');
