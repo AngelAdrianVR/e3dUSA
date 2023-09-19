@@ -23,7 +23,7 @@ class ProjectResource extends JsonResource
             'is_strict_project' => $this->is_strict_project,
             'budget' => $this->budget,
             'type_access_project' => $this->type_access_project,
-            'tasks' => $this->whenLoaded('tasks'),
+            'tasks' => TaskResource::collection($this->whenLoaded('tasks')),
             'start_date' => $this->start_date?->isoFormat('DD MMM YYYY'),
             'limit_date' => $this->limit_date?->isoFormat('DD MMM YYYY'),
             'finished_at' => $this->finished_at?->isoFormat('DD MMM, YYYY h:mm A'),

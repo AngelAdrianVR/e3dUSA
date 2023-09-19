@@ -2,6 +2,10 @@
   <AppLayoutNoHeader title="Detalles de proyecto |">
     <div class="flex justify-between text-lg mx-14 mt-11">
         <span>Proyectos</span>
+        <Link :href="route('projects.index')"
+            class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+          </Link>
     </div>
 
     <div class="flex justify-between mt-5 mx-14">
@@ -49,38 +53,19 @@
       <!-- -- Por hacer -- -->
         <div class="border-r border-[#9A9A9A] h-56 pr-7">
             <h2 class="font-bold mb-10">POR HACER <span class="font-normal ml-7">{{ '6' }}</span></h2>
-
-<!-- ---------- Task card component --------- -->
-            <div class="shadow-md shadow-gray-400/100 h-36 rounded-r-md border-l-4 border-red-600 py-2 px-3 cursor-grab active:cursor-grabbing">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <i class="fa-solid fa-ellipsis-vertical text-lg"></i>
-                        <i class="fa-solid fa-ellipsis-vertical text-lg"></i>
-                    </div>
-                    <p class="mr-5">{{ '24/02/2023' }}</p>
-                </div>
-
-                <div class="p-3">
-                    <p class="text-lg">{{ 'Fabricación de portaplacas' }}</p>
-                </div>
-
-                <footer class="p-3 border-t border-[#9A9A9A] mt-1 relative">
-                    <div class="flex justify-between items-center px-3">
-                        <i class="fa-regular fa-comments text-[#9A9A9A] text-lg cursor-pointer"></i>
-                        <div class="rounded-full w-12 h-12 border border-[#9A9A9A] absolute bottom-3 bg-gray-100 right-0"></div>
-                    </div>
-                </footer>
-            </div>
+            <ProjectTaskCard v-for="task in pedingTasks" :key="task" :taskComponent="task" />
         </div>
 
         <!-- -- En curso -- -->
         <div class="border-r border-[#9A9A9A] h-56 px-7">
-            <h2 class="font-bold">EN CURSO <span class="font-normal ml-7">{{ '3' }}</span></h2>
+            <h2 class="font-bold mb-10">EN CURSO <span class="font-normal ml-7">{{ '3' }}</span></h2>
+            <ProjectTaskCard v-for="task in inProgressTasks" :key="task" :taskComponent="task" />
         </div>
 
         <!-- -- Terminado -- -->
         <div class="h-56 px-7">
-            <h2 class="font-bold">TERMINADO <span class="font-normal ml-7">{{ '1' }}</span></h2>
+            <h2 class="font-bold mb-10">TERMINADO <span class="font-normal ml-7">{{ '1' }}</span></h2>
+            <ProjectTaskCard v-for="task in finishedTasks" :key="task" :taskComponent="task" />
         </div>
       </div>
       <!-- ------------- Informacion general ends 1 ------------- -->
@@ -91,17 +76,24 @@
 <script>
 import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import ProjectTaskCard from "@/Components/MyComponents/ProjectTaskCard.vue";
+import { Link } from "@inertiajs/vue3";
 
 export default {
     data(){
         return{
             selectedProyect: "",
+            pedingTasks: null,
+            inProgressTasks: null,
+            finishedTasks: null,
             tabs: 1,
         }
     },
     components:{
         AppLayoutNoHeader,
-        PrimaryButton
+        PrimaryButton,
+        ProjectTaskCard,
+        Link,
     },
     props:{
       projects: Object,
@@ -110,5 +102,17 @@ export default {
     methods:{
       
     },
+    computed: {
+  pedingTasks() {
+    return this.project.data.tasks.filter(task => task.status === 'Por hacer');
+  },
+  inProgressTasks() {
+    return this.project.data.tasks.filter(task => task.status === 'En curso');
+  },
+  finishedTasks() {
+    return this.project.data.tasks.filter(task => task.status === 'Terminada');
+  },
+},
+
 }
 </script>

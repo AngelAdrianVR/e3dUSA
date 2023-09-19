@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
-            $table->string('label');
+            $table->string('priority');
             $table->string('status');
+            $table->boolean('is_paused')->default(false);
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
