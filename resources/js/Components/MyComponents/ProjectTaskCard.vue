@@ -16,7 +16,12 @@
             <!-- ------------ body -------------------------- -->
                 <div class="flex items-center justify-between p-3">
                     <p class="text-lg">{{ taskComponent.title }}</p>
-                    <i class="fa-solid fa-paperclip cursor-pointer hover:bg-[#dfdede] rounded-full p-2"></i>
+                    <div>
+                        <el-tooltip content="Tienes una tarea por cumplir antes de poder comenzar" placement="top">
+                            <i class="fa-solid fa-hourglass cursor-default mr-3"></i>
+                        </el-tooltip>
+                        <i class="fa-solid fa-paperclip cursor-pointer hover:bg-[#dfdede] rounded-full p-2"></i>
+                    </div>
                 </div>
 
             <!-- ----------------- footer --------------- -->
@@ -27,12 +32,21 @@
                        <p class="text-xs ml-1">{{ '3' }} </p>
                        <p class="text-sm ml-3">| {{ 'Dpto. Diseño' }} </p>
                       </div>
-                      <div class="flex items-end absolute bottom-3 right-0 cursor-default">
-                        <p class="text-primary mr-2">+2</p>
-                        <el-tooltip content="Nombre de la persona" placement="bottom">
-                            <div class="rounded-full w-10 h-10 border border-[#9A9A9A]  bg-gray-100 "></div>
+                      <div class="flex items-center absolute bottom-3 right-0 cursor-default">
+                        <p class="text-primary mr-1">+2</p>
+                        <el-tooltip v-for="user in taskComponent.users" :key="user" :content="user.name" placement="bottom">
+                            <figure>
+                                <div v-if="$page.props.jetstream.managesProfilePhotos"
+                                    class="flex text-sm rounded-full">
+                                    <img class="h-9 w-9 rounded-full object-cover" :src="user.profile_photo_url"
+                                    :alt="user.name" />
+                                </div>
+                            </figure>
                         </el-tooltip>
                       </div>
+                      <el-tooltip content="Tarea terminada" placement="bottom">
+                        <i v-if="taskComponent.status == 'Terminada'" class="fa-solid fa-check text-green-500 text-xl cursor-default mr-24"></i>
+                    </el-tooltip>
                     </div>
                 </footer>
             </div>

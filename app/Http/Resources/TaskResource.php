@@ -17,7 +17,7 @@ class TaskResource extends JsonResource
         if ($this->priority == 'Normal') {
             $priority = [
                 'label' => 'Normal',
-                'color_border' => 'border-green-600'
+                'color_border' => 'border-[#87CEEB]'
             ];
         } else if ($this->priority == 'Medio') {
             $priority = [

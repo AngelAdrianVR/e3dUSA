@@ -55,15 +55,6 @@
                 {{ project.finished_at }}
                 </td>
                 <td class="text-left py-2 px-2">
-                <div>
-                    <!-- <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar roles y permisos')"
-                    confirm-button-text="Si" cancel-button-text="No" icon-color="#FFFFFF" title="¿Continuar?"
-                    @confirm="deleteRole(role, index)">
-                    <template #reference>
-                        <i class="fa-solid fa-trash-can text-red-600 cursor-pointer"></i>
-                    </template>
-                    </el-popconfirm> -->
-                </div>
                 </td>
             </tr>
             </tbody>

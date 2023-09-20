@@ -36,7 +36,7 @@ class ProjectController extends Controller
         $project = ProjectResource::make(Project::with('tasks.users')->find($project_id));
         $projects = ProjectResource::collection(Project::with('tasks.users')->latest()->get());
 
-        // return $project ;
+        // return $project;
         return inertia('Project/Show', compact('project', 'projects'));
     }
 
