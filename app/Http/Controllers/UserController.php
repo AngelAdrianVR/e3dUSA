@@ -296,6 +296,14 @@ class UserController extends Controller
         return response()->json(['requested' => $requested_payrolls_user, 'all' => $payrolls_user]);
     }
 
+    public function updatePausas(PayrollUser $payroll_user, Request $request)
+    {
+        $payroll_user->pausas = $request->pausas;
+        $payroll_user->save();
+
+        return response()->json([]);
+    }
+
     private function formatTime($minutes)
     {
         $hours = floor($minutes / 60);
