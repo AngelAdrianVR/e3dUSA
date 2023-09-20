@@ -115,19 +115,19 @@
             <p class="mt-7 mb-3">Dimensiones</p>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Peso</p>
-              <p>{{ currentMachine?.weight.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} kg</p>
+              <p>{{ currentMachine?.weight?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} kg</p>
             </div>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Ancho</p>
-              <p>{{ currentMachine?.width.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} cm</p>
+              <p>{{ currentMachine?.width?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} cm</p>
             </div>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Largo</p>
-              <p>{{ currentMachine?.large.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} cm</p>
+              <p>{{ currentMachine?.large?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} cm</p>
             </div>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Alto</p>
-              <p>{{ currentMachine?.height.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} cm</p>
+              <p>{{ currentMachine?.height?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} cm</p>
             </div>
             <p class="mt-7 mb-3">Datos de compra</p>
             <div class="flex mb-2 space-x-2">

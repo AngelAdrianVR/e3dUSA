@@ -80,6 +80,15 @@ export default {
                         this.$page.props.auth.user.permissions.includes('Ver ordenes de venta')
                 },
                 {
+                    label: 'Proyectos',
+                    icon: '<i class="fa-solid fa-check"></i>',
+                    route: route('projects.index'),
+                    active: route().current('projects.*'),
+                    options: [],
+                    dropdown: false,
+                    show: this.$page.props.auth.user.permissions.includes('Ver proyectos')
+                },
+                {
                     label: 'Compras',
                     icon: '<i class="fa-solid fa-cart-shopping text-xs"></i>',
                     active: route().current('suppliers.*') || route().current('purchases.*'),

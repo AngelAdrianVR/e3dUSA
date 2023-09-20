@@ -23,7 +23,7 @@ return new class extends Migration
             $table->timestamp('started_at')->nullable();
             $table->timestamp('finished_at')->nullable();
             $table->unsignedMediumInteger('scrap')->default(0);
-            $table->timestamp('is_paused')->default(false);
+            $table->boolean('is_paused')->default(0);
             $table->json('additionals')->nullable();
             $table->timestamps();
         });
