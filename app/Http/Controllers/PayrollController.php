@@ -177,7 +177,11 @@ class PayrollController extends Controller
                     'check_out' => $attendance['check_out'],
                     'pausas' => $attendance['pausas'],
                     'additionals' => [
-                        'salary' =>  $user->employee_properties['salary'],
+                        'salary' =>  [
+                            "week" => $user->employee_properties['salary']['week'],
+                            "day" => $user->employee_properties['work_days'][today()->dayOfWeek]["salary"],
+                            "hour" => $user->employee_properties['salary']['hour'],
+                        ],
                         'bonuses' => $bonuses,
                         'discounts' => $discounts,
                         'hours_per_week' => $user->employee_properties['hours_per_week'],
@@ -345,5 +349,13 @@ class PayrollController extends Controller
         $additiona_times = AdditionalTimeRequest::where('user_id', $request->user_id)->where('payroll_id', $request->payroll_id)->whereNotNull('authorized_at')->get();
 
         return response()->json(['items' => $additiona_times]);
+    }
+
+    public function getUsers($payroll_id)
+    {
+        $payroll = Payroll::find($payroll_id);
+        $users = $payroll->users->unique('name');
+        
+        return response()->json(['items' => $users]);
     }
 }

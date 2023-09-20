@@ -21,6 +21,7 @@ use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\ProductionCostController;
 use App\Http\Controllers\ProductionProgressController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RoleController;
@@ -34,6 +35,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -88,6 +90,8 @@ Route::put('sales/authorize/{sale}', [SaleController::class, 'authorizeOrder'])-
 
 // ------- Ventas(Companybranches sucursales Routes)  ---------
 Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');
+Route::put('company-branches/clear-important-notes/{company_branch}', [CompanyBranchController::class, 'clearImportantNotes'])->name('company-branches.clear-important-notes')->middleware('auth');
+Route::put('company-branches/store-important-notes/{company_branch}', [CompanyBranchController::class, 'storeImportantNotes'])->name('company-branches.store-important-notes')->middleware('auth');
 
 // ------- Compras(Suppliers Routes)  ---------
 Route::resource('suppliers', SupplierController::class)->middleware('auth');
@@ -99,6 +103,11 @@ Route::post('purchases/massive-delete', [PurchaseController::class, 'massiveDele
 Route::post('purchases/clone', [PurchaseController::class, 'clone'])->name('purchases.clone');
 Route::put('purchases/mark-order-done/{currentPurchase}', [PurchaseController::class, 'markOrderDone'])->name('purchases.done');
 Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseController::class, 'markOrderRecieved'])->name('purchases.recieved');
+
+
+//-------------- Projects routes ------------------
+Route::resource('projects', ProjectController::class)->middleware('auth');
+
 
 // ------- Raw Material routes  ---------
 Route::resource('raw-materials', RawMaterialController::class)->middleware('auth');
@@ -121,11 +130,12 @@ Route::post('payrolls/get-bonuses', [PayrollController::class, 'getBonuses'])->m
 Route::post('payrolls/get-discounts', [PayrollController::class, 'getDiscounts'])->middleware('auth')->name('payrolls.get-discounts');
 Route::post('payrolls/get-extras', [PayrollController::class, 'getExtras'])->middleware('auth')->name('payrolls.get-extras');
 Route::post('payrolls/get-payroll-users', [PayrollController::class, 'getPayrollUsers'])->middleware('auth')->name('payrolls.get-payroll-users');
-Route::get('payrolls/print-template/{users_id_to_show}/{payroll_id}', [PayrollController::class, 'printTemplate'])->middleware('auth')->name('payrolls.print-template');
 Route::post('payrolls/get-additional-time', [PayrollController::class, 'getAdditionalTime'])->middleware('auth')->name('payrolls.get-additional-time');
 Route::post('payrolls/close-current', [PayrollController::class, 'closeCurrent'])->middleware('auth')->name('payrolls.close-current');
 Route::post('payrolls/get-current-payroll', [PayrollController::class, 'getCurrentPayroll'])->middleware('auth')->name('payrolls.get-current-payroll');
 Route::post('payrolls/get-all-payrolls', [PayrollController::class, 'getAllPayrolls'])->middleware('auth')->name('payrolls.get-all-payrolls');
+Route::get('payrolls/print-template/{users_id_to_show}/{payroll_id}', [PayrollController::class, 'printTemplate'])->middleware('auth')->name('payrolls.print-template');
+Route::get('payrolls/get-users/{payroll_id}', [PayrollController::class, 'getUsers'])->middleware('auth')->name('payrolls.get-users');
 
 // ------- Recursos humanos(users routes)  ---------
 Route::resource('users', UserController::class)->middleware('auth');
@@ -133,8 +143,10 @@ Route::get('users-get-next-attendance', [UserController::class, 'getNextAttendan
 Route::get('users-get-pause-status', [UserController::class, 'getPauseStatus'])->middleware('auth')->name('users.get-pause-status');
 Route::get('users-set-attendance', [UserController::class, 'setAttendance'])->middleware('auth')->name('users.set-attendance');
 Route::get('users-set-pause', [UserController::class, 'setPause'])->middleware('auth')->name('users.set-pause');
+Route::get('users-get-additional-time-requested-days/{user_id}/{payroll_id}', [UserController::class, 'getRequestedDays'])->middleware('auth')->name('users.get-additional-time-requested-days');
 Route::put('users-reset-pass/{user}', [UserController::class, 'resetPass'])->middleware('auth')->name('users.reset-pass');
 Route::put('users-change-status/{user}', [UserController::class, 'changeStatus'])->middleware('auth')->name('users.change-status');
+Route::put('users-update-pausas/{payroll_user}', [UserController::class, 'updatePausas'])->middleware('auth')->name('users.update-pausas');
 Route::post('users-get-unseen-messages', [UserController::class, 'getUnseenMessages'])->middleware('auth')->name('users.get-unseen-messages');
 Route::post('users-get-notifications', [UserController::class, 'getNotifications'])->middleware('auth')->name('users.get-notifications');
 Route::post('users-read-notifications', [UserController::class, 'readNotifications'])->middleware('auth')->name('users.read-notifications');
@@ -195,6 +207,7 @@ Route::post('designs/massive-delete', [DesignController::class, 'massiveDelete']
 Route::put('designs/start-order/{design}', [DesignController::class, 'startOrder'])->name('designs.start-order');
 Route::post('designs/finish-order', [DesignController::class, 'finishOrder'])->name('designs.finish-order');
 Route::put('designs/authorize/{design}', [DesignController::class, 'authorizeOrder'])->name('designs.authorize');
+Route::post('designs/update-with-media/{design}', [DesignController::class, 'updateWithMedia'])->name('designs.update-with-media');
 
 // ------- Design modifications routes  ---------
 Route::resource('design-modifications', DesignModificationController::class)->middleware('auth');
@@ -214,8 +227,6 @@ Route::post('machines/upload-files/{machine}', [MachineController::class, 'uploa
 Route::post('machines/update-with-media/{machine}', [MachineController::class, 'updateWithMedia'])->name('machines.update-with-media')->middleware('auth');
 Route::post('machines/QR-search-machine', [MachineController::class, 'QRSearchMachine'])->name('machines.QR-search-machine');
 
-
-
 // ------- aditional time request Routes  ---------
 Route::resource('more-additional-times', AdditionalTimeRequestController::class)->middleware('auth');
 Route::post('more-additional-times/massive-delete', [AdditionalTimeRequestController::class, 'massiveDelete'])->name('more-additional-times.massive-delete');
@@ -232,14 +243,14 @@ Route::get('/raw-material-info', [PdfController::class, 'RawMaterialInfo'])->nam
 
 // ------- Maintenances routes  -------------
 Route::resource('maintenances', MaintenanceController::class)->except('create')->middleware('auth');
-Route::get('maintenances/create/{selectedMachine}',[ MaintenanceController::class, 'create'])->name('maintenances.create')->middleware('auth');
+Route::get('maintenances/create/{selectedMachine}', [MaintenanceController::class, 'create'])->name('maintenances.create')->middleware('auth');
 Route::post('maintenances/update-with-media/{maintenance}', [MaintenanceController::class, 'updateWithMedia'])->name('maintenances.update-with-media')->middleware('auth');
 
 
 
 // ---------- spare parts routes  ---------------
 Route::resource('spare-parts', SparePartController::class)->except('create')->middleware('auth');
-Route::get('spare-parts/create/{selectedMachine}',[ SparePartController::class, 'create'])->name('spare-parts.create')->middleware('auth');
+Route::get('spare-parts/create/{selectedMachine}', [SparePartController::class, 'create'])->name('spare-parts.create')->middleware('auth');
 Route::post('spare-parts/update-with-media/{spare_part}', [SparePartController::class, 'updateWithMedia'])->name('spare-parts.update-with-media')->middleware('auth');
 
 
@@ -268,7 +279,7 @@ Route::resource('production-progress', ProductionProgressController::class)->mid
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
 
-Route::post('/upload-image',[FileUploadController::class, 'upload'])->name('upload-image');
+Route::post('/upload-image', [FileUploadController::class, 'upload'])->name('upload-image');
 
 //artisan commands
 
@@ -286,5 +297,20 @@ Route::get('/clear-cache', function () {
     return 'cleared.';
 });
 
+Route::get('/backup', function () {
+    Artisan::call('app:backup-database');
+    return 'backup created.';
+});
 
+// test mail
+Route::get('mail-test', function () {
+    $destinatario = 'maribel@emblemas3d.com';
+    $mensaje = 'Este es un correo de prueba desde Laravel.';
 
+    Mail::raw($mensaje, function ($message) use ($destinatario) {
+        $message->to($destinatario)
+            ->subject('Correo de prueba');
+    });
+
+    return "Correo de prueba enviado a $destinatario.";
+});

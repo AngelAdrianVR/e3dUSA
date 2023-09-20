@@ -45,7 +45,6 @@ class UserController extends Controller
             'email' => 'required|string|unique:users,email',
             'roles' => 'array|min:1',
             'employee_properties.salary.week' => 'required|numeric|min:1',
-            'employee_properties.hours_per_week' => 'required|numeric|min:1',
             'employee_properties.birthdate' => 'required|date',
             'employee_properties.join_date' => 'required|date',
             'employee_properties.job_position' => 'required|string',
@@ -55,23 +54,10 @@ class UserController extends Controller
             'employee_properties.discounts' => 'nullable',
             'employee_properties.vacations' => 'nullable',
         ]);
-        $work_days = 0;
-        foreach ($validated['employee_properties']['work_days'] as $day) {
-            if ($day['check_in'] != 0) $work_days++;
-        }
 
-        $validated['employee_properties']['birthdate'] = [
-            'formatted' => Carbon::parse($validated['employee_properties']['birthdate'])->isoFormat('DD MMMM'),
-            'raw' => $validated['employee_properties']['birthdate']
-        ];
-        $validated['employee_properties']['salary']['week'] =  floatval($validated['employee_properties']['salary']['week']);
-        $validated['employee_properties']['hours_per_week'] =  intval($validated['employee_properties']['hours_per_week']);
-        $hours_per_day = $validated['employee_properties']['hours_per_week'] / $work_days;
-        $validated['employee_properties']['salary']['hour'] =
-            round($validated['employee_properties']['salary']['week'] / $validated['employee_properties']['hours_per_week'], 2);
-        $validated['employee_properties']['salary']['day'] = round($validated['employee_properties']['salary']['hour'] * $hours_per_day, 2);
-        $validated['password'] = bcrypt($request['employee_properties']['password']);
-
+        $password = $request['employee_properties']['password'];
+        $validated = $this->processUserData($validated);
+        $validated['password'] = bcrypt($password);
         $user = User::create($validated);
         $user->syncRoles($request->roles);
 
@@ -98,10 +84,13 @@ class UserController extends Controller
                 }
                 return 0; // En caso de que el resultado no sea válido
             }))],
-            ["label" => "Total pagado sin bonos", "value" => '$' . number_format($payroll_user->sum(function ($payrollUser) {
+            ["label" => "Total pagado sin bonos", "value" => '$' . number_format($payroll_user->sum(function ($payrollUser) use ($user_id) {
                 $result = $payrollUser->totalWorkedTime();
                 // Verificar si el resultado es un array con clave 'hours' y sumar el valor 'hours' al total
                 if (is_array($result) && isset($result['hours'])) {
+                    if ($user_id == 34) { //solo para santiago porque causa problemas
+                        return $result['hours'] * 52.08;
+                    }
                     return $result['hours'] * $payrollUser->additionals["salary"]["hour"];
                 }
                 return 0; // En caso de que el resultado no sea válido
@@ -149,7 +138,7 @@ class UserController extends Controller
             'personal',
             'production_performances',
             'design_performances',
-            'sale_performances',    
+            'sale_performances',
         ));
     }
 
@@ -170,7 +159,6 @@ class UserController extends Controller
             'email' => 'required|string|unique:users,email,' . $user->id,
             'roles' => 'array|min:1',
             'employee_properties.salary.week' => 'required|numeric|min:1',
-            'employee_properties.hours_per_week' => 'required|numeric|min:1',
             'employee_properties.birthdate' => 'required|date',
             'employee_properties.join_date' => 'required|date',
             'employee_properties.job_position' => 'required|string',
@@ -181,23 +169,7 @@ class UserController extends Controller
             'employee_properties.discounts' => 'nullable',
         ]);
 
-        $work_days = 0;
-        foreach ($validated['employee_properties']['work_days'] as $day) {
-            if ($day['check_in'] != 0) $work_days++;
-        }
-
-        $validated['employee_properties']['birthdate'] = [
-            'formatted' => Carbon::parse($validated['employee_properties']['birthdate'])->isoFormat('DD MMMM'),
-            'raw' => $validated['employee_properties']['birthdate']
-        ];
-        $validated['employee_properties']['salary']['week'] =  floatval($validated['employee_properties']['salary']['week']);
-        $validated['employee_properties']['hours_per_week'] =  intval($validated['employee_properties']['hours_per_week']);
-        $hours_per_day = $validated['employee_properties']['hours_per_week'] / $work_days;
-        $validated['employee_properties']['salary']['hour'] =
-            round($validated['employee_properties']['salary']['week'] / $validated['employee_properties']['hours_per_week'], 2);
-        $validated['employee_properties']['salary']['day'] = round($validated['employee_properties']['salary']['hour'] * $hours_per_day, 2);
-        $validated['employee_properties']['hours_per_day'] = round($hours_per_day, 2);
-
+        $validated = $this->processUserData($validated);
         $user->update($validated);
         $user->syncRoles($request->roles);
 
@@ -313,6 +285,25 @@ class UserController extends Controller
         return response()->json([]);
     }
 
+    public function getRequestedDays($user_id, $payroll_id)
+    {
+        $user = User::find($user_id);
+        $payrolls_user = $user->payrolls()->wherePivot('payroll_id', $payroll_id)->get();
+        $requested_payrolls_user = $payrolls_user->filter(function ($payroll) {
+            return !$payroll->pivot->additionalTimeRequest()->doesntExist();
+        })->values();
+
+        return response()->json(['requested' => $requested_payrolls_user, 'all' => $payrolls_user]);
+    }
+
+    public function updatePausas(PayrollUser $payroll_user, Request $request)
+    {
+        $payroll_user->pausas = $request->pausas;
+        $payroll_user->save();
+
+        return response()->json([]);
+    }
+
     private function formatTime($minutes)
     {
         $hours = floor($minutes / 60);
@@ -329,5 +320,39 @@ class UserController extends Controller
         }
 
         return $formattedTime;
+    }
+
+    private function processUserData($data)
+    {
+        $workDaysData = $data['employee_properties']['work_days'];
+        $hoursPerWeek = 0;
+        foreach ($workDaysData as &$workDay) {
+            $hoursWorked = 0;
+            if ($workDay['check_in'] != 0 && $workDay['check_in'] != null) {
+                $checkIn = Carbon::parse($workDay['check_in']);
+                $checkOut = Carbon::parse($workDay['check_out']);
+
+                // Calcula las horas trabajadas y redondea a 2 decimales
+                $hoursWorked = round($checkOut->diffInMinutes($checkIn) / 60, 2);
+
+                // Agrega las horas trabajadas al arreglo
+            }
+            $workDay['hours'] = $hoursWorked;
+            $hoursPerWeek += $hoursWorked;
+        }
+        $salaryPerHour = $data['employee_properties']['salary']['week'] / $hoursPerWeek;
+        foreach ($workDaysData as &$workDay) {
+            $workDay['salary'] = round($workDay['hours'] * $salaryPerHour, 2);
+        }
+        $data['employee_properties']['hours_per_week'] =  $hoursPerWeek;
+        $data['employee_properties']['work_days'] = $workDaysData;
+        $data['employee_properties']['birthdate'] = [
+            'formatted' => Carbon::parse($data['employee_properties']['birthdate'])->isoFormat('DD MMMM'),
+            'raw' => $data['employee_properties']['birthdate']
+        ];
+        $data['employee_properties']['salary']['week'] =  floatval($data['employee_properties']['salary']['week']);
+        $data['employee_properties']['salary']['hour'] = round($salaryPerHour, 2);
+
+        return $data;
     }
 }

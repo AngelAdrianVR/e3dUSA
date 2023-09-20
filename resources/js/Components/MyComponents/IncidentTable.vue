@@ -48,12 +48,14 @@
                   <input v-model="attendance.check_out" type="time"
                     class="bg-transparent text-sm rounded-md border-gray-400">
                 </td>
-                <td v-if="attendance.total_break_time" class="px-6 text-xs py-2 w-32">
+                <td @click="showPausesModal = true; currentPayrollUser = attendance" v-if="attendance.total_break_time"
+                  class="px-6 text-xs py-2 w-32 cursor-pointer">
                   <el-tooltip placement="right">
                     <template #content>
                       <ol>
                         <li v-for="(pausa, index) in attendance.pausas" :key="index">
-                          <span class="text-yellow-500">{{ index + 1 }}.</span> De {{ formatTimeTo12Hour(pausa.start) }} a {{ formatTimeTo12Hour(pausa.finish) ??
+                          <span class="text-yellow-500">{{ index + 1 }}.</span> De {{ formatTimeTo12Hour(pausa.start) }} a
+                          {{ formatTimeTo12Hour(pausa.finish) ??
                             'Sin reanudar' }}
                         </li>
                       </ol>
@@ -143,14 +145,40 @@
       </div>
     </div>
   </div>
+  <DialogModal :show="showPausesModal" @close="showPausesModal = false">
+    <template #title>
+      <h1>Gestor de pausas</h1>
+    </template>
+    <template #content>
+      <div v-for="(pausa, index) in currentPayrollUser.pausas" :key="index" class="grid grid-cols-2 gap-3">
+        <IconInput v-model="pausa.start" inputPlaceholder="Hora de inicio *" inputType="time">
+          <el-tooltip content="Hora de inicio de la pausa" placement="top">
+            <i class="fa-regular fa-circle-play"></i>
+          </el-tooltip>
+        </IconInput>
+        <IconInput v-model="pausa.finish" inputPlaceholder="Hora de término *" inputType="time">
+          <el-tooltip content="Hora de término de la pausa" placement="top">
+            <i class="fa-regular fa-circle-stop"></i>
+          </el-tooltip>
+        </IconInput>
+      </div>
+    </template>
+    <template #footer>
+      <CancelButton @click="showPausesModal = false">Cerrar</CancelButton>
+      <PrimaryButton @click="updatePausas()">Guardar cambios</PrimaryButton>
+    </template>
+  </DialogModal>
 </template>
 
 <script>
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+import IconInput from "@/Components/MyComponents/IconInput.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
+import DialogModal from "@/Components/DialogModal.vue";
 import moment from "moment";
+import axios from "axios";
 
 export default {
   data() {
@@ -159,6 +187,8 @@ export default {
       loading: false,
       pageLoading: false,
       additionalTime: null,
+      showPausesModal: false,
+      currentPayrollUser: null,
     }
   },
   emits: ['closeIncidentTable'],
@@ -172,6 +202,8 @@ export default {
     CancelButton,
     Dropdown,
     DropdownLink,
+    DialogModal,
+    IconInput,
   },
   watch: {
     user: {
@@ -182,6 +214,24 @@ export default {
     }
   },
   methods: {
+    async updatePausas() {
+      try {
+        const response = await axios.put(route('users.update-pausas', this.currentPayrollUser.id), { pausas: this.currentPayrollUser.pausas });
+
+        if (response.status === 200) {
+          this.showPausesModal = false;
+          this.currentPayrollUser = null;
+          this.getAttendances();
+          this.$notify({
+            title: 'Éxito',
+            message: 'Pausa(s) actualizada(s)',
+            type: 'success'
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
     formatTimeTo12Hour(time) {
       if (time === null) return null;
       const formatted = moment(time, 'HH:mm:ss').format('h:mma');

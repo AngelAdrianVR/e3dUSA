@@ -123,7 +123,7 @@
         </button>
       </el-tooltip>
       <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
-        @confirm="getNextAction() == 'Finalizar' ? showScrapModal = true : changeTaskStatus">
+        @confirm="getNextAction() == 'Finalizar' ? showScrapModal = true : changeTaskStatus()">
         <template #reference>
           <button
             v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id)"

@@ -13,8 +13,8 @@
                     </p>
                     <p class="text-sm text-justify px-12 py-4">
                         Se notifica a todos los colaboradores de emblems3d que a partir del 8 de Septiembre del 2023,
-                        los registros de salida después de las horas de su jornada diaria no contarán como horas adicionales
-                        a menos que se apruebe una solicitud de tiempo adicional.
+                        los registros de salida después de las horas de su jornada diaria no contarán como horas
+                        adicionales.
                     </p>
                 </div>
             </div>
@@ -124,8 +124,10 @@
                         <p class="text-primary text-center mt-8">¡Es necesario dar seguimiento!</p>
                     </div>
                     <p v-else class="text-xs text-black text-center my-6">
-                        Nos complace informarte que todas las órdenes que has realizado están actualmente en proceso de producción. 
-                        Para que puedas dar seguimiento detallado a tus órdenes, te invitamos a acceder a la sección "ventas"<br>
+                        Nos complace informarte que todas las órdenes que has realizado están actualmente en proceso de
+                        producción.
+                        Para que puedas dar seguimiento detallado a tus órdenes, te invitamos a acceder a la sección
+                        "ventas"<br>
                         <span class="text-2xl">&#128521;</span>
                     </p>
                 </div>

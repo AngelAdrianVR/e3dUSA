@@ -58,7 +58,7 @@ class PurchaseController extends Controller
         }else {
             // notify to Maribel
             $maribel = User::find(3);
-            // $maribel->notify(new ApprovalRequiredNotification('orden de compra', 'purchases.index'));
+            $maribel->notify(new ApprovalRequiredNotification('orden de compra', 'purchases.index'));
         }
 
         event(new RecordCreated($purchase));

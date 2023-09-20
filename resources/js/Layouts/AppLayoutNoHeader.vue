@@ -88,7 +88,7 @@ const scanMachineForm = async () =>{
 }
 
 const scanForm = async () => {
-  if (form.scanType == "Buscar producto") {
+  if (form.scanType == "Buscar materia prima") {
     try {
       productFound.value = null;
       loading.value = true;
@@ -105,6 +105,38 @@ const scanForm = async () => {
           });
         } else {
           productFound.value = response.data.item;
+          form.barCode = null;
+          partNumberInput.value.focus();
+        }
+      }
+    } catch (error) {
+      ElNotification.error({
+        title: "Error",
+        message: "Formato de código inválido",
+      });
+      console.log(error);
+    } finally {
+      form.barCode = null;
+      loading.value = false;
+    }
+    // ------------- productos de catalogo para admin ----------------------
+  } else if (form.scanType == "Producto de catalogo") {
+    try {
+      productFound.value = null;
+      loading.value = true;
+      const response = await axios.post(route("catalog-products.QR-search-catalog-product"), {
+        barCode: form.barCode,
+        scanType: form.scanType,
+      });
+
+      if (response.status === 200) {
+        if (response.data.item == null) {
+          ElNotification.error({
+            title: "Error",
+            message: "No se encontró ningun producto de catálogo",
+          });
+        } else {
+          catalogProductFound.value = response.data.item;
           form.barCode = null;
           partNumberInput.value.focus();
         }
@@ -144,7 +176,7 @@ const scanForm = async () => {
           title: "Error",
           message: "Formato de código inválido",
         });
-        console.log('error:', error);
+        console.log("error:", error);
       }
     } finally {
       form.barCode = null;
@@ -810,15 +842,10 @@ onMounted(() => {
 
 
         <!-- -------------- Catalog Product found in search starts--------------------- -->
-        <div v-if="(catalogProductFound && !loading) && form.scanType == 'Producto de catalogo' " class="flex space-x-2 mt-4">
-          <figure
-            class="w-1/3 h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center border"
-          >
-            <el-image
-              style="height: 100%"
-              :src="catalogProductFound.media[0]?.original_url"
-              fit="contain"
-            >
+        <div v-if="(catalogProductFound && !loading) && form.scanType == 'Producto de catalogo'"
+          class="flex space-x-2 mt-4">
+          <figure class="w-1/3 h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center border">
+            <el-image style="height: 100%" :src="catalogProductFound.media[0]?.original_url" fit="contain">
               <template #error>
                 <div class="flex justify-center items-center text-[#ababab]">
                   <i class="fa-solid fa-image text-6xl"></i>
@@ -853,18 +880,25 @@ onMounted(() => {
                 }}
               </li>
             </ul>
+            <Link class="text-center my-5" :href="route('catalog-products.show', catalogProductFound.id)">
+            <p class="text-secondary hover:underline cursor-pointer">
+              Ver producto
+            </p>
+            </Link>
             <h1 class="text-sm font-bold text-center mt-1">
               Clientes
             </h1>
-            
-            <Link
-              class="text-center mt-5"
-              :href="route('catalog-products.show', catalogProductFound.id)"
-            >
-              <p class="text-secondary hover:underline cursor-pointer">
-                Ver producto
-              </p>
-            </Link>
+
+            <div>
+              <div v-for="company_info in catalogProductFound.companies" :key="company_info" class="p-3 flex flex-col border rounde-lg">
+                <p class="text-secondary font-bold">Razon social: <span class="text-gray-600 font-thin">{{company_info.business_name}}</span></p>
+                <p class="text-secondary font-bold">Precio anterior: <span class="text-gray-600 font-thin">{{company_info.pivot.old_price}} {{ company_info.pivot.new_currency }}</span></p>
+                <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{company_info.pivot.old_date}}</span></p>
+                <p class="text-secondary font-bold">Precio actual: <span class="text-gray-600 font-thin">{{company_info.pivot.new_price}} {{ company_info.pivot.new_currency }}</span></p>
+                <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{company_info.pivot.new_date}}</span></p>
+              </div>
+            </div>
+
           </div>
         </div>
         <!-- -------------- Catalog Product found in search ends--------------------- -->

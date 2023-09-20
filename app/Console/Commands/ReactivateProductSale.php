@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ReactivateProductSale extends Command
 {
@@ -23,25 +24,27 @@ class ReactivateProductSale extends Command
 
         $date_to_reactivate = Carbon::now()->subDays($days);
         $products = DB::table('catalog_product_company')
-        ->select('catalog_product_company.*')
-        ->join('catalog_product_company_sale', 'catalog_product_company.id', '=', 'catalog_product_company_sale.catalog_product_company_id')
-        ->join('sales', 'catalog_product_company_sale.sale_id', '=', 'sales.id')
-        ->whereDate('sales.created_at', '<=', $date_to_reactivate)
-        ->distinct()
-        ->get();
+            ->select('catalog_product_company.*')
+            ->join('catalog_product_company_sale', 'catalog_product_company.id', '=', 'catalog_product_company_sale.catalog_product_company_id')
+            ->join('sales', 'catalog_product_company_sale.sale_id', '=', 'sales.id')
+            ->whereDate('sales.created_at', '<=', $date_to_reactivate)
+            ->distinct()
+            ->get();
 
-        $super_admins = User::whereIn('id', [1,2,3])->get();
-        $sellers = User::where('employee_properties->department', 'Ventas')->where('is_active', 1)->get();
+        if ($products->count()) {
+            $super_admins = User::whereIn('id', [1, 2, 3])->get();
+            $sellers = User::where('employee_properties->department', 'Ventas')->where('is_active', 1)->get();
 
-        // notify users
-        foreach ($sellers as $seller) {
-            $seller->notify(new ReactivateProductSaleNotification($products, $days));
+            // notify users
+            foreach ($sellers as $seller) {
+                $seller->notify(new ReactivateProductSaleNotification($products, $days));
+            }
+            foreach ($super_admins as $super) {
+                $super->notify(new ReactivateProductSaleNotification($products, $days));
+            }
+            Log::info('app:reactivate-product-sale executed successfully. There where ' . $products->count() . ' product(s)');
+        } else {
+            Log::info('app:reactivate-product-sale executed successfully. There where 0 products');
         }
-        foreach ($super_admins as $super) {
-            $super->notify(new ReactivateProductSaleNotification($products, $days));
-        }
-        
-        Log::info('app:reactivate-product-sale executed successfully.');
-        Log::info($products);
     }
 }

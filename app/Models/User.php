@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -102,6 +103,11 @@ class User extends Authenticatable
         return $this->hasMany(Sample::class);
     }
 
+    public function tasks(): BelongsToMany
+    {
+        return $this->belongsToMany(Task::class, 'task_user', 'user_id', 'task_id');
+    }
+
     // methods
     public function getNextAttendance()
     {
@@ -156,7 +162,11 @@ class User extends Authenticatable
         $today_attendance = PayrollUser::firstOrCreate(['date' => today()->toDateString(), 'user_id' => $this->id], [
             'payroll_id' => Payroll::getCurrent()->id,
             'additionals' => [
-                'salary' =>  $this->employee_properties['salary'],
+                'salary' =>  [
+                    "week" => $this->employee_properties['salary']['week'],
+                    "day" => $this->employee_properties['work_days'][today()->dayOfWeek]["salary"],
+                    "hour" => $this->employee_properties['salary']['hour'],
+                ],
                 'bonuses' => $bonuses,
                 'discounts' => $discounts,
                 'hours_per_week' => $this->employee_properties['hours_per_week'],

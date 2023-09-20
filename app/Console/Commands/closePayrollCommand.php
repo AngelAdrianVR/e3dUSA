@@ -30,7 +30,7 @@ class closePayrollCommand extends Command
         $current = Payroll::getCurrent();
         Payroll::create([
             'start_date' => $current->start_date->addDays(7)->toDateString(),
-            'week' => today()->weekOfYear,
+            'week' => today()->weekOfYear + 1,
         ]);
 
         $current->update(['is_active' => 0]);

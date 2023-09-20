@@ -43,7 +43,7 @@
                             </el-popconfirm>
                         </div>
                     </div>
-                    <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="450" style="width: 100%"
+                    <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
                         @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                         <el-table-column type="selection" width="45" />
                         <el-table-column prop="user.name" label="Solicitante" />
@@ -54,7 +54,7 @@
                         <el-table-column align="right" fixed="right" width="190">
                             <template #header>
                                 <div class="flex space-x-2">
-                                <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
+                                <TextInput v-model="inputSearch" type="search" @keyup.enter="handleSearch" class="w-full text-gray-600" placeholder="Buscar" />
                                 <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
                             </div>
                             </template>

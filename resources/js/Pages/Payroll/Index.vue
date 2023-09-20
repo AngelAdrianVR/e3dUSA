@@ -33,7 +33,7 @@
             </el-popconfirm>
           </div>
         </div>
-        <el-table @row-click="handleRowClick" :data="filteredTableData" max-height="450" style="width: 100%"
+        <el-table @row-click="handleRowClick" :data="filteredTableData" max-height="670" style="width: 100%"
           class="cursor-pointer" @selection-change="handleSelectionChange" ref="multipleTableRef"
           :row-class-name="tableRowClassName">
           <el-table-column type="selection" width="45" />

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('sat_method');
             $table->string('sat_type');
             $table->string('sat_way');
+            $table->text('important_notes')->nullable();
             $table->foreignId('company_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });

@@ -288,15 +288,33 @@ export default {
   },
   methods: {
     update() {
-      this.form.put(route("designs.update", this.design), {
-        onSuccess: () => {
-          this.$notify({
-            title: "Éxito",
-            message: "Órden aditada",
-            type: "success",
-          });
-        },
-      });
+      if (this.form.media_plano || this.form.media_logo) {
+        this.form.post(
+          route("designs.update-with-media", this.design),
+          {
+            onSuccess: () => {
+              this.$notify({
+                title: "Éxito",
+                message: "Orden de diseño actualizada",
+                type: "success",
+              });
+            },
+          }
+        );
+      } else {
+        this.form.put(
+          route("designs.update", this.design),
+          {
+            onSuccess: () => {
+              this.$notify({
+                title: "Éxito",
+                message: "Orden de diseño actualizada",
+                type: "success",
+              });
+            },
+          }
+        );
+      }
     },
   },
 };

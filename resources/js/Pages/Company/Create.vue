@@ -18,8 +18,8 @@
       <!-- Form -->
       <form @submit.prevent="store">
         <!-- ---------------- Company starts ----------------- -->
-        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
-          <div class="md:grid gap-6 mb-6 grid-cols-2 pb-4">
+        <div class="md:w-1/2 md:mx-auto mx-3 my-3 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
+          <div class="md:grid gap-3 mb-6 grid-cols-2 pb-4">
             <div>
               <IconInput v-model="form.business_name" inputPlaceholder="Razon social *" inputType="text">
                 <el-tooltip content="Razon social" placement="top">
@@ -116,7 +116,7 @@
             <div class="flex items-center">
               <el-tooltip content="Método de pago" placement="top">
                 <span
-                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md ">
                   sat
                 </span>
               </el-tooltip>
@@ -135,7 +135,7 @@
             <div class="flex items-center">
               <el-tooltip content="Medio de pago" placement="top">
                 <span
-                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md ">
                   sat
                 </span>
               </el-tooltip>
@@ -154,7 +154,7 @@
             <div class="flex items-center">
               <el-tooltip content="Uso de factura" placement="top">
                 <span
-                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md ">
                   sat
                 </span>
               </el-tooltip>
@@ -169,6 +169,18 @@
                 </el-option>
               </el-select>
               <!-- <InputError :message="form.errors.sat_types" /> -->
+            </div>
+            <div class="mt-2">
+              <div class="flex">
+                <el-tooltip content="Estas notas se mostraran cuando se seleccione esta sucursal para crear cotizacion, orden de venta u otro movimiento" placement="top">
+                  <span
+                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                    <i class="fa-solid fa-grip-lines"></i>
+                  </span>
+                </el-tooltip>
+                <textarea v-model="branch.important_notes" rows="4" class="textarea mb-1" autocomplete="off" placeholder="Notas. Ejemplo: Precio acordado de 'x' producto en siguiente cotizacion $45.30"></textarea>
+              </div>
+              <InputError :message="branch.errors?.important_notes" />
             </div>
             <!-- ---------------- Company Branch ends ----------------- -->
 
@@ -227,7 +239,7 @@
                 <div class="flex items-center">
                   <el-tooltip content="Cumpleaños" placement="top">
                     <span
-                      class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                      class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md ">
                       <i class="fa-solid fa-cake"></i>
                     </span>
                   </el-tooltip>
@@ -254,13 +266,13 @@
             </div>
             <div>
               <SecondaryButton @click="addBranch" :disabled="contacts.length == 0 ||
-                !branch.name ||
-                !branch.address ||
-                !branch.post_code ||
-                !branch.sat_method ||
-                !branch.sat_type ||
-                !branch.sat_way
-                ">
+                  !branch.name ||
+                  !branch.address ||
+                  !branch.post_code ||
+                  !branch.sat_method ||
+                  !branch.sat_type ||
+                  !branch.sat_way
+                  ">
                 {{
                   editBranchIndex !== null
                   ? "Actualizar sucursal"
@@ -305,7 +317,7 @@
             <div class="flex items-center">
               <el-tooltip content="Producto de catálogo" placement="top">
                 <span
-                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md ">
                   <i class="fa-solid fa-magnifying-glass"></i>
                 </span>
               </el-tooltip>
@@ -326,7 +338,7 @@
               <div class="flex items-center">
                 <el-tooltip content="Moneda" placement="top">
                   <span
-                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md ">
                     <i class="fa-solid fa-dollar-sign"></i>
                   </span>
                 </el-tooltip>
@@ -354,7 +366,7 @@
               <div class="flex items-center">
                 <el-tooltip content="Moneda" placement="top">
                   <span
-                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md ">
                     <i class="fa-solid fa-dollar-sign"></i>
                   </span>
                 </el-tooltip>
@@ -437,6 +449,7 @@ export default {
         sat_method: null,
         sat_type: null,
         sat_way: null,
+        important_notes: null,
       },
       product: {
         catalog_product_id: null,

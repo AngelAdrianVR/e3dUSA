@@ -41,13 +41,14 @@ class QuoteController extends Controller
         $request->validate([
             'receiver' => 'required|string|max:191',
             'department' => 'required|string|max:191',
-            'tooling_cost' => 'required|numeric|min:0',
+            'tooling_cost' => 'required|min:0',
             'freight_cost' => 'required|numeric|min:0',
             'first_production_days' => 'required|string|max:191',
             'notes' => 'nullable|string|max:191',
             'currency' => 'required|string|max:191',
             'company_branch_id' => 'required|numeric|min:1',
-            'products' => 'array|min:1'
+            'products' => 'array|min:1',
+            'tooling_currency' => 'nullable'
         ]);
 
         $quote = Quote::create($request->except('products') + ['user_id' => auth()->id()]);
@@ -100,7 +101,7 @@ class QuoteController extends Controller
         $request->validate([
             'receiver' => 'required|string|max:191',
             'department' => 'required|string|max:191',
-            'tooling_cost' => 'required|numeric|min:0',
+            'tooling_cost' => 'required|min:0',
             'freight_cost' => 'required|numeric|min:0',
             'first_production_days' => 'required|string|max:191',
             'notes' => 'nullable|string|max:191',
@@ -158,7 +159,7 @@ class QuoteController extends Controller
         } else {
             // notify to Maribel
             $maribel = User::find(3);
-            // $maribel->notify(new ApprovalRequiredNotification('cotización', 'quotes.index'));
+            $maribel->notify(new ApprovalRequiredNotification('cotización', 'quotes.index'));
         }
 
         foreach ($quote->catalogProducts as $product) {
