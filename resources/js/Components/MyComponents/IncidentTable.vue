@@ -220,6 +220,7 @@ export default {
 
         if (response.status === 200) {
           this.showPausesModal = false;
+          this.currentPayrollUser = null;
           this.getAttendances();
           this.$notify({
             title: 'Éxito',

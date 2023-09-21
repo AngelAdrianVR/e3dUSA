@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
-use App\Http\Resources\ProductionResource;
 use App\Http\Resources\SaleResource;
+use App\Models\CatalogProduct;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Production;
 use App\Models\Sale;
 use App\Models\Setting;
+use App\Models\StockMovementHistory;
+use App\Models\Storage;
 use App\Models\User;
 use App\Notifications\ProductionCompletedNotification;
 use Illuminate\Http\Request;
@@ -51,6 +53,7 @@ class ProductionController extends Controller
             'productions' => 'array|min:1',
         ]);
 
+
         $is_automatic_assignment = Setting::where('key', 'AUTOMATIC_PRODUCTION_ASSIGNMENT')->first()->value;
 
         foreach ($request->productions as $production) {
@@ -58,14 +61,14 @@ class ProductionController extends Controller
                 'user_id' => $production['user_id'],
                 'catalog_product_company_sale_id' => $production['catalog_product_company_sale_id']
             ];
-            
+
             foreach ($production['tasks'] as $task) {
                 // Calculate total estimated time for the production
                 $totalEstimatedTime = ($task['estimated_time_hours'] * 60) + $task['estimated_time_minutes'];
-                
+
                 // Find suitable employees based on criteria
                 $selectedEmployees = $this->findSuitableEmployees($totalEstimatedTime);
-                
+
                 $data = $task + $foreigns;
                 if ($is_automatic_assignment) {
                     foreach ($selectedEmployees as $employeeId) {
@@ -80,6 +83,22 @@ class ProductionController extends Controller
                     $produ = Production::create($data);
                     event(new RecordCreated($produ));
                 }
+            }
+
+            // sub needed quantities from stock
+            $cpcs = CatalogProductCompanySale::find($production['catalog_product_company_sale_id']);
+            $raw_materials = $cpcs->catalogProductCompany->catalogProduct->rawMaterials;
+            foreach ($raw_materials as $raw_material) {
+                $quantity_needed = $raw_material->pivot->quantity * $cpcs->quantity;
+                $storage = Storage::where('storageable_id', $raw_material->id)->where('storageable_type', 'App\Models\RawMaterial')->first();
+                $storage->decrement('quantity', $quantity_needed);
+                StockMovementHistory::Create([
+                    'storage_id' => $storage->id,
+                    'user_id' => auth()->id(),
+                    'type' => 'Salida',
+                    'quantity' => $quantity_needed,
+                    'notes' => 'Salida de material automática por orden de producción',
+                ]);
             }
         }
 
@@ -173,14 +192,16 @@ class ProductionController extends Controller
             ]);
 
             $user = User::where('employee_properties->job_position', 'Jefe de producción')->first();
-            $user->notify(new ProductionCompletedNotification(
-                $production->catalogProductCompanySale->catalogProductCompany->catalogProduct->name, 
-                'OP-' . str_pad($production->catalogProductCompanySale->sale->id, 4, "0", STR_PAD_LEFT),
-                 "", 'production')
+            $user->notify(
+                new ProductionCompletedNotification(
+                    $production->catalogProductCompanySale->catalogProductCompany->catalogProduct->name,
+                    'OP-' . str_pad($production->catalogProductCompanySale->sale->id, 4, "0", STR_PAD_LEFT),
+                    "",
+                    'production'
+                )
             );
 
             $message = 'Se ha registrado el final';
-            
         }
 
         $production = Production::with(['operator', 'user'])->find($production->id);
@@ -199,8 +220,8 @@ class ProductionController extends Controller
     // private methods
     private function findSuitableEmployees($totalEstimatedTime)
     {
-        $employees = User::where('is_active', 1)->where('employee_properties->department', 'Producción')->get();
-        
+        $employees = User::where('is_active', 1)->where('employee_properties->department', 'Producción')->whereIn('id', [4, 6, 8, 14, 27])->get();
+
         // Calculate required employee count based on production time
         $requiredEmployeeCount = ceil($totalEstimatedTime / 240); // 240 minutes per employee
 
@@ -208,12 +229,12 @@ class ProductionController extends Controller
         if ($requiredEmployeeCount >= $employees->count()) {
             return $employees->pluck('id')->toArray();
         }
-        
+
         // Select the most optimal employees based on their total estimated time
         $sortedEmployees = $employees->sortBy(function ($employee) {
             return $employee->getTotalEstimatedTime();
         });
-        
+
         return $sortedEmployees->take($requiredEmployeeCount)->pluck('id')->toArray();
     }
 }
