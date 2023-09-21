@@ -15,14 +15,27 @@
             <el-option v-for="item in projects.data" :key="item.id" :label="item.project_name" :value="item.id" />
           </el-select>
         </div>
-        <div>
-          <PrimaryButton @click="$inertia.get(route('projects.create'))">+ Agregar tarea</PrimaryButton>
+        <div class="flex space-x-2">
+          <PrimaryButton v-if="$page.props.auth.user.permissions.includes('Crear tareas')"
+           @click="$inertia.get(route('projects.create'))">+ Agregar tarea</PrimaryButton>
+          <Dropdown align="right" width="48">
+            <template #trigger>
+              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
+                Mis tareas <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
+              </button>
+            </template>
+            <template #content>
+              <DropdownLink :href="route('machines.create')">
+                Agregar nueva máquina
+              </DropdownLink>
+            </template>
+          </Dropdown>
         </div>
       </div>
 
 <!-- --------------project title--------------------------- -->
       <div class="text-center font-bold text-lg mb-4 flex justify-center items-center">
-        <p>{{currentProject?.project_name }}</p>
+        <p>{{ currentProject?.project_name }}</p>
         <div class="flex items-center ml-24">
             <figure v-for="user in uniqueUsers.slice(0, maxUsersToShow)" :key="user.id">
           <el-tooltip :content="user.name" placement="top">
@@ -91,6 +104,127 @@
         </div>
       </div>
       <!-- ------------- Tasks ends 2 ------------- -->
+
+
+    <!-- ------------- Cronograma Starts 3 ------------- -->
+      <div v-if="tabs == 3" class="text-left text-sm items-center">
+        
+      <table class="border border-[#9A9A9A] default w-full">
+  <tr>
+    <th class="border-y border-[#9A9A9A] text-left pl-7 py-3 font-thin relative" scope="row">Proyecto <br>
+     <strong class="text-lg font-bold">{{ currentProject?.project_name }}</strong>
+     <i class="fa-solid fa-ellipsis text-primary absolute bottom-4 right-4 cursor-pointer hover:bg-[#dfdede] rounded-full p-2"></i>
+     </th>
+    <th class="border border-[#9A9A9A] text-center font-thin">%</th>
+    <th class="border border-[#9A9A9A] text-center font-thin"><strong class="text-base uppercase font-bold tex">Junio</strong><br>
+     <div class="flex space-x-5 justify-center">
+      <p class="text-secondary relative">L <span class="absolute -bottom-3 -left-[2px] text-xs text-black">01</span></p>
+      <p class="text-secondary relative">M <span class="absolute -bottom-3 -left-[2px] text-xs text-black">02</span></p>
+      <p class="text-secondary relative">I <span class="absolute -bottom-3 -left-[2px] text-xs text-black">03</span></p>
+      <p class="text-secondary relative">J <span class="absolute -bottom-3 -left-[2px] text-xs text-black">04</span></p>
+      <p class="text-secondary relative">V <span class="absolute -bottom-3 -left-[2px] text-xs text-black">05</span></p>
+      <p class="text-secondary relative">S <span class="absolute -bottom-3 -left-[2px] text-xs text-black">06</span></p>
+      <p class="text-secondary relative">D <span class="absolute -bottom-3 -left-[2px] text-xs text-black">07</span></p>
+      </div>
+     </th>
+    <th class="border border-[#9A9A9A] text-center font-thin"><strong class="text-base uppercase font-bold tex">Julio</strong><br>
+     <div class="flex space-x-5 justify-center">
+      <p class="text-secondary relative">L <span class="absolute -bottom-3 -left-[2px] text-xs text-black">01</span></p>
+      <p class="text-secondary relative">M <span class="absolute -bottom-3 -left-[2px] text-xs text-black">02</span></p>
+      <p class="text-secondary relative">I <span class="absolute -bottom-3 -left-[2px] text-xs text-black">03</span></p>
+      <p class="text-secondary relative">J <span class="absolute -bottom-3 -left-[2px] text-xs text-black">04</span></p>
+      <p class="text-secondary relative">V <span class="absolute -bottom-3 -left-[2px] text-xs text-black">05</span></p>
+      <p class="text-secondary relative">S <span class="absolute -bottom-3 -left-[2px] text-xs text-black">06</span></p>
+      <p class="text-secondary relative">D <span class="absolute -bottom-3 -left-[2px] text-xs text-black">07</span></p>
+      </div>
+     </th>
+    <th class="border border-[#9A9A9A] text-center font-thin"><strong class="text-base uppercase font-bold tex">Agosto</strong><br>
+     <div class="flex space-x-5 justify-center">
+      <p class="text-secondary relative">L <span class="absolute -bottom-3 -left-[2px] text-xs text-black">01</span></p>
+      <p class="text-secondary relative">M <span class="absolute -bottom-3 -left-[2px] text-xs text-black">02</span></p>
+      <p class="text-secondary relative">I <span class="absolute -bottom-3 -left-[2px] text-xs text-black">03</span></p>
+      <p class="text-secondary relative">J <span class="absolute -bottom-3 -left-[2px] text-xs text-black">04</span></p>
+      <p class="text-secondary relative">V <span class="absolute -bottom-3 -left-[2px] text-xs text-black">05</span></p>
+      <p class="text-secondary relative">S <span class="absolute -bottom-3 -left-[2px] text-xs text-black">06</span></p>
+      <p class="text-secondary relative">D <span class="absolute -bottom-3 -left-[2px] text-xs text-black">07</span></p>
+      </div>
+     </th>
+    <th class="border border-[#9A9A9A] text-center font-thin"><strong class="text-base uppercase font-bold tex">Septiembre</strong><br>
+     <div class="flex space-x-5 justify-center">
+      <p class="text-secondary relative">L <span class="absolute -bottom-3 -left-[2px] text-xs text-black">01</span></p>
+      <p class="text-secondary relative">M <span class="absolute -bottom-3 -left-[2px] text-xs text-black">02</span></p>
+      <p class="text-secondary relative">I <span class="absolute -bottom-3 -left-[2px] text-xs text-black">03</span></p>
+      <p class="text-secondary relative">J <span class="absolute -bottom-3 -left-[2px] text-xs text-black">04</span></p>
+      <p class="text-secondary relative">V <span class="absolute -bottom-3 -left-[2px] text-xs text-black">05</span></p>
+      <p class="text-secondary relative">S <span class="absolute -bottom-3 -left-[2px] text-xs text-black">06</span></p>
+      <p class="text-secondary relative">D <span class="absolute -bottom-3 -left-[2px] text-xs text-black">07</span></p>
+      </div>
+     </th>
+  </tr>
+
+  <tr>
+    <th class="text-lg font-normal pl-7 py-2 border-y border-[#9A9A9A]">Fabricación de portaplacas <br>
+      <p class="text-[#9A9A9A] text-sm">Depto. Finanzas</p>
+    </th>
+    <td class="font-normal text-center border border-[#9A9A9A]">100</td>
+    <td class="border-x border-[#9A9A9A]"></td>
+    <td class="border-x border-[#9A9A9A]"></td>
+    <td class="border-x border-[#9A9A9A]"></td>
+    <td class="border-x border-[#9A9A9A]"></td>
+  </tr>
+  <tr>
+    <th class="text-lg font-normal pl-7 py-2 border-y border-[#9A9A9A]">Grabado laser de emblema... <br>
+      <p class="text-[#9A9A9A] text-sm">Depto. Producción</p>
+    </th>
+    <td class="font-normal text-center border border-[#9A9A9A]">50</td>
+    <td class="border-x border-[#9A9A9A]"></td>
+    <td class="border-x border-[#9A9A9A]"></td>
+    <td class="border-x border-[#9A9A9A]"></td>
+    <td class="border-x border-[#9A9A9A]"></td>
+  </tr>
+  <tr>
+    <th class="text-lg font-normal pl-7 py-2 border-y border-[#9A9A9A]">Empaque y etiquetado de... <br>
+      <p class="text-[#9A9A9A] text-sm">Depto. Ventas</p>
+    </th>
+    <td class="font-normal text-center border border-[#9A9A9A]">0</td>
+    <td class="border-x border-[#9A9A9A]"></td>
+    <td class="border-x border-[#9A9A9A]"></td>
+    <td class="border-x border-[#9A9A9A]"></td>
+    <td class="border-x border-[#9A9A9A]"></td>
+  </tr>
+  <tr>
+    <th class="text-lg font-normal pl-7 py-2 border-y border-[#9A9A9A]">Enviar correo de confirmacion... <br>
+      <p class="text-[#9A9A9A] text-sm">Depto. Ventas</p>
+    </th>
+    <td class="font-normal text-center border border-[#9A9A9A]">30</td>
+    <td class="border-x border-[#9A9A9A]"></td>
+    <td class="border-x border-[#9A9A9A]"></td>
+    <td class="border-x border-[#9A9A9A]"></td>
+    <td class="border-x border-[#9A9A9A]"></td>
+  </tr>
+  <tr>
+    <th class="text-lg font-normal pl-7 py-2 border-y border-[#9A9A9A]">Empaque y etiquetado de... <br>
+      <p class="text-[#9A9A9A] text-sm">Depto. Diseño</p>
+    </th>
+    <td class="font-normal text-center border border-[#9A9A9A]">60</td>
+    <td class="border-x border-[#9A9A9A]"></td>
+    <td class="border-x border-[#9A9A9A]"></td>
+    <td class="border-x border-[#9A9A9A]"></td>
+    <td class="border-x border-[#9A9A9A]"></td>
+  </tr>
+</table>
+
+<div class="text-right mr-9">
+  <div class="border border-[#9A9A9A] rounded-md inline-flex justify-end mt-4">
+    <p :class="period == 'Hoy' ? 'bg-primary text-white rounded-sm' :'border-[#9A9A9A]' " @click="period = 'Hoy'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-x border-transparent">Hoy</p>
+    <p :class="period == 'Semana' ? 'bg-primary text-white rounded-sm' :'border-[#9A9A9A]'" @click="period = 'Semana'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-x border-transparent">Semana</p>
+    <p :class="period == 'Mes' ? 'bg-primary text-white rounded-sm' :'border-[#9A9A9A]'"  @click="period = 'Mes'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-x">Mes</p>
+    <p :class="period == 'Trimestre' ? 'bg-primary text-white rounded-sm' :'border-[#9A9A9A]'" @click="period = 'Trimestre'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-x border-transparent">Trimestre</p>
+  </div>  
+</div>
+
+      </div>
+      <!-- ------------- Cronograma ends 3 ------------- -->
   </AppLayoutNoHeader>
 </template>
 
@@ -98,6 +232,8 @@
 import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import ProjectTaskCard from "@/Components/MyComponents/ProjectTaskCard.vue";
+import Dropdown from "@/Components/Dropdown.vue";
+import DropdownLink from "@/Components/DropdownLink.vue";
 import { Link } from "@inertiajs/vue3";
 
 export default {
@@ -112,6 +248,7 @@ export default {
             maxUsersToShow: 3 ,
             selectedProject: '',
             currentProject: null,
+            period: 'Hoy' //period of time in cronograma table tab 3
         }
     },
     components:{
@@ -119,6 +256,8 @@ export default {
         PrimaryButton,
         ProjectTaskCard,
         Link,
+        Dropdown,
+        DropdownLink,
     },
     props:{
       projects: Object,

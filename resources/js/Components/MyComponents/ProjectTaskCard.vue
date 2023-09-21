@@ -20,7 +20,9 @@
                         <el-tooltip content="Tienes una tarea por cumplir antes de poder comenzar" placement="top">
                             <i class="fa-solid fa-hourglass cursor-default mr-3"></i>
                         </el-tooltip>
-                        <i class="fa-solid fa-paperclip cursor-pointer hover:bg-[#dfdede] rounded-full p-2"></i>
+                        <el-tooltip content="Archivo adjunto" placement="top">
+                            <i class="fa-solid fa-paperclip cursor-pointer hover:bg-[#dfdede] rounded-full p-2"></i>
+                        </el-tooltip>
                     </div>
                 </div>
 
@@ -33,7 +35,10 @@
                        <p class="text-sm ml-3">| {{ 'Dpto. Diseño' }} </p>
                       </div>
                       <div class="flex items-center absolute bottom-3 right-0 cursor-default">
-                        <p class="text-primary mr-1">+2</p>
+                      <el-tooltip v-if="taskComponent.status == 'Terminada'" content="Tarea terminada" placement="bottom">
+                        <i class="fa-solid fa-check text-green-500 text-xl cursor-default mr-2"></i>
+                    </el-tooltip>
+                        <!-- <p class="text-primary mr-1">+2</p> -->
                         <el-tooltip v-for="user in taskComponent.users" :key="user" :content="user.name" placement="bottom">
                             <figure>
                                 <div v-if="$page.props.jetstream.managesProfilePhotos"
@@ -44,9 +49,6 @@
                             </figure>
                         </el-tooltip>
                       </div>
-                      <el-tooltip content="Tarea terminada" placement="bottom">
-                        <i v-if="taskComponent.status == 'Terminada'" class="fa-solid fa-check text-green-500 text-xl cursor-default mr-24"></i>
-                    </el-tooltip>
                     </div>
                 </footer>
             </div>
