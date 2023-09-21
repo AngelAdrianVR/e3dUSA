@@ -114,7 +114,7 @@
             </ul>
           </div>
           <div class="mt-2 mx-3 md:text-right">
-            <PrimaryButton :disabled="form.processing"> Actualizar </PrimaryButton>
+            <PrimaryButton :disabled="form.processing"> Guardar cambios </PrimaryButton>
           </div>
         </div>
       </form>

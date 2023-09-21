@@ -81,6 +81,8 @@ Route::resource('companies', CompanyController::class)->middleware('auth');
 Route::post('companies/massive-delete', [CompanyController::class, 'massiveDelete'])->name('companies.massive-delete');
 Route::post('companies/clone', [CompanyController::class, 'clone'])->name('companies.clone');
 
+// ------- CRM (Clients Routes)  ---------
+Route::get('crm', [DashboardController::class, 'crmDashboard'])->middleware('auth')->name('crm.dashboard');
 
 // ------- Ventas(sale orders Routes)  ---------
 Route::resource('sales', SaleController::class)->middleware('auth');

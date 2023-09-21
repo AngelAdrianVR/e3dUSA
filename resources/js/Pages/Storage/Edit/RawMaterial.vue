@@ -166,7 +166,7 @@
 
           <el-divider />
           <div class="mx-3 md:text-right">
-            <PrimaryButton :disabled="form.processing"> Editar </PrimaryButton>
+            <PrimaryButton :disabled="form.processing"> Guardar cambios </PrimaryButton>
           </div>
         </div>
       </form>

@@ -312,4 +312,10 @@ class DashboardController extends Controller
         });
         return $filtered;
     }
+
+    // CRM
+    public function crmDashboard()
+    {
+        return inertia('CRM/Dashboard');
+    }
 }
