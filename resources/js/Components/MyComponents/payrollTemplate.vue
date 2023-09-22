@@ -352,12 +352,6 @@ export default {
       const discounts = this.discounts?.reduce((accumulator, discount) => {
         return accumulator + discount.amount.raw;
       }, 0) ?? 0;
-      console.log('vacations',vacations);
-      console.log('workedDays',workedDays);
-      console.log('holyDays',holyDays);
-      console.log('bonuses',bonuses);
-      console.log('discounts',discounts);
-      console.log('this.extras.amount.raw',this.extras.amount.raw);
 
       return vacations
         + workedDays

@@ -9,6 +9,7 @@
             <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 mt-4">
                 <CustomerDates :dates="[{contact: 'Elena Jimenez', date: '22 agosto', time:'14:30 hrs', type: 'Presencial', reason: 'Revision de temas varios para implementacion de proyecto'},]" />
                 <BirthdateCardCustomer :contacts="customers_birthdays" />
+                <PieChart />
             </div>
         </div>
         <DialogModal :show="false"  @close="">
@@ -32,9 +33,8 @@ import DialogModal from '@/Components/DialogModal.vue';
 import BirthdateCardCustomer from '@/Components/MyComponents/BirthdateCardCustomer.vue';
 import CustomerDates from '@/Components/MyComponents/CustomerDates.vue';
 import CancelButton from '@/Components/MyComponents/CancelButton.vue';
+import PieChart from '@/Components/MyComponents/PieChart.vue';
 import AppLayoutNoHeader from '@/Layouts/AppLayoutNoHeader.vue';
-import axios from 'axios';
-import { useForm, Link } from '@inertiajs/vue3';
 
 export default {
     data() {
@@ -50,6 +50,7 @@ export default {
         DialogModal,
         CancelButton,
         CustomerDates,
+        PieChart,
     },
     methods: {
        
