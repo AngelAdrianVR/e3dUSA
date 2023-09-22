@@ -31,15 +31,15 @@
                 </th>
                 <td class="px-6 text-xs py-px lg:py-2">
                   <span v-if="attendance.additional_time?.authorized_at">
-                  {{ formattedTimeToHoursAndMinutes(attendance.additional_time.time_requested) }}
+                    {{ formattedTimeToHoursAndMinutes(attendance.additional_time.time_requested) }}
                   </span>
                   <i v-else class="fa-solid fa-minus"></i>
                 </td>
                 <td class="px-6 text-xs py-px lg:py-2">
                   <p class="bg-transparent text-sm" :class="{
-                      'text-amber-500': attendance.late > 0 && attendance.late < 15,
-                      'text-red-600': attendance.late >= 15,
-                    }">
+                    'text-amber-500': attendance.late > 0 && attendance.late < 15,
+                    'text-red-600': attendance.late >= 15,
+                  }">
                     {{ attendance.check_in }}
                     <i v-if="!attendance.late" class="fa-solid fa-face-smile text-green-600 ml-1"></i>
                     <i v-else-if="attendance.late < 15" class="fa-solid fa-face-meh ml-1"></i>
@@ -111,9 +111,10 @@
         <p v-if="getHolidays().length" class="grid grid-cols-3 gap-x-1">
           <span>Días Feriados</span>
           <span class="text-center">{{ getHolidays().length }}</span>
-          <span>${{ (user.employee_properties.salary.day * getHolidays().length).toLocaleString('en-US', {
-            minimumFractionDigits: 2
-          }) }}</span>
+          <!-- <span class="text-center">{{ user.employee_properties.work_days[6] }}</span> -->
+          <span>${{ (user.employee_properties.work_days[6].salary * getHolidays().length).toLocaleString('en-US', {
+              minimumFractionDigits: 2
+            }) }}</span>
         </p>
         <p v-if="getVacations().length" class="grid grid-cols-3 gap-x-1">
           <span>Vacaciones</span>
@@ -199,6 +200,11 @@ export default {
       this.getDiscounts();
       this.getExtras();
       this.getAuthorizedAdditionalTimes();
+    },
+    getDayOfWeek(date) {
+      const fechaMoment = moment(date);
+
+      return fechaMoment.day();
     },
     formatTimeTo12Hour(time) {
       if (time === null) return null;
@@ -320,10 +326,10 @@ export default {
       return `${hours}h ${minutes}m`; // Formatear como "Xh Ym"
     },
     formattedTimeToHoursAndMinutes(time) {
-        const hours = time.split(':')[0];
-        const minutes = time.split(':')[1];
+      const hours = time.split(':')[0];
+      const minutes = time.split(':')[1];
 
-        return `${parseInt(hours)}h ${parseInt(minutes)}m`;
+      return `${parseInt(hours)}h ${parseInt(minutes)}m`;
     },
     getRemainingHoursWeekly() {
       const totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
@@ -344,7 +350,7 @@ export default {
       const dayly_salary = this.processedAttendances.find(item => item.check_in)?.additionals?.salary.day;
       const vacations = this.getVacations().length * 1.25 * dayly_salary;
       const workedDays = this.getWorkedDaysSalary();
-      const holyDays = dayly_salary * this.getHolidays().length;
+      const holyDays = this.user.employee_properties.work_days[6].salary * this.getHolidays().length;
       const bonuses = this.bonuses?.reduce((accumulator, bonus) => {
         return accumulator + bonus.amount.raw;
       }, 0) ?? 0;
@@ -352,12 +358,6 @@ export default {
       const discounts = this.discounts?.reduce((accumulator, discount) => {
         return accumulator + discount.amount.raw;
       }, 0) ?? 0;
-      console.log('vacations',vacations);
-      console.log('workedDays',workedDays);
-      console.log('holyDays',holyDays);
-      console.log('bonuses',bonuses);
-      console.log('discounts',discounts);
-      console.log('this.extras.amount.raw',this.extras.amount.raw);
 
       return vacations
         + workedDays
@@ -374,7 +374,6 @@ export default {
 
         this.totalAdditionalTime += parseFloat(hours) + parseFloat(minutes / 60);
       });
-      console.log(this.additionalTimes);
     },
   },
   watch: {
