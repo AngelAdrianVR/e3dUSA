@@ -32,6 +32,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Artisan;
@@ -107,6 +108,10 @@ Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseControlle
 
 //-------------- Projects routes ------------------
 Route::resource('projects', ProjectController::class)->middleware('auth');
+
+
+//-------------------------- Tasks routes -------------------------
+Route::resource('tasks', TaskController::class)->middleware('auth');
 
 
 // ------- Raw Material routes  ---------

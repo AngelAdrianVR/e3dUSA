@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('priority');
             $table->string('status');
             $table->boolean('is_paused')->default(false);
+            $table->date('start_date');
+            $table->date('end_date');
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });

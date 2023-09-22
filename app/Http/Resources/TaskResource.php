@@ -14,19 +14,19 @@ class TaskResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        if ($this->priority == 'Normal') {
+        if ($this->priority == 'Baja') {
             $priority = [
-                'label' => 'Normal',
+                'label' => 'Baja',
                 'color_border' => 'border-[#87CEEB]'
             ];
-        } else if ($this->priority == 'Medio') {
+        } else if ($this->priority == 'Media') {
             $priority = [
-                'label' => 'Medio',
+                'label' => 'Media',
                 'color_border' => 'border-orange-600'
             ];
-        } else if ($this->priority == 'Urgente') {
+        } else if ($this->priority == 'Alta') {
             $priority = [
-                'label' => 'Urgente',
+                'label' => 'Alta',
                 'color_border' => 'border-red-600'
             ];
         }

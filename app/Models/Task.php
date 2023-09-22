@@ -18,6 +18,8 @@ class Task extends Model
         'priority',
         'status',
         'is_paused',
+        'start_date',
+        'end_date',
         'project_id',
     ];
 

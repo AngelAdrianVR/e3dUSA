@@ -17,7 +17,7 @@
         </div>
         <div class="flex space-x-2">
           <PrimaryButton v-if="$page.props.auth.user.permissions.includes('Crear tareas')"
-           @click="$inertia.get(route('projects.create'))">+ Agregar tarea</PrimaryButton>
+           @click="$inertia.get(route('tasks.create'))">+ Agregar tarea</PrimaryButton>
           <Dropdown align="right" width="48">
             <template #trigger>
               <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
