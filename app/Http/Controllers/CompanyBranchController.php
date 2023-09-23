@@ -19,6 +19,10 @@ class CompanyBranchController extends Controller
         //
     }
 
+    // public function show()
+    // {
+    //     //
+    // }
     
     public function store(Request $request)
     {
@@ -56,5 +60,12 @@ class CompanyBranchController extends Controller
         $company_branch->save();
 
         return response()->json(['message' => 'Notas guardadas']);
+    }
+
+    public function getAllBranches()
+    {
+        $company_branches = CompanyBranch::with(['contacts'])->get();
+
+        return response()->json(['items' => $company_branches]);
     }
 }

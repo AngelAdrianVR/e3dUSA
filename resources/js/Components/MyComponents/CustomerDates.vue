@@ -40,9 +40,29 @@
             <h2 class="text-xs text-secondary text-start mb-4">Detalles del cliente</h2>
             <form @submit.prevent="update()" class="lg:grid grid-cols-2 gap-3">
                 <div>
-                    <label for="customer" class="font-bold">Cliente</label>
-                    <el-select v-model="form.customer_id" placeholder="Seleccionar *" :fit-input-width="true">
-                        <el-option v-for="item in customers" :key="item.id" :value="item.name" />
+                    <label for="customer" class="font-bold block text-start text-sm">Cliente</label>
+                    <el-select @change="handleCompanySelected()" v-model="form.company_id"
+                        no-data-text="No hay opciones por mostrar" no-match-text="No se encontraron coincidencias"
+                        clearable filterable placeholder="Seleccionar *">
+                        <el-option v-for="item in companyBranches" ::key="item.id" :label="item.name" :value="item.id" />
+                    </el-select>
+                    <!-- <InputError :message="branch.errors.sat_method" /> -->
+                </div>
+                <div>
+                    <label @change="handleBranchSelected()" for="company-branch" class="font-bold block text-start text-sm">Sucursal</label>
+                    <el-select v-model="form.company_branch_id"
+                        no-data-text="No hay opciones por mostrar" no-match-text="No se encontraron coincidencias"
+                        clearable filterable placeholder="Seleccionar *">
+                        <el-option v-for="item in contacts" ::key="item.id" :label="item.name" :value="item.id" />
+                    </el-select>
+                    <!-- <InputError :message="branch.errors.sat_method" /> -->
+                </div>
+                <div>
+                    <label for="contact" class="font-bold block text-start text-sm">Contacto</label>
+                    <el-select v-model="form.contact_id"
+                        no-data-text="No hay opciones por mostrar" no-match-text="No se encontraron coincidencias"
+                        clearable filterable placeholder="Seleccionar *">
+                        <el-option v-for="item in contacts" ::key="item.id" :label="item.name" :value="item.id" />
                     </el-select>
                     <!-- <InputError :message="branch.errors.sat_method" /> -->
                 </div>
@@ -65,31 +85,22 @@ import DialogModal from '@/Components/DialogModal.vue';
 import CancelButton from '@/Components/MyComponents/CancelButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { useForm } from '@inertiajs/vue3';
+import axios from 'axios';
 
 export default {
     data() {
         const form = useForm({
-            customer_id: 1,
+            company_branch_id: 2,
+            contact_id: 1,
         });
 
         return {
             form,
             showDetailsModal: false,
             selectedDate: null,
-            customers: [
-                {
-                    id: 1,
-                    name: 'GoRinho'
-                },
-                {
-                    id: 2,
-                    name: 'Honda'
-                },
-                {
-                    id: 3,
-                    name: 'FIFA'
-                },
-            ]
+            companies: [],
+            companyBranches: [],
+            contacts: [],
         };
     },
     components: {
@@ -105,9 +116,31 @@ export default {
             this.selectedDate = date;
             this.showDetailsModal = true;
         },
+         handleCompnaySelected() {
+            this.companyBranches = this.companies.find(item => item.id == this.form.company_id)?.company_branches;
+        },
+        handleBranchSelected() {
+            this.contacts = this.companyBranches.find(item => item.id == this.form.company_branch_id)?.contacts;
+        },
         update() {
 
         },
+        async fetchCompanies() {
+            try {
+                const response = await axios.post(route('company-branches.get-all-branches'));
+
+                if (response.status === 200) {
+                    this.companyBranches = response.data.items;
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    },
+    mounted() {
+        this.fetchCompanies();
+        this.handleBranchSelected();
+        this.handleBranchSelected();
     }
 }
 </script>
