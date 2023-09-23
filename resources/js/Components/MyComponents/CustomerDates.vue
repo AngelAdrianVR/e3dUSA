@@ -16,12 +16,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="date in dates" :key="date.id" class="text-xs w-full">
-                            <td class="w-1/5 py-1"><i class="fa-regular fa-user mr-2"></i> {{ date.contact }}</td>
+                        <tr @click="prepareModal()" v-for="date in dates" :key="date.id"
+                            class="text-xs w-full cursor-pointer hover:bg-[#cccccc]">
+                            <td class="w-1/5 py-1 rounded-tl-lg rounded-bl-lg"><i class="fa-regular fa-user mr-2"></i> {{
+                                date.contact }}</td>
                             <td class="w-1/5">{{ date.date }}</td>
                             <td class="w-1/5">{{ date.time }}</td>
                             <td class="w-1/5">{{ date.type }}</td>
-                            <td class="w-1/5 truncate">{{ date.reason }}</td>
+                            <td class="w-1/5 truncate rounded-tr-lg rounded-br-lg">{{ date.reason }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -32,18 +34,80 @@
         </div>
         <p v-else class="text-gray-400 text-center mt-8">No hay citas proximas registradas</p>
     </div>
+    <DialogModal :show="showDetailsModal" @close="showDetailsModal = false">
+        <template #title>
+            <h1 class="text-lg"><i class="fa-regular fa-calendar-check mr-2 mb-4"></i> Resumen de cita </h1>
+            <h2 class="text-xs text-secondary text-start mb-4">Detalles del cliente</h2>
+            <form @submit.prevent="update()" class="lg:grid grid-cols-2 gap-3">
+                <div>
+                    <label for="customer" class="font-bold">Cliente</label>
+                    <el-select v-model="form.customer_id" placeholder="Seleccionar *" :fit-input-width="true">
+                        <el-option v-for="item in customers" :key="item.id" :value="item.name" />
+                    </el-select>
+                    <!-- <InputError :message="branch.errors.sat_method" /> -->
+                </div>
+            </form>
+        </template>
+        <template #content>
+        </template>
+        <template #footer>
+            <CancelButton @click="showDetailsModal = false">
+                Cerrar
+            </CancelButton>
+            <PrimaryButton @click="">
+                Guardar cambios
+            </PrimaryButton>
+        </template>
+    </DialogModal>
 </template>
 <script>
+import DialogModal from '@/Components/DialogModal.vue';
+import CancelButton from '@/Components/MyComponents/CancelButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { useForm } from '@inertiajs/vue3';
+
 export default {
     data() {
-        return {
+        const form = useForm({
+            customer_id: 1,
+        });
 
-        }
+        return {
+            form,
+            showDetailsModal: false,
+            selectedDate: null,
+            customers: [
+                {
+                    id: 1,
+                    name: 'GoRinho'
+                },
+                {
+                    id: 2,
+                    name: 'Honda'
+                },
+                {
+                    id: 3,
+                    name: 'FIFA'
+                },
+            ]
+        };
     },
     components: {
+        DialogModal,
+        CancelButton,
+        PrimaryButton,
     },
     props: {
         dates: Array,
+    },
+    methods: {
+        prepareModal(date) {
+            this.selectedDate = date;
+            this.showDetailsModal = true;
+        },
+        update() {
+
+        },
     }
 }
 </script>
