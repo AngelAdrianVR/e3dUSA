@@ -31,15 +31,15 @@
                 </th>
                 <td class="px-6 text-xs py-px lg:py-2">
                   <span v-if="attendance.additional_time?.authorized_at">
-                  {{ formattedTimeToHoursAndMinutes(attendance.additional_time.time_requested) }}
+                    {{ formattedTimeToHoursAndMinutes(attendance.additional_time.time_requested) }}
                   </span>
                   <i v-else class="fa-solid fa-minus"></i>
                 </td>
                 <td class="px-6 text-xs py-px lg:py-2">
                   <p class="bg-transparent text-sm" :class="{
-                      'text-amber-500': attendance.late > 0 && attendance.late < 15,
-                      'text-red-600': attendance.late >= 15,
-                    }">
+                    'text-amber-500': attendance.late > 0 && attendance.late < 15,
+                    'text-red-600': attendance.late >= 15,
+                  }">
                     {{ attendance.check_in }}
                     <i v-if="!attendance.late" class="fa-solid fa-face-smile text-green-600 ml-1"></i>
                     <i v-else-if="attendance.late < 15" class="fa-solid fa-face-meh ml-1"></i>
@@ -111,7 +111,7 @@
         <p v-if="getHolidays().length" class="grid grid-cols-3 gap-x-1">
           <span>Días Feriados</span>
           <span class="text-center">{{ getHolidays().length }}</span>
-          <span>${{ (user.employee_properties.salary.day * getHolidays().length).toLocaleString('en-US', {
+          <span>${{ (getUserWorkDayByDate(getHolidays()[0].date.estandard).salary).toLocaleString('en-US', {
             minimumFractionDigits: 2
           }) }}</span>
         </p>
@@ -199,6 +199,11 @@ export default {
       this.getDiscounts();
       this.getExtras();
       this.getAuthorizedAdditionalTimes();
+    },
+    getDayOfWeek(date) {
+      const fechaMoment = moment(date);
+
+      return fechaMoment.day();
     },
     formatTimeTo12Hour(time) {
       if (time === null) return null;
@@ -303,16 +308,13 @@ export default {
       return this.processedAttendances.filter(item => item.incident?.id < 0);
     },
     getWorkedDaysSalary() {
-      let totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
-      let totalWeekHoursAllowed = this.processedAttendances.find(item => item.check_in)?.additionals?.hours_per_week;
+      // total_worked_time ya toma en cuenta si existe solicitud de tiempo adicional
+      let totalSalary =
+        this.getWorkedDays().reduce(
+          (accum, object) => accum + object.total_worked_time?.hours * object.additionals.salary.hour, 0
+        );
 
-      // si hay tiempo adicional autorizado 
-      totalWeekHoursAllowed += this.totalAdditionalTime;
-
-      if (totalWeekHours > totalWeekHoursAllowed) {
-        totalWeekHours = totalWeekHoursAllowed;
-      }
-      return totalWeekHours * this.user.employee_properties.salary.hour;
+      return totalSalary;
     },
     formattedTotalAdditionalTime() {
       const hours = parseInt(this.totalAdditionalTime); // Calcular las horas
@@ -320,10 +322,10 @@ export default {
       return `${hours}h ${minutes}m`; // Formatear como "Xh Ym"
     },
     formattedTimeToHoursAndMinutes(time) {
-        const hours = time.split(':')[0];
-        const minutes = time.split(':')[1];
+      const hours = time.split(':')[0];
+      const minutes = time.split(':')[1];
 
-        return `${parseInt(hours)}h ${parseInt(minutes)}m`;
+      return `${parseInt(hours)}h ${parseInt(minutes)}m`;
     },
     getRemainingHoursWeekly() {
       const totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
@@ -335,16 +337,38 @@ export default {
       return hours + 'h ' + minutes + 'm';
     },
     getWeekProcessInPercentage() {
-      const totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
+      let totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
+      
+      // sumar sueldo por dias feriados
+      this.getHolidays().forEach(element => {
+        totalWeekHours += this.getUserWorkDayByDate(element.date.estandard).hours;
+      });
+
       const percentage = (totalWeekHours * 100) / this.user.employee_properties.hours_per_week;
 
       return Math.round(percentage) + '%';
     },
+    getUserWorkDayByDate(date) {
+      const dateMoment = moment(date, 'DD-MM-YYYY');
+      // Obtener el día de la semana (0 para domingo, 1 para lunes, ..., 6 para sábado)
+      const dayOfWeek = dateMoment.day();
+      return this.user.employee_properties.work_days[dayOfWeek];
+    },
     getTotal() {
-      const dayly_salary = this.processedAttendances.find(item => item.check_in)?.additionals?.salary.day;
-      const vacations = this.getVacations().length * 1.25 * dayly_salary;
+      let holyDays = 0;
+      let vacations = 0;
+
+      // sumar sueldo por dias feriados
+      this.getHolidays().forEach(element => {
+        holyDays += this.getUserWorkDayByDate(element.date.estandard).salary;
+      });
+
+      // sumar sueldo por vacaciones
+      this.getVacations().forEach(element => {
+        vacations += this.getUserWorkDayByDate(element.date.estandard).salary * 1.25;
+      });
+
       const workedDays = this.getWorkedDaysSalary();
-      const holyDays = dayly_salary * this.getHolidays().length;
       const bonuses = this.bonuses?.reduce((accumulator, bonus) => {
         return accumulator + bonus.amount.raw;
       }, 0) ?? 0;
@@ -368,7 +392,6 @@ export default {
 
         this.totalAdditionalTime += parseFloat(hours) + parseFloat(minutes / 60);
       });
-      console.log(this.additionalTimes);
     },
   },
   watch: {
