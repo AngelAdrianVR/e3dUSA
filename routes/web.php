@@ -80,6 +80,8 @@ Route::post('catalog-products/QR-search-catalog-product', [CatalogProductControl
 Route::resource('companies', CompanyController::class)->middleware('auth');
 Route::post('companies/massive-delete', [CompanyController::class, 'massiveDelete'])->name('companies.massive-delete');
 Route::post('companies/clone', [CompanyController::class, 'clone'])->name('companies.clone');
+Route::post('companies/get-all-companies', [CompanyController::class, 'getAllCompanies'])->name('companies.get-all-companies')->middleware('auth');
+
 
 // ------- CRM (Clients Routes)  ---------
 Route::get('crm', [DashboardController::class, 'crmDashboard'])->middleware('auth')->name('crm.dashboard');
@@ -94,7 +96,6 @@ Route::put('sales/authorize/{sale}', [SaleController::class, 'authorizeOrder'])-
 Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');
 Route::put('company-branches/clear-important-notes/{company_branch}', [CompanyBranchController::class, 'clearImportantNotes'])->name('company-branches.clear-important-notes')->middleware('auth');
 Route::put('company-branches/store-important-notes/{company_branch}', [CompanyBranchController::class, 'storeImportantNotes'])->name('company-branches.store-important-notes')->middleware('auth');
-Route::post('company-branches/get-all-branches', [CompanyBranchController::class, 'getAllBranches'])->name('company-branches.get-all-branches')->middleware('auth');
 
 // ------- Compras(Suppliers Routes)  ---------
 Route::resource('suppliers', SupplierController::class)->middleware('auth');
