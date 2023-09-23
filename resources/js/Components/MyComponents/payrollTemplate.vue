@@ -111,10 +111,9 @@
         <p v-if="getHolidays().length" class="grid grid-cols-3 gap-x-1">
           <span>Días Feriados</span>
           <span class="text-center">{{ getHolidays().length }}</span>
-          <!-- <span class="text-center">{{ user.employee_properties.work_days[6] }}</span> -->
-          <span>${{ (user.employee_properties.work_days[6].salary * getHolidays().length).toLocaleString('en-US', {
-              minimumFractionDigits: 2
-            }) }}</span>
+          <span>${{ (getUserWorkDayByDate(getHolidays()[0].date.estandard).salary).toLocaleString('en-US', {
+            minimumFractionDigits: 2
+          }) }}</span>
         </p>
         <p v-if="getVacations().length" class="grid grid-cols-3 gap-x-1">
           <span>Vacaciones</span>
@@ -309,16 +308,13 @@ export default {
       return this.processedAttendances.filter(item => item.incident?.id < 0);
     },
     getWorkedDaysSalary() {
-      let totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
-      let totalWeekHoursAllowed = this.processedAttendances.find(item => item.check_in)?.additionals?.hours_per_week;
+      // total_worked_time ya toma en cuenta si existe solicitud de tiempo adicional
+      let totalSalary =
+        this.getWorkedDays().reduce(
+          (accum, object) => accum + object.total_worked_time?.hours * object.additionals.salary.hour, 0
+        );
 
-      // si hay tiempo adicional autorizado 
-      totalWeekHoursAllowed += this.totalAdditionalTime;
-
-      if (totalWeekHours > totalWeekHoursAllowed) {
-        totalWeekHours = totalWeekHoursAllowed;
-      }
-      return totalWeekHours * this.user.employee_properties.salary.hour;
+      return totalSalary;
     },
     formattedTotalAdditionalTime() {
       const hours = parseInt(this.totalAdditionalTime); // Calcular las horas
@@ -341,16 +337,38 @@ export default {
       return hours + 'h ' + minutes + 'm';
     },
     getWeekProcessInPercentage() {
-      const totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
+      let totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
+      
+      // sumar sueldo por dias feriados
+      this.getHolidays().forEach(element => {
+        totalWeekHours += this.getUserWorkDayByDate(element.date.estandard).hours;
+      });
+
       const percentage = (totalWeekHours * 100) / this.user.employee_properties.hours_per_week;
 
       return Math.round(percentage) + '%';
     },
+    getUserWorkDayByDate(date) {
+      const dateMoment = moment(date, 'DD-MM-YYYY');
+      // Obtener el día de la semana (0 para domingo, 1 para lunes, ..., 6 para sábado)
+      const dayOfWeek = dateMoment.day();
+      return this.user.employee_properties.work_days[dayOfWeek];
+    },
     getTotal() {
-      const dayly_salary = this.processedAttendances.find(item => item.check_in)?.additionals?.salary.day;
-      const vacations = this.getVacations().length * 1.25 * dayly_salary;
+      let holyDays = 0;
+      let vacations = 0;
+
+      // sumar sueldo por dias feriados
+      this.getHolidays().forEach(element => {
+        holyDays += this.getUserWorkDayByDate(element.date.estandard).salary;
+      });
+
+      // sumar sueldo por vacaciones
+      this.getVacations().forEach(element => {
+        vacations += this.getUserWorkDayByDate(element.date.estandard).salary * 1.25;
+      });
+
       const workedDays = this.getWorkedDaysSalary();
-      const holyDays = this.user.employee_properties.work_days[6].salary * this.getHolidays().length;
       const bonuses = this.bonuses?.reduce((accumulator, bonus) => {
         return accumulator + bonus.amount.raw;
       }, 0) ?? 0;

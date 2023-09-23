@@ -172,6 +172,7 @@ class PayrollController extends Controller
             $payroll_user = PayrollUser::find($attendance['id']);
 
             if ($payroll_user) {
+                $day_of_week = $payroll_user->date->dayOfWeek;
                 $payroll_user->update([
                     'check_in' => $attendance['check_in'],
                     'check_out' => $attendance['check_out'],
@@ -179,7 +180,7 @@ class PayrollController extends Controller
                     'additionals' => [
                         'salary' =>  [
                             "week" => $user->employee_properties['salary']['week'],
-                            "day" => $user->employee_properties['work_days'][today()->dayOfWeek]["salary"],
+                            "day" => $user->employee_properties['work_days'][$day_of_week]["salary"],
                             "hour" => $user->employee_properties['salary']['hour'],
                         ],
                         'bonuses' => $bonuses,
@@ -347,7 +348,6 @@ class PayrollController extends Controller
     public function getAdditionalTime(Request $request)
     {
         $additiona_times = AdditionalTimeRequest::where('user_id', $request->user_id)->where('payroll_id', $request->payroll_id)->whereNotNull('authorized_at')->get();
-
         return response()->json(['items' => $additiona_times]);
     }
 
