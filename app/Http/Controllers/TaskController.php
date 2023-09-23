@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordEdited;
+use App\Models\Comment;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
@@ -36,8 +39,8 @@ class TaskController extends Controller
             'reminder' => 'required',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
+            'media' => 'nullable',
         ]);
-        
 
         $task = Task::create($request->except('participants') + ['user_id' => auth()->id()]);
 
@@ -45,8 +48,10 @@ class TaskController extends Controller
             // Adjuntar el usuario a la tarea
             $task->participants()->attach($user_id);
         }
+
+        event(new RecordCreated($task));
     
-        // Resto de tu lógica si es necesario
+        $task->addAllMediaFromRequest('media')->each(fn ($file) => $file->toMediaCollection('files'));
     
         return to_route('projects.show', ['project'=> $request->project_id]);
     }
@@ -66,12 +71,55 @@ class TaskController extends Controller
     
     public function update(Request $request, Task $task)
     {
-        //
+
+        $validated =$request->validate([
+            'status' => 'required|string',
+            'description' => 'required',
+            'priority' => 'required|string',
+        ]);
+
+        $task->update($validated);
+
+        if ($request->comment) {
+            $comment = new Comment([
+                'body' => $request->comment,
+                'user_id' => auth()->id(),
+            ]);
+            $task->comments()->save($comment);
+        }
+        // event(new RecordEdited($task));
     }
 
     
     public function destroy(Task $task)
     {
         //
+    }
+
+
+    public function comment(Request $request, Task $task)
+    {
+
+        $comment = new Comment([
+            'body' => $request->comment,
+            'user_id' => auth()->id(),
+        ]);
+        $task->comments()->save($comment);
+        // event(new RecordCreated($comment)); me dice que el id del usuario no tiene un valor por default.
+        return response()->json(['item' => $comment]);
+    }
+
+    public function pausePlayTask(Task $task)
+    {
+        if ($task->is_paused){
+            $task->update([ 
+                'is_paused' => false
+            ]);
+        } else {
+            $task->update([ 
+                'is_paused' => true
+            ]);
+        }
+        // return response()->json(['item' => $comment]);
     }
 }

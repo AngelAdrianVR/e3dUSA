@@ -33,7 +33,13 @@
                 <input v-model="form.description" name="taski_name" class="input" type="text">
                 <InputError :message="form.errors.description" />
             </div>
-            <p class="text-primary cursor-pointer">+ Agregar archivos</p>
+            <p @click="activateFileInput" class="text-primary cursor-pointer">+ Agregar archivos</p>
+            <div class="ml-4 -mt-5">
+              <ul>
+                <li class="text-secondary text-sm" v-for="fileName in form.mediaNames" :key="fileName">{{ fileName }}</li>
+              </ul>
+            </div>
+            <input  @input="form.media = $event.target.files" multiple type="file" id="fileInput" style="display: none;" @change="handleFileUpload">
             <div>
                 <label class="block" for="">Participante(s) *</label>
                 <el-select class="w-full mt-2" v-model="form.participants" clearable filterable multiple placeholder="Seleccionar participantes"
@@ -152,11 +158,13 @@ export default {
       reminder: null,
       start_date: "",
       end_date: "",
+      media: [],
           });
 
     return {
       form,
       remainderModal: false,
+       mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
       priorities:[
         'Baja',
         'Media',
@@ -182,23 +190,38 @@ export default {
     users: Array,
   },
   methods: {
-    store() {
+    store(){
       this.form.post(route("tasks.store"), {
+        // _method: 'put',
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
             message: "Se ha creado una nueva tarea",
             type: "success",
           });
-
         },
       });
     },
-    disabledDate(time) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return time.getTime() > today.getTime();
-    },
+    activateFileInput() {
+    // Simula un clic en el campo de entrada de archivos al hacer clic en el párrafo
+    document.getElementById('fileInput').click();
+  },
+  handleFileUpload(event) {
+    // Este método se llama cuando se selecciona un archivo en el input file
+    const selectedFiles = event.target.files;
+    const fileNames = [];
+    
+    // Obtén los nombres de los archivos seleccionados y guárdalos en form.mediaNames
+    for (let i = 0; i < selectedFiles.length; i++) {
+      fileNames.push(selectedFiles[i].name);
+    }
+
+    // Actualiza la propiedad form.media con los archivos seleccionados
+    this.form.media = selectedFiles;
+    // Actualiza la propiedad form.mediaNames con los nombres de los archivos
+    this.form.mediaNames = fileNames;
+  },
+
   },
 };
 </script>

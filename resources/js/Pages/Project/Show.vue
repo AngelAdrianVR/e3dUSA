@@ -84,23 +84,23 @@
 
 
     <!-- ------------- Tasks Starts 2 ------------- -->
-      <div v-if="tabs == 2" class="md:grid grid-cols-3 text-left p-4  text-sm items-center">
+      <div v-if="tabs == 2" class="md:grid grid-cols-3 text-left p-4  text-sm">
       <!-- -- Por hacer -- -->
-        <div class="border-r border-[#9A9A9A] h-56 pr-7">
+        <div class="border-r border-[#9A9A9A] h-auto pr-7">
             <h2 class="font-bold mb-10">POR HACER <span class="font-normal ml-7">{{ pedingTasks.length }}</span></h2>
-            <ProjectTaskCard v-for="task in pedingTasks" :key="task" :taskComponent="task" />
+            <ProjectTaskCard v-for="task in pedingTasks" :key="task" :taskComponent="task" :users="users" />
         </div>
 
         <!-- -- En curso -- -->
-        <div class="border-r border-[#9A9A9A] h-56 px-7">
+        <div class="border-r border-[#9A9A9A] h-auto px-7">
             <h2 class="font-bold mb-10">EN CURSO <span class="font-normal ml-7">{{ inProgressTasks.length }}</span></h2>
-            <ProjectTaskCard v-for="task in inProgressTasks" :key="task" :taskComponent="task" />
+            <ProjectTaskCard v-for="task in inProgressTasks" :key="task" :taskComponent="task" :users="users" />
         </div>
 
         <!-- -- Terminado -- -->
-        <div class="h-56 px-7">
+        <div class="h-auto px-7">
             <h2 class="font-bold mb-10">TERMINADO <span class="font-normal ml-7">{{ finishedTasks.length }}</span></h2>
-            <ProjectTaskCard v-for="task in finishedTasks" :key="task" :taskComponent="task" />
+            <ProjectTaskCard v-for="task in finishedTasks" :key="task" :taskComponent="task" :users="users" />
         </div>
       </div>
       <!-- ------------- Tasks ends 2 ------------- -->
@@ -234,6 +234,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import ProjectTaskCard from "@/Components/MyComponents/ProjectTaskCard.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
+import Modal from "@/Components/Modal.vue";
 import { Link } from "@inertiajs/vue3";
 
 export default {
@@ -258,10 +259,12 @@ export default {
         Link,
         Dropdown,
         DropdownLink,
+        Modal,
     },
     props:{
       projects: Object,
-      project: Object
+      project: Object,
+      users: Array
     },
     methods:{
       
