@@ -16,11 +16,12 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->string('priority');
-            $table->string('status');
+            $table->string('status')->default('Por hacer');
             $table->boolean('is_paused')->default(false);
             $table->date('start_date');
             $table->date('end_date');
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

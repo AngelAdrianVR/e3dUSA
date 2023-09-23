@@ -39,7 +39,8 @@ class TaskResource extends JsonResource
             'status' => $this->status,
             'is_paused' => $this->is_paused,
             'project' => $this->whenLoaded('project'),
-            'users' => $this->whenLoaded('users'),
+            'participants' => $this->whenLoaded('participants'),
+            'user' => $this->whenLoaded('user'),
             'created_at' => $this->created_at?->isoFormat('DD MMM YYYY'),
             'updated_at' => $this->updated_at?->isoFormat('DD MMM YYYY'),
         ];

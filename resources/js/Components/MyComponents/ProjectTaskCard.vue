@@ -39,7 +39,7 @@
                         <i class="fa-solid fa-check text-green-500 text-xl cursor-default mr-2"></i>
                     </el-tooltip>
                         <!-- <p class="text-primary mr-1">+2</p> -->
-                        <el-tooltip v-for="user in taskComponent.users" :key="user" :content="user.name" placement="bottom">
+                        <el-tooltip v-for="user in taskComponent.participants" :key="user" :content="user.name" placement="bottom">
                             <figure>
                                 <div v-if="$page.props.jetstream.managesProfilePhotos"
                                     class="flex text-sm rounded-full">

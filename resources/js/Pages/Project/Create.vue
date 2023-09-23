@@ -17,19 +17,19 @@
       <form @submit.prevent="store">
         <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4">
           <div>
-            <IconInput v-model="form.name" inputPlaceholder="Título del proyecto *" inputType="text">
+            <IconInput v-model="form.project_name" inputPlaceholder="Título del proyecto *" inputType="text">
               <el-tooltip content="Título del proyecto" placement="top"> A </el-tooltip>
             </IconInput>
             <InputError :message="form.errors.name" />
           </div>
           <div class="lg:flex space-x-3 pt-3 relative">
-            <el-select class="lg:w-1/ mt-2" v-model="selectedProyect" clearable filterable placeholder="Propietario"
+            <el-select class="lg:w-1/ mt-2" v-model="form.owner" clearable filterable placeholder="Propietario"
             no-data-text="No hay propietarios registrados" no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in projects?.data" :key="item.id" :label="item.name" :value="item.id" />
           </el-select>
-            <el-select class="lg:w-1/2 mt-2" v-model="selectedProyect" clearable filterable placeholder="Grupo"
+            <el-select class="lg:w-1/2 mt-2" v-model="form.group" clearable filterable placeholder="Grupo"
             no-data-text="No hay grupos registrados" no-match-text="No se encontraron coincidencias">
-            <el-option v-for="item in projects?.data" :key="item.id" :label="item.name" :value="item.id" />
+            <el-option v-for="group in groups" :key="group" :label="group" :value="group" />
           </el-select>
           <p class="absolute -top-2 right-0 text-primary text-xs cursor-pointer">Agregar grupo nuevo</p>
           </div>
@@ -50,9 +50,9 @@
                 <i class="fa-solid fa-calendar"></i>
               </span>
             </el-tooltip>
-            <el-date-picker v-model="form.aquisition_date" type="date" placeholder="Fecha de inicio *"
+            <el-date-picker v-model="form.start_date" type="date" placeholder="Fecha de inicio *"
               format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
-            <InputError :message="form.errors.aquisition_date" :disabled-date="disabledDate" />
+            <InputError :message="form.errors.start_date" :disabled-date="disabledDate" />
           </div>
           <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
             <el-tooltip content="Fecha de final *" placement="top">
@@ -61,9 +61,9 @@
                 <i class="fa-solid fa-calendar"></i>
               </span>
             </el-tooltip>
-            <el-date-picker v-model="form.aquisition_date" type="date" placeholder="Fecha de final *"
+            <el-date-picker v-model="form.limit_date" type="date" placeholder="Fecha de final *"
               format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
-            <InputError :message="form.errors.aquisition_date" :disabled-date="disabledDate" />
+            <InputError :message="form.errors.limit_date" :disabled-date="disabledDate" />
           </div>
         </div>
         <div class="flex justify-end items-center space-x-3 mr-auto mt-2">
@@ -135,12 +135,19 @@ import Checkbox from "@/Components/Checkbox.vue";
 export default {
   data() {
     const form = useForm({
-      name: null,
+      project_name: null,
+      group: null,
 
     });
 
     return {
       form,
+      groups:[
+        'Compras',
+        'Ventas',
+        'Producción',
+        'Diseño',
+      ],
     };
   },
   components: {

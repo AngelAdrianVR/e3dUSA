@@ -26,7 +26,7 @@
             </template>
             <template #content>
               <DropdownLink :href="route('machines.create')">
-                Agregar nueva máquina
+                Todas las tareas
               </DropdownLink>
             </template>
           </Dropdown>

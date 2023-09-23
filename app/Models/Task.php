@@ -21,6 +21,7 @@ class Task extends Model
         'start_date',
         'end_date',
         'project_id',
+        'user_id',
     ];
 
     //relationships
@@ -29,7 +30,12 @@ class Task extends Model
         return $this->belongsTo(Project::class);
     }
 
-    public function users(): BelongsToMany
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function participants(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'task_user', 'task_id', 'user_id');
     }

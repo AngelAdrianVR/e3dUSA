@@ -33,7 +33,7 @@
                 <input v-model="form.description" name="taski_name" class="input" type="text">
                 <InputError :message="form.errors.description" />
             </div>
-            <p class="text-primary">+ Agregar archivos</p>
+            <p class="text-primary cursor-pointer">+ Agregar archivos</p>
             <div>
                 <label class="block" for="">Participante(s) *</label>
                 <el-select class="w-full mt-2" v-model="form.participants" clearable filterable multiple placeholder="Seleccionar participantes"
@@ -96,8 +96,10 @@
             <PrimaryButton :disabled="form.processing">
               Agregar
             </PrimaryButton>
-            <p class="text-primary text-sm ml-5 cursor-pointer">+ Agregar tarea consecutiva </p>
+              <p class="text-primary text-sm ml-5 cursor-pointer">+ Agregar tarea consecutiva </p>
+             <el-tooltip content="Son las tareas relacionadas a la tarea principal" placement="top">
             <i class="fa-regular fa-circle-question text-xs ml-2"></i>
+            </el-tooltip>
           </div>
         </div>
       </form>
@@ -148,8 +150,9 @@ export default {
       participants: null,
       priority: null,
       reminder: null,
-
-    });
+      start_date: "",
+      end_date: "",
+          });
 
     return {
       form,
@@ -201,12 +204,6 @@ export default {
 </script>
 
 <style scoped>
-/* Estilos específicos para este componente */
-/* Estilo para la ventana desplegable */
-.el-select-dropdown__list {
-  background-color: #CCCCCC; /* Color de fondo */
-  padding: 5px; /* Padding de 5px */
-}
 
 /* Estilo para el hover de las opciones */
 .el-select-dropdown .el-select-dropdown__item:hover {
