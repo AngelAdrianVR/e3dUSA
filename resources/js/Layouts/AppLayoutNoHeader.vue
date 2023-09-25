@@ -55,36 +55,36 @@ const getUnseenMessages = async () => {
   }
 }
 
-const scanMachineForm = async () =>{
+const scanMachineForm = async () => {
   try {
-      machineFound.value = null;
-      loading.value = true;
-      const response = await axios.post(route("machines.QR-search-machine"), {
-        barCode: form.barCode,
-      });
+    machineFound.value = null;
+    loading.value = true;
+    const response = await axios.post(route("machines.QR-search-machine"), {
+      barCode: form.barCode,
+    });
 
-      if (response.status === 200) {
-        if (response.data.item == null) {
-          ElNotification.error({
-            title: "Error",
-            message: "No se encontró ninguna máquina",
-          });
-        } else {
-          machineFound.value = response.data.item;
-          form.barCode = null;
-          partNumberInput.value.focus();
-        }
+    if (response.status === 200) {
+      if (response.data.item == null) {
+        ElNotification.error({
+          title: "Error",
+          message: "No se encontró ninguna máquina",
+        });
+      } else {
+        machineFound.value = response.data.item;
+        form.barCode = null;
+        partNumberInput.value.focus();
       }
-    } catch (error) {
-      ElNotification.error({
-        title: "Error",
-        message: "Formato de código inválido",
-      });
-      console.log(error);
-    } finally {
-      form.barCode = null;
-      loading.value = false;
     }
+  } catch (error) {
+    ElNotification.error({
+      title: "Error",
+      message: "Formato de código inválido",
+    });
+    console.log(error);
+  } finally {
+    form.barCode = null;
+    loading.value = false;
+  }
 }
 
 const scanForm = async () => {
@@ -432,11 +432,11 @@ onMounted(() => {
                   </Dropdown>
                 </div>
 
-                <el-tooltip content="Escanear máquina con código QR">
+                <!-- <el-tooltip content="Escanear máquina con código QR">
                   <SecondaryButton @click="QRMachineScan" class="mr-2">
                     <i class="fa-solid fa-qrcode mr-1"></i> Máquinas
                   </SecondaryButton>
-                </el-tooltip>
+                </el-tooltip> -->
 
                 <el-tooltip content="Escanear producto con código QR">
                   <PrimaryButton @click="QRScan" class="mr-10">
@@ -451,7 +451,7 @@ onMounted(() => {
                     $page.props.auth.user.name.split(" ")[0]
                   }}</strong>
                 </p>
-                
+
                 <!-- pause work time -->
                 <el-popconfirm v-if="$page.props.isKiosk && isPaused !== null &&
                     nextAttendance &&
@@ -471,11 +471,11 @@ onMounted(() => {
 
                 <!-- attendances -->
                 <el-popconfirm v-if="$page.props.isKiosk &&
-                    nextAttendance &&
-                    $page.props.auth.user.permissions.includes(
-                      'Registrar asistencia'
-                    )
-                    " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
+                  nextAttendance &&
+                  $page.props.auth.user.permissions.includes(
+                    'Registrar asistencia'
+                  )
+                  " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
                   @confirm="setAttendance">
                   <template #reference>
                     <SecondaryButton v-if="nextAttendance != 'Dia terminado'" class="mr-14">
@@ -714,39 +714,27 @@ onMounted(() => {
       <div class="flex justify-center mb-4">
         <h2 v-if="is_product" class="font-bold text-center mr-2">Movimientos de materia prima</h2>
         <h2 v-else class="font-bold text-center mr-2">Búsqueda de maquinaria</h2>
-        <div
-          @click="
-            qrScan = false;
-            form.reset();
-          "
-          class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0"
-        >
+        <div @click="
+          qrScan = false;
+        form.reset();
+        "
+          class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
           <i class="fa-solid fa-xmark"></i>
         </div>
       </div>
 
       <form v-if="is_product" @submit.prevent="scanForm">
+        <button @click="QRMachineScan()" class="text-primary underline text-xs">Escanear máquinas</button>
         <div style="margin-top: 20px">
           <el-radio-group v-model="form.scanType">
-            <el-radio-button
-              v-if="
-                $page.props.auth.user.permissions.includes('Crear entradas')
-              "
-              label="Entrada"
-            />
-            <el-radio-button
-              v-if="$page.props.auth.user.permissions.includes('Crear salidas')"
-              label="Salida"
-            />
+            <el-radio-button v-if="$page.props.auth.user.permissions.includes('Crear entradas')
+              " label="Entrada" />
+            <el-radio-button v-if="$page.props.auth.user.permissions.includes('Crear salidas')" label="Salida" />
             <el-radio-button label="Buscar materia prima" />
-            <el-radio-button
-              v-if="
-                $page.props.auth.user.permissions.includes(
-                  'QR producto de catalogo'
-                )
-              "
-              label="Producto de catalogo"
-            />
+            <el-radio-button v-if="$page.props.auth.user.permissions.includes(
+              'QR producto de catalogo'
+            )
+              " label="Producto de catalogo" />
           </el-radio-group>
         </div>
 
@@ -754,39 +742,23 @@ onMounted(() => {
           <div class="flex col-span-full ml-3 mt-2">
             <el-tooltip content="Código QR *" placement="top">
               <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
-              >
+                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
                 <i class="fa-solid fa-qrcode ml-2"></i>
               </span>
             </el-tooltip>
-            <input
-              ref="partNumberInput"
-              v-model="form.barCode"
-              class="input"
-              autocomplete="off"
-              placeholder="Código QR *"
-              type="text"
-            />
+            <input ref="partNumberInput" v-model="form.barCode" class="input" autocomplete="off" placeholder="Código QR *"
+              type="text" />
             <InputError :message="form.errors.barCode" />
           </div>
         </div>
-        <div
-          v-if="loading"
-          class="mt-5 z-20 rounded-lg flex items-center justify-center"
-        >
+        <div v-if="loading" class="mt-5 z-20 rounded-lg flex items-center justify-center">
           <i class="fa-solid fa-spinner fa-spin text-3xl text-primary"></i>
         </div>
 
         <!-- -------------- Product found in search raw material starts--------------------- -->
-        <div v-if="(productFound && !loading) && form.scanType == 'Buscar materia prima' " class="flex space-x-2 mt-4">
-          <figure
-            class="w-1/3 h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center border"
-          >
-            <el-image
-              style="height: 100%"
-              :src="productFound.storageable?.media[0]?.original_url"
-              fit="contain"
-            >
+        <div v-if="(productFound && !loading) && form.scanType == 'Buscar materia prima'" class="flex space-x-2 mt-4">
+          <figure class="w-1/3 h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center border">
+            <el-image style="height: 100%" :src="productFound.storageable?.media[0]?.original_url" fit="contain">
               <template #error>
                 <div class="flex justify-center items-center text-[#ababab]">
                   <i class="fa-solid fa-image text-6xl"></i>
@@ -828,13 +800,10 @@ onMounted(() => {
                 }}
               </li>
             </ul>
-            <Link
-              class="text-center mt-5"
-              :href="route('storages.show', productFound.id)"
-            >
-              <p class="text-secondary hover:underline cursor-pointer">
-                Ver producto
-              </p>
+            <Link class="text-center mt-5" :href="route('storages.show', productFound.id)">
+            <p class="text-secondary hover:underline cursor-pointer">
+              Ver producto
+            </p>
             </Link>
           </div>
         </div>
@@ -890,12 +859,20 @@ onMounted(() => {
             </h1>
 
             <div>
-              <div v-for="company_info in catalogProductFound.companies" :key="company_info" class="p-3 flex flex-col border rounde-lg">
-                <p class="text-secondary font-bold">Razon social: <span class="text-gray-600 font-thin">{{company_info.business_name}}</span></p>
-                <p class="text-secondary font-bold">Precio anterior: <span class="text-gray-600 font-thin">{{company_info.pivot.old_price}} {{ company_info.pivot.new_currency }}</span></p>
-                <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{company_info.pivot.old_date}}</span></p>
-                <p class="text-secondary font-bold">Precio actual: <span class="text-gray-600 font-thin">{{company_info.pivot.new_price}} {{ company_info.pivot.new_currency }}</span></p>
-                <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{company_info.pivot.new_date}}</span></p>
+              <div v-for="company_info in catalogProductFound.companies" :key="company_info"
+                class="p-3 flex flex-col border rounde-lg">
+                <p class="text-secondary font-bold">Razon social: <span
+                    class="text-gray-600 font-thin">{{ company_info.business_name }}</span></p>
+                <p class="text-secondary font-bold">Precio anterior: <span
+                    class="text-gray-600 font-thin">{{ company_info.pivot.old_price }} {{ company_info.pivot.new_currency
+                    }}</span></p>
+                <p class="text-secondary font-bold">Fecha de cambio: <span
+                    class="text-gray-600 font-thin">{{ company_info.pivot.old_date }}</span></p>
+                <p class="text-secondary font-bold">Precio actual: <span
+                    class="text-gray-600 font-thin">{{ company_info.pivot.new_price }} {{ company_info.pivot.new_currency
+                    }}</span></p>
+                <p class="text-secondary font-bold">Fecha de cambio: <span
+                    class="text-gray-600 font-thin">{{ company_info.pivot.new_date }}</span></p>
               </div>
             </div>
 
@@ -905,55 +882,37 @@ onMounted(() => {
 
         <div class="flex justify-end space-x-3 pt-5 pb-1">
           <PrimaryButton :disabled="form.processing">Enviar</PrimaryButton>
-          <CancelButton
-            @click="
-              qrScan = false;
-              form.reset();
-            "
-            >Cancelar</CancelButton
-          >
+          <CancelButton @click="
+            qrScan = false;
+          form.reset();
+          ">Cancelar</CancelButton>
         </div>
       </form>
 
       <!-- ---------------------- Machine form starts ---------------------- -->
       <form v-if="!is_product" @submit.prevent="scanMachineForm">
-      <div class="mt-6">
+        <button @click="QRScan()" class="text-primary underline text-xs">Escanear productos</button>
+        <div class="mt-6">
           <div class="flex col-span-full ml-3 mt-2">
             <el-tooltip content="Código QR *" placement="top">
               <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
-              >
+                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
                 <i class="fa-solid fa-qrcode ml-2"></i>
               </span>
             </el-tooltip>
-            <input
-              ref="partNumberInput"
-              v-model="form.barCode"
-              class="input"
-              autocomplete="off"
-              placeholder="Código QR *"
-              type="text"
-            />
+            <input ref="partNumberInput" v-model="form.barCode" class="input" autocomplete="off" placeholder="Código QR *"
+              type="text" />
             <InputError :message="form.errors.barCode" />
           </div>
         </div>
 
-        <div
-          v-if="loading"
-          class="mt-5 z-20 rounded-lg flex items-center justify-center"
-        >
+        <div v-if="loading" class="mt-5 z-20 rounded-lg flex items-center justify-center">
           <i class="fa-solid fa-spinner fa-spin text-3xl text-primary"></i>
         </div>
 
         <div v-if="machineFound" class="flex space-x-2 mt-4">
-          <figure
-            class="w-1/3 h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center border"
-          >
-            <el-image
-              style="height: 100%"
-              :src="machineFound.media[0]?.original_url"
-              fit="contain"
-            >
+          <figure class="w-1/3 h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center border">
+            <el-image style="height: 100%" :src="machineFound.media[0]?.original_url" fit="contain">
               <template #error>
                 <div class="flex justify-center items-center text-[#ababab]">
                   <i class="fa-solid fa-image text-6xl"></i>
@@ -1012,30 +971,26 @@ onMounted(() => {
               <li>
                 <label class="text-primary mt-2">Archivos: </label>
                 <div class="flex flex-col">
-                 <p class="text-secondary hover:underline" v-for="file in machineFound.files" :key="file"><a :href="file.original_url" target="_blank">{{ file.name ?? 'No hay archivos de esta máquina' }}</a></p>
+                  <p class="text-secondary hover:underline" v-for="file in machineFound.files" :key="file"><a
+                      :href="file.original_url" target="_blank">{{ file.name ?? 'No hay archivos de esta máquina' }}</a>
+                  </p>
                 </div>
               </li>
             </ul>
-            <Link
-              class="text-center mt-5"
-              :href="route('machines.show', machineFound.id)"
-            >
-              <p class="text-secondary hover:underline cursor-pointer mt-4">
-                Ver máquina
-              </p>
+            <Link class="text-center mt-5" :href="route('machines.show', machineFound.id)">
+            <p class="text-secondary hover:underline cursor-pointer mt-4">
+              Ver máquina
+            </p>
             </Link>
           </div>
         </div>
 
-      <div class="flex justify-end space-x-3 pt-5 pb-1">
+        <div class="flex justify-end space-x-3 pt-5 pb-1">
           <PrimaryButton :disabled="form.processing">Buscar</PrimaryButton>
-          <CancelButton
-            @click="
-              qrScan = false;
-              form.reset();
-            "
-            >Cancelar</CancelButton
-          >
+          <CancelButton @click="
+            qrScan = false;
+          form.reset();
+          ">Cancelar</CancelButton>
         </div>
 
       </form>
