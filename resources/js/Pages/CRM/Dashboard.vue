@@ -6,7 +6,7 @@
             <!-- customers -->
             <h2 class="text-primary lg:text-xl text-lg lg:mt-6 mt-6">Clientes</h2>
             <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 mt-4 space-y-6 lg:space-y-0">
-                <CustomerDates :dates="[{contact: 'Elena Jimenez', date: '22 agosto', time:'14:30 hrs', type: 'Presencial', reason: 'Revision de temas varios para implementacion de proyecto'},]" />
+                <CustomerDates />
                 <BirthdateCardCustomer :contacts="customers_birthdays" />
             </div>
 

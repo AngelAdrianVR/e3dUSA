@@ -191,5 +191,9 @@ return [
         'designer_id' => 'Diseñedor(a)',
         'design_type_id' => 'Categoria de diseño',
         'specifications' => 'Especificaciones',
+        'customer' => 'cliente',
+        'date' => 'fecha',
+        'time' => 'hora',
+        'type' => ' ',
     ],
 ];
