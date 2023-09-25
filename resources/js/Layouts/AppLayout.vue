@@ -431,11 +431,11 @@ onMounted(() => {
                   </Dropdown>
                 </div>
 
-                <el-tooltip content="Escanear máquina con código QR">
+                <!-- <el-tooltip content="Escanear máquina con código QR">
                   <SecondaryButton @click="QRMachineScan" class="mr-2">
                     <i class="fa-solid fa-qrcode mr-1"></i> Máquinas
                   </SecondaryButton>
-                </el-tooltip>
+                </el-tooltip> -->
 
                 <el-tooltip content="Escanear producto con código QR">
                   <PrimaryButton @click="QRScan" class="mr-10">
@@ -724,6 +724,7 @@ onMounted(() => {
       </div>
 
       <form v-if="is_product" @submit.prevent="scanForm">
+        <button @click="QRMachineScan()" class="text-primary underline text-xs">Escanear máquinas</button>
         <div style="margin-top: 20px">
           <el-radio-group v-model="form.scanType">
             <el-radio-button v-if="$page.props.auth.user.permissions.includes('Crear entradas')
@@ -882,6 +883,7 @@ onMounted(() => {
 
       <!-- ---------------------- Machine form starts ---------------------- -->
       <form v-if="!is_product" @submit.prevent="scanMachineForm">
+        <button @click="QRScan()" class="text-primary underline text-xs">Escanear productos</button>
         <div class="mt-6">
           <div class="flex col-span-full ml-3 mt-2">
             <el-tooltip content="Código QR *" placement="top">

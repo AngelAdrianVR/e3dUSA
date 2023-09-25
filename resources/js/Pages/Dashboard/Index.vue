@@ -3,7 +3,7 @@
         <div class="px-9 pt-3 lg:px-14 lg:pt-8">
             <h1>Inicio</h1>
 
-            <div class="my-5">
+            <!-- <div class="my-5">
                 <h2 class="text-primary lg:text-xl text-lg mb-3">Avisos</h2>
                 <div class="rounded-xl border border-[#D90537]">
                     <p
@@ -17,7 +17,7 @@
                         adicionales.
                     </p>
                 </div>
-            </div>
+            </div> -->
 
             <!-- attendance -->
             <div class="lg:hidden mx-auto w-4/5 rounded-[20px] bg-[#d9d9d9] py-3 px-5 flex flex-col space-y-2 mt-4">
