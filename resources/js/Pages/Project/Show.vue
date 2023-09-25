@@ -113,9 +113,26 @@
   <tr>
     <th class="border-y border-[#9A9A9A] text-left pl-7 py-3 font-thin relative" scope="row">Proyecto <br>
      <strong class="text-lg font-bold">{{ currentProject?.project_name }}</strong>
-     <i class="fa-solid fa-ellipsis text-primary absolute bottom-4 right-4 cursor-pointer hover:bg-[#dfdede] rounded-full p-2"></i>
+     <i @click="showDepartmentFilter = !showDepartmentFilter" class="fa-solid fa-ellipsis text-primary absolute bottom-4 right-4 cursor-pointer hover:bg-[#dfdede] rounded-full p-2"></i>
+     <div v-if="showDepartmentFilter" class="absolute right-4 top-[60px] bg-[#D9D9D9] rounded-md px-4 py-2">
+        <label class="flex items-center">
+          <Checkbox v-model:checked="productionCheck" class="bg-transparent"/>
+          <span class="ml-2 text-sm text-[#9A9A9A]">Producción</span>
+        </label>
+        <label class="flex items-center">
+          <Checkbox v-model:checked="designCheck" class="bg-transparent"/>
+          <span class="ml-2 text-sm text-[#9A9A9A]">Diseño</span>
+        </label>
+        <label class="flex items-center">
+          <Checkbox v-model:checked="salesCheck" class="bg-transparent"/>
+          <span class="ml-2 text-sm text-[#9A9A9A]">Ventas</span>
+        </label>
+        <label class="flex items-center">
+          <Checkbox v-model:checked="marketingCheck" class="bg-transparent"/>
+          <span class="ml-2 text-sm text-[#9A9A9A]">Marketing</span>
+        </label>
+     </div>
      </th>
-    <th class="border border-[#9A9A9A] text-center font-thin">%</th>
     <th class="border border-[#9A9A9A] text-center font-thin"><strong class="text-base uppercase font-bold tex">Junio</strong><br>
      <div class="flex space-x-5 justify-center">
       <p class="text-secondary relative">L <span class="absolute -bottom-3 -left-[2px] text-xs text-black">01</span></p>
@@ -162,61 +179,22 @@
      </th>
   </tr>
 
-  <tr>
-    <th class="text-lg font-normal pl-7 py-2 border-y border-[#9A9A9A]">Fabricación de portaplacas <br>
-      <p class="text-[#9A9A9A] text-sm">Depto. Finanzas</p>
+  <tr v-for="task in currentProject?.tasks" :key="task">
+    <th class="text-lg font-normal pl-7 py-2 border-y border-[#9A9A9A]">
+      <div :class="task.priority.color_border" class="border-r-4">{{ task.title }}
+        <p class="text-[#9A9A9A] text-sm">Depto. {{ task.department }}</p>
+       </div>
     </th>
-    <td class="font-normal text-center border border-[#9A9A9A]">100</td>
-    <td class="border-x border-[#9A9A9A]"></td>
-    <td class="border-x border-[#9A9A9A]"></td>
-    <td class="border-x border-[#9A9A9A]"></td>
-    <td class="border-x border-[#9A9A9A]"></td>
-  </tr>
-  <tr>
-    <th class="text-lg font-normal pl-7 py-2 border-y border-[#9A9A9A]">Grabado laser de emblema... <br>
-      <p class="text-[#9A9A9A] text-sm">Depto. Producción</p>
-    </th>
-    <td class="font-normal text-center border border-[#9A9A9A]">50</td>
-    <td class="border-x border-[#9A9A9A]"></td>
-    <td class="border-x border-[#9A9A9A]"></td>
-    <td class="border-x border-[#9A9A9A]"></td>
-    <td class="border-x border-[#9A9A9A]"></td>
-  </tr>
-  <tr>
-    <th class="text-lg font-normal pl-7 py-2 border-y border-[#9A9A9A]">Empaque y etiquetado de... <br>
-      <p class="text-[#9A9A9A] text-sm">Depto. Ventas</p>
-    </th>
-    <td class="font-normal text-center border border-[#9A9A9A]">0</td>
-    <td class="border-x border-[#9A9A9A]"></td>
-    <td class="border-x border-[#9A9A9A]"></td>
-    <td class="border-x border-[#9A9A9A]"></td>
-    <td class="border-x border-[#9A9A9A]"></td>
-  </tr>
-  <tr>
-    <th class="text-lg font-normal pl-7 py-2 border-y border-[#9A9A9A]">Enviar correo de confirmacion... <br>
-      <p class="text-[#9A9A9A] text-sm">Depto. Ventas</p>
-    </th>
-    <td class="font-normal text-center border border-[#9A9A9A]">30</td>
-    <td class="border-x border-[#9A9A9A]"></td>
-    <td class="border-x border-[#9A9A9A]"></td>
-    <td class="border-x border-[#9A9A9A]"></td>
-    <td class="border-x border-[#9A9A9A]"></td>
-  </tr>
-  <tr>
-    <th class="text-lg font-normal pl-7 py-2 border-y border-[#9A9A9A]">Empaque y etiquetado de... <br>
-      <p class="text-[#9A9A9A] text-sm">Depto. Diseño</p>
-    </th>
-    <td class="font-normal text-center border border-[#9A9A9A]">60</td>
-    <td class="border-x border-[#9A9A9A]"></td>
-    <td class="border-x border-[#9A9A9A]"></td>
-    <td class="border-x border-[#9A9A9A]"></td>
-    <td class="border-x border-[#9A9A9A]"></td>
+    <td class="border-x border-[#CCCCCC]"></td>
+    <td class="border-x border-[#CCCCCC]"></td>
+    <td class="border-x border-[#CCCCCC]"></td>
+    <td class="border-x border-[#CCCCCC]"></td>
   </tr>
 </table>
 
 <div class="text-right mr-9">
   <div class="border border-[#9A9A9A] rounded-md inline-flex justify-end mt-4">
-    <p :class="period == 'Hoy' ? 'bg-primary text-white rounded-sm' :'border-[#9A9A9A]' " @click="period = 'Hoy'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-x border-transparent">Hoy</p>
+    <p :class="period == 'Hoy' ? 'bg-primary text-white rounded-sm' :'border-[#9A9A9A]' " @click="period = 'Hoy'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-r">Hoy</p>
     <p :class="period == 'Semana' ? 'bg-primary text-white rounded-sm' :'border-[#9A9A9A]'" @click="period = 'Semana'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-x border-transparent">Semana</p>
     <p :class="period == 'Mes' ? 'bg-primary text-white rounded-sm' :'border-[#9A9A9A]'"  @click="period = 'Mes'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-x">Mes</p>
     <p :class="period == 'Trimestre' ? 'bg-primary text-white rounded-sm' :'border-[#9A9A9A]'" @click="period = 'Trimestre'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-x border-transparent">Trimestre</p>
@@ -235,6 +213,7 @@ import ProjectTaskCard from "@/Components/MyComponents/ProjectTaskCard.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import Modal from "@/Components/Modal.vue";
+import Checkbox from "@/Components/Checkbox.vue";
 import { Link } from "@inertiajs/vue3";
 
 export default {
@@ -249,6 +228,11 @@ export default {
             maxUsersToShow: 3 ,
             selectedProject: '',
             currentProject: null,
+            productionCheck: true,
+            designCheck: true,
+            salesCheck: true,
+            marketingCheck: true,
+            showDepartmentFilter: false,
             period: 'Hoy' //period of time in cronograma table tab 3
         }
     },
@@ -260,6 +244,7 @@ export default {
         Dropdown,
         DropdownLink,
         Modal,
+        Checkbox,
     },
     props:{
       projects: Object,

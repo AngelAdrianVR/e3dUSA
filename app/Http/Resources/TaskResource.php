@@ -22,7 +22,7 @@ class TaskResource extends JsonResource
         } else if ($this->priority == 'Media') {
             $priority = [
                 'label' => 'Media',
-                'color_border' => 'border-orange-600'
+                'color_border' => 'border-orange-500'
             ];
         } else if ($this->priority == 'Alta') {
             $priority = [
@@ -35,6 +35,7 @@ class TaskResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
+            'department' => $this->department,
             'priority' => $priority,
             'status' => $this->status,
             'is_paused' => $this->is_paused,

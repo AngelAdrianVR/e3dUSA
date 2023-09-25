@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
+            $table->string('department');
             $table->string('priority');
             $table->string('status')->default('Por hacer');
             $table->boolean('is_paused')->default(false);

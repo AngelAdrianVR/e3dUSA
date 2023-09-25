@@ -32,7 +32,7 @@
                       <div @click.stop="" class="flex items-end text-[#9A9A9A]">
                         <i class="fa-regular fa-comments text-lg  rounded-full py-1 px-2"></i>
                        <p class="text-xs ml-1">{{ taskComponent.comments?.length }} </p>
-                       <p class="text-sm ml-3">| {{ 'Dpto. ' + taskComponent.project.group }} </p>
+                       <p class="text-sm ml-3">| {{ 'Dpto. ' + taskComponent.department }} </p>
                       </div>
                       <div class="flex items-center absolute bottom-3 right-0 cursor-default">
                       <el-tooltip v-if="taskComponent.status == 'Terminada'" content="Tarea terminada" placement="bottom">
@@ -65,15 +65,15 @@
                 <div>
                     <label>Estado actual</label> <br>
                     <div class="flex items-center space-x-4">
-                        <el-select class="lg:w-1/2 mt-2" v-model="form.status" clearable filterable placeholder="Seleccionar estatus"
+                        <el-select :disabled="taskComponent.is_paused" class="lg:w-1/2 mt-2" v-model="form.status" clearable filterable placeholder="Seleccionar estatus"
                             no-data-text="No hay estatus registrados" no-match-text="No se encontraron coincidencias">
                             <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
                                 <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
                                 <span style="float: center; margin-left: 5px; font-size: 13px;">{{ item.label}}</span>
                             </el-option>
                         </el-select>
-                        <el-tooltip :content="taskComponent.is_paused ? 'Reanudar tarea' : 'Pausar tarea'" placement="top">
-                            <i @click.stop="$inertia.put(route('tasks.pause-play', taskComponent))" :class="taskComponent.is_paused ? 'fa-circle-play' : 'fa-circle-pause'" class="fa-regular text-secondary text-xl cursor-pointer"></i>
+                        <el-tooltip v-if="taskComponent.status == 'En curso'" :content="taskComponent.is_paused ? 'Reanudar tarea' : 'Pausar tarea'" placement="top">
+                            <button type="button"><i @click.stop="$inertia.put(route('tasks.pause-play', taskComponent))" :class="taskComponent.is_paused ? 'fa-circle-play' : 'fa-circle-pause'" class="fa-regular text-secondary text-xl cursor-pointer"></i></button>
                         </el-tooltip>
                     </div>
                     <InputError :message="form.errors.status" />
@@ -92,11 +92,11 @@
                     </div>  
                     <div class="flex space-x-2 justify-end items-center mt-3">
                         <label>Departamento</label>
-                        <el-select class="w-full mt-2" v-model="form.group" clearable filterable placeholder="Seleccionar departamento"
+                        <el-select class="w-full mt-2" v-model="form.department" clearable filterable placeholder="Seleccionar departamento"
                             no-data-text="No hay departamentos registrados" no-match-text="No se encontraron coincidencias">
-                            <el-option v-for="item in groups" :key="item" :label="item" :value="item" />
+                            <el-option v-for="item in departments" :key="item" :label="item" :value="item" />
                         </el-select>
-                <InputError :message="form.errors.group" />
+                <InputError :message="form.errors.department" />
                     </div>  
                     <div class="flex space-x-2 justify-end items-center mt-3">
                         <label>Participantes</label>
@@ -187,7 +187,7 @@
                                 </div>
                                 <textarea v-model="form.comment" class="textarea w-full">
                                 </textarea>
-                                <PrimaryButton @click.stop="comment(taskComponent)" class="h-9"><i class="fa-regular fa-paper-plane"></i></PrimaryButton>
+                                <PrimaryButton type="button" @click.stop="comment(taskComponent)" class="h-9"><i class="fa-regular fa-paper-plane"></i></PrimaryButton>
                             </div>
                             </div>
                         </div>
@@ -221,7 +221,7 @@
             <!-- ---------------- tab 4 dependencia/consecutiva ends  -------------->
                     </section>
                 </div>
-{{ taskComponent }}
+<!-- {{ taskComponent }} -->
           <div class="flex justify-end space-x-3 pt-5 pb-1">
             <PrimaryButton>Guardar</PrimaryButton>
             <CancelButton @click="taskInformationModal = false">Cancelar</CancelButton>
@@ -243,8 +243,8 @@ data(){
       title: null,
       project_name: this.taskComponent.project.project_name,
       user: this.taskComponent.user.name,
-      group: this.taskComponent.project.group,
-      participants: null,
+      department: this.taskComponent.department,
+      participants: this.taskComponent.participants,
       description: this.taskComponent.description,
       priority: this.taskComponent.priority.label,
       start_date: this.taskComponent.start_date,
@@ -286,7 +286,7 @@ data(){
               color: 'text-red-600',
             },
         ],
-        groups:[
+        departments:[
         'Compras',
         'Ventas',
         'Producción',

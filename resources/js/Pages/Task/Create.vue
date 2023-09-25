@@ -24,9 +24,17 @@
                 <InputError :message="form.errors.project_id" />
             </div>
             <div>
-                <label for="task_name">Nombre de la tarea *</label>
-                <input v-model="form.title" name="task_name" class="input" type="text">
+                <label>Nombre de la tarea *</label>
+                <input v-model="form.title" class="input" type="text">
                 <InputError :message="form.errors.title" />
+            </div>
+            <div>
+                <label>Departamento *</label>
+                <el-select class="w-full mt-2" v-model="form.department" clearable filterable placeholder="Seleccionar departamento"
+                    no-data-text="No hay departamentos registrados" no-match-text="No se encontraron coincidencias">
+                    <el-option v-for="item in departments" :key="item" :label="item" :value="item" />
+                </el-select>
+                <InputError :message="form.errors.department" />
             </div>
             <div>
                 <label>Descripción</label>
@@ -153,6 +161,7 @@ export default {
       project_id: null,
       title: null,
       description: null,
+      department: null,
       participants: null,
       priority: null,
       reminder: null,
@@ -169,6 +178,12 @@ export default {
         'Baja',
         'Media',
         'Alta',
+      ],
+      departments:[
+        'Produccion',
+        'Ventas',
+        'Diseño',
+        'Marketing',
       ],
       reminders:[
         'Cada día',

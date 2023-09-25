@@ -34,6 +34,7 @@ class TaskController extends Controller
             'project_id' => 'required',
             'title' => 'required|string',
             'description' => 'required',
+            'department' => 'required|string',
             'participants' => 'required|array|min:1',
             'priority' => 'required|string',
             'reminder' => 'required',
@@ -49,7 +50,7 @@ class TaskController extends Controller
             $task->participants()->attach($user_id);
         }
 
-        event(new RecordCreated($task));
+        // event(new RecordCreated($task));
     
         $task->addAllMediaFromRequest('media')->each(fn ($file) => $file->toMediaCollection('files'));
     
@@ -75,6 +76,7 @@ class TaskController extends Controller
         $validated =$request->validate([
             'status' => 'required|string',
             'description' => 'required',
+            'department' => 'required|string',
             'priority' => 'required|string',
         ]);
 
@@ -106,7 +108,8 @@ class TaskController extends Controller
         ]);
         $task->comments()->save($comment);
         // event(new RecordCreated($comment)); me dice que el id del usuario no tiene un valor por default.
-        return response()->json(['item' => $comment]);
+        return to_route('projects.show', ['project'=> $request->project_id]);
+        // return response()->json(['item' => $comment]);
     }
 
     public function pausePlayTask(Task $task)
@@ -120,6 +123,7 @@ class TaskController extends Controller
                 'is_paused' => true
             ]);
         }
+        $task->save();
         // return response()->json(['item' => $comment]);
     }
 }

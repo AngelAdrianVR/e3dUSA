@@ -17,6 +17,7 @@ class Task extends Model implements HasMedia
     protected $fillable = [
         'title',
         'description',
+        'department',
         'priority',
         'status',
         'is_paused',
