@@ -10,6 +10,8 @@ use App\Models\CatalogProductCompanySale;
 use App\Models\Company;
 use App\Models\CompanyBranch;
 use App\Models\Sale;
+use App\Models\StockMovementHistory;
+use App\Models\Storage;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
 use Illuminate\Http\Request;
@@ -32,7 +34,6 @@ class SaleController extends Controller
     {
         $company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
 
-        // return $company_branches;
         return inertia('Sale/Create', compact('company_branches'));
     }
 
@@ -64,7 +65,22 @@ class SaleController extends Controller
         $sale->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection('oce'));
 
         foreach ($request->products as $product) {
-            CatalogProductCompanySale::create($product + ['sale_id' => $sale->id]);
+            $cpcs = CatalogProductCompanySale::create($product + ['sale_id' => $sale->id]);
+
+            // sub needed quantities from stock
+            $raw_materials = $cpcs->catalogProductCompany->catalogProduct->rawMaterials;
+            foreach ($raw_materials as $raw_material) {
+                $quantity_needed = $raw_material->pivot->quantity * $cpcs->quantity;
+                $storage = Storage::where('storageable_id', $raw_material->id)->where('storageable_type', 'App\Models\RawMaterial')->first();
+                $storage->decrement('quantity', $quantity_needed);
+                StockMovementHistory::Create([
+                    'storage_id' => $storage->id,
+                    'user_id' => auth()->id(),
+                    'type' => 'Salida',
+                    'quantity' => $quantity_needed,
+                    'notes' => 'Salida de material automática por orden de producción',
+                ]);
+            }
         }
 
         event(new RecordCreated($sale));
@@ -107,7 +123,7 @@ class SaleController extends Controller
         $updatedProductIds = [];
         $sale->update($request->except('products'));
 
-       
+
         foreach ($request->products as $product) {
             $productData = $product + ['sale_id' => $sale->id];
 
@@ -116,7 +132,6 @@ class SaleController extends Controller
                 $existingRelation = CatalogProductCompanySale::findOrFail($product['id']);
                 $existingRelation->update($productData);
                 $updatedProductIds[] = $product['id'];
-                
             } else {
                 // Crear una nueva relaci贸n en catalogProductCompanySales
                 $new = CatalogProductCompanySale::create($productData);
@@ -129,7 +144,7 @@ class SaleController extends Controller
             ->whereNotIn('id', $updatedProductIds)
             ->delete();
 
-            event(new RecordEdited($sale));
+        event(new RecordEdited($sale));
 
         return to_route('sales.index');
     }

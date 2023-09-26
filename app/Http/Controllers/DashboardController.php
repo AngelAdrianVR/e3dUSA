@@ -290,8 +290,9 @@ class DashboardController extends Controller
                 $sold_products = $sale->catalogProductCompanySales;
 
                 foreach ($sold_products as $product) {
-                    $weekly_points[$day]["sales"] += $product->quantity * $product->catalogProductCompany->new_price;
-                    $totalMoney += $product->quantity * $product->catalogProductCompany->new_price;
+                    $price = $product->catalogProductCompany?->new_price ?? 0; 
+                    $weekly_points[$day]["sales"] += $product->quantity * $price;
+                    $totalMoney += $product->quantity * $price;
                 }
             }
 

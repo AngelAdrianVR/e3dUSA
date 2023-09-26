@@ -86,20 +86,20 @@ class ProductionController extends Controller
             }
 
             // sub needed quantities from stock
-            $cpcs = CatalogProductCompanySale::find($production['catalog_product_company_sale_id']);
-            $raw_materials = $cpcs->catalogProductCompany->catalogProduct->rawMaterials;
-            foreach ($raw_materials as $raw_material) {
-                $quantity_needed = $raw_material->pivot->quantity * $cpcs->quantity;
-                $storage = Storage::where('storageable_id', $raw_material->id)->where('storageable_type', 'App\Models\RawMaterial')->first();
-                $storage->decrement('quantity', $quantity_needed);
-                StockMovementHistory::Create([
-                    'storage_id' => $storage->id,
-                    'user_id' => auth()->id(),
-                    'type' => 'Salida',
-                    'quantity' => $quantity_needed,
-                    'notes' => 'Salida de material automática por orden de producción',
-                ]);
-            }
+            // $cpcs = CatalogProductCompanySale::find($production['catalog_product_company_sale_id']);
+            // $raw_materials = $cpcs->catalogProductCompany->catalogProduct->rawMaterials;
+            // foreach ($raw_materials as $raw_material) {
+            //     $quantity_needed = $raw_material->pivot->quantity * $cpcs->quantity;
+            //     $storage = Storage::where('storageable_id', $raw_material->id)->where('storageable_type', 'App\Models\RawMaterial')->first();
+            //     $storage->decrement('quantity', $quantity_needed);
+            //     StockMovementHistory::Create([
+            //         'storage_id' => $storage->id,
+            //         'user_id' => auth()->id(),
+            //         'type' => 'Salida',
+            //         'quantity' => $quantity_needed,
+            //         'notes' => 'Salida de material automática por orden de producción',
+            //     ]);
+            // }
         }
 
         return redirect()->route('productions.index');
