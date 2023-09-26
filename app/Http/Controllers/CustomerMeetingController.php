@@ -29,11 +29,12 @@ class CustomerMeetingController extends Controller
             'contact_id' => 'required|numeric|min:1',
         ]);
 
-        CustomerMeeting::create($validated + ['user_id' => auth()->id()]);
+        $customerMeeting = CustomerMeeting::create($validated + ['user_id' => auth()->id()]);
+        $customerMeeting = CustomerMeeting::with(['user', 'contact.contactable.company'])->where('id', $customerMeeting->id)->first();
 
         //crear evento o tarea an calendario
         
-        return to_route('crm.dashboard');
+        return response()->json(['item' => $customerMeeting]);
     }
 
     public function show(CustomerMeeting $customerMeeting)
@@ -62,8 +63,10 @@ class CustomerMeetingController extends Controller
         $customerMeeting->update($validated);
 
         //atualizar evento o tarea an calendario
+
         
-        return to_route('crm.dashboard');
+        $customerMeeting = CustomerMeeting::with(['user', 'contact.contactable.company'])->where('id', $customerMeeting->id)->first();
+        return response()->json(['item' => $customerMeeting]);
     }
 
     public function destroy(CustomerMeeting $customerMeeting)

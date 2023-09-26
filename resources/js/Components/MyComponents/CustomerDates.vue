@@ -131,7 +131,7 @@
                 <CancelButton @click="editForm = false">
                     Cancelar
                 </CancelButton>
-                <PrimaryButton @click="submitForm('edit')">
+                <PrimaryButton @click="submitForm('edit')" :disabled="form.processing">
                     Actualizar
                 </PrimaryButton>
             </div>
@@ -342,17 +342,61 @@ export default {
                 }
             });
         },
-        store() {
-            this.form.post(route('customer-meetings.store'), {
-                onSuccess: () => {
+        async update() {
+            try {
+                this.form.processing = true;
+                const response = await axios.put(route('customer-meetings.update', this.selectedDate.id), {
+                    company_id: this.form.company_id,
+                    company_branch_id: this.form.company_branch_id,
+                    contact_id: this.form.contact_id,
+                    date: this.form.date,
+                    time: this.form.time,
+                    type: this.form.type,
+                    location: this.form.location,
+                    reason: this.form.reason,
+                });
+
+                if (response.status === 200) {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: 'Se ha actualizado la cita correctamente',
+                        type: 'success',
+                    });
+                    const currentDateIndex = this.dates.findIndex(item => item.id == this.selectedDate.id);
+                    this.dates[currentDateIndex] = response.data.item;
+                    this.form.processing = false;
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async store() {
+            try {
+                this.form.processing = true;
+                const response = await axios.post(route('customer-meetings.store'), {
+                    company_id: this.form.company_id,
+                    company_branch_id: this.form.company_branch_id,
+                    contact_id: this.form.contact_id,
+                    date: this.form.date,
+                    time: this.form.time,
+                    type: this.form.type,
+                    location: this.form.location,
+                    reason: this.form.reason,
+                });
+
+                if (response.status === 200) {
                     this.$notify({
                         title: 'Éxito',
                         message: 'Se ha registrado la cita correctamente',
                         type: 'success',
                     });
+                    this.dates.push(response.data.item);
                     this.form.reset();
+                    this.form.processing = false;
                 }
-            });
+            } catch (error) {
+                console.log(error);
+            }
         },
         disabledDate(time) {
             const today = new Date();
