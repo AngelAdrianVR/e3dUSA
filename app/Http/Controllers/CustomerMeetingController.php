@@ -48,7 +48,22 @@ class CustomerMeetingController extends Controller
 
     public function update(Request $request, CustomerMeeting $customerMeeting)
     {
-        //
+        $validated = $request->validate([
+            'type' => 'required|string|max:255',
+            'location' => 'required|string',
+            'date' => 'required|date',
+            'time' => 'required',
+            'reason' => 'required|string',
+            'company_branch_id' => 'required',
+            'company_id' => 'required',
+            'contact_id' => 'required|numeric|min:1',
+        ]);
+
+        $customerMeeting->update($validated);
+
+        //atualizar evento o tarea an calendario
+        
+        return to_route('crm.dashboard');
     }
 
     public function destroy(CustomerMeeting $customerMeeting)
