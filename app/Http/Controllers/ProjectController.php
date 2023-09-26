@@ -13,7 +13,7 @@ class ProjectController extends Controller
     
     public function index()
     {
-        $projects = ProjectResource::collection(Project::with('tasks')->latest()->get());
+        $projects = ProjectResource::collection(Project::with('tasks')->latest()->paginate(30));
 
         // return $projects;
         return inertia('Project/Index', compact('projects'));
@@ -31,6 +31,7 @@ class ProjectController extends Controller
     
     public function store(Request $request)
     {
+        
        $validated = $request->validate([
             'project_name' => 'required|string',
             'group' => 'required|string',

@@ -15,7 +15,7 @@
 </el-tooltip>
             <!-- ------------ body -------------------------- -->
                 <div class="flex items-center justify-between p-3">
-                    <p class="text-lg">{{ taskComponent.title }}</p>
+                    <p class="text-base">{{ taskComponent.title }}</p>
                     <div>
                         <!-- <el-tooltip content="Tienes una tarea por cumplir antes de poder comenzar" placement="top">
                             <i @click.stop="" class="fa-solid fa-hourglass cursor-default mr-3"></i>
@@ -29,10 +29,10 @@
             <!-- ----------------- footer --------------- -->
                 <footer class="p-3 border-t border-[#9A9A9A] relative">
                     <div class="flex justify-between items-center px-3">
-                      <div @click.stop="" class="flex items-end text-[#9A9A9A]">
+                      <div @click.stop="" class="flex items-center text-[#9A9A9A]">
                         <i class="fa-regular fa-comments text-lg  rounded-full py-1 px-2"></i>
-                       <p class="text-xs ml-1">{{ taskComponent.comments?.length }} </p>
-                       <p class="text-sm ml-3">| {{ 'Dpto. ' + taskComponent.department }} </p>
+                       <p class="text-xs">{{ taskComponent.comments?.length }} </p>
+                       <p class="text-sm ml-1">| {{ 'Dpto. ' + taskComponent.department }} </p>
                       </div>
                       <div class="flex items-center absolute bottom-3 right-0 cursor-default">
                       <el-tooltip v-if="taskComponent.status == 'Terminada'" content="Tarea terminada" placement="bottom">
@@ -221,7 +221,7 @@
             <!-- ---------------- tab 4 dependencia/consecutiva ends  -------------->
                     </section>
                 </div>
-{{ taskComponent }}
+<!-- {{ taskComponent }} -->
           <div class="flex justify-end space-x-3 pt-5 pb-1">
             <PrimaryButton>Guardar</PrimaryButton>
             <CancelButton @click="taskInformationModal = false">Cancelar</CancelButton>

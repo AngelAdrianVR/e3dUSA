@@ -14,7 +14,7 @@ class Project extends Model
     protected $fillable = [
         'project_name',
         'group',
-        'status', // SE CALCULA EN EL RESOURCE
+        //'status', // SE CALCULA EN LA VISTA
         'shipping_address',
         'currency',
         'sat_method',

@@ -30,12 +30,12 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(project, index) in filteredTableData" :key="project.id" class="mb-4 cursor-pointer hover:bg-[#acababa8]" @click="$inertia.get(route('projects.show', project.id))">
-                <td class="text-left py-2 px-2">
+            <tr v-for="(project, index) in filteredTableData" :key="project.id" class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]" @click="$inertia.get(route('projects.show', project.id))">
+                <td class="text-left py-2 px-2 rounded-l-full">
                 {{ project.project_name }}
                 </td>
                 <td class="text-left py-2 px-2">
-                <span class="">{{ project.status }}</span>
+                <span :class="calculateProjectStatus(project.tasks)?.text_color + ' ' + calculateProjectStatus(project.tasks)?.bg" class="py-1 px-2 rounded-full">{{ calculateProjectStatus(project.tasks)?.label }}</span>
                 </td>
                 <td class="text-left py-2 flex space-x-1 items-center px-2">
                   <p class="text-xs">{{ project.tasks.filter(task => task.status === 'Terminada').length }}</p>
@@ -51,14 +51,16 @@
                 <td class="text-left py-2 px-2">
                 {{ project.limit_date }}
                 </td>
-                <td class="text-left py-2 px-2">
+                <td class="text-left py-2 px-2 rounded-r-full">
                 {{ project.finished_at }}
-                </td>
-                <td class="text-left py-2 px-2">
                 </td>
             </tr>
             </tbody>
         </table>
+        <!-- --- pagination --- -->
+        <div class="mt-4">
+        <Pagination :pagination="projects" />
+    </div>
 </div>
 
   </AppLayoutNoHeader>
@@ -68,6 +70,7 @@
 import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import Pagination from "@/Components/MyComponents/Pagination.vue";
 
 export default {
     data(){
@@ -79,15 +82,52 @@ export default {
     components:{
         AppLayoutNoHeader,
         PrimaryButton,
-        SecondaryButton
+        SecondaryButton,
+        Pagination
     },
     props:{
-      projects: Array
+      projects: Object
     },
     methods:{
       handleSearch() {
             this.search = this.inputSearch;
         },
+        handlePageChange(newPage) {
+            this.$inertia.get(route('projects.index', { page: newPage }));
+        },
+        calculateProjectStatus(tasks) {
+          const totalTasks = tasks.length;
+          const completedTasks = tasks.filter(task => task.status === 'Terminada').length;
+          const inProgressTasks = tasks.filter(task => task.status === 'En curso').length;
+
+          if (totalTasks === 0) {
+            return {
+              label: 'Sin tareas',
+              text_color: 'text-red-600',
+              bg: 'bg-red-200',
+              };
+          }
+
+          if (completedTasks === totalTasks) {
+            return {
+              label: 'Terminado',
+              text_color: 'text-green-600',
+              bg: 'bg-green-200',
+              };
+          } else if (inProgressTasks > 0 || completedTasks > 0) {
+            return {
+              label: 'En proceso',
+              text_color: 'text-secondary',
+              bg: 'bg-blue-200',
+              };
+          } else {
+            return {
+              label: 'Sin iniciar',
+              text_color: 'text-orange-600',
+              bg: 'bg-orange-200',
+              };
+          }
+  },
     },
     computed: {
         filteredTableData() {
@@ -96,8 +136,7 @@ export default {
             } else {
                 return this.projects.data.filter(
                     (project) =>
-                        project.project_name.toLowerCase().includes(this.search.toLowerCase()) ||
-                        project.status.toLowerCase().includes(this.search.toLowerCase())
+                        project.project_name.toLowerCase().includes(this.search.toLowerCase())
                 )
             }
         }

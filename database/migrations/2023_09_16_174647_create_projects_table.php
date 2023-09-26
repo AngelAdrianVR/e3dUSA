@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('project_name');
             $table->string('group');
-            $table->string('status'); // se calcula en en resource
+            //$table->string('status'); // se calcula en en la vista
             $table->string('shipping_address')->nullable();
             $table->string('currency')->nullable();
             $table->string('sat_method')->nullable();
