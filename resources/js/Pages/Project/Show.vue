@@ -46,16 +46,13 @@
                 </div>
           </el-tooltip>
             </figure>
-            <el-tooltip
-              v-if="remainingUsersCount > 0"
-              :content="userNames.join(', ')"
-              placement="top"
-            >
-              <div
-                class="rounded-full w-10 h-10 bg-[#D9D9D9] flex items-center justify-center text-primary text-sm cursor-default"
-              >
+            <el-tooltip v-if="remainingUsersCount > 0" placement="top">
+              <div class="rounded-full w-10 h-10 bg-[#D9D9D9] flex items-center justify-center text-primary text-sm cursor-default">
                 +{{ remainingUsersCount }}
               </div>
+              <template #content>
+                <div style="white-space: pre-line;">{{ userNames.join('\n') }}</div>
+              </template>
             </el-tooltip>
         </div>
       </div>
@@ -111,7 +108,7 @@
         
       <table class="border border-[#9A9A9A] default w-full">
   <tr>
-    <th class="border-y border-[#9A9A9A] text-left pl-7 py-3 font-thin relative" scope="row">Proyecto <br>
+    <th class="border-y border-[#9A9A9A] text-left pl-7 py-3 font-thin relative w-1/4" scope="row">Proyecto <br>
      <strong class="text-lg font-bold">{{ currentProject?.project_name }}</strong>
      <i @click="showDepartmentFilter = !showDepartmentFilter" class="fa-solid fa-ellipsis text-primary absolute bottom-4 right-4 cursor-pointer hover:bg-[#dfdede] rounded-full p-2"></i>
      <div v-if="showDepartmentFilter" class="absolute right-4 top-[60px] bg-[#D9D9D9] rounded-md px-4 py-2">
@@ -179,7 +176,7 @@
      </th>
   </tr>
 
-  <tr v-for="task in currentProject?.tasks" :key="task">
+  <tr v-for="task in currentProject?.tasks" :key="task" v-show="taskMatchesFilters(task)">
     <th class="text-lg font-normal pl-7 py-2 border-y border-[#9A9A9A]">
       <div :class="task.priority.color_border" class="border-r-4">{{ task.title }}
         <p class="text-[#9A9A9A] text-sm">Depto. {{ task.department }}</p>
@@ -252,7 +249,15 @@ export default {
       users: Array
     },
     methods:{
-      
+      taskMatchesFilters(task) {
+      // Verifica si la tarea cumple con al menos uno de los criterios de filtro
+      return (
+        (this.productionCheck && task.department === "Producción") ||
+        (this.designCheck && task.department === "Diseño") ||
+        (this.salesCheck && task.department === "Ventas") ||
+        (this.marketingCheck && task.department === "Marketing")
+      );
+    },
     },
     computed: {
   pedingTasks() {
@@ -275,7 +280,7 @@ export default {
         // Recorrer las tareas del proyecto
       for (const task of this.currentProject?.tasks) {
         // Recorrer los usuarios de cada tarea
-        for (const user of task.users) {
+        for (const user of task.participants  ) {
           // Verificar si el usuario ya ha sido agregado
           if (!userIds.has(user.id)) {
             // Agregar el usuario a la lista de usuarios únicos
@@ -316,3 +321,13 @@ mounted() {
 
 }
 </script>
+
+<style scoped>
+
+/* Estilo para el hover de las opciones */
+.el-select-dropdown .el-select-dropdown__item:hover {
+  background-color: #D90537; /* Color de fondo al hacer hover */
+  color: white; /* Color del texto al hacer hover */
+  border-radius: 20px; /* Redondeo */
+}
+</style>

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Project extends Model
@@ -12,15 +13,23 @@ class Project extends Model
     
     protected $fillable = [
         'project_name',
-        'owner',
         'group',
-        'status',
+        'status', // SE CALCULA EN EL RESOURCE
+        'shipping_address',
+        'currency',
+        'sat_method',
+        'description',
         'is_strict_project',
+        'is_internal_project',
         'budget',
         'type_access_project',
         'start_date',
         'limit_date',
         'finished_at',
+        'user_id',
+        'company_id',
+        'company_branch_id',
+        'sale_id',
     ];
     
     protected $casts = [
@@ -34,4 +43,11 @@ class Project extends Model
     {
         return $this->hasMany(Task::class);
     }
+
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }

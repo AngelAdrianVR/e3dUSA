@@ -221,7 +221,7 @@
             <!-- ---------------- tab 4 dependencia/consecutiva ends  -------------->
                     </section>
                 </div>
-<!-- {{ taskComponent }} -->
+{{ taskComponent }}
           <div class="flex justify-end space-x-3 pt-5 pb-1">
             <PrimaryButton>Guardar</PrimaryButton>
             <CancelButton @click="taskInformationModal = false">Cancelar</CancelButton>

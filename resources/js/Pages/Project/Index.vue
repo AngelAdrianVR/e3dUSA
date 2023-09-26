@@ -5,12 +5,12 @@
     </div>
 
     <div class="flex justify-between mt-5 mx-14">
-        <div class="md:w-1/3 mr-2">
-          <el-select v-model="selectedProyect" clearable filterable placeholder="Buscar proyecto"
-            no-data-text="No hay proyectos registrados" no-match-text="No se encontraron coincidencias">
-            <el-option v-for="item in projects.data" :key="item.id" :label="item.project_name" :value="item.id" />
-          </el-select>
-        </div>
+        <div class="flex items-center space-x-2">
+              <input  @keyup.enter="handleSearch" v-model="inputSearch" type="search" class="input"
+                  placeholder="Buscar" />
+              <SecondaryButton @click="handleSearch" type="submit" class=""><i
+                      class="fa-solid fa-magnifying-glass"></i></SecondaryButton>
+          </div>
         <div>
           <PrimaryButton @click="$inertia.get(route('projects.create'))">Nuevo proyecto</PrimaryButton>
         </div>
@@ -30,7 +30,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(project, index) in projects?.data" :key="project.id" class="mb-4 cursor-pointer hover:bg-[#acababa8]" @click="$inertia.get(route('projects.show', project.id))">
+            <tr v-for="(project, index) in filteredTableData" :key="project.id" class="mb-4 cursor-pointer hover:bg-[#acababa8]" @click="$inertia.get(route('projects.show', project.id))">
                 <td class="text-left py-2 px-2">
                 {{ project.project_name }}
                 </td>
@@ -67,22 +67,40 @@
 <script>
 import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
 
 export default {
     data(){
         return{
-            selectedProyect: "",
+            search: '',
+            inputSearch: '',
         }
     },
     components:{
         AppLayoutNoHeader,
-        PrimaryButton
+        PrimaryButton,
+        SecondaryButton
     },
     props:{
       projects: Array
     },
     methods:{
-      
+      handleSearch() {
+            this.search = this.inputSearch;
+        },
+    },
+    computed: {
+        filteredTableData() {
+            if (!this.search) {
+                return this.projects.data;
+            } else {
+                return this.projects.data.filter(
+                    (project) =>
+                        project.project_name.toLowerCase().includes(this.search.toLowerCase()) ||
+                        project.status.toLowerCase().includes(this.search.toLowerCase())
+                )
+            }
+        }
     },
 }
 </script>

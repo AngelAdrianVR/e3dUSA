@@ -110,10 +110,10 @@
             <PrimaryButton :disabled="form.processing">
               Agregar
             </PrimaryButton>
-              <p class="text-primary text-sm ml-5 cursor-pointer">+ Agregar tarea consecutiva </p>
+              <!-- <p class="text-primary text-sm ml-5 cursor-pointer">+ Agregar tarea consecutiva </p>
              <el-tooltip content="Son las tareas relacionadas a la tarea principal" placement="top">
             <i class="fa-regular fa-circle-question text-xs ml-2"></i>
-            </el-tooltip>
+            </el-tooltip> -->
           </div>
         </div>
       </form>
@@ -207,7 +207,7 @@ export default {
   methods: {
     store(){
       this.form.post(route("tasks.store"), {
-        // _method: 'put',
+        // _method: 'post',
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
@@ -247,6 +247,6 @@ export default {
 .el-select-dropdown .el-select-dropdown__item:hover {
   background-color: #D90537; /* Color de fondo al hacer hover */
   color: white; /* Color del texto al hacer hover */
-  border-radius: 10px; /* Redondeo */
+  border-radius: 20px; /* Redondeo */
 }
 </style>
