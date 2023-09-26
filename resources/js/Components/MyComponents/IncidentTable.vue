@@ -63,7 +63,8 @@
                     <p>{{ attendance.total_break_time }} <i class="fa-solid fa-circle-info"></i></p>
                   </el-tooltip>
                 </td>
-                <td v-else class="px-6 text-xs py-2 w-32">
+                <td v-else @click="showPausesModal = true; currentPayrollUser = attendance"
+                  class="px-6 text-xs py-2 w-32 cursor-pointer">
                   <i class="fa-solid fa-minus"></i>
                 </td>
                 <td v-if="attendance.total_worked_time" class="px-6 text-xs py-2 w-32">
@@ -162,6 +163,18 @@
           </el-tooltip>
         </IconInput>
       </div>
+      <div v-if="!currentPayrollUser?.pausas?.length" class="grid grid-cols-2 gap-3 pt-6">
+        <IconInput v-model="newPausa.start" inputPlaceholder="Hora de inicio *" inputType="time">
+          <el-tooltip content="Hora de inicio de la pausa" placement="top">
+            <i class="fa-regular fa-circle-play"></i>
+          </el-tooltip>
+        </IconInput>
+        <IconInput v-model="newPausa.finish" inputPlaceholder="Hora de término *" inputType="time">
+          <el-tooltip content="Hora de término de la pausa" placement="top">
+            <i class="fa-regular fa-circle-stop"></i>
+          </el-tooltip>
+        </IconInput>
+      </div>
     </template>
     <template #footer>
       <CancelButton @click="showPausesModal = false">Cerrar</CancelButton>
@@ -189,6 +202,10 @@ export default {
       additionalTime: null,
       showPausesModal: false,
       currentPayrollUser: null,
+      newPausa: {
+        start: null,
+        finish: null,
+      },
     }
   },
   emits: ['closeIncidentTable'],
@@ -216,7 +233,12 @@ export default {
   methods: {
     async updatePausas() {
       try {
-        const response = await axios.put(route('users.update-pausas', this.currentPayrollUser.id), { pausas: this.currentPayrollUser.pausas });
+        let pausas = this.currentPayrollUser.pausas;
+        if (this.newPausa.start) {
+          pausas = [this.newPausa];
+        }
+
+        const response = await axios.put(route('users.update-pausas', this.currentPayrollUser.id), { pausas: pausas });
 
         if (response.status === 200) {
           this.showPausesModal = false;
@@ -227,6 +249,10 @@ export default {
             message: 'Pausa(s) actualizada(s)',
             type: 'success'
           });
+
+          // reset new pausa
+          this.newPausa.start = null;
+          this.newPausa.finish = null;
         }
       } catch (error) {
         console.log(error);

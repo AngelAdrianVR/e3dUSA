@@ -95,7 +95,7 @@
 
       <!-- -------------- Incidents starts----------------------- -->
       <div v-if="incidentsTab" class="md:mx-9 md:my-7 space-y-3 m-1 h-48">
-        <div class="flex items-center">
+        <div class="flex items-center w-1/2">
           <label class="mr-10">Colaborador</label>
           <el-select v-model="user_selected" clearable class="m-2" placeholder="Seleccionar">
             <el-option v-for="item in users.data" :key="item.id" :label="item.name" :value="item.id" />
