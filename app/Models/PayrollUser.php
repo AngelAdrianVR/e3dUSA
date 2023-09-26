@@ -87,7 +87,12 @@ class PayrollUser extends Pivot
                 $breakTime = $this->calculateTotalBreakTime();
                 $workedTime -= $breakTime;
     
-                $maxWorkedTime = $this->user->employee_properties['work_days'][$this->date->dayOfWeek]['hours'] * 60;
+                // Dia marcado como descanso lo esta trabajando
+                if ($this->user->employee_properties['work_days'][$this->date->dayOfWeek]['hours'] == 0) {
+                    $maxWorkedTime = 480; //8 horas limite
+                } else {
+                    $maxWorkedTime = $this->user->employee_properties['work_days'][$this->date->dayOfWeek]['hours'] * 60;
+                }
 
                 // aumentar el maximo permitido por dia si existe una solicitud de tiempo adicional autorizada
                 $additional_time = $this->additionalTimeRequest;
@@ -125,7 +130,7 @@ class PayrollUser extends Pivot
 
     public function getLateTime()
     {
-        if ($this->check_in) {
+        if ($this->check_in && $this->user->employee_properties['work_days'][$this->date->dayOfWeek]['check_in'] != 0) {
             $original_check_in = Carbon::parse($this->user->employee_properties['work_days'][$this->date->dayOfWeek]['check_in']);
             $minutes_late = $original_check_in->diffInMinutes($this->check_in, false);
             return $minutes_late < 0 ? 0 : $minutes_late;

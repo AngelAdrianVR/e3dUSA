@@ -332,7 +332,7 @@ export default {
                 onSuccess: () => {
                     this.$notify({
                         title: 'Éxito',
-                        message: 'Orden de venta creada',
+                        message: 'Orden de venta creada. Se han descontado las cantidades del stock automáticamente',
                         type: 'success'
                     });
 
