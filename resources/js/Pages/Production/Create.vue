@@ -255,7 +255,7 @@ export default {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: "Órdenes de producción creadas. Se han descontado las cantidades del stock automáticamente",
+            message: "Órdenes de producción creadas",
             type: "success",
           });
 
