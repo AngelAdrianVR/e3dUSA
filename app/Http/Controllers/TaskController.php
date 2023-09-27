@@ -5,21 +5,23 @@ namespace App\Http\Controllers;
 use App\Events\RecordCreated;
 use App\Events\RecordEdited;
 use App\Http\Resources\ProjectResource;
+use App\Http\Resources\TaskResource;
 use App\Models\Comment;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class TaskController extends Controller
 {
-    
+
     public function index()
     {
         //
     }
 
-   
+
     public function create()
     {
         $projects = Project::latest()->get();
@@ -28,7 +30,7 @@ class TaskController extends Controller
         return inertia('Task/Create', compact('projects', 'users'));
     }
 
-    
+
     public function store(Request $request)
     {
         $request->validate([
@@ -52,33 +54,33 @@ class TaskController extends Controller
         }
 
         // event(new RecordCreated($task));
-    
+
         $task->addAllMediaFromRequest('media')->each(fn ($file) => $file->toMediaCollection('files'));
-    
-        return to_route('projects.show', ['project'=> $request->project_id]);
+
+        return to_route('projects.show', ['project' => $request->project_id]);
     }
 
-   
+
     public function show(Task $task)
     {
         //
     }
 
-    
+
     public function edit(Task $task)
     {
         //
     }
 
-    
+
     public function update(Request $request, Task $task)
     {
-
-        $validated =$request->validate([
+        // return $request->priority;
+        $validated = $request->validate([
             'status' => 'required|string',
             'description' => 'required',
             'department' => 'required|string',
-            'priority' => 'required|string',
+            'priority' => 'nullable|string',
         ]);
 
         $task->update($validated);
@@ -91,22 +93,24 @@ class TaskController extends Controller
             $task->comments()->save($comment);
         }
 
-         // Obtén el proyecto al que pertenece la tarea
-    $project_id = $task->project_id;
-    $project = Project::with('tasks')->find($project_id);
+        // Obtén el proyecto al que pertenece la tarea
+        $project_id = $task->project_id;
+        $project = Project::with('tasks')->find($project_id);
 
-    // Verifica si todas las tareas del proyecto están terminadas
-    $allTasksCompleted = $project->tasks->where('status', 'Terminada')->count() === $project->tasks->count();
+        // Verifica si todas las tareas del proyecto están terminadas
+        $allTasksCompleted = $project->tasks->where('status', 'Terminada')->count() === $project->tasks->count();
 
-    if ($allTasksCompleted) {
-        // Establece la fecha finished_at en la fecha actual
-        $project->finished_at = now();
-        $project->save();
-    }
+        if ($allTasksCompleted) {
+            // Establece la fecha finished_at en la fecha actual
+            $project->finished_at = now();
+            $project->save();
+        }
         // event(new RecordEdited($task));
+
+        return response()->json(['item' => TaskResource::make($task->fresh(['participants', 'project', 'user', 'comments.user', 'media']))]);
     }
 
-    
+
     public function destroy(Task $task)
     {
         //
@@ -122,18 +126,18 @@ class TaskController extends Controller
         ]);
         $task->comments()->save($comment);
         // event(new RecordCreated($comment)); me dice que el id del usuario no tiene un valor por default.
-        return to_route('projects.show', ['project'=> $request->project_id]);
+        return to_route('projects.show', ['project' => $request->project_id]);
         // return response()->json(['item' => $comment]);
     }
 
     public function pausePlayTask(Task $task)
     {
-        if ($task->is_paused){
-            $task->update([ 
+        if ($task->is_paused) {
+            $task->update([
                 'is_paused' => false
             ]);
         } else {
-            $task->update([ 
+            $task->update([
                 'is_paused' => true
             ]);
         }
