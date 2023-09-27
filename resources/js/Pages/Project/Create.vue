@@ -96,7 +96,7 @@
             <el-option v-for="company_branch in companies.find((item) => item.id == form.company_id)?.company_branches"
              :key="company_branch" :label="company_branch.name" :value="company_branch.id" />
             </el-select>
-            <InputError :message="form.errors.company_branch" />
+            <InputError :message="form.errors.company_branch_id" />
           </div>
         </div>
 
@@ -108,11 +108,11 @@
           </div>
           <div class="w-1/2">
           <label>OV *</label> <br>
-            <el-select v-model="form.sale_order_id" clearable filterable placeholder="Seleccione"
+            <el-select v-model="form.sale_id" clearable filterable placeholder="Seleccione"
             no-data-text="No hay órdenes registradas" no-match-text="No se encontraron coincidencias">
             <el-option v-for="ov in company_branch_obj?.sales" :key="ov?.id" :label="'OV-0' + ov?.id" :value="ov?.id" />
             </el-select>
-            <InputError :message="form.errors.sale_order_id" />
+            <InputError :message="form.errors.sale_id" />
           </div>
         </div>
       </section>
@@ -144,38 +144,75 @@
           <InputError :message="form.errors.sat_method" />
       </div>
 
-    <div class="text-sm lg:text-base">
+    <div class="text-sm">
       <h3 class="font-bold text-lg mb-2 mt-10">Acceso al proyecto</h3>
-      <div class="my-1">
-        <input v-model="form.type_access_project" value="Privado" class="checked:bg-primary focus:text-primary focus:ring-[#D90537] border-transparent" type="radio" name="type_access_project"> Privado
-        <p class="text-[#9A9A9A] ml-4">Solo los usuarios de proyecto pueden ver y acceder a este proyecto</p>
-      </div>
       <div class="my-1">
         <input v-model="form.type_access_project" value="Publico" class="checked:bg-primary focus:text-primary focus:ring-[#D90537] border-transparent" type="radio" name="type_access_project"> Público
         <p class="text-[#9A9A9A] ml-4">Los usuarios del portal solo pueden  ver, seguir y comentar, mientras que los usuarios del proyecto tendrán acceso directo.</p>
       </div>
+      <div class="my-1">
+        <input v-model="form.type_access_project" value="Privado" class="checked:bg-primary focus:text-primary focus:ring-[#D90537] border-transparent" type="radio" name="type_access_project"> Privado
+        <p class="text-[#9A9A9A] ml-4">Solo los usuarios de proyecto pueden ver y acceder a este proyecto</p>
+      </div>
     </div>
 
-    <section class="rounded-lg bg-[#CCCCCC] py-4 px-7">
+    <section class="rounded-lg bg-[#CCCCCC] py-4 px-7 h-[545px]">
       <div class="text-right">
-        <ThirthButton>Editar</ThirthButton>
+        <ThirthButton type="button" @click.stop="editAccesFlag = !editAccesFlag">{{ editAccesFlag ? 'Actualizar' : 'Editar'}}</ThirthButton>
       </div>
-      <div class="grid grid-cols-3">
 
-        <div class="col-span-2">
-          <h2 class="font-bold border-b border-[#9A9A9A] pl-3">Usuarios</h2>
+      <div class="flex justify-between overflow-y-scroll h-[460px] mt-4">
+        <div class="w-full">
+          <div class="flex">
+            <h2 class="font-bold border-b border-[#9A9A9A] w-2/3 pl-3">Usuarios</h2>
+            <h2 class="font-bold border-b border-[#9A9A9A] w-1/3">Permisos</h2>
+          </div>
           <div class="pl-3">
+            <figure class="flex mt-2 border-b border-[#9A9A9A]"  v-for="user in (users)" :key="user">
+              <div class="w-2/3 flex space-x-2">
+                <div v-if="$page.props.jetstream.managesProfilePhotos"
+                    class="flex text-sm rounded-full w-12">
+                    <img class="h-10 w-10 rounded-full object-cover" :src="user.profile_photo_url"
+                    :alt="user.name" />
+                </div>
+                <div class="text-sm w-full">
+                    <p class="font-bold">{{ user.name }}</p>
+                    <p v-if="user.employee_properties">{{ 'Depto.' + user.employee_properties?.department }}</p>
+                    <p v-else>Super admin</p>
+                </div>
+              </div>
 
+              <div class="w-1/3">
+          <div class="space-y-1 mb-2">
+            <label class="flex items-center">
+              <Checkbox :disabled="!editAccesFlag" v-model:checked="form.is_strict_proyect" class="bg-transparent disabled:border-gray-400"/>
+              <span :class="!editAccesFlag ? 'text-gray-500/80 cursor-not-allowed' : ''" class="ml-2 text-xs">Crea tarea</span>
+            </label>
+            <label class="flex items-center">
+              <Checkbox v-model:checked="form.is_strict_proyect" class="bg-transparent disabled:border-gray-400"/>
+              <span class="ml-2 text-xs">Ver</span>
+            </label>
+            <label class="flex items-center">
+              <Checkbox :disabled="!editAccesFlag" v-model:checked="form.is_strict_proyect" class="bg-transparent disabled:border-gray-400"/>
+              <span :class="!editAccesFlag ? 'text-gray-500/80 cursor-not-allowed' : ''" class="ml-2 text-xs">Editar</span>
+            </label>
+            <label class="flex items-center">
+              <Checkbox :disabled="!editAccesFlag" v-model:checked="form.is_strict_proyect" class="bg-transparent disabled:border-gray-400"/>
+              <span :class="!editAccesFlag ? 'text-gray-500/80 cursor-not-allowed' : ''" class="ml-2 text-xs">Eliminar</span>
+            </label>
+            <label class="flex items-center">
+              <Checkbox v-model:checked="form.is_strict_proyect" class="bg-transparent disabled:border-gray-400"/>
+              <span class="ml-2 text-xs">Comentar</span>
+            </label>
           </div>
         </div>
 
-        <div>
-          <h2 class="font-bold border-b border-[#9A9A9A]">Permisos</h2>
+            </figure>
+          </div>
         </div>
-
       </div>
     </section>
-{{form}}
+<!-- {{form}} -->
 
           <div class="mt-9 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing">
@@ -211,16 +248,17 @@ export default {
       company_id: null,
       company_branch_id: null,
       shipping_address: null,
-      sale_order_id: null,
+      sale_id: null,
       currency: null,
       budget: null,
       sat_method: null,
-      type_access_project: 'Privado',
+      type_access_project: 'Publico',
 
     });
 
     return {
       form,
+      editAccesFlag: false,
       company_branch_obj: null,
       owner: this.$page.props.auth.user.name,
       groups: [
@@ -254,6 +292,7 @@ export default {
   },
   props: {
     companies: Array,
+    users: Array,
   },
   methods: {
     store() {

@@ -4,7 +4,7 @@
         <span>Proyectos</span>
     </div>
 
-    <div class="flex justify-between mt-5 mx-14">
+    <div class="flex justify-between mt-5 mx-1 lg:mx-14">
         <div class="flex items-center space-x-2">
               <input  @keyup.enter="handleSearch" v-model="inputSearch" type="search" class="input"
                   placeholder="Buscar" />
@@ -52,7 +52,7 @@
                 {{ project.limit_date }}
                 </td>
                 <td class="text-left py-2 px-2 rounded-r-full">
-                {{ project.finished_at }}
+                {{ project.finished_at ?? '--' }}
                 </td>
             </tr>
             </tbody>

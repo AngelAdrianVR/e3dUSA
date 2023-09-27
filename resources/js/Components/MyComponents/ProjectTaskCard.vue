@@ -1,7 +1,7 @@
 <template>
   <div @click="taskInformationModal = true; itemToShow = taskComponent" :class="taskComponent.priority.color_border" class="shadow-md shadow-gray-400/100 h-36 rounded-r-md border-l-4 py-2 px-3 cursor-pointer my-3">
             <!-- ------------ top ------------------ -->
-<el-tooltip :content="'Prioridad: ' + taskComponent.priority.label" placement="top">
+<!-- <el-tooltip :content="'Prioridad: ' + taskComponent.priority.label" placement="top"> -->
                 <div class="flex justify-between items-center">
                     <div @click.stop="" class="rounded-full px-2 cursor-grab active:cursor-grabbing">
                         <i class="fa-solid fa-ellipsis-vertical text-lg"></i>
@@ -12,10 +12,10 @@
                       <p class="mr-5">{{ taskComponent.created_at }}</p>
                     </div>
                 </div>
-</el-tooltip>
+<!-- </el-tooltip> -->
             <!-- ------------ body -------------------------- -->
                 <div class="flex items-center justify-between p-3">
-                    <p class="text-base">{{ taskComponent.title }}</p>
+                    <p class="text-sm">{{ taskComponent.title }}</p>
                     <div>
                         <!-- <el-tooltip content="Tienes una tarea por cumplir antes de poder comenzar" placement="top">
                             <i @click.stop="" class="fa-solid fa-hourglass cursor-default mr-3"></i>
@@ -29,14 +29,14 @@
             <!-- ----------------- footer --------------- -->
                 <footer class="p-3 border-t border-[#9A9A9A] relative">
                     <div class="flex justify-between items-center px-3">
-                      <div @click.stop="" class="flex items-center text-[#9A9A9A]">
+                      <div class="flex items-center text-[#9A9A9A]">
                         <i class="fa-regular fa-comments text-lg  rounded-full py-1 px-2"></i>
                        <p class="text-xs">{{ taskComponent.comments?.length }} </p>
                        <p class="text-sm ml-1">| {{ 'Dpto. ' + taskComponent.department }} </p>
                       </div>
                       <div class="flex items-center absolute bottom-3 right-0 cursor-default">
                       <el-tooltip v-if="taskComponent.status == 'Terminada'" content="Tarea terminada" placement="bottom">
-                        <i class="fa-solid fa-check text-green-500 text-xl cursor-default mr-2"></i>
+                        <i @click.stop="" class="fa-solid fa-check text-green-500 text-xl cursor-default mr-2"></i>
                     </el-tooltip>
                         <!-- <p class="text-primary mr-1">+2</p> -->
                         <el-tooltip v-for="user in taskComponent.participants" :key="user" :content="user.name" placement="bottom">

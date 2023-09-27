@@ -29,6 +29,7 @@ class Project extends Model
         'user_id',
         'company_id',
         'company_branch_id',
+        'sat_method',
         'sale_id',
     ];
     
@@ -48,6 +49,11 @@ class Project extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 
 }

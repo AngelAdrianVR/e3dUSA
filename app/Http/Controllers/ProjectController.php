@@ -23,9 +23,10 @@ class ProjectController extends Controller
     public function create()
     {
         $companies = Company::with('companyBranches.sales')->latest()->get();
+        $users = User::where('is_active', true)->get();
 
-        // return $companies;
-        return inertia('Project/Create', compact('companies'));
+        // return $users;
+        return inertia('Project/Create', compact('companies', 'users'));
     }
 
     
@@ -47,7 +48,7 @@ class ProjectController extends Controller
             'limit_date' => 'required',
             'company_id' => $request->is_internal_project ? 'nullable' : 'required',
             'company_branch_id' => $request->is_internal_project ? 'nullable' : 'required',
-            'sale_id' => 'nullable',
+            'sale_id' => $request->is_internal_project ? 'nullable' : 'required',
         ]);
 
             Project::create($validated + ['user_id' => auth()->id()]);
@@ -61,10 +62,10 @@ class ProjectController extends Controller
     {
 
         $project = ProjectResource::make(Project::with(['tasks' => ['participants', 'project', 'user']])->find($project_id));
-        $projects = ProjectResource::collection(Project::with(['tasks' => ['participants', 'project', 'user', 'comments.user', 'media']])->latest()->get());
+        $projects = ProjectResource::collection(Project::with(['tasks' => ['participants', 'project', 'user', 'comments.user', 'media'], 'user', 'company'])->latest()->get());
         $users = User::all();
 
-        // return $project;
+        // return $projects;
         return inertia('Project/Show', compact('project', 'projects', 'users'));
     }
 

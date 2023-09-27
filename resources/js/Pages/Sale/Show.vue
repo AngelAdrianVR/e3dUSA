@@ -177,8 +177,8 @@
       <div v-if="tabs == 2" class="p-7">
         <p class="text-secondary mb-2">Productos Ordenados</p>
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-7">
-          <ProductSaleCard @selected="" is_view_for_seller
-            v-for="(productSale, index) in currentSale?.catalogProductCompanySales" :key="productSale.id"
+          <ProductSaleCard is_view_for_seller
+            v-for="productSale in currentSale?.catalogProductCompanySales" :key="productSale.id"
             :catalog_product_company_sale="productSale" />
         </div>
       </div>
