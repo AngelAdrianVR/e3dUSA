@@ -232,8 +232,6 @@ class UserController extends Controller
         return response()->json(['message' => $message, 'status' => $is_paused]);
     }
 
-
-
     public function resetPass(User $user)
     {
         $user->update([

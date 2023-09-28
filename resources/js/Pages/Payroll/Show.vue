@@ -61,7 +61,7 @@
             Ver incidencias
           </p>
           <div class="border-r-2 border-[#cccccc] ml-3"></div>
-          <p @click="incidentsTab = false" :class="!incidentsTab ? 'bg-secondary-gray rounded-xl text-primary' : ''
+          <p @click="incidentsTab = false;" :class="!incidentsTab ? 'bg-secondary-gray rounded-xl text-primary' : ''
             " class="my-2 ml-3 p-2 cursor-pointer transition duration-300 ease-in-out">
             Imprimir nóminas
           </p>
@@ -242,10 +242,12 @@ export default {
       console.log("Elimidado");
     },
     sumTotalAmount(amount) {
-      this.totalAmount += amount;
-      this.amountLoadingCounter ++;
-      if (this.amountLoadingCounter == this.payrollUsersToShow.length) {
-        this.isCalculatingTotalAmount = false;
+      if (this.isCalculatingTotalAmount) {
+        this.totalAmount += amount;
+        this.amountLoadingCounter ++;
+        if (this.amountLoadingCounter == this.payrollUsersToShow.length) {
+          this.isCalculatingTotalAmount = false;
+        }
       }
     },
     async payrollChanged() {  

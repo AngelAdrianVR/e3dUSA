@@ -292,6 +292,7 @@ export default {
         if (response.status === 200) {
           this.additionalTimes = response.data.items;
           this.getTotalAditionalTimeInHours();
+          this.$emit('amount-calculated', this.getTotal());
         }
       } catch (error) {
         console.log(error);
