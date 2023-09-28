@@ -68,6 +68,8 @@
         </div>
 
         <div v-if="!incidentsTab" class="text-right mr-9 flex items-center">
+          <p v-if="isCalculatingTotalAmount" class="mr-6 text-sm">Calculando monto total... {{ amountLoadingCounter }}/{{ payrollUsersToShow.length }}</p>
+          <el-tag v-else type="success" class="mr-6" style="font-size: 16px;">Monto total ${{ totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</el-tag>
           <PrimaryButton @click="printPayrolls" class="mr-5" :disabled="!payrollUsersToShow.length">
             Imprimir
           </PrimaryButton>
@@ -112,7 +114,7 @@
       <!-- -------------- print starts----------------------- -->
       <div v-else>
         <template v-for="(user_id, index) in payrollUsersToShow" :key="user_id">
-          <payrollTemplate :user="users.data.find(item => item.id == user_id)" :payrollId="selectedPayroll" />
+          <payrollTemplate @amount-calculated="sumTotalAmount($event)" :user="users.data.find(item => item.id == user_id)" :payrollId="selectedPayroll" />
         </template>
       </div>
       <!-- -------------- print ends----------------------- -->
@@ -210,6 +212,9 @@ export default {
       payrollUsersToShow: [],
       loading: false,
       currentPayroll: null,
+      totalAmount: 0,
+      isCalculatingTotalAmount: true,
+      amountLoadingCounter: 0,
     };
   },
   components: {
@@ -235,6 +240,13 @@ export default {
   methods: {
     deleteIncident() {
       console.log("Elimidado");
+    },
+    sumTotalAmount(amount) {
+      this.totalAmount += amount;
+      this.amountLoadingCounter ++;
+      if (this.amountLoadingCounter == this.payrollUsersToShow.length) {
+        this.isCalculatingTotalAmount = false;
+      }
     },
     async payrollChanged() {  
       this.loading = true;
