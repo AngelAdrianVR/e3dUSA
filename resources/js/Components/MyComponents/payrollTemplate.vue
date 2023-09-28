@@ -338,7 +338,7 @@ export default {
     },
     getWeekProcessInPercentage() {
       let totalWeekHours = this.getWorkedDays().reduce((accum, object) => accum + object.total_worked_time?.hours, 0);
-      
+
       // sumar sueldo por dias feriados
       this.getHolidays().forEach(element => {
         totalWeekHours += this.getUserWorkDayByDate(element.date.estandard).hours;
@@ -377,12 +377,14 @@ export default {
         return accumulator + discount.amount.raw;
       }, 0) ?? 0;
 
-      return vacations
+      const total = vacations
         + workedDays
         + holyDays
         + bonuses
         - discounts
         + this.extras.amount.raw;
+
+      return total;
     },
     getTotalAditionalTimeInHours() {
       this.additionalTimes?.forEach(element => {
