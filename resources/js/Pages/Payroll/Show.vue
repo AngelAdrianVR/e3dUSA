@@ -72,7 +72,7 @@
             Monto total ${{ totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}
           </el-tag>
           <el-tooltip v-if="!isCalculatingTotalAmount" content="Refrescar monto" placement="top">
-            <button @click="calculateTotalAmount()" class="mr-8 px-1">
+            <button @click="calculateTotalAmount(true)" class="mr-8 px-1">
               <i class="fa-solid fa-arrows-rotate"></i>
             </button>
           </el-tooltip>
@@ -268,7 +268,7 @@ export default {
     printPayrolls() {
       this.$inertia.get(route('payrolls.print-template', { users_id_to_show: JSON.stringify(this.payrollUsersToShow), payroll_id: this.currentPayroll.id }));
     },
-    calculateTotalAmount() {
+    calculateTotalAmount(showToast = false) {
       this.totalAmount = 0;
       this.isCalculatingTotalAmount = true;
 
@@ -282,6 +282,14 @@ export default {
       });
 
       this.isCalculatingTotalAmount = false;
+
+      if (showToast) {
+        this.$notify({
+          title: 'Éxito',
+          message: 'Monto refrescado',
+          type: 'success',
+        })
+      }
     }
   },
   watch: {
