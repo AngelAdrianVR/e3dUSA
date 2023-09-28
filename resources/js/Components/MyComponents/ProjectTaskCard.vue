@@ -1,12 +1,9 @@
 <template>
-  <div
-    @click="
-      taskInformationModal = true;
-      titemToShow = taskComponentLocal;
-    "
-    :class="taskComponentLocal?.priority.color_border"
-    class="shadow-md shadow-gray-400/100 h-36 rounded-r-md border-l-4 py-2 px-3 cursor-pointer my-3"
-  >
+  <div @click="
+    taskInformationModal = true;
+  titemToShow = taskComponentLocal;
+  " :class="taskComponentLocal?.priority.color_border"
+    class="shadow-md shadow-gray-400/100 border border-t-[#d9d9d9] border-r-[#d9d9d9] border-b-[#d9d9d9] h-36 rounded-r-md border-l-4 py-2 px-3 cursor-pointer my-3">
     <!-- ------------ top ------------------ -->
     <!-- <el-tooltip :content="'Prioridad: ' + taskComponentLocal?.priority.label" placement="top"> -->
     <div class="flex justify-between items-center">
@@ -15,10 +12,7 @@
         <i class="fa-solid fa-ellipsis-vertical text-lg"></i>
       </div>
       <div @click.stop="" class="flex cursor-default">
-        <p
-          v-if="taskComponentLocal?.is_paused"
-          class="mr-4 rounded-full text-orange-500 bg-orange-200 px-2"
-        >
+        <p v-if="taskComponentLocal?.is_paused" class="mr-4 rounded-full text-orange-500 bg-orange-200 px-2">
           {{ "Pausado" }}
         </p>
         <p class="mr-5">{{ taskComponentLocal?.created_at }}</p>
@@ -32,11 +26,7 @@
         <!-- <el-tooltip content="Tienes una tarea por cumplir antes de poder comenzar" placement="top">
                             <i @click.stop="" class="fa-solid fa-hourglass cursor-default mr-3"></i>
                         </el-tooltip> -->
-        <el-tooltip
-          v-if="taskComponentLocal?.media.length"
-          content="Archivo adjunto"
-          placement="top"
-        >
+        <el-tooltip v-if="taskComponentLocal?.media.length" content="Archivo adjunto" placement="top">
           <i @click.stop="" class="fa-solid fa-paperclip rounded-full p-2"></i>
         </el-tooltip>
       </div>
@@ -51,33 +41,15 @@
           <p class="text-sm ml-1">| {{ "Dpto. " + taskComponentLocal?.department }}</p>
         </div>
         <div class="flex items-center absolute bottom-3 right-0 cursor-default">
-          <el-tooltip
-            v-if="taskComponentLocal?.status == 'Terminada'"
-            content="Tarea terminada"
-            placement="bottom"
-          >
-            <i
-              @click.stop=""
-              class="fa-solid fa-check text-green-500 text-xl cursor-default mr-2"
-            ></i>
+          <el-tooltip v-if="taskComponentLocal?.status == 'Terminada'" content="Tarea terminada" placement="bottom">
+            <i @click.stop="" class="fa-solid fa-check text-green-500 text-xl cursor-default mr-2"></i>
           </el-tooltip>
           <!-- <p class="text-primary mr-1">+2</p> -->
-          <el-tooltip
-            v-for="user in taskComponentLocal?.participants"
-            :key="user"
-            :content="user.name"
-            placement="bottom"
-          >
+          <el-tooltip v-for="user in taskComponentLocal?.participants" :key="user" :content="user.name"
+            placement="bottom">
             <figure @click.stop="">
-              <div
-                v-if="$page.props.jetstream.managesProfilePhotos"
-                class="flex text-sm rounded-full"
-              >
-                <img
-                  class="h-9 w-9 rounded-full object-cover"
-                  :src="user.profile_photo_url"
-                  :alt="user.name"
-                />
+              <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm rounded-full">
+                <img class="h-9 w-9 rounded-full object-cover" :src="user.profile_photo_url" :alt="user.name" />
               </div>
             </figure>
           </el-tooltip>
@@ -89,58 +61,32 @@
   <!-- -------------- task information Modal -------------- -->
   <Modal :show="taskInformationModal" @close="taskInformationModal = false">
     <form @submit.prevent="update" class="mx-7 my-4 space-y-4 relative">
-      <div
-        @click="taskInformationModal = false"
-        class="cursor-pointer w-5 h-5 rounded-full flex items-center justify-center absolute top-0 right-0"
-      >
+      <div @click="taskInformationModal = false"
+        class="cursor-pointer w-5 h-5 rounded-full flex items-center justify-center absolute top-0 right-0">
         <i class="fa-solid fa-xmark"></i>
       </div>
       <h1 class="font-bold">{{ taskComponentLocal?.title }}</h1>
 
       <div class="relative">
-        <i
-          :class="getColorStatus(taskComponentLocal?.status)"
-          class="fa-solid fa-circle text-xs top-10 -left-4 absolute z-30"
-        ></i>
+        <i :class="getColorStatus(taskComponentLocal?.status)"
+          class="fa-solid fa-circle text-xs top-10 -left-4 absolute z-30"></i>
         <label>Estado actual</label> <br />
         <div class="flex items-center space-x-4">
-          <el-select
-            :disabled="taskComponentLocal?.is_paused"
-            class="lg:w-1/2 mt-2"
-            v-model="form.status"
-            clearable
-            filterable
-            placeholder="Seleccionar estatus"
-            no-data-text="No hay estatus registrados"
-            no-match-text="No se encontraron coincidencias"
-          >
-            <el-option
-              v-for="item in statuses"
-              :key="item"
-              :label="item.label"
-              :value="item.label"
-            >
-              <span style="float: left"
-                ><i :class="item.color" class="fa-solid fa-circle"></i
-              ></span>
+          <el-select :disabled="taskComponentLocal?.is_paused" class="lg:w-1/2 mt-2" v-model="form.status" clearable
+            filterable placeholder="Seleccionar estatus" no-data-text="No hay estatus registrados"
+            no-match-text="No se encontraron coincidencias">
+            <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
+              <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
               <span style="float: center; margin-left: 5px; font-size: 13px">{{
                 item.label
               }}</span>
             </el-option>
           </el-select>
-          <el-tooltip
-            v-if="taskComponentLocal?.status == 'En curso'"
-            :content="taskComponentLocal?.is_paused ? 'Reanudar tarea' : 'Pausar tarea'"
-            placement="top"
-          >
+          <el-tooltip v-if="taskComponentLocal?.status == 'En curso'"
+            :content="taskComponentLocal?.is_paused ? 'Reanudar tarea' : 'Pausar tarea'" placement="top">
             <button type="button">
-              <i
-                @click.stop="$inertia.put(route('tasks.pause-play', taskComponentLocal))"
-                :class="
-                  taskComponentLocal?.is_paused ? 'fa-circle-play' : 'fa-circle-pause'
-                "
-                class="fa-regular text-secondary text-xl cursor-pointer"
-              ></i>
+              <i @click.stop="$inertia.put(route('tasks.pause-play', taskComponentLocal))" :class="taskComponentLocal?.is_paused ? 'fa-circle-play' : 'fa-circle-pause'
+                " class="fa-regular text-secondary text-xl cursor-pointer"></i>
             </button>
           </el-tooltip>
         </div>
@@ -160,42 +106,19 @@
         </div>
         <div class="flex space-x-2 justify-end items-center mt-3">
           <label>Departamento</label>
-          <el-select
-            class="w-full mt-2"
-            v-model="form.department"
-            clearable
-            filterable
-            placeholder="Seleccionar departamento"
-            no-data-text="No hay departamentos registrados"
-            no-match-text="No se encontraron coincidencias"
-          >
-            <el-option
-              v-for="item in departments"
-              :key="item"
-              :label="item"
-              :value="item"
-            />
+          <el-select class="w-full mt-2" v-model="form.department" clearable filterable
+            placeholder="Seleccionar departamento" no-data-text="No hay departamentos registrados"
+            no-match-text="No se encontraron coincidencias">
+            <el-option v-for="item in departments" :key="item" :label="item" :value="item" />
           </el-select>
           <InputError :message="form.errors.department" />
         </div>
         <div class="flex space-x-2 justify-end items-center mt-3">
           <label>Participantes</label>
-          <el-select
-            class="w-full mt-2"
-            v-model="form.participants"
-            clearable
-            filterable
-            multiple
-            placeholder="Seleccionar participantes"
-            no-data-text="No hay usuarios registrados"
-            no-match-text="No se encontraron coincidencias"
-          >
-            <el-option
-              v-for="user in users"
-              :key="user.id"
-              :label="user.name"
-              :value="user.id"
-            />
+          <el-select class="w-full mt-2" v-model="form.participants" clearable filterable multiple
+            placeholder="Seleccionar participantes" no-data-text="No hay usuarios registrados"
+            no-match-text="No se encontraron coincidencias">
+            <el-option v-for="user in users" :key="user.id" :label="user.name" :value="user.id" />
           </el-select>
           <InputError :message="form.errors.participants" />
         </div>
@@ -205,29 +128,13 @@
           <InputError :message="form.errors.description" />
         </div>
         <div class="mt-3 relative">
-          <i
-            :class="getColorPriority(taskComponentLocal?.priority.label)"
-            class="fa-solid fa-circle text-xs top-10 -left-4 absolute z-30"
-          ></i>
+          <i :class="getColorPriority(taskComponentLocal?.priority.label)"
+            class="fa-solid fa-circle text-xs top-10 -left-4 absolute z-30"></i>
           <label>Prioridad</label>
-          <el-select
-            class="w-full mt-2"
-            v-model="form.priority"
-            clearable
-            filterable
-            placeholder="Seleccionar prioridad"
-            no-data-text="No hay registros"
-            no-match-text="No se encontraron coincidencias"
-          >
-            <el-option
-              v-for="item in priorities"
-              :key="item"
-              :label="item.label"
-              :value="item.label"
-            >
-              <span style="float: left"
-                ><i :class="item.color" class="fa-solid fa-circle"></i
-              ></span>
+          <el-select class="w-full mt-2" v-model="form.priority" clearable filterable placeholder="Seleccionar prioridad"
+            no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
+            <el-option v-for="item in priorities" :key="item" :label="item.label" :value="item.label">
+              <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
               <span style="float: center; margin-left: 5px; font-size: 13px">{{
                 item.label
               }}</span>
@@ -256,55 +163,33 @@
         <!-- --------------------- TABS -------------------- -->
         <section class="mt-9">
           <div class="flex items-center">
-            <p
-              @click="tabs = 1"
-              :class="tabs == 1 ? 'border-b-2 border-[#D90537] text-primary' : ''"
-              class="h-8 p-1 cursor-pointer ml-5 transition duration-300 ease-in-out text-xs md:text-base"
-            >
+            <p @click="tabs = 1" :class="tabs == 1 ? 'border-b-2 border-[#D90537] text-primary' : ''"
+              class="h-8 p-1 cursor-pointer ml-5 transition duration-300 ease-in-out text-xs md:text-base">
               Comentarios ({{ taskComponentLocal?.comments?.length }})
             </p>
             <div class="border-r-2 border-[#cccccc] h-7 ml-3"></div>
-            <p
-              @click="tabs = 2"
-              :class="tabs == 2 ? 'border-b-2 border-[#D90537] text-primary' : ''"
-              class="ml-3 h-8 p-1 cursor-pointer transition duration-300 ease-in-out text-xs md:text-base"
-            >
+            <p @click="tabs = 2" :class="tabs == 2 ? 'border-b-2 border-[#D90537] text-primary' : ''"
+              class="ml-3 h-8 p-1 cursor-pointer transition duration-300 ease-in-out text-xs md:text-base">
               Documentos
             </p>
             <div class="border-r-2 border-[#cccccc] h-7 ml-3"></div>
-            <p
-              @click="tabs = 3"
-              :class="tabs == 3 ? 'border-b-2 border-[#D90537] text-primary' : ''"
-              class="ml-3 h-8 p-1 cursor-pointer transition duration-300 ease-in-out text-xs md:text-base"
-            >
+            <p @click="tabs = 3" :class="tabs == 3 ? 'border-b-2 border-[#D90537] text-primary' : ''"
+              class="ml-3 h-8 p-1 cursor-pointer transition duration-300 ease-in-out text-xs md:text-base">
               Historial
             </p>
             <div class="border-r-2 border-[#cccccc] h-7 ml-3"></div>
-            <p
-              @click="tabs = 4"
-              :class="tabs == 4 ? 'border-b-2 border-[#D90537] text-primary' : ''"
-              class="ml-3 h-8 p-1 cursor-pointer transition duration-300 ease-in-out text-xs md:text-base"
-            >
+            <p @click="tabs = 4" :class="tabs == 4 ? 'border-b-2 border-[#D90537] text-primary' : ''"
+              class="ml-3 h-8 p-1 cursor-pointer transition duration-300 ease-in-out text-xs md:text-base">
               Dependencia/Consecutiva
             </p>
           </div>
           <!-- -------------- Tab 1 comentarios starts ----------------->
           <div v-if="tabs == 1" class="mt-7">
             <div>
-              <figure
-                class="flex space-x-2 mt-4"
-                v-for="comment in taskComponentLocal?.comments"
-                :key="comment"
-              >
-                <div
-                  v-if="$page.props.jetstream.managesProfilePhotos"
-                  class="flex text-sm rounded-full w-12"
-                >
-                  <img
-                    class="h-10 w-10 rounded-full object-cover"
-                    :src="comment.user.profile_photo_url"
-                    :alt="comment.user.name"
-                  />
+              <figure class="flex space-x-2 mt-4" v-for="comment in taskComponentLocal?.comments" :key="comment">
+                <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm rounded-full w-12">
+                  <img class="h-10 w-10 rounded-full object-cover" :src="comment.user.profile_photo_url"
+                    :alt="comment.user.name" />
                 </div>
                 <div class="text-sm w-full">
                   <p class="font-bold">{{ comment.user.name }}</p>
@@ -312,23 +197,13 @@
                 </div>
               </figure>
               <div class="flex space-x-2 mt-5 items-center">
-                <div
-                  v-if="$page.props.jetstream.managesProfilePhotos"
-                  class="flex text-sm rounded-full w-12"
-                >
-                  <img
-                    class="h-10 w-10 rounded-full object-cover"
-                    :src="$page.props.auth.user.profile_photo_url"
-                    :alt="$page.props.auth.user.name"
-                  />
+                <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm rounded-full w-12">
+                  <img class="h-10 w-10 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url"
+                    :alt="$page.props.auth.user.name" />
                 </div>
                 <textarea v-model="form.comment" class="textarea w-full"> </textarea>
-                <PrimaryButton
-                  type="button"
-                  @click.stop="comment(taskComponentLocal)"
-                  class="h-9"
-                  ><i class="fa-regular fa-paper-plane"></i
-                ></PrimaryButton>
+                <PrimaryButton type="button" @click.stop="comment(taskComponentLocal)" class="h-9"><i
+                    class="fa-regular fa-paper-plane"></i></PrimaryButton>
               </div>
             </div>
           </div>
@@ -336,13 +211,8 @@
 
           <!-- -------------- Tab 2 documentos starts ----------------->
           <div v-if="tabs == 2" class="mt-7">
-            <a
-              :href="file?.original_url"
-              target="_blank"
-              v-for="file in taskComponentLocal?.media"
-              :key="file"
-              class="flex justify-between items-center cursor-pointer"
-            >
+            <a :href="file?.original_url" target="_blank" v-for="file in taskComponentLocal?.media" :key="file"
+              class="flex justify-between items-center cursor-pointer">
               <div class="flex space-x-7 items-center">
                 <img src="@/../../public/images/adobepdf.png" :alt="file?.file_name" />
                 <p>{{ file?.file_name }}sss</p>
@@ -377,6 +247,7 @@ import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import axios from "axios";
+
 export default {
   data() {
     const form = useForm({

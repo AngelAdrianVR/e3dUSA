@@ -144,4 +144,11 @@ class TaskController extends Controller
         $task->save();
         // return response()->json(['item' => $comment]);
     }
+
+    public function updateStatus(Task $task, Request $request)
+    {
+        $task->update(['status' => $request->status]);
+
+        return response()->json([]);
+    }
 }

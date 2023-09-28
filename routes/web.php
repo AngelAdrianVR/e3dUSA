@@ -114,6 +114,7 @@ Route::resource('projects', ProjectController::class)->middleware('auth');
 Route::resource('tasks', TaskController::class)->middleware('auth');
 Route::post('tasks-{task}-comment', [TaskController::class, 'comment'])->name('tasks.comment')->middleware('auth');
 Route::put('tasks-{task}-pause-play', [TaskController::class, 'pausePlayTask'])->name('tasks.pause-play')->middleware('auth');
+Route::put('tasks-{task}-update-status', [TaskController::class, 'updateStatus'])->name('tasks.update-status')->middleware('auth');
 
 
 // ------- Raw Material routes  ---------
