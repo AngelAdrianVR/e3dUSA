@@ -6,6 +6,7 @@ use App\Http\Controllers\BonusController;
 use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CustomerMeetingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\DesignModificationController;
@@ -81,7 +82,11 @@ Route::post('catalog-products/QR-search-catalog-product', [CatalogProductControl
 Route::resource('companies', CompanyController::class)->middleware('auth');
 Route::post('companies/massive-delete', [CompanyController::class, 'massiveDelete'])->name('companies.massive-delete');
 Route::post('companies/clone', [CompanyController::class, 'clone'])->name('companies.clone');
+Route::post('companies/get-all-companies', [CompanyController::class, 'getAllCompanies'])->name('companies.get-all-companies')->middleware('auth');
 
+
+// ------- CRM (Clients Routes)  ---------
+Route::get('crm', [DashboardController::class, 'crmDashboard'])->middleware('auth')->name('crm.dashboard');
 
 // ------- Ventas(sale orders Routes)  ---------
 Route::resource('sales', SaleController::class)->middleware('auth');
@@ -261,8 +266,6 @@ Route::resource('spare-parts', SparePartController::class)->except('create')->mi
 Route::get('spare-parts/create/{selectedMachine}', [SparePartController::class, 'create'])->name('spare-parts.create')->middleware('auth');
 Route::post('spare-parts/update-with-media/{spare_part}', [SparePartController::class, 'updateWithMedia'])->name('spare-parts.update-with-media')->middleware('auth');
 
-
-
 //------------------ Meetings routes ----------------
 Route::resource('meetings', MeetingController::class)->middleware('auth');
 Route::post('meetings/massive-delete', [MeetingController::class, 'massiveDelete'])->name('meetings.massive-delete');
@@ -283,6 +286,10 @@ Route::resource('settings', SettingController::class)->middleware('auth');
 
 //------------------ Production progress routes ----------------
 Route::resource('production-progress', ProductionProgressController::class)->middleware('auth');
+
+//------------------ Customer dates routes ----------------
+Route::resource('customer-meetings', CustomerMeetingController::class)->middleware('auth');
+Route::post('customer-meetings/get-soon-dates', [CustomerMeetingController::class, 'getSoonDates'])->name('customer-meetings.get-soon-dates')->middleware('auth');
 
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');

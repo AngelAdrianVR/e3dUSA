@@ -19,6 +19,10 @@ class CompanyBranchController extends Controller
         //
     }
 
+    // public function show()
+    // {
+    //     //
+    // }
     
     public function store(Request $request)
     {
@@ -57,4 +61,5 @@ class CompanyBranchController extends Controller
 
         return response()->json(['message' => 'Notas guardadas']);
     }
+
 }

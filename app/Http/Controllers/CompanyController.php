@@ -198,4 +198,11 @@ class CompanyController extends Controller
 
         return response()->json(['message' => "Cliente clonado: {$clone->business_name}", 'newItem' => CompanyResource::make($clone)]);
     }
+
+    public function getAllCompanies()
+    {
+        $companies = Company::with(['companyBranches.contacts'])->get();
+
+        return response()->json(['items' => $companies]);
+    }
 }

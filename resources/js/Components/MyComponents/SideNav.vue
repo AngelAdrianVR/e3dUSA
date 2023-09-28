@@ -93,13 +93,19 @@ export default {
                     show: this.$page.props.auth.user.permissions.includes('Ver catalogo de productos')
                 },
                 {
-                    label: 'Ventas',
-                    icon: '<i class="fa-solid fa-shop text-xs"></i>',
-                    active: route().current('quotes.*') || route().current('companies.*') || route().current('sales.*'),
+                    label: 'CRM',
+                    icon: '<i class="fa-solid fa-chart-line text-sm"></i>',
+                    active: route().current('crm.*') || route().current('quotes.*') || route().current('companies.*') || route().current('sales.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
                         return ['quote', 'sale'].includes(notification.data.module);
                     }),
                     options: [
+                        {
+                            label: 'Inicio',
+                            route: 'crm.dashboard',
+                            show: this.$page.props.auth.user.permissions.includes('Inicio crm'),
+                            notifications: false,
+                        },
                         {
                             label: 'Cotizaciones',
                             route: 'quotes.index',
