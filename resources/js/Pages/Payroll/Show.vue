@@ -10,11 +10,9 @@
       <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
         <div class="flex justify-between">
           <label>Nóminas</label>
-          <Link
-            :href="route('payrolls.index')"
-            class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center"
-          >
-            <i class="fa-solid fa-xmark"></i>
+          <Link :href="route('payrolls.index')"
+            class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
           </Link>
         </div>
         <div class="w-1/3">
@@ -61,13 +59,23 @@
             Ver incidencias
           </p>
           <div class="border-r-2 border-[#cccccc] ml-3"></div>
-          <p @click="incidentsTab = false" :class="!incidentsTab ? 'bg-secondary-gray rounded-xl text-primary' : ''
+          <p @click="incidentsTab = false;" :class="!incidentsTab ? 'bg-secondary-gray rounded-xl text-primary' : ''
             " class="my-2 ml-3 p-2 cursor-pointer transition duration-300 ease-in-out">
             Imprimir nóminas
           </p>
         </div>
 
         <div v-if="!incidentsTab" class="text-right mr-9 flex items-center">
+          <p v-if="isCalculatingTotalAmount" class="mr-6 text-sm">Calculando total <i
+              class="fa-solid fa-spinner fa-spin text-primary"></i></p>
+          <el-tag v-else type="success" style="font-size: 16px;">
+            Monto total ${{ totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}
+          </el-tag>
+          <el-tooltip v-if="!isCalculatingTotalAmount" content="Refrescar monto" placement="top">
+            <button @click="calculateTotalAmount(true)" class="mr-8 px-1">
+              <i class="fa-solid fa-arrows-rotate"></i>
+            </button>
+          </el-tooltip>
           <PrimaryButton @click="printPayrolls" class="mr-5" :disabled="!payrollUsersToShow.length">
             Imprimir
           </PrimaryButton>
@@ -112,11 +120,11 @@
       <!-- -------------- print starts----------------------- -->
       <div v-else>
         <template v-for="(user_id, index) in payrollUsersToShow" :key="user_id">
-          <payrollTemplate :user="users.data.find(item => item.id == user_id)" :payrollId="selectedPayroll" />
+          <payrollTemplate :user="users.data.find(item => item.id == user_id)" :payrollId="selectedPayroll"
+            :ref="'payrollTemplate-' + user_id" />
         </template>
       </div>
       <!-- -------------- print ends----------------------- -->
-
 
       <!-- -------------- IncidentModal starts----------------------- -->
       <Modal :show="incidentModal" @close="incidentModal = false">
@@ -210,6 +218,9 @@ export default {
       payrollUsersToShow: [],
       loading: false,
       currentPayroll: null,
+      totalAmount: 0,
+      isCalculatingTotalAmount: true,
+      amountLoadingCounter: 0,
     };
   },
   components: {
@@ -236,7 +247,7 @@ export default {
     deleteIncident() {
       console.log("Elimidado");
     },
-    async payrollChanged() {  
+    async payrollChanged() {
       this.loading = true;
       try {
         const response = await axios.post(route('payrolls.get-payroll-users'), {
@@ -255,8 +266,31 @@ export default {
       }
     },
     printPayrolls() {
-      this.$inertia.get(route('payrolls.print-template', {users_id_to_show: JSON.stringify(this.payrollUsersToShow), payroll_id: this.currentPayroll.id}));
+      this.$inertia.get(route('payrolls.print-template', { users_id_to_show: JSON.stringify(this.payrollUsersToShow), payroll_id: this.currentPayroll.id }));
     },
+    calculateTotalAmount(showToast = false) {
+      this.totalAmount = 0;
+      this.isCalculatingTotalAmount = true;
+
+      this.payrollUsersToShow.map(async (user_id) => {
+        const childComponent = this.$refs[`payrollTemplate-${user_id}`][0];
+
+        if (childComponent) {
+          const total = childComponent.getTotal();
+          this.totalAmount += total;
+        }
+      });
+
+      this.isCalculatingTotalAmount = false;
+
+      if (showToast) {
+        this.$notify({
+          title: 'Éxito',
+          message: 'Monto refrescado',
+          type: 'success',
+        })
+      }
+    }
   },
   watch: {
     selectedPayroll(newVal) {
@@ -268,6 +302,10 @@ export default {
 
     // get processed payrolls for each user
     this.payrollUsersToShow = Object.keys(this.payroll_users);
+
+    setTimeout(() => {
+      this.calculateTotalAmount();
+    }, 15000);
   },
   computed: {},
 };
