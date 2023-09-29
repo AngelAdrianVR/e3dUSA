@@ -4,7 +4,7 @@
         <h1 class="font-bold text-center">{{ title }} <span v-html="icon"></span></h1>
 
         <div id="chart">
-            <apexchart type="pie" width="335" :options="chartOptions" :series="series"></apexchart>
+            <apexchart type="donut" width="335" :options="chartOptions" :series="series"></apexchart>
         </div>
         <div class="flex justify-end mx-6 absolute bottom-3 right-5">
             <button class="text-primary text-xs">Ver detalles</button>
@@ -20,8 +20,7 @@ export default {
             series: this.options.series,
             chartOptions: {
                 chart: {
-                    width: 300,
-                    type: 'pie',
+                    type: 'donut',
                 },
                 colors: this.options.colors,
                 stroke: {
