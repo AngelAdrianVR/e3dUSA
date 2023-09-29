@@ -1,6 +1,6 @@
 <template>
   <AppLayoutNoHeader title="Calendario |">
-    <div class="flex justify-between text-lg mx-2 lg:mx-14 mt-11">
+    <div class="flex justify-between text-lg mx-2 lg:mx-14 mt-2">
       <span>Calendario</span>
       <Link
         :href="route('dashboard')"
@@ -10,11 +10,12 @@
       </Link>
     </div>
 
+      
     <div class="flex justify-between text-lg mx-2 lg:mx-14 mt-11">
       <span class="text-primary text-sm cursor-pointer"
         >Mes <i class="fa-solid fa-angle-down text-xs ml-2"></i
       ></span>
-      <div class="flex justify-between items-center w-1/5">
+      <div class="flex justify-between items-center lg:w-1/5">
         <i @click="changeMonth(-1)"
           class="fa-solid fa-angle-left text-primary text-xs mr-5 cursor-pointer p-1"
         ></i>
@@ -26,25 +27,17 @@
         ></i>
       </div>
       <div class="flex space-x-2">
-        <Dropdown align="right" width="48">
-          <template #trigger>
-            <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
-              Mis tareas <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
-            </button>
-          </template>
-          <template #content>
-            <DropdownLink :href="route('machines.create')">
-              Todas las tareas
-            </DropdownLink>
-          </template>
-        </Dropdown>
+        <Link :href="route('calendars.create')">
+        <PrimaryButton >+ Agendar</PrimaryButton>
+      </Link>
       </div>
     </div>
+    
 
 
       <!-- -------------- calendar section --------------- -->
-      <section class="w-11/12 mx-auto mb-16">
-    <table class="default w-full mt-12">
+      <section @click="selectedDay = null" class="w-11/12 mx-auto mb-24 overflow-x-scroll">
+    <table class="w-full mt-12">
       <tr class="text-center">
         <th class="py-2 w-[14.28%] border border-[#9A9A9A]">DOM</th>
         <th class="py-2 w-[14.28%] border border-[#9A9A9A]">LUN</th>
@@ -55,14 +48,57 @@
         <th class="py-2 w-[14.28%] border border-[#9A9A9A]">SAB</th>
       </tr>
       <tr v-for="(week, index) in weeks" :key="index" class="text-sm text-right">
-        <td v-for="day in week" :key="day" class="h-32 border border-[#9A9A9A] relative">
-          <p style="z-index: 999;" class="absolute bottom-0 right-3">{{ day }}</p>
+        <td v-for="day in week" :key="day" class="h-32 pb-4 border border-[#9A9A9A] relative">
+          <p class="absolute bottom-0 right-3">{{ day }}</p>
           <!-- Agregar línea para tareas y eventos -->
           <div v-for="task in tasks" :key="task.id">
             <div class="" v-if="isTaskDay(task, day)">
-                <div @click="showInfoTask = !showInfoTask" :class="task.type === 'Tarea' ? 'bg-[#B9D9FE] border-[#0355B5] border-l-4 border' : 'bg-[#FDB9C9] border-[#D90537] border-l-4 border'" class="h-5 rounded-sm my-1 text-xs justify-center items-center cursor-pointer flex relative">
+                <!-- <div @click="showInfoTask = !showInfoTask" :class="task.type === 'Tarea' ? 'bg-[#B9D9FE] border-[#0355B5] border-l-4 border' : 'bg-[#FDB9C9] border-[#D90537] border-l-4 border'" class="h-5 rounded-sm my-1 text-xs justify-center items-center cursor-pointer flex relative">
                     {{ task.title }}
                 <div v-if="showInfoTask" style="z-index: 999;" class="absolute -bottom-36 w-56 h-32 bg-[#D9D9D9] rounded-md border"></div>
+                </div> -->
+                <div @click.stop="selectedTask = task; selectedDay = day" :class="task.type === 'Tarea' ? 'bg-[#B9D9FE] border-[#0355B5] border-l-4 border' : 'bg-[#FDB9C9] border-[#D90537] border-l-4 border'" class="h-5 rounded-sm my-1 text-xs justify-center items-center cursor-pointer flex relative">
+                    <p :class="task.status === 'Terminada' ? 'line-through' : ''">{{ task.title }}</p>
+                <div v-if="selectedTask === task && selectedDay == day" style="z-index: 999;" class="px-1 pb-3 absolute -bottom-56 w-56 h-auto bg-[#D9D9D9] rounded-md border cursor-default">
+                  <!-- --- Head --- -->
+                  <div class="flex items-center justify-end">
+                    <p :class="selectedTask.type === 'Tarea' ? 'border-[#0355B5] bg-[#B9D9FE]' : 'bg-[#FDB9C9] border-[#D90537]'" class="border inline rounded-md py-[1px] px-[2px]">{{ selectedTask.type }}</p>
+                    <i @click.stop="selectedTask = null; selectedDay = null" class="fa-solid fa-xmark text-xs p-2 ml-4 cursor-pointer"></i>
+                  </div>
+                  <!-- --- Body --- -->
+                  <div class="px-3">
+                    <p class="font-bold text-left pb-[2px] pl-1">{{ selectedTask?.title }}</p>
+                    <div class="grid grid-cols-2 border-y border-[#9A9A9A] p-1 text-left">
+                        <p class="text-[#9A9A9A] text-xs">Fecha de inicio</p>
+                        <p class="text-[#9A9A9A] text-xs ml-5">Fecha final</p>
+                        <el-tooltip content="Año-Mes-Día" placement="top">
+                          <p class="text-xs">{{ selectedTask?.start_date.split('T')[0] }}</p>
+                        </el-tooltip>
+                        <el-tooltip content="Año-Mes-Día" placement="top">
+                          <p class="text-xs ml-5">{{ selectedTask?.finish_date.split('T')[0] }}</p>
+                        </el-tooltip>
+                        <p class="text-[#9A9A9A] text-xs col-span-2">duración</p>
+                        <p class="text-xs col-span-2">{{ getDurationTask() + ' Día(s)' }}</p>
+                        <p class="text-[#9A9A9A] text-xs col-span-2">Descripción</p>
+                        <p class="text-xs col-span-2">{{ selectedTask?.description }}</p>
+                    </div>
+                  </div>
+                  <!-- --- Footer --- -->
+                  <div class="px-4 pt-2 flex justify-between items-center">
+                    <el-popconfirm v-if="selectedTask?.status === 'Pendiente'" confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                            title="Tarea terminada?" @confirm="taskDone">
+                            <template #reference>
+                                <PrimaryButton class="text-xs h-5">Hecho</PrimaryButton>
+                            </template>
+                        </el-popconfirm>
+                    <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#D90537"
+                            title="Eliminar tarea?" @confirm="deleteTask">
+                            <template #reference>
+                                <i class="fa-regular fa-trash-can text-primary cursor-pointer"></i>
+                            </template>
+                        </el-popconfirm>
+                  </div>
+                </div>
                 </div>
             </div>
           </div>
@@ -80,12 +116,14 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import { Link } from "@inertiajs/vue3";
+import axios from 'axios';
 
 export default {
   data() {
     return {
         currentMonth: new Date(),
-        showInfoTask: false,
+        selectedTask: null, // Variable para realizar un seguimiento de la tarea seleccionada
+        selectedDay: null, // Seguinmiento del dia seleccionado
     };
   },
   components: {
@@ -101,15 +139,60 @@ export default {
     // events: Array,
   },
   methods: {
+   async taskDone() {
+    try {
+      const response = await axios.put(route('calendars.task-done', this.selectedTask));
+
+      if (response.status === 200) {
+        this.$notify({
+            title: "Éxito",
+            message: "Tarea terminada",
+            type: "success",
+          });
+          this.selectedTask.status = 'Terminada';
+      }
+    } catch (error) {
+      console.log(error);
+    }
+      
+      
+    },
+    deleteTask() {
+      this.$inertia.delete(route('calendars.destroy', this.selectedTask));
+      this.$notify({
+            title: "Éxito",
+            message: "Tarea terminada",
+            type: "success",
+          });
+      
+      this.selectedTask = null;
+    },
     changeMonth(offset) {
       const newMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() + offset, 1);
       this.currentMonth = newMonth;
     },
     isTaskDay(task, day) {
-      const taskStartDate = new Date(task.start_date);
-      const taskFinishDate = new Date(task.finish_date);
-      const currentDay = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), day);
-      return currentDay >= taskStartDate && currentDay <= taskFinishDate;
+      if (day) {
+        const taskStartDate = new Date(task.start_date);
+        const taskFinishDate = new Date(task.finish_date);
+        const currentDay = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), day);
+        // this.selectedTask = task;
+        return (currentDay >= taskStartDate) && (currentDay <= taskFinishDate);
+      } 
+        return
+    },
+    getDurationTask(){
+      // Convierte las fechas en objetos Date
+      const startDate = new Date(this.selectedTask.start_date);
+      const finishDate = new Date(this.selectedTask.finish_date);
+
+      // Calcula la diferencia en milisegundos
+      const diferenciaEnMilisegundos = finishDate - startDate;
+
+      // Convierte la diferencia en días
+      const duracionEnDias = diferenciaEnMilisegundos / (1000 * 60 * 60 * 24);
+
+      return duracionEnDias;
     },
   },
   computed: {

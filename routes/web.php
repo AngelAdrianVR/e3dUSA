@@ -71,6 +71,7 @@ Route::middleware([
 
 // --------------- Calendar routes -----------------
 Route::resource('calendars', CalendarController::class)->middleware('auth');
+Route::put('calendars-{calendar}-task-done', [CalendarController::class, 'taskDone'])->name('calendars.task-done')->middleware('auth');
 
 
 // ------- Catalog Products Routes ---------

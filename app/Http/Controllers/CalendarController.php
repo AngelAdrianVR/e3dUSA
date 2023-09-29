@@ -23,7 +23,7 @@ class CalendarController extends Controller
     
     public function create()
     {
-        //
+        return inertia('Calendar/Create');
     }
 
     
@@ -32,9 +32,7 @@ class CalendarController extends Controller
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
+    
     public function show(Calendar $calendar)
     {
         //
@@ -55,6 +53,13 @@ class CalendarController extends Controller
     
     public function destroy(Calendar $calendar)
     {
-        //
+        $calendar->delete();
+    }
+
+    public function taskDone(Calendar $calendar)
+    {
+        $calendar->update([
+            'status' => 'Terminada'
+        ]);
     }
 }
