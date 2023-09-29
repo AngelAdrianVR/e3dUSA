@@ -11,12 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('comments', function (Blueprint $table) {
+        Schema::create('customer_meetings', function (Blueprint $table) {
             $table->id();
-            $table->text('body');
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->unsignedBigInteger('commentable_id');
-            $table->string('commentable_type');
+            $table->string('type');
+            $table->string('location');
+            $table->date('date');
+            $table->time('time');
+            $table->text('reason')->nullable();
+            $table->unsignedBigInteger('contact_id');
+            $table->unsignedBigInteger('user_id');
             $table->timestamps();
         });
     }
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('comments');
+        Schema::dropIfExists('customer_meetings');
     }
 };

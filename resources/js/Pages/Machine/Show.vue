@@ -665,7 +665,6 @@ export default {
   mounted() {
     this.selectedMachine = this.machine.id;
   this.currentIndexMachine = this.machines.data.findIndex((obj) => obj.id == this.selectedMachine);
-
   },
 };
 </script>

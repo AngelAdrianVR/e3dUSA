@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('authorized_user_name')->nullable();
             $table->timestamp('authorized_at')->nullable();
             $table->foreignId('payroll_id')->constrained()->cascadeOnDelete(); //quitar*
-            $table->foreignId('payroll_user_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('payroll_user_id');
             $table->foreignId('user_id')->constrained()->cascadeOnDelete(); //quitar*
             $table->timestamps();
         });

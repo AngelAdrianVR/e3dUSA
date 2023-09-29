@@ -21,8 +21,11 @@
         "vue": "^3.2.31"
     },
     "dependencies": {
+        "apexcharts": "^3.42.0",
         "date-fns": "^2.30.0",
         "element-plus": "^2.3.6",
-        "moment": "^2.29.4"
+        "moment": "^2.29.4",
+        "vuedraggable": "^4.1.0",
+        "vue3-apexcharts": "^1.4.4"
     }
 }

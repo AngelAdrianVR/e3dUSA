@@ -6,7 +6,6 @@ use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\SaleResource;
-use App\Models\CatalogProduct;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Production;
 use App\Models\Sale;

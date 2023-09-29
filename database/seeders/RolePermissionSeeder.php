@@ -155,7 +155,14 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Solicitudes de tiempo adicional personal', 'category' => 'Generales']);
         Permission::create(['name' => 'Reuniones personal', 'category' => 'Generales']);
         Permission::create(['name' => 'Ver historial de acciones', 'category' => 'Generales']);
-        Permission::create(['name' => 'Ver proyectos', 'category' => 'Generales']);
+        Permission::create(['name' => 'Ver proyectos', 'category' => 'Generales']); //Gestor de proyectos
+        Permission::create(['name' => 'Crear proyectos', 'category' => 'Generales']); //Gestor de proyectos
+        Permission::create(['name' => 'Editar proyectos', 'category' => 'Generales']); //Gestor de proyectos
+        Permission::create(['name' => 'Eliminar proyectos', 'category' => 'Generales']); //Gestor de proyectos
+        Permission::create(['name' => 'Ver tareas', 'category' => 'Generales']); //tareas de proyectos (Gestor de proyectos)
+        Permission::create(['name' => 'Crear tareas', 'category' => 'Generales']); //tareas de proyectos (Gestor de proyectos)
+        Permission::create(['name' => 'Editar tareas', 'category' => 'Generales']); //tareas de proyectos (Gestor de proyectos)
+        Permission::create(['name' => 'Eliminar tareas', 'category' => 'Generales']); //tareas de proyectos (Gestor de proyectos)
 
         Permission::create(['name' => 'Ordenes de diseño todas', 'category' => 'Diseño']);
         Permission::create(['name' => 'Autorizar ordenes de diseño', 'category' => 'Diseño']);

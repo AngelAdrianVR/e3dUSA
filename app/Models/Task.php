@@ -7,18 +7,29 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Task extends Model
+class Task extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'title',
         'description',
+        'department',
         'priority',
         'status',
         'is_paused',
+        'start_date',
+        'end_date',
         'project_id',
+        'user_id',
+    ];
+
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
     ];
 
     //relationships
@@ -27,7 +38,12 @@ class Task extends Model
         return $this->belongsTo(Project::class);
     }
 
-    public function users(): BelongsToMany
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function participants(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'task_user', 'task_id', 'user_id');
     }
@@ -36,4 +52,5 @@ class Task extends Model
     {
         return $this->morphMany(Comment::class, 'commentable');
     }
+
 }

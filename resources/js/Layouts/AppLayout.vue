@@ -439,7 +439,7 @@ onMounted(() => {
 
                 <el-tooltip content="Escanear producto con código QR">
                   <PrimaryButton @click="QRScan" class="mr-10">
-                    <i class="fa-solid fa-qrcode mr-1"></i> Almacén
+                    <i class="fa-solid fa-qrcode"></i>
                   </PrimaryButton>
                 </el-tooltip>
 
@@ -501,6 +501,14 @@ onMounted(() => {
                     </SecondaryButton>
                   </template>
                 </el-popconfirm>
+
+                <div class="mr-9">
+                  <el-tooltip content="Calendario">
+                    <Link :href="route('calendars.index')">
+                      <i class="fa-solid fa-calendar-days text-[#9A9A9A]"></i>
+                    </Link>
+                  </el-tooltip>
+                </div>
 
                 <div class="relative">
                   <el-tooltip v-if="$page.props.auth.user.permissions.includes('Chatear')" content="Chat"
@@ -712,7 +720,7 @@ onMounted(() => {
   <Modal :show="qrScan" @close="qrScan = false">
     <div class="mx-7 my-4 space-y-4 relative">
       <div class="flex justify-center mb-4">
-        <h2 v-if="is_product" class="font-bold text-center mr-2">Movimientos de materia prima</h2>
+        <h2 v-if="is_product" class="font-bold text-center mr-2">Movimientos y detalles de producto</h2>
         <h2 v-else class="font-bold text-center mr-2">Búsqueda de maquinaria</h2>
         <div @click="
           qrScan = false;
@@ -724,7 +732,6 @@ onMounted(() => {
       </div>
 
       <form v-if="is_product" @submit.prevent="scanForm">
-        <button @click="QRMachineScan()" class="text-primary underline text-xs">Escanear máquinas</button>
         <div style="margin-top: 20px">
           <el-radio-group v-model="form.scanType">
             <el-radio-button v-if="$page.props.auth.user.permissions.includes('Crear entradas')
@@ -859,12 +866,20 @@ onMounted(() => {
             </h1>
 
             <div>
-              <div v-for="company_info in catalogProductFound.companies" :key="company_info" class="p-3 flex flex-col border rounde-lg">
-                <p class="text-secondary font-bold">Razon social: <span class="text-gray-600 font-thin">{{company_info.business_name}}</span></p>
-                <p class="text-secondary font-bold">Precio anterior: <span class="text-gray-600 font-thin">{{company_info.pivot.old_price}} {{ company_info.pivot.new_currency }}</span></p>
-                <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{company_info.pivot.old_date}}</span></p>
-                <p class="text-secondary font-bold">Precio actual: <span class="text-gray-600 font-thin">{{company_info.pivot.new_price}} {{ company_info.pivot.new_currency }}</span></p>
-                <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{company_info.pivot.new_date}}</span></p>
+              <div v-for="company_info in catalogProductFound.companies" :key="company_info"
+                class="p-3 flex flex-col border rounde-lg">
+                <p class="text-secondary font-bold">Razon social: <span class="text-gray-600 font-thin">{{
+                  company_info.business_name }}</span></p>
+                <p class="text-secondary font-bold">Precio anterior: <span class="text-gray-600 font-thin">{{
+                  company_info.pivot.old_price }} {{ company_info.pivot.new_currency
+  }}</span></p>
+                <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{
+                  company_info.pivot.old_date }}</span></p>
+                <p class="text-secondary font-bold">Precio actual: <span class="text-gray-600 font-thin">{{
+                  company_info.pivot.new_price }} {{ company_info.pivot.new_currency
+  }}</span></p>
+                <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{
+                  company_info.pivot.new_date }}</span></p>
               </div>
             </div>
 
@@ -872,18 +887,21 @@ onMounted(() => {
         </div>
         <!-- -------------- Catalog Product found in search ends--------------------- -->
 
-        <div class="flex justify-end space-x-3 pt-5 pb-1">
-          <PrimaryButton :disabled="form.processing">Enviar</PrimaryButton>
-          <CancelButton @click="
-            qrScan = false;
-          form.reset();
-          ">Cancelar</CancelButton>
+        <div class="flex justify-between items-center">
+          <button type="button" @click="QRMachineScan()" class="text-primary text-sm flex items-center">Escanear máquinas <i
+              class="fa-solid fa-arrow-right-long ml-2 mt-1"></i></button>
+          <div class="flex justify-end space-x-3 pt-5 pb-1">
+            <CancelButton @click="
+              qrScan = false;
+            form.reset();
+            ">Cancelar</CancelButton>
+            <PrimaryButton :disabled="form.processing">Buscar</PrimaryButton>
+          </div>
         </div>
       </form>
 
       <!-- ---------------------- Machine form starts ---------------------- -->
       <form v-if="!is_product" @submit.prevent="scanMachineForm">
-        <button @click="QRScan()" class="text-primary underline text-xs">Escanear productos</button>
         <div class="mt-6">
           <div class="flex col-span-full ml-3 mt-2">
             <el-tooltip content="Código QR *" placement="top">
@@ -977,12 +995,15 @@ onMounted(() => {
           </div>
         </div>
 
-        <div class="flex justify-end space-x-3 pt-5 pb-1">
-          <PrimaryButton :disabled="form.processing">Buscar</PrimaryButton>
-          <CancelButton @click="
-            qrScan = false;
-          form.reset();
-          ">Cancelar</CancelButton>
+        <div class="flex items-center justify-between">
+          <button @click="QRScan()" class="text-primary text-sm flex items-center"><i class="fa-solid fa-arrow-left-long mr-2 mt-1"></i> Escanear productos</button>
+          <div class="flex justify-end space-x-3 pt-5 pb-1">
+            <CancelButton @click="
+              qrScan = false;
+            form.reset();
+            ">Cancelar</CancelButton>
+            <PrimaryButton :disabled="form.processing">Buscar</PrimaryButton>
+          </div>
         </div>
 
       </form>
