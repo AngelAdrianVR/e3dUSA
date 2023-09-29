@@ -1,13 +1,13 @@
 <template>
     <div class="lg:min-h-52 min-h-44 bg-[#D9D9D9] rounded-[30px] lg:rounded-xl lg:p-5 py-2 px-4 text-xs lg:text-sm relative">
-        <h1 class="font-bold text-center">Embudo de ventas</h1>
+        <h1 class="font-bold text-center">{{ title }} <span v-html="icon"></span></h1>
 
         <div id="chart">
             <apexchart type="bar" height="150" :options="chartOptions" :series="series"></apexchart>
         </div>
-        <div class="flex justify-end mx-6 absolute bottom-3 right-5">
+        <!-- <div class="flex justify-end mx-6 absolute bottom-3 right-5">
             <button class="text-primary text-xs">Ver detalles</button>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -16,12 +16,7 @@
 export default {
     data() {
         return {
-            series: [
-                {
-                    name: "Cantidad",
-                    data: [10, 7, 5, 3],
-                },
-            ],
+            series: this.options.series,
             chartOptions: {
                 chart: {
                     type: 'bar',
@@ -49,19 +44,9 @@ export default {
                         colors: ["#ffffff"]
                     }
                 },
-                colors: [
-                    '#31CB23',
-                    '#D47914',
-                    '#888888',
-                    '#D90537',
-                ],
+                colors: this.options.colors,
                 xaxis: {
-                    categories: [
-                        'Prospectos',
-                        'Propuesta',
-                        'Cotización ',
-                        'Ventas cerradas',
-                    ],
+                    categories: this.options.categories,
                 },
                 legend: {
                     show: true,
@@ -70,8 +55,13 @@ export default {
 
         };
     },
-    methods: {
-
+    props: {
+        title: String,
+        icon: {
+            default: '',
+            type: String
+        },
+        options: Object,
     },
 }
 </script>

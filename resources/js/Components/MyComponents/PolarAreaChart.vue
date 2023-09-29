@@ -4,7 +4,7 @@
         <h1 class="font-bold text-center">{{ title }} <span v-html="icon"></span></h1>
 
         <div id="chart">
-            <apexchart type="donut" width="385" :options="chartOptions" :series="series"></apexchart>
+            <apexchart type="polarArea" width="335" :options="chartOptions" :series="series"></apexchart>
         </div>
         <!-- <div class="flex justify-end mx-6 absolute bottom-3 right-5">
             <button class="text-primary text-xs">Ver detalles</button>
@@ -20,7 +20,8 @@ export default {
             series: this.options.series,
             chartOptions: {
                 chart: {
-                    type: 'donut',
+                    width: 335,
+                    type: 'polarArea',
                 },
                 colors: this.options.colors,
                 stroke: {
@@ -28,6 +29,9 @@ export default {
                     colors: '#D9D9D9'
                 },
                 labels: this.options.labels,
+                fill: {
+                    opacity: 0.9
+                },
                 responsive: [{
                     breakpoint: 480,
                     options: {
