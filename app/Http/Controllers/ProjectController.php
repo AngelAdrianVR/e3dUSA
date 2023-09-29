@@ -51,7 +51,7 @@ class ProjectController extends Controller
             'start_date' => 'required',
             'limit_date' => 'required',
             'company_id' => $request->is_internal_project ? 'nullable' : 'required',
-            'company_branch_id' => $request->is_internal_project ? 'nullable' : 'required',
+            'company_branch' => $request->is_internal_project ? 'nullable' : 'required',
             'sale_id' => $request->is_internal_project ? 'nullable' : 'required',
         ]);
 

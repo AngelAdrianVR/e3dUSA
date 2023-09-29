@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdditionalTimeRequestController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BonusController;
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
@@ -68,6 +69,9 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
+
+// --------------- Calendar routes -----------------
+Route::resource('calendars', CalendarController::class)->middleware('auth');
 
 
 // ------- Catalog Products Routes ---------

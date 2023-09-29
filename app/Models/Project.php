@@ -28,7 +28,7 @@ class Project extends Model
         'finished_at',
         'user_id',
         'company_id',
-        'company_branch_id',
+        'company_branch',
         'sat_method',
         'sale_id',
     ];

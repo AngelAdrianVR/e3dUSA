@@ -17,7 +17,7 @@
         <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4">
             <div>
                 <label class="block" for="">Proyecto *</label>
-                <el-select class="w-full mt-2" v-model="form.project_id" clearable filterable placeholder="Seleccionar proyecto"
+                <el-select @change="getProject()" class="w-full mt-2" v-model="form.project_id" clearable filterable placeholder="Seleccionar proyecto"
                     no-data-text="No hay proyectos registrados" no-match-text="No se encontraron coincidencias">
                     <el-option v-for="item in projects" :key="item.id" :label="item.project_name" :value="item.id" />
                 </el-select>
@@ -65,29 +65,27 @@
                 <InputError :message="form.errors.priority" />
             </div>
             <div class="lg:flex pt-3">
-          <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
-            <el-tooltip content="Fecha de inicio *" placement="top">
-              <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                <i class="fa-solid fa-calendar"></i>
-              </span>
-            </el-tooltip>
-            <el-date-picker v-model="form.start_date" type="date" placeholder="Fecha de inicio *"
-              format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
-            <InputError :message="form.errors.start_date" :disabled-date="disabledDate" />
-          </div>
-          <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
-            <el-tooltip content="Fecha de final *" placement="top">
-              <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                <i class="fa-solid fa-calendar"></i>
-              </span>
-            </el-tooltip>
-            <el-date-picker v-model="form.end_date" type="date" placeholder="Fecha de final *"
-              format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
-            <InputError :message="form.errors.end_date" :disabled-date="disabledDate" />
-          </div>
-        </div>
+    <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
+      <el-tooltip content="Fecha de inicio *" placement="top">
+        <span class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+          <i class="fa-solid fa-calendar"></i>
+        </span>
+      </el-tooltip>
+      <el-date-picker v-model="form.start_date" type="date" placeholder="Fecha de inicio *"
+         :disabled-date="disabledStartOrLimitDate" />
+      <InputError :message="form.errors.start_date" />
+    </div>
+    <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
+      <el-tooltip content="Fecha de final *" placement="top">
+        <span class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+          <i class="fa-solid fa-calendar"></i>
+        </span>
+      </el-tooltip>
+      <el-date-picker v-model="form.end_date" type="date" placeholder="Fecha de final *"
+         :disabled-date="disabledStartOrLimitDate" />
+      <InputError :message="form.errors.end_date" />
+    </div>
+  </div>
         <div>
             <div class="flex items-center">
                 <label>Recordatorio</label>
@@ -116,6 +114,7 @@
             </el-tooltip> -->
           </div>
         </div>
+        {{ selectedProject }}
       </form>
 
 <!-- -------------- Remainder Modal -------------- -->
@@ -165,14 +164,15 @@ export default {
       participants: null,
       priority: null,
       reminder: null,
-      start_date: "",
-      end_date: "",
+      start_date: '',
+      end_date: '',
       media: [],
           });
 
     return {
       form,
       remainderModal: false,
+      selectedProject: null,
        mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
       priorities:[
         'Baja',
@@ -236,6 +236,18 @@ export default {
     // Actualiza la propiedad form.mediaNames con los nombres de los archivos
     this.form.mediaNames = fileNames;
   },
+  getProject() {
+    this.selectedProject = this.projects.find(item => item.id == this.form.project_id);
+  },
+    // Función para deshabilitar fechas fuera del rango [start_date, limit_date]
+    disabledStartOrLimitDate(time) {
+      if (this.selectedProject && this.selectedProject.is_strict_project) {
+        const startTime = new Date(this.selectedProject.start_date).getTime();
+        const limitTime = new Date(this.selectedProject.limit_date).getTime();
+        return time.getTime() < startTime || time.getTime() > limitTime;
+      }
+      return false;
+    },
 
   },
 };

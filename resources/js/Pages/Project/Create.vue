@@ -91,12 +91,12 @@
           </div>
           <div class="w-1/2">
           <label>Sucursal *</label> <br>
-            <el-select @change="saveCompanyBranchAddress" v-model="form.company_branch_id" clearable filterable placeholder="Seleccione"
+            <el-select @change="saveCompanyBranchAddress" v-model="form.company_branch" clearable filterable placeholder="Seleccione"
             no-data-text="No hay sucursales registradas" no-match-text="No se encontraron coincidencias">
             <el-option v-for="company_branch in companies.find((item) => item.id == form.company_id)?.company_branches"
-             :key="company_branch" :label="company_branch.name" :value="company_branch.id" />
+             :key="company_branch" :label="company_branch.name" :value="company_branch.name" />
             </el-select>
-            <InputError :message="form.errors.company_branch_id" />
+            <InputError :message="form.errors.company_branch" />
           </div>
         </div>
 
@@ -246,7 +246,7 @@ export default {
       group: null,
       is_internal_project: false,
       company_id: null,
-      company_branch_id: null,
+      company_branch: null,
       shipping_address: null,
       sale_id: null,
       currency: null,

@@ -502,6 +502,14 @@ onMounted(() => {
                   </template>
                 </el-popconfirm>
 
+                <div class="mr-9">
+                  <el-tooltip content="Calendario">
+                    <Link :href="route('calendars.index')">
+                      <i class="fa-solid fa-calendar-days text-[#9A9A9A]"></i>
+                    </Link>
+                  </el-tooltip>
+                </div>
+
                 <div class="relative">
                   <el-tooltip v-if="$page.props.auth.user.permissions.includes('Chatear')" content="Chat"
                     placement="bottom">
