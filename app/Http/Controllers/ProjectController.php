@@ -19,6 +19,10 @@ class ProjectController extends Controller
         return inertia('Project/Index', compact('projects'));
     }
 
+    public function dashboard()
+    {
+        return inertia('Project/Dashboard');
+    }
     
     public function create()
     {
