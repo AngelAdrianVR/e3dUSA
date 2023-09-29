@@ -121,7 +121,7 @@
         }}</span>
         <span v-if="!currentProject?.is_internal_project" class="text-gray-500 my-2">Sucursal</span>
         <span v-if="!currentProject?.is_internal_project">{{
-          currentProject?.company_branch_id
+          currentProject?.company_branch
         }}</span>
         <span v-if="!currentProject?.is_internal_project" class="text-gray-500 my-2">Dirección</span>
         <span v-if="!currentProject?.is_internal_project">{{
@@ -129,7 +129,7 @@
         }}</span>
         <span v-if="!currentProject?.is_internal_project" class="text-gray-500 my-2">OV</span>
         <span v-if="!currentProject?.is_internal_project">{{
-          currentProject?.sale_id
+          'OV-' + currentProject?.sale_id
         }}</span>
       </div>
 
@@ -139,7 +139,7 @@
         <span class="text-gray-500 mb-6">Moneda</span>
         <span class="mb-6">{{ currentProject?.currency }}</span>
         <span class="text-gray-500">Monto</span>
-        <span>{{ currentProject?.budget }}</span>
+        <span>${{ currentProject?.budget?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
         <span class="text-gray-500 my-2">Método de facturación</span>
         <span>{{ currentProject?.sat_method }}</span>
 
@@ -165,7 +165,11 @@
             Depto. {{ user.employee_properties?.department ?? "Super admin" }}
           </li>
         </ul>
-        <!-- <p v-if="remainingUsersCount" class="text-primary col-span-2 justify-center mt-5 cursor-pointer flex items-center">Ver más <i class="fa-solid fa-chevron-down ml-3 text-xs"></i></p> -->
+
+        <p class="text-secondary col-span-2 mb-2">Documentos adjuntos</p>
+        <ul>
+          <li v-for="file in currentProject?.media" :key="file" class="mt-1">{{ file.file_name }}</li>
+        </ul>
       </div>
     </div>
     <!-- ------------- info project ends 1 ------------- -->

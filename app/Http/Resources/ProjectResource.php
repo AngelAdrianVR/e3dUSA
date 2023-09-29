@@ -28,7 +28,7 @@ class ProjectResource extends JsonResource
             'type_access_project' => $this->type_access_project,
             'user' => $this->whenLoaded('user'),
             'company' => $this->whenLoaded('company'),
-            'company_branch_id' => $this->company_branch_id,
+            'company_branch' => $this->company_branch,
             'sale_id' => $this->sale_id,
             'user' => $this->whenLoaded('user'),
             'tasks' => TaskResource::collection($this->whenLoaded('tasks')),
