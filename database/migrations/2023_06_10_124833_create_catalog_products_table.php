@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('catalog_products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->string('part_number');
             $table->string('measure_unit');
-            $table->unsignedMediumInteger('cost')->nullable();
-            $table->unsignedMediumInteger('min_quantity')->nullable();
-            $table->unsignedMediumInteger('max_quantity')->nullable();
+            $table->unsignedFloat('cost')->nullable();
+            $table->unsignedFloat('min_quantity')->nullable();
+            $table->unsignedFloat('max_quantity')->nullable();
             $table->json('features')->nullable();
             $table->timestamps();
         });

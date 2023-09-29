@@ -20,8 +20,10 @@ class SupplierResource extends JsonResource
             'address' => $this->address,
             'post_code' => $this->post_code,
             'phone' => $this->phone,
-            'created_at' => $this->created_at?->isoFormat('YYYY MMM DD'),
-            'updated_at' => $this->updated_at?->isoFormat('YYYY MMM DD'),
+            'banks' => $this->banks,
+            'contacts' => $this->whenLoaded('contacts'),
+            'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+            'updated_at' => $this->updated_at?->isoFormat('DD MMM, YYYY h:mm A'),
         ];
     }
 }

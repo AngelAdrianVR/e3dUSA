@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('storages', function (Blueprint $table) {
             $table->id();
             $table->morphs('storageable');
-            $table->mediumInteger('quantity');
+            $table->float('quantity');
             $table->string('type');
+            $table->string('location');
             $table->timestamps();
         });
     }

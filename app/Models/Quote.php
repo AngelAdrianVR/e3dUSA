@@ -12,9 +12,11 @@ class Quote extends Model
     use HasFactory;
 
     protected $fillable = [
-        'reciever',
+        'receiver',
         'department',
         'tooling_cost',
+        'tooling_currency',
+        'tooling_cost_stroked',
         'freight_cost',
         'first_production_days',
         'notes',
@@ -32,30 +34,29 @@ class Quote extends Model
     ];
 
     //relationships
-public function companyBranch(): BelongsTo
-{
-    return $this->belongsTo(CompanyBranch::class);
-}
+    public function companyBranch(): BelongsTo
+    {
+        return $this->belongsTo(CompanyBranch::class);
+    }
 
-public function user(): BelongsTo
-{
-    return $this->belongsTo(User::class);
-}
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
-public function sale(): BelongsTo
-{
-    return $this->belongsTo(Sale::class);
-}
+    public function sale(): BelongsTo
+    {
+        return $this->belongsTo(Sale::class);
+    }
 
-public function catalogProducts(): BelongsToMany
-{
-    return $this->belongsToMany(CatalogProduct::class)
+    public function catalogProducts(): BelongsToMany
+    {
+        return $this->belongsToMany(CatalogProduct::class)
             ->withPivot([
                 'quantity',
                 'price',
                 'show_image',
                 'notes',
             ])->withTimestamps();
-}
-
+    }
 }

@@ -13,6 +13,7 @@ class Storage extends Model
     protected $fillable = [
         'storageable',
         'quantity',
+        'location',
         'type',
     ];
 
@@ -24,5 +25,18 @@ class Storage extends Model
     public function storageable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public static function lowStock()
+    {
+        return collect([]);
+        return self::where('type', 'materia-prima')->whereHas('storageable', function ($query) {
+            $query->whereColumn('storages.quantity', '<=', 'raw_materials.min_quantity');
+        })->with('storageable')->get();
+    }
+
+    public function movements()
+    {
+        return $this->hasMany(StockMovementHistory::class);
     }
 }

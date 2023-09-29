@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
+use App\Listeners\RecordCreatedListener;
+use App\Listeners\RecordDeletedListener;
+use App\Listeners\RecordEditedListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -17,6 +23,15 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        RecordCreated::class => [
+            RecordCreatedListener::class,
+        ],
+        RecordEdited::class => [
+            RecordEditedListener::class,
+        ],
+        RecordDeleted::class => [
+            RecordDeletedListener::class,
         ],
     ];
 

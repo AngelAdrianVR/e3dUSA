@@ -2,64 +2,118 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
+use App\Models\Machine;
 use App\Models\Maintenance;
 use Illuminate\Http\Request;
 
 class MaintenanceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    
+    public function create($selectedMachine)
     {
-        //
+        return inertia('Maintenance/Create', compact('selectedMachine'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'maintenance_type' => 'required',
+            'problems' => $request->maintenance_type =='Correctivo' ? 'required' : 'nullable' . '|string',
+            'actions' => 'required|string',
+            'cost' => 'required|numeric|min:0',
+            'responsible' => 'required|string',
+            'machine_id' => 'required|numeric',
+        ]);
+
+        $maintenance = Maintenance::create($request->except('maintenance_type_id') + [
+            'maintenance_type_id' => $request->maintenance_type == 'Preventivo' ? '0' : '1',
+        ]);
+
+        $maintenance->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+
+        event(new RecordCreated($maintenance));
+        
+        return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
     }
 
-    /**
-     * Display the specified resource.
-     */
+    
     public function show(Maintenance $maintenance)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    
     public function edit(Maintenance $maintenance)
     {
-        //
+        $media = $maintenance->getMedia()->all();
+
+        return inertia('Maintenance/Edit', compact('maintenance', 'media'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    
     public function update(Request $request, Maintenance $maintenance)
     {
-        //
+        $request->validate([
+            'maintenance_type' => 'required',
+            'problems' => $request->maintenance_type =='Correctivo' ? 'required' : 'nullable' . '|string',
+            'actions' => 'required|string',
+            'cost' => 'required|numeric|min:0',
+            'responsible' => 'required|string',
+            'machine_id' => 'required|numeric',
+        ]);
+
+        $maintenance->update($request->except('maintenance_type_id') + [
+            'maintenance_type_id' => $request->maintenance_type == 'Preventivo' ? '0' : '1',
+        ]);
+
+         // update image
+         $maintenance->clearMediaCollection();
+         $maintenance->addMediaFromRequest('media')->toMediaCollection();
+         $maintenance->save();
+
+         event(new RecordEdited($maintenance));
+
+        return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    public function updateWithMedia(Request $request, Maintenance $maintenance)
+    {
+        $request->validate([
+            'maintenance_type' => 'required',
+            'problems' => $request->maintenance_type =='Correctivo' ? 'required' : 'nullable' . '|string',
+            'actions' => 'required|string',
+            'cost' => 'required|numeric|min:0',
+            'responsible' => 'required|string',
+            'machine_id' => 'required|numeric',
+        ]);
+
+        $maintenance->update($request->all());
+          // update image
+        $maintenance->clearMediaCollection();
+        $maintenance->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+
+        event(new RecordEdited($maintenance));
+
+        return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
+
+    }
+
+    
     public function destroy(Maintenance $maintenance)
     {
-        //
+        $maintenance->delete();
+
+        event(new RecordDeleted($maintenance));
+
     }
 }

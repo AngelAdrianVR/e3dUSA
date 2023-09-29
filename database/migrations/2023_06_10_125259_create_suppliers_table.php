@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('address')->nullable();
             $table->string('post_code')->nullable();
+            $table->foreignId('contact_id')->constrained()->onDelete('cascade');
+            $table->json('banks')->nullable();
             $table->string('phone');
             $table->timestamps();
         });

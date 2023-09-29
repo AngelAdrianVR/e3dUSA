@@ -21,7 +21,8 @@ class ContactFactory extends Factory
             'name' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
             'phone' => $this->faker->phoneNumber(),
-            'birthdate' => $this->faker->date(),
+            'birthdate_day' => 13,
+            'birthdate_month' => 3,
             'charge' => $this->faker->jobTitle(),
         ];
     }

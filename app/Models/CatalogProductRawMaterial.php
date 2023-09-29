@@ -24,8 +24,6 @@ class CatalogProductRawMaterial extends Pivot
         'production_costs' => 'array'
     ];
 
-    
-
     public function productionCost() :BelongsTo
     {
         return $this->belongsTo(ProductionCost::class);

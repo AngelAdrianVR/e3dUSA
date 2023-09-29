@@ -2,64 +2,88 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
+use App\Http\Resources\ProductionCostResource;
 use App\Models\ProductionCost;
 use Illuminate\Http\Request;
 
 class ProductionCostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
-        //
+        $production_costs = ProductionCostResource::collection(ProductionCost::latest()->get());
+
+        return inertia('ProductionCost/Index', compact('production_costs'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    
     public function create()
     {
-        //
+        return inertia('ProductionCost/Create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string',
+            'cost' => 'required|numeric|min:0',
+            'description' => 'required|string',
+        ]);
+
+        $production_cost = ProductionCost::create($request->all());
+
+        event(new RecordCreated($production_cost));
+        
+        return to_route('production-costs.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(ProductionCost $productionCost)
+    
+    public function show(ProductionCost $production_cost)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(ProductionCost $productionCost)
+    
+    public function edit(ProductionCost $production_cost)
+    {
+        return inertia('ProductionCost/Edit', compact('production_cost'));
+    }
+
+
+    public function update(Request $request, ProductionCost $production_cost)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'cost' => 'required|numeric|min:0',
+            'description' => 'required|string',
+        ]);
+
+        $production_cost->update($request->all());
+
+        event(new RecordEdited($production_cost));
+        
+        return to_route('production-costs.index');
+    }
+
+    
+    public function destroy(ProductionCost $production_cost)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, ProductionCost $productionCost)
+    public function massiveDelete(Request $request)
     {
-        //
-    }
+        foreach ($request->production_costs as $production_cost) {
+            $production_cost = ProductionCost::find($production_cost['id']);
+            $production_cost?->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(ProductionCost $productionCost)
-    {
-        //
+            event(new RecordDeleted($production_cost));
+        }
+
+        return response()->json(['message' => 'Costo(s) de producci+on eliminado(s)']);
     }
 }

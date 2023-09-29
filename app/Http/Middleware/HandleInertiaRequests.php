@@ -2,8 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\KioskDevice;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Spatie\Permission\Models\Permission;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -37,7 +39,47 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
-            //
+            'week_time' => fn () => $request->user()
+                ? $request->user()->getWeekTime()
+                : null,
+            'auth.user.permissions' => function () use ($request) {
+                if ($request->user()) {
+                    if ($request->user()->hasRole('Super admin')) {
+                        return Permission::whereNotIn('id', [102, 104])->get()->pluck('name');
+                    } else {
+                        return $request->user()->getAllPermissions()->pluck('name');
+                    }
+                }
+                return [];
+            },
+            'auth.user.nextAttendance' => function () use ($request) {
+                if ($request->user()) {
+                    return $request->user()->getNextAttendance();
+                }
+
+                return null;
+            },
+            'auth.user.pauseStatus' => function () use ($request) {
+                if ($request->user()) {
+                    return $request->user()->getPauseStatus();
+                }
+
+                return null;
+            },
+            'isKiosk' => function () use ($request) {
+                $token = $_COOKIE['kioskToken'] ?? 'noToken';
+                $kiosk = KioskDevice::where('token', $token)
+                    ->first();
+
+                return !is_null($kiosk);
+            },
+            'auth.user.notifications' => function () use ($request) {
+                if ($request->user()) {
+                    return $request->user()->unreadNotifications;
+                }
+
+                return null;
+            },
         ]);
     }
 }

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('phone');
             $table->string('rfc');
             $table->string('post_code');
-            $table->string('fiscal_address');
+            $table->text('fiscal_address');
             $table->timestamps();
         });
     }

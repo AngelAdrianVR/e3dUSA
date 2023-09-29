@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\SupplierResource;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -30,9 +33,17 @@ class SupplierController extends Controller
             'address' => 'nullable|string',
             'post_code' => 'nullable|string|min:4|max:9',
             'phone' => 'required|string|min:10|max:13',
+            'banks' => 'array|min:1',
+            'contacts' => 'array|min:1',
         ]);
 
-        Supplier::create($request->all());
+       $supplier = Supplier::create($request->except('contacts'));
+
+       foreach ($request->contacts as $contact ) {
+            $supplier->contacts()->create($contact);
+       }
+
+       event(new RecordCreated($supplier));
 
         return to_route('suppliers.index');
     }
@@ -40,12 +51,16 @@ class SupplierController extends Controller
     
     public function show(Supplier $supplier)
     {
-        //
+        $suppliers = SupplierResource::collection(Supplier::with('contacts')->latest()->get());
+        // return $suppliers;
+
+        return inertia('Supplier/Show', compact('supplier', 'suppliers'));
     }
 
     
     public function edit(Supplier $supplier)
     {
+        // return $supplier;
         return inertia('Supplier/Edit', compact('supplier'));
     }
 
@@ -57,9 +72,12 @@ class SupplierController extends Controller
             'address' => 'nullable|string',
             'post_code' => 'nullable|string|min:4|max:9',
             'phone' => 'required|string|min:10|max:13',
+            'banks' => 'array|min:1',
         ]);
 
-        $supplier->update($request->all());
+       $supplier->update($request->all());
+
+       event(new RecordEdited($supplier));
 
         return to_route('suppliers.index');
     }
@@ -67,6 +85,24 @@ class SupplierController extends Controller
     
     public function destroy(Supplier $supplier)
     {
-        //
+        $supplier_name = $supplier->name;
+        $supplier->delete();
+
+        event(new RecordDeleted($supplier));
+
+        return response()->json(['message' => "Producto eliminado: $supplier_name"]);
+    }
+
+    public function massiveDelete(Request $request)
+    {
+
+        foreach ($request->suppliers as $supplier) {
+            $supplier = Supplier::find($supplier['id']);
+            $supplier?->delete();
+
+            event(new RecordDeleted($supplier));
+        }
+
+        return response()->json(['message' => 'proveedor(es) eliminado(s)']);
     }
 }

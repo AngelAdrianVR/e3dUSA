@@ -13,16 +13,21 @@ class Meeting extends Model
         'subject',
         'location',
         'url',
-        'status',
+        'authorized_at',
         'description',
         'date',
         'start',
         'end',
+        'participants',
         'user_id',
     ];
 
     protected $casts = [
-        'date' => 'date'
+        'date' => 'date',
+        'authorized_at' => 'datetime',
+        'start' => 'datetime',
+        'end' => 'datetime',
+        'participants' => 'array',
     ];
 
     // relationships
@@ -30,6 +35,7 @@ class Meeting extends Model
     {
         return $this->belongsToMany(User::class)
             ->withPivot([
+                'id',
                 'comments',
                 'attendance_confirmation',
             ])

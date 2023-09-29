@@ -4,12 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class CatalogProduct extends Model
+class CatalogProduct extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
   
   protected $fillable = [
         'name',
@@ -31,9 +34,9 @@ class CatalogProduct extends Model
     /**
      * Get the CatalogProduct's storage in warehouse.
      */
-    public function storage(): MorphOne
+    public function storages(): MorphMany
     {
-        return $this->morphOne(Storage::class, 'storageable');
+        return $this->morphMany(Storage::class, 'storageable');
     }
 
     public function rawMaterials(): BelongsToMany
@@ -41,6 +44,7 @@ class CatalogProduct extends Model
         return $this->belongsToMany(RawMaterial::class)->using(CatalogProductRawMaterial::class)
                 ->withPivot([
                     'quantity',
+                    'production_costs',
                 ])->withTimestamps();
     }
 
@@ -53,5 +57,25 @@ class CatalogProduct extends Model
                 'show_image',
                 'notes',
             ])->withTimestamps();
+    }
+
+    public function companies(): BelongsToMany
+    {
+      return $this->belongsToMany(Company::class, 'catalog_product_company', 'catalog_product_id', 'company_id')
+            ->withPivot([
+                'id',
+                'old_price',
+                'old_date',
+                'old_currency',
+                'new_price',
+                'new_date',
+                'new_currency',
+            ])->withTimestamps()
+            ->using(CatalogProductCompany::class);
+    }
+
+    public function samples():HasMany 
+    {
+        return $this->hasMany(Sample::class);
     }
 }

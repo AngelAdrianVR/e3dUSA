@@ -16,7 +16,8 @@ class Contact extends Model
         'name',
         'email',
         'phone',
-        'birthdate',
+        'birthdate_day',
+        'birthdate_month',
         'charge',
     ];
 

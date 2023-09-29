@@ -2,44 +2,91 @@
     <AppLayout title="Cotizaciones">
         <template #header>
             <div class="flex justify-between">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl leading-tight">
                     Cotizaciones
                 </h2>
-                <Link :href="route('quotes.create')">
-                    <SecondaryButton>+ Nuevo</SecondaryButton>
+                <Link v-if="$page.props.auth.user.permissions.includes('Crear cotizaciones')"
+                    :href="route('quotes.create')">
+                <SecondaryButton>+ Nuevo</SecondaryButton>
                 </Link>
             </div>
         </template>
 
-        <div class="lg:w-5/6 mx-auto mt-6">
-            <div class="flex space-x-2 justify-end">
-                <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FF0000" title="¿Continuar?"
-                    @confirm="deleteSelections">
-                    <template #reference>
-                        <el-button type="danger" plain class="mb-3" :disabled="disableMassiveActions">Eliminar</el-button>
-                    </template>
-                </el-popconfirm>
-            </div>
+        <div class="relative overflow-hidden">
+            <NotificationCenter module="quote" />
+            <div class="lg:w-5/6 mx-auto mt-6">
 
-            <el-table :data="filteredTableData" max-height="450" style="width: 100%"
-                @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
-                <el-table-column type="selection" width="45" />
-                <el-table-column prop="folio" label="Folio" width="85" />
-                <el-table-column prop="user.name" label="Creado por" />
-                <el-table-column prop="receiver" label="Receptor" />
-                <el-table-column prop="company_branch.name" label="Cliente" />
-                <el-table-column prop="authorized_user_name" label="Autorizado por" />
-                <el-table-column prop="created_at" label="Enviado el" />
-                <el-table-column align="right" fixed="right">
-                    <template #header>
-                        <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
-                    </template>
-                    <template #default="scope">
-                        <el-button size="small" type="primary"
-                            @click="createQuote(scope.$index, scope.row)">Clonar</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
+                <div class="flex justify-between">
+                    <!-- pagination -->
+                    <div>
+                        <el-pagination @current-change="handlePagination" layout="prev, pager, next"
+                            :total="quotes.data.length" />
+                    </div>
+
+                    <!-- buttons -->
+                    <div>
+                        <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar cotizaciones')"
+                            confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
+                            @confirm="deleteSelections">
+                            <template #reference>
+                                <el-button type="danger" plain class="mb-3"
+                                    :disabled="disableMassiveActions">Eliminar</el-button>
+                            </template>
+                        </el-popconfirm>
+                    </div>
+                </div>
+                <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
+                    @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
+                    <el-table-column type="selection" width="45" />
+                    <el-table-column prop="folio" label="Folio" width="100" />
+                    <el-table-column prop="user.name" label="Creado por" />
+                    <el-table-column prop="receiver" label="Receptor" />
+                    <el-table-column prop="companyBranch.name" label="Cliente" />
+                    <el-table-column prop="authorized_user_name" label="Autorizado por" />
+                    <el-table-column prop="created_at" label="Creado el" width="180" />
+                    <el-table-column align="right" fixed="right" width="190">
+                        <template #header>
+                            <div class="flex space-x-2">
+                                <TextInput v-model="inputSearch" @keyup.enter="handleSearch" type="search" class="w-full text-gray-600"
+                                    placeholder="Buscar" />
+                                <el-button @click="handleSearch" type="primary" plain class="mb-3"><i
+                                        class="fa-solid fa-magnifying-glass"></i></el-button>
+                            </div>
+                        </template>
+                        <template #default="scope">
+                            <el-dropdown trigger="click" @command="handleCommand">
+                                <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </span>
+                                <template #dropdown>
+                                    <el-dropdown-menu>
+                                        <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
+                                            Ver</el-dropdown-item>
+                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar cotizaciones')
+                                            || scope.row.user.id == $page.props.auth.user.id"
+                                            :command="'edit-' + scope.row.id">
+                                            <i class="fa-solid fa-pen"></i>
+                                            Editar</el-dropdown-item>
+                                        <el-dropdown-item
+                                            v-if="$page.props.auth.user.permissions.includes('Crear cotizaciones')"
+                                            :command="'clone-' + scope.row.id"><i class="fa-solid fa-clone"></i>
+                                            Clonar</el-dropdown-item>
+                                        <el-dropdown-item
+                                            v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')"
+                                            :command="'make_so-' + scope.row.id"><i
+                                                class="fa-solid fa-arrows-turn-to-dots"></i>Convertir a
+                                            OV</el-dropdown-item>
+                                        <el-dropdown-item
+                                            v-if="$page.props.auth.user.permissions.includes('Autorizar cotizaciones') && !scope.row.authorized_at"
+                                            :command="'authorize-' + scope.row.id"><i
+                                                class="fa-solid fa-check"></i>Autoizar</el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </template>
+                            </el-dropdown>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
         </div>
     </AppLayout>
 </template>
@@ -48,96 +95,41 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import TextInput from '@/Components/TextInput.vue';
 import axios from 'axios';
+import Checkbox from "@/Components/Checkbox.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 import { Link } from "@inertiajs/vue3";
 
 export default {
     components: {
         AppLayout,
         TextInput,
+        Checkbox,
+        NotificationCenter,
         SecondaryButton,
         Link,
     },
     data() {
         return {
             disableMassiveActions: true,
+            inputSearch: '',
             search: '',
+            // pagination
+            itemsPerPage: 10,
+            start: 0,
+            end: 10,
         };
     },
     props: {
         quotes: {
-            type: Array,
-            default: [
-                {
-                    id: '1',
-                    folio: 'COT-001',
-                    receiver: 'Alexis Llanos',
-                    department: 'Mercadotecnia',
-                    tooling_cost: 800.00,
-                    freight_cost: 350.00,
-                    first_production_days: '12 días laborales',
-                    notes: 'Notas adicionales para la cotización en general',
-                    currency: '$MXN',
-                    authorized_user_name: 'Maribel Ortíz',
-                    authorized_at: '11 Jun., 2023 05:16 pm.',
-                    is_spanish_template: true,
-                    company_branch: {
-                        name: 'Dalton Honda'
-                    },
-                    user: {
-                        name: 'Miguel Vázquez'
-                    },
-                    created_at: '11 Jun., 2023 01:11 pm.',
-                    sale: null,
-                    products: [
-                        {
-                            name: 'Dalton honda diseño 2',
-                            cost: 21.55,
-                            features:
-                            {
-                                family: 'Porta placas',
-                                material: 'ABS',
-                            },
-                        },
-                    ],
-                },
-                {
-                    id: '2',
-                    folio: 'COT-002',
-                    receiver: 'Anguel Vazquez',
-                    department: 'Ventas',
-                    tooling_cost: 700.00,
-                    freight_cost: 350.00,
-                    first_production_days: '10 días laborales',
-                    notes: 'Notas adicionales para la cotización en general',
-                    currency: '$MXN',
-                    authorized_user_name: 'Maribel Ortíz',
-                    authorized_at: '11 Jun., 2023 05:16 pm.',
-                    is_spanish_template: true,
-                    company_branch: {
-                        name: 'Tesla Nuevo León'
-                    },
-                    user: {
-                        name: 'Miguel Vázquez'
-                    },
-                    created_at: '11 Jun., 2023 01:11 pm.',
-                    sale: null,
-                    products: [
-                        {
-                            name: 'Metalico tesla',
-                            cost: 41.55,
-                            features:
-                            {
-                                family: 'Llavero',
-                                material: 'Metal cromado',
-                            },
-                        },
-                    ],
-                },
-            ]
+            type: Object,
+            default: []
         },
     },
     methods: {
+        handleSearch() {
+            this.search = this.inputSearch;
+        },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
 
@@ -146,6 +138,10 @@ export default {
             } else {
                 this.disableMassiveActions = false;
             }
+        },
+        handlePagination(val) {
+            this.start = (val - 1) * this.itemsPerPage;
+            this.end = val * this.itemsPerPage;
         },
         async deleteSelections() {
             try {
@@ -162,7 +158,7 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.quotes.forEach((quote, index) => {
+                    this.quotes.data.forEach((quote, index) => {
                         if (this.$refs.multipleTableRef.value.includes(quote)) {
                             deletedIndexes.push(index);
                         }
@@ -173,7 +169,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.quotes.splice(index, 1);
+                        this.quotes.data.splice(index, 1);
                     }
 
                 } else {
@@ -186,35 +182,142 @@ export default {
 
             } catch (err) {
                 this.$notify({
-                        title: 'Algo salió mal',
-                        message: err.message,
-                        type: 'error'
-                    });
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
                 console.log(err);
             }
         },
+
+        handleRowClick(row) {
+            this.$inertia.get(route('quotes.show', row));
+        },
+
         tableRowClassName({ row, rowIndex }) {
             if (row.status === 1) {
-                return 'text-green-600';
+                return 'text-green-600 cursor-pointer';
             }
 
-            return '';
+            return 'cursor-pointer';
         },
-        createQuote(index, message) {
-            console.log(message)
-        }
+        async clone(quote_id) {
+            try {
+                const response = await axios.post(route('quotes.clone', {
+                    quote_id: quote_id
+                }));
+
+                if (response.status == 200) {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+
+                    this.quotes.data.unshift(response.data.newItem);
+
+                } else {
+                    this.$notify({
+                        title: 'Algo salió mal',
+                        message: response.data.message,
+                        type: 'error'
+                    });
+                }
+
+            } catch (err) {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
+                console.log(err);
+            }
+        },
+        async createSO(quote_id) {
+            try {
+                const response = await axios.post(route('quotes.create-so', {
+                    quote_id: quote_id
+                }));
+
+                if (response.status == 200) {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+                } else {
+                    this.$notify({
+                        title: 'Algo salió mal',
+                        message: response.data.message,
+                        type: 'error'
+                    });
+                }
+            } catch (err) {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
+                console.log(err);
+            }
+        },
+        async authorize(quote_id) {
+            try {
+                const response = await axios.put(route('quotes.authorize', quote_id));
+
+                if (response.status == 200) {
+                    const index = this.quotes.data.findIndex(item => item.id == quote_id);
+                    this.quotes.data[index].authorized_at = response.data.item.authorized_at;
+                    this.quotes.data[index].authorized_user_name = response.data.item.authorized_user_name;
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+                } else {
+                    this.$notify({
+                        title: 'Algo salió mal',
+                        message: response.data.message,
+                        type: 'error'
+                    });
+                }
+            } catch (err) {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
+                console.log(err);
+            }
+        },
+        handleCommand(command) {
+            const commandName = command.split('-')[0];
+            const rowId = command.split('-')[1];
+
+            if (commandName == 'clone') {
+                this.clone(rowId);
+            } else if (commandName == 'make_so') {
+                this.createSO(rowId);
+            } else if (commandName == 'authorize') {
+                this.authorize(rowId);
+            } else {
+                this.$inertia.get(route('quotes.' + commandName, rowId));
+            }
+        },
     },
     computed: {
         filteredTableData() {
-            return this.quotes.filter(
-                (quote) =>
-                    !this.search ||
-                    quote.folio.toLowerCase().includes(this.search.toLowerCase()) ||
-                    quote.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                    quote.receiver.toLowerCase().includes(this.search.toLowerCase()) ||
-                    quote.company_branch.name.toLowerCase().includes(this.search.toLowerCase())
-
-            )
+            if (!this.search) {
+                return this.quotes.data.filter((item, index) => index >= this.start && index < this.end);
+            } else {
+                return this.quotes.data.filter(
+                    (quote) =>
+                        quote.folio.toLowerCase().includes(this.search.toLowerCase()) ||
+                        quote.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                        quote.receiver.toLowerCase().includes(this.search.toLowerCase()) ||
+                        quote.companyBranch.name.toLowerCase().includes(this.search.toLowerCase())
+                );
+            }
         }
     },
 }

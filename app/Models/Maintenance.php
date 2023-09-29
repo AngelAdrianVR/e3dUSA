@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Maintenance extends Model
+class Maintenance extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     const PREVENTIVE = 0, CORRECTIVE = 1;
 
@@ -15,7 +17,7 @@ class Maintenance extends Model
         'problems',
         'actions',
         'cost',
-        'manteinance_type_id',
+        'maintenance_type_id',
         'responsible',
         'machine_id',
     ];

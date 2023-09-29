@@ -12,11 +12,13 @@ const props = defineProps({
     },
     contentClasses: {
         type: Array,
-        default: () => ['py-1', 'bg-white'],
+        default: () => ['py-1', 'bg-[#D9D9D9]', 'px-2', 'space-y-1'],
     },
 });
 
 let open = ref(false);
+
+const dropdownRef = ref(null);
 
 const closeOnEscape = (e) => {
     if (open.value && e.key === 'Escape') {
@@ -30,6 +32,7 @@ onUnmounted(() => document.removeEventListener('keydown', closeOnEscape));
 const widthClass = computed(() => {
     return {
         '48': 'w-48',
+        '60': 'w-60',
     }[props.width.toString()];
 });
 
@@ -70,7 +73,7 @@ const alignmentClasses = computed(() => {
                 style="display: none;"
                 @click="open = false"
             >
-                <div class="rounded-md ring-1 ring-black ring-opacity-5" :class="contentClasses">
+                <div class="rounded-lg ring-1 ring-black ring-opacity-5" :class="contentClasses">
                     <slot name="content" />
                 </div>
             </div>
