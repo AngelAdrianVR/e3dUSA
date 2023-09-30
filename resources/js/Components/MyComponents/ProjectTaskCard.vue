@@ -233,8 +233,8 @@
       </div>
       <!-- {{ form }} -->
       <div class="flex justify-end space-x-3 pt-5 pb-1">
-        <PrimaryButton>Guardar</PrimaryButton>
         <CancelButton @click="taskInformationModal = false">Cancelar</CancelButton>
+        <PrimaryButton>Guardar</PrimaryButton>
       </div>
     </form>
   </Modal>
