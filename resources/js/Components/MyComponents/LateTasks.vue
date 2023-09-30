@@ -3,8 +3,16 @@
         <div class="my-3 col-start-2 col-span-2">
             <h1 class="font-bold text-center">Tareas atrasadas <i class="fa-solid fa-clock-rotate-left ml-2"></i></h1>
         </div>
-        <div v-if="tasks.length" class="h-full">
-            <div class="h-2/3 overflow-y-scroll">
+        <div v-if="loading" class="animate-pulse flex space-x-4">
+            <div class="flex-1 space-y-3 py-1">
+                <div class="h-4 bg-[#a9a9a9] rounded"></div>
+                <div class="h-4 bg-[#a9a9a9] rounded"></div>
+                <div class="h-4 bg-[#a9a9a9] rounded"></div>
+                <div class="h-4 bg-[#a9a9a9] rounded"></div>
+            </div>
+        </div>
+        <div v-else class="h-2/3 overflow-y-scroll">
+            <div v-if="tasks.length" class="h-full">
                 <table class="w-full table-fixed">
                     <thead>
                         <tr class="text-xs">
@@ -47,24 +55,38 @@
                     </tbody>
                 </table>
             </div>
+            <p v-else class="text-gray-400 text-center mt-8">No hay tareas atrasadas</p>
             <!-- <div class="flex justify-end mx-6">
                 <button class="text-primary text-xs">Ver detalles</button>
             </div> -->
         </div>
-        <p v-else class="text-gray-400 text-center mt-8">No hay tareas atrasadas</p>
     </div>
 </template>
 <script>
 export default {
     data() {
         return {
-
+            loading: true,
+            tasks: [],
         }
     },
-    components: {
+    methods: {
+        async fetchLateTasks() {
+            this.loading = true;
+            try {
+                const response = await axios.get(route('tasks.get-late-tasks'));
+
+                if (response.status === 200) {
+                    this.tasks = response.data.items;
+                    this.loading = false;
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
     },
-    props: {
-        tasks: Array,
+    mounted() {
+        this.fetchLateTasks();
     }
 }
 </script>
