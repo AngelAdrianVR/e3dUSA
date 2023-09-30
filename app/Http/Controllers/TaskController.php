@@ -93,18 +93,8 @@ class TaskController extends Controller
             $task->comments()->save($comment);
         }
 
-        // Obtén el proyecto al que pertenece la tarea
-        $project_id = $task->project_id;
-        $project = Project::with('tasks')->find($project_id);
+        $this->handleUpdatedTaskStatus($task->project_id);
 
-        // Verifica si todas las tareas del proyecto están terminadas
-        $allTasksCompleted = $project->tasks->where('status', 'Terminada')->count() === $project->tasks->count();
-
-        if ($allTasksCompleted) {
-            // Establece la fecha finished_at en la fecha actual
-            $project->finished_at = now();
-            $project->save();
-        }
         // event(new RecordEdited($task));
 
         return response()->json(['item' => TaskResource::make($task->fresh(['participants', 'project', 'user', 'comments.user', 'media']))]);
@@ -148,6 +138,7 @@ class TaskController extends Controller
     public function updateStatus(Task $task, Request $request)
     {
         $task->update(['status' => $request->status]);
+        $this->handleUpdatedTaskStatus($task->project_id);
 
         return response()->json([]);
     }
@@ -165,5 +156,19 @@ class TaskController extends Controller
         });
 
         return response()->json(['items' => $late_tasks]);
+    }
+
+    private function handleUpdatedTaskStatus($project_id) {
+         // Obtén el proyecto al que pertenece la tarea
+         $project = Project::with('tasks')->find($project_id);
+ 
+         // Verifica si todas las tareas del proyecto están terminadas y actualiza propiedad finished_at
+          if ($project->tasks->where('status', 'Terminada')->count() === $project->tasks->count()) {
+            $project->finished_at = now();
+            $project->save();
+          } else if ($project->finished_at !== null) {
+            $project->finished_at = null;
+            $project->save();
+          }
     }
 }
