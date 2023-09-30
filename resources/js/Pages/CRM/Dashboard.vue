@@ -5,14 +5,14 @@
 
             <!-- customers -->
             <h2 class="text-primary lg:text-xl text-lg lg:mt-6 mt-6 font-bold">Clientes</h2>
-            <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 mt-4 space-y-6 lg:space-y-0">
+            <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 mt-4 space-y-4 lg:space-y-0">
                 <CustomerDates />
                 <BirthdateCardCustomer :contacts="customers_birthdays" />
             </div>
 
             <!-- Estadistics -->
             <h2 class="text-primary lg:text-xl text-lg lg:mt-6 mt-6 font-bold">Estadísticas</h2>
-            <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 mt-4 space-y-6 lg:space-y-0">
+            <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 mt-4 space-y-4 lg:space-y-0">
                 <PieChart :options="monthSalesChartOptions" :title="'Ventas de ' + currentMonth"
                     icon='<i class="fa-solid fa-hand-holding-dollar ml-2"></i>' />
                 <BarChart :options="yearComparisonChartOptions" title="Ventas año en curso vs anterior"
@@ -21,7 +21,7 @@
 
             <!-- sales -->
             <h2 class="text-primary lg:text-xl text-lg lg:mt-6 mt-6 font-bold">Seguimiento de ventas</h2>
-            <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 mt-4">
+            <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 mt-4 space-y-4 lg:space-y-0">
                 <FunnelChart :options="funnelSalesChartOptions" title="Embudo de ventas"
                     icon='<i class="fa-solid fa-filter-circle-dollar ml-2"></i>' />
                 <RecentSales
@@ -30,7 +30,7 @@
 
             <!-- performance -->
             <h2 class="text-primary lg:text-xl text-lg lg:mt-6 mt-6 font-bold">Desempeño</h2>
-            <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 mt-4">
+            <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 mt-4 space-y-4 lg:space-y-0">
                 <GroupedBarChar :options="saleGoalsChartOptions" title="Objetivo de ventas"
                     icon='<i class="fa-solid fa-bullseye ml-2"></i>' />
             </div>

@@ -5,7 +5,7 @@
 
             <!-- Estadistics -->
             <h2 class="text-primary lg:text-xl text-lg lg:mt-6 mt-6 font-bold">Proyectos</h2>
-            <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 mt-4 space-y-6 lg:space-y-0">
+            <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 mt-4 space-y-4 lg:space-y-0">
                 <StackedColumn100Chart :options="projecsProgressChartOptions" title="Progreso de proyectos"
                     icon="<i class='fa-regular fa-flag ml-2'></i>" />
                 <PieChart :options="taskStatusChartOptions" title="Estado de las Tareas"
@@ -18,7 +18,7 @@
 
             <!-- performance -->
             <h2 class="text-primary lg:text-xl text-lg lg:mt-6 mt-6 font-bold">Desempeño</h2>
-            <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 mt-4">
+            <div class="lg:grid grid-cols-2 gap-x-16 gap-y-14 mt-4 space-y-4 lg:space-y-0">
                 <PendentTasks
                     :tasks="[{ title: 'Alta IMSS de colaboradores nuevos', status: 'En curso', start_date: '12/09/2023', priority: 'Alta' }]" />
                 <LateTasks

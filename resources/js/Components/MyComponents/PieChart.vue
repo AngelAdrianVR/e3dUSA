@@ -33,10 +33,10 @@ export default {
                     breakpoint: 480,
                     options: {
                         chart: {
-                            width: 200
+                            width: 280
                         },
                         legend: {
-                            position: 'bottom'
+                            position: 'right'
                         }
                     }
                 }]
