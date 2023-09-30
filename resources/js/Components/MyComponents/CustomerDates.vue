@@ -30,8 +30,12 @@
                         <tbody>
                             <tr @click="prepareModal(date)" v-for="date in dates" :key="date.id"
                                 class="text-xs w-full cursor-pointer hover:bg-[#cccccc]">
-                                <td class="w-1/5 py-1 rounded-tl-lg rounded-bl-lg"><i class="fa-regular fa-user mr-2"></i>
-                                    {{ date.contact.name }}</td>
+                                <el-tooltip :content="date.contact.name" placement="top">
+                                    <td class="w-1/5 truncate py-1 pr-3 rounded-tl-lg rounded-bl-lg">
+                                        <i class="fa-regular fa-user mr-2"></i>
+                                        {{ date.contact.name }}
+                                    </td>
+                                </el-tooltip>
                                 <td class="w-1/5">{{ formatDate(date.date) }}</td>
                                 <td class="w-1/5">{{ formatTime(date.time) }}</td>
                                 <td class="w-1/5">{{ date.type }}</td>

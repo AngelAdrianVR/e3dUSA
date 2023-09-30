@@ -151,4 +151,19 @@ class TaskController extends Controller
 
         return response()->json([]);
     }
+
+    public function getLateTasks()
+    {
+        $late_tasks = Task::with(['participants', 'project'])->where('status', '!=', 'Terminada')->whereDate('end_date', '<', today())->get();
+        
+        $currentDate = today();
+
+        $late_tasks = $late_tasks->map(function ($task) use ($currentDate) {
+            $lateDays = $task->end_date->diffInDays($currentDate); // Calcula la diferencia en días entre end_date y la fecha actual
+            $task['late_days'] = $lateDays; // Agrega la propiedad "late_days" al objeto de la tarea
+            return $task;
+        });
+
+        return response()->json(['items' => $late_tasks]);
+    }
 }

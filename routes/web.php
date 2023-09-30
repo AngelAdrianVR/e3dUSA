@@ -125,6 +125,7 @@ Route::resource('tasks', TaskController::class)->middleware('auth');
 Route::post('tasks-{task}-comment', [TaskController::class, 'comment'])->name('tasks.comment')->middleware('auth');
 Route::put('tasks-{task}-pause-play', [TaskController::class, 'pausePlayTask'])->name('tasks.pause-play')->middleware('auth');
 Route::put('tasks-{task}-update-status', [TaskController::class, 'updateStatus'])->name('tasks.update-status')->middleware('auth');
+Route::get('tasks-late-tasks', [TaskController::class, 'getLateTasks'])->middleware('auth')->name('tasks.get-late-tasks');
 
 
 // ------- Raw Material routes  ---------
@@ -162,6 +163,7 @@ Route::get('users-get-pause-status', [UserController::class, 'getPauseStatus'])-
 Route::get('users-set-attendance', [UserController::class, 'setAttendance'])->middleware('auth')->name('users.set-attendance');
 Route::get('users-set-pause', [UserController::class, 'setPause'])->middleware('auth')->name('users.set-pause');
 Route::get('users-get-additional-time-requested-days/{user_id}/{payroll_id}', [UserController::class, 'getRequestedDays'])->middleware('auth')->name('users.get-additional-time-requested-days');
+Route::get('users-get-pendent-tasks', [UserController::class, 'getPendentTasks'])->middleware('auth')->name('users.get-pendent-tasks');
 Route::put('users-reset-pass/{user}', [UserController::class, 'resetPass'])->middleware('auth')->name('users.reset-pass');
 Route::put('users-change-status/{user}', [UserController::class, 'changeStatus'])->middleware('auth')->name('users.change-status');
 Route::put('users-update-pausas/{payroll_user}', [UserController::class, 'updatePausas'])->middleware('auth')->name('users.update-pausas');
