@@ -8,7 +8,7 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
-import VueApexCharts from "vue3-apexcharts";
+// import VueApexCharts from "vue3-apexcharts";
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'E3D USA';
 
@@ -20,7 +20,7 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue, Ziggy)
             .use(ElementPlus)
-            .use(VueApexCharts)
+            // .use(VueApexCharts)
             .mount(el);
     },
     progress: {

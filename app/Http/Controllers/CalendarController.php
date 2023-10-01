@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Calendar;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class CalendarController extends Controller
@@ -23,7 +24,9 @@ class CalendarController extends Controller
     
     public function create()
     {
-        return inertia('Calendar/Create');
+        $users = User::where('is_active', true)->get();
+        
+        return inertia('Calendar/Create', compact('users'));
     }
 
     

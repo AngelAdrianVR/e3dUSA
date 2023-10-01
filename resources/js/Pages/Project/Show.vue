@@ -18,7 +18,7 @@
       <div class="flex space-x-2">
         <PrimaryButton v-if="$page.props.auth.user.permissions.includes('Crear tareas')"
           @click="$inertia.get(route('tasks.create'))">+ Agregar tarea</PrimaryButton>
-        <!-- <Dropdown align="right" width="48">
+        <Dropdown align="right" width="48">
             <template #trigger>
               <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
                 Mis tareas <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
@@ -29,7 +29,7 @@
                 Todas las tareas
               </DropdownLink>
             </template>
-          </Dropdown> -->
+          </Dropdown>
       </div>
     </div>
 
@@ -262,134 +262,15 @@
             </div>
           </th>
           <th class="border border-[#9A9A9A] text-center font-thin">
-            <strong class="text-base uppercase font-bold tex">Junio</strong><br />
-            <div class="flex space-x-5 justify-center">
-              <p class="text-secondary relative">
-                L
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">01</span>
-              </p>
-              <p class="text-secondary relative">
-                M
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">02</span>
-              </p>
-              <p class="text-secondary relative">
-                I
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">03</span>
-              </p>
-              <p class="text-secondary relative">
-                J
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">04</span>
-              </p>
-              <p class="text-secondary relative">
-                V
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">05</span>
-              </p>
-              <p class="text-secondary relative">
-                S
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">06</span>
-              </p>
-              <p class="text-secondary relative">
-                D
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">07</span>
-              </p>
-            </div>
-          </th>
-          <th class="border border-[#9A9A9A] text-center font-thin">
-            <strong class="text-base uppercase font-bold tex">Julio</strong><br />
-            <div class="flex space-x-5 justify-center">
-              <p class="text-secondary relative">
-                L
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">01</span>
-              </p>
-              <p class="text-secondary relative">
-                M
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">02</span>
-              </p>
-              <p class="text-secondary relative">
-                I
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">03</span>
-              </p>
-              <p class="text-secondary relative">
-                J
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">04</span>
-              </p>
-              <p class="text-secondary relative">
-                V
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">05</span>
-              </p>
-              <p class="text-secondary relative">
-                S
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">06</span>
-              </p>
-              <p class="text-secondary relative">
-                D
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">07</span>
-              </p>
-            </div>
-          </th>
-          <th class="border border-[#9A9A9A] text-center font-thin">
-            <strong class="text-base uppercase font-bold tex">Agosto</strong><br />
-            <div class="flex space-x-5 justify-center">
-              <p class="text-secondary relative">
-                L
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">01</span>
-              </p>
-              <p class="text-secondary relative">
-                M
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">02</span>
-              </p>
-              <p class="text-secondary relative">
-                I
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">03</span>
-              </p>
-              <p class="text-secondary relative">
-                J
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">04</span>
-              </p>
-              <p class="text-secondary relative">
-                V
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">05</span>
-              </p>
-              <p class="text-secondary relative">
-                S
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">06</span>
-              </p>
-              <p class="text-secondary relative">
-                D
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">07</span>
-              </p>
-            </div>
-          </th>
-          <th class="border border-[#9A9A9A] text-center font-thin">
-            <strong class="text-base uppercase font-bold tex">Septiembre</strong><br />
-            <div class="flex space-x-5 justify-center">
-              <p class="text-secondary relative">
-                L
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">01</span>
-              </p>
-              <p class="text-secondary relative">
-                M
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">02</span>
-              </p>
-              <p class="text-secondary relative">
-                I
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">03</span>
-              </p>
-              <p class="text-secondary relative">
-                J
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">04</span>
-              </p>
-              <p class="text-secondary relative">
-                V
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">05</span>
-              </p>
-              <p class="text-secondary relative">
-                S
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">06</span>
-              </p>
-              <p class="text-secondary relative">
-                D
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">07</span>
+            <strong class="text-base uppercase font-bold tex">{{ monthName }}</strong><br />
+            <div class="flex space-x-8 justify-center w-[95%] mx-auto">
+              <p
+                v-for="day in daysInMonth"
+                :key="day"
+                class="text-secondary relative"
+              >
+                {{ daysOfWeek[(day + startDayOfWeek - 2) % 7] }}
+                <span class="absolute -bottom-3 -left-0 text-[11px] text-black">{{ day }}</span>
               </p>
             </div>
           </th>
@@ -402,33 +283,36 @@
               <p class="text-[#9A9A9A] text-sm">Depto. {{ task.department }}</p>
             </div>
           </th>
-          <td class="border-x border-[#CCCCCC]"></td>
-          <td class="border-x border-[#CCCCCC]"></td>
-          <td class="border-x border-[#CCCCCC]"></td>
-          <td class="border-x border-[#CCCCCC]"></td>
+          <td class="border-x border-[#CCCCCC]">
+            <div class="w-[92%] mx-auto overflow-x-hidden">
+              <el-tooltip :content="task.start_date + ' -- ' + task.end_date" placement="top">
+              <div
+                class="h-4 rounded-full shadow-md shadow-gray-400/100"
+                :class="getStatusColor(task) + ' start-day-2'"
+                 :style="{
+                    width: (100 / daysInMonth) * taskDuration(task) + '%',
+                    '--days-in-month': daysInMonth,
+                    '--task-start-day': taskStartDay(task)
+                  }"
+              ></div>
+          </el-tooltip>
+            </div>
+          </td>
         </tr>
       </table>
 
       <div class="text-right mr-9">
         <div class="border border-[#9A9A9A] rounded-md inline-flex justify-end mt-4">
-          <p :class="period == 'Hoy' ? 'bg-primary text-white rounded-sm' : 'border-[#9A9A9A]'
-            " @click="period = 'Hoy'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-r">
-            Hoy
-          </p>
-          <p :class="period == 'Semana' ? 'bg-primary text-white rounded-sm' : 'border-[#9A9A9A]'
-            " @click="period = 'Semana'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-x border-transparent">
-            Semana
-          </p>
           <p :class="period == 'Mes' ? 'bg-primary text-white rounded-sm' : 'border-[#9A9A9A]'
             " @click="period = 'Mes'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-x">
             Mes
           </p>
-          <p :class="period == 'Trimestre'
+          <p :class="period == 'Bimestre'
             ? 'bg-primary text-white rounded-sm'
             : 'border-[#9A9A9A]'
-            " @click="period = 'Trimestre'"
+            " @click="period = 'Bimestre'"
             class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-x border-transparent">
-            Trimestre
+            Bimestre
           </p>
         </div>
       </div>
@@ -462,12 +346,15 @@ export default {
       salesCheck: true,
       marketingCheck: true,
       showDepartmentFilter: false,
-      period: "Hoy", //period of time in cronograma table tab 3
+      period: "Mes", //period of time in cronograma table tab 3
       pendingTasksList: [],
       inProgressTasksList: [],
       finishedTasksList: [],
       drag: false,
       draggingTaskId: null,
+      daysOfWeek: ['L', 'M', 'I', 'J', 'V', 'S', 'D'],
+      currentDate: new Date(), // La fecha actual
+      cellWidth: 100 / this.daysInMonth, // Suponiendo que el ancho total de la columna del mes es 100%
     };
   },
   components: {
@@ -487,6 +374,37 @@ export default {
     users: Array,
   },
   methods: {
+    getStatusColor(task){
+      console.log(task);
+      if (task.status == "Por hacer") {
+        return "bg-[#9A9A9A]";
+      } else if (task.status == "En curso") {
+        return "bg-[#0355B5]";
+      } else {
+        return "bg-green-500";
+      }
+    },
+     taskStartDay(task) {
+    const startDate = new Date(task.start_date);
+    const startDay = startDate.getDate();
+    const currentMonthFirstDay = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1);
+    const dayDifference = Math.abs(startDate - currentMonthFirstDay) / (1000 * 60 * 60 * 24);
+    return dayDifference; // Sumar 1 para que el primer día sea 1 en lugar de 0
+  },
+    taskDuration(task) {
+    const startDate = new Date(task.start_date);
+    const endDate = new Date(task.end_date);
+    const duration = (endDate - startDate) / (24 * 60 * 60 * 1000); // Convertir a días
+    return duration + 1; // Sumar 1 para incluir el día de inicio
+  },
+     getCurrentMonthName() {
+    const months = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+    const currentDate = new Date();
+    return months[currentDate.getMonth()];
+  },
     handleStartDrag(evt) {
       this.draggingTaskId = evt.item.__draggable_context.element.id;
       this.drag = true;
@@ -585,18 +503,52 @@ export default {
       const remainingUsers = this.uniqueUsers.slice(this.maxUsersToShow);
       return remainingUsers.map((user) => user.name);
     },
+     monthName() {
+    const months = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+    return months[this.currentDate.getMonth()];
+  },
+  daysInMonth() {
+    const year = this.currentDate.getFullYear();
+    const month = this.currentDate.getMonth() + 1;
+    return new Date(year, month, 0).getDate();
+  },
+  startDayOfWeek() {
+    const year = this.currentDate.getFullYear();
+    const month = this.currentDate.getMonth();
+    return new Date(year, month, 1).getDay(); // 0 para domingo, 1 para lunes, etc.
+  },
   },
   watch: {
     selectedProject(newVal) {
       this.currentProject = this.projects.data.find((item) => item.id == newVal);
       this.uniqueUsers = [];
       this.updateTasksLists();
+
+      // Verificar si hay tareas en el proyecto y si la primera tarea tiene una fecha de inicio
+  if (this.currentProject && this.currentProject.tasks.length > 0) {
+    const firstTask = this.currentProject.tasks[0];
+    if (firstTask && firstTask.start_date) {
+      this.currentDate = new Date(firstTask.start_date);
+    }
+  }
     },
   },
 
   mounted() {
-    this.selectedProject = this.project.data.id;
-  },
+  this.selectedProject = this.project.data.id;
+  this.currentProject = this.projects.data.find((item) => item.id == this.selectedProject);
+
+  // Verificar si hay tareas en el proyecto y si la primera tarea tiene una fecha de inicio
+  if (this.currentProject && this.currentProject.tasks.length > 0) {
+    const firstTask = this.currentProject.tasks[0];
+    if (firstTask && firstTask.start_date) {
+      this.currentDate = new Date(firstTask.start_date);
+    }
+  }
+},
 };
 </script>
 
@@ -610,5 +562,7 @@ export default {
   border-radius: 20px;
   /* Redondeo */
 }
-
+.start-day-2 {
+  margin-left: calc((100% / var(--days-in-month)) * var(--task-start-day));
+}
 </style>
