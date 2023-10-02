@@ -60,8 +60,16 @@
             <td class="text-left py-2 px-2">
               {{ project.limit_date }}
             </td>
-            <td class="text-left py-2 px-2 rounded-r-full">
+            <td class="text-left py-2 px-2">
               {{ project.finished_at ?? '--' }}
+            </td>
+            <td v-if="$page.props.auth.user.permissions.includes('Eliminar proyectos')" class="text-left py-2 px-2 rounded-r-full">
+              <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#D90537"
+                  title="¿Eliminar?" @confirm="deleteProject(project)">
+                  <template #reference>
+                      <i @click.stop="" class="fa-regular fa-trash-can text-primary cursor-pointer p-2"></i>
+                  </template>
+              </el-popconfirm>
             </td>
           </tr>
         </tbody>
@@ -98,6 +106,14 @@ export default {
     projects: Object
   },
   methods: {
+    deleteProject(project) {
+      this.$inertia.delete(route('projects.destroy', project));
+      this.$notify({
+            title: "Éxito",
+            message: "Proyecto eliminado",
+            type: "success",
+          });
+          },
     handleSearch() {
       this.search = this.inputSearch;
     },

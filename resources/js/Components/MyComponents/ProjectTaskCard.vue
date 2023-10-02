@@ -7,7 +7,7 @@
     <!-- ------------ top ------------------ -->
     <!-- <el-tooltip :content="'Prioridad: ' + taskComponentLocal?.priority.label" placement="top"> -->
     <div class="flex justify-between items-center">
-      <div @click.stop="" class="rounded-full px-2 cursor-grab active:cursor-grabbing">
+      <div @click.stop="" class="rounded-full px-2 cursor-move">
         <i class="fa-solid fa-ellipsis-vertical text-lg"></i>
         <i class="fa-solid fa-ellipsis-vertical text-lg"></i>
       </div>
@@ -44,8 +44,15 @@
           <el-tooltip v-if="taskComponentLocal?.status == 'Terminada'" content="Tarea terminada" placement="bottom">
             <i @click.stop="" class="fa-solid fa-check text-green-500 text-xl cursor-default mr-2"></i>
           </el-tooltip>
-          <!-- <p class="text-primary mr-1">+2</p> -->
-          <el-tooltip v-for="user in taskComponentLocal?.participants" :key="user" :content="user.name"
+          <el-tooltip v-if="taskComponentLocal?.participants?.length > 2" placement="top">
+          <p class="text-primary mr-1"> + {{ taskComponentLocal?.participants.length - 2 }}</p>
+            <template #content>
+            <div>
+             <p v-for="user in taskComponentLocal?.participants.slice(1, taskComponentLocal?.participants.length)" :key="user">{{ user.name }}</p>
+            </div>
+          </template>
+          </el-tooltip>
+          <el-tooltip v-for="user in taskComponentLocal?.participants.slice(0, 2)" :key="user" :content="user.name"
             placement="bottom">
             <figure @click.stop="">
               <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm rounded-full">
@@ -85,7 +92,7 @@
           <el-tooltip v-if="taskComponentLocal?.status == 'En curso'"
             :content="taskComponentLocal?.is_paused ? 'Reanudar tarea' : 'Pausar tarea'" placement="top">
             <button type="button">
-              <i @click.stop="$inertia.put(route('tasks.pause-play', taskComponentLocal))" :class="taskComponentLocal?.is_paused ? 'fa-circle-play' : 'fa-circle-pause'
+              <i @click.stop="playPauseTask(taskComponentLocal)" :class="taskComponentLocal?.is_paused ? 'fa-circle-play' : 'fa-circle-pause'
                 " class="fa-regular text-secondary text-xl cursor-pointer"></i>
             </button>
           </el-tooltip>
@@ -114,7 +121,7 @@
           <InputError :message="form.errors.department" />
         </div>
         <div class="flex space-x-2 justify-end items-center mt-3">
-          <label>Participantes</label>
+          <label>Más participantes</label> <br>
           <el-select class="w-full mt-2" v-model="form.participants" clearable filterable multiple
             placeholder="Seleccionar participantes" no-data-text="No hay usuarios registrados"
             no-match-text="No se encontraron coincidencias">
@@ -162,7 +169,7 @@
         </div>
         <!-- --------------------- TABS -------------------- -->
         <section class="mt-9">
-          <div class="flex items-center">
+          <div class="flex items-center justify-center">
             <p @click="tabs = 1" :class="tabs == 1 ? 'border-b-2 border-[#D90537] text-primary' : ''"
               class="h-8 p-1 cursor-pointer ml-5 transition duration-300 ease-in-out text-xs md:text-base">
               Comentarios ({{ taskComponentLocal?.comments?.length }})
@@ -177,22 +184,17 @@
               class="ml-3 h-8 p-1 cursor-pointer transition duration-300 ease-in-out text-xs md:text-base">
               Historial
             </p>
-            <div class="border-r-2 border-[#cccccc] h-7 ml-3"></div>
-            <p @click="tabs = 4" :class="tabs == 4 ? 'border-b-2 border-[#D90537] text-primary' : ''"
-              class="ml-3 h-8 p-1 cursor-pointer transition duration-300 ease-in-out text-xs md:text-base">
-              Dependencia/Consecutiva
-            </p>
           </div>
           <!-- -------------- Tab 1 comentarios starts ----------------->
           <div v-if="tabs == 1" class="mt-7">
             <div>
               <figure class="flex space-x-2 mt-4" v-for="comment in taskComponentLocal?.comments" :key="comment">
                 <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm rounded-full w-12">
-                  <img class="h-10 w-10 rounded-full object-cover" :src="comment.user.profile_photo_url"
-                    :alt="comment.user.name" />
+                  <img class="h-10 w-10 rounded-full object-cover" :src="comment.user?.profile_photo_url"
+                    :alt="comment.user?.name" />
                 </div>
                 <div class="text-sm w-full">
-                  <p class="font-bold">{{ comment.user.name }}</p>
+                  <p class="font-bold">{{ comment.user?.name }}</p>
                   <p>{{ comment.body }}</p>
                 </div>
               </figure>
@@ -226,9 +228,7 @@
           <div v-if="tabs == 3" class="mt-7"></div>
           <!-- ---------------- tab 3 historial ends  -------------->
 
-          <!-- -------------- Tab 4 dependencia/consecutiva starts ----------------->
-          <div v-if="tabs == 4" class="mt-7"></div>
-          <!-- ---------------- tab 4 dependencia/consecutiva ends  -------------->
+
         </section>
       </div>
       <!-- {{ form }} -->
@@ -256,7 +256,7 @@ export default {
       project_name: this.taskComponent.project.project_name,
       user: this.taskComponent.user.name,
       department: this.taskComponent.department,
-      participants: this.taskComponent.participants,
+      participants: null,
       description: this.taskComponent.description,
       priority: this.taskComponent.priority.label,
       start_date: this.taskComponent.start_date,
@@ -302,7 +302,7 @@ export default {
           color: "text-red-600",
         },
       ],
-      departments: ["Compras", "Ventas", "Producción", "Diseño"],
+      departments: ["Marketing", "Ventas", "Produccion", "Diseño"],
     };
   },
   components: {
@@ -320,6 +320,33 @@ export default {
     'updated-status'
   ],
   methods: {
+    async playPauseTask(task){
+      try {
+        const response = await axios.put(route('tasks.pause-play', task));
+
+        if (response.status === 200) {
+          this.taskComponentLocal = response.data.item;
+
+          if (this.taskComponentLocal.is_paused) {
+            this.$notify({
+              title: "Éxito",
+            message: "Se ha pausado la tarea",
+            type: "success",
+          });
+            } else {
+              this.$notify({
+              title: "Éxito",
+            message: "Se ha reanudado la tarea",
+            type: "success",
+          });
+            }
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.taskInformationModal = false;
+      }
+    },
     async update() {
       try {
         const response = await axios.put(route("tasks.update", this.taskComponentLocal), {
@@ -327,7 +354,7 @@ export default {
           department: this.form.department,
           participants: this.form.participants,
           description: this.form.description,
-          priority: this.form.priority.label,
+          priority: this.form.priority,
           start_date: this.form.start_date,
           limit_date: this.form.end_date,
           reminder: this.form.reminder,
@@ -337,9 +364,10 @@ export default {
           this.taskComponentLocal = response.data.item;
           this.$notify({
             title: "Éxito",
-            message: "Se ha actualizado la tarea tarea",
+            message: "Se ha actualizado la tarea",
             type: "success",
           });
+          this.taskComponentLocal = response.data.item;
           this.taskInformationModal = false;
           this.$emit('updated-status', this.taskComponentLocal);
         }
@@ -353,6 +381,7 @@ export default {
           comment: this.form.comment,
         });
         if (response.status === 200) {
+          console.log('Comment', response.data.item);
           this.taskComponentLocal?.comments.push(response.data.item);
         }
       } catch (error) {

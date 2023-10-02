@@ -81,9 +81,16 @@ class TaskController extends Controller
             'description' => 'required',
             'department' => 'required|string',
             'priority' => 'nullable|string',
+            'participants' => 'required|array|min:1',
         ]);
 
         $task->update($validated);
+
+        //agregar nuevos participantes
+        foreach ($request->participants as $user_id) {
+            // Adjuntar el usuario a la tarea
+            $task->participants()->attach($user_id);
+        }
 
         if ($request->comment) {
             $comment = new Comment([
@@ -116,8 +123,8 @@ class TaskController extends Controller
         ]);
         $task->comments()->save($comment);
         // event(new RecordCreated($comment)); me dice que el id del usuario no tiene un valor por default.
-        return to_route('projects.show', ['project' => $request->project_id]);
-        // return response()->json(['item' => $comment]);
+        // return to_route('projects.show', ['project' => $request->project_id]);
+        return response()->json(['item' => $comment->fresh('user')]);
     }
 
     public function pausePlayTask(Task $task)
@@ -132,7 +139,8 @@ class TaskController extends Controller
             ]);
         }
         $task->save();
-        // return response()->json(['item' => $comment]);
+
+        return response()->json(['item' => TaskResource::make($task->fresh(['participants', 'project', 'user', 'comments.user', 'media']))]);
     }
 
     public function updateStatus(Task $task, Request $request)
