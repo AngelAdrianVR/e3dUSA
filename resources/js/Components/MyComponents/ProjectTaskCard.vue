@@ -68,7 +68,7 @@
       <h1 class="font-bold">{{ taskComponentLocal?.title }}</h1>
 
       <div class="relative">
-        <i :class="getColorStatus(taskComponentLocal?.status)"
+        <i :class="getColorStatus(form.status)"
           class="fa-solid fa-circle text-xs top-10 -left-4 absolute z-30"></i>
         <label>Estado actual</label> <br />
         <div class="flex items-center space-x-4">
@@ -128,7 +128,7 @@
           <InputError :message="form.errors.description" />
         </div>
         <div class="mt-3 relative">
-          <i :class="getColorPriority(taskComponentLocal?.priority.label)"
+          <i :class="getColorPriority(form.priority)"
             class="fa-solid fa-circle text-xs top-10 -left-4 absolute z-30"></i>
           <label>Prioridad</label>
           <el-select class="w-full mt-2" v-model="form.priority" clearable filterable placeholder="Seleccionar prioridad"
@@ -233,8 +233,8 @@
       </div>
       <!-- {{ form }} -->
       <div class="flex justify-end space-x-3 pt-5 pb-1">
-        <PrimaryButton>Guardar</PrimaryButton>
         <CancelButton @click="taskInformationModal = false">Cancelar</CancelButton>
+        <PrimaryButton>Guardar</PrimaryButton>
       </div>
     </form>
   </Modal>

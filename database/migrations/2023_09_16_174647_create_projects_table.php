@@ -27,7 +27,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('limit_date');
             $table->string('company_branch');
-            $table->date('finished_at')->nullable();
+            $table->timestamp('finished_at')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('company_id')->constrained()->cascadeOnDelete(); //ver si es viable tenerlo como id foraneo
             $table->foreignId('sale_id')->nullable()->constrained()->cascadeOnDelete(); //ver si es viable tenerlo como id foraneo
