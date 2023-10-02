@@ -181,7 +181,7 @@
         <h2 class="font-bold mb-10">
           POR HACER <span class="font-normal ml-7">{{ pendingTasksList?.length }}</span>
         </h2>
-        <draggable @start="handleStartDrag" @add="handleAddDrag"  v-model="pendingTasksList" :animation="300" item-key="id" tag="ul" group="tasks" id="pendent" :class="(drag && !pendingTasksList?.length) ? 'h-40' : ''">
+        <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="pendingTasksList" :animation="300" item-key="id" tag="ul" group="tasks" id="pendent" :class="(drag && !pendingTasksList?.length) ? 'h-40' : ''">
           <template #item="{ element: task }">
             <li>
               <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="users" :id="task.id" />
@@ -199,7 +199,7 @@
         <h2 class="font-bold mb-10">
           EN CURSO <span class="font-normal ml-7">{{ inProgressTasksList?.length }}</span>
         </h2>
-        <draggable @start="handleAddDrag" @add="handleAddDrag" v-model="inProgressTasksList" :animation="300" item-key="id" tag="ul" group="tasks" id="process" :class="(drag && !inProgressTasksList?.length) ? 'h-40' : ''">
+        <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="inProgressTasksList" :animation="300" item-key="id" tag="ul" group="tasks" id="process" :class="(drag && !inProgressTasksList?.length) ? 'h-40' : ''">
           <template #item="{ element: task }">
             <li>
               <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="users" />
@@ -217,7 +217,7 @@
         <h2 class="font-bold mb-10">
           TERMINADA <span class="font-normal ml-7">{{ finishedTasksList?.length }}</span>
         </h2>
-        <draggable @start="handleAddDrag" @add="handleAddDrag" v-model="finishedTasksList" :animation="300" item-key="id" tag="ul" group="tasks" id="finished" :class="(drag && !finishedTasksList?.length) ? 'h-40' : ''">
+        <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="finishedTasksList" :animation="300" item-key="id" tag="ul" group="tasks" id="finished" :class="(drag && !finishedTasksList?.length) ? 'h-40' : ''">
           <template #item="{ element: task }">
             <li>
               <ProjectTaskCard @updated-status="updateTask($event)"
@@ -490,7 +490,6 @@ export default {
     handleStartDrag(evt) {
       this.draggingTaskId = evt.item.__draggable_context.element.id;
       this.drag = true;
-      console.log('ID',this.draggingTaskId);
     },
     handleAddDrag(evt) {
       let status = 'Terminada';
@@ -500,19 +499,17 @@ export default {
         status = 'En curso';
       }
 
-      console.log('status',status);
       this.updateTaskStatus(status);
       this.drag = false;
     },
     async updateTaskStatus(status) {
       try {
-        const response = await axios.put(route('tasks.update-status', this.currentProject), {status: status});
+        const response = await axios.put(route('tasks.update-status', this.draggingTaskId), {status: status});
 
         if (response.status === 200) {
           const taskIndex = this.currentProject.tasks.findIndex(item => item.id === this.draggingTaskId);
           this.currentProject.tasks[taskIndex].status = status;
         }
-
       } catch (error) {
         console.log(error);
       }
@@ -526,7 +523,7 @@ export default {
         (this.marketingCheck && task.department === "Marketing")
       );
     },
-    updateTasks(task) {
+    updateTask(task) {
       const taskIndex = this.currentProject.tasks.findIndex(
         (item) => item.id === task.id
       );

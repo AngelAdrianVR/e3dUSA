@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-[220px] bg-[#D9D9D9] rounded-[30px] lg:rounded-xl lg:py-2 py-2 px-8 text-xs lg:text-sm">
+    <div class="lg:min-h-[220px] min-h-[140px] bg-[#D9D9D9] rounded-[30px] lg:rounded-xl lg:py-2 py-2 px-8 text-xs lg:text-sm">
         <div class="my-3 col-start-2 col-span-2">
             <h1 class="font-bold text-center">Tareas atrasadas <i class="fa-solid fa-clock-rotate-left ml-2"></i></h1>
         </div>
