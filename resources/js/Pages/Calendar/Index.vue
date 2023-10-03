@@ -53,10 +53,6 @@
           <!-- Agregar línea para tareas y eventos -->
           <div v-for="task in tasks" :key="task.id">
             <div class="" v-if="isTaskDay(task, day)">
-                <!-- <div @click="showInfoTask = !showInfoTask" :class="task.type === 'Tarea' ? 'bg-[#B9D9FE] border-[#0355B5] border-l-4 border' : 'bg-[#FDB9C9] border-[#D90537] border-l-4 border'" class="h-5 rounded-sm my-1 text-xs justify-center items-center cursor-pointer flex relative">
-                    {{ task.title }}
-                <div v-if="showInfoTask" style="z-index: 999;" class="absolute -bottom-36 w-56 h-32 bg-[#D9D9D9] rounded-md border"></div>
-                </div> -->
                 <div @click.stop="selectedTask = task; selectedDay = day" :class="task.type === 'Tarea' ? 'bg-[#B9D9FE] border-[#0355B5] border-l-4 border' : 'bg-[#FDB9C9] border-[#D90537] border-l-4 border'" class="h-5 rounded-sm my-1 text-xs justify-center items-center cursor-pointer flex relative">
                     <p :class="task.status === 'Terminada' ? 'line-through' : ''">{{ task.title }}</p>
                 <div v-if="selectedTask === task && selectedDay == day" style="z-index: 999;" class="px-1 pb-3 absolute -bottom-56 w-56 h-auto bg-[#D9D9D9] rounded-md border cursor-default">

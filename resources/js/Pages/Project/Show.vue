@@ -18,18 +18,18 @@
       <div class="flex space-x-2">
         <PrimaryButton v-if="$page.props.auth.user.permissions.includes('Crear tareas')"
           @click="$inertia.get(route('tasks.create'))">+ Agregar tarea</PrimaryButton>
-        <!-- <Dropdown align="right" width="48">
+        <Dropdown align="right" width="48">
             <template #trigger>
               <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
-                Mis tareas <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
+                Todas las tareas <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
               </button>
             </template>
             <template #content>
               <DropdownLink :href="route('machines.create')">
-                Todas las tareas
+                Mis tareas
               </DropdownLink>
             </template>
-          </Dropdown> -->
+          </Dropdown>
       </div>
     </div>
 
@@ -235,200 +235,22 @@
 
     <!-- ------------- Cronograma Starts 3 ------------- -->
     <div v-if="tabs == 3" class="text-left text-sm items-center">
-      <table class="border border-[#9A9A9A] default w-full">
-        <tr>
-          <th class="border-y border-[#9A9A9A] text-left pl-7 py-3 font-thin relative w-1/4" scope="row">
-            Proyecto <br />
-            <strong class="text-lg font-bold">{{ currentProject?.project_name }}</strong>
-            <i @click="showDepartmentFilter = !showDepartmentFilter"
-              class="fa-solid fa-ellipsis text-primary absolute bottom-4 right-4 cursor-pointer hover:bg-[#dfdede] rounded-full p-2"></i>
-            <div v-if="showDepartmentFilter" class="absolute right-4 top-[60px] bg-[#D9D9D9] rounded-md px-4 py-2">
-              <label class="flex items-center">
-                <Checkbox v-model:checked="productionCheck" class="bg-transparent" />
-                <span class="ml-2 text-sm text-[#9A9A9A]">Producción</span>
-              </label>
-              <label class="flex items-center">
-                <Checkbox v-model:checked="designCheck" class="bg-transparent" />
-                <span class="ml-2 text-sm text-[#9A9A9A]">Diseño</span>
-              </label>
-              <label class="flex items-center">
-                <Checkbox v-model:checked="salesCheck" class="bg-transparent" />
-                <span class="ml-2 text-sm text-[#9A9A9A]">Ventas</span>
-              </label>
-              <label class="flex items-center">
-                <Checkbox v-model:checked="marketingCheck" class="bg-transparent" />
-                <span class="ml-2 text-sm text-[#9A9A9A]">Marketing</span>
-              </label>
-            </div>
-          </th>
-          <th class="border border-[#9A9A9A] text-center font-thin">
-            <strong class="text-base uppercase font-bold tex">Junio</strong><br />
-            <div class="flex space-x-5 justify-center">
-              <p class="text-secondary relative">
-                L
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">01</span>
-              </p>
-              <p class="text-secondary relative">
-                M
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">02</span>
-              </p>
-              <p class="text-secondary relative">
-                I
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">03</span>
-              </p>
-              <p class="text-secondary relative">
-                J
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">04</span>
-              </p>
-              <p class="text-secondary relative">
-                V
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">05</span>
-              </p>
-              <p class="text-secondary relative">
-                S
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">06</span>
-              </p>
-              <p class="text-secondary relative">
-                D
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">07</span>
-              </p>
-            </div>
-          </th>
-          <th class="border border-[#9A9A9A] text-center font-thin">
-            <strong class="text-base uppercase font-bold tex">Julio</strong><br />
-            <div class="flex space-x-5 justify-center">
-              <p class="text-secondary relative">
-                L
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">01</span>
-              </p>
-              <p class="text-secondary relative">
-                M
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">02</span>
-              </p>
-              <p class="text-secondary relative">
-                I
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">03</span>
-              </p>
-              <p class="text-secondary relative">
-                J
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">04</span>
-              </p>
-              <p class="text-secondary relative">
-                V
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">05</span>
-              </p>
-              <p class="text-secondary relative">
-                S
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">06</span>
-              </p>
-              <p class="text-secondary relative">
-                D
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">07</span>
-              </p>
-            </div>
-          </th>
-          <th class="border border-[#9A9A9A] text-center font-thin">
-            <strong class="text-base uppercase font-bold tex">Agosto</strong><br />
-            <div class="flex space-x-5 justify-center">
-              <p class="text-secondary relative">
-                L
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">01</span>
-              </p>
-              <p class="text-secondary relative">
-                M
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">02</span>
-              </p>
-              <p class="text-secondary relative">
-                I
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">03</span>
-              </p>
-              <p class="text-secondary relative">
-                J
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">04</span>
-              </p>
-              <p class="text-secondary relative">
-                V
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">05</span>
-              </p>
-              <p class="text-secondary relative">
-                S
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">06</span>
-              </p>
-              <p class="text-secondary relative">
-                D
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">07</span>
-              </p>
-            </div>
-          </th>
-          <th class="border border-[#9A9A9A] text-center font-thin">
-            <strong class="text-base uppercase font-bold tex">Septiembre</strong><br />
-            <div class="flex space-x-5 justify-center">
-              <p class="text-secondary relative">
-                L
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">01</span>
-              </p>
-              <p class="text-secondary relative">
-                M
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">02</span>
-              </p>
-              <p class="text-secondary relative">
-                I
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">03</span>
-              </p>
-              <p class="text-secondary relative">
-                J
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">04</span>
-              </p>
-              <p class="text-secondary relative">
-                V
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">05</span>
-              </p>
-              <p class="text-secondary relative">
-                S
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">06</span>
-              </p>
-              <p class="text-secondary relative">
-                D
-                <span class="absolute -bottom-3 -left-[2px] text-xs text-black">07</span>
-              </p>
-            </div>
-          </th>
-        </tr>
+      <GanttDiagramMonth v-if="period === 'Mes'" :currentProject="currentProject" :currentDate="currentDate" />
 
-        <tr v-for="task in currentProject?.tasks" :key="task" v-show="taskMatchesFilters(task)">
-          <th class="text-lg font-normal pl-7 py-2 border-y border-[#9A9A9A]">
-            <div :class="task.priority.color_border" class="border-r-4">
-              {{ task.title }}
-              <p class="text-[#9A9A9A] text-sm">Depto. {{ task.department }}</p>
-            </div>
-          </th>
-          <td class="border-x border-[#CCCCCC]"></td>
-          <td class="border-x border-[#CCCCCC]"></td>
-          <td class="border-x border-[#CCCCCC]"></td>
-          <td class="border-x border-[#CCCCCC]"></td>
-        </tr>
-      </table>
+      <GanttDiagramBimester v-if="period === 'Bimestre'" :currentProject="currentProject" :currentDate="currentDate" />
 
       <div class="text-right mr-9">
         <div class="border border-[#9A9A9A] rounded-md inline-flex justify-end mt-4">
-          <p :class="period == 'Hoy' ? 'bg-primary text-white rounded-sm' : 'border-[#9A9A9A]'
-            " @click="period = 'Hoy'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-r">
-            Hoy
-          </p>
-          <p :class="period == 'Semana' ? 'bg-primary text-white rounded-sm' : 'border-[#9A9A9A]'
-            " @click="period = 'Semana'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-x border-transparent">
-            Semana
-          </p>
           <p :class="period == 'Mes' ? 'bg-primary text-white rounded-sm' : 'border-[#9A9A9A]'
             " @click="period = 'Mes'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-x">
             Mes
           </p>
-          <p :class="period == 'Trimestre'
+          <p :class="period == 'Bimestre'
             ? 'bg-primary text-white rounded-sm'
             : 'border-[#9A9A9A]'
-            " @click="period = 'Trimestre'"
+            " @click="period = 'Bimestre'"
             class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-x border-transparent">
-            Trimestre
+            Bimestre
           </p>
         </div>
       </div>
@@ -441,6 +263,8 @@
 import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import ProjectTaskCard from "@/Components/MyComponents/ProjectTaskCard.vue";
+import GanttDiagramMonth from "@/Components/MyComponents/GanttDiagramMonth.vue";
+import GanttDiagramBimester from "@/Components/MyComponents/GanttDiagramBimester.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import Modal from "@/Components/Modal.vue";
@@ -457,12 +281,7 @@ export default {
       maxUsersToShow: 3,
       selectedProject: "",
       currentProject: null,
-      productionCheck: true,
-      designCheck: true,
-      salesCheck: true,
-      marketingCheck: true,
-      showDepartmentFilter: false,
-      period: "Hoy", //period of time in cronograma table tab 3
+      period: "Mes", //period of time in cronograma table tab 3
       pendingTasksList: [],
       inProgressTasksList: [],
       finishedTasksList: [],
@@ -480,6 +299,8 @@ export default {
     Modal,
     Checkbox,
     draggable,
+    GanttDiagramMonth,
+    GanttDiagramBimester
   },
   props: {
     projects: Object,
@@ -513,15 +334,6 @@ export default {
       } catch (error) {
         console.log(error);
       }
-    },
-    taskMatchesFilters(task) {
-      // Verifica si la tarea cumple con al menos uno de los criterios de filtro
-      return (
-        (this.productionCheck && task.department === "Producción") ||
-        (this.designCheck && task.department === "Diseño") ||
-        (this.salesCheck && task.department === "Ventas") ||
-        (this.marketingCheck && task.department === "Marketing")
-      );
     },
     updateTask(task) {
       const taskIndex = this.currentProject.tasks.findIndex(
@@ -588,12 +400,21 @@ export default {
       this.currentProject = this.projects.data.find((item) => item.id == newVal);
       this.uniqueUsers = [];
       this.updateTasksLists();
+
+      // Verificar si hay tareas en el proyecto y si la primera tarea tiene una fecha de inicio
+  if (this.currentProject && this.currentProject.tasks.length > 0) {
+    const firstTask = this.currentProject.tasks[0];
+    if (firstTask && firstTask.start_date) {
+      this.currentDate = new Date(firstTask.start_date);
+    }
+  }
     },
   },
 
   mounted() {
-    this.selectedProject = this.project.data.id;
-  },
+  this.selectedProject = this.project.data.id;
+  this.currentProject = this.projects.data.find((item) => item.id == this.selectedProject);
+},
 };
 </script>
 

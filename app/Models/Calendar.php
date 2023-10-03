@@ -13,6 +13,7 @@ class Calendar extends Model
     protected $fillable = [
         'type',
         'title',
+        'participants',
         'description',
         'status',
         'start_date',
@@ -27,6 +28,7 @@ class Calendar extends Model
         'finish_date' => 'date',
         'start_at' => 'datetime',
         'finish_at' => 'datetime',
+        'participants' => 'array',
     ];
 
     //relaionships

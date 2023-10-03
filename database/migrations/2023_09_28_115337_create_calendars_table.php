@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('type');
             $table->string('title');
+            $table->json('participants')->nullable();
             $table->text('description')->nullable();
             $table->string('status')->default('Pendiente');
             $table->date('start_date')->nullable();
