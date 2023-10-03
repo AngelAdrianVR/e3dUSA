@@ -27,7 +27,7 @@
           </th>
           <th class="border border-[#9A9A9A] text-center font-thin">
             <strong class="text-base uppercase font-bold tex">{{ monthName }}</strong><br />
-            <div class="flex space-x-8 justify-center w-[95%] mx-auto">
+            <div class="flex space-x-3 justify-center w-[95%] mx-auto">
               <p
                 v-for="day in daysInMonth"
                 :key="day"
@@ -38,6 +38,19 @@
               </p>
             </div>
           </th>
+          <th class="border border-[#9A9A9A] text-center font-thin">
+          <strong class="text-base uppercase font-bold">{{ nextMonthName }}</strong>
+           <div class="flex space-x-3 justify-center w-[95%] mx-auto">
+              <p
+                v-for="day in daysInNextMonth"
+                :key="day"
+                class="text-secondary relative"
+              >
+                {{ daysOfWeek[(day + startDayOfWeekNextMonth - 2) % 7] }}
+                <span class="absolute -bottom-3 -left-0 text-[11px] text-black">{{ day }}</span>
+              </p>
+            </div>
+        </th>
         </tr>
 
         <tr v-for="task in currentProject?.tasks" :key="task" v-show="taskMatchesFilters(task)">
@@ -47,7 +60,7 @@
               <p class="text-[#9A9A9A] text-sm">Depto. {{ task.department }}</p>
             </div>
           </th>
-          <td class="border-x border-[#CCCCCC] overflow-x-hidden">
+          <td class="border-x border-[#CCCCCC]">
             <div class="w-[93%] mx-auto">
               <el-tooltip :content="task.start_date + ' -- ' + task.end_date" placement="top">
               <div
@@ -111,7 +124,16 @@ export default {
     const startDate = new Date(task.start_date);
     const endDate = new Date(task.end_date);
     const duration = (endDate - startDate) / (24 * 60 * 60 * 1000); // Convertir a días
-    return duration + 1; // Sumar 1 para incluir el día de inicio
+    // const offsetNextMonth = 0 //offset que agrega 2.5 dias cuando la tarea termina el siguiente mes y se muestre en el dia correcto.
+
+    // Calcula la fecha del primer día del mes siguiente
+    const nextMonthDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1);
+
+    if (endDate >= nextMonthDate) {
+      return duration + 3.5; //si la tarea termina el mes siguiente del que comenzó se suma un offset de 2.5 dias para mostrarlo en el dia correspondiente.
+    }
+
+    return duration + 1 ; // Sumar 1 para incluir el día de inicio
   },
      getCurrentMonthName() {
     const months = [
@@ -132,7 +154,7 @@ export default {
     },
  },
 computed: {
-    monthName() {
+  monthName() {
     const months = [
       'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
@@ -149,17 +171,43 @@ computed: {
     const month = this.currentDate.getMonth();
     return new Date(year, month, 1).getDay(); // 0 para domingo, 1 para lunes, etc.
   },
+  nextMonthDate() {
+      const currentYear = this.currentDate.getFullYear();
+      const currentMonth = this.currentDate.getMonth();
+      // Calcula la fecha del mes siguiente
+      const nextMonth = new Date(currentYear, currentMonth + 1, 1);
+      return nextMonth;
+    },
+    nextMonthName() {
+      const months = [
+        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+      ];
+      return months[this.nextMonthDate.getMonth()];
+    },
+    daysInNextMonth() {
+      return new Date(this.nextMonthDate.getFullYear(), this.nextMonthDate.getMonth() + 1, 0).getDate();
+    },
+   daysInNextMonth() {
+    const nextYear = this.nextMonthDate.getFullYear();
+    const nextMonth = this.nextMonthDate.getMonth() + 1;
+    return new Date(nextYear, nextMonth, 0).getDate();
+  },
+  startDayOfWeekNextMonth() {
+    const nextYear = this.nextMonthDate.getFullYear();
+    const nextMonth = this.nextMonthDate.getMonth();
+    return new Date(nextYear, nextMonth, 1).getDay(); // 0 para domingo, 1 para lunes, etc.
+  },
 },
 mounted() {
-
-  // Verificar si hay tareas en el proyecto y si la primera tarea tiene una fecha de inicio
-  if (this.currentProject && this.currentProject.tasks.length > 0) {
-    const firstTask = this.currentProject.tasks[0];
-    if (firstTask && firstTask.start_date) {
-      this.currentDate = new Date(firstTask.start_date);
+    // Verificar si hay tareas en el proyecto y si la primera tarea tiene una fecha de inicio
+    if (this.currentProject && this.currentProject.tasks.length > 0) {
+      const firstTask = this.currentProject.tasks[0];
+      if (firstTask && firstTask.start_date) {
+        this.currentDate = new Date(firstTask.start_date);
+      }
     }
-  }
-},
+  },
 }
 </script>
 

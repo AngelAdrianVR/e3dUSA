@@ -237,6 +237,8 @@
     <div v-if="tabs == 3" class="text-left text-sm items-center">
       <GanttDiagramMonth v-if="period === 'Mes'" :currentProject="currentProject" :currentDate="currentDate" />
 
+      <GanttDiagramBimester v-if="period === 'Bimestre'" :currentProject="currentProject" :currentDate="currentDate" />
+
       <div class="text-right mr-9">
         <div class="border border-[#9A9A9A] rounded-md inline-flex justify-end mt-4">
           <p :class="period == 'Mes' ? 'bg-primary text-white rounded-sm' : 'border-[#9A9A9A]'
@@ -262,6 +264,7 @@ import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import ProjectTaskCard from "@/Components/MyComponents/ProjectTaskCard.vue";
 import GanttDiagramMonth from "@/Components/MyComponents/GanttDiagramMonth.vue";
+import GanttDiagramBimester from "@/Components/MyComponents/GanttDiagramBimester.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import Modal from "@/Components/Modal.vue";
@@ -297,6 +300,7 @@ export default {
     Checkbox,
     draggable,
     GanttDiagramMonth,
+    GanttDiagramBimester
   },
   props: {
     projects: Object,
