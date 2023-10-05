@@ -19,7 +19,6 @@
       <div
         class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4"
       >
-      
         <div class="flex justify-center items-center space-x-12">
           <div class="flex items-center">
             <input
@@ -44,210 +43,236 @@
           <InputError :message="form.errors.type" />
         </div>
 
-<!-- --------------- Evento -------------- -->
+        <!-- --------------- Evento -------------- -->
         <section class="space-y-3" v-if="form.type == 'Evento'">
-        <div>
-          <label class="block" for="">Título del evento *</label>
-          <input
-            v-model="form.title"
-            class="input"
-            type="text"
-            placeholder="Agregar título"
-          />
-          <InputError :message="form.errors.title" />
-        </div>
-        <div>
-          <label class="block" for="">Participante(s) *</label>
-          <el-select
-            class="w-full mt-2"
-            v-model="form.participants"
-            clearable
-            filterable
-            multiple
-            placeholder="Seleccionar participantes"
-            no-data-text="No hay usuarios registrados"
-            no-match-text="No se encontraron coincidencias"
-          >
-            <el-option
-              v-for="user in users"
-              :key="user.id"
-              :label="user.name"
-              :value="user.id"
+          <div>
+            <label class="block" for="">Título del evento *</label>
+            <input
+              v-model="form.title"
+              class="input"
+              type="text"
+              placeholder="Agregar título"
             />
-          </el-select>
-          <InputError :message="form.errors.participants" />
-        </div>
-        <div class="flex items-center">
-          <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
-            <el-tooltip content="Fecha *" placement="top">
-              <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"
-              >
-                <i class="fa-solid fa-calendar"></i>
-              </span>
-            </el-tooltip>
-            <el-date-picker
-              v-model="form.start_date"
-              type="date"
-              placeholder="Fecha *"
-            />
-            <InputError :message="form.errors.start_date" />
+            <InputError :message="form.errors.title" />
           </div>
-          <label class="flex items-center">
-              <Checkbox v-model:checked="form.is_strict_proyect" class="bg-transparent disabled:border-gray-400"/>
-              <span class="ml-2 text-xs">Todo el día</span>
-          </label>
-        </div>
-        <div>
-          <label>Horario</label>
-          <div class="demo-range">
-            <el-time-picker
-              v-model="value1"
-              is-range
-              range-separator="-"
-              start-placeholder="Hora inicio"
-              end-placeholder="Hora final"
-            />
+          <div>
+            <label class="block" for="">Participante(s) *</label>
+            <el-select
+              class="w-full mt-2"
+              v-model="form.participants"
+              clearable
+              filterable
+              multiple
+              placeholder="Seleccionar participantes"
+              no-data-text="No hay usuarios registrados"
+              no-match-text="No se encontraron coincidencias"
+            >
+              <el-option
+                v-for="user in users"
+                :key="user.id"
+                :label="user.name"
+                :value="user.id"
+              />
+            </el-select>
+            <InputError :message="form.errors.participants" />
           </div>
-          <InputError :message="form.errors.description" />
-        </div>
-        <div>
-          <label class="block">Repetir</label>
-          <el-select
-            class="w-full mt-2"
-            v-model="form.repeat"
-            clearable
-            placeholder="Seleccionar"
-            no-data-text="No hay opciones registradas"
-            no-match-text="No se encontraron coincidencias"
-          >
-            <el-option
-              v-for="repit in repeaters"
-              :key="repit"
-              :label="repit"
-              :value="repit"
-            />
-          </el-select>
-          <InputError :message="form.errors.repeat" />
-        </div>
-        <div>
-          <label class="block">Ubicación</label>
-          <input
-            v-model="form.location"
-            class="input"
-            type="text"
-            placeholder="Agregar ubicación"
-          />
-          <InputError :message="form.errors.location" />
-        </div>
-        <div>
-          <label>Descripción</label>
-          <textarea class="textarea">
-
-          </textarea>
-          <InputError :message="form.errors.description" />
-        </div>
-        <div>
-          <label class="block">Recordatorio</label>
           <div class="flex items-center">
-          <el-select
-            class="w-1/2 mt-2"
-            v-model="form.remind"
-            clearable
-            placeholder="Seleccionar"
-            no-data-text="No hay opciones registradas"
-            no-match-text="No se encontraron coincidencias"
-          >
-            <el-option
-              v-for="remind in reminders"
-              :key="remind"
-              :label="remind"
-              :value="remind"
-            />
-          </el-select>
-          <p class="text-sm text-primary ml-7 cursor-pointer w-1/2">+ Agregar recordatorio</p>
-          </div>
-          <InputError :message="form.errors.remind" />
-        </div>
-      </section>
-
-
-<!-- ------------- Tarea .............. -->
-      <section class="space-y-3" v-else>
-        <div>
-          <label class="block" for="">Título de la tarea *</label>
-          <input
-            v-model="form.title"
-            class="input"
-            type="text"
-            placeholder="Agregar título"
-          />
-          <InputError :message="form.errors.title" />
-        </div>
-        <div class="flex items-center">
-          <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
-            <el-tooltip content="Fecha *" placement="top">
-              <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"
-              >
-                <i class="fa-solid fa-calendar"></i>
-              </span>
-            </el-tooltip>
-            <el-date-picker
-              v-model="form.start_date"
-              type="date"
-              placeholder="Fecha *"
-            />
-            <InputError :message="form.errors.start_date" />
-          </div>
-          <label class="flex items-center">
-              <Checkbox v-model:checked="form.is_strict_proyect" class="bg-transparent disabled:border-gray-400"/>
+            <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
+              <el-tooltip content="Fecha *" placement="top">
+                <span
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"
+                >
+                  <i class="fa-solid fa-calendar"></i>
+                </span>
+              </el-tooltip>
+              <el-date-picker
+                v-model="form.start_date"
+                type="date"
+                placeholder="Fecha *"
+                :disabled-date="disabledDate"
+              />
+              <InputError :message="form.errors.start_date" />
+            </div>
+            <label class="flex items-center">
+              <Checkbox
+                v-model:checked="form.is_full_day"
+                class="bg-transparent disabled:border-gray-400"
+              />
               <span class="ml-2 text-xs">Todo el día</span>
-          </label>
-        </div>
-        <div>
-          <label>Horario</label>
-          <div class="demo-range">
-            <el-time-picker
-              v-model="value1"
-              is-range
-              range-separator="-"
-              start-placeholder="Hora inicio"
-              end-placeholder="Hora final"
-            />
+            </label>
           </div>
-          <InputError :message="form.errors.description" />
-        </div>
-        <div>
-          <label>Descripción</label>
-          <textarea class="textarea">
+          <div v-if="!form.is_full_day">
+            <label>Horario</label>
+            <div class="demo-range">
+              <el-time-picker
+                v-model="form.time"
+                is-range
+                range-separator="-"
+                start-placeholder="Hora inicio"
+                end-placeholder="Hora final"
+              />
+            </div>
+            <InputError :message="form.errors.time" />
+          </div>
+          <div>
+            <label class="block">Repetir</label>
+            <el-select
+              class="w-full mt-2"
+              v-model="form.repeater"
+              clearable
+              placeholder="Seleccionar"
+              no-data-text="No hay opciones registradas"
+              no-match-text="No se encontraron coincidencias"
+            >
+              <el-option
+                v-for="repeater in repeaters"
+                :key="repeater"
+                :label="repeater"
+                :value="repeater"
+              />
+            </el-select>
+            <InputError :message="form.errors.repeater" />
+          </div>
+          <div>
+            <label class="block">Ubicación</label>
+            <input
+              v-model="form.location"
+              class="input"
+              type="text"
+              placeholder="Agregar ubicación"
+            />
+            <InputError :message="form.errors.location" />
+          </div>
+          <div>
+            <label>Descripción</label>
+            <textarea class="textarea"> </textarea>
+            <InputError :message="form.errors.description" />
+          </div>
+          <div>
+            <label class="block">Recordatorio</label>
+            <div class="flex items-center">
+              <el-select
+                class="w-1/2 mt-2"
+                v-model="form.reminder"
+                clearable
+                placeholder="Seleccionar"
+                no-data-text="No hay opciones registradas"
+                no-match-text="No se encontraron coincidencias"
+              >
+                <el-option
+                  v-for="reminder in reminders"
+                  :key="reminder"
+                  :label="reminder"
+                  :value="reminder"
+                />
+              </el-select>
+              <p class="text-sm text-primary ml-7 cursor-pointer w-1/2">
+                + Agregar recordatorio
+              </p>
+            </div>
+            <InputError :message="form.errors.reminder" />
+          </div>
+        </section>
 
-          </textarea>
-          <InputError :message="form.errors.description" />
-        </div>
-        <div>
-          <label class="block">Recordatorio</label>
-          <div class="flex items-center">
-          <el-select
-            class="w-1/2 mt-2"
-            v-model="form.remind"
-            clearable
-            placeholder="Seleccionar"
-            no-data-text="No hay opciones registradas"
-            no-match-text="No se encontraron coincidencias"
-          >
-            <el-option
-              v-for="remind in reminders"
-              :key="remind"
-              :label="remind"
-              :value="remind"
+        <!-- ------------- Tarea .............. -->
+        <section class="space-y-3" v-else>
+          <div>
+            <label class="block" for="">Título de la tarea *</label>
+            <input
+              v-model="form.title"
+              class="input"
+              type="text"
+              placeholder="Agregar título"
             />
-          </el-select>
-          <p class="text-sm text-primary ml-7 cursor-pointer w-1/2">+ Agregar recordatorio</p>
+            <InputError :message="form.errors.title" />
           </div>
-          <InputError :message="form.errors.remind" />
-        </div>
-      </section>
+          <div class="flex items-center">
+            <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
+              <el-tooltip content="Fecha *" placement="top">
+                <span
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"
+                >
+                  <i class="fa-solid fa-calendar"></i>
+                </span>
+              </el-tooltip>
+              <el-date-picker
+                v-model="form.start_date"
+                type="date"
+                placeholder="Fecha *"
+                :disabled-date="disabledDate"
+              />
+              <InputError :message="form.errors.start_date" />
+            </div>
+            <label class="flex items-center">
+              <Checkbox
+                v-model:checked="form.is_full_day"
+                class="bg-transparent disabled:border-gray-400"
+              />
+              <span class="ml-2 text-xs">Todo el día</span>
+            </label>
+          </div>
+          <div v-if="!form.is_full_day">
+            <label>Horario</label>
+            <div class="demo-range">
+              <el-time-picker
+                v-model="form.time"
+                is-range
+                range-separator="-"
+                start-placeholder="Hora inicio"
+                end-placeholder="Hora final"
+              />
+            </div>
+            <InputError :message="form.errors.time" />
+          </div>
+          <div>
+            <label class="block">Repetir</label>
+            <el-select
+              class="w-full mt-2"
+              v-model="form.repeater"
+              clearable
+              placeholder="Seleccionar"
+              no-data-text="No hay opciones registradas"
+              no-match-text="No se encontraron coincidencias"
+            >
+              <el-option
+                v-for="repeater in repeaters"
+                :key="repeater"
+                :label="repeater"
+                :value="repeater"
+              />
+            </el-select>
+            <InputError :message="form.errors.repeater" />
+          </div>
+          <div>
+            <label>Descripción</label>
+            <textarea v-model="form.description" class="textarea"> </textarea>
+            <InputError :message="form.errors.description" />
+          </div>
+          <div>
+            <label class="block">Recordatorio</label>
+            <div class="flex items-center">
+              <el-select
+                class="w-1/2 mt-2"
+                v-model="form.reminder"
+                clearable
+                placeholder="Seleccionar"
+                no-data-text="No hay opciones registradas"
+                no-match-text="No se encontraron coincidencias"
+              >
+                <el-option
+                  v-for="reminder in reminders"
+                  :key="reminder"
+                  :label="reminder"
+                  :value="reminder"
+                />
+              </el-select>
+              <p class="text-sm text-primary ml-7 cursor-pointer w-1/2">
+                + Agregar recordatorio
+              </p>
+            </div>
+            <InputError :message="form.errors.reminder" />
+          </div>
+        </section>
 
         <div class="flex md:text-left items-center">
           <PrimaryButton :disabled="form.processing"> Guardar </PrimaryButton>
@@ -264,33 +289,35 @@ import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 
-
 export default {
   data() {
     const form = useForm({
       type: "Evento",
       title: null,
       participants: [],
-      repeat: 'No se repite',
+      repeater: "No se repite",
       location: null,
       description: null,
-      remind: null,
+      reminder: null,
+      is_full_day: false,
+      time: null,
+      start_date: null,
     });
 
     return {
       form,
       repeaters: [
-        'No se repite',
-        'Todos los días',
-        'Cada semana, el lunes',
-        'Personalizado',
+        "No se repite",
+        "Todos los días",
+        "Cada semana, el lunes",
+        "Personalizado",
       ],
       reminders: [
-        '5 minutos antes',
-        '10 minutos antes',
-        '1 hora antes',
-        '1 día antes',
-        'Personalizado',
+        "5 minutos antes",
+        "10 minutos antes",
+        "1 hora antes",
+        "1 día antes",
+        "Personalizado",
       ],
     };
   },
@@ -299,20 +326,18 @@ export default {
     PrimaryButton,
     Link,
     InputError,
-    Checkbox
-
+    Checkbox,
   },
   props: {
     users: Array,
   },
   methods: {
     store() {
-      this.form.post(route("tasks.store"), {
-        // _method: 'post',
+      this.form.post(route("calendars.store"), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: "Se ha creado una nueva tarea",
+            message: "Se ha agendado correctamente!",
             type: "success",
           });
         },
@@ -321,7 +346,7 @@ export default {
     disabledDate(time) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      return time.getTime() > today.getTime();
+      return time.getTime() < today.getTime();
     },
   },
 };

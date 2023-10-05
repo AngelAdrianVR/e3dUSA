@@ -32,7 +32,38 @@ class CalendarController extends Controller
     
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'type' => 'required|string',
+            'title' => 'required|string',
+            'participants' => 'nullable|array|min:1',
+            'repeater' => 'nullable|string',
+            'location' => 'nullable|string',
+            'description' => 'nullable|string',
+            'reminder' => 'nullable|string',
+            'is_full_day' => 'boolean',
+            'time' => 'required|array|min:2', //viene un array de hora de inicio y hora de termino
+            'start_date' => 'required',
+        ]);
+
+         // Obtén los valores del array 'time' y asígnalos a las variables 'start_at' y 'finish_at'
+    list($start_at, $finish_at) = $request->input('time');
+
+        Calendar::create([
+            'type' => $request->type,
+            'title' => $request->title,
+            'repeater' => $request->repeater,
+            'location' => $request->location,
+            'description' => $request->description,
+            'reminder' => $request->reminder,
+            'is_full_day' => $request->is_full_day,
+            'start_at' => $start_at,
+            'finish_at' => $finish_at,
+            'start_date' => $request->start_date,
+            'finish_date' => $request->start_date,
+            'user_id' => auth()->id(),
+        ]);
+
+        return to_route('calendars.index');
     }
 
     

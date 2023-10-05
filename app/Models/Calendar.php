@@ -13,9 +13,12 @@ class Calendar extends Model
     protected $fillable = [
         'type',
         'title',
+        'repeater', //repeat es una palabra reservada de SQL por eso lo cambié a repeater
+        'reminder',
         'participants',
         'description',
         'status',
+        'is_full_day',
         'start_date',
         'finish_date',
         'start_at',
