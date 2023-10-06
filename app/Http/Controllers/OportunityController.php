@@ -20,7 +20,7 @@ class OportunityController extends Controller
     
     public function create()
     {
-        //
+        return inertia('Oportunity/Create');
     }
 
     

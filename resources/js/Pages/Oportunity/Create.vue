@@ -1,14 +1,14 @@
 <template>
   <div>
-    <AppLayout title="Crear proyecto |">
+    <AppLayout title="Crear Oportunidad |">
       <template #header>
         <div class="flex justify-between">
-          <Link :href="route('projects.index')"
+          <Link :href="route('oportunities.index')"
             class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
           <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
-            <h2 class="font-semibold text-xl leading-tight">Crear proyecto</h2>
+            <h2 class="font-semibold text-xl leading-tight">Crear Oportunidad</h2>
           </div>
         </div>
       </template>
@@ -17,10 +17,28 @@
       <form @submit.prevent="store">
         <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4">
           <div>
-              <label>Título del proyecto *</label>
-              <input v-model="form.project_name" class="input" type="text">
-              <InputError :message="form.errors.project_name" />
+              <label>Nombre de la oportunidad *</label>
+              <input v-model="form.name" class="input" type="text">
+              <InputError :message="form.errors.name" />
           </div>
+          <div class="relative">
+        <i :class="getColorStatus(form.status)"
+          class="fa-solid fa-circle text-xs top-1 left-16 absolute z-30"></i>
+        <label>Estatus</label> <br />
+        <div class="flex items-center space-x-4">
+          <el-select class="lg:w-1/2 mt-2" v-model="form.status" clearable
+            filterable placeholder="Seleccionar estatus" no-data-text="No hay estatus registrados"
+            no-match-text="No se encontraron coincidencias">
+            <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
+              <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
+              <span style="float: center; margin-left: 5px; font-size: 13px">{{
+                item.label
+              }}</span>
+            </el-option>
+          </el-select>
+        </div>
+        <InputError :message="form.errors.status" />
+      </div>
           <div>
               <label>Creado por</label>
               <input disabled v-model="owner" class="input text-gray-400" type="text">
@@ -38,111 +56,77 @@
             <InputError :message="form.errors.start_date" :disabled-date="disabledDate" />
           </div>
           <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
-            <el-tooltip content="Fecha de final *" placement="top">
+            <el-tooltip content="Fecha estimada de cierre" placement="top">
               <span
                 class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
                 <i class="fa-solid fa-calendar"></i>
               </span>
             </el-tooltip>
-            <el-date-picker v-model="form.limit_date" type="date" placeholder="Fecha de final *"
+            <el-date-picker v-model="form.limit_date" type="date" placeholder="Fecha estimada de cierre *"
               format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
             <InputError :message="form.errors.limit_date" :disabled-date="disabledDate" />
           </div>
         </div>
-        <div class="flex justify-end items-center space-x-3 mr-auto mt-2">
-        <label class="flex items-center">
-          <Checkbox v-model:checked="form.is_strict_proyect" class="bg-transparent"/>
-          <span class="ml-2 text-sm text-[#9A9A9A]">Proyecto estricto</span>
-        </label>
-        <el-tooltip content="Las tareas no pueden comenzar ni finalizar fuera de las fechas programadas de un proyecto " placement="top">
-          <i class="fa-solid fa-circle-info text-primary text-xs"></i>
-        </el-tooltip>
-      </div>
       <div>
         <label>Descripción *</label>
-        <textarea v-model="form.description" class="textarea w-full">
-        </textarea>
+        <RichText v-model="form.description" />
       </div>
-      <div class="w-1/2">
-          <el-select v-model="form.group" clearable filterable placeholder="Grupo"
-          no-data-text="No hay grupos registrados" no-match-text="No se encontraron coincidencias">
-          <el-option v-for="group in groups" :key="group" :label="group" :value="group" />
-        </el-select>
-          <InputError :message="form.errors.group" />
-      </div>
-      <div class="inline-block">
-        <label class="flex items-center">
-          <Checkbox v-model:checked="form.is_internal_project" class="bg-transparent" />
-          <span class="ml-2 text-sm text-[#9A9A9A]">Proyecto interno</span>
+      <p @click="activateFileInput" class="text-primary cursor-pointer">+ Adjuntar archivos</p>
+        <div class="ml-4 -mt-5">
+            <ul>
+            <li class="text-secondary text-sm" v-for="fileName in form.mediaNames" :key="fileName">{{ fileName }}</li>
+            </ul>
+        </div>
+        <input  @input="form.media = $event.target.files" multiple type="file" id="fileInput" style="display: none;" @change="handleFileUpload">
+
+<div class="flex items-center space-x-4">
+    <div class="lg:w-1/2">
+       <label class="block">Etiquetas <i class="fa-solid fa-circle-plus ml-7 text-primary text-xs cursor-pointer"></i></label>
+        <div class="flex items-center space-x-4">
+          <el-select class="lg:w-1/2" v-model="form.tag" clearable
+            filterable placeholder="Escriba el nombre de etiqueta" no-data-text="No hay etiquetas registradas"
+            no-match-text="No se encontraron coincidencias">
+            <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
+              <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
+              <span style="float: center; margin-left: 5px; font-size: 13px">{{
+                item.label
+              }}</span>
+            </el-option>
+          </el-select>
+        </div>
+        <InputError :message="form.errors.tag" /> 
+    </div>  
+    <div class="lg:w-1/2">
+        <label>Probabilidad %</label>
+        <input v-model="form.probability" class="input text-gray-400" type="number">
+    </div>
+</div>
+<div class="flex items-center space-x-4">
+    <div class="lg:w-1/2">
+       <label class="block">Prioridad</label>
+        <div class="flex items-center space-x-4">
+          <el-select class="lg:w-1/2" v-model="form.priority" clearable
+            filterable placeholder="Seleccione" no-data-text="No hay opciones registradas"
+            no-match-text="No se encontraron coincidencias">
+            <el-option v-for="item in priorities" :key="item" :label="item.label" :value="item.label">
+              <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
+              <span style="float: center; margin-left: 5px; font-size: 13px">{{
+                item.label
+              }}</span>
+            </el-option>
+          </el-select>
+        </div>
+        <InputError :message="form.errors.priority" /> 
+    </div>  
+    <div class="lg:w-1/2">
+        <label>Causa oportunidad perdida 
+            <el-tooltip content="Escribe la causa por lo que se PERDIÓ esta oportunidad" placement="top">
+                <i class="fa-regular fa-circle-question ml-2 text-primary text-xs"></i>
+             </el-tooltip>
         </label>
-      </div>
-
-      <section v-if="!form.is_internal_project">
-        <h2 class="font-bold my-3">Campos adicionales</h2>
-
-        <div class="flex space-x-7 justify-between">
-          <div class="w-1/2">
-          <label>Cliente *</label> <br>
-            <el-select v-model="form.company_id" clearable filterable placeholder="Seleccione"
-            no-data-text="No hay clientes registrados" no-match-text="No se encontraron coincidencias">
-            <el-option v-for="company in companies" :key="company" :label="company.business_name" :value="company.id" />
-            </el-select>
-            <InputError :message="form.errors.company_id" />
-          </div>
-          <div class="w-1/2">
-          <label>Sucursal *</label> <br>
-            <el-select @change="saveCompanyBranchAddress" v-model="form.company_branch" clearable filterable placeholder="Seleccione"
-            no-data-text="No hay sucursales registradas" no-match-text="No se encontraron coincidencias">
-            <el-option v-for="company_branch in companies.find((item) => item.id == form.company_id)?.company_branches"
-             :key="company_branch" :label="company_branch.name" :value="company_branch.name" />
-            </el-select>
-            <InputError :message="form.errors.company_branch" />
-          </div>
-        </div>
-
-        <div class="flex space-x-7 justify-between my-2">
-          <div class="w-1/2">
-          <label>Dirección de entrega <span @click="form.shipping_address = company_branch_obj?.address" class="text-primary text-xs cursor-pointer ml-4">Dirección de sucursal</span></label> <br>
-            <input v-model="form.shipping_address" class="input text-gray-600" type="text">
-            <InputError :message="form.errors.shipping_address" />
-          </div>
-          <div class="w-1/2">
-          <label>OV *</label> <br>
-            <el-select v-model="form.sale_id" clearable filterable placeholder="Seleccione"
-            no-data-text="No hay órdenes registradas" no-match-text="No se encontraron coincidencias">
-            <el-option v-for="ov in company_branch_obj?.sales" :key="ov?.id" :label="'OV-0' + ov?.id" :value="ov?.id" />
-            </el-select>
-            <InputError :message="form.errors.sale_id" />
-          </div>
-        </div>
-      </section>
-
-        <h2 class="font-bold">Presupuesto</h2>
-
-        <div class="flex space-x-7 justify-between">
-          <div class="w-1/2">
-          <label>Moneda</label> <br>
-            <el-select v-model="form.currency" clearable filterable placeholder="Seleccione"
-            no-data-text="No hay opciones registradas" no-match-text="No se encontraron coincidencias">
-            <el-option v-for="currency in currencies" :key="currency" :label="currency" :value="currency" />
-            </el-select>
-            <InputError :message="form.errors.currency" />
-          </div>
-          <div class="w-1/2">
-          <label>Monto</label> <br>
-            <input v-model="form.budget" class="input" type="number" min="0">
-            <InputError :message="form.errors.budget" />
-          </div>
-        </div>
-
-        <div class="w-1/2">
-        <label>Método de facturación</label>
-          <el-select v-model="form.sat_method" clearable filterable placeholder="seleccione"
-          no-data-text="No hay metodos registrados" no-match-text="No se encontraron coincidencias">
-          <el-option v-for="sat_method in sat_methods" :key="sat_method" :label="sat_method" :value="sat_method" />
-        </el-select>
-          <InputError :message="form.errors.sat_method" />
-      </div>
+        <input v-model="form.lostOportunityRazon" class="input text-gray-400" type="text">
+    </div>
+</div>
 
     <div class="text-sm">
       <h3 class="font-bold text-lg mb-2 mt-10">Acceso al proyecto</h3>
@@ -212,7 +196,6 @@
         </div>
       </div>
     </section>
-<!-- {{form}} -->
 
           <div class="mt-9 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing">
@@ -229,53 +212,69 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import ThirthButton from "@/Components/MyComponents/ThirthButton.vue";
+import RichText from "@/Components/MyComponents/RichText.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import Checkbox from "@/Components/Checkbox.vue";
+
 export default {
   data() {
     const form = useForm({
-      project_name: null,
-      start_date: null,
-      limit_date: null,
-      is_strict_proyect: false,
+      name: null,
+      status: null,
       description: null,
-      group: null,
-      is_internal_project: false,
-      company_id: null,
-      company_branch: null,
-      shipping_address: null,
-      sale_id: null,
-      currency: null,
-      budget: null,
-      sat_method: null,
+      tag: null,
+      probability: null,
+      priority: null,
       type_access_project: 'Publico',
+      lostOportunityRazon: null,
+      media: [],
 
     });
 
     return {
       form,
+      mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
       editAccesFlag: false,
       company_branch_obj: null,
       owner: this.$page.props.auth.user.name,
-      groups: [
-        'Compras',
-        'Ventas',
-        'Producción',
-        'Diseño',
-        'Marketing',
-        'Finanzas',
+      statuses: [
+        {
+          label: "Nueva",
+          color: "text-[#9A9A9A]",
+        },
+        {
+          label: "Pendiente",
+          color: "text-[#F3FD85]",
+        },
+        {
+          label: "En proceso",
+          color: "text-[#FEDBBD]",
+        },
+        {
+          label: "Pagado",
+          color: "text-[#AFFDB2]",
+        },
+        {
+          label: "Perdida",
+          color: "text-[#F7B7FC]",
+        },
       ],
-      currencies: [
-          'MXN - Peso Mexicano',
-          'USD - Dolar',
-      ],
-      sat_methods: [
-          'Facturación al contado',
-          'Facturación a crédito',
-          'Facturación por adelantado',
+      priorities:[
+         {
+          label: "Baja",
+          color: "text-[#87CEEB]",
+        },
+         {
+          label: "Media",
+          color: "text-[#D97705]",
+        },
+         {
+          label: "Alta",
+          color: "text-[#D90537]",
+        },
       ],
     };
   },
@@ -287,7 +286,8 @@ export default {
     InputError,
     IconInput,
     Checkbox,
-    ThirthButton
+    ThirthButton,
+    RichText
   },
   props: {
     companies: Array,
@@ -295,11 +295,11 @@ export default {
   },
   methods: {
     store() {
-      this.form.post(route("projects.store"), {
+      this.form.post(route("oportunities.store"), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: "Se ha creado un nuevo proyecto",
+            message: "Se ha creado una nueva oportunidad",
             type: "success",
           });
 
@@ -315,6 +315,40 @@ export default {
       today.setHours(0, 0, 0, 0);
       return time.getTime() > today.getTime();
     },
+    getColorStatus(oportunityStatus) {
+      if (oportunityStatus === "Nueva") {
+        return "text-[#9A9A9A]";
+      } else if (oportunityStatus === "Pendiente") {
+        return "text-[#F3FD85]";
+      } else if (oportunityStatus === "En proceso") {
+        return "text-[#FEDBBD]";
+      } else if (oportunityStatus === "Pagado") {
+        return "text-[#AFFDB2]";
+      } else if (oportunityStatus === "Perdida") {
+        return "text-[#F7B7FC]";
+      } else {
+        return "text-transparent";
+      }
+    },
+    activateFileInput() {
+    // Simula un clic en el campo de entrada de archivos al hacer clic en el párrafo
+    document.getElementById('fileInput').click();
+  },
+  handleFileUpload(event) {
+    // Este método se llama cuando se selecciona un archivo en el input file
+    const selectedFiles = event.target.files;
+    const fileNames = [];
+    
+    // Obtén los nombres de los archivos seleccionados y guárdalos en form.mediaNames
+    for (let i = 0; i < selectedFiles.length; i++) {
+      fileNames.push(selectedFiles[i].name);
+    }
+
+    // Actualiza la propiedad form.media con los archivos seleccionados
+    this.form.media = selectedFiles;
+    // Actualiza la propiedad form.mediaNames con los nombres de los archivos
+    this.form.mediaNames = fileNames;
+  },
   },
 };
 </script>
@@ -323,7 +357,7 @@ export default {
 
 /* Estilo para el hover de las opciones */
 .el-select-dropdown .el-select-dropdown__item:hover {
-  background-color: #D90537; /* Color de fondo al hacer hover */
+  background-color: #d8224d; /* Color de fondo al hacer hover */
   color: white; /* Color del texto al hacer hover */
   border-radius: 20px; /* Redondeo */
 }

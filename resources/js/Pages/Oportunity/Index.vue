@@ -385,7 +385,8 @@ export default {
         return this.oportunities.data;
       } else {
         return this.oportunities.data.filter((oportunity) =>
-          oportunity.name.toLowerCase().includes(this.search.toLowerCase())
+          oportunity.name.toLowerCase().includes(this.search.toLowerCase()) ||
+          oportunity.status.toLowerCase().includes(this.search.toLowerCase())
         );
       }
     },
