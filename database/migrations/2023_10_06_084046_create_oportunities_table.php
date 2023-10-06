@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('oportunities', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('contact');
+            $table->unsignedFloat('amount')->nullable();
+            $table->string('status')->default('Nueva');
+            $table->string('priority');
+            $table->timestamp('finished_at')->nullable();
+            $table->timestamp('estimated_finish_date')->nullable();
+            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

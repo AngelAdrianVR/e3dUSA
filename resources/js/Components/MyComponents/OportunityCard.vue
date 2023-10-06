@@ -2,15 +2,20 @@
   <div
     class="border border-[#D9D9D9] text-left rounded-md py-2 lg:px-8 shadow-md shadow-gray-400/100 h-24 relative"
   >
-    <div class="flex items-center absolute top-2 left-3">
+    <div class="flex items-center absolute top-2 left-2 cursor-move p-1">
       <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
       <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
     </div>
-    <i class="fa-solid fa-circle text-[9px] absolute top-3 right-3"></i>
-    <p>{{ "BOSH Porta Placas" }}</p>
-    <p>{{ "Martin Gallegos" }}</p>
-    <p>${{ "65,945.32" }}</p>
-    <p class="text-right">{{ "Hace 5 días" }}</p>
+    <el-tooltip :content="'Prioridad: ' + oportunity.priority.label" placement="top">
+        <i :class="oportunity.priority.color" class="fa-solid fa-circle text-[9px] absolute top-3 right-2 p-1"></i>
+    </el-tooltip>
+<p>{{ oportunity?.name }}</p>
+    <p>{{ oportunity?.contact }}</p>
+    <p>${{ oportunity?.amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</p>
+    <div class="flex justify-between">
+      <p>Actividades <span class="text-white rounded-full px-1 bg-secondary">5</span></p>
+      <p>{{ oportunity?.created_at?.diffForHumans }}</p>
+    </div>
   </div>
 </template>
 
@@ -29,7 +34,7 @@ export default {
 
     },
     props:{
-
+        oportunity: Object
     },
 };
 </script>

@@ -314,7 +314,8 @@ export default {
             message: "Orden de venta autorizada",
             type: "success",
           });
-
+          
+          this.$inertia.get(route('sales.index'));
           this.currentSale.authorized_at = response.data.item.authorized_at;
           this.currentSale.status = response.data.item.status;
         }

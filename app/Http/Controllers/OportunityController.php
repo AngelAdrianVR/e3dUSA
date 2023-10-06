@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\OportunityResource;
 use App\Models\Oportunity;
 use Illuminate\Http\Request;
 
@@ -10,7 +11,10 @@ class OportunityController extends Controller
     
     public function index()
     {
-        return inertia('Oportunity/Index');
+        $oportunities = OportunityResource::collection(Oportunity::latest()->get());
+
+        // return $oportunities;
+        return inertia('Oportunity/Index',  compact('oportunities'));
     }
 
     
@@ -46,6 +50,6 @@ class OportunityController extends Controller
     
     public function destroy(Oportunity $oportunity)
     {
-        //
+        $oportunity->delete();
     }
 }
