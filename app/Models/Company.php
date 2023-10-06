@@ -39,4 +39,9 @@ class Company extends Model
             ])->withTimestamps()
             ->using(CatalogProductCompany::class);
     }
+
+    public function oportunities(): HasMany
+    {
+        return $this->hasMany(Oportunity::class);
+    }
 }

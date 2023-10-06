@@ -126,6 +126,12 @@ export default {
                             show: this.$page.props.auth.user.permissions.includes('Ver ordenes de venta'),
                             notifications: false,
                         },
+                        {
+                            label: 'Oportunidades',
+                            route: 'oportunities.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver oportunidades'),
+                            notifications: false,
+                        },
 
                     ],
                     dropdown: true,

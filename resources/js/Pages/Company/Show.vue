@@ -11,7 +11,7 @@
         </div>
         <div class="flex justify-between">
           <div class="md:w-1/3">
-            <el-select v-model="selectedCompany" clearable filterable placeholder="Buscar producto"
+            <el-select v-model="selectedCompany" clearable filterable placeholder="Buscar cliente"
               no-data-text="No hay clientes en el catálogo" no-match-text="No se encontraron coincidencias">
               <el-option v-for="item in companies" :key="item.id" :label="item.business_name" :value="item.id" />
             </el-select>
@@ -66,6 +66,21 @@
             " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Productos
           </p>
+          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p @click="tabs = 4" :class="tabs == 4 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Oportunidades
+          </p>
+          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p @click="tabs = 5" :class="tabs == 5 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Historial
+          </p>
+          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p @click="tabs = 6" :class="tabs == 6 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Cotizaciones
+          </p>
         </div>
       </div>
       <!-- ------------- tabs section ends ------------- -->
@@ -103,8 +118,28 @@
             :company_product="company_product" />
         </div>
       </div>
-
       <!-- ------------- Productos ends 3 ------------- -->
+      
+      <!-- -------------Oportunidades starts 4 ------------- -->
+      <div v-if="tabs == 4" class="p-7">
+        <p class="text-secondary">Oportunidades</p>
+        
+      </div>
+      <!-- ------------- Oportunidades ends 4 ------------- -->
+      
+      <!-- -------------Historial starts 5 ------------- -->
+      <div v-if="tabs == 5" class="p-7">
+        <p class="text-secondary">Historial</p>
+        
+      </div>
+      <!-- ------------- Historial ends 5 ------------- -->
+      
+      <!-- -------------Cotizaciones starts 6 ------------- -->
+      <div v-if="tabs == 6" class="p-7">
+        <p class="text-secondary">Cotizaciones</p>
+        
+      </div>
+      <!-- ------------- Cotizaciones ends 6 ------------- -->
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar cliente </template>
