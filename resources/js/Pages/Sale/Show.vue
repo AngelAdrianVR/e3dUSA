@@ -100,6 +100,11 @@
             " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Productos
           </p>
+          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p @click="tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Historial
+          </p>
         </div>
       </div>
       <!-- ------------- tabs section ends ------------- -->
@@ -126,10 +131,6 @@
           <span>{{ currentSale?.created_at }}</span>
           <span class="text-gray-500 my-2">Medio de petición</span>
           <span>{{ currentSale?.order_via }}</span>
-          <!-- <span class="text-gray-500 my-2">Prioridad</span>
-          <span>{{ "currentSale?.status" }}</span>
-          <span class="text-gray-500 my-2">Operadores</span>
-          <span>{{ "currentSale?.authorized_at" }}</span> -->
           <span class="text-gray-500 my-2">OCE</span>
           <span>{{ currentSale?.oce_name }}</span>
           <span class="text-gray-500 my-2">Factura</span>
@@ -184,6 +185,15 @@
       </div>
 
       <!-- ------------- tab 2 products ends ------------ -->
+      
+      <!-- -------------tab 3 history starts ------------- -->
+
+      <div v-if="tabs == 3" class="p-7">
+        <p class="text-secondary mb-2">Historial</p>
+        
+      </div>
+
+      <!-- ------------- tab 3 history ends ------------ -->
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar Órden de venta </template>

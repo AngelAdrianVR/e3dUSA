@@ -18,6 +18,7 @@ use App\Http\Controllers\KioskDeviceController;
 use App\Http\Controllers\MachineController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MeetingController;
+use App\Http\Controllers\OportunityController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProductionController;
@@ -93,13 +94,16 @@ Route::post('companies/get-all-companies', [CompanyController::class, 'getAllCom
 // ------- CRM (Clients Routes)  ---------
 Route::get('crm', [DashboardController::class, 'crmDashboard'])->middleware('auth')->name('crm.dashboard');
 
-// ------- Ventas(sale orders Routes)  ---------
+// ------- CRM (oportunities Routes)  ---------
+Route::resource('oportunities', OportunityController::class)->middleware('auth');
+
+// ------- CRM(sale orders Routes)  ---------
 Route::resource('sales', SaleController::class)->middleware('auth');
 Route::post('sales/massive-delete', [SaleController::class, 'massiveDelete'])->name('sales.massive-delete');
 Route::post('sales/clone', [SaleController::class, 'clone'])->name('sales.clone');
 Route::put('sales/authorize/{sale}', [SaleController::class, 'authorizeOrder'])->name('sales.authorize');
 
-// ------- Ventas(Companybranches sucursales Routes)  ---------
+// ------- CRM(Companybranches sucursales Routes)  ---------
 Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');
 Route::put('company-branches/clear-important-notes/{company_branch}', [CompanyBranchController::class, 'clearImportantNotes'])->name('company-branches.clear-important-notes')->middleware('auth');
 Route::put('company-branches/store-important-notes/{company_branch}', [CompanyBranchController::class, 'storeImportantNotes'])->name('company-branches.store-important-notes')->middleware('auth');
