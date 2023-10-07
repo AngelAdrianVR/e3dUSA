@@ -57,8 +57,9 @@ class OportunityController extends Controller
     
     public function show(Oportunity $oportunity)
     {
-        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks')->latest()->get());
+        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned')->latest()->get());
 
+        // return $oportunities;
         return inertia('Oportunity/Show', compact('oportunity', 'oportunities'));
     }
 

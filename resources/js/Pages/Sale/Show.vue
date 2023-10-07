@@ -327,9 +327,6 @@ export default {
         });
       }
     },
-    productionOrder() {
-
-    },
   },
 
   // watch: {

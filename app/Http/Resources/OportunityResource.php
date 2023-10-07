@@ -33,6 +33,7 @@ class OportunityResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'folio' => 'OP-' . strtoupper(substr($this->name, 0, 3)) . '-' . str_pad($this->id, 3, '0', STR_PAD_LEFT),
             'name' => $this->name,
             'contact' => $this->contact,
             'amount' => $this->amount,
@@ -43,7 +44,7 @@ class OportunityResource extends JsonResource
             'type_access_project' => $this->type_access_project,
             'priority' => $priority,
             'finished_at' => $this->finished_at?->isoFormat('DD MMMM YYYY'),
-            'start_date' => $this->star_date?->isoFormat('DD MMMM YYYY'),
+            'start_date' => $this->start_date?->isoFormat('DD MMMM YYYY'),
             'media' => $this->getMedia('files')->all(),
             'estimated_finish_date' => $this->estimated_finish_date?->isoFormat('DD MMMM YYYY'),
             'company' => $this->whenLoaded('company'),
