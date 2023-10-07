@@ -6,12 +6,6 @@
     >
       <div class="flex justify-between">
         <label class="text-lg">Oportunidades</label>
-        <Link
-          :href="route('dashboard')"
-          class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center"
-        >
-          <i class="fa-solid fa-xmark"></i>
-        </Link>
       </div>
       <div class="flex justify-between">
         <div class="flex items-center space-x-2 w-1/3">
@@ -285,8 +279,6 @@ export default {
     return {
       search: "",
       inputSearch: "",
-      selectedOportunity: "",
-      currentCompany: null,
       show_type_view: false,
       type_view: "Kanban",
       newTotal: null,

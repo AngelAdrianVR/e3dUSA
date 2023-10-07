@@ -13,7 +13,7 @@
         <div class="flex justify-between">
           <div class="md:w-1/3 mr-2">
             <el-select @change="saleSelection" v-model="saleSelected" clearable filterable
-              placeholder="Buscar órden de venta" no-data-text="No hay órdenes en el catálogo"
+              placeholder="Buscar órden de venta" no-data-text="No hay órdenes registradas"
               no-match-text="No se encontraron coincidencias">
               <el-option v-for="item in sales.data" :key="item.id" :label="item.folio" :value="item.id" />
             </el-select>

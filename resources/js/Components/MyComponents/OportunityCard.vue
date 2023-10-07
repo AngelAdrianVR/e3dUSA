@@ -1,6 +1,6 @@
 <template>
-  <div
-    class="border border-[#D9D9D9] text-left rounded-md py-2 lg:px-8 shadow-md shadow-gray-400/100 h-24 relative"
+  <div @click="$inertia.get(route('oportunities.show', oportunity.id))"
+    class="border border-[#D9D9D9] text-left rounded-md py-2 lg:px-7 shadow-md shadow-gray-400/100 h-24 relative cursor-pointer"
   >
     <div class="flex items-center absolute top-2 left-2 cursor-move p-1">
       <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
@@ -13,7 +13,7 @@
     <p>{{ oportunity?.contact }}</p>
     <p>${{ oportunity?.amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</p>
     <div class="flex justify-between">
-      <p>Actividades <span class="text-white rounded-full px-1 bg-secondary text-xs">5</span></p>
+      <p class="text-gray-400">Actividades <span class="text-white rounded-full px-1 bg-secondary text-xs">{{ oportunity?.oportunityTasks?.length }}</span></p>
       <p>{{ oportunity?.created_at?.diffForHumans }}</p>
     </div>
   </div>

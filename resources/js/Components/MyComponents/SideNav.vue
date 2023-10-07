@@ -95,7 +95,7 @@ export default {
                 {
                     label: 'CRM',
                     icon: '<i class="fa-solid fa-chart-line text-sm"></i>',
-                    active: route().current('crm.*') || route().current('quotes.*') || route().current('companies.*') || route().current('sales.*'),
+                    active: route().current('crm.*') || route().current('quotes.*') || route().current('companies.*') || route().current('sales.*') || route().current('oportunities.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
                         return ['quote', 'sale'].includes(notification.data.module);
                     }),
@@ -137,7 +137,8 @@ export default {
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones') ||
                         this.$page.props.auth.user.permissions.includes('Ver clientes') ||
-                        this.$page.props.auth.user.permissions.includes('Ver ordenes de venta')
+                        this.$page.props.auth.user.permissions.includes('Ver ordenes de venta') ||
+                        this.$page.props.auth.user.permissions.includes('Ver oportunidades')
                 },
                 {
                     label: 'Compras',
