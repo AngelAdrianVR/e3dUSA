@@ -43,6 +43,41 @@
               <label>Creado por</label>
               <input disabled v-model="owner" class="input text-gray-400" type="text">
           </div>
+          <label class="inline-flex items-center">
+              <Checkbox v-model:checked="form.is_new_company" @change="handleChecked" class="bg-transparent disabled:border-gray-400"/>
+              <span class="ml-2 text-xs">Nuevo cliente</span>
+            </label>
+            <div v-if="form.is_new_company">
+              <label>Contacto *</label>
+              <input v-model="form.contact" class="input" type="text">
+              <InputError :message="form.errors.contact" />
+          </div>
+          <div v-if="!form.is_new_company" class="flex space-x-2 justify-between">
+          <div class="w-1/2">
+          <label>Cliente *</label> <br>
+            <el-select v-model="form.company_id" clearable filterable placeholder="Seleccione"
+            no-data-text="No hay clientes registrados" no-match-text="No se encontraron coincidencias">
+            <el-option v-for="company in companies" :key="company" :label="company.business_name" :value="company.id" />
+            </el-select>
+            <InputError :message="form.errors.company_id" />
+          </div>
+          <div class="w-1/2">
+          <label>Sucursal *</label> <br>
+            <el-select @change="saveCompanyBranchAddress" v-model="company_branch" clearable filterable placeholder="Seleccione"
+            no-data-text="No hay sucursales registradas" no-match-text="No se encontraron coincidencias">
+            <el-option v-for="company_branch in companies.find((item) => item.id == form.company_id)?.company_branches"
+             :key="company_branch" :label="company_branch.name" :value="company_branch.name" />
+            </el-select>
+          </div>
+          <div class="w-1/2">
+          <label>Contacto *</label> <br>
+            <el-select v-model="form.contact" clearable filterable placeholder="Seleccione"
+            no-data-text="No hay contactos registrados" no-match-text="No se encontraron coincidencias">
+            <el-option v-for="contact in company_branch_obj?.contacts"
+             :key="contact" :label="contact.name" :value="contact.name" />
+            </el-select>
+          </div>
+        </div>
            <div class="lg:flex pt-3">
           <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
             <el-tooltip content="Fecha de inicio *" placement="top">
@@ -53,7 +88,7 @@
             </el-tooltip>
             <el-date-picker v-model="form.start_date" type="date" placeholder="Fecha de inicio *"
               format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
-            <InputError :message="form.errors.start_date" :disabled-date="disabledDate" />
+            <InputError :message="form.errors.start_date" />
           </div>
           <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
             <el-tooltip content="Fecha estimada de cierre" placement="top">
@@ -62,14 +97,18 @@
                 <i class="fa-solid fa-calendar"></i>
               </span>
             </el-tooltip>
-            <el-date-picker v-model="form.limit_date" type="date" placeholder="Fecha estimada de cierre *"
+            <el-date-picker v-model="form.estimated_finish_date" type="date" placeholder="Fecha estimada de cierre"
               format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
-            <InputError :message="form.errors.limit_date" :disabled-date="disabledDate" />
+            <InputError :message="form.errors.estimated_finish_date" />
           </div>
         </div>
-      <div>
+      <!-- <div>
         <label>Descripción *</label>
         <RichText v-model="form.description" />
+      </div> -->
+      <div>
+        <label>Descripción *</label>
+        <input type="text" class="input" v-model="form.description">
       </div>
       <p @click="activateFileInput" class="text-primary cursor-pointer">+ Adjuntar archivos</p>
         <div class="ml-4 -mt-5">
@@ -83,7 +122,7 @@
     <div class="lg:w-1/2">
        <label class="block">Etiquetas <i class="fa-solid fa-circle-plus ml-7 text-primary text-xs cursor-pointer"></i></label>
         <div class="flex items-center space-x-4">
-          <el-select class="lg:w-1/2" v-model="form.tag" clearable
+          <el-select class="lg:w-1/2" v-model="form.tags" multiple clearable
             filterable placeholder="Escriba el nombre de etiqueta" no-data-text="No hay etiquetas registradas"
             no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
@@ -94,15 +133,17 @@
             </el-option>
           </el-select>
         </div>
-        <InputError :message="form.errors.tag" /> 
+        <InputError :message="form.errors.tags" /> 
     </div>  
     <div class="lg:w-1/2">
         <label>Probabilidad %</label>
-        <input v-model="form.probability" class="input text-gray-400" type="number">
+        <input v-model="form.probability" class="input" type="number" min="0" max="100">
     </div>
 </div>
 <div class="flex items-center space-x-4">
-    <div class="lg:w-1/2">
+    <div class="lg:w-1/2 relative">
+    <i :class="getColorPriority(form.priority)"
+        class="fa-solid fa-circle text-xs top-1 left-20 absolute z-30"></i>
        <label class="block">Prioridad</label>
         <div class="flex items-center space-x-4">
           <el-select class="lg:w-1/2" v-model="form.priority" clearable
@@ -115,18 +156,25 @@
               }}</span>
             </el-option>
           </el-select>
-        </div>
         <InputError :message="form.errors.priority" /> 
+        </div>
     </div>  
-    <div class="lg:w-1/2">
+
+    <div v-if="form.status === 'Perdida'" class="lg:w-1/2">
         <label>Causa oportunidad perdida 
             <el-tooltip content="Escribe la causa por lo que se PERDIÓ esta oportunidad" placement="top">
                 <i class="fa-regular fa-circle-question ml-2 text-primary text-xs"></i>
              </el-tooltip>
         </label>
-        <input v-model="form.lostOportunityRazon" class="input text-gray-400" type="text">
+        <input v-model="form.lost_oportunity_razon" class="input text-gray-400" type="text">
+        <InputError :message="form.errors.lost_oportunity_razon" />
     </div>
 </div>
+<div class="lg:w-1/2">
+        <label>Valor de oportunidad $ *</label>
+        <input v-model="form.amount" class="input" type="number" min="0" step="0.01">
+        <InputError :message="form.errors.amount" />
+    </div>
 
     <div class="text-sm">
       <h3 class="font-bold text-lg mb-2 mt-10">Acceso al proyecto</h3>
@@ -196,10 +244,10 @@
         </div>
       </div>
     </section>
-
+{{ form }}
           <div class="mt-9 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing">
-              Crear proyecto
+              Crear oportunidad
             </PrimaryButton>
           </div>
         </div>
@@ -225,21 +273,27 @@ export default {
       name: null,
       status: null,
       description: null,
-      tag: null,
+      company_id: null,
+      contact: null,
+      tags: [],
       probability: null,
+      amount: null,
       priority: null,
+      start_date: null,
+      estimated_finish_date: null,
       type_access_project: 'Publico',
-      lostOportunityRazon: null,
+      lost_oportunity_razon: null,
       media: [],
-
+      is_new_company: false,
     });
 
     return {
       form,
-      mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
-      editAccesFlag: false,
+      company_branch: null,
       company_branch_obj: null,
       owner: this.$page.props.auth.user.name,
+      mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
+      editAccesFlag: false,
       statuses: [
         {
           label: "Nueva",
@@ -306,10 +360,6 @@ export default {
         },
       });
     },
-    saveCompanyBranchAddress(){
-      this.company_branch_obj = this.companies.find((item) => item.id == this.form.company_id)?.company_branches[0];
-      // console.log(this.company_branch_obj);
-    },
     disabledDate(time) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -326,6 +376,17 @@ export default {
         return "text-[#AFFDB2]";
       } else if (oportunityStatus === "Perdida") {
         return "text-[#F7B7FC]";
+      } else {
+        return "text-transparent";
+      }
+    },
+    getColorPriority(oportunityPriority){
+      if (oportunityPriority === "Baja") {
+        return "text-[#87CEEB]";
+      } else if (oportunityPriority === "Media") {
+        return "text-[#D97705]";
+      } else if (oportunityPriority === "Alta") {
+        return "text-[#D90537]";
       } else {
         return "text-transparent";
       }
@@ -349,16 +410,17 @@ export default {
     // Actualiza la propiedad form.mediaNames con los nombres de los archivos
     this.form.mediaNames = fileNames;
   },
+  handleChecked() {
+    //resetea la busqueda de contacto en formulario
+    this.form.company_id = null;
+    this.company_branch_obj = null;
+    this.company_branch = null;
+    this.form.contact = null;
+  },
+  saveCompanyBranchAddress(){
+      this.company_branch_obj = this.companies.find((item) => item.id == this.form.company_id)?.company_branches[0];
+      // console.log(this.company_branch_obj);
+    },
   },
 };
 </script>
-
-<style scoped>
-
-/* Estilo para el hover de las opciones */
-.el-select-dropdown .el-select-dropdown__item:hover {
-  background-color: #d8224d; /* Color de fondo al hacer hover */
-  color: white; /* Color del texto al hacer hover */
-  border-radius: 20px; /* Redondeo */
-}
-</style>

@@ -15,7 +15,8 @@
             </button>
         </header>
         <div contenteditable="true" @input="updateContent" ref="editor" id="editor"
-            class="bg-transparent border border-[#9c9b9b] placeholder:text-gray-400 border-transparent text-gray-700 text-sm rounded-lg focus:ring-[#0355B5] focus:border-[#0355B5] block w-full p-2.5 rounded-tr-none rounded-tl-none min-h-[160px] p-2 focus:outline-none"></div>
+            class="bg-transparent border border-[#9A9A9A] placeholder:text-gray-400 text-gray-700 text-sm rounded-lg focus:ring-[#0355B5] focus:border-[#0355B5] block w-full p-2.5 rounded-tr-none rounded-tl-none min-h-[160px] focus:outline-none"></div>
+            {{ value }}
     </div>
 </template>
 <script>
@@ -30,7 +31,11 @@ export default {
             }
         };
     },
-    emits: ['content'],
+    props:{
+         // Propiedad para recibir y enviar el valor del componente padre
+    value: String,
+    },
+    emits: ['update:value'], // Emite un evento personalizado para actualizar "value",
     methods: {
         toggleStyle(style) {
             // Cambia el estado del estilo
@@ -42,9 +47,9 @@ export default {
             this.$refs.editor.focus();
         },
         updateContent() {
-            // Actualiza el contenido del editor
-            this.$emit('content', this.$refs.editor.innerHTML);
-        }
+      // Actualiza el contenido del editor y emite el evento personalizado "update:value"
+      this.$emit('update:value', this.$refs.editor.innerHTML);
+    },
     }
 }
 </script>

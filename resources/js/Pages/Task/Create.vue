@@ -86,7 +86,7 @@
       <InputError :message="form.errors.end_date" />
     </div>
   </div>
-        <div>
+        <!-- <div>
             <div class="flex items-center">
                 <label>Recordatorio</label>
                 <i @click="remainderModal = true" class="fa-regular fa-clock text-xs text-primary ml-5 cursor-pointer"></i>
@@ -100,7 +100,7 @@
                 </el-option>
             </el-select>
             <InputError :message="form.errors.reminder" />
-        </div>
+        </div> -->
           
 
 

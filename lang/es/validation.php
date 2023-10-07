@@ -194,6 +194,10 @@ return [
         'customer' => 'cliente',
         'date' => 'fecha',
         'time' => 'hora',
+        'company_id' => 'Cliente',
+        'status' => 'Estatus',
+        'start_date' => 'Fecha de inicio',
+        'amount' => ' ',
         'type' => ' ',
     ],
 ];

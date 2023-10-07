@@ -18,9 +18,16 @@ return new class extends Migration
             $table->unsignedFloat('amount')->nullable();
             $table->string('status')->default('Nueva');
             $table->string('priority');
+            $table->text('description')->nullable();
+            $table->text('lost_oportunity_razon')->nullable();
+            $table->json('tags')->nullable(); //se guardan varias etiquetas
+            $table->unsignedTinyInteger('probability')->nullable(); // 1 al 100
             $table->timestamp('finished_at')->nullable();
+            $table->timestamp('start_date')->nullable();
             $table->timestamp('estimated_finish_date')->nullable();
+            $table->string('type_access_project');
             $table->foreignId('company_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
