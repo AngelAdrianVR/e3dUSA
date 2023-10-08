@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -49,7 +50,7 @@ class OportunityResource extends JsonResource
             'estimated_finish_date' => $this->estimated_finish_date?->isoFormat('DD MMMM YYYY'),
             'company' => $this->whenLoaded('company'),
             'user' => $this->whenLoaded('user'),
-            'oportunityTasks' => $this->whenLoaded('oportunityTasks'),
+            'oportunityTasks' => OportunityTaskResource::collection($this->whenLoaded('oportunityTasks')),
             'created_at' => [
                 'diffForHumans' => $this->created_at?->diffForHumans(),
                 'isoFormat' => $this->created_at?->isoFormat('DD MMMM YYYY'),                

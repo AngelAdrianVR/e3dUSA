@@ -148,11 +148,11 @@
 
       <!-- -------------tab 2 atividades starts ------------- -->
 
-      <div v-if="tabs == 2" class="md:grid grid-cols-3 text-left p-4 text-sm">
+      <div v-if="tabs == 2" class="contenedor text-left p-4 text-sm">
       <!-- -- TERMINAR HOY -- -->
-      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:pr-7">
+      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:pr-7 seccion">
         <h2 class="font-bold mb-10">
-          TERMINAR HOY <span class="font-normal ml-7">{{ currentOportunity?.oportunityTasks?.length }}</span>
+          TERMINAR HOY <span class="font-normal ml-7">{{ todayTasksList.length }}</span>
         </h2>
         <!-- <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="currentOportunity" :animation="300" item-key="id" tag="ul" group="tasks" id="pendent" :class="(drag && !currentOportunity?.length) ? 'h-40' : ''">
           <template #item="{ element: task }">
@@ -161,7 +161,84 @@
             </li>
           </template>
         </draggable> -->
-        <div class="text-center" v-if="!currentOportunity?.oportunityTasks.length">
+        <OportunityTaskCard v-for="todayTask in todayTasksList" :key="todayTask" :oportunityTask="todayTask" />
+        <div class="text-center" v-if="!todayTasksList.length">
+          <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
+          <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
+        </div>
+      </div>
+      
+      <!-- -- TERMINAR ESTA SEMANA -- -->
+      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:px-4 seccion">
+        <h2 class="font-bold mb-10 first-letter ml-2">
+          TERMINAR ESTA SEMANA <span class="font-normal ml-7">{{ thisWeekTasksList.length }}</span>
+        </h2>
+        <!-- <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="currentOportunity" :animation="300" item-key="id" tag="ul" group="tasks" id="pendent" :class="(drag && !currentOportunity?.length) ? 'h-40' : ''">
+          <template #item="{ element: task }">
+            <li>
+              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="users" :id="task.id" />
+            </li>
+          </template>
+        </draggable> -->
+        <OportunityTaskCard v-for="thisWeekTask in thisWeekTasksList" :key="thisWeekTask" :oportunityTask="thisWeekTask" />
+        <div class="text-center" v-if="!thisWeekTasksList.length">
+          <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
+          <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
+        </div>
+      </div>
+      
+      <!-- -- ACTIVIDADES PROXIMAS -- -->
+      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:pr-7 seccion">
+        <h2 class="font-bold mb-10 first-letter ml-2">
+          ACTIVIDADES PROXIMAS <span class="font-normal ml-7">{{ nextTasksList.length }}</span>
+        </h2>
+        <!-- <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="currentOportunity" :animation="300" item-key="id" tag="ul" group="tasks" id="pendent" :class="(drag && !currentOportunity?.length) ? 'h-40' : ''">
+          <template #item="{ element: task }">
+            <li>
+              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="users" :id="task.id" />
+            </li>
+          </template>
+        </draggable> -->
+        <OportunityTaskCard v-for="nextTask in nextTasksList" :key="nextTask" :oportunityTask="nextTask" />
+        <div class="text-center" v-if="!nextTasksList.length">
+          <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
+          <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
+        </div>
+      </div>
+      
+      <!-- -- TERMINADAS -- -->
+      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:pr-7 seccion">
+        <h2 class="font-bold mb-10 first-letter ml-2">
+          TERMINADAS <span class="font-normal ml-7">{{ finishedTasksList.length }}</span>
+        </h2>
+        <!-- <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="currentOportunity" :animation="300" item-key="id" tag="ul" group="tasks" id="pendent" :class="(drag && !currentOportunity?.length) ? 'h-40' : ''">
+          <template #item="{ element: task }">
+            <li>
+              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="users" :id="task.id" />
+            </li>
+          </template>
+        </draggable> -->
+        <OportunityTaskCard v-for="finishedTask in finishedTasksList" :key="finishedTask" :oportunityTask="finishedTask" />
+        <div class="text-center" v-if="!finishedTasksList.length">
+          <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
+          <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
+        </div>
+      </div>
+      
+      <!-- -- ATRASADAS -- -->
+      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:pr-7 seccion">
+        <h2 class="font-bold mb-10 first-letter ml-2">
+          ATRASADAS <span class="font-normal ml-7">{{ lateTasksList.length }}</span>
+        </h2>
+        <!-- <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="currentOportunity" :animation="300" item-key="id" tag="ul" group="tasks" id="pendent" :class="(drag && !currentOportunity?.length) ? 'h-40' : ''">
+          <template #item="{ element: task }">
+            <li>
+              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="users" :id="task.id" />
+            </li>
+          </template>
+        </draggable> -->
+        <OportunityTaskCard v-for="lateTask in lateTasksList" :key="lateTask" :oportunityTask="lateTask" />
+        <div class="text-center" v-if="!lateTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
         </div>
@@ -178,6 +255,7 @@ import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import OportunityTaskCard from "@/Components/MyComponents/OportunityTaskCard.vue";
 import { Link } from "@inertiajs/vue3";
 
 export default {
@@ -186,6 +264,11 @@ export default {
     oportunitySelected: "",
     currentOportunity: null,
     tabs: 1,
+    todayTasksList: [],
+    thisWeekTasksList: [],
+    nextTasksList: [],
+    finishedTasksList: [],
+    lateTasksList: [],
     }
  },
  components:{
@@ -193,6 +276,7 @@ export default {
     Dropdown,
     DropdownLink,
     PrimaryButton,
+    OportunityTaskCard,
     Link,
  },
  props:{
@@ -224,6 +308,11 @@ export default {
     this.currentOportunity = this.oportunities.data.find(
       (item) => item.id == this.oportunitySelected
     );
+    this.todayTasksList = this.currentOportunity.oportunityTasks.filter(oportunity => oportunity.deadline_status === 'Terminar hoy');
+    this.thisWeekTasksList = this.currentOportunity.oportunityTasks.filter(oportunity => oportunity.deadline_status === 'Esta semana');
+    this.nextTasksList = this.currentOportunity.oportunityTasks.filter(oportunity => oportunity.deadline_status === 'Proximas');
+    this.finishedTasksList = this.currentOportunity.oportunityTasks.filter(oportunity => oportunity.finished_at);
+    this.lateTasksList = this.currentOportunity.oportunityTasks.filter(oportunity => oportunity.deadline_status === 'Atrasadas');
   },
   computed: {
     uniqueAsignedNames() {
@@ -245,5 +334,22 @@ export default {
 </script>
 
 <style>
+.contenedor {
+  display: flex;
+  overflow-x: scroll; /* Permite el desplazamiento horizontal */
+  white-space: nowrap; /* Evita el salto de línea de las secciones */
+}
 
+.seccion {
+  flex: 0 0 25%; /* Establece el ancho de cada sección al 25% */
+}
+
+.contenedor::-webkit-scrollbar {
+  width: 1px; /* Ancho de la barra de desplazamiento */
+}
+
+.contenedor::-webkit-scrollbar-thumb {
+  background-color: #ccc; /* Color de la barra de desplazamiento */
+  border-radius: 10px; /* Radio de los bordes de la barra de desplazamiento */
+}
 </style>

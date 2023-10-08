@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->timestamp('limite_date');
             $table->time('time');
+            $table->timestamp('finished_at')->nullable();
             $table->time('description');
             $table->string('priority');
             $table->string('reminder')->nullable();

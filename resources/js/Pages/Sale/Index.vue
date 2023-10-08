@@ -256,7 +256,7 @@ export default {
              } else {
                 return this.sales.data.filter(
                     (sale) =>
-                        // sale.id.toLowerCase().includes(this.search.toLowerCase()) ||
+                        sale.folio.toLowerCase().includes(this.search.toLowerCase()) ||
                         sale.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
                         sale.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
                         sale.company_branch.name.toLowerCase().includes(this.search.toLowerCase())
