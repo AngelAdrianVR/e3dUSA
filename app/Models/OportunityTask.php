@@ -12,8 +12,9 @@ class OportunityTask extends Model
 
     protected $fillable = [
         'name',
-        'limite_date',
+        'limit_date',
         'time',
+        'finished_at',
         'description',
         'priority',
         'reminder',
@@ -23,7 +24,8 @@ class OportunityTask extends Model
     ];
 
     protected $casts = [
-        'limite_date' => 'datetime',
+        'limit_date' => 'datetime',
+        'finished_at' => 'datetime',
     ];
 
     //relationships

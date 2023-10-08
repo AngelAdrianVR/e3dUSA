@@ -51,6 +51,7 @@
 *::-webkit-scrollbar-thumb:horizontal {
 	background: #9a9a9a;
 	border-radius: 2px;
+    width: 3px;
 }
 
 @layer components{

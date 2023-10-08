@@ -84,10 +84,10 @@
     <!-- ------------ Kanban view starts ----------------- -->
     <div
       v-if="type_view === 'Kanban'"
-      class="mx-4 lg:flex text-center text-sm my-16"
+      class="mx-4 contenedor text-center text-sm my-16"
     >
       <!-- ---- Nueva --- -->
-      <section class="w-1/4">
+      <section class="seccion">
         <h2 class="text-[#9A9A9A] bg-[#D9D9D9] border border-[#9A9A9A] py-1">Nueva</h2>
         <div class="border border-[#9A9A9A] p-2 min-h-full">
           <p class="text-[#9A9A9A] cursor-pointer mt-1">+ Agregar</p>
@@ -105,7 +105,7 @@
       </section>
 
       <!-- ---- Pendiente de aprobación --- -->
-      <section class="w-1/4">
+      <section class="seccion">
         <h2 class="text-[#C88C3C] bg-[#F3FD85] border border-[#9A9A9A] py-1">
           Pendiente de aprobación
         </h2>
@@ -127,7 +127,7 @@
       </section>
 
       <!-- ---- En progreso --- -->
-      <section class="w-1/4">
+      <section class="seccion">
         <h2 class="text-[#FD8827] bg-[#FEDBBD] border border-[#9A9A9A] py-1">
           En progreso
         </h2>
@@ -149,7 +149,7 @@
       </section>
 
       <!-- ---- Pagado --- -->
-      <section class="w-1/4">
+      <section class="seccion">
         <h2 class="text-[#37951F] bg-[#AFFDB2] border border-[#9A9A9A] py-1">Pagado</h2>
         <div class="border border-[#9A9A9A] p-2 min-h-full">
           <p class="text-[#9A9A9A] cursor-pointer mt-1">+ Agregar</p>
@@ -167,7 +167,7 @@
       </section>
 
       <!-- ---- Perdidas --- -->
-      <section class="w-1/4">
+      <section class="seccion">
         <h2 class="text-[#9E0FA9] bg-[#F7B7FC] border border-[#9A9A9A] py-1">Perdidas</h2>
         <div class="border border-[#9A9A9A] p-2 min-h-full">
           <p class="text-[#9A9A9A] cursor-pointer mt-1">+ Agregar</p>
@@ -387,5 +387,13 @@ export default {
 </script>
 
 <style>
+.contenedor {
+  display: flex;
+  overflow-x: scroll; /* Permite el desplazamiento horizontal */
+  white-space: nowrap; /* Evita el salto de línea de las secciones */
+}
 
+.seccion {
+  flex: 0 0 25%; /* Establece el ancho de cada sección al 25% */
+}
 </style>
