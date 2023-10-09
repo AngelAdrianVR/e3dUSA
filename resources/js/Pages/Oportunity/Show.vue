@@ -57,7 +57,7 @@
                 <DropdownLink v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades')">
                   Registrar pago
                 </DropdownLink>
-                <DropdownLink :ref="route('oportunity-tasks.create')" v-if="$page.props.auth.user.permissions.includes('Crear tareas de oportunidades')">
+                <DropdownLink :href="route('oportunity-tasks.create')" v-if="$page.props.auth.user.permissions.includes('Crear tareas de oportunidades')">
                   Crear nueva actividad
                 </DropdownLink>
                 <DropdownLink v-if="$page.props.auth.user.permissions.includes(

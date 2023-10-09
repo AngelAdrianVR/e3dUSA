@@ -1,13 +1,13 @@
 <template>
-    <AppLayout title="Crear tarea de oportunidad">
+    <AppLayout title="Crear actividad de oportunidad">
       <template #header>
         <div class="flex justify-between">
-          <Link :href="route('oportunity-tasks.index')"
+          <Link :href="route('oportunities.index')"
             class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
           <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
-            <h2 class="font-semibold text-xl leading-tight">Nueva tarea de oportunidad</h2>
+            <h2 class="font-semibold text-xl leading-tight">Nueva atividad de oportunidad</h2>
           </div>
         </div>
       </template>
@@ -15,46 +15,37 @@
       <!-- Form -->
       <form @submit.prevent="store">
         <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4">
-            <div>
-                <label class="block" for="">Proyecto *</label>
-                <el-select @change="getProject()" class="w-full mt-2" v-model="form.project_id" clearable filterable placeholder="Seleccionar proyecto"
-                    no-data-text="No hay proyectos registrados" no-match-text="No se encontraron coincidencias">
-                    <el-option v-for="item in projects" :key="item.id" :label="item.project_name" :value="item.id" />
-                </el-select>
-                <InputError :message="form.errors.project_id" />
+            <div class="flex items-center space-x-2">
+                <div class="w-1/2">
+                    <label>Nombre de la actividad *</label>
+                    <input v-model="form.name" class="input" type="text">
+                    <InputError :message="form.errors.name" />
+                </div>
+                <div class="w-1/2">
+                    <label>Asignado a *</label>
+                    <el-select class="w-full" v-model="form.asigned_id" clearable filterable placeholder="Seleccionar usuario"
+                        no-data-text="No hay usuarios registrados" no-match-text="No se encontraron coincidencias">
+                        <el-option v-for="user in users" :key="user" :label="user.name" :value="user.id" />
+                    </el-select>
+                    <InputError :message="form.errors.asigned_id" />
+                </div>
             </div>
-            <div>
-                <label>Nombre de la tarea *</label>
-                <input v-model="form.title" class="input" type="text">
-                <InputError :message="form.errors.title" />
-            </div>
-            <div>
-                <label>Departamento *</label>
-                <el-select class="w-full mt-2" v-model="form.department" clearable filterable placeholder="Seleccionar departamento"
-                    no-data-text="No hay departamentos registrados" no-match-text="No se encontraron coincidencias">
-                    <el-option v-for="item in departments" :key="item" :label="item" :value="item" />
-                </el-select>
-                <InputError :message="form.errors.department" />
-            </div>
-            <div>
-                <label>Descripción</label>
-                <input v-model="form.description" name="taski_name" class="input" type="text">
-                <InputError :message="form.errors.description" />
-            </div>
-            <p @click="activateFileInput" class="text-primary cursor-pointer">+ Agregar archivos</p>
-            <div class="ml-4 -mt-5">
-              <ul>
-                <li class="text-secondary text-sm" v-for="fileName in form.mediaNames" :key="fileName">{{ fileName }}</li>
-              </ul>
-            </div>
-            <input  @input="form.media = $event.target.files" multiple type="file" id="fileInput" style="display: none;" @change="handleFileUpload">
-            <div>
-                <label class="block" for="">Participante(s) *</label>
-                <el-select class="w-full mt-2" v-model="form.participants" clearable filterable multiple placeholder="Seleccionar participantes"
-                    no-data-text="No hay usuarios registrados" no-match-text="No se encontraron coincidencias">
-                    <el-option v-for="user in users" :key="user.id" :label="user.name" :value="user.id" />
-                </el-select>
-                <InputError :message="form.errors.participants" />
+            <div class="lg:flex items-center pt-3">
+                <div class="flex items-center lg:w-1/2 lg:mt-0">
+                <el-tooltip content="Fecha limite *" placement="top">
+                    <span class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                    <i class="fa-solid fa-calendar"></i>
+                    </span>
+                </el-tooltip>
+                <el-date-picker v-model="form.limit_date" type="date" placeholder="Fecha limite *"
+                    :disabled-date="disabledDate" />
+                <InputError :message="form.errors.limit_date" />
+                </div>
+                <div class="w-1/2">
+                    <label>Hora *</label>
+                    <input v-model="form.time" class="input" type="time">
+                    <InputError :message="form.errors.time" />
+                </div>
             </div>
             <div>
                 <label>Prioridad *</label>
@@ -64,30 +55,19 @@
                 </el-select>
                 <InputError :message="form.errors.priority" />
             </div>
-            <div class="lg:flex pt-3">
-    <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
-      <el-tooltip content="Fecha de inicio *" placement="top">
-        <span class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-          <i class="fa-solid fa-calendar"></i>
-        </span>
-      </el-tooltip>
-      <el-date-picker v-model="form.start_date" type="date" placeholder="Fecha de inicio *"
-         :disabled-date="disabledStartOrLimitDate" />
-      <InputError :message="form.errors.start_date" />
-    </div>
-    <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
-      <el-tooltip content="Fecha de final *" placement="top">
-        <span class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-          <i class="fa-solid fa-calendar"></i>
-        </span>
-      </el-tooltip>
-      <el-date-picker v-model="form.end_date" type="date" placeholder="Fecha de final *"
-         :disabled-date="disabledStartOrLimitDate" />
-      <InputError :message="form.errors.end_date" />
-    </div>
-  </div>
-
-          <div class="flex md:text-left items-center">
+            <div>
+                <label>Descripción</label>
+                <input v-model="form.description" name="taski_name" class="input" type="text">
+                <InputError :message="form.errors.description" />
+            </div>
+            <p @click="activateFileInput" class="text-primary cursor-pointer">+ Adjuntar archivos</p>
+            <div class="ml-4 -mt-5">
+              <ul>
+                <li class="text-secondary text-sm" v-for="fileName in form.mediaNames" :key="fileName">{{ fileName }}</li>
+              </ul>
+            </div>
+            <input  @input="form.media = $event.target.files" multiple type="file" id="fileInput" style="display: none;" @change="handleFileUpload">
+          <div class="flex justify-end items-center">
             <PrimaryButton :disabled="form.processing">
               Agregar
             </PrimaryButton>
@@ -109,38 +89,22 @@ import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 export default {
   data() {
     const form = useForm({
-      project_id: null,
-      title: null,
-      description: null,
-      department: null,
-      participants: null,
+      name: null,
+      asigned_id: null,
+      limit_date: null,
+      time: null,
       priority: null,
-      reminder: null,
-      start_date: '',
-      end_date: '',
+      description: null,
       media: [],
           });
 
     return {
       form,
-      remainderModal: false,
-      selectedProject: null,
        mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
       priorities:[
         'Baja',
         'Media',
         'Alta',
-      ],
-      departments:[
-        'Produccion',
-        'Ventas',
-        'Diseño',
-        'Marketing',
-      ],
-      reminders:[
-        'Cada día',
-        'Un dia antes de la fecha de vencimiento',
-        'En la fecha de vencimiento',
       ],
     };
   },
@@ -149,20 +113,17 @@ export default {
     PrimaryButton,
     Link,
     InputError,
-    CancelButton,
   },
   props: {
-    projects: Array,
     users: Array,
   },
   methods: {
     store(){
-      this.form.post(route("tasks.store"), {
-        // _method: 'post',
+      this.form.post(route("oportunity-tasks.store"), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: "Se ha creado una nueva tarea",
+            message: "Se ha creado una nueva actividad",
             type: "success",
           });
         },
@@ -187,17 +148,10 @@ export default {
     // Actualiza la propiedad form.mediaNames con los nombres de los archivos
     this.form.mediaNames = fileNames;
   },
-  getProject() {
-    this.selectedProject = this.projects.find(item => item.id == this.form.project_id);
-  },
     // Función para deshabilitar fechas fuera del rango [start_date, limit_date]
-    disabledStartOrLimitDate(time) {
-      if (this.selectedProject && this.selectedProject.is_strict_project) {
-        const startTime = new Date(this.selectedProject.start_date).getTime();
-        const limitTime = new Date(this.selectedProject.limit_date).getTime();
-        return time.getTime() < startTime || time.getTime() > limitTime;
-      }
-      return false;
+    disabledDate(time) {
+        const today = new Date(); // Obtener la fecha de hoy
+        return time.getTime() < today.getTime();
     },
 
   },
