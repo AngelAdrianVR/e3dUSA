@@ -36,7 +36,7 @@ class OportunityTaskResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'limit_date' => $this->limit_date?->isoFormat('DD MMMM YYYY'),
-            'time' => $this->time,
+            'time' => Carbon::parse($this->time)->format('h:i A'),
             'finished_at' => $this->finished_at?->isoFormat('DD MMMM YYYY, h:mmA'),
             'description' => $this->description,
             'priority' => $this->priority,

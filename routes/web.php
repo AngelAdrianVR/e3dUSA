@@ -19,6 +19,7 @@ use App\Http\Controllers\MachineController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\OportunityController;
+use App\Http\Controllers\OportunityTaskController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProductionController;
@@ -96,6 +97,9 @@ Route::get('crm', [DashboardController::class, 'crmDashboard'])->middleware('aut
 
 // ------- CRM (oportunities Routes)  ---------
 Route::resource('oportunities', OportunityController::class)->middleware('auth');
+
+// ------- CRM (oportunityTasks Routes)  ---------
+Route::resource('oportunity-tasks', OportunityTaskController::class)->middleware('auth');
 
 // ------- CRM(sale orders Routes)  ---------
 Route::resource('sales', SaleController::class)->middleware('auth');
