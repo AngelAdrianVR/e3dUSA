@@ -45,17 +45,10 @@
               </p>
             </div>
           </div>
-          <el-tooltip
-            v-if="$page.props.auth.user.permissions.includes('Crear oportunidades')"
-            content="Crear oportunidad"
-            placement="top"
-          >
-            <Link :href="route('oportunities.create')">
-              <PrimaryButton class="rounded-md">Crear</PrimaryButton>
+            <Link v-if="$page.props.auth.user.permissions.includes('Crear oportunidades')" :href="route('oportunities.create')">
+              <PrimaryButton class="rounded-lg">Nueva oportunidad</PrimaryButton>
             </Link>
-          </el-tooltip>
-
-          <Dropdown
+          <!-- <Dropdown
             align="right"
             width="48"
             v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades')"
@@ -76,7 +69,7 @@
                 Eliminar
               </DropdownLink>
             </template>
-          </Dropdown>
+          </Dropdown> -->
         </div>
       </div>
     </div>
@@ -84,7 +77,7 @@
     <!-- ------------ Kanban view starts ----------------- -->
     <div
       v-if="type_view === 'Kanban'"
-      class="mx-4 contenedor text-center text-sm my-16"
+      class="mx-4 contenedor text-center text-sm my-16 pb-9"
     >
       <!-- ---- Nueva --- -->
       <section class="seccion">

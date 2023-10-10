@@ -100,6 +100,7 @@ Route::resource('oportunities', OportunityController::class)->middleware('auth')
 
 // ------- CRM (oportunityTasks Routes)  ---------
 Route::resource('oportunity-tasks', OportunityTaskController::class)->middleware('auth');
+Route::put('oportunity-tasks/mark-as-done/{oportunityTask}', [OportunityTaskController::class, 'markAsDone'])->name('oportunity-tasks.mark-as-done')->middleware('auth');
 
 // ------- CRM(sale orders Routes)  ---------
 Route::resource('sales', SaleController::class)->middleware('auth');

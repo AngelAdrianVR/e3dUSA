@@ -40,26 +40,35 @@ class OportunityTaskController extends Controller
     }
 
     
-    public function show(OportunityTask $oportunityTask)
+    public function show(OportunityTask $oportunity_task)
     {
         //
     }
 
     
-    public function edit(OportunityTask $oportunityTask)
+    public function edit(OportunityTask $oportunity_task)
     {
         //
     }
 
     
-    public function update(Request $request, OportunityTask $oportunityTask)
+    public function update(Request $request, OportunityTask $oportunity_task)
     {
         //
     }
 
     
-    public function destroy(OportunityTask $oportunityTask)
+    public function destroy(OportunityTask $oportunity_task)
     {
         //
+    }
+
+    public function markAsDone($oportunity_task_id)
+    {
+        $oportunity_task = OportunityTask::find($oportunity_task_id);
+        // return $oportunity_task;
+        $oportunity_task->update([
+            'finished_at' => now()
+        ]);
     }
 }

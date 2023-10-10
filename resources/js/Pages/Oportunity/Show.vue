@@ -11,14 +11,15 @@
 
         <div class="flex justify-between">
           <div class="md:w-1/3 mr-2">
-            <el-select @change="saleSelection" v-model="oportunitySelected" clearable filterable
+            <el-select v-model="oportunitySelected" clearable filterable
               placeholder="Buscar oportunidades" no-data-text="No hay oportuindades registradas"
               no-match-text="No se encontraron coincidencias">
               <el-option v-for="item in oportunities.data" :key="item.id" :label="item.name" :value="item.id" />
             </el-select>
           </div>
+
           <div class="flex items-center space-x-2">
-            <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar oportunidades')" content="Editar" placement="top">
+            <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar oportunidades') && tabs == 1" content="Editar oportunidad" placement="top">
               <Link :href="route('oportunities.edit', oportunitySelected)">
               <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
                 <i class="fa-solid fa-pen text-sm"></i>
@@ -26,12 +27,30 @@
               </Link>
             </el-tooltip>
             <el-tooltip
-            v-if="$page.props.auth.user.permissions.includes('Crear oportunidades')"
+            v-if="$page.props.auth.user.permissions.includes('Crear oportunidades') && tabs == 1"
             content="Crear oportunidad"
             placement="top"
           >
             <Link :href="route('oportunities.create')">
-              <PrimaryButton class="rounded-md">Crear</PrimaryButton>
+              <PrimaryButton class="rounded-md">Nueva oportunidad</PrimaryButton>
+            </Link>
+          </el-tooltip>
+            <el-tooltip
+            v-if="$page.props.auth.user.permissions.includes('Crear tareas de oportunidades') && tabs == 2"
+            content="Crear actividad en la oportunidad"
+            placement="top"
+          >
+            <Link :href="route('oportunity-tasks.create')">
+              <PrimaryButton class="rounded-md">Nueva actividad</PrimaryButton>
+            </Link>
+          </el-tooltip>
+            <el-tooltip
+            v-if="tabs == 3"
+            content="Enviar un correo a prospecto"
+            placement="top"
+          >
+            <Link :href="route('oportunity-tasks.create')">
+              <PrimaryButton class="rounded-md">Enviar correo</PrimaryButton>
             </Link>
           </el-tooltip>
 
@@ -43,26 +62,18 @@
               )
               ">
               <template #trigger>
-                <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
+                <button v-if="tabs == 1 || tabs == 3" class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
                   Más <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
                 </button>
               </template>
               <template #content>
-                <DropdownLink v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades')">
-                  Enviar correo
-                </DropdownLink>
-                <DropdownLink v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades')">
+                <DropdownLink v-if="tabs == 3">
                   Registrar cita
                 </DropdownLink>
-                <DropdownLink v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades')">
+                <DropdownLink v-if="tabs == 3">
                   Registrar pago
                 </DropdownLink>
-                <DropdownLink :href="route('oportunity-tasks.create')" v-if="$page.props.auth.user.permissions.includes('Crear tareas de oportunidades')">
-                  Crear nueva actividad
-                </DropdownLink>
-                <DropdownLink v-if="$page.props.auth.user.permissions.includes(
-                  'Eliminar oportunidades'
-                )
+                <DropdownLink v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades') && tabs == 1
                   " @click="showConfirmModal = true" as="button">
                   Eliminar
                 </DropdownLink>
@@ -114,11 +125,11 @@
           <span class="text-gray-500 my-2">Descripción</span>
           <span>{{ currentOportunity?.description }}</span>
           <span class="text-gray-500 my-2">Creado por</span>
-          <span>{{ currentOportunity?.description }}</span>
+          <span>{{ currentOportunity?.user?.name }}</span>
           <span class="text-gray-500 my-2">Estatus</span>
           <p :class="getStatusStyles()" class="rounded-full px-2 py-1 w-1/2 text-center">{{ currentOportunity?.status }}</p>
           <span class="text-gray-500 my-2">Probabilidad</span>
-          <span>{{ currentOportunity?.probability }}</span>
+          <span>{{ currentOportunity?.probability }}%</span>
           <span class="text-gray-500 my-2">Fecha de inicio</span>
           <span>{{ currentOportunity?.start_date }}</span>
           <span class="text-gray-500 my-2">Fecha estimada de cierre</span>
@@ -161,7 +172,7 @@
             </li>
           </template>
         </draggable> -->
-        <OportunityTaskCard class="mb-3" v-for="todayTask in todayTasksList" :key="todayTask" :oportunityTask="todayTask" />
+        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="todayTask in todayTasksList" :key="todayTask" :oportunityTask="todayTask" />
         <div class="text-center" v-if="!todayTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -180,7 +191,7 @@
             </li>
           </template>
         </draggable> -->
-        <OportunityTaskCard class="mb-3" v-for="thisWeekTask in thisWeekTasksList" :key="thisWeekTask" :oportunityTask="thisWeekTask" />
+        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="thisWeekTask in thisWeekTasksList" :key="thisWeekTask" :oportunityTask="thisWeekTask" />
         <div class="text-center" v-if="!thisWeekTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -199,7 +210,7 @@
             </li>
           </template>
         </draggable> -->
-        <OportunityTaskCard class="mb-3" v-for="nextTask in nextTasksList" :key="nextTask" :oportunityTask="nextTask" />
+        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="nextTask in nextTasksList" :key="nextTask" :oportunityTask="nextTask" />
         <div class="text-center" v-if="!nextTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -218,7 +229,7 @@
             </li>
           </template>
         </draggable> -->
-        <OportunityTaskCard class="mb-3" v-for="finishedTask in finishedTasksList" :key="finishedTask" :oportunityTask="finishedTask" />
+        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="finishedTask in finishedTasksList" :key="finishedTask" :oportunityTask="finishedTask" />
         <div class="text-center" v-if="!finishedTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -237,7 +248,7 @@
             </li>
           </template>
         </draggable> -->
-        <OportunityTaskCard class="mb-3" v-for="lateTask in lateTasksList" :key="lateTask" :oportunityTask="lateTask" />
+        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="lateTask in lateTasksList" :key="lateTask" :oportunityTask="lateTask" />
         <div class="text-center" v-if="!lateTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -245,8 +256,18 @@
       </div>
 
     </div>
-
       <!-- ------------- tab 2 atividades ends ------------ -->
+
+      <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
+        <template #title> Eliminar oportunidad </template>
+        <template #content> ¿Continuar con la eliminación? </template>
+        <template #footer>
+          <div>
+            <CancelButton @click="showConfirmModal = false" class="mr-2">Cancelar</CancelButton>
+            <PrimaryButton @click="deleteItem">Eliminar</PrimaryButton>
+          </div>
+        </template>
+      </ConfirmationModal>
    </AppLayoutNoHeader>
 </template>
 
@@ -256,7 +277,10 @@ import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import OportunityTaskCard from "@/Components/MyComponents/OportunityTaskCard.vue";
+import ConfirmationModal from "@/Components/ConfirmationModal.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import { Link } from "@inertiajs/vue3";
+import axios from 'axios';
 
 export default {
  data(){
@@ -264,6 +288,7 @@ export default {
     oportunitySelected: "",
     currentOportunity: null,
     tabs: 1,
+    showConfirmModal: false,
     todayTasksList: [],
     thisWeekTasksList: [],
     nextTasksList: [],
@@ -277,6 +302,8 @@ export default {
     DropdownLink,
     PrimaryButton,
     OportunityTaskCard,
+    ConfirmationModal,
+    CancelButton,
     Link,
  },
  props:{
@@ -297,10 +324,33 @@ export default {
              return 'text-[#9E0FA9] bg-[#F7B7FC]';
         }
  },
+    deleteItem() {
+      this.$inertia.delete(route('oportunities.destroy', this.oportunitySelected));
+      this.$inertia.get(route('oportunities.index'));
+    },
+    async markAsDone(data) {
+      try {
+        const response = await axios.put(route('oportunity-tasks.mark-as-done', data));
+
+      if (response.status === 200) {
+           this.$notify({
+            title: "Éxito",
+            message: "Se ha marcado como terminada",
+            type: "success",
+          });
+
+          this.currentOportunity.oportunityTasks.find(item => item.id === data).finished_at = new Date();
+      }
+      } catch (error) {
+        console.log(error);
+      }
+      
+    },
  },
  watch: {
     oportunitySelected(newVal) {
       this.currentOportunity = this.oportunities.data.find((item) => item.id == newVal);
+      this.oportunitySelected = this.currentOportunity?.id
     },
   },
  mounted() {
@@ -308,11 +358,6 @@ export default {
     this.currentOportunity = this.oportunities.data.find(
       (item) => item.id == this.oportunitySelected
     );
-    this.todayTasksList = this.currentOportunity.oportunityTasks.filter(oportunity => oportunity.deadline_status === 'Terminar hoy' && !oportunity.finished_at);
-    this.thisWeekTasksList = this.currentOportunity.oportunityTasks.filter(oportunity => oportunity.deadline_status === 'Esta semana' && !oportunity.finished_at);
-    this.nextTasksList = this.currentOportunity.oportunityTasks.filter(oportunity => oportunity.deadline_status === 'Proximas' && !oportunity.finished_at);
-    this.finishedTasksList = this.currentOportunity.oportunityTasks.filter(oportunity => oportunity.finished_at);
-    this.lateTasksList = this.currentOportunity.oportunityTasks.filter(oportunity => oportunity.deadline_status === 'Atrasadas' && !oportunity.finished_at);
   },
   computed: {
     uniqueAsignedNames() {
@@ -328,6 +373,21 @@ export default {
       // Convertimos el conjunto a un array para mostrarlo en la plantilla.
       return Array.from(asignedNamesSet);
           }
+    },
+    todayTasksList() {
+       return this.todayTasksList = this.currentOportunity.oportunityTasks.filter(oportunity => oportunity.deadline_status === 'Terminar hoy' && !oportunity.finished_at);
+    },
+    thisWeekTasksList() {
+       return this.thisWeekTasksList = this.currentOportunity.oportunityTasks.filter(oportunity => oportunity.deadline_status === 'Esta semana' && !oportunity.finished_at);
+    },
+    nextTasksList() {
+       return this.nextTasksList = this.currentOportunity.oportunityTasks.filter(oportunity => oportunity.deadline_status === 'Proximas' && !oportunity.finished_at);
+    },
+    finishedTasksList() {
+       return this.finishedTasksList = this.currentOportunity.oportunityTasks.filter(oportunity => oportunity.finished_at);
+    },
+    lateTasksList() {
+       return this.lateTasksList = this.currentOportunity.oportunityTasks.filter(oportunity => oportunity.deadline_status === 'Atrasadas' && !oportunity.finished_at);
     },
   },
 };
