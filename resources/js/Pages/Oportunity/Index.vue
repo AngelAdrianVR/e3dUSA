@@ -45,17 +45,10 @@
               </p>
             </div>
           </div>
-          <el-tooltip
-            v-if="$page.props.auth.user.permissions.includes('Crear oportunidades')"
-            content="Crear oportunidad"
-            placement="top"
-          >
-            <Link :href="route('oportunities.create')">
-              <PrimaryButton class="rounded-md">Crear</PrimaryButton>
+            <Link v-if="$page.props.auth.user.permissions.includes('Crear oportunidades')" :href="route('oportunities.create')">
+              <PrimaryButton class="rounded-lg">Nueva oportunidad</PrimaryButton>
             </Link>
-          </el-tooltip>
-
-          <Dropdown
+          <!-- <Dropdown
             align="right"
             width="48"
             v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades')"
@@ -76,7 +69,7 @@
                 Eliminar
               </DropdownLink>
             </template>
-          </Dropdown>
+          </Dropdown> -->
         </div>
       </div>
     </div>
@@ -84,13 +77,13 @@
     <!-- ------------ Kanban view starts ----------------- -->
     <div
       v-if="type_view === 'Kanban'"
-      class="mx-4 contenedor text-center text-sm my-16"
+      class="mx-4 contenedor text-center text-sm my-16 pb-9"
     >
       <!-- ---- Nueva --- -->
       <section class="seccion">
         <h2 class="text-[#9A9A9A] bg-[#D9D9D9] border border-[#9A9A9A] py-1">Nueva</h2>
         <div class="border border-[#9A9A9A] p-2 min-h-full">
-          <p class="text-[#9A9A9A] cursor-pointer mt-1">+ Agregar</p>
+          <!-- <p class="text-[#9A9A9A] cursor-pointer mt-1">+ Agregar</p> -->
           <p class="text-secondary text-xl my-2">
             ${{ newTotal?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0.00" }}
           </p>
@@ -110,7 +103,7 @@
           Pendiente de aprobación
         </h2>
         <div class="border border-[#9A9A9A] p-2 min-h-full">
-          <p class="text-[#9A9A9A] cursor-pointer mt-1">+ Agregar</p>
+          <!-- <p class="text-[#9A9A9A] cursor-pointer mt-1">+ Agregar</p> -->
           <p class="text-secondary text-xl my-2">
             ${{
               pendingTotal?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0.00"
@@ -132,7 +125,7 @@
           En progreso
         </h2>
         <div class="border border-[#9A9A9A] p-2 min-h-full">
-          <p class="text-[#9A9A9A] cursor-pointer mt-1">+ Agregar</p>
+          <!-- <p class="text-[#9A9A9A] cursor-pointer mt-1">+ Agregar</p> -->
           <p class="text-secondary text-xl my-2">
             ${{
               inProgressTotal?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0.00"
@@ -152,7 +145,7 @@
       <section class="seccion">
         <h2 class="text-[#37951F] bg-[#AFFDB2] border border-[#9A9A9A] py-1">Pagado</h2>
         <div class="border border-[#9A9A9A] p-2 min-h-full">
-          <p class="text-[#9A9A9A] cursor-pointer mt-1">+ Agregar</p>
+          <!-- <p class="text-[#9A9A9A] cursor-pointer mt-1">+ Agregar</p> -->
           <p class="text-secondary text-xl my-2">
             ${{ paidTotal?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0.00" }}
           </p>
@@ -170,7 +163,7 @@
       <section class="seccion">
         <h2 class="text-[#9E0FA9] bg-[#F7B7FC] border border-[#9A9A9A] py-1">Perdidas</h2>
         <div class="border border-[#9A9A9A] p-2 min-h-full">
-          <p class="text-[#9A9A9A] cursor-pointer mt-1">+ Agregar</p>
+          <!-- <p class="text-[#9A9A9A] cursor-pointer mt-1">+ Agregar</p> -->
           <p class="text-secondary text-xl my-2">
             ${{ lostTotal?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0.00" }}
           </p>
