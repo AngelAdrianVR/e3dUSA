@@ -1,7 +1,7 @@
 <template>
   <div @click="
     taskInformationModal = true;
-  titemToShow = taskComponentLocal;
+  itemToShow = taskComponentLocal;
   " :class="taskComponentLocal?.priority.color_border"
     class="shadow-md shadow-gray-400/100 border border-t-[#d9d9d9] border-r-[#d9d9d9] border-b-[#d9d9d9] h-36 rounded-r-md border-l-4 py-2 px-3 cursor-pointer my-3">
     <!-- ------------ top ------------------ -->

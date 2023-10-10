@@ -2,12 +2,12 @@
     <AppLayout title="Crear actividad de oportunidad">
       <template #header>
         <div class="flex justify-between">
-          <Link :href="route('oportunities.index')"
+          <Link :href="route('oportunities.show', oportunity_id)"
             class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
           <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
-            <h2 class="font-semibold text-xl leading-tight">Nueva atividad de oportunidad</h2>
+            <h2 class="font-semibold text-xl leading-tight">Nueva actividad de oportunidad</h2>
           </div>
         </div>
       </template>
@@ -49,9 +49,14 @@
             </div>
             <div>
                 <label>Prioridad *</label>
-                <el-select class="w-full mt-2" v-model="form.priority" clearable filterable placeholder="Seleccionar proyecto"
-                    no-data-text="No hay proyectos registrados" no-match-text="No se encontraron coincidencias">
-                    <el-option v-for="item in priorities" :key="item" :label="item" :value="item" />
+                <el-select class="w-full mt-2" v-model="form.priority" clearable filterable placeholder="Seleccionar prioridad"
+                  no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
+                  <el-option v-for="item in priorities" :key="item" :label="item.label" :value="item.label">
+                    <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
+                    <span style="float: center; margin-left: 5px; font-size: 13px">{{
+                      item.label
+                    }}</span>
+                  </el-option>
                 </el-select>
                 <InputError :message="form.errors.priority" />
             </div>
@@ -84,7 +89,6 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
-import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 
 export default {
   data() {
@@ -100,11 +104,20 @@ export default {
 
     return {
       form,
-       mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
-      priorities:[
-        'Baja',
-        'Media',
-        'Alta',
+      mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
+      priorities: [
+        {
+          label: "Baja",
+          color: "text-[#87CEEB]",
+        },
+        {
+          label: "Media",
+          color: "text-orange-500",
+        },
+        {
+          label: "Alta",
+          color: "text-red-600",
+        },
       ],
     };
   },
@@ -116,10 +129,11 @@ export default {
   },
   props: {
     users: Array,
+    oportunity_id: Number,
   },
   methods: {
     store(){
-      this.form.post(route("oportunity-tasks.store"), {
+      this.form.post(route("oportunity-tasks.store", this.oportunity_id), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
@@ -148,7 +162,6 @@ export default {
     // Actualiza la propiedad form.mediaNames con los nombres de los archivos
     this.form.mediaNames = fileNames;
   },
-    // Función para deshabilitar fechas fuera del rango [start_date, limit_date]
     disabledDate(time) {
         const today = new Date(); // Obtener la fecha de hoy
         return time.getTime() < today.getTime();

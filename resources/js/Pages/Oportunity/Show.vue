@@ -40,7 +40,7 @@
             content="Crear actividad en la oportunidad"
             placement="top"
           >
-            <Link :href="route('oportunity-tasks.create')">
+            <Link :href="route('oportunity-tasks.create', oportunitySelected)">
               <PrimaryButton class="rounded-md">Nueva actividad</PrimaryButton>
             </Link>
           </el-tooltip>
@@ -49,7 +49,7 @@
             content="Enviar un correo a prospecto"
             placement="top"
           >
-            <Link :href="route('oportunity-tasks.create')">
+            <Link :href="route('oportunity-tasks.create', oportunitySelected)">
               <PrimaryButton class="rounded-md">Enviar correo</PrimaryButton>
             </Link>
           </el-tooltip>
@@ -148,9 +148,15 @@
           <span>{{ currentOportunity?.contact?.name }}</span>
 
           <div class="flex items-center justify-end space-x-2 col-span-2 mr-4">
-            <i class="fa-regular fa-calendar text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
-            <i class="fa-solid fa-money-bill text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
-            <i class="fa-regular fa-envelope text-primary cursor-pointer text-lg px-3"></i>
+            <el-tooltip content="Agendar reunión" placement="top">
+              <i class="fa-regular fa-calendar text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
+            </el-tooltip>
+            <el-tooltip content="Registrar pago" placement="top">
+              <i class="fa-solid fa-money-bill text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
+            </el-tooltip>
+            <el-tooltip content="Enviar correo" placement="top">
+              <i class="fa-regular fa-envelope text-primary cursor-pointer text-lg px-3"></i>
+            </el-tooltip>
           </div>
 
         </div>
@@ -165,14 +171,7 @@
         <h2 class="font-bold mb-10">
           TERMINAR HOY <span class="font-normal ml-7">{{ todayTasksList.length }}</span>
         </h2>
-        <!-- <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="currentOportunity" :animation="300" item-key="id" tag="ul" group="tasks" id="pendent" :class="(drag && !currentOportunity?.length) ? 'h-40' : ''">
-          <template #item="{ element: task }">
-            <li>
-              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="users" :id="task.id" />
-            </li>
-          </template>
-        </draggable> -->
-        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="todayTask in todayTasksList" :key="todayTask" :oportunityTask="todayTask" />
+        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="todayTask in todayTasksList" :key="todayTask" :oportunityTask="todayTask" :users="users" />
         <div class="text-center" v-if="!todayTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -184,14 +183,7 @@
         <h2 class="font-bold mb-10 first-letter ml-2">
           TERMINAR ESTA SEMANA <span class="font-normal ml-7">{{ thisWeekTasksList.length }}</span>
         </h2>
-        <!-- <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="currentOportunity" :animation="300" item-key="id" tag="ul" group="tasks" id="pendent" :class="(drag && !currentOportunity?.length) ? 'h-40' : ''">
-          <template #item="{ element: task }">
-            <li>
-              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="users" :id="task.id" />
-            </li>
-          </template>
-        </draggable> -->
-        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="thisWeekTask in thisWeekTasksList" :key="thisWeekTask" :oportunityTask="thisWeekTask" />
+        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="thisWeekTask in thisWeekTasksList" :key="thisWeekTask" :oportunityTask="thisWeekTask" :users="users" />
         <div class="text-center" v-if="!thisWeekTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -203,14 +195,7 @@
         <h2 class="font-bold mb-10 first-letter ml-2">
           ACTIVIDADES PROXIMAS <span class="font-normal ml-7">{{ nextTasksList.length }}</span>
         </h2>
-        <!-- <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="currentOportunity" :animation="300" item-key="id" tag="ul" group="tasks" id="pendent" :class="(drag && !currentOportunity?.length) ? 'h-40' : ''">
-          <template #item="{ element: task }">
-            <li>
-              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="users" :id="task.id" />
-            </li>
-          </template>
-        </draggable> -->
-        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="nextTask in nextTasksList" :key="nextTask" :oportunityTask="nextTask" />
+        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="nextTask in nextTasksList" :key="nextTask" :oportunityTask="nextTask" :users="users" />
         <div class="text-center" v-if="!nextTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -222,14 +207,7 @@
         <h2 class="font-bold mb-10 first-letter ml-2">
           TERMINADAS <span class="font-normal ml-7">{{ finishedTasksList.length }}</span>
         </h2>
-        <!-- <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="currentOportunity" :animation="300" item-key="id" tag="ul" group="tasks" id="pendent" :class="(drag && !currentOportunity?.length) ? 'h-40' : ''">
-          <template #item="{ element: task }">
-            <li>
-              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="users" :id="task.id" />
-            </li>
-          </template>
-        </draggable> -->
-        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="finishedTask in finishedTasksList" :key="finishedTask" :oportunityTask="finishedTask" />
+        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="finishedTask in finishedTasksList" :key="finishedTask" :oportunityTask="finishedTask" :users="users" />
         <div class="text-center" v-if="!finishedTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -241,14 +219,7 @@
         <h2 class="font-bold mb-10 first-letter ml-2">
           ATRASADAS <span class="font-normal ml-7">{{ lateTasksList.length }}</span>
         </h2>
-        <!-- <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="currentOportunity" :animation="300" item-key="id" tag="ul" group="tasks" id="pendent" :class="(drag && !currentOportunity?.length) ? 'h-40' : ''">
-          <template #item="{ element: task }">
-            <li>
-              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="users" :id="task.id" />
-            </li>
-          </template>
-        </draggable> -->
-        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="lateTask in lateTasksList" :key="lateTask" :oportunityTask="lateTask" />
+        <Oportuni tyTaskCard @task-done="markAsDone" class="mb-3" v-for="lateTask in lateTasksList" :key="lateTask" :oportunityTask="lateTask" :users="users" />
         <div class="text-center" v-if="!lateTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -257,6 +228,65 @@
 
     </div>
       <!-- ------------- tab 2 atividades ends ------------ -->
+
+      <!-- ------------ tab 3 seguimiento integral starts ------------- -->
+      <div v-if="tabs == 3" class="w-11/12 mx-auto my-16">
+      <table class="lg:w-[80%] w-full mx-auto">
+        <thead>
+          <tr class="text-left">
+            <th class="font-bold pb-5">
+              Folio <i class="fa-solid fa-arrow-down-long ml-3"></i>
+            </th>
+            <th class="font-bold pb-5">
+              Tipo que interacciones <i class="fa-solid fa-arrow-down-long ml-3"></i>
+            </th>
+            <th class="font-bold pb-5">
+              Fecha <i class="fa-solid fa-arrow-down-long ml-3"></i>
+            </th>
+            <th class="font-bold pb-5">
+              Concepto <i class="fa-solid fa-arrow-down-long ml-3"></i>
+            </th>
+            <th class="font-bold pb-5">
+              Vededor <i class="fa-solid fa-arrow-down-long ml-3"></i>
+            </th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="monitor in currentOportunity?.clientMonitores" :key="monitor"
+            class="mb-4 hover:bg-[#dfdbdba8]"
+          >
+            <td class="text-left py-2 px-2 rounded-l-full text-secondary">
+              {{ monitor.folio }}
+            </td>
+            <td class="text-left py-2 px-2">
+              <span
+                class="py-1 px-4 rounded-full"
+                >{{ monitor.type }}</span
+              >
+            </td>
+            <td class="text-left py-2 px-2">
+              <span
+                class="py-1 px-2 rounded-full"
+                >{{ monitor.date }}</span
+              >
+            </td>
+            <td class="text-left py-2 px-2">
+              {{ monitor.concept }}
+            </td>
+            <td class="text-left py-2 px-2 text-secondary">
+              {{ monitor.seller.name }}
+            </td>
+            <td
+              class="text-left py-2 px-2 rounded-r-full"
+            >
+              
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+      <!-- ------------ tab 3 seguimiento integral ends ------------- -->
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar oportunidad </template>
@@ -309,6 +339,7 @@ export default {
  props:{
     oportunity: Object,
     oportunities: Object,
+    users: Array
  },
  methods:{
     getStatusStyles(){
