@@ -102,6 +102,7 @@ Route::resource('oportunities', OportunityController::class)->middleware('auth')
 Route::resource('oportunity-tasks', OportunityTaskController::class)->except(['store', 'create'])->middleware('auth');
 Route::get('oportunity-tasks/create/{oportunity_id}', [OportunityTaskController::class, 'create'])->name('oportunity-tasks.create')->middleware('auth');
 Route::post('oportunity-tasks/store/{oportunity_id}', [OportunityTaskController::class, 'store'])->name('oportunity-tasks.store')->middleware('auth');
+Route::post('oportunity-tasks/{oportunity_task}/comment', [OportunityTaskController::class, 'comment'])->name('oportunity-tasks.comment')->middleware('auth');
 
 Route::put('oportunity-tasks/mark-as-done/{oportunityTask}', [OportunityTaskController::class, 'markAsDone'])->name('oportunity-tasks.mark-as-done')->middleware('auth');
 

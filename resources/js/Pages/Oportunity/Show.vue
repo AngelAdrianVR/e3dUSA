@@ -171,7 +171,7 @@
         <h2 class="font-bold mb-10">
           TERMINAR HOY <span class="font-normal ml-7">{{ todayTasksList.length }}</span>
         </h2>
-        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="todayTask in todayTasksList" :key="todayTask" :oportunityTask="todayTask" :users="users" />
+        <OportunityTaskCard @delete-task="deleteTask" @task-done="markAsDone" class="mb-3" v-for="todayTask in todayTasksList" :key="todayTask" :oportunityTask="todayTask" :users="users" />
         <div class="text-center" v-if="!todayTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -183,7 +183,7 @@
         <h2 class="font-bold mb-10 first-letter ml-2">
           TERMINAR ESTA SEMANA <span class="font-normal ml-7">{{ thisWeekTasksList.length }}</span>
         </h2>
-        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="thisWeekTask in thisWeekTasksList" :key="thisWeekTask" :oportunityTask="thisWeekTask" :users="users" />
+        <OportunityTaskCard @delete-task="deleteTask" @task-done="markAsDone" class="mb-3" v-for="thisWeekTask in thisWeekTasksList" :key="thisWeekTask" :oportunityTask="thisWeekTask" :users="users" />
         <div class="text-center" v-if="!thisWeekTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -195,7 +195,7 @@
         <h2 class="font-bold mb-10 first-letter ml-2">
           ACTIVIDADES PROXIMAS <span class="font-normal ml-7">{{ nextTasksList.length }}</span>
         </h2>
-        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="nextTask in nextTasksList" :key="nextTask" :oportunityTask="nextTask" :users="users" />
+        <OportunityTaskCard @delete-task="deleteTask" @task-done="markAsDone" class="mb-3" v-for="nextTask in nextTasksList" :key="nextTask" :oportunityTask="nextTask" :users="users" />
         <div class="text-center" v-if="!nextTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -207,7 +207,7 @@
         <h2 class="font-bold mb-10 first-letter ml-2">
           TERMINADAS <span class="font-normal ml-7">{{ finishedTasksList.length }}</span>
         </h2>
-        <OportunityTaskCard @task-done="markAsDone" class="mb-3" v-for="finishedTask in finishedTasksList" :key="finishedTask" :oportunityTask="finishedTask" :users="users" />
+        <OportunityTaskCard @delete-task="deleteTask" @task-done="markAsDone" class="mb-3" v-for="finishedTask in finishedTasksList" :key="finishedTask" :oportunityTask="finishedTask" :users="users" />
         <div class="text-center" v-if="!finishedTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -219,7 +219,7 @@
         <h2 class="font-bold mb-10 first-letter ml-2">
           ATRASADAS <span class="font-normal ml-7">{{ lateTasksList.length }}</span>
         </h2>
-        <Oportuni tyTaskCard @task-done="markAsDone" class="mb-3" v-for="lateTask in lateTasksList" :key="lateTask" :oportunityTask="lateTask" :users="users" />
+        <OportunityTaskCard @delete-task="deleteTask" @task-done="markAsDone" class="mb-3" v-for="lateTask in lateTasksList" :key="lateTask" :oportunityTask="lateTask" :users="users" />
         <div class="text-center" v-if="!lateTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -371,6 +371,28 @@ export default {
           });
 
           this.currentOportunity.oportunityTasks.find(item => item.id === data).finished_at = new Date();
+      }
+      } catch (error) {
+        console.log(error);
+      }
+      
+    },
+    async deleteTask(data) {
+      try {
+        const response = await axios.delete(route('oportunity-tasks.destroy', data));
+
+      if (response.status === 200) {
+           this.$notify({
+            title: "Éxito",
+            message: "Se ha eliminado correctamente",
+            type: "success",
+          });
+
+          const index = this.currentOportunity.oportunityTasks.findIndex(item => item.id === data);
+
+        if (index !== -1) {
+          this.currentOportunity.oportunityTasks.splice(index, 1);
+        }
       }
       } catch (error) {
         console.log(error);
