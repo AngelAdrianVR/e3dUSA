@@ -1,5 +1,5 @@
 <template>
-    <AppLayout title="Registro de pago">
+    <AppLayout title="Agendar cita">
       <template #header>
         <div class="flex justify-between">
           <Link :href="route('client-monitors.index')"
@@ -7,7 +7,7 @@
           <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
-            <h2 class="font-semibold text-xl leading-tight">Registro de pago o transacción</h2>
+            <h2 class="font-semibold text-xl leading-tight">Agendar una cita</h2>
           </div>
         </div>
       </template>
@@ -20,9 +20,9 @@
             <div class="flex items-center space-x-2">
                 <div class="w-1/2">
                     <label>Folio de la oportunidad *</label>
-                    <el-select class="w-full" v-model="form.oportunity_id" clearable filterable placeholder="Seleccione"
-                        no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
-                        <el-option v-for="folio in client_monitors.data" :key="folio" :label="folio.folio" :value="folio.id" />
+                    <el-select class="w-full" v-model="form.oportunity_id" clearable filterable placeholder="Seleccione un cliente"
+                        no-data-text="No hay clientes registrados" no-match-text="No se encontraron coincidencias">
+                        <el-option v-for="company in companies" :key="company" :label="company.business_name" :value="company.id" />
                     </el-select>
                     <InputError :message="form.errors.oportunity_id" />
                 </div>
@@ -130,7 +130,7 @@ export default {
     InputError,
   },
   props: {
-    client_monitors: Object,
+    companies: Array,
   },
   methods: {
     store(){

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ClientMonitorResource;
 use App\Models\ClientMonitor;
+use App\Models\Company;
 use Illuminate\Http\Request;
 
 class ClientMonitorController extends Controller
@@ -30,7 +31,9 @@ class ClientMonitorController extends Controller
 
     public function meetingCreate()
     {
-        return inertia('ClientMonitor/MeetingCreate');
+        $companies = Company::all();
+
+        return inertia('ClientMonitor/MeetingCreate', compact('companies'));
     }
 
     
