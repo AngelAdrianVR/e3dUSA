@@ -56,11 +56,11 @@
 
 @layer components{
     .input{
-        @apply h-8 bg-[#CCCCCC] border placeholder:text-gray-400 border-transparent text-gray-700 text-sm rounded-lg focus:ring-[#0355B5] focus:border-[#0355B5] block w-full p-2.5;
+        @apply h-8 bg-[#CCCCCC] border placeholder:text-gray-400 border-transparent text-gray-700 text-sm rounded-lg focus:ring-0 focus:border-primary block w-full p-2.5;
     }
 
     .textarea{
-        @apply bg-[#CCCCCC] placeholder:text-gray-400 border border-transparent text-gray-700 text-sm rounded-lg focus:ring-[#0355B5] focus:border-[#0355B5] block w-full p-2.5;
+        @apply bg-[#CCCCCC] placeholder:text-gray-400 border border-transparent text-gray-700 text-sm rounded-lg focus:ring-0 focus:border-primary block w-full p-2.5;
     }
 
     .label{

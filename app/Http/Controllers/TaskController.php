@@ -22,12 +22,13 @@ class TaskController extends Controller
     }
 
 
-    public function create()
+    public function create(Request $request)
     {
-        $projects = Project::latest()->get();
+        $projects = Project::with(['users'])->latest()->get();
         $users = User::where('is_active', true)->get();
+        $parent_id = $request->input('projectId') ?? 1;
 
-        return inertia('Task/Create', compact('projects', 'users'));
+        return inertia('Task/Create', compact('projects', 'users', 'parent_id'));
     }
 
 
@@ -36,11 +37,10 @@ class TaskController extends Controller
         $request->validate([
             'project_id' => 'required',
             'title' => 'required|string',
-            'description' => 'required',
+            'description' => 'nullable',
             'department' => 'required|string',
             'participants' => 'required|array|min:1',
             'priority' => 'required|string',
-            'reminder' => 'required',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
             'media' => 'nullable',
@@ -78,7 +78,7 @@ class TaskController extends Controller
         // return $request->priority;
         $validated = $request->validate([
             'status' => 'required|string',
-            'description' => 'required',
+            'description' => 'nullable',
             'department' => 'required|string',
             'priority' => 'nullable|string',
             'participants' => 'required|array|min:1',
@@ -154,7 +154,7 @@ class TaskController extends Controller
     public function getLateTasks()
     {
         $late_tasks = Task::with(['participants', 'project'])->where('status', '!=', 'Terminada')->whereDate('end_date', '<', today())->get();
-        
+
         $currentDate = today();
 
         $late_tasks = $late_tasks->map(function ($task) use ($currentDate) {
@@ -166,17 +166,18 @@ class TaskController extends Controller
         return response()->json(['items' => $late_tasks]);
     }
 
-    private function handleUpdatedTaskStatus($project_id) {
-         // Obtén el proyecto al que pertenece la tarea
-         $project = Project::with('tasks')->find($project_id);
- 
-         // Verifica si todas las tareas del proyecto están terminadas y actualiza propiedad finished_at
-          if ($project->tasks->where('status', 'Terminada')->count() === $project->tasks->count()) {
+    private function handleUpdatedTaskStatus($project_id)
+    {
+        // Obtén el proyecto al que pertenece la tarea
+        $project = Project::with('tasks')->find($project_id);
+
+        // Verifica si todas las tareas del proyecto están terminadas y actualiza propiedad finished_at
+        if ($project->tasks->where('status', 'Terminada')->count() === $project->tasks->count()) {
             $project->finished_at = now();
             $project->save();
-          } else if ($project->finished_at !== null) {
+        } else if ($project->finished_at !== null) {
             $project->finished_at = null;
             $project->save();
-          }
+        }
     }
 }
