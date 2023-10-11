@@ -36,6 +36,6 @@ class CompanyBranch extends Model
 
     public function sales():HasMany
     {
-        return $this->hasMany(sales::class);
+        return $this->hasMany(Sale::class);
     }
 }

@@ -33,6 +33,7 @@ use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
+use App\Models\CompanyBranch;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
@@ -66,6 +67,20 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
+
+
+Route::get('customers-report', function () {
+    $customerWithSales = CompanyBranch::withCount(['sales' => function ($query) {
+        // Filtra las ventas con fecha de creación de hace un año hasta hoy
+        $query->whereBetween('created_at', [now()->subYear(), now()]);
+    }])->get();
+
+    $data = $customerWithSales->filter(function ($cliente) {
+        return $cliente->sales_count > 0;
+    });
+
+    return inertia('Sale/Report', compact('data'));
+})->name('sales.customers-report');
 
 
 // ------- Catalog Products Routes ---------
