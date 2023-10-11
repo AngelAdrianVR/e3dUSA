@@ -52,7 +52,7 @@ export default {
                 {
                     label: 'CRM',
                     icon: '<i class="fa-solid fa-chart-line text-xs"></i>',
-                    active:  route().current('crm.*') || route().current('quotes.*') || route().current('companies.*') || route().current('sales.*'),
+                    active:  route().current('crm.*') || route().current('quotes.*') || route().current('companies.*') || route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*') || route().current('client-monitors.*'),
                     options: [
                         {
                             label: 'Inicio',
@@ -78,12 +78,27 @@ export default {
                             active: route().current('sales.*'),
                             show: this.$page.props.auth.user.permissions.includes('Ver ordenes de venta')
                         },
+                        {
+                            label: 'Oportunidades',
+                            route: route('oportunities.index'),
+                            active: route().current('oportunities.*'),
+                            show: this.$page.props.auth.user.permissions.includes('Ver oportunidades')
+                        },
+                        {
+                            label: 'Seguimiento integral',
+                            route: route('client-monitors.index'),
+                            active: route().current('client-monitors.*'),
+                            show: this.$page.props.auth.user.permissions.includes('Ver seguimiento integral')
+                        },
+                        
 
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones') ||
                         this.$page.props.auth.user.permissions.includes('Ver clientes') ||
-                        this.$page.props.auth.user.permissions.includes('Ver ordenes de venta')
+                        this.$page.props.auth.user.permissions.includes('Ver ordenes de venta') ||
+                        this.$page.props.auth.user.permissions.includes('Ver oportunidades')||
+                        this.$page.props.auth.user.permissions.includes('Ver seguimiento integral')
                 },
                 {
                     label: 'Proyectos',
@@ -283,7 +298,7 @@ export default {
                         },
                         {
                             label: 'Historial de acciones',
-                            route: 'audits.index',
+                            route: route('audits.index'),
                             show: this.$page.props.auth.user.permissions.includes('Ver historial de acciones')
                         },
                     ],

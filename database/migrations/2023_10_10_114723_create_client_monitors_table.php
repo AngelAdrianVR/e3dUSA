@@ -17,7 +17,7 @@ return new class extends Migration
             $table->timestamp('date');
             $table->string('concept');
             $table->foreignId('seller_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('oportunity_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('oportunity_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('company_id')->nullable()->constrained()->cascadeOnDelete();
             $table->timestamps();
         });

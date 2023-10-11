@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\OportunityTaskResource;
 use App\Models\Comment;
 use App\Models\OportunityTask;
 use App\Models\User;
@@ -77,7 +78,7 @@ class OportunityTaskController extends Controller
 
         // event(new RecordEdited($task));
 
-        return response()->json(['item' => OportunityTask::make($oportunity_task->fresh(['asigned','oportunity','user','comments.user']))]);
+        return response()->json(['item' => OportunityTaskResource::make($oportunity_task->fresh(['asigned','oportunity','user','comments.user']))]);
     }
 
     

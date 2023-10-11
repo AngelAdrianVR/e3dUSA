@@ -170,16 +170,16 @@
                     {{ index + 1 }}
                   </td>
                   <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
-                    {{ maintenance.maintenance_type_id }}
+                    {{ maintenance?.maintenance_type_id }}
                   </td>
                   <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
-                    {{ maintenance.created_at }}
+                    {{ maintenance?.created_at }}
                   </td>
                   <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
-                    ${{ maintenance.cost }}
+                    ${{ maintenance?.cost }}
                   </td>
                   <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
-                    {{ maintenance.responsible }}
+                    {{ maintenance?.responsible }}
                   </td>
                   <td class="text-center pb-3">
                     <div>
@@ -218,19 +218,19 @@
                     {{ index + 1 }}
                   </td>
                   <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
-                    {{ spare_part.name }}
+                    {{ spare_part?.name }}
                   </td>
                   <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
-                    {{ spare_part.quantity }}
+                    {{ spare_part?.quantity }}
                   </td>
                   <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
-                    ${{ spare_part.cost }}
+                    ${{ spare_part?.cost }}
                   </td>
                   <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
-                    {{ spare_part.created_at }}
+                    {{ spare_part?.created_at }}
                   </td>
                   <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
-                    {{ spare_part.location }}
+                    {{ spare_part?.location }}
                   </td>
                   <td class="text-center pb-3">
                     <div>
@@ -267,7 +267,7 @@
           <section v-if="maintenanceModal">
             <div class="flex justify-center mb-4">
               <h2 class="font-bold text-center mr-2">
-                {{ currentMachine.name }}
+                {{ currentMachine?.name }}
               </h2>
               <div @click="maintenanceModal = false"
                 class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
@@ -338,7 +338,7 @@
           <section v-if="sparePartModal">
             <div class="flex justify-center mb-7">
               <h2 class="font-bold text-center mr-2">
-                {{ currentMachine.name }}
+                {{ currentMachine?.name }}
               </h2>
               <div @click="sparePartModal = false"
                 class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
