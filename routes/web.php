@@ -5,6 +5,7 @@ use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CatalogProductController;
+use App\Http\Controllers\ClientMonitorController;
 use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomerMeetingController;
@@ -103,8 +104,12 @@ Route::resource('oportunity-tasks', OportunityTaskController::class)->except(['s
 Route::get('oportunity-tasks/create/{oportunity_id}', [OportunityTaskController::class, 'create'])->name('oportunity-tasks.create')->middleware('auth');
 Route::post('oportunity-tasks/store/{oportunity_id}', [OportunityTaskController::class, 'store'])->name('oportunity-tasks.store')->middleware('auth');
 Route::post('oportunity-tasks/{oportunity_task}/comment', [OportunityTaskController::class, 'comment'])->name('oportunity-tasks.comment')->middleware('auth');
-
 Route::put('oportunity-tasks/mark-as-done/{oportunityTask}', [OportunityTaskController::class, 'markAsDone'])->name('oportunity-tasks.mark-as-done')->middleware('auth');
+
+// ------- CRM (Client monior Routes)  ---------
+Route::resource('client-monitors', ClientMonitorController::class)->except('create')->middleware('auth');
+Route::get('/client-monitors/payment/create', [ClientMonitorController::class, 'paymentCreate'])->name('client-monitors.payment-create')->middleware('auth');
+Route::get('/client-monitors/meeting/create', [ClientMonitorController::class, 'meetingCreate'])->name('client-monitors.meeting-create')->middleware('auth');
 
 // ------- CRM(sale orders Routes)  ---------
 Route::resource('sales', SaleController::class)->middleware('auth');

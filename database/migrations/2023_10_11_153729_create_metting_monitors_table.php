@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('client_monitors', function (Blueprint $table) {
+        Schema::create('metting_monitors', function (Blueprint $table) {
             $table->id();
-            $table->string('type');
-            $table->timestamp('date');
-            $table->string('concept');
-            $table->foreignId('seller_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('oportunity_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->date('meeting_date');
+            $table->time('time');
+            $table->string('meeting_via');
+            $table->string('location');
+            $table->text('description')->nullable();
             $table->foreignId('company_id')->nullable()->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('client_monitors');
+        Schema::dropIfExists('metting_monitors');
     }
 };

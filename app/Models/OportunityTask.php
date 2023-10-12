@@ -25,7 +25,7 @@ class OportunityTask extends Model
     ];
 
     protected $casts = [
-        'limit_date' => 'datetime',
+        'limit_date' => 'date',
         'finished_at' => 'datetime',
     ];
 

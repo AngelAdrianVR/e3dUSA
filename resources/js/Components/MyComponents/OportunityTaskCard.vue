@@ -58,7 +58,7 @@
           <div class="flex items-center space-x-2">
           <label class="lg:mr-16 text-sm">Fecha limite</label>
           <el-date-picker v-model="form.limit_date" type="date" placeholder="Fecha limite *"
-              :disabled-date="disabledDate" />
+              :disabled-date="disabledDate" format="YYYY-MM-DD" />
           <InputError :message="form.errors.limit_date" />
           </div>
           <div class="flex items-center space-x-2">
@@ -160,8 +160,8 @@ import axios from "axios";
 export default {
 data(){
   const form = useForm({
-      asigned_id: this.oportunityTask.asigned.name,
-      limit_date: this.oportunityTask.limit_date,
+      asigned_id: this.oportunityTask.asigned.id,
+      limit_date: this.oportunityTask.limit_date_raw,
       time: this.oportunityTask.time_raw,
       priority: this.oportunityTask.priority,
       reminder: this.oportunityTask.reminder,
@@ -205,8 +205,8 @@ props:{
 },
 methods:{
   async update() {
-      try {
-        const response = await axios.put(route("oportunity-tasks.update", this.oportunityTask.id), {
+    try {
+        const response = await axios.put(route("oportunity-tasks.update", this.oportunityTask), {
           asigned_id: this.form.asigned_id,
           limit_date: this.form.limit_date,
           time: this.form.time,
@@ -215,19 +215,19 @@ methods:{
           description: this.form.description,
         });
         if (response.status === 200) {
-          this.oportunityTask = response.data.item;
           this.$notify({
             title: "Éxito",
             message: "Se ha actualizado la actividad",
             type: "success",
           });
-          this.oportunityTask = response.data.item;
-          this.taskInformationModal = false;
-          // this.$emit('updated-status', this.oportunityTask);
+          this.oportunityTask = response.data.item
+
         }
       } catch (error) {
         console.log(error);
       }
+      this.$emit('updated-oportunityTask', this.oportunityTask.id);
+        this.taskInformationModal = false;
     },
   getPriorityStyles() {
     if (this.oportunityTask?.priority === 'Baja') {

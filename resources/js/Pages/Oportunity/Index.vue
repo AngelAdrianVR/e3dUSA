@@ -10,13 +10,14 @@
       <div class="flex justify-between">
         <div class="flex items-center space-x-2 w-1/3">
           <input
-            @keyup.enter="handleSearch"
-            v-model="inputSearch"
-            type="search"
-            class="input"
-            placeholder="Buscar"
+          :disabled="type_view == 'Kanban'"
+          @keyup.enter="handleSearch"
+          v-model="inputSearch"
+          type="search"
+          class="input"
+          placeholder="Buscar"
           />
-          <SecondaryButton @click="handleSearch" type="submit" class="rounded-lg">
+          <SecondaryButton :disabled="type_view == 'Kanban'" @click="handleSearch" type="submit" class="rounded-lg">
             <i class="fa-solid fa-magnifying-glass"></i>
           </SecondaryButton>
         </div>
