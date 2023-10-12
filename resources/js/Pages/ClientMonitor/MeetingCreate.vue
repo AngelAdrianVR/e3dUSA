@@ -17,73 +17,83 @@
         <div class="md:w-1/2 md:mx-auto text-sm my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4">
         <h2 class="text-secondary">Datos del cliente</h2>
         
-            <div class="flex items-center space-x-2">
-                <div class="w-1/2">
-                    <label>Folio de la oportunidad *</label>
-                    <el-select class="w-full" v-model="form.oportunity_id" clearable filterable placeholder="Seleccione un cliente"
-                        no-data-text="No hay clientes registrados" no-match-text="No se encontraron coincidencias">
-                        <el-option v-for="company in companies" :key="company" :label="company.business_name" :value="company.id" />
-                    </el-select>
-                    <InputError :message="form.errors.oportunity_id" />
-                </div>
-                <div class="w-1/2">
-                    <label>Cliente</label>
-                    <input v-model="form.name" disabled class="input" type="text">
-                    <InputError :message="form.errors.name" />
-                </div>
+            <div class="flex space-x-7 justify-between">
+              <div class="w-1/2">
+              <label>Cliente *</label> <br>
+                <el-select v-model="form.company_id" clearable filterable placeholder="Seleccione"
+                no-data-text="No hay clientes registrados" no-match-text="No se encontraron coincidencias">
+                <el-option v-for="company in companies" :key="company" :label="company.business_name" :value="company.id" />
+                </el-select>
+                <InputError :message="form.errors.company_id" />
+              </div>
+              <div class="w-1/2">
+              <label>Sucursal *</label> <br>
+                <el-select @change="saveCompanyBranchAddress" v-model="form.company_branch" clearable filterable placeholder="Seleccione"
+                no-data-text="No hay sucursales registradas" no-match-text="No se encontraron coincidencias">
+                <el-option v-for="company_branch in companies.find((item) => item.id == form.company_id)?.company_branches"
+                :key="company_branch" :label="company_branch.name" :value="company_branch.name" />
+                </el-select>
+                <InputError :message="form.errors.company_branch" />
+              </div>
             </div>
-            <div class="w-1/2">
-                <label>Vendedor</label>
-                <input v-model="form.name" disabled class="input" type="text">
-                <InputError :message="form.errors.name" />
+            <div class="flex justify-between space-x-7">
+              <div class="w-1/2">
+                  <label>Contacto</label>
+                  <el-select @change="getContactPhone" v-model="form.contact_id" clearable filterable placeholder="Seleccione"
+                  no-data-text="No hay contactos registrados" no-match-text="No se encontraron coincidencias">
+                  <el-option v-for="contact in company_branch_obj?.contacts"
+                  :key="contact" :label="contact.name" :value="contact.id" />
+                  </el-select>
+                  <InputError :message="form.errors.contact_id" />
+              </div>
+              <div class="w-1/2">
+                  <label>Telefono</label>
+                  <input v-model="form.phone" class="input" type="text">
+                  <InputError :message="form.errors.phone" />
+              </div>
             </div>
 
-            <h2 class="text-secondary pt-4">Detalles del pago</h2>
+            <h2 class="text-secondary pt-4">Detalles de la cita</h2>
 
             <div class="lg:flex items-center pt-3">
                 <div class="flex items-center lg:w-1/2 lg:mt-0">
-                <el-tooltip content="Fecha de pago *" placement="top">
+                <el-tooltip content="Fecha *" placement="top">
                     <span class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
                     <i class="fa-solid fa-calendar"></i>
                     </span>
                 </el-tooltip>
-                <el-date-picker v-model="form.limit_date" type="date" placeholder="Fecha de pago *" />
-                <InputError :message="form.errors.limit_date" />
+                <el-date-picker v-model="form.meeting_date" type="date" placeholder="Fecha *" />
+                <InputError :message="form.errors.meeting_date" />
                 </div>
                 <div class="w-1/2">
-                    <label>Monto pagado *</label>
-                    <input v-model="form.time" class="input" type="number" min="0">
+                    <label>Hora *</label>
+                    <input v-model="form.time" class="input" type="time">
                     <InputError :message="form.errors.time" />
                 </div>
             </div>
             <div class="flex items-center space-x-2">
                 <div class="w-1/2">
-                    <label>Método de pago *</label>
-                    <el-select class="w-full" v-model="form.payment_method" clearable filterable placeholder="Seleccione"
+                    <label>Vía de cita *</label>
+                    <el-select class="w-full" v-model="form.meeting_via" clearable filterable placeholder="Seleccione"
                         no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
-                        <el-option v-for="payment_method in payment_methods" :key="payment_method" :label="payment_method" :value="payment_method" />
+                        <el-option v-for="meeting_via in meetingVias" :key="meeting_via" :label="meeting_via" :value="meeting_via" />
                     </el-select>
-                    <InputError :message="form.errors.payment_method" />
+                    <InputError :message="form.errors.meeting_via" />
                 </div>
-                <div class="w-1/2">
-                    <label>Concepto</label>
-                    <input v-model="form.concept" class="input" type="text">
-                    <InputError :message="form.errors.concept" />
+                <div class="w-1/2 relative">
+                    <label>Ubicacion</label>
+                    <input v-model="form.location" class="input" type="text">
+                    <label @click="getCompanyBranchAddress" class="text-primary text-xs underline cursor-pointer absolute -bottom-5 left-3">Agregar ubicación de la sucursal</label>
+                    <InputError :message="form.errors.location" />
                 </div>
             </div>
             <div>
-                <label>Observaciones</label>
-                <textarea v-model="form.notes" class="textarea" rows="2">
+                <label>Descripción</label>
+                <textarea v-model="form.description" class="textarea" rows="2">
                 </textarea>
-                <InputError :message="form.errors.notes" />
+                <InputError :message="form.errors.description" />
             </div>
-            <p @click="activateFileInput" class="text-primary cursor-pointer">+ Adjuntar archivos</p>
-            <div class="ml-4 -mt-5">
-              <ul>
-                <li class="text-secondary text-sm" v-for="fileName in form.mediaNames" :key="fileName">{{ fileName }}</li>
-              </ul>
-            </div>
-            <input  @input="form.media = $event.target.files" multiple type="file" id="fileInput" style="display: none;" @change="handleFileUpload">
+            
           <div class="flex justify-end items-center">
             <PrimaryButton :disabled="form.processing">
               Agregar
@@ -105,21 +115,23 @@ import InputError from "@/Components/InputError.vue";
 export default {
   data() {
     const form = useForm({
-    oportunity_id: null,
-    payment_method: null,
-    concept: null,
-    time: null,
-    priority: null,
-    notes: null,
-    media: [],
+    company_id: null,
+    company_branch: null,
+    contact_id: null,
+    phone: null,
+    meeting_via: null,
+    location: null,
+    description: null,
         });
 
     return {
       form,
-      mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
-      payment_methods: [
-        'transferencia electrónica',
-        'otro',
+      company_branch_obj: null,
+      meetingVias: [
+        'Presencial',
+        'Videoconferencia',
+        'Llamada',
+        'Otro',
       ],
     };
   },
@@ -144,25 +156,15 @@ export default {
         },
       });
     },
-    activateFileInput() {
-    // Simula un clic en el campo de entrada de archivos al hacer clic en el párrafo
-    document.getElementById('fileInput').click();
-  },
-  handleFileUpload(event) {
-    // Este método se llama cuando se selecciona un archivo en el input file
-    const selectedFiles = event.target.files;
-    const fileNames = [];
-    
-    // Obtén los nombres de los archivos seleccionados y guárdalos en form.mediaNames
-    for (let i = 0; i < selectedFiles.length; i++) {
-      fileNames.push(selectedFiles[i].name);
-    }
-
-    // Actualiza la propiedad form.media con los archivos seleccionados
-    this.form.media = selectedFiles;
-    // Actualiza la propiedad form.mediaNames con los nombres de los archivos
-    this.form.mediaNames = fileNames;
-  },
+    saveCompanyBranchAddress(){
+      this.company_branch_obj = this.companies.find((item) => item.id == this.form.company_id)?.company_branches[0];
+    },
+    getContactPhone(){
+      this.form.phone = this.company_branch_obj?.contacts?.find(contact => contact.id == this.form.contact_id)?.phone;
+    },
+    getCompanyBranchAddress(){
+      this.form.location = this.company_branch_obj?.address;
+    },
 
   },
 };

@@ -37,7 +37,6 @@
             <template #content>
               <DropdownLink
               :href="route('client-monitors.payment-create')"
-                as="button"
                 v-if="
                   $page.props.auth.user.permissions.includes('Registrar pagos en seguimiento integral' )
                 "
@@ -46,7 +45,6 @@
               </DropdownLink>
               <DropdownLink
               :href="route('client-monitors.meeting-create')"
-                as="button"
                 v-if="
                   $page.props.auth.user.permissions.includes('Agendar citas en seguimiento integral')
                 "

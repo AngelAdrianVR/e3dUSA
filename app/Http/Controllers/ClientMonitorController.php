@@ -31,7 +31,7 @@ class ClientMonitorController extends Controller
 
     public function meetingCreate()
     {
-        $companies = Company::all();
+        $companies = Company::with('companyBranches.contacts')->get();
 
         return inertia('ClientMonitor/MeetingCreate', compact('companies'));
     }
