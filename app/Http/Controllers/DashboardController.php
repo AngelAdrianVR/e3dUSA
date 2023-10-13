@@ -52,7 +52,8 @@ class DashboardController extends Controller
         // return $collaborators_production_performance;
 
         // birthdates
-        $collaborators_birthdays = User::whereDate('employee_properties->birthdate', today())->get();
+        $collaborators_birthdays = $collaborators_birthdays = User::where('is_active', true)->whereMonth('employee_properties->birthdate->raw', '=', now()->month)
+            ->get();
 
         // recently added
         $collaborators_added = User::whereDate('employee_properties->join_date', '<=', today())
@@ -149,11 +150,11 @@ class DashboardController extends Controller
                 $dailyTotal = $points["punctuality"] + $points["scrap"] + $points["time"];
                 $totalPoints += $dailyTotal;
             }
-            
+
             $user->weekly_points = $weekly_points; // Asignar weekly_points al usuario
             $user->total_points = $totalPoints; // Asignar total_points al usuario
         }
-        
+
         $users = $users->sortByDesc('total_points')->values();
         $filtered = $users->sortByDesc('points')->values()->map(function ($user) {
             return [
@@ -290,7 +291,7 @@ class DashboardController extends Controller
                 $sold_products = $sale->catalogProductCompanySales;
 
                 foreach ($sold_products as $product) {
-                    $price = $product->catalogProductCompany?->new_price ?? 0; 
+                    $price = $product->catalogProductCompany?->new_price ?? 0;
                     $weekly_points[$day]["sales"] += $product->quantity * $price;
                     $totalMoney += $product->quantity * $price;
                 }

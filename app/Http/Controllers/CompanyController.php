@@ -13,6 +13,7 @@ use App\Models\Company;
 use App\Models\CompanyBranch;
 use App\Models\CompanyProduct;
 use App\Models\Contact;
+use App\Models\Production;
 use App\Models\RawMaterial;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -130,7 +131,32 @@ class CompanyController extends Controller
         }
 
         // Actualizar productos
-        $company->catalogProducts()->sync($request->products);
+        // $company->catalogProducts()->sync($request->products);
+        $productIdsInRequest = array_column($request->products, 'catalog_product_id');
+        
+        // Recorre los productos relacionados con la compañía
+        foreach ($company->catalogProducts as $product) {
+            $catalogProductId = $product->id;
+            
+            if (in_array($catalogProductId, $productIdsInRequest)) {
+                // El producto existe en la solicitud, actualiza los datos
+                $productData = $request->products[array_search($catalogProductId, $productIdsInRequest)];
+                CatalogProductCompany::find($product->pivot->id)->update($productData);
+                // $product->update($productData);
+            } else {
+                // El producto no está en la solicitud, elimínalo
+                $company->catalogProducts()->detach($catalogProductId);
+            }
+        }
+
+        // Relaciona los nuevos productos y actualiza cualquier otra información de la compañía
+        foreach ($request->products as $productData) {
+            $catalogProductId = $productData['catalog_product_id'];
+
+            if (!$company->catalogProducts->contains($catalogProductId)) {
+                $company->catalogProducts()->attach($catalogProductId, $productData);
+            }
+        }
 
         event(new RecordEdited($company));
 
