@@ -21,6 +21,7 @@ class PaymentMonitorResource extends JsonResource
             'payment_method' => $this->payment_method,
             'concept' => $this->concept,
             'notes' => $this->notes,
+            'media' => $this->getMedia('files')->all(),
             'oportunity' => $this->whenLoaded('oportunity'),
             'created_at' => $this->created_at?->isoFormat('DD MMMM YYYY'),
             'updated_at' => $this->updated_at?->isoFormat('DD MMMM YYYY'),

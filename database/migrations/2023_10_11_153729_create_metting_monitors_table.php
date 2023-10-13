@@ -16,9 +16,13 @@ return new class extends Migration
             $table->date('meeting_date');
             $table->time('time');
             $table->string('meeting_via');
-            $table->string('location');
-            $table->text('description')->nullable();
+            $table->string('location')->nullable();
+            $table->string('phone')->nullable();
+            $table->text('description');
             $table->foreignId('company_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('company_branch_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('oportunity_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('seller_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
     }

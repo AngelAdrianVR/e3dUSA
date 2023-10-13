@@ -19,8 +19,10 @@ use App\Http\Controllers\KioskDeviceController;
 use App\Http\Controllers\MachineController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MeetingController;
+use App\Http\Controllers\MettingMonitorController;
 use App\Http\Controllers\OportunityController;
 use App\Http\Controllers\OportunityTaskController;
+use App\Http\Controllers\PaymentMonitorController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProductionController;
@@ -107,9 +109,13 @@ Route::post('oportunity-tasks/{oportunity_task}/comment', [OportunityTaskControl
 Route::put('oportunity-tasks/mark-as-done/{oportunityTask}', [OportunityTaskController::class, 'markAsDone'])->name('oportunity-tasks.mark-as-done')->middleware('auth');
 
 // ------- CRM (Client monior Routes)  ---------
-Route::resource('client-monitors', ClientMonitorController::class)->except('create')->middleware('auth');
-Route::get('/client-monitors/payment/create', [ClientMonitorController::class, 'paymentCreate'])->name('client-monitors.payment-create')->middleware('auth');
-Route::get('/client-monitors/meeting/create', [ClientMonitorController::class, 'meetingCreate'])->name('client-monitors.meeting-create')->middleware('auth');
+Route::resource('client-monitors', ClientMonitorController::class)->middleware('auth');
+
+// ------- CRM (Payment monior Routes)  ---------
+Route::resource('payment-monitors', PaymentMonitorController::class)->middleware('auth');
+
+// ------- CRM (meeting monior Routes)  ---------
+Route::resource('meeting-monitors', MettingMonitorController::class)->middleware('auth');
 
 // ------- CRM(sale orders Routes)  ---------
 Route::resource('sales', SaleController::class)->middleware('auth');

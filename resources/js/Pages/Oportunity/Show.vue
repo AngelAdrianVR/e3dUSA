@@ -67,11 +67,11 @@
                 </button>
               </template>
               <template #content>
-                <DropdownLink v-if="tabs == 3">
-                  Registrar cita
+                <DropdownLink :href="route('payment-monitors.create')" v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Registrar pagos en seguimiento integral')">
+                  Registrar Pago
                 </DropdownLink>
-                <DropdownLink v-if="tabs == 3">
-                  Registrar pago
+                <DropdownLink :href="route('meeting-monitors.create')" v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Agendar citas en seguimiento integral')">
+                  Agendar Cita
                 </DropdownLink>
                 <DropdownLink v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades') && tabs == 1
                   " @click="showConfirmModal = true" as="button">
@@ -231,7 +231,7 @@
 
       <!-- ------------ tab 3 seguimiento integral starts ------------- -->
       <div v-if="tabs == 3" class="w-11/12 mx-auto my-16">
-      <table class="lg:w-[80%] w-full mx-auto">
+      <table class="lg:w-[80%] w-full mx-auto text-sm">
         <thead>
           <tr class="text-center">
             <th class="font-bold pb-5">

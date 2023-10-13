@@ -58,4 +58,14 @@ class Oportunity extends Model implements HasMedia
     {
         return $this->hasMany(ClientMonitor::class);
     }
+
+    public function paymentMonitors() :HasMany
+    {
+        return $this->hasMany(PaymentMonitor::class);
+    }
+
+    public function mettingMonitors() :HasMany
+    {
+        return $this->hasMany(MettingMonitor::class);
+    }
 }

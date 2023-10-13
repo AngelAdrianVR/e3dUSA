@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ClientMonitorResource;
+use App\Http\Resources\OportunityResource;
 use App\Models\ClientMonitor;
 use App\Models\Company;
+use App\Models\Oportunity;
+use App\Models\PaymentMonitor;
 use Illuminate\Http\Request;
 
 class ClientMonitorController extends Controller
@@ -20,32 +23,31 @@ class ClientMonitorController extends Controller
     }
 
     
-    public function paymentCreate()
+    public function Create()
     {
-        $client_monitors = ClientMonitorResource::collection(ClientMonitor::with('company')->latest()->get());
-
-        // return $client_monitors;
-
-        return inertia('ClientMonitor/PaymentCreate', compact('client_monitors'));
+        
     }
 
     public function meetingCreate()
     {
-        $companies = Company::with('companyBranches.contacts')->get();
-
-        return inertia('ClientMonitor/MeetingCreate', compact('companies'));
+        
     }
 
     
     public function store(Request $request)
     {
-        //
+        
     }
 
    
     public function show(ClientMonitor $client_monitor)
     {
-        //
+
+        $client_monitors = ClientMonitorResource::collection(ClientMonitor::with('oportunity')->latest()->get());
+
+        // return $client_monitors;
+
+        return inertia('ClientMonitor/Show', compact('client_monitor', 'client_monitors'));
     }
 
     
