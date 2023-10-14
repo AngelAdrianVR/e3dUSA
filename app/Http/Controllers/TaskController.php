@@ -81,7 +81,7 @@ class TaskController extends Controller
             'description' => 'nullable',
             'department' => 'required|string',
             'priority' => 'nullable|string',
-            'participants' => 'required|array|min:1',
+            'participants' => 'nullable|array',
         ]);
 
         $task->update($validated);

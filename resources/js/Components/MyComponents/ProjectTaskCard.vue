@@ -216,8 +216,8 @@
             <a :href="file?.original_url" target="_blank" v-for="file in taskComponentLocal?.media" :key="file"
               class="flex justify-between items-center cursor-pointer">
               <div class="flex space-x-7 items-center">
-                <img src="@/../../public/images/adobepdf.png" :alt="file?.file_name" />
-                <p>{{ file?.file_name }}sss</p>
+                <i :class="getFileTypeIcon(file.file_name)"></i>
+                <span class="ml-2">{{ file.file_name }}</span>
               </div>
               <i class="fa-solid fa-download text-right text-sm text-[#9a9a9a]"></i>
             </a>
@@ -406,6 +406,21 @@ export default {
         return "text-orange-500";
       } else {
         return "text-red-600";
+      }
+    },
+    getFileTypeIcon(fileName) {
+      // Asocia extensiones de archivo a iconos
+      const fileExtension = fileName.split('.').pop().toLowerCase();
+      switch (fileExtension) {
+        case 'pdf':
+          return 'fa-regular fa-file-pdf text-red-700';
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+        case 'gif':
+          return 'fa-regular fa-image text-blue-300';
+        default:
+          return 'fa-regular fa-file-lines';
       }
     },
   },

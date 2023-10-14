@@ -176,7 +176,7 @@
           :class="(drag && !pendingTasksList?.length) ? 'h-40' : ''">
           <template #item="{ element: task }">
             <li>
-              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="users" :id="task.id" />
+              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="currentProject?.users" :id="task.id" />
             </li>
           </template>
         </draggable>
@@ -196,7 +196,7 @@
           :class="(drag && !inProgressTasksList?.length) ? 'h-40' : ''">
           <template #item="{ element: task }">
             <li>
-              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="users" />
+              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="currentProject?.users" />
             </li>
           </template>
         </draggable>
@@ -216,7 +216,7 @@
           :class="(drag && !finishedTasksList?.length) ? 'h-40' : ''">
           <template #item="{ element: task }">
             <li>
-              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="users" />
+              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="currentProject?.users" />
             </li>
           </template>
         </draggable>

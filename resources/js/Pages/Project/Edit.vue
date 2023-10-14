@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppLayout title="Crear proyecto">
+    <AppLayout title="Editar proyecto">
       <template #header>
         <div class="flex justify-between">
           <Link :href="route('projects.index')"
@@ -8,13 +8,13 @@
           <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
-            <h2 class="font-semibold text-xl leading-tight">Crear proyecto</h2>
+            <h2 class="font-semibold text-xl leading-tight">Editar proyecto - {{ project.data.project_name }}</h2>
           </div>
         </div>
       </template>
 
       <!-- Form -->
-      <form @submit.prevent="store">
+      <form @submit.prevent="update">
         <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4">
           <div>
             <label>Título del proyecto *</label>
@@ -311,7 +311,7 @@
 
           <div class="mt-9 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing">
-              Crear proyecto
+              Actualizar proyecto
             </PrimaryButton>
           </div>
         </div>
@@ -383,21 +383,21 @@ import Tag from "@/Components/MyComponents/Tag.vue";
 export default {
   data() {
     const form = useForm({
-      project_name: null,
-      start_date: null,
-      limit_date: null,
-      is_strict_project: false,
-      description: null,
-      tags: null,
-      project_group_id: null,
-      is_internal_project: false,
-      company_id: null,
-      company_branch_id: null,
-      shipping_address: null,
-      sale_id: null,
-      currency: null,
-      budget: null,
-      sat_method: null,
+      project_name: this.project.data.project_name,
+      start_date: this.project.data.start_date_raw,
+      limit_date: this.project.data.limit_date_raw,
+      is_strict_project: this.project.data.is_strict_project,
+      description: this.project.data.description,
+      tags: this.project.data.tags,
+      project_group_id: this.project.data.projectGroup,
+      is_internal_project: this.project.data.is_internal_project,
+      company_id: this.project.data.company?.id,
+      company_branch_id: this.project.data.companyBranch?.id,
+      shipping_address: this.project.data.shipping_address,
+      sale_id: this.project.data.sale?.id,
+      currency: this.project.data.currency,
+      budget: this.project.data.budget,
+      sat_method: this.project.data.sat_method,
       owner_id: this.$page.props.auth.user.id,
       selectedUsersToPermissions: [],
       media: [],
@@ -452,6 +452,7 @@ export default {
     users: Array,
     tags: Object,
     project_groups: Object,
+    project: Object,
   },
   methods: {
     submitGroupForm() {
@@ -545,12 +546,12 @@ export default {
     updateDescription(content) {
       this.form.description = content;
     },
-    store() {
-      this.form.post(route("projects.store"), {
+    update() {
+      this.form.put(route("projects.update", this.project.data.id), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: "Se ha creado un nuevo proyecto",
+            message: "Se ha editado el proyecto",
             type: "success",
           });
 
