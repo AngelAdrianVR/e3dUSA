@@ -15,7 +15,7 @@
             </button>
         </header>
         <div contenteditable="true" @input="updateContent" ref="editor" id="editor"
-            class="bg-transparent border border-[#9A9A9A] placeholder:text-gray-400 text-gray-700 text-sm rounded-lg focus:ring-[#0355B5] focus:border-[#0355B5] block w-full p-2.5 rounded-tr-none rounded-tl-none min-h-[160px] focus:outline-none"></div>
+            class="bg-transparent border border-[#9A9A9A] placeholder:text-gray-400 text-gray-700 text-sm rounded-lg focus:border-primary block w-full p-2.5 rounded-tr-none rounded-tl-none min-h-[85px] focus:outline-none"></div>
             {{ value }}
     </div>
 </template>
@@ -38,6 +38,7 @@ export default {
     emits: ['update:value'], // Emite un evento personalizado para actualizar "value",
     methods: {
         toggleStyle(style) {
+            this.$refs.editor.focus();
             // Cambia el estado del estilo
             this.styles[style] = !this.styles[style];
 
@@ -53,12 +54,3 @@ export default {
     }
 }
 </script>
-<!-- <style scoped>
-/* Establece el color de fondo y el color de texto para el texto seleccionado */
-#editor::selection {
-    background-color: #FD8827;
-    /* Cambia el color de fondo de selección a tu preferencia */
-    color: #000000;
-    /* Cambia el color del texto seleccionado a tu preferencia */
-}
-</style> -->

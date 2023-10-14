@@ -15,44 +15,40 @@
           <el-option v-for="item in projects.data" :key="item.id" :label="item.project_name" :value="item.id" />
         </el-select>
       </div>
-      <div class="flex space-x-2">
-        <PrimaryButton v-if="$page.props.auth.user.permissions.includes('Crear tareas')"
-          @click="$inertia.get(route('tasks.create'))">+ Agregar tarea</PrimaryButton>
-        <Dropdown align="right" width="48">
-            <template #trigger>
-              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
-                Todas las tareas <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
-              </button>
-            </template>
-            <template #content>
-              <DropdownLink :href="route('machines.create')">
-                Mis tareas
-              </DropdownLink>
-            </template>
-          </Dropdown>
+      <div v-if="tabs == 1" class="flex space-x-2 w-full justify-end">
+        <PrimaryButton @click="$inertia.get(route('projects.create'))" class="!rounded-[10px]">Nuevo proyecto</PrimaryButton>
+        <button @click="$inertia.get(route('projects.edit', currentProject?.id ?? 1))"
+          class="w-9 h-9 rounded-[10px] bg-[#D9D9D9]">
+          <i class="fa-solid fa-pen text-sm"></i>
+        </button>
+      </div>
+      <div v-if="tabs == 2 || tabs == 3" class="flex space-x-2 w-full justify-end">
+        <PrimaryButton @click="$inertia.get(route('tasks.create', { projectId: currentProject?.id ?? 1 }))" class="!rounded-[10px]">Nueva tarea
+        </PrimaryButton>
       </div>
     </div>
 
     <!-- --------------project title--------------------------- -->
     <div class="text-center font-bold lg:text-lg mb-4 flex justify-center items-center mt-5 mx-2">
       <p>{{ currentProject?.project_name }}</p>
-      <div class="flex items-center ml-5 lg:ml-24">
-        <figure v-for="user in uniqueUsers.slice(0, maxUsersToShow)" :key="user.id">
+      <div class="flex items-center ml-5">
+        <div v-for="(user, index) in currentProject?.users" :key="index">
           <el-tooltip :content="user.name" placement="top">
-            <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm items-center rounded-full">
-              <img class="lg:h-12 h-10 w-10 lg:w-12 rounded-full object-cover" :src="user.profile_photo_url"
-                :alt="user.name" />
+            <div v-if="index < 3" class="flex text-sm rounded-full w-8">
+              <img class="h-7 w-7 rounded-full border border-[#cccccc] object-cover" :src="user.profile_photo_url" :alt="user.name" />
             </div>
           </el-tooltip>
-        </figure>
-        <el-tooltip v-if="remainingUsersCount > 0" placement="top">
-          <div
-            class="rounded-full lg:w-10 lg:h-10 w-8 h-8 bg-[#D9D9D9] flex items-center justify-center text-primary text-sm cursor-default">
-            +{{ remainingUsersCount }}
-          </div>
+        </div>
+        <el-tooltip placement="top">
           <template #content>
-            <div style="white-space: pre-line">{{ userNames.join("\n") }}</div>
+            <li v-for="(user, index) in currentProject?.users.filter((item, index) => index >= 3)" :key="index"
+              class="ml-2 text-xs">
+              {{ user.name }}
+            </li>
           </template>
+          <span v-if="currentProject?.users.length > 3" class="ml-1 text-primary text-sm">
+            +{{ (currentProject?.users.length - 3) }}
+          </span>
         </el-tooltip>
       </div>
     </div>
@@ -85,6 +81,12 @@
 
         <span class="text-gray-500">Creado por</span>
         <span>{{ currentProject?.user?.name }}</span>
+        <span class="text-gray-500 my-2">Creado el</span>
+        <span>{{
+          currentProject?.created_at
+        }}</span>
+        <span class="text-gray-500 my-2">Responsable del proyecto</span>
+        <span>{{ currentProject?.owner?.name }}</span>
         <span class="text-gray-500 my-2">Fecha de inicio</span>
         <span>{{ currentProject?.start_date }}</span>
         <span class="text-gray-500 my-2">Fecha final</span>
@@ -102,14 +104,14 @@
           <i v-else class="fa-solid fa-minus"></i>
         </span>
         <span class="text-gray-500 my-2">Descripción</span>
-        <span>{{ currentProject?.description }}</span>
+        <span v-html="currentProject?.description"></span>
         <span class="text-gray-500 my-2">Proyecto interno</span>
         <span>
           <i v-if="currentProject?.is_internal_project" class="fa-solid fa-check text-green-500"></i>
           <i v-else class="fa-solid fa-minus"></i>
         </span>
         <span class="text-gray-500 my-2">Grupo</span>
-        <span>{{ currentProject?.group }}</span>
+        <span>{{ currentProject?.projectGroup.name }}</span>
 
         <p v-if="!currentProject?.is_internal_project" class="text-secondary col-span-2 mb-2 mt-8">
           Campos adicionales
@@ -121,55 +123,43 @@
         }}</span>
         <span v-if="!currentProject?.is_internal_project" class="text-gray-500 my-2">Sucursal</span>
         <span v-if="!currentProject?.is_internal_project">{{
-          currentProject?.company_branch
+          currentProject?.companyBranch.name
         }}</span>
         <span v-if="!currentProject?.is_internal_project" class="text-gray-500 my-2">Dirección</span>
         <span v-if="!currentProject?.is_internal_project">{{
-          currentProject?.created_at
+          currentProject?.shipping_address
         }}</span>
+
         <span v-if="!currentProject?.is_internal_project" class="text-gray-500 my-2">OV</span>
+        <Link :href="route('sales.show', currentProject?.sale?.id ?? 1)" class="text-secondary underline">
         <span v-if="!currentProject?.is_internal_project">{{
-          'OV-' + currentProject?.sale_id
+          'OV-' + currentProject?.sale?.id
         }}</span>
+        </Link>
       </div>
 
-      <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
+      <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center self-start">
         <p class="text-secondary col-span-2 mb-2">Presupuestos</p>
 
-        <span class="text-gray-500 mb-6">Moneda</span>
+        <span class="text-gray-500">Moneda</span>
         <span class="mb-6">{{ currentProject?.currency }}</span>
-        <span class="text-gray-500">Monto</span>
+        <span class="text-gray-500 mt-2">Monto</span>
         <span>${{ currentProject?.budget?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
         <span class="text-gray-500 my-2">Método de facturación</span>
         <span>{{ currentProject?.sat_method }}</span>
 
-        <p class="text-secondary col-span-2 mt-7">Acceso al proyecto</p>
+        <p class="text-secondary col-span-2 mb-2 mt-5">Documentos adjuntos</p>
+        <li v-for="file in currentProject?.media" :key="file" class="flex items-center justify-between col-span-full">
+          <a :href="file.original_url" target="_blank" class="flex items-center">
+            <i :class="getFileTypeIcon(file.file_name)"></i>
+            <span class="ml-2">{{ file.file_name }}</span>
+          </a>
+        </li>
 
-        <span class="text-gray-500 my-2">Acceso</span>
-        <div class="flex items-start my-2">
-          <span>{{ currentProject?.type_access_project }}</span>
-          <el-tooltip
-            content="Los usuarios del portal pueden  ver el contenido y hacer comentarios, mientras que los usuarios del proyecto tendrán acceso directo."
-            placement="top">
-            <i class="fa-regular fa-circle-question text-primary text-[10px] ml-1"></i>
-          </el-tooltip>
+        <p class="text-secondary col-span-full mt-7 mb-2">Etiquetas</p>
+        <div class="col-span-full flex space-x-3">
+          <Tag v-for="(item, index) in currentProject?.tags" :key="index" :name="item.name" :color="item.color" />
         </div>
-
-        <p class="text-secondary col-span-2 mb-2">Usuarios</p>
-
-        <ul>
-          <li v-for="user in uniqueUsers" :key="user.id" class="mt-1">{{ user.name }}</li>
-        </ul>
-        <ul>
-          <li v-for="user in uniqueUsers" :key="user.id" class="mt-1">
-            Depto. {{ user.employee_properties?.department ?? "Super admin" }}
-          </li>
-        </ul>
-
-        <p class="text-secondary col-span-2 mb-2">Documentos adjuntos</p>
-        <ul>
-          <li v-for="file in currentProject?.media" :key="file" class="mt-1">{{ file.file_name }}</li>
-        </ul>
       </div>
     </div>
     <!-- ------------- info project ends 1 ------------- -->
@@ -181,7 +171,9 @@
         <h2 class="font-bold mb-10">
           POR HACER <span class="font-normal ml-7">{{ pendingTasksList?.length }}</span>
         </h2>
-        <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="pendingTasksList" :animation="300" item-key="id" tag="ul" group="tasks" id="pendent" :class="(drag && !pendingTasksList?.length) ? 'h-40' : ''">
+        <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="pendingTasksList"
+          :animation="300" item-key="id" tag="ul" group="tasks" id="pendent"
+          :class="(drag && !pendingTasksList?.length) ? 'h-40' : ''">
           <template #item="{ element: task }">
             <li>
               <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="users" :id="task.id" />
@@ -199,7 +191,9 @@
         <h2 class="font-bold mb-10">
           EN CURSO <span class="font-normal ml-7">{{ inProgressTasksList?.length }}</span>
         </h2>
-        <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="inProgressTasksList" :animation="300" item-key="id" tag="ul" group="tasks" id="process" :class="(drag && !inProgressTasksList?.length) ? 'h-40' : ''">
+        <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="inProgressTasksList"
+          :animation="300" item-key="id" tag="ul" group="tasks" id="process"
+          :class="(drag && !inProgressTasksList?.length) ? 'h-40' : ''">
           <template #item="{ element: task }">
             <li>
               <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="users" />
@@ -217,11 +211,12 @@
         <h2 class="font-bold mb-10">
           TERMINADA <span class="font-normal ml-7">{{ finishedTasksList?.length }}</span>
         </h2>
-        <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="finishedTasksList" :animation="300" item-key="id" tag="ul" group="tasks" id="finished" :class="(drag && !finishedTasksList?.length) ? 'h-40' : ''">
+        <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="finishedTasksList"
+          :animation="300" item-key="id" tag="ul" group="tasks" id="finished"
+          :class="(drag && !finishedTasksList?.length) ? 'h-40' : ''">
           <template #item="{ element: task }">
             <li>
-              <ProjectTaskCard @updated-status="updateTask($event)"
-                :taskComponent="task" :users="users" />
+              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="users" />
             </li>
           </template>
         </draggable>
@@ -248,8 +243,7 @@
           <p :class="period == 'Bimestre'
             ? 'bg-primary text-white rounded-sm'
             : 'border-[#9A9A9A]'
-            " @click="period = 'Bimestre'"
-            class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-x border-transparent">
+            " @click="period = 'Bimestre'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-x border-transparent">
             Bimestre
           </p>
         </div>
@@ -269,6 +263,7 @@ import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import Modal from "@/Components/Modal.vue";
 import Checkbox from "@/Components/Checkbox.vue";
+import Tag from "@/Components/MyComponents/Tag.vue";
 import { Link } from "@inertiajs/vue3";
 import draggable from 'vuedraggable';
 
@@ -277,8 +272,6 @@ export default {
     return {
       selectedProyect: "",
       tabs: 1,
-      uniqueUsers: [],
-      maxUsersToShow: 3,
       selectedProject: "",
       currentProject: null,
       period: "Mes", //period of time in cronograma table tab 3
@@ -300,7 +293,8 @@ export default {
     Checkbox,
     draggable,
     GanttDiagramMonth,
-    GanttDiagramBimester
+    GanttDiagramBimester,
+    Tag,
   },
   props: {
     projects: Object,
@@ -308,6 +302,21 @@ export default {
     users: Array,
   },
   methods: {
+    getFileTypeIcon(fileName) {
+      // Asocia extensiones de archivo a iconos
+      const fileExtension = fileName.split('.').pop().toLowerCase();
+      switch (fileExtension) {
+        case 'pdf':
+          return 'fa-regular fa-file-pdf text-red-700';
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+        case 'gif':
+          return 'fa-regular fa-image text-blue-300';
+        default:
+          return 'fa-regular fa-file-lines';
+      }
+    },
     handleStartDrag(evt) {
       this.draggingTaskId = evt.item.__draggable_context.element.id;
       this.drag = true;
@@ -325,7 +334,7 @@ export default {
     },
     async updateTaskStatus(status) {
       try {
-        const response = await axios.put(route('tasks.update-status', this.draggingTaskId), {status: status});
+        const response = await axios.put(route('tasks.update-status', this.draggingTaskId), { status: status });
 
         if (response.status === 200) {
           const taskIndex = this.currentProject.tasks.findIndex(item => item.id === this.draggingTaskId);
@@ -361,40 +370,6 @@ export default {
       this.finishedTasks();
     },
   },
-  computed: {
-    // Calcular la lista de usuarios únicos
-    uniqueUsers() {
-      const uniqueUsers = [];
-      const userIds = new Set();
-
-      if (this.currentProject) {
-        // Recorrer las tareas del proyecto
-        for (const task of this.currentProject?.tasks) {
-          // Recorrer los usuarios de cada tarea
-          for (const user of task.participants) {
-            // Verificar si el usuario ya ha sido agregado
-            if (!userIds.has(user.id)) {
-              // Agregar el usuario a la lista de usuarios únicos
-              uniqueUsers.push(user);
-              this.uniqueUsers.push(user);
-              userIds.add(user.id);
-            }
-          }
-        }
-      }
-      return uniqueUsers;
-    },
-    // Calcular la cantidad de usuarios restantes
-    remainingUsersCount() {
-      return Math.max(0, this.uniqueUsers?.length - this.maxUsersToShow);
-    },
-
-    // Calcular los nombres de los usuarios restantes
-    userNames() {
-      const remainingUsers = this.uniqueUsers.slice(this.maxUsersToShow);
-      return remainingUsers.map((user) => user.name);
-    },
-  },
   watch: {
     selectedProject(newVal) {
       this.currentProject = this.projects.data.find((item) => item.id == newVal);
@@ -402,19 +377,18 @@ export default {
       this.updateTasksLists();
 
       // Verificar si hay tareas en el proyecto y si la primera tarea tiene una fecha de inicio
-  if (this.currentProject && this.currentProject.tasks.length > 0) {
-    const firstTask = this.currentProject.tasks[0];
-    if (firstTask && firstTask.start_date) {
-      this.currentDate = new Date(firstTask.start_date);
-    }
-  }
+      if (this.currentProject && this.currentProject.tasks.length > 0) {
+        const firstTask = this.currentProject.tasks[0];
+        if (firstTask && firstTask.start_date) {
+          this.currentDate = new Date(firstTask.start_date);
+        }
+      }
     },
   },
-
   mounted() {
-  this.selectedProject = this.project.data.id;
-  this.currentProject = this.projects.data.find((item) => item.id == this.selectedProject);
-},
+    this.selectedProject = this.project.data.id;
+    this.currentProject = this.projects.data.find((item) => item.id == this.selectedProject);
+  },
 };
 </script>
 
@@ -428,5 +402,4 @@ export default {
   border-radius: 20px;
   /* Redondeo */
 }
-
 </style>

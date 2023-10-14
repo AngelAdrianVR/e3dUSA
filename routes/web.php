@@ -29,9 +29,9 @@ use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\ProductionCostController;
 use App\Http\Controllers\ProductionProgressController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectGroupController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RawMaterialController;
-use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SampleController;
@@ -39,6 +39,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
@@ -74,6 +75,14 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
+
+
+// -------------- project groups routes ------------
+Route::resource('project-groups', ProjectGroupController::class)->middleware('auth')->names('project-groups');
+
+
+// -------------- tags routes ------------
+Route::resource('tags', TagController::class)->middleware('auth')->names('tags');
 
 // --------------- Calendar routes -----------------
 Route::resource('calendars', CalendarController::class)->middleware('auth');

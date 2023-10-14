@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('reminder')->nullable();
             $table->json('participants')->nullable();
             $table->text('description')->nullable();
-            $table->boolean('is_full_day')->default('false');
+            $table->boolean('is_full_day')->default(false);
             $table->string('status')->default('Pendiente');
             $table->date('start_date')->nullable();
             $table->date('finish_date')->nullable();
