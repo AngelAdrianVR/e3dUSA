@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('payment_method');
             $table->string('concept');
             $table->text('notes')->nullable();
+            $table->foreignId('seller_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->foreignId('oportunity_id')->nullable()->constrained()->cascadeOnDelete();
             $table->timestamps();
         });

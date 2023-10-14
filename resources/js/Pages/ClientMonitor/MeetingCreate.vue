@@ -16,28 +16,40 @@
       <form @submit.prevent="store">
         <div class="md:w-1/2 md:mx-auto text-sm my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4">
         <h2 class="text-secondary">Datos del cliente</h2>
-        
+
+            <label class="inline-flex items-center">
+              <Checkbox @change="clearOportunityForm" v-model:checked="form.is_oportunity" class="bg-transparent disabled:border-gray-400"/>
+              <span class="ml-2 text-xs">Agendar cita a oportunidad</span>
+            </label>
+            <div v-if="form.is_oportunity" class="w-1/2">
+                <label>Folio de la oportunidad *</label>
+                <el-select @change="getCompany" class="w-full" v-model="form.oportunity_id" clearable filterable placeholder="Seleccione"
+                    no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
+                    <el-option v-for="oportunity in oportunities.data" :key="oportunity" :label="oportunity.folio" :value="oportunity.id" />
+                </el-select>
+                <InputError :message="form.errors.oportunity_id" />
+            </div>
             <div class="flex space-x-7 justify-between">
               <div class="w-1/2">
               <label>Cliente *</label> <br>
-                <el-select v-model="form.company_id" clearable filterable placeholder="Seleccione"
+                <el-select :disabled="form.is_oportunity" v-model="form.company_id" clearable filterable placeholder="Seleccione"
                 no-data-text="No hay clientes registrados" no-match-text="No se encontraron coincidencias">
                 <el-option v-for="company in companies" :key="company" :label="company.business_name" :value="company.id" />
                 </el-select>
                 <InputError :message="form.errors.company_id" />
               </div>
               <div class="w-1/2">
-              <label>Sucursal *</label> <br>
-                <el-select @change="saveCompanyBranchAddress" v-model="form.company_branch" clearable filterable placeholder="Seleccione"
+              <label>Sucursal</label> <br>
+                <el-select @change="saveCompanyBranchAddress" v-model="form.company_branch_id" clearable filterable placeholder="Seleccione"
                 no-data-text="No hay sucursales registradas" no-match-text="No se encontraron coincidencias">
                 <el-option v-for="company_branch in companies.find((item) => item.id == form.company_id)?.company_branches"
-                :key="company_branch" :label="company_branch.name" :value="company_branch.name" />
+                :key="company_branch" :label="company_branch.name" :value="company_branch.id" />
                 </el-select>
                 <InputError :message="form.errors.company_branch" />
               </div>
             </div>
             <div class="flex justify-between space-x-7">
-              <div class="w-1/2">
+              <div v-if="!has_contact" class="w-1/2">
                   <label>Contacto</label>
                   <el-select @change="getContactPhone" v-model="form.contact_id" clearable filterable placeholder="Seleccione"
                   no-data-text="No hay contactos registrados" no-match-text="No se encontraron coincidencias">
@@ -45,6 +57,11 @@
                   :key="contact" :label="contact.name" :value="contact.id" />
                   </el-select>
                   <InputError :message="form.errors.contact_id" />
+              </div>
+              <div v-if="has_contact" class="w-1/2">
+                  <label>Contacto</label>
+                  <input v-model="form.contact_name" class="input" type="text">
+                  <InputError :message="form.errors.contact_name" />
               </div>
               <div class="w-1/2">
                   <label>Telefono</label>
@@ -88,7 +105,7 @@
                 </div>
             </div>
             <div>
-                <label>Descripción</label>
+                <label>Descripción *</label>
                 <textarea v-model="form.description" class="textarea" rows="2">
                 </textarea>
                 <InputError :message="form.errors.description" />
@@ -102,7 +119,7 @@
           </div>
         </div>
       </form>
-
+  {{form}}
     </AppLayout>
 </template>
 
@@ -111,13 +128,19 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
+import Checkbox from "@/Components/Checkbox.vue";
 
 export default {
   data() {
     const form = useForm({
+    is_oportunity: true,
+    oportunity_id: null,
+    time: null,
     company_id: null,
-    company_branch: null,
+    meeting_date: null,
+    company_branch_id: null,
     contact_id: null,
+    contact_name: null,
     phone: null,
     meeting_via: null,
     location: null,
@@ -126,6 +149,7 @@ export default {
 
     return {
       form,
+      has_contact: false,
       company_branch_obj: null,
       meetingVias: [
         'Presencial',
@@ -138,19 +162,21 @@ export default {
   components: {
     AppLayout,
     PrimaryButton,
-    Link,
     InputError,
+    Checkbox,
+    Link,
   },
   props: {
+    oportunities: Object,
     companies: Array,
   },
   methods: {
     store(){
-      this.form.post(route("oportunity-tasks.store", this.oportunity_id), {
+      this.form.post(route("meeting-monitors.store"), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: "Se ha creado una nueva actividad",
+            message: "Se ha agendado una nueva cita",
             type: "success",
           });
         },
@@ -165,7 +191,35 @@ export default {
     getCompanyBranchAddress(){
       this.form.location = this.company_branch_obj?.address;
     },
+    getCompany() {
+      const oportunity = this.oportunities.data.find(oportunity => oportunity.id === this.form.oportunity_id);
+      this.form.company_branch_id = null;
+      this.form.contact_id = null;
+      this.form.contact_name = null;
+      this.form.phone = null;
+      this.company_branch_obj = null;
 
+    if (oportunity.company) {
+      this.form.company_id = oportunity.company.id;
+      this.has_contact = false;
+      } else {
+        this.has_contact = true;
+        this.form.company_id = null;
+        this.form.contact_name = oportunity.contact;
+      }
+    },
+    clearOportunityForm() {
+      if (!this.form.is_oportunity) {
+        this.form.oportunity_id = null;
+        this.form.company_id = null;
+        this.form.company_branch_id = null;
+        this.form.contact_id = null;
+        this.form.phone = null;
+      } else {
+        return
+      }
+      
+    },
   },
 };
 </script>

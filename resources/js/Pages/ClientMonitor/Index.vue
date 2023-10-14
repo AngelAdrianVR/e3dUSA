@@ -36,15 +36,15 @@
             </template>
             <template #content>
               <DropdownLink
-              :href="route('client-monitors.payment-create')"
+              :href="route('payment-monitors.create')"
                 v-if="
-                  $page.props.auth.user.permissions.includes('Registrar pagos en seguimiento integral' )
+                  $page.props.auth.user.permissions.includes('Registrar pagos en seguimiento integral')
                 "
               >
                 Registrar pago o transacción
               </DropdownLink>
               <DropdownLink
-              :href="route('client-monitors.meeting-create')"
+              :href="route('meeting-monitors.create')"
                 v-if="
                   $page.props.auth.user.permissions.includes('Agendar citas en seguimiento integral')
                 "

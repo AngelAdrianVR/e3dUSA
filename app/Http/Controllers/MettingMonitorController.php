@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Http\Resources\OportunityResource;
+use App\Models\ClientMonitor;
+use App\Models\Company;
 use App\Models\MettingMonitor;
+use App\Models\Oportunity;
 use Illuminate\Http\Request;
 
 class MettingMonitorController extends Controller
@@ -20,7 +25,10 @@ class MettingMonitorController extends Controller
      */
     public function create()
     {
-        //
+        $companies = Company::with('companyBranches.contacts')->get();
+        $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
+
+        return inertia('ClientMonitor/MeetingCreate', compact('companies', 'oportunities'));
     }
 
     /**
@@ -28,7 +36,35 @@ class MettingMonitorController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'is_oportunity' => 'boolean',
+            'meeting_date' => 'required|date',
+            'time' => 'required',
+            'oportunity_id' => 'nullable',
+            'company_id' => 'nullable',
+            'company_branch_id' => 'nullable',
+            'contact_id' => 'nullable',
+            'contact_name' => 'nullable|string',
+            'phone' => 'nullable',
+            'meeting_via' => 'required',
+            'location' => 'nullable',
+            'description' => 'required',
+        ]);
+
+        $meeting_monitor = MettingMonitor::create($request->all() + ['seller_id' => auth()->id()]);
+
+        ClientMonitor::create([
+            'type' => 'Reunión',
+            'date' => now(),
+            'concept' => $request->description,
+            'seller_id' => auth()->id(),
+            'oportunity_id' => $request->oportunity_id,
+            'company_id' => $request->company_id,
+        ]);
+
+        event(new RecordCreated($meeting_monitor));
+        
+        return to_route('client-monitors.index');
     }
 
     /**

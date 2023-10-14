@@ -20,22 +20,20 @@
             <div class="flex items-center space-x-2">
                 <div class="w-1/2">
                     <label>Folio de la oportunidad *</label>
-                    <el-select class="w-full" v-model="form.oportunity_id" clearable filterable placeholder="Seleccione"
+                    <el-select @change="getCompany" class="w-full" v-model="form.oportunity_id" clearable filterable placeholder="Seleccione"
                         no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
-                        <el-option v-for="folio in client_monitors.data" :key="folio" :label="folio.folio" :value="folio.id" />
+                        <el-option v-for="oportunity in oportunities.data" :key="oportunity" :label="oportunity.folio" :value="oportunity.id" />
                     </el-select>
                     <InputError :message="form.errors.oportunity_id" />
                 </div>
                 <div class="w-1/2">
                     <label>Cliente</label>
-                    <input v-model="form.name" disabled class="input" type="text">
-                    <InputError :message="form.errors.name" />
+                    <input v-model="company_name" disabled class="input cursor-not-allowed" type="text">
                 </div>
             </div>
             <div class="w-1/2">
                 <label>Vendedor</label>
-                <input v-model="form.name" disabled class="input" type="text">
-                <InputError :message="form.errors.name" />
+                <input v-model="seller_name" disabled class="input cursor-not-allowed" type="text">
             </div>
 
             <h2 class="text-secondary pt-4">Detalles del pago</h2>
@@ -47,13 +45,13 @@
                     <i class="fa-solid fa-calendar"></i>
                     </span>
                 </el-tooltip>
-                <el-date-picker v-model="form.limit_date" type="date" placeholder="Fecha de pago *" />
-                <InputError :message="form.errors.limit_date" />
+                <el-date-picker v-model="form.paid_at" type="date" placeholder="Fecha de pago *" />
+                <InputError :message="form.errors.paid_at" />
                 </div>
                 <div class="w-1/2">
                     <label>Monto pagado *</label>
-                    <input v-model="form.time" class="input" type="number" min="0">
-                    <InputError :message="form.errors.time" />
+                    <input v-model="form.amount" class="input" type="number" min="0">
+                    <InputError :message="form.errors.amount" />
                 </div>
             </div>
             <div class="flex items-center space-x-2">
@@ -106,9 +104,12 @@ export default {
   data() {
     const form = useForm({
     oportunity_id: null,
+    company_id: null,
+    seller_id: this.$page.props.auth.user.id,
+    paid_at: null,
+    amount: null,
     payment_method: null,
     concept: null,
-    time: null,
     priority: null,
     notes: null,
     media: [],
@@ -116,10 +117,12 @@ export default {
 
     return {
       form,
+      company_name: null,
+      seller_name: this.$page.props.auth.user.name,
       mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
       payment_methods: [
-        'transferencia electrónica',
-        'otro',
+        'Transferencia electrónica',
+        'Otro',
       ],
     };
   },
@@ -130,15 +133,15 @@ export default {
     InputError,
   },
   props: {
-    client_monitors: Object,
+    oportunities: Object,
   },
   methods: {
     store(){
-      this.form.post(route("oportunity-tasks.store", this.oportunity_id), {
+      this.form.post(route('payment-monitors.store'), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: "Se ha creado una nueva actividad",
+            message: "Registro de pago exitoso",
             type: "success",
           });
         },
@@ -162,6 +165,18 @@ export default {
     this.form.media = selectedFiles;
     // Actualiza la propiedad form.mediaNames con los nombres de los archivos
     this.form.mediaNames = fileNames;
+  },
+  getCompany() {
+    const oportunity = this.oportunities.data.find(oportunity => oportunity.id === this.form.oportunity_id);
+    // console.log(oportunity);
+
+    if (oportunity.company) {
+      this.form.company_id = oportunity.company.id;
+      this.company_name = oportunity.company.business_name;
+      } else {
+        this.company_name = 'Nuevo cliente. Contacto: ' + oportunity.contact; 
+        this.form.company_id = null;
+      }
   },
 
   },

@@ -20,8 +20,12 @@ class MeetingMonitorResource extends JsonResource
             'time' => $this->time,
             'meeting_via' => $this->meeting_via,
             'location' => $this->location,
+            'phone' => $this->phone,
             'description' => $this->description,
             'company' => $this->whenLoaded('company'),
+            'companyBranch' => $this->whenLoaded('companyBranch'),
+            'oportunity' => $this->whenLoaded('oportunity'),
+            'seller' => $this->whenLoaded('seller'),
             'created_at' => $this->created_at?->isoFOrmat('DD MMMM YYYY'),
             'updated_at' => $this->updated_at?->isoFOrmat('DD MMMM YYYY'),
         ];
