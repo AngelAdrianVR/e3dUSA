@@ -216,7 +216,13 @@ watch: {
       this.currentClientMonitor = this.client_monitors.data.find((item) => item.id == newVal);
       this.clientMonitorSelected = this.currentClientMonitor?.id
     },
-}
+},
+mounted() {
+    this.clientMonitorSelected = this.client_monitor.id;
+    this.currentClientMonitor = this.client_monitors.data.find(
+      (item) => item.id == this.clientMonitorSelected
+    );
+  },
 };
 </script>
 
