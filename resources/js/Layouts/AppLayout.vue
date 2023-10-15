@@ -473,7 +473,7 @@ onMounted(() => {
                   nextAttendance &&
                   $page.props.auth.user.permissions.includes(
                     'Registrar asistencia'
-                  )
+                  ) && !isPaused
                   " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
                   @confirm="setAttendance">
                   <template #reference>
@@ -900,7 +900,7 @@ onMounted(() => {
         </div>
       </form>
 
-      <!-- ---------------------- Machine form starts ---------------------- -->
+      <!------------------------ Machine form starts ------------------------>
       <form v-if="!is_product" @submit.prevent="scanMachineForm">
         <div class="mt-6">
           <div class="flex col-span-full ml-3 mt-2">
