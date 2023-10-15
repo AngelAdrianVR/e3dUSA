@@ -95,7 +95,7 @@ export default {
                 {
                     label: 'CRM',
                     icon: '<i class="fa-solid fa-chart-line text-sm"></i>',
-                    active: route().current('crm.*') || route().current('quotes.*') || route().current('companies.*') || route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*'),
+                    active: route().current('crm.*') || route().current('quotes.*') || route().current('companies.*') || route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*') || route().current('client-monitors.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
                         return ['quote', 'sale'].includes(notification.data.module);
                     }),
@@ -132,13 +132,20 @@ export default {
                             show: this.$page.props.auth.user.permissions.includes('Ver oportunidades'),
                             notifications: false,
                         },
+                        {
+                            label: 'Seguimiento integral',
+                            route: 'client-monitors.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver seguimiento integral'),
+                            notifications: false,
+                        },
 
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones') ||
                         this.$page.props.auth.user.permissions.includes('Ver clientes') ||
                         this.$page.props.auth.user.permissions.includes('Ver ordenes de venta') ||
-                        this.$page.props.auth.user.permissions.includes('Ver oportunidades')
+                        this.$page.props.auth.user.permissions.includes('Ver oportunidades') ||
+                        this.$page.props.auth.user.permissions.includes('Ver seguimiento integral')
                 },
                 {
                     label: 'Compras',

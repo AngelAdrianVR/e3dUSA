@@ -5,6 +5,7 @@ use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CatalogProductController;
+use App\Http\Controllers\ClientMonitorController;
 use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomerMeetingController;
@@ -18,8 +19,10 @@ use App\Http\Controllers\KioskDeviceController;
 use App\Http\Controllers\MachineController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MeetingController;
+use App\Http\Controllers\MettingMonitorController;
 use App\Http\Controllers\OportunityController;
 use App\Http\Controllers\OportunityTaskController;
+use App\Http\Controllers\PaymentMonitorController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProductionController;
@@ -112,8 +115,16 @@ Route::resource('oportunity-tasks', OportunityTaskController::class)->except(['s
 Route::get('oportunity-tasks/create/{oportunity_id}', [OportunityTaskController::class, 'create'])->name('oportunity-tasks.create')->middleware('auth');
 Route::post('oportunity-tasks/store/{oportunity_id}', [OportunityTaskController::class, 'store'])->name('oportunity-tasks.store')->middleware('auth');
 Route::post('oportunity-tasks/{oportunity_task}/comment', [OportunityTaskController::class, 'comment'])->name('oportunity-tasks.comment')->middleware('auth');
-
 Route::put('oportunity-tasks/mark-as-done/{oportunityTask}', [OportunityTaskController::class, 'markAsDone'])->name('oportunity-tasks.mark-as-done')->middleware('auth');
+
+// ------- CRM (Client monior Routes)  ---------
+Route::resource('client-monitors', ClientMonitorController::class)->middleware('auth');
+
+// ------- CRM (Payment monior Routes)  ---------
+Route::resource('payment-monitors', PaymentMonitorController::class)->middleware('auth');
+
+// ------- CRM (meeting monior Routes)  ---------
+Route::resource('meeting-monitors', MettingMonitorController::class)->middleware('auth');
 
 // ------- CRM(sale orders Routes)  ---------
 Route::resource('sales', SaleController::class)->middleware('auth');

@@ -13,7 +13,7 @@
           <div class="md:w-1/3">
             <el-select v-model="selectedCompany" clearable filterable placeholder="Buscar cliente"
               no-data-text="No hay clientes en el catálogo" no-match-text="No se encontraron coincidencias">
-              <el-option v-for="item in companies" :key="item.id" :label="item.business_name" :value="item.id" />
+              <el-option v-for="item in companies.data" :key="item.id" :label="item.business_name" :value="item.id" />
             </el-select>
           </div>
           <div class="flex items-center space-x-2">
@@ -74,12 +74,22 @@
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
           <p @click="tabs = 5" :class="tabs == 5 ? 'bg-secondary-gray rounded-xl text-primary' : ''
             " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-            Historial
+            Cotizaciones
           </p>
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
           <p @click="tabs = 6" :class="tabs == 6 ? 'bg-secondary-gray rounded-xl text-primary' : ''
             " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-            Cotizaciones
+            Seguimiento integral
+          </p>
+          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p @click="tabs = 7" :class="tabs == 7 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Proyectos
+          </p>
+          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p @click="tabs = 8" :class="tabs == 8 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Historial
           </p>
         </div>
       </div>
@@ -107,39 +117,114 @@
       <div v-if="tabs == 2" class="lg:grid grid-cols-2 gap-8 md:mt-12 md:px-14">
         <CompanyBranchCard :company_branches="currentCompany?.company_branches" />
       </div>
-
       <!-- ------------- Sucursales ends 2 ------------- -->
 
       <!-- -------------Productos starts 3 ------------- -->
       <div v-if="tabs == 3" class="p-7">
         <p class="text-secondary">Productos registrados</p>
         <div class="grid lg:grid-cols-4 md:grid-cols-2 mt-7 gap-10">
-          <CompanyProductCard v-for="company_product in currentCompany?.catalog_products" :key="company_product.id"
+          <CompanyProductCard v-for="company_product in currentCompany?.catalogProducts" :key="company_product.id"
             :company_product="company_product" />
         </div>
       </div>
       <!-- ------------- Productos ends 3 ------------- -->
       
       <!-- -------------Oportunidades starts 4 ------------- -->
-      <div v-if="tabs == 4" class="p-7">
-        <p class="text-secondary">Oportunidades</p>
-        
+      <div v-if="tabs == 4" class="p-7 w-11/12 mx-auto my-4">
+      <div v-if="currentCompany?.oportunities.length">
+        <CompanyOportunityTable :oportunities="currentCompany?.oportunities" />
+      </div>
+      <div class="flex flex-col text-center justify-center" v-else>
+        <p class="text-sm text-center">No hay oportunidades para mostrar</p>
+        <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+      </div>
       </div>
       <!-- ------------- Oportunidades ends 4 ------------- -->
       
-      <!-- -------------Historial starts 5 ------------- -->
-      <div v-if="tabs == 5" class="p-7">
+      <!-- -------------Cotizaciones starts 5 ------------- -->
+      <div v-if="tabs == 5" class="p-7 w-11/12 mx-auto my-4">
+        <table v-if="hasQuotes()" class="lg:w-[80%] w-full mx-auto">
+  <thead>
+    <tr class="text-center">
+      <th class="font-bold pb-5">
+        Folio <i class="fa-solid fa-arrow-down-long ml-3"></i>
+      </th>
+      <th class="font-bold pb-5">
+        Creado por <i class="fa-solid fa-arrow-down-long ml-3"></i>
+      </th>
+      <th class="font-bold pb-5">
+        Receptor <i class="fa-solid fa-arrow-down-long ml-3"></i>
+      </th>
+      <th class="font-bold pb-5">
+        Autorizado por <i class="fa-solid fa-arrow-down-long ml-3"></i>
+      </th>
+      <th class="font-bold pb-5">
+        Creado el <i class="fa-solid fa-arrow-down-long ml-3"></i>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <template v-for="branch in currentCompany?.company_branches">
+      <tr v-for="quote in branch.quotes" :key="quote.id" class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]"
+        @click="$inertia.get(route('quotes.show', quote.id))"
+      >
+        <td class="text-center text-secondary py-2 px-2 rounded-l-full">
+          {{ quote.folio }}
+        </td>
+        <td class="text-center py-2 px-2">
+          {{ quote.user ? quote.user.name : '' }}
+        </td>
+        <td class="text-center py-2 px-2">
+          <span class="py-1 px-4 rounded-full">{{ quote.receiver }}</span>
+        </td>
+        <td class="text-center py-2 px-2">
+          <span class="py-1 px-2">{{ quote.authorized_user_name ?? '--' }}</span>
+        </td>
+        <td class="text-center py-2 px-2 rounded-r-full">
+          {{ quote.created_at }}
+        </td>
+      </tr>
+    </template>
+  </tbody>
+</table>
+      <div class="flex flex-col text-center justify-center" v-else>
+        <p class="text-sm text-center">No hay cotizaciones para mostrar</p>
+        <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+      </div>
+        
+      </div>
+      <!-- ------------- Cotizaciones ends 5 ------------- -->
+
+      <!-- -------------Seguimiento integral starts 6 ------------- -->
+      <div v-if="tabs == 6" class="p-7 w-11/12 mx-auto my-4">
+      <div v-if=" currentCompany?.clientMonitors?.length">
+        <CompanyClientMonitorTable :client_monitors="currentCompany?.clientMonitors" />
+      </div>
+      <div class="flex flex-col text-center justify-center" v-else>
+        <p class="text-sm text-center">No hay Seguimiento para mostrar</p>
+        <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+      </div>
+      </div>
+      <!-- ------------- Seguimiento integral ends 6 ------------- -->
+
+      <!-- -------------Proyectos starts 7 ------------- -->
+      <div v-if="tabs == 7" class="p-7 w-11/12 mx-auto my-4">
+      <div v-if=" currentCompany?.projects?.length">
+        <ProjectTable :projects="currentCompany?.projects" />
+      </div>
+      <div class="flex flex-col text-center justify-center" v-else>
+        <p class="text-sm text-center">No hay proyectos para mostrar</p>
+        <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+      </div>
+      </div>
+      <!-- ------------- Proyectos ends 7 ------------- -->
+      
+      <!-- -------------Historial starts 8 ------------- -->
+      <div v-if="tabs == 8" class="p-7">
         <p class="text-secondary">Historial</p>
         
       </div>
-      <!-- ------------- Historial ends 5 ------------- -->
-      
-      <!-- -------------Cotizaciones starts 6 ------------- -->
-      <div v-if="tabs == 6" class="p-7">
-        <p class="text-secondary">Cotizaciones</p>
-        
-      </div>
-      <!-- ------------- Cotizaciones ends 6 ------------- -->
+      <!-- ------------- Historial ends 8 ------------- -->
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar cliente </template>
@@ -163,6 +248,9 @@ import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+import CompanyOportunityTable from "@/Components/MyComponents/CompanyOportunityTable.vue";
+import CompanyClientMonitorTable from "@/Components/MyComponents/CompanyClientMonitorTable.vue";
+import ProjectTable from "@/Components/MyComponents/ProjectTable.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link } from "@inertiajs/vue3";
 
@@ -178,7 +266,7 @@ export default {
   },
   props: {
     company: Object,
-    companies: Array,
+    companies: Object,
     // company_products: Array,
   },
   components: {
@@ -191,6 +279,9 @@ export default {
     ConfirmationModal,
     CancelButton,
     PrimaryButton,
+    CompanyOportunityTable,
+    CompanyClientMonitorTable,
+    ProjectTable,
   },
   methods: {
     async deleteItem() {
@@ -206,11 +297,11 @@ export default {
             type: "success",
           });
 
-          const index = this.companies.findIndex(
+          const index = this.companies.data.findIndex(
             (item) => item.id === this.currentCompany.id
           );
           if (index !== -1) {
-            this.companies.splice(index, 1);
+            this.companies.data.splice(index, 1);
             this.selectedCompany = "";
           }
         } else {
@@ -231,11 +322,19 @@ export default {
         this.showConfirmModal = false;
       }
     },
+    hasQuotes() {
+      const tieneCotizaciones = this.currentCompany?.company_branches
+      .map((branch) => branch.quotes.length > 0)
+      .some((tieneCotizacionesEnBranch) => tieneCotizacionesEnBranch);
+
+     return tieneCotizaciones; // Devolverá true si hay cotizaciones en al menos un company_branch
+    },
+    
   },
 
   watch: {
     selectedCompany(newVal) {
-      this.currentCompany = this.companies.find((item) => item.id == newVal);
+      this.currentCompany = this.companies.data.find((item) => item.id == newVal);
       // this.currentCompanyProducts = this.company_products.data.find((item) => item.company_id == this.selectedCompany);
     },
   },

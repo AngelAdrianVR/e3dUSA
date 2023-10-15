@@ -38,4 +38,9 @@ class CompanyBranch extends Model
     {
         return $this->hasMany(Sale::class);
     }
+
+    public function quotes():HasMany
+    {
+        return $this->hasMany(Quote::class);
+    }
 }
