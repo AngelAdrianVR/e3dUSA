@@ -44,7 +44,7 @@ export default {
             default: false
         }
     },
-    emits: ['update:value'], // Emite un evento personalizado para actualizar "value",
+    emits: ['content'], // Emite un evento personalizado para actualizar "value",
     methods: {
         toggleStyle(style) {
             this.$refs.editor.focus();
@@ -57,8 +57,8 @@ export default {
             this.$refs.editor.focus();
         },
         updateContent() {
-            // Actualiza el contenido del editor y emite el evento personalizado "update:value"
-            this.$emit('update:value', this.$refs.editor.innerHTML);
+            // Actualiza el contenido del editor y emite el evento personalizado "content"
+            this.$emit('content', this.$refs.editor.innerHTML);
         },
     }
 }

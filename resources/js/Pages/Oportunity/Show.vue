@@ -134,25 +134,44 @@
           <span>{{ currentOportunity?.start_date }}</span>
           <span class="text-gray-500 my-2">Fecha estimada de cierre</span>
           <span>{{ currentOportunity?.estimated_finish_date }}</span>
+        <span v-if="currentOportunity?.lost_oportunity_razon" class="text-gray-500 my-2">Causa de pérdida</span>
+        <span class="bg-red-300 py-1 px-2 rounded-full" v-if="currentOportunity?.lost_oportunity_razon">{{ currentOportunity?.lost_oportunity_razon }}</span>
         </div>
 
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
           <p class="text-secondary col-span-2 mb-2">Usuarios</p>
 
-          <span v-for="asignedName in uniqueAsignedNames" :key="asignedName" class="text-gray-500">{{ asignedName }}</span>
-          <span>{{ currentOportunity?.company_branch }}</span>
+          <div v-if="uniqueAsignedNames">
+            <span v-for="asignedName in uniqueAsignedNames" :key="asignedName" class="text-gray-500">{{ asignedName }}</span>
+            <span>{{ currentOportunity?.company_branch }}</span>
+          </div>
+          <p class="text-sm text-gray-400" v-else><i class="fa-solid fa-user-slash mr-3"></i>No hay tareas asignadas a usuarios</p>
 
-          <p class="text-secondary col-span-2 mt-7">Documentos adjuntos</p>
 
-          <span class="text-gray-500 my-2">Nombre</span>
-          <span>{{ currentOportunity?.contact?.name }}</span>
+          <p class="text-secondary col-span-2 mb-2 mt-5">Documentos adjuntos</p>
+          <div v-if=" currentOportunity?.media?.length">
+            <li v-for="file in currentOportunity?.media" :key="file" class="flex items-center justify-between col-span-full">
+              <a :href="file.original_url" target="_blank" class="flex items-center">
+                <i :class="getFileTypeIcon(file.file_name)"></i>
+                <span class="ml-2">{{ file.file_name }}</span>
+              </a>
+            </li>
+          </div>
+          <p class="text-sm text-gray-400" v-else><i class="fa-regular fa-file-excel mr-3"></i>No hay archivos adjuntos en esta oportunidad</p>
+
+
+
+            <p class="text-secondary col-span-full mt-7 mb-2">Etiquetas</p>
+            <div class="col-span-full flex space-x-3">
+              <Tag v-for="(item, index) in currentOportunity?.tags" :key="index" :name="item.name" :color="item.color" />
+            </div>
 
           <div class="flex items-center justify-end space-x-2 col-span-2 mr-4">
             <el-tooltip content="Agendar reunión" placement="top">
-              <i class="fa-regular fa-calendar text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
+              <i @click="$inertia.get(route('meeting-monitors.create'))" class="fa-regular fa-calendar text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
             </el-tooltip>
             <el-tooltip content="Registrar pago" placement="top">
-              <i class="fa-solid fa-money-bill text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
+              <i @click="$inertia.get(route('payment-monitors.create'))" class="fa-solid fa-money-bill text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
             </el-tooltip>
             <el-tooltip content="Enviar correo" placement="top">
               <i class="fa-regular fa-envelope text-primary cursor-pointer text-lg px-3"></i>
@@ -230,7 +249,7 @@
       <!-- ------------- tab 2 atividades ends ------------ -->
 
       <!-- ------------ tab 3 seguimiento integral starts ------------- -->
-      <div v-if="tabs == 3" class="w-11/12 mx-auto my-16">
+      <div v-if="tabs == 3" class="w-11/12 mx-auto my-8">
       <table class="lg:w-[80%] w-full mx-auto text-sm">
         <thead>
           <tr class="text-center">
@@ -320,6 +339,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import OportunityTaskCard from "@/Components/MyComponents/OportunityTaskCard.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+import Tag from "@/Components/MyComponents/Tag.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 
@@ -346,6 +366,7 @@ export default {
     ConfirmationModal,
     CancelButton,
     Link,
+    Tag,
  },
  props:{
     oportunity: Object,
@@ -353,12 +374,27 @@ export default {
     users: Array
  },
  methods:{
+  getFileTypeIcon(fileName) {
+      // Asocia extensiones de archivo a iconos
+      const fileExtension = fileName.split('.').pop().toLowerCase();
+      switch (fileExtension) {
+        case 'pdf':
+          return 'fa-regular fa-file-pdf text-red-700';
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+        case 'gif':
+          return 'fa-regular fa-image text-blue-300';
+        default:
+          return 'fa-regular fa-file-lines';
+      }
+    },
     getStatusStyles(){
         if (this.currentOportunity?.status === 'Nueva') {
             return 'text-[#9A9A9A] bg-[#CCCCCCCC]';
         } else if (this.currentOportunity?.status === 'Pendiente') {
              return 'text-[#C88C3C] bg-[#F3FD85]';
-        } else if (this.currentOportunity?.status === 'En progreso') {
+        } else if (this.currentOportunity?.status === 'En proceso') {
              return 'text-[#FD8827] bg-[#FEDBBD]';
         } else if (this.currentOportunity?.status === 'Pagado') {
              return 'text-[#37951F] bg-[#ADFEB5]';
@@ -410,11 +446,11 @@ export default {
       }
       
     },
-   updateOportunityTask(data) {
-          const index = this.currentOportunity.oportunityTasks.findIndex(item => item.id === data);
+   updateOportunityTask(task) {
+          const index = this.currentOportunity.oportunityTasks.findIndex(item => item.id === task.id);
 
           if (index !== -1) {
-            this.currentOportunity.oportunityTasks[index] = response.data.item;
+            this.currentOportunity.oportunityTasks[index] = task;
           }
         },
     async deleteClientMonitor(monitor) {

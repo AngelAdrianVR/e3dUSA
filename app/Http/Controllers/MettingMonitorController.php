@@ -52,8 +52,10 @@ class MettingMonitorController extends Controller
         ]);
 
         $meeting_monitor = MettingMonitor::create($request->all() + ['seller_id' => auth()->id()]);
+        
+        event(new RecordCreated($meeting_monitor));
 
-        ClientMonitor::create([
+       $client_monitor = ClientMonitor::create([
             'type' => 'Reunión',
             'date' => now(),
             'concept' => $request->description,
@@ -62,7 +64,7 @@ class MettingMonitorController extends Controller
             'company_id' => $request->company_id,
         ]);
 
-        event(new RecordCreated($meeting_monitor));
+        event(new RecordCreated($client_monitor));
         
         return to_route('client-monitors.index');
     }

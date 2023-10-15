@@ -68,4 +68,9 @@ class Oportunity extends Model implements HasMedia
     {
         return $this->hasMany(MettingMonitor::class);
     }
+
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
 }

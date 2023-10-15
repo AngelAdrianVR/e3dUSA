@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\ProjectGroupResource;
 use App\Http\Resources\ProjectResource;
 use App\Http\Resources\TagResource;
@@ -71,7 +74,7 @@ class ProjectController extends Controller
 
 
         $project = Project::create($validated + ['user_id' => auth()->id()]);
-        //event(new RecordCreated($project)); evento para registro creado
+        event(new RecordCreated($project));
 
         // permisos
         foreach ($request->selectedUsersToPermissions as $user) {
@@ -105,14 +108,69 @@ class ProjectController extends Controller
     }
 
 
-    public function edit(Project $project)
+    public function edit($project_id)
     {
-        //
+        $project = ProjectResource::make(Project::with('tags', 'company')->find($project_id));
+        $companies = Company::with('companyBranches.sales')->latest()->get();
+        $tags = TagResource::collection(Tag::where('type', 'projects')->get());
+        $project_groups = ProjectGroupResource::collection(ProjectGroup::all());
+        $users = User::where('is_active', true)->get();
+
+        // return $project;
+        return inertia('Project/Edit', compact('companies', 'users', 'tags', 'project_groups', 'project'));
     }
 
 
     public function update(Request $request, Project $project)
     {
+        $validated = $request->validate([
+            'project_name' => 'required|string',
+            'project_group_id' => 'required|numeric|min:0',
+            'shipping_address' => 'nullable|string',
+            'currency' => 'nullable|string',
+            'sat_method' => 'nullable|string',
+            'description' => 'nullable',
+            'is_strict_project' => 'boolean',
+            'is_internal_project' => 'boolean',
+            'budget' => 'nullable|numeric|min:0',
+            'selectedUsersToPermissions' => 'array|min:1',
+            // 'type_access_project' => 'required|string',
+            'start_date' => 'required',
+            'limit_date' => 'required',
+            'owner_id' => 'required|numeric|min:1',
+            'company_id' => [Rule::requiredIf(function () use ($request) {
+                return !$request->is_internal_project;
+            })],
+            'company_branch_id' => [Rule::requiredIf(function () use ($request) {
+                return !$request->is_internal_project;
+            })],
+            'sale_id' => [Rule::requiredIf(function () use ($request) {
+                return !$request->is_internal_project;
+            })],
+        ]);
+
+
+        $project->update($validated);
+        event(new RecordEdited($project));
+
+        // permisos
+        foreach ($request->selectedUsersToPermissions as $user) {
+            $allowedUser = [
+                "permissions" => json_encode($user['permissions']), // Serializa los permisos en formato JSON
+            ];
+            $project->users()->attach($user['id'], $allowedUser);
+        }
+
+        // etiquetas
+        // Obtiene los IDs de las etiquetas seleccionadas desde el formulario
+        $tagIds = $request->input('tags', []);
+        // Adjunta las etiquetas al proyecto utilizando la relación polimórfica
+        $project->tags()->attach($tagIds);
+
+        // archivos adjuntos
+        $project->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+
+        return to_route('projects.show', $project);
         //event(new RecordEdited($project));
     }
 
@@ -120,5 +178,6 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         $project->delete();
+        event(new RecordDeleted($project));
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\ProjectResource;
 use App\Http\Resources\TaskResource;
@@ -53,7 +54,7 @@ class TaskController extends Controller
             $task->participants()->attach($user_id);
         }
 
-        // event(new RecordCreated($task));
+        event(new RecordCreated($task));
 
         $task->addAllMediaFromRequest('media')->each(fn ($file) => $file->toMediaCollection('files'));
 
@@ -81,10 +82,11 @@ class TaskController extends Controller
             'description' => 'nullable',
             'department' => 'required|string',
             'priority' => 'nullable|string',
-            'participants' => 'required|array|min:1',
+            'participants' => 'nullable|array',
         ]);
 
         $task->update($validated);
+        event(new RecordEdited($task));
 
         //agregar nuevos participantes
         foreach ($request->participants as $user_id) {
@@ -102,7 +104,6 @@ class TaskController extends Controller
 
         $this->handleUpdatedTaskStatus($task->project_id);
 
-        // event(new RecordEdited($task));
 
         return response()->json(['item' => TaskResource::make($task->fresh(['participants', 'project', 'user', 'comments.user', 'media']))]);
     }
@@ -110,7 +111,8 @@ class TaskController extends Controller
 
     public function destroy(Task $task)
     {
-        //
+        $task->delete();
+        event(new RecordDeleted($task));
     }
 
 

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\OportunityResource;
 use App\Models\ClientMonitor;
 use App\Models\Oportunity;
@@ -66,7 +68,7 @@ class PaymentMonitorController extends Controller
     }
 
     
-    public function show(PaymentMonitor $paymentMonitor)
+    public function show(PaymentMonitor $payment_monitor)
     {
         //
     }
@@ -74,7 +76,7 @@ class PaymentMonitorController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(PaymentMonitor $paymentMonitor)
+    public function edit(PaymentMonitor $payment_monitor)
     {
         //
     }
@@ -82,16 +84,16 @@ class PaymentMonitorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, PaymentMonitor $paymentMonitor)
+    public function update(Request $request, PaymentMonitor $payment_monitor)
     {
-        //
+        // event(new RecordEdited($payment_monitor));
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(PaymentMonitor $paymentMonitor)
+    public function destroy(PaymentMonitor $payment_monitor)
     {
-        //
+        // event(new RecordDeleted($payment_monitor));
     }
 }

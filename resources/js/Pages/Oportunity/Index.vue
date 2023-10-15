@@ -334,7 +334,7 @@ export default {
       (oportunity) => oportunity.status === "Pendiente"
     );
     this.progressOportunitiesLocal = this.oportunities?.data.filter(
-      (oportunity) => oportunity.status === "En progreso"
+      (oportunity) => oportunity.status === "En proceso"
     );
     this.paidOportunitiesLocal = this.oportunities?.data.filter(
       (oportunity) => oportunity.status === "Pagado"

@@ -102,38 +102,33 @@
             <InputError :message="form.errors.estimated_finish_date" />
           </div>
         </div>
-      <!-- <div>
-        <label>Descripción *</label>
-        <RichText v-model="form.description" />
-      </div> -->
       <div>
         <label>Descripción *</label>
-        <input type="text" class="input" v-model="form.description">
+        <RichText @content="updateDescription($event)" v-model="form.description" />
       </div>
-      <p @click="activateFileInput" class="text-primary cursor-pointer">+ Adjuntar archivos</p>
-        <div class="ml-4 -mt-5">
-            <ul>
-            <li class="text-secondary text-sm" v-for="fileName in form.mediaNames" :key="fileName">{{ fileName }}</li>
-            </ul>
-        </div>
-        <input  @input="form.media = $event.target.files" multiple type="file" id="fileInput" style="display: none;" @change="handleFileUpload">
+      <!-- <div>
+        <label>Descripción *</label>
+        <input type="text" class="input" v-model="form.description">
+      </div> -->
+      <div class="ml-2 mt-2 col-span-full flex">
+        <FileUploader @files-selected="this.form.media = $event" />
+      </div>
 
 <div class="flex items-center space-x-4">
-    <div class="lg:w-1/2">
-       <label class="block">Etiquetas <i class="fa-solid fa-circle-plus ml-7 text-primary text-xs cursor-pointer"></i></label>
-        <div class="flex items-center space-x-4">
-          <el-select class="lg:w-1/2" v-model="form.tags" multiple clearable
-            filterable placeholder="Escriba el nombre de etiqueta" no-data-text="No hay etiquetas registradas"
-            no-match-text="No se encontraron coincidencias">
-            <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
-              <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
-              <span style="float: center; margin-left: 5px; font-size: 13px">{{
-                item.label
-              }}</span>
-            </el-option>
-          </el-select>
-        </div>
-        <InputError :message="form.errors.tags" /> 
+    <div>
+      <div class="flex justify-between items-center mx-2">
+        <label>Etiquetas</label>
+        <button @click="showTagFormModal = true" type="button"
+          class="rounded-full border border-primary w-4 h-4 flex items-center justify-center">
+          <i class="fa-solid fa-plus text-primary text-[9px]"></i>
+        </button>
+      </div>
+      <el-select v-model="form.tags" clearable placeholder="Seleccione" multiple class="w-full"
+        no-data-text="No hay opciones para mostrar" no-match-text="No se encontraron coincidencias">
+        <el-option v-for="(item, index) in tags.data" :key="item.id" :label="item.name" :value="item.id">
+          <Tag :name="item.name" :color="item.color" />
+        </el-option>
+      </el-select>
     </div>  
     <div class="lg:w-1/2">
         <label>Probabilidad %</label>
@@ -166,7 +161,7 @@
                 <i class="fa-regular fa-circle-question ml-2 text-primary text-xs"></i>
              </el-tooltip>
         </label>
-        <input v-model="form.lost_oportunity_razon" class="input text-gray-400" type="text">
+        <input v-model="form.lost_oportunity_razon" class="input" type="text">
         <InputError :message="form.errors.lost_oportunity_razon" />
     </div>
 </div>
@@ -244,7 +239,7 @@
         </div>
       </div>
     </section>
-{{ form }}
+<!-- {{ form }} -->
           <div class="mt-9 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing">
               Crear oportunidad
@@ -252,6 +247,30 @@
           </div>
         </div>
       </form>
+      <!-- tag form -->
+      <DialogModal :show="showTagFormModal" @close="showTagFormModal = false">
+        <template #title>
+          Agregar etiqueta
+        </template>
+        <template #content>
+          <form @submit.prevent="storeTag" ref="tagForm">
+            <div>
+              <label>Nombre de la etiqueta *</label>
+              <input v-model="tagForm.name" type="text" class="input mt-1" placeholder="Escribe el nombre" required>
+              <InputError :message="tagForm.errors.name" />
+            </div>
+            <div class="mt-3">
+              <label>Seleccione el color *</label>
+              <el-color-picker v-model="tagForm.color" class="mt-1" />
+              <InputError :message="tagForm.errors.color" />
+            </div>
+          </form>
+        </template>
+        <template #footer>
+          <CancelButton @click="showTagFormModal = false" :disabled="tagForm.processing">Cancelar</CancelButton>
+          <PrimaryButton @click="submitTagForm()" :disabled="tagForm.processing">Crear</PrimaryButton>
+        </template>
+      </DialogModal>
     </AppLayout>
   </div>
 </template>
@@ -260,12 +279,16 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import ThirthButton from "@/Components/MyComponents/ThirthButton.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import RichText from "@/Components/MyComponents/RichText.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import Checkbox from "@/Components/Checkbox.vue";
+import FileUploader from "@/Components/MyComponents/FileUploader.vue";
+import Tag from "@/Components/MyComponents/Tag.vue";
+import DialogModal from "@/Components/DialogModal.vue";
 
 export default {
   data() {
@@ -287,9 +310,16 @@ export default {
       is_new_company: false,
     });
 
+    const tagForm = useForm({
+      name: null,
+      color: null,
+    });
+
     return {
       form,
+      tagForm,
       company_branch: null,
+      showTagFormModal: false,
       company_branch_obj: null,
       owner: this.$page.props.auth.user.name,
       mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
@@ -341,11 +371,16 @@ export default {
     IconInput,
     Checkbox,
     ThirthButton,
-    RichText
+    RichText,
+    FileUploader,
+    DialogModal,
+    CancelButton,
+    Tag,
   },
   props: {
     companies: Array,
     users: Array,
+    tags: Object,
   },
   methods: {
     store() {
@@ -359,6 +394,38 @@ export default {
 
         },
       });
+    },
+    async storeTag() {
+      try {
+        this.tagForm.processing = true;
+        const response = await axios.post(route('tags.store'), { name: this.tagForm.name, color: this.tagForm.color, type: 'projects', user_id: this.$page.props.auth.user.id });
+
+        if (response.status === 200) {
+          this.$notify({
+            title: 'Correcto',
+            message: response.data.message,
+            type: 'success'
+          });
+
+          this.showTagFormModal = false;
+          this.tags?.data.push(response.data.item);
+          this.tagForm.reset();
+          this.tagForm.errors = {};
+          this.form.tags.push(response.data.item.id);
+        }
+      } catch (error) {
+        if (error.response.status === 422) {
+          // guardando errores de validacion a formulario para mostrarlos
+          this.tagForm.errors.name = error.response.data.errors.name[0];
+          this.tagForm.errors.color = error.response.data.errors.color[0];
+        }
+        console.log(error)
+      } finally {
+        this.tagForm.processing = false;
+      }
+    },
+    submitTagForm() {
+      this.$refs.tagForm.dispatchEvent(new Event('submit', { cancelable: true }));
     },
     disabledDate(time) {
       const today = new Date();
@@ -391,25 +458,6 @@ export default {
         return "text-transparent";
       }
     },
-    activateFileInput() {
-    // Simula un clic en el campo de entrada de archivos al hacer clic en el párrafo
-    document.getElementById('fileInput').click();
-  },
-  handleFileUpload(event) {
-    // Este método se llama cuando se selecciona un archivo en el input file
-    const selectedFiles = event.target.files;
-    const fileNames = [];
-    
-    // Obtén los nombres de los archivos seleccionados y guárdalos en form.mediaNames
-    for (let i = 0; i < selectedFiles.length; i++) {
-      fileNames.push(selectedFiles[i].name);
-    }
-
-    // Actualiza la propiedad form.media con los archivos seleccionados
-    this.form.media = selectedFiles;
-    // Actualiza la propiedad form.mediaNames con los nombres de los archivos
-    this.form.mediaNames = fileNames;
-  },
   handleChecked() {
     //resetea la busqueda de contacto en formulario
     this.form.company_id = null;
@@ -421,6 +469,9 @@ export default {
       this.company_branch_obj = this.companies.find((item) => item.id == this.form.company_id)?.company_branches[0];
       // console.log(this.company_branch_obj);
     },
+    updateDescription(content) {
+      this.form.description = content;
+    }
   },
 };
 </script>

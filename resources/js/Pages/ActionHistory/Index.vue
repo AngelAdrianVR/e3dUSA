@@ -38,6 +38,7 @@
             >
               Eliminaciones
             </p>
+            
           </div>
 
           <!-- --------------------- Tab 1 Creaciones starts------------------ -->
@@ -86,6 +87,10 @@
                 </tr>
               </tbody>
             </table>
+            <!-- --- pagination --- -->
+            <div class="mt-4">
+              <Pagination :pagination="audits_created" />
+            </div>
           </div>
           <!-- --------------------- Tab 1 Creaciones ends------------------ -->
 
@@ -131,6 +136,10 @@
                 </tr>
               </tbody>
             </table>
+            <!-- --- pagination --- -->
+            <div class="mt-4">
+              <Pagination :pagination="audits_edited" />
+            </div>
           </div>
           <!-- --------------------- Tab 2 ediciones ends------------------ -->
 
@@ -177,6 +186,10 @@
                 </tr>
               </tbody>
             </table>
+            <!-- --- pagination --- -->
+            <div class="mt-4">
+              <Pagination :pagination="audits_deleted" />
+            </div>
           </div>
           <!-- --------------------- Tab 3 eliminaciones ends------------------ -->
         </div>
@@ -218,6 +231,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import DialogModal from "@/Components/DialogModal.vue";
+import Pagination from "@/Components/MyComponents/Pagination.vue";
 
 export default {
   data() {
@@ -237,6 +251,7 @@ export default {
     IconInput,
     CancelButton,
     DialogModal,
+    Pagination
   },
   props: {
     audits_created: Object,
@@ -289,7 +304,26 @@ export default {
                 return 'Clientes';
             case 'quotes':
                 return 'Cotizaciones';
-
+            case 'metting_monitors':
+                return 'Seguimiento de citas';
+            case 'payment_monitors':
+                return 'Seguimiento de pagos';
+            case 'client_monitors':
+                return 'Seguimiento integral';
+            case 'oportunity_tasks':
+                return 'Tareas de oportunidad';
+            case 'oportunities':
+                return 'Oportunidades';
+            case 'tags':
+                return 'Etiquetas';
+            case 'calendars':
+              return 'Evento en calendario';
+            case 'customer_meetings':
+              return 'Reuniones con clientes';
+            case 'projects':
+                return 'Proyectos';
+            case 'project_groups':
+                return 'Grupos de proyectos';
         }
     },
     getUserName(user_id){

@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('oportunity_tasks', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->timestamp('limite_date');
+            $table->date('limit_date');
             $table->time('time');
             $table->timestamp('finished_at')->nullable();
-            $table->time('description');
+            $table->text('description');
             $table->string('priority');
             $table->string('reminder')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();

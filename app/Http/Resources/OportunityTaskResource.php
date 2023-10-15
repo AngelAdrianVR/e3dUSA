@@ -42,6 +42,7 @@ class OportunityTaskResource extends JsonResource
             'finished_at' => $this->finished_at?->isoFormat('DD MMMM YYYY, h:mmA'),
             'description' => $this->description,
             'priority' => $this->priority,
+            'media' => $this->getMedia()->all(),
             'reminder' => $this->reminder,
             'user' => $this->whenLoaded('user'),
             'oportunity' => $this->whenLoaded('oportunity'),

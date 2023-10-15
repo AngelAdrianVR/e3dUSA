@@ -88,33 +88,33 @@
           @click="$inertia.get(route('client-monitors.show', monitor.id))"
             class="mb-4 hover:bg-[#dfdbdba8] cursor-pointer"
           >
-            <td class="text-left py-2 px-2 rounded-l-full text-secondary">
+            <td class="text-center py-2 px-2 rounded-l-full text-secondary">
               {{ monitor.folio}}
             </td>
-            <td class="text-left py-2 px-2 text-secondary">
+            <td class="text-center py-2 px-2 text-secondary">
               {{ monitor.company?.business_name ?? monitor.oportunity?.name }}
             </td>
-            <td class="text-left py-2 px-2">
+            <td class="text-center py-2 px-2">
               <span
                 class="py-1 px-4 rounded-full"
                 >{{ monitor.type }}</span
               >
             </td>
-            <td class="text-left py-2 px-2">
+            <td class="text-center py-2 px-2">
               <span
                 class="py-1 px-2 rounded-full"
                 >{{ monitor.date }}</span
               >
             </td>
-            <td class="text-left py-2 px-2">
+            <td class="text-center py-2 px-2">
               {{ monitor.concept }}
             </td>
-            <td class="text-left py-2 px-2 text-secondary">
+            <td class="text-center py-2 px-2 text-secondary">
               {{ monitor.seller?.name }}
             </td>
             <td
               v-if="$page.props.auth.user.permissions.includes('Eliminar seguimiento integral')"
-              class="text-left py-2 px-2 rounded-r-full"
+              class="text-center py-2 px-2 rounded-r-full"
             >
               <el-popconfirm
                 confirm-button-text="Si"

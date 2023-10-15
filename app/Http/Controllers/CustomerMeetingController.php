@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Models\CustomerMeeting;
 use Illuminate\Http\Request;
 
@@ -30,8 +33,11 @@ class CustomerMeetingController extends Controller
         ]);
 
         $customerMeeting = CustomerMeeting::create($validated + ['user_id' => auth()->id()]);
-        $customerMeeting = CustomerMeeting::with(['user', 'contact.contactable.company'])->where('id', $customerMeeting->id)->first();
 
+        event(new RecordCreated($customerMeeting));
+
+        $customerMeeting = CustomerMeeting::with(['user', 'contact.contactable.company'])->where('id', $customerMeeting->id)->first();
+        
         //crear evento o tarea an calendario
         
         return response()->json(['item' => $customerMeeting]);
@@ -62,6 +68,8 @@ class CustomerMeetingController extends Controller
 
         $customerMeeting->update($validated);
 
+        event(new RecordEdited($customerMeeting));
+
         //atualizar evento o tarea an calendario
 
         
@@ -71,7 +79,7 @@ class CustomerMeetingController extends Controller
 
     public function destroy(CustomerMeeting $customerMeeting)
     {
-        //
+        // event(new RecordDeleted($customerMeeting));
     }
 
     public function getSoonDates()

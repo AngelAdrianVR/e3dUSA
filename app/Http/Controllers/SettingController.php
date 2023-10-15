@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Http\Resources\SettingResource;
 use App\Models\Setting;
 use Illuminate\Http\Request;
@@ -80,7 +81,7 @@ class SettingController extends Controller
         }
 
         $setting->update($validated);
-        event(new RecordCreated($setting));
+        event(new RecordEdited($setting));
 
         return response()->json(['item' => SettingResource::make($setting)]);
     }
