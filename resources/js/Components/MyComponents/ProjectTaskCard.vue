@@ -45,12 +45,13 @@
             <i @click.stop="" class="fa-solid fa-check text-green-500 text-xl cursor-default mr-2"></i>
           </el-tooltip>
           <el-tooltip v-if="taskComponentLocal?.participants?.length > 2" placement="top">
-          <p class="text-primary mr-1"> + {{ taskComponentLocal?.participants.length - 2 }}</p>
+            <p class="text-primary mr-1"> + {{ taskComponentLocal?.participants.length - 2 }}</p>
             <template #content>
-            <div>
-             <p v-for="user in taskComponentLocal?.participants.slice(1, taskComponentLocal?.participants.length)" :key="user">{{ user.name }}</p>
-            </div>
-          </template>
+              <div>
+                <p v-for="user in taskComponentLocal?.participants.slice(1, taskComponentLocal?.participants.length)"
+                  :key="user">{{ user.name }}</p>
+              </div>
+            </template>
           </el-tooltip>
           <el-tooltip v-for="user in taskComponentLocal?.participants.slice(0, 2)" :key="user" :content="user.name"
             placement="bottom">
@@ -75,11 +76,12 @@
       <h1 class="font-bold">{{ taskComponentLocal?.title }}</h1>
 
       <div class="relative">
-        <i :class="getColorStatus(form.status)"
-          class="fa-solid fa-circle text-xs top-10 -left-4 absolute z-30"></i>
-        <label>Estado actual</label> <br />
+        <label>
+          Estado actual
+          <i :class="getColorStatus(form.status)" class="fa-solid fa-circle text-xs ml-1"></i>
+        </label> <br />
         <div class="flex items-center space-x-4">
-          <el-select :disabled="taskComponentLocal?.is_paused" class="lg:w-1/2 mt-2" v-model="form.status" clearable
+          <el-select :disabled="taskComponentLocal?.is_paused" class="lg:w-1/2" v-model="form.status" clearable
             filterable placeholder="Seleccionar estatus" no-data-text="No hay estatus registrados"
             no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
@@ -101,44 +103,45 @@
       </div>
       <h2 class="font-bold">Información de la tarea</h2>
       <div>
-        <div class="flex space-x-2 justify-end items-center">
+        <div class="flex space-x-2 justify-between items-center">
           <label>Proyecto</label>
-          <input v-model="form.project_name" disabled class="input w-[80%]" type="text" />
+          <input v-model="form.project_name" disabled class="input w-[78%]" type="text" />
           <InputError :message="form.errors.project_name" />
         </div>
-        <div class="flex space-x-2 justify-end items-center mt-3">
+        <div class="flex space-x-2 justify-between items-center mt-2">
           <label>Creado por</label>
-          <input v-model="form.user" disabled class="input w-[80%]" type="text" />
+          <input v-model="form.user" disabled class="input w-[78%]" type="text" />
           <InputError :message="form.errors.user" />
         </div>
-        <div class="flex space-x-2 justify-end items-center mt-3">
+        <div class="flex space-x-2 justify-between items-center mt-2">
           <label>Departamento</label>
-          <el-select class="w-full mt-2" v-model="form.department" clearable filterable
+          <el-select class="!w-[78%]" v-model="form.department" clearable filterable
             placeholder="Seleccionar departamento" no-data-text="No hay departamentos registrados"
             no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in departments" :key="item" :label="item" :value="item" />
           </el-select>
           <InputError :message="form.errors.department" />
         </div>
-        <div class="flex space-x-2 justify-end items-center mt-3">
-          <label>Más participantes</label> <br>
-          <el-select class="w-full mt-2" v-model="form.participants" clearable filterable multiple
+        <div class="flex space-x-2 justify-between items-center mt-2">
+          <label>Participantes</label> <br>
+          <el-select class="!w-[78%]" v-model="form.participants" clearable filterable multiple
             placeholder="Seleccionar participantes" no-data-text="No hay usuarios registrados"
             no-match-text="No se encontraron coincidencias">
             <el-option v-for="user in users" :key="user.id" :label="user.name" :value="user.id" />
           </el-select>
           <InputError :message="form.errors.participants" />
         </div>
-        <div class="mt-3">
+        <div class="mt-2">
           <label>Descripción</label>
-          <textarea v-model="form.description" class="textarea w-full"> </textarea>
+          <RichText @content="updateDescription($event)"/>
           <InputError :message="form.errors.description" />
         </div>
         <div class="mt-3 relative">
-          <i :class="getColorPriority(form.priority)"
-            class="fa-solid fa-circle text-xs top-10 -left-4 absolute z-30"></i>
-          <label>Prioridad</label>
-          <el-select class="w-full mt-2" v-model="form.priority" clearable filterable placeholder="Seleccionar prioridad"
+          <label>
+            Prioridad
+            <i :class="getColorPriority(form.priority)" class="fa-solid fa-circle text-xs ml-1"></i>
+          </label>
+          <el-select class="w-full" v-model="form.priority" clearable filterable placeholder="Seleccionar prioridad"
             no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in priorities" :key="item" :label="item.label" :value="item.label">
               <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
@@ -162,11 +165,11 @@
           </div>
         </div>
 
-        <div class="w-1/2 mt-3">
+        <!-- <div class="w-1/2 mt-3">
           <label>Recordatorio</label>
           <textarea v-model="form.reminder" disabled class="textarea w-full"> </textarea>
           <InputError :message="form.errors.reminder" />
-        </div>
+        </div> -->
         <!-- --------------------- TABS -------------------- -->
         <section class="mt-9">
           <div class="flex items-center justify-center">
@@ -198,14 +201,14 @@
                   <p>{{ comment.body }}</p>
                 </div>
               </figure>
-              <div class="flex space-x-2 mt-5 items-center">
-                <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm rounded-full w-12">
-                  <img class="h-10 w-10 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url"
+              <div class="flex space-x-1 mt-5">
+                <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm rounded-full w-10">
+                  <img class="h-8 w-8 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url"
                     :alt="$page.props.auth.user.name" />
                 </div>
-                <textarea v-model="form.comment" class="textarea w-full"> </textarea>
-                <PrimaryButton type="button" @click.stop="comment(taskComponentLocal)" class="h-9"><i
-                    class="fa-regular fa-paper-plane"></i></PrimaryButton>
+                <RichText @content="updateComment($event)" class="flex-1" />
+                <!-- <PrimaryButton type="button" @click.stop="comment(taskComponentLocal)" class="h-9"><i
+                    class="fa-regular fa-paper-plane"></i></PrimaryButton> -->
               </div>
             </div>
           </div>
@@ -246,6 +249,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
+import RichText from "@/Components/MyComponents/RichText.vue";
 import axios from "axios";
 
 export default {
@@ -311,6 +315,7 @@ export default {
     CancelButton,
     Link,
     InputError,
+    RichText,
   },
   props: {
     taskComponent: Object,
@@ -320,7 +325,13 @@ export default {
     'updated-status'
   ],
   methods: {
-    async playPauseTask(task){
+    updateDescription(content) {
+      this.form.description = content;
+    },
+    updateComment(content) {
+      this.form.comment = content;
+    },
+    async playPauseTask(task) {
       try {
         const response = await axios.put(route('tasks.pause-play', task));
 
@@ -330,16 +341,16 @@ export default {
           if (this.taskComponentLocal.is_paused) {
             this.$notify({
               title: "Éxito",
-            message: "Se ha pausado la tarea",
-            type: "success",
-          });
-            } else {
-              this.$notify({
+              message: "Se ha pausado la tarea",
+              type: "success",
+            });
+          } else {
+            this.$notify({
               title: "Éxito",
-            message: "Se ha reanudado la tarea",
-            type: "success",
-          });
-            }
+              message: "Se ha reanudado la tarea",
+              type: "success",
+            });
+          }
         }
       } catch (error) {
         console.log(error);

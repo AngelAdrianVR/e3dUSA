@@ -1,6 +1,7 @@
 <template>
     <div>
-        <header class="border border-b-0 border-[#9A9A9A] bg-[#CCCCCC] rounded-tl-[3px] rounded-tr-[3px] h-7 flex items-center">
+        <header
+            class="border border-b-0 border-[#9A9A9A] bg-[#CCCCCC] rounded-tl-[3px] rounded-tr-[3px] h-7 flex items-center">
             <button type="button" @click="toggleStyle('bold')" :class="{ 'text-primary': styles.bold }"
                 class="border-r border-[#9A9A9A] px-3 text-sm">
                 <i class="fa-solid fa-bold"></i>
@@ -15,8 +16,12 @@
             </button>
         </header>
         <div contenteditable="true" @input="updateContent" ref="editor" id="editor"
-            class="bg-transparent border border-[#9A9A9A] placeholder:text-gray-400 text-gray-700 text-sm rounded-lg focus:border-primary block w-full p-2.5 rounded-tr-none rounded-tl-none min-h-[85px] focus:outline-none"></div>
-            {{ value }}
+            class="bg-transparent border border-[#9A9A9A] placeholder:text-gray-400 text-gray-700 text-sm rounded-lg focus:border-primary block w-full p-2.5 rounded-tr-none rounded-tl-none min-h-[85px] focus:outline-none">
+        </div>
+        {{ value }}
+        <footer v-if="withFooter">
+            hola
+        </footer>
     </div>
 </template>
 <script>
@@ -31,9 +36,13 @@ export default {
             }
         };
     },
-    props:{
-         // Propiedad para recibir y enviar el valor del componente padre
-    value: String,
+    props: {
+        // Propiedad para recibir y enviar el valor del componente padre
+        value: String,
+        withFooter: {
+            type: Boolean,
+            default: false
+        }
     },
     emits: ['update:value'], // Emite un evento personalizado para actualizar "value",
     methods: {
@@ -48,9 +57,9 @@ export default {
             this.$refs.editor.focus();
         },
         updateContent() {
-      // Actualiza el contenido del editor y emite el evento personalizado "update:value"
-      this.$emit('update:value', this.$refs.editor.innerHTML);
-    },
+            // Actualiza el contenido del editor y emite el evento personalizado "update:value"
+            this.$emit('update:value', this.$refs.editor.innerHTML);
+        },
     }
 }
 </script>

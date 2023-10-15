@@ -474,7 +474,7 @@ onMounted(() => {
                   nextAttendance &&
                   $page.props.auth.user.permissions.includes(
                     'Registrar asistencia'
-                  )
+                  ) && !isPaused
                   " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
                   @confirm="setAttendance">
                   <template #reference>
