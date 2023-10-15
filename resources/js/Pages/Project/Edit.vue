@@ -307,8 +307,6 @@
               </div>
             </div>
           </section>
-          <!-- {{form}} -->
-
           <div class="mt-9 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing">
               Actualizar proyecto
@@ -388,8 +386,8 @@ export default {
       limit_date: this.project.data.limit_date_raw,
       is_strict_project: this.project.data.is_strict_project,
       description: this.project.data.description,
-      tags: this.project.data.tags,
-      project_group_id: this.project.data.projectGroup,
+      tags: [],
+      project_group_id: this.project.data.projectGroup?.id,
       is_internal_project: this.project.data.is_internal_project,
       company_id: this.project.data.company?.id,
       company_branch_id: this.project.data.companyBranch?.id,
@@ -600,6 +598,7 @@ export default {
   },
   mounted() {
     this.selectAdmins();
+    this.form.tags = this.project.data.tags.map(tag => tag.id);
   }
 };
 </script>

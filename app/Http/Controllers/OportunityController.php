@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\OportunityResource;
+use App\Http\Resources\TagResource;
 use App\Models\Company;
 use App\Models\Oportunity;
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
@@ -25,9 +27,10 @@ class OportunityController extends Controller
     {
         $users = User::where('is_active', true)->get();
         $companies = Company::with('companyBranches.contacts')->latest()->get();
+        $tags = TagResource::collection(Tag::where('type', 'projects')->get());
 
         // return $companies;
-        return inertia('Oportunity/Create', compact('users', 'companies'));
+        return inertia('Oportunity/Create', compact('users', 'companies', 'tags'));
     }
 
 
@@ -49,7 +52,16 @@ class OportunityController extends Controller
             'company_id' => $request->is_new_company ? 'nullable' : 'required',
         ]);
 
-        Oportunity::create($validated + ['user_id' => auth()->id()]);
+        $oportunity = Oportunity::create($validated + ['user_id' => auth()->id()]);
+
+        // etiquetas
+        // Obtiene los IDs de las etiquetas seleccionadas desde el formulario
+        $tagIds = $request->input('tags', []);
+        // Adjunta las etiquetas al proyecto utilizando la relación polimórfica
+        $oportunity->tags()->attach($tagIds);
+
+        // archivos adjuntos
+        $oportunity->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
 
         return to_route('oportunities.index');
     }
@@ -57,7 +69,7 @@ class OportunityController extends Controller
 
     public function show(Oportunity $oportunity)
     {
-        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitores.seller', 'oportunityTasks.comments.user')->latest()->get());
+        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitores.seller', 'oportunityTasks.comments.user', 'tags', 'media')->latest()->get());
         $users = User::where('is_active', true)->get();
 
         // return $oportunities;

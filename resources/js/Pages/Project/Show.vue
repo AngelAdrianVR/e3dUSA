@@ -176,7 +176,7 @@
           :class="(drag && !pendingTasksList?.length) ? 'h-40' : ''">
           <template #item="{ element: task }">
             <li>
-              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="currentProject?.users" :id="task.id" />
+              <ProjectTaskCard @delete-task="deleteProjectTask" @updated-status="updateTask($event)" :taskComponent="task" :users="currentProject?.users" :id="task.id" />
             </li>
           </template>
         </draggable>
@@ -196,7 +196,7 @@
           :class="(drag && !inProgressTasksList?.length) ? 'h-40' : ''">
           <template #item="{ element: task }">
             <li>
-              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="currentProject?.users" />
+              <ProjectTaskCard @delete-task="deleteProjectTask" @updated-status="updateTask($event)" :taskComponent="task" :users="currentProject?.users" />
             </li>
           </template>
         </draggable>
@@ -216,7 +216,7 @@
           :class="(drag && !finishedTasksList?.length) ? 'h-40' : ''">
           <template #item="{ element: task }">
             <li>
-              <ProjectTaskCard @updated-status="updateTask($event)" :taskComponent="task" :users="currentProject?.users" />
+              <ProjectTaskCard @delete-task="deleteProjectTask" @updated-status="updateTask($event)" :taskComponent="task" :users="currentProject?.users" />
             </li>
           </template>
         </draggable>
@@ -266,6 +266,7 @@ import Checkbox from "@/Components/Checkbox.vue";
 import Tag from "@/Components/MyComponents/Tag.vue";
 import { Link } from "@inertiajs/vue3";
 import draggable from 'vuedraggable';
+import axios from 'axios';
 
 export default {
   data() {
@@ -368,6 +369,29 @@ export default {
       this.pendingTasks();
       this.inProgressTasks();
       this.finishedTasks();
+    },
+    async deleteProjectTask(data) {
+      try {
+        const response = await axios.delete(route('tasks.destroy', data));
+
+      if (response.status === 200) {
+           this.$notify({
+            title: "Éxito",
+            message: "Se ha eliminado correctamente",
+            type: "success",
+          });
+
+          const index = this.currentProject.tasks.findIndex(item => item.id === data);
+
+        if (index !== -1) {
+          this.currentProject.tasks.splice(index, 1);
+        }
+        this.updateTasksLists();
+      }
+      } catch (error) {
+        console.log(error);
+      }
+      
     },
   },
   watch: {

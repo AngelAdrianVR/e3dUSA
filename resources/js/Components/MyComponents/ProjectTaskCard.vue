@@ -26,7 +26,7 @@
         <!-- <el-tooltip content="Tienes una tarea por cumplir antes de poder comenzar" placement="top">
                             <i @click.stop="" class="fa-solid fa-hourglass cursor-default mr-3"></i>
                         </el-tooltip> -->
-        <el-tooltip v-if="taskComponentLocal?.media.length" content="Archivo adjunto" placement="top">
+        <el-tooltip v-if="taskComponentLocal?.media.length" content="Archivos adjunto" placement="top">
           <i @click.stop="" class="fa-solid fa-paperclip rounded-full p-2"></i>
         </el-tooltip>
       </div>
@@ -237,10 +237,28 @@
       <!-- {{ form }} -->
       <div class="flex justify-end space-x-3 pt-5 pb-1">
         <CancelButton @click="taskInformationModal = false">Cancelar</CancelButton>
-        <PrimaryButton>Guardar</PrimaryButton>
-      </div>
+        <el-dropdown split-button type="primary" @click="update" class="custom-dropdown">
+          Guarda cambios
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="showConfirmModal= true">Eliminar</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+          </div>
     </form>
   </Modal>
+
+  <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
+    <template #title> Eliminar tarea </template>
+    <template #content> ¿Continuar con la eliminación? </template>
+    <template #footer>
+      <div>
+        <PrimaryButton @click="deleteProjectTask">Eliminar</PrimaryButton>
+        <CancelButton @click="showConfirmModal = false" class="mr-2">Cancelar</CancelButton>
+      </div>
+    </template>
+  </ConfirmationModal>
 </template>
 
 <script>
@@ -250,6 +268,7 @@ import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import RichText from "@/Components/MyComponents/RichText.vue";
+import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import axios from "axios";
 
 export default {
@@ -271,6 +290,7 @@ export default {
 
     return {
       form,
+      showConfirmModal: false,
       taskComponentLocal: null,
       tabs: 1,
       taskInformationModal: false,
@@ -316,6 +336,7 @@ export default {
     Link,
     InputError,
     RichText,
+    ConfirmationModal
   },
   props: {
     taskComponent: Object,
@@ -434,9 +455,22 @@ export default {
           return 'fa-regular fa-file-lines';
       }
     },
+    deleteProjectTask() {
+      this.$emit('delete-task', this.taskComponent.id);
+      this.taskInformationModal = false;
+      this.showConfirmModal = false;
+    },
   },
   mounted() {
     this.taskComponentLocal = this.taskComponent;
   },
 };
 </script>
+
+<style scoped>
+.custom-dropdown {
+  background-color: red; /* Fondo rojo */
+  border-radius: 9999px; /* Redondeo completo */
+  padding: 5px 20px; /* 5px de relleno vertical, 20px de relleno horizontal (ajusta según tus necesidades) */
+}
+</style>

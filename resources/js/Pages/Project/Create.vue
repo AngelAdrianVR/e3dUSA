@@ -388,7 +388,7 @@ export default {
       limit_date: null,
       is_strict_project: false,
       description: null,
-      tags: null,
+      tags: [],
       project_group_id: null,
       is_internal_project: false,
       company_id: null,

@@ -5,7 +5,12 @@
     </el-tooltip>
   <div class="py-3 px-4">
           <p :class="oportunityTask?.finished_at ? 'line-through' : ''">{{ oportunityTask?.name }}</p>
-          <p class="text-gray-400 mt-3 mb-2">Asignado a</p>
+          <div class="flex justify-between items-center">
+              <p class="text-gray-400 mt-3 mb-2">Asignado a</p>
+              <el-tooltip v-if="oportunityTask?.media?.length" content="Archivos adjuntos" placement="top">
+              <i @click.stop="" class="fa-solid fa-paperclip rounded-full p-2"></i>
+              </el-tooltip>
+          </div>
           <figure>
               <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm rounded-full items-center">
                 <img class="h-11 w-11 rounded-full object-cover" :src="oportunityTask?.asigned?.profile_photo_url" :alt="oportunityTask?.asigned?.name" />
@@ -96,6 +101,19 @@
           <InputError :message="form.errors.description" />
         </div>
 
+      <div v-if="oportunityTask?.media?.length" class="text-sm">
+        <h2 class="font-bold py-5">Archivos adjuntos</h2>
+        <a :href="file?.original_url" target="_blank" v-for="file in oportunityTask?.media" :key="file"
+          class="flex justify-between items-center cursor-pointer">
+          <div class="flex space-x-7 items-center">
+            <i :class="getFileTypeIcon(file.file_name)"></i>
+            <span class="ml-2">{{ file.file_name }}</span>
+          </div>
+          <i class="fa-solid fa-download text-right text-sm text-[#9a9a9a]"></i>
+        </a>
+      </div>
+
+
         <h2 class="font-bold py-5">Comentarios</h2>
 
         <!-- ------- Comments ------- -->
@@ -171,6 +189,7 @@ data(){
 
     return{
       form,
+      taskComponentLocal: null,
       oportunity: this.oportunityTask.oportunity.name,
       creator: this.oportunityTask.user?.name,
       taskInformationModal: false,
@@ -220,14 +239,14 @@ methods:{
             message: "Se ha actualizado la actividad",
             type: "success",
           });
-          this.oportunityTask = response.data.item
-
+            this.taskComponentLocal = response.data.item;
+            this.taskInformationModal = false;
+            this.$emit('updated-oportunityTask', this.taskComponentLocal);
         }
       } catch (error) {
         console.log(error);
       }
-      this.$emit('updated-oportunityTask', this.oportunityTask.id);
-        this.taskInformationModal = false;
+      
     },
   getPriorityStyles() {
     if (this.oportunityTask?.priority === 'Baja') {
@@ -273,7 +292,25 @@ methods:{
       this.$emit('delete-task', this.oportunityTask.id);
       this.taskInformationModal = false;
     },
+    getFileTypeIcon(fileName) {
+      // Asocia extensiones de archivo a iconos
+      const fileExtension = fileName.split('.').pop().toLowerCase();
+      switch (fileExtension) {
+        case 'pdf':
+          return 'fa-regular fa-file-pdf text-red-700';
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+        case 'gif':
+          return 'fa-regular fa-image text-blue-300';
+        default:
+          return 'fa-regular fa-file-lines';
+      }
+    },
 },
+mounted() {
+    this.taskComponentLocal = this.oportunityTask;
+  },
 
 }
 </script>
@@ -284,10 +321,5 @@ methods:{
   border-radius: 9999px; /* Redondeo completo */
   padding: 5px 20px; /* 5px de relleno vertical, 20px de relleno horizontal (ajusta según tus necesidades) */
 }
-
-.custom-dropdown-menu {
-}
-
-.custom-dropdown-item {
-}
 </style>
+

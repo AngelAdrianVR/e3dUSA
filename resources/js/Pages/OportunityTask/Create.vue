@@ -60,18 +60,13 @@
                 </el-select>
                 <InputError :message="form.errors.priority" />
             </div>
-            <div>
-                <label>Descripción</label>
-                <input v-model="form.description" name="taski_name" class="input" type="text">
-                <InputError :message="form.errors.description" />
+            <div class="mt-5 col-span-full">
+            <label>Descripción</label>
+            <RichText @content="updateDescription($event)" />
+          </div>
+            <div class="ml-2 mt-2 col-span-full flex">
+              <FileUploader @files-selected="this.form.media = $event" />
             </div>
-            <p @click="activateFileInput" class="text-primary cursor-pointer">+ Adjuntar archivos</p>
-            <div class="ml-4 -mt-5">
-              <ul>
-                <li class="text-secondary text-sm" v-for="fileName in form.mediaNames" :key="fileName">{{ fileName }}</li>
-              </ul>
-            </div>
-            <input  @input="form.media = $event.target.files" multiple type="file" id="fileInput" style="display: none;" @change="handleFileUpload">
           <div class="flex justify-end items-center">
             <PrimaryButton :disabled="form.processing">
               Agregar
@@ -89,6 +84,8 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
+import RichText from "@/Components/MyComponents/RichText.vue";
+import FileUploader from "@/Components/MyComponents/FileUploader.vue";
 
 export default {
   data() {
@@ -124,8 +121,10 @@ export default {
   components: {
     AppLayout,
     PrimaryButton,
-    Link,
     InputError,
+    FileUploader,
+    RichText,
+    Link,
   },
   props: {
     users: Array,
@@ -143,28 +142,12 @@ export default {
         },
       });
     },
-    activateFileInput() {
-    // Simula un clic en el campo de entrada de archivos al hacer clic en el párrafo
-    document.getElementById('fileInput').click();
-  },
-  handleFileUpload(event) {
-    // Este método se llama cuando se selecciona un archivo en el input file
-    const selectedFiles = event.target.files;
-    const fileNames = [];
-    
-    // Obtén los nombres de los archivos seleccionados y guárdalos en form.mediaNames
-    for (let i = 0; i < selectedFiles.length; i++) {
-      fileNames.push(selectedFiles[i].name);
-    }
-
-    // Actualiza la propiedad form.media con los archivos seleccionados
-    this.form.media = selectedFiles;
-    // Actualiza la propiedad form.mediaNames con los nombres de los archivos
-    this.form.mediaNames = fileNames;
-  },
     disabledDate(time) {
         const today = new Date(); // Obtener la fecha de hoy
         return time.getTime() < today.getTime();
+    },
+    updateDescription(content) {
+      this.form.description = content;
     },
 
   },
