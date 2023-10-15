@@ -168,10 +168,10 @@
 
           <div class="flex items-center justify-end space-x-2 col-span-2 mr-4">
             <el-tooltip content="Agendar reunión" placement="top">
-              <i class="fa-regular fa-calendar text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
+              <i @click="$inertia.get(route('meeting-monitors.create'))" class="fa-regular fa-calendar text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
             </el-tooltip>
             <el-tooltip content="Registrar pago" placement="top">
-              <i class="fa-solid fa-money-bill text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
+              <i @click="$inertia.get(route('payment-monitors.create'))" class="fa-solid fa-money-bill text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
             </el-tooltip>
             <el-tooltip content="Enviar correo" placement="top">
               <i class="fa-regular fa-envelope text-primary cursor-pointer text-lg px-3"></i>
@@ -394,7 +394,7 @@ export default {
             return 'text-[#9A9A9A] bg-[#CCCCCCCC]';
         } else if (this.currentOportunity?.status === 'Pendiente') {
              return 'text-[#C88C3C] bg-[#F3FD85]';
-        } else if (this.currentOportunity?.status === 'En progreso') {
+        } else if (this.currentOportunity?.status === 'En proceso') {
              return 'text-[#FD8827] bg-[#FEDBBD]';
         } else if (this.currentOportunity?.status === 'Pagado') {
              return 'text-[#37951F] bg-[#ADFEB5]';

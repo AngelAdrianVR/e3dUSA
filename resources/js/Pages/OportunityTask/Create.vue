@@ -60,7 +60,7 @@
                 </el-select>
                 <InputError :message="form.errors.priority" />
             </div>
-            <div class="mt-5 col-span-full">
+          <div class="mt-5 col-span-full">
             <label>Descripción</label>
             <RichText @content="updateDescription($event)" />
           </div>
@@ -143,8 +143,9 @@ export default {
       });
     },
     disabledDate(time) {
-        const today = new Date(); // Obtener la fecha de hoy
-        return time.getTime() < today.getTime();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Establece la hora a las 00:00:00.000
+      return time < today;
     },
     updateDescription(content) {
       this.form.description = content;

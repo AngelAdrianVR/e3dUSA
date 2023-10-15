@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\OportunityResource;
 use App\Http\Resources\TagResource;
 use App\Models\Company;
@@ -54,6 +57,8 @@ class OportunityController extends Controller
 
         $oportunity = Oportunity::create($validated + ['user_id' => auth()->id()]);
 
+        event(new RecordCreated($oportunity));
+
         // etiquetas
         // Obtiene los IDs de las etiquetas seleccionadas desde el formulario
         $tagIds = $request->input('tags', []);
@@ -85,12 +90,14 @@ class OportunityController extends Controller
 
     public function update(Request $request, Oportunity $oportunity)
     {
-        //
+        // event(new RecordEdited($oportunity));
     }
 
 
     public function destroy(Oportunity $oportunity)
     {
         $oportunity->delete();
+
+        event(new RecordDeleted($oportunity));
     }
 }

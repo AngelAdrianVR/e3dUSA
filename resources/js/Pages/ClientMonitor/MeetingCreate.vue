@@ -79,7 +79,7 @@
                     <i class="fa-solid fa-calendar"></i>
                     </span>
                 </el-tooltip>
-                <el-date-picker v-model="form.meeting_date" type="date" placeholder="Fecha *" />
+                <el-date-picker v-model="form.meeting_date" :disabled-date="disabledDate" type="date" placeholder="Fecha *" />
                 <InputError :message="form.errors.meeting_date" />
                 </div>
                 <div class="w-1/2">
@@ -104,11 +104,9 @@
                     <InputError :message="form.errors.location" />
                 </div>
             </div>
-            <div>
-                <label>Descripción *</label>
-                <textarea v-model="form.description" class="textarea" rows="2">
-                </textarea>
-                <InputError :message="form.errors.description" />
+            <div class="mt-5 col-span-full">
+              <label>Descripción</label>
+              <RichText @content="updateDescription($event)" />
             </div>
             
           <div class="flex justify-end items-center">
@@ -119,7 +117,6 @@
           </div>
         </div>
       </form>
-  {{form}}
     </AppLayout>
 </template>
 
@@ -128,6 +125,7 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
+import RichText from "@/Components/MyComponents/RichText.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 
 export default {
@@ -164,6 +162,7 @@ export default {
     PrimaryButton,
     InputError,
     Checkbox,
+    RichText,
     Link,
   },
   props: {
@@ -219,6 +218,14 @@ export default {
         return
       }
       
+    },
+    disabledDate(time) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Establece la hora a las 00:00:00.000
+      return time < today;
+    },
+    updateDescription(content) {
+      this.form.description = content;
     },
   },
 };

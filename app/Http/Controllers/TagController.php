@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 
@@ -25,6 +26,8 @@ class TagController extends Controller
         ]);
 
         $tag = Tag::create($request->all());
+
+        event(new RecordCreated($tag));
 
         return response()->json(['message' => 'Se ha creado una nueva etiqueta de proyecto', 'item' => $tag]);
     }

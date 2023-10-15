@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Models\CompanyBranch;
 use Illuminate\Http\Request;
 
@@ -35,7 +36,7 @@ class CompanyBranchController extends Controller
             'sat_way' => 'required|string',
         ]);
 
-        CompanyBranch::create([
+       $company_branch = CompanyBranch::create([
             'name' => $request->name,
             'address' => $request->address,
             'post_code' => $request->post_code_branch,
@@ -43,6 +44,8 @@ class CompanyBranchController extends Controller
             'sat_type' => $request->sat_type,
             'sat_way' => $request->sat_way
         ]);
+
+        event(new RecordCreated($company_branch));
 
     }
 

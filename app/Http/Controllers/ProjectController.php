@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\ProjectGroupResource;
 use App\Http\Resources\ProjectResource;
 use App\Http\Resources\TagResource;
@@ -71,7 +74,7 @@ class ProjectController extends Controller
 
 
         $project = Project::create($validated + ['user_id' => auth()->id()]);
-        //event(new RecordCreated($project)); evento para registro creado
+        event(new RecordCreated($project));
 
         // permisos
         foreach ($request->selectedUsersToPermissions as $user) {
@@ -148,6 +151,7 @@ class ProjectController extends Controller
 
 
         $project->update($validated);
+        event(new RecordEdited($project));
 
         // permisos
         foreach ($request->selectedUsersToPermissions as $user) {
@@ -174,5 +178,6 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         $project->delete();
+        event(new RecordDeleted($project));
     }
 }

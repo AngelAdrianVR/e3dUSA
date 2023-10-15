@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordDeleted;
 use App\Http\Resources\ClientMonitorResource;
 use App\Http\Resources\OportunityResource;
 use App\Models\ClientMonitor;
@@ -66,5 +67,6 @@ class ClientMonitorController extends Controller
     public function destroy(ClientMonitor $client_monitor)
     {
         $client_monitor->delete();
+        event(new RecordDeleted($client_monitor));
     }
 }

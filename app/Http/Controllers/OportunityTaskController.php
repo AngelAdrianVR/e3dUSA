@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\OportunityTaskResource;
 use App\Models\Comment;
 use App\Models\OportunityTask;
@@ -41,6 +44,8 @@ class OportunityTaskController extends Controller
             'oportunity_id' => $oportunity_id,
         ]);
 
+        event(new RecordCreated($oportunity_task));
+
         // archivos adjuntos
         $oportunity_task->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
 
@@ -71,6 +76,8 @@ class OportunityTaskController extends Controller
 
         $oportunity_task->update($validated); 
 
+        event(new RecordEdited($oportunity_task));
+
         if ($request->comment) {
             $comment = new Comment([
                 'body' => $request->comment,
@@ -88,6 +95,7 @@ class OportunityTaskController extends Controller
     public function destroy(OportunityTask $oportunity_task)
     {
         $oportunity_task->delete();
+        event(new RecordDeleted($oportunity_task));
     }
 
     public function markAsDone($oportunity_task_id)
