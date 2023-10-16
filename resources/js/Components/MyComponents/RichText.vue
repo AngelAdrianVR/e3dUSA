@@ -16,15 +16,23 @@
             </button>
         </header>
         <div contenteditable="true" @input="updateContent" ref="editor" id="editor"
-            class="bg-transparent border border-[#9A9A9A] placeholder:text-gray-400 text-gray-700 text-sm rounded-lg focus:border-primary block w-full p-2.5 rounded-tr-none rounded-tl-none min-h-[85px] focus:outline-none">
+            class="bg-transparent border border-[#9A9A9A] placeholder:text-gray-400 text-gray-700 text-sm rounded-[5px] focus:border-primary block w-full p-2.5 rounded-tr-none rounded-tl-none min-h-[85px] focus:outline-none"
+            :class="{ 'rounded-none': withFooter }">
         </div>
         {{ value }}
-        <footer v-if="withFooter">
-            hola
+        <footer v-if="withFooter"
+            class="border border-t-0 border-[#9A9A9A] rounded-br-[5px] rounded-bl-[5px] p-2 flex justify-between relative">
+            <button @click="showUsersList = !showUsersList" type="button" class="text-primary text-sm">@Mención</button>
+            <PrimaryButton @click="deleteProjectTask">Agregar comentarios</PrimaryButton>
+            <div v-if="showUsersList" class="border border-[#a9a9a9] absolute -top-28 left-20 shadow-md rounded-[3px] p-2 bg-[#CCCCCC] w-56 h-32">
+                
+            </div>
         </footer>
     </div>
 </template>
 <script>
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 
 export default {
     data() {
@@ -33,8 +41,13 @@ export default {
                 bold: false,
                 italic: false,
                 underline: false
-            }
+            },
+            showUsersList: false,
         };
+    },
+    components: {
+        PrimaryButton,
+        CancelButton,
     },
     props: {
         // Propiedad para recibir y enviar el valor del componente padre
@@ -42,7 +55,11 @@ export default {
         withFooter: {
             type: Boolean,
             default: false
-        }
+        },
+        userList: {
+            type: Array,
+            default: []
+        },
     },
     emits: ['content'], // Emite un evento personalizado para actualizar "value",
     methods: {

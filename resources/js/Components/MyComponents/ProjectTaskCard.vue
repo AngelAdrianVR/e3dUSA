@@ -48,7 +48,7 @@
             <p class="text-primary mr-1"> + {{ taskComponentLocal?.participants.length - 2 }}</p>
             <template #content>
               <div>
-                <p v-for="user in taskComponentLocal?.participants.slice(1, taskComponentLocal?.participants.length)"
+                <p v-for="user in taskComponentLocal?.participants.slice(2, taskComponentLocal?.participants.length)"
                   :key="user">{{ user.name }}</p>
               </div>
             </template>
@@ -206,7 +206,7 @@
                   <img class="h-8 w-8 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url"
                     :alt="$page.props.auth.user.name" />
                 </div>
-                <RichText @content="updateComment($event)" class="flex-1" />
+                <RichText @content="updateComment($event)" class="flex-1" withFooter :userList="users" />
                 <!-- <PrimaryButton type="button" @click.stop="comment(taskComponentLocal)" class="h-9"><i
                     class="fa-regular fa-paper-plane"></i></PrimaryButton> -->
               </div>
@@ -237,7 +237,7 @@
       <!-- {{ form }} -->
       <div class="flex justify-end space-x-3 pt-5 pb-1">
         <CancelButton @click="taskInformationModal = false">Cancelar</CancelButton>
-        <el-dropdown split-button type="primary" @click="update" class="custom-dropdown">
+        <el-dropdown split-button type="secondary" @click="update" class="custom-dropdown">
           Guarda cambios
           <template #dropdown>
             <el-dropdown-menu>
@@ -466,11 +466,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.custom-dropdown {
-  background-color: red; /* Fondo rojo */
-  border-radius: 9999px; /* Redondeo completo */
-  padding: 5px 20px; /* 5px de relleno vertical, 20px de relleno horizontal (ajusta según tus necesidades) */
-}
-</style>
