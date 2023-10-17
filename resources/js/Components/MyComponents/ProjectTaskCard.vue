@@ -209,7 +209,7 @@
                 <RichText @content="updateComment($event)" class="flex-1" withFooter :userList="users" />
                 <!-- <PrimaryButton type="button" @click.stop="comment(taskComponentLocal)" class="h-9"><i
                     class="fa-regular fa-paper-plane"></i></PrimaryButton> -->
-              </div>
+                  </div>
             </div>
           </div>
           <!-- ---------------- tab 1 comentarios ends  -------------->
