@@ -59,7 +59,7 @@
 
     <!-- ----------- Client monitor table ----------- -->
     <div class="w-11/12 mx-8 my-16">
-      <table class="w-full mx-auto text-sm">
+      <table v-if="filteredTableData.length" class="w-full mx-auto text-sm">
         <thead>
           <tr class="text-center">
             <th class="font-bold pb-5 px-5">
@@ -131,6 +131,9 @@
           </tr>
         </tbody>
       </table>
+      <div v-else>
+        <p class="text-sm text-center text-gray-400">No hay seguimientos para mostrar</p>
+      </div>
     </div>
 
 </AppLayoutNoHeader>

@@ -75,13 +75,9 @@
                 </textarea>
                 <InputError :message="form.errors.notes" />
             </div>
-            <p @click="activateFileInput" class="text-primary cursor-pointer">+ Adjuntar archivos</p>
-            <div class="ml-4 -mt-5">
-              <ul>
-                <li class="text-secondary text-sm" v-for="fileName in form.mediaNames" :key="fileName">{{ fileName }}</li>
-              </ul>
+            <div class="ml-2 mt-2 col-span-full flex">
+              <FileUploader @files-selected="this.form.media = $event" />
             </div>
-            <input  @input="form.media = $event.target.files" multiple type="file" id="fileInput" style="display: none;" @change="handleFileUpload">
           <div class="flex justify-end items-center">
             <PrimaryButton :disabled="form.processing">
               Agregar
@@ -99,6 +95,7 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
+import FileUploader from "@/Components/MyComponents/FileUploader.vue";
 
 export default {
   data() {
@@ -127,10 +124,11 @@ export default {
     };
   },
   components: {
-    AppLayout,
     PrimaryButton,
-    Link,
+    FileUploader,
     InputError,
+    AppLayout,
+    Link,
   },
   props: {
     oportunities: Object,
