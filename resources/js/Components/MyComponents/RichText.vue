@@ -20,21 +20,24 @@
             class="bg-transparent border border-[#9A9A9A] placeholder:text-gray-400 text-gray-700 text-sm rounded-[5px] focus:border-primary block w-full p-2.5 rounded-tr-none rounded-tl-none min-h-[85px] focus:outline-none"
             :class="{ 'rounded-none': withFooter }">
         </div>
-        {{ value }}
         <footer v-if="withFooter"
             class="border border-t-0 border-[#9A9A9A] rounded-br-[5px] rounded-bl-[5px] p-2 flex justify-between relative">
-            <button @click="showUsersList = !showUsersList" type="button" class="text-primary text-sm">@Mención</button>
-            <PrimaryButton @click="deleteProjectTask">Agregar comentarios</PrimaryButton>
-            <ul v-if="showUsersList"
-                class="z-20 border border-[#a9a9a9] absolute -top-28 left-20 shadow-md rounded-[3px] bg-[#CCCCCC] w-56 h-32 overflow-y-auto">
-                <template v-for="item in userList" :key="item.id">
-                    <li @click="mentionUser(item)"
-                        class="flex items-center px-2 py-1 space-x-2 text-xs mb-1 hover:bg-primarylight cursor-pointer">
-                        <img class="h-7 w-7 rounded-full object-cover" :src="item.profile_photo_url" :alt="item.name" />
-                        <p>{{ item.name }}</p>
-                    </li>
-                </template>
-            </ul>
+            <button @click.stop="showUsersList = !showUsersList" type="button"
+                class="text-primary text-sm cursor-pointer">@Mención</button>
+            <PrimaryButton type="button" @click="deleteProjectTask">Agregar comentarios</PrimaryButton>
+
+            <transition name="fade">
+                <ul v-if="showUsersList"
+                    class="z-20 border border-[#a9a9a9] absolute -top-28 left-20 shadow-md rounded-[3px] bg-[#CCCCCC] w-56 h-32 overflow-y-auto">
+                    <template v-for="item in userList" :key="item.id">
+                        <li type="button" @click.stop="mentionUser(item)"
+                            class="flex items-center px-2 py-1 space-x-2 text-xs mb-1 hover:bg-primarylight cursor-pointer">
+                            <img class="h-7 w-7 rounded-full object-cover" :src="item.profile_photo_url" :alt="item.name" />
+                            <p>{{ item.name }}</p>
+                        </li>
+                    </template>
+                </ul>
+            </transition>
         </footer>
     </div>
 </template>
@@ -52,6 +55,7 @@ export default {
             },
             showUsersList: false,
             mentions: [],
+            content: null,
         };
     },
     components: {
@@ -60,7 +64,6 @@ export default {
     },
     props: {
         // Propiedad para recibir y enviar el valor del componente padre
-        value: String,
         withFooter: {
             type: Boolean,
             default: false
@@ -72,6 +75,11 @@ export default {
     },
     emits: ['content'], // Emite un evento personalizado para actualizar "value",
     methods: {
+        clearContent() {
+            const editor = this.$refs.editor;
+            editor.innerHTML = null;
+            this.mentions = [];
+        },
         toggleStyle(style) {
             const editor = this.$refs.editor;
             // Cambia el estado del estilo
@@ -84,10 +92,10 @@ export default {
             // Enfoca nuevamente el editor de texto después de aplicar el estilo
             setCaretPositionToEnd(editor);
         },
-        updateContent() {
-            // Actualiza el contenido del editor y emite el evento personalizado "content"
-            this.$emit('content', this.$refs.editor.innerHTML);
-        },
+        // updateContent() {
+        //     // Actualiza el contenido del editor y emite el evento personalizado "content"
+        //     this.$emit('content', this.$refs.editor.innerHTML);
+        // },
         addUserToMentions(user) {
             const userWithSomeProperties = { id: user.id, name: user.name };
             this.mentions.push(userWithSomeProperties);
@@ -107,7 +115,7 @@ export default {
                 editor.innerHTML = newText;
 
                 // Registrar el usuario mencionado en el arreglo
-                this.mentions.push({id:user.id, tag:`@${user.name}`});
+                this.mentions.push({ id: user.id, tag: `@${user.name}` });
 
                 // Enfocar el editor
                 editor.focus();
@@ -121,12 +129,16 @@ export default {
             this.setCaretPositionToEnd(editor);
             // Cerrar la lista de usuarios
             this.showUsersList = false;
+            
+            this.$emit('content', this.$refs.editor.innerHTML);
         },
 
         onInput() {
             const editor = this.$refs.editor;
             const text = editor.innerHTML;
             const mentionElements = editor.querySelectorAll('span[id^="m-"]');
+
+            if (!mentionElements.length && this.mentions.length) this.mentions = [];
 
             // Iterar sobre las menciones en orden inverso para evitar problemas con los índices al borrar
             for (let i = this.mentions.length - 1; i >= 0; i--) {
@@ -145,24 +157,6 @@ export default {
             this.$emit('content', this.$refs.editor.innerHTML);
         },
 
-        // onInput() {
-        //     const editor = this.$refs.editor;
-        //     const text = editor.innerHTML;
-
-        //     // Iterar sobre las menciones en orden inverso para evitar problemas con índices al borrar
-        //     for (let i = this.mentions.length - 1; i >= 0; i--) {
-        //         const mention = this.mentions[i];
-
-        //         // Comprobar si la mención está presente en el contenido
-        //         if (!text.includes(mention.mention)) {
-        //             this.mentions.splice(i, 1);
-        //         }
-        //     }
-
-        //     // Actualiza el contenido del editor y emite el evento personalizado "content"
-        //     this.$emit('content', this.$refs.editor.innerHTML);
-        // },
-
         setCaretPositionToEnd(elem) {
             const range = document.createRange();
             const sel = window.getSelection();
@@ -174,3 +168,15 @@ export default {
     }
 }
 </script>
+<style scoped>
+.slide-fade-enter-active,
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>
