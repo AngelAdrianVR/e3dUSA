@@ -123,7 +123,7 @@
           <InputError :message="form.errors.department" />
         </div>
         <div class="flex space-x-2 justify-between items-center mt-2">
-          <label>Participantes</label> <br>
+          <label>Agregar participantes</label> <br>
           <el-select class="!w-[78%]" v-model="form.participants" clearable filterable multiple
             placeholder="Seleccionar participantes" no-data-text="No hay usuarios registrados"
             no-match-text="No se encontraron coincidencias">

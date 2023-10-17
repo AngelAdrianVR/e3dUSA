@@ -74,7 +74,7 @@ class OportunityController extends Controller
 
     public function show(Oportunity $oportunity)
     {
-        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitores.seller', 'oportunityTasks.comments.user', 'tags', 'media')->latest()->get());
+        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitores.seller', 'oportunityTasks.comments.user', 'tags', 'media', 'survey')->latest()->get());
         $users = User::where('is_active', true)->get();
 
         // return $oportunities;

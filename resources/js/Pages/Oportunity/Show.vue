@@ -109,6 +109,11 @@
             " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Historial
           </p>
+          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p @click="tabs = 5" :class="tabs == 5 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Encuesta post venta
+          </p>
         </div>
       </div>
       <!-- ------------- tabs section ends ------------- -->
@@ -250,7 +255,7 @@
 
       <!-- ------------ tab 3 seguimiento integral starts ------------- -->
       <div v-if="tabs == 3" class="w-11/12 mx-auto my-8">
-      <table class="lg:w-[80%] w-full mx-auto text-sm">
+      <table v-if="currentOportunity?.clientMonitores?.length" class="lg:w-[80%] w-full mx-auto text-sm">
         <thead>
           <tr class="text-center">
             <th class="font-bold pb-5">
@@ -315,8 +320,77 @@
           </tr>
         </tbody>
       </table>
+      <div v-else>
+        <p class="text-sm text-center text-gray-400">No hay seguimiento en esta oportunidad</p>
+      </div>
     </div>
       <!-- ------------ tab 3 seguimiento integral ends ------------- -->
+
+      <!-- ------------ tab 4 Historial starts ------------- -->
+      <div v-if="tabs == 4" class="w-11/12 mx-auto my-8">
+      
+    </div>
+      <!-- ------------ tab 4 Historial ends ------------- -->
+
+      <!-- ------------ tab 5 Ecuesta post venta starts ------------- -->
+      <div v-if="tabs == 5" class="w-11/12 mx-auto my-8">
+        <table v-if="currentOportunity?.survey" class="lg:w-[80%] w-full mx-auto text-sm">
+        <thead>
+          <tr class="text-center">
+            <th class="font-bold pb-5">
+              ID <i class="fa-solid fa-arrow-down-long ml-3"></i>
+            </th>
+            <th class="font-bold pb-5">
+              P1 <i class="fa-solid fa-arrow-down-long ml-3"></i>
+            </th>
+            <th class="font-bold pb-5">
+              P2 <i class="fa-solid fa-arrow-down-long ml-3"></i>
+            </th>
+            <th class="font-bold pb-5">
+              P3 <i class="fa-solid fa-arrow-down-long ml-3"></i>
+            </th>
+            <th class="font-bold pb-5">
+              P4 <i class="fa-solid fa-arrow-down-long ml-3"></i>
+            </th>
+            <th class="font-bold pb-5">Comentario</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class="mb-4 hover:bg-[#dfdbdba8]"
+          >
+            <td class="text-center py-2 px-2 rounded-l-full">
+              {{ currentOportunity?.survey?.oportunity_id }}
+            </td>
+            <td class="text-center py-2 px-2">
+              <span
+                class="py-1 px-4 rounded-full"
+                >{{ currentOportunity?.survey?.p1 ? 'Sí' :' No' }}</span
+              >
+            </td>
+            <td class="text-center py-2 px-2">
+              <span
+                class="py-1 px-2 rounded-full"
+                >{{ currentOportunity?.survey?.p2 ? 'Sí' :' No' }}</span
+              >
+            </td>
+            <td class="text-center py-2 px-2">
+              {{ currentOportunity?.survey?.p3 ? 'Sí' :' No' }}
+            </td>
+            <td class="text-center py-2 px-2">
+              {{ currentOportunity?.survey?.p4 ? 'Sí' :' No' }}
+            </td>
+            <td class="text-center py-2 px-2 rounded-r-full">
+              {{ currentOportunity?.survey?.p5 }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div v-else>
+        <p class="text-sm text-center text-gray-400">No se ha contestado la encuesta</p>
+      </div>
+      </div>
+      <!-- ------------ tab 5 Ecuesta post venta ends ------------- -->
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar oportunidad </template>
