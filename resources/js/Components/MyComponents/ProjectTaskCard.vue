@@ -48,7 +48,7 @@
             <p class="text-primary mr-1"> + {{ taskComponentLocal?.participants.length - 2 }}</p>
             <template #content>
               <div>
-                <p v-for="user in taskComponentLocal?.participants.slice(1, taskComponentLocal?.participants.length)"
+                <p v-for="user in taskComponentLocal?.participants.slice(2, taskComponentLocal?.participants.length)"
                   :key="user">{{ user.name }}</p>
               </div>
             </template>
@@ -81,8 +81,8 @@
           <i :class="getColorStatus(form.status)" class="fa-solid fa-circle text-xs ml-1"></i>
         </label> <br />
         <div class="flex items-center space-x-4">
-          <el-select :disabled="taskComponentLocal?.is_paused" class="lg:w-1/2" v-model="form.status" clearable
-            filterable placeholder="Seleccionar estatus" no-data-text="No hay estatus registrados"
+          <el-select :disabled="taskComponentLocal?.is_paused" class="lg:w-1/2" v-model="form.status" clearable filterable
+            placeholder="Seleccionar estatus" no-data-text="No hay estatus registrados"
             no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
               <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
@@ -124,7 +124,7 @@
         </div>
         <div class="flex space-x-2 justify-between items-center mt-2">
           <label>Agregar participantes</label> <br>
-          <el-select class="!w-[78%]" v-model="form.participants" clearable filterable multiple
+          <el-select class="!w-[95%]" v-model="form.participants" clearable filterable multiple
             placeholder="Seleccionar participantes" no-data-text="No hay usuarios registrados"
             no-match-text="No se encontraron coincidencias">
             <el-option v-for="user in users" :key="user.id" :label="user.name" :value="user.id" />
@@ -133,7 +133,7 @@
         </div>
         <div class="mt-2">
           <label>Descripción</label>
-          <RichText @content="updateDescription($event)"/>
+          <RichText @content="updateDescription($event)" />
           <InputError :message="form.errors.description" />
         </div>
         <div class="mt-3 relative">
@@ -189,16 +189,16 @@
             </p>
           </div>
           <!-- -------------- Tab 1 comentarios starts ----------------->
-          <div v-if="tabs == 1" class="mt-7">
+          <div v-if="tabs == 1" class="mt-7 min-h-[170px]">
             <div>
               <figure class="flex space-x-2 mt-4" v-for="comment in taskComponentLocal?.comments" :key="comment">
-                <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm rounded-full w-12">
-                  <img class="h-10 w-10 rounded-full object-cover" :src="comment.user?.profile_photo_url"
+                <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm rounded-full w-10">
+                  <img class="h-8 w-8 rounded-full object-cover" :src="comment.user?.profile_photo_url"
                     :alt="comment.user?.name" />
                 </div>
                 <div class="text-sm w-full">
                   <p class="font-bold">{{ comment.user?.name }}</p>
-                  <p>{{ comment.body }}</p>
+                  <p v-html="comment.body"></p>
                 </div>
               </figure>
               <div class="flex space-x-1 mt-5">
@@ -206,7 +206,7 @@
                   <img class="h-8 w-8 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url"
                     :alt="$page.props.auth.user.name" />
                 </div>
-                <RichText @content="updateComment($event)" class="flex-1" />
+                <RichText @click="storeComment(taskComponentLocal)" @content="updateComment($event)" ref="commentEditor" class="flex-1" withFooter :userList="users" />
                 <!-- <PrimaryButton type="button" @click.stop="comment(taskComponentLocal)" class="h-9"><i
                     class="fa-regular fa-paper-plane"></i></PrimaryButton> -->
               </div>
@@ -215,7 +215,7 @@
           <!-- ---------------- tab 1 comentarios ends  -------------->
 
           <!-- -------------- Tab 2 documentos starts ----------------->
-          <div v-if="tabs == 2" class="mt-7">
+          <div v-if="tabs == 2" class="mt-7 min-h-[170px]">
             <a :href="file?.original_url" target="_blank" v-for="file in taskComponentLocal?.media" :key="file"
               class="flex justify-between items-center cursor-pointer">
               <div class="flex space-x-7 items-center">
@@ -228,7 +228,7 @@
           <!-- ---------------- tab 2 documentos ends  -------------->
 
           <!-- -------------- Tab 3 historial starts ----------------->
-          <div v-if="tabs == 3" class="mt-7"></div>
+          <div v-if="tabs == 3" class="mt-7 min-h-[170px]"></div>
           <!-- ---------------- tab 3 historial ends  -------------->
 
 
@@ -237,15 +237,15 @@
       <!-- {{ form }} -->
       <div class="flex justify-end space-x-3 pt-5 pb-1">
         <CancelButton @click="taskInformationModal = false">Cancelar</CancelButton>
-        <el-dropdown split-button type="primary" @click="update" class="custom-dropdown">
+        <el-dropdown split-button type="secondary" @click="update" class="custom-dropdown">
           Guarda cambios
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item @click="showConfirmModal= true">Eliminar</el-dropdown-item>
+              <el-dropdown-item @click="showConfirmModal = true">Eliminar</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-          </div>
+      </div>
     </form>
   </Modal>
 
@@ -407,19 +407,20 @@ export default {
         console.log(error);
       }
     },
-    async comment(task) {
-      try {
-        const response = await axios.post(route("tasks.comment", task.id), {
-          comment: this.form.comment,
-        });
-        if (response.status === 200) {
-          console.log('Comment', response.data.item);
-          this.taskComponentLocal?.comments.push(response.data.item);
+    async storeComment() {
+      if (this.form.comment) {
+        try {
+          const response = await axios.post(route("tasks.comment", this.taskComponentLocal.id), {
+            comment: this.form.comment,
+          });
+          if (response.status === 200) {
+            this.taskComponentLocal?.comments.push(response.data.item);
+            this.form.comment = null;
+            this.$refs.commentEditor.clearContent();
+          }
+        } catch (error) {
+          console.log(error);
         }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        this.form.comment = null;
       }
     },
     getColorStatus(taskStatus) {
@@ -466,11 +467,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.custom-dropdown {
-  background-color: red; /* Fondo rojo */
-  border-radius: 9999px; /* Redondeo completo */
-  padding: 5px 20px; /* 5px de relleno vertical, 20px de relleno horizontal (ajusta según tus necesidades) */
-}
-</style>

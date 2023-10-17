@@ -254,7 +254,7 @@
                       <div class="space-y-1 mb-2">
                         <label class="flex items-center">
                           <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                            v-model="user.permissions[0]" :checked="user.permissions[0]" />
+                            v-model="user.permissions[0]" :checked="user.permissions[0]" />{{ permissions }}
                           <span
                             :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                             class="ml-2 text-xs">
@@ -263,7 +263,7 @@
                         </label>
                         <label class="flex items-center">
                           <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                            v-model="user.permissions[1]" :checked="user.permissions[1]" />
+                            v-model="user.permissions[1]" :checked="user.permissions[1]"/>
                           <span
                             :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                             class="ml-2 text-xs">Ver</span>
@@ -294,7 +294,7 @@
                         cancel-button-text="No" icon-color="#D90537" title="Remover?"
                         @confirm="removeUserFromPermissions(user.id)">
                         <template #reference>
-                          <button :disabled="user.employee_properties == null" type="button"
+                          <button :disabled="user.employee_properties === null" type="button"
                             class="text-primary mr-10 disabled:cursor-not-allowed disabled:opacity-50">
                             <i class="fa-regular fa-circle-xmark"></i>
                           </button>
@@ -416,7 +416,7 @@ export default {
       form,
       groupForm,
       tagForm,
-      editAccesFlag: false,
+      editAccesFlag: true,
       showGroupFormModal: false,
       showTagFormModal: false,
       company_branch_obj: null,
@@ -538,7 +538,7 @@ export default {
         id: user.id,
         name: user.name,
         profile_photo_url: user.profile_photo_url,
-        permissions: defaultPermissions,
+        permissions: [...defaultPermissions],
       };
       this.form.selectedUsersToPermissions.push(foundUser);
     },
@@ -581,18 +581,18 @@ export default {
   },
   watch: {
     typeAccessProject(newVal) {
+      this.selectAdmins();
       if (newVal === 'Public') {
-        let defaultPermissions = [true, true, true, true, true];
-        const usersWithSelectedProperties = this.users.map(user => ({
+        let defaultPermissions = [false, true, false, false, true];
+        let usersWithSelectedProperties = this.users.filter(element => element.employee_properties !== null).map(user => ({
           id: user.id,
           name: user.name,
           profile_photo_url: user.profile_photo_url,
-          permissions: defaultPermissions,
+          permissions: [...defaultPermissions],
         }));
-        this.form.selectedUsersToPermissions = usersWithSelectedProperties;
+        this.form.selectedUsersToPermissions = [...this.form.selectedUsersToPermissions, ...usersWithSelectedProperties];
         this.editAccesFlag = false;
       } else {
-        this.selectAdmins();
         this.editAccesFlag = true;
       }
     }
