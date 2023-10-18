@@ -68,7 +68,7 @@
 
   <!-- -------------- task information Modal -------------- -->
   <Modal :show="taskInformationModal" @close="taskInformationModal = false">
-    <form @submit.prevent="update" class="mx-7 my-4 space-y-4 relative">
+    <div class="mx-7 my-4 space-y-4 relative">
       <div @click="taskInformationModal = false"
         class="cursor-pointer w-5 h-5 rounded-full flex items-center justify-center absolute top-0 right-0">
         <i class="fa-solid fa-xmark"></i>
@@ -206,7 +206,8 @@
                   <img class="h-8 w-8 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url"
                     :alt="$page.props.auth.user.name" />
                 </div>
-                <RichText @click="storeComment(taskComponentLocal)" @content="updateComment($event)" ref="commentEditor" class="flex-1" withFooter :userList="users" />
+                <RichText @submitComment="storeComment(taskComponentLocal)" @content="updateComment($event)"
+                  ref="commentEditor" class="flex-1" withFooter :userList="users" :disabled="sendingComments" />
                 <!-- <PrimaryButton type="button" @click.stop="comment(taskComponentLocal)" class="h-9"><i
                     class="fa-regular fa-paper-plane"></i></PrimaryButton> -->
               </div>
@@ -246,7 +247,7 @@
           </template>
         </el-dropdown>
       </div>
-    </form>
+    </div>
   </Modal>
 
   <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
@@ -291,6 +292,7 @@ export default {
     return {
       form,
       showConfirmModal: false,
+      sendingComments: false,
       taskComponentLocal: null,
       tabs: 1,
       taskInformationModal: false,
@@ -409,6 +411,7 @@ export default {
     },
     async storeComment() {
       if (this.form.comment) {
+        this.sendingComments = true;
         try {
           const response = await axios.post(route("tasks.comment", this.taskComponentLocal.id), {
             comment: this.form.comment,
@@ -420,6 +423,8 @@ export default {
           }
         } catch (error) {
           console.log(error);
+        } finally {
+          this.sendingComments = false;
         }
       }
     },
