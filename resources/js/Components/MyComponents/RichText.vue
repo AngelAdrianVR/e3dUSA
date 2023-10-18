@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <div v-if="showUsersList" @click="showUsersList = false" class="inset-0 absolute top-0 left-0 z-10"></div>
+    <div v-if="showUsersList" @click="showUsersList = false" class="inset-0 absolute top-0 left-0 z-10"></div>
+    <div class="relative w-full">
         <header
             class="border border-b-0 border-[#9A9A9A] bg-[#CCCCCC] rounded-tl-[3px] rounded-tr-[3px] h-7 flex items-center">
             <button type="button" @click="toggleStyle('bold')" :class="{ 'text-primary': styles.bold }"
@@ -21,13 +21,13 @@
             :class="{ 'rounded-none': withFooter }">
         </div>
         <footer v-if="withFooter"
-            class="border border-t-0 border-[#9A9A9A] bg-transparent rounded-br-[5px] rounded-bl-[5px] p-2 flex justify-between relative">
+            class="border border-t-0 border-[#9A9A9A] bg-transparent rounded-br-[5px] rounded-bl-[5px] p-2 flex justify-between">
             <button @click="showUsersList = !showUsersList" type="button"
                 class="text-primary text-sm cursor-pointer">@Mención</button>
             <PrimaryButton type="button" @click="$emit('submitComment')" :disabled="disabled">Agregar comentarios</PrimaryButton>
             <transition name="fade">
                 <ul v-if="showUsersList"
-                    class="z-20 border border-[#a9a9a9] absolute -top-36 left-20 shadow-md rounded-[3px] bg-[#CCCCCC] w-60 h-40 overflow-y-auto">
+                    class="z-20 border border-[#a9a9a9] absolute -top-40 left-0 rounded-[3px] bg-[#CCCCCC] w-60 h-40 overflow-y-auto">
                     <template v-for="item in userList" :key="item.id">
                         <li type="button" @click="mentionUser(item)"
                             class="flex items-center px-2 py-1 space-x-2 text-xs mb-1 hover:bg-primarylight cursor-pointer">
