@@ -26,7 +26,7 @@
         </div>
         <div>
           <label>Nombre de la tarea *</label>
-          <input v-model="form.title" class="input" type="text">
+          <input v-model="form.title" class="input" type="text" placeholder="Escribe el nombre">
           <InputError :message="form.errors.title" />
         </div>
         <div>

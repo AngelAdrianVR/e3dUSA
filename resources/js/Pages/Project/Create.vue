@@ -18,7 +18,7 @@
         <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4">
           <div>
             <label>Título del proyecto *</label>
-            <input v-model="form.project_name" class="input" type="text">
+            <input v-model="form.project_name" class="input" type="text" placeholder="Escribe el título">
             <InputError :message="form.errors.project_name" />
           </div>
           <div>
@@ -57,7 +57,9 @@
             <el-tooltip
               content="Las tareas no pueden comenzar ni finalizar fuera de las fechas programadas de un proyecto "
               placement="top">
-              <i class="fa-solid fa-circle-info text-primary text-xs"></i>
+              <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                <i class="fa-solid fa-info text-primary text-[7px]"></i>
+              </div>
             </el-tooltip>
           </div>
           <div class="mt-5 col-span-full">
@@ -90,7 +92,6 @@
                   <el-tooltip
                     content="Organice su proyecto en grupos. Seleccione o cree un grupo para asociar este proyecto"
                     placement="right">
-                    <!-- <i class="fa-solid fa-circle-info text-primary text-xs ml-2"></i> -->
                     <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
                       <i class="fa-solid fa-info text-primary text-[7px]"></i>
                     </div>
@@ -263,7 +264,7 @@
                         </label>
                         <label class="flex items-center">
                           <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                            v-model="user.permissions[1]" :checked="user.permissions[1]"/>
+                            v-model="user.permissions[1]" :checked="user.permissions[1]" />
                           <span
                             :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                             class="ml-2 text-xs">Ver</span>
@@ -310,7 +311,7 @@
           <!-- {{form}} -->
 
           <div class="mt-9 mx-3 md:text-right">
-            <PrimaryButton :disabled="form.processing">
+            <PrimaryButton :disabled="form.processing || (editAccesFlag && typeAccessProject == 'Public')">
               Crear proyecto
             </PrimaryButton>
           </div>
