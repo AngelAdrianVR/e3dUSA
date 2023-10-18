@@ -39,6 +39,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
@@ -109,6 +110,10 @@ Route::get('crm', [DashboardController::class, 'crmDashboard'])->middleware('aut
 
 // ------- CRM (oportunities Routes)  ---------
 Route::resource('oportunities', OportunityController::class)->middleware('auth');
+
+// ------- CRM (surveys Routes)  ---------
+Route::get('/surveys/create/{oportunity_id}', [SurveyController::class, 'create'])->name('surveys.create')->middleware('auth');
+Route::post('/surveys/store/{oportunity_id}', [SurveyController::class, 'store'])->name('surveys.store')->middleware('auth');
 
 // ------- CRM (oportunityTasks Routes)  ---------
 Route::resource('oportunity-tasks', OportunityTaskController::class)->except(['store', 'create'])->middleware('auth');
