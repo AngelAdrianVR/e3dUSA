@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\ReactivateProductSale::class,
         \App\Console\Commands\BackupDatabase::class,
         \App\Console\Commands\closePayrollCommand::class,
+        \App\Console\Commands\StockReposition::class,
         \App\Console\Commands\TestCron::class,
     ];
     /**
@@ -24,6 +25,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:increase-product-price')->weekly();
         $schedule->command('app:reactivate-product-sale')->weekly();
         $schedule->command('app:backup-database')->daily();
+        $schedule->command('app:stock-reposition')->daily();
     }
 
     /**
