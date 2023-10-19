@@ -5,8 +5,9 @@
     </div>
 
     <div class="flex justify-between mt-5 mx-1 lg:mx-14">
-      <div class="w-1/3 relative">
-        <input @keyup.enter="handleSearch" v-model="inputSearch" class="input outline-none pr-8" placeholder="Buscar proyecto" />
+      <div class="w-1/3 relative ">
+        <input @keyup.enter="handleSearch" v-model="inputSearch" class="input outline-none pr-8"
+          placeholder="Buscar proyecto" />
         <i class="fa-solid fa-magnifying-glass absolute top-2 right-4 text-xs text-[#9A9A9A]"></i>
       </div>
       <div>
@@ -14,6 +15,7 @@
       </div>
     </div>
 
+    <NotificationCenter module="projects" />
     <div class="lg:px-14 pb-7 pt-14 text-sm overflow-x-scroll">
       <table class="w-full mx-auto">
         <thead>
@@ -87,6 +89,7 @@ import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import Pagination from "@/Components/MyComponents/Pagination.vue";
+import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 
 export default {
   data() {
@@ -99,7 +102,8 @@ export default {
     AppLayoutNoHeader,
     PrimaryButton,
     SecondaryButton,
-    Pagination
+    Pagination,
+    NotificationCenter,
   },
   props: {
     projects: Object

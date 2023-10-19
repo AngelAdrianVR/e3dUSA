@@ -1,5 +1,5 @@
 <template>
-  <AppLayout title="Crear tarea |">
+  <AppLayout title="Crear tarea">
     <template #header>
       <div class="flex justify-between">
         <Link :href="route('projects.index')"

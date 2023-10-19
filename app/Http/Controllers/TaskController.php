@@ -11,6 +11,7 @@ use App\Models\Comment;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
+use App\Notifications\MentionNotification;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -76,7 +77,6 @@ class TaskController extends Controller
 
     public function update(Request $request, Task $task)
     {
-        // return $request->priority;
         $validated = $request->validate([
             'status' => 'required|string',
             'description' => 'nullable',
@@ -89,10 +89,6 @@ class TaskController extends Controller
         event(new RecordEdited($task));
 
         $task->participants()->sync($request->participants);
-        //agregar nuevos participantes
-        // foreach ($request->participants as $user_id) {
-        //     // Adjuntar el usuario a la tarea
-        // }
 
         if ($request->comment) {
             $comment = new Comment([
@@ -123,7 +119,14 @@ class TaskController extends Controller
             'body' => $request->comment,
             'user_id' => auth()->id(),
         ]);
+
         $task->comments()->save($comment);
+        
+        $mentions = $request->mentions;
+        foreach ($mentions as $mention) {
+            $user = User::find($mention['id']);
+            $user->notify(new MentionNotification($task, "", 'projects'));
+        }
         // event(new RecordCreated($comment)); me dice que el id del usuario no tiene un valor por default.
         // return to_route('projects.show', ['project' => $request->project_id]);
         return response()->json(['item' => $comment->fresh('user')]);
