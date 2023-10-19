@@ -1,70 +1,68 @@
 <template>
-  <AppLayoutNoHeader title="Calendario |">
+  <AppLayoutNoHeader title="Calendario">
     <div class="flex justify-between text-lg mx-2 lg:mx-14 mt-2">
       <span>Calendario</span>
-      <Link
-        :href="route('dashboard')"
-        class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center"
-      >
-        <i class="fa-solid fa-xmark"></i>
+      <Link :href="route('dashboard')"
+        class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+      <i class="fa-solid fa-xmark"></i>
       </Link>
     </div>
 
-      
+
     <div class="flex justify-between text-lg mx-2 lg:mx-14 mt-11">
-      <span class="text-primary text-sm cursor-pointer"
-        >Mes <i class="fa-solid fa-angle-down text-xs ml-2"></i
-      ></span>
+      <!-- <span class="text-primary text-sm cursor-pointer">Mes <i class="fa-solid fa-angle-down text-xs ml-2"></i></span> -->
+      <span></span>
       <div class="flex justify-between items-center lg:w-1/5">
-        <i @click="changeMonth(-1)"
-          class="fa-solid fa-angle-left text-primary text-xs mr-5 cursor-pointer p-1"
-        ></i>
+        <i @click="changeMonth(-1)" class="fa-solid fa-angle-left text-primary text-xs mr-5 cursor-pointer p-1"></i>
         <i class="fa-solid fa-calendar-days text-primary text-sm mr-2"></i>
         <p class="text-[#cccccc]">|</p>
         <p class="text-sm ml-2">{{ currentMonth.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }) }}</p>
-        <i @click="changeMonth(1)"
-          class="fa-solid fa-angle-right text-primary text-xs ml-5 cursor-pointer p-1"
-        ></i>
+        <i @click="changeMonth(1)" class="fa-solid fa-angle-right text-primary text-xs ml-5 cursor-pointer p-1"></i>
       </div>
       <div class="flex space-x-2">
         <Link :href="route('calendars.create')">
-        <PrimaryButton >+ Agendar</PrimaryButton>
-      </Link>
+        <PrimaryButton>+ Agendar</PrimaryButton>
+        </Link>
       </div>
     </div>
-    
 
 
-      <!-- -------------- calendar section --------------- -->
-      <section @click="selectedDay = null" class="w-11/12 mx-auto mb-24 overflow-x-scroll">
-    <table class="w-full mt-12">
-      <tr class="text-center">
-        <th class="py-2 w-[14.28%] border border-[#9A9A9A]">DOM</th>
-        <th class="py-2 w-[14.28%] border border-[#9A9A9A]">LUN</th>
-        <th class="py-2 w-[14.28%] border border-[#9A9A9A]">MAR</th>
-        <th class="py-2 w-[14.28%] border border-[#9A9A9A]">MIE</th>
-        <th class="py-2 w-[14.28%] border border-[#9A9A9A]">JUE</th>
-        <th class="py-2 w-[14.28%] border border-[#9A9A9A]">VIE</th>
-        <th class="py-2 w-[14.28%] border border-[#9A9A9A]">SAB</th>
-      </tr>
-      <tr v-for="(week, index) in weeks" :key="index" class="text-sm text-right">
-        <td v-for="day in week" :key="day" class="h-32 pb-4 border border-[#9A9A9A] relative">
-          <p class="absolute bottom-0 right-3">{{ day }}</p>
-          <!-- Agregar línea para tareas y eventos -->
-          <div v-for="task in tasks" :key="task.id">
-            <div class="" v-if="isTaskDay(task, day)">
-                <div @click.stop="selectedTask = task; selectedDay = day" :class="task.type === 'Tarea' ? 'bg-[#B9D9FE] border-[#0355B5] border-l-4 border' : 'bg-[#FDB9C9] border-[#D90537] border-l-4 border'" class="h-5 rounded-sm my-1 text-xs justify-center items-center cursor-pointer flex relative">
-                    <p :class="task.status === 'Terminada' ? 'line-through' : ''">{{ task.title }}</p>
-                <div v-if="selectedTask === task && selectedDay == day" style="z-index: 999;" class="px-1 pb-3 absolute -bottom-56 w-56 h-auto bg-[#D9D9D9] rounded-md border cursor-default">
-                  <!-- --- Head --- -->
-                  <div class="flex items-center justify-end">
-                    <p :class="selectedTask.type === 'Tarea' ? 'border-[#0355B5] bg-[#B9D9FE]' : 'bg-[#FDB9C9] border-[#D90537]'" class="border inline rounded-md py-[1px] px-[2px]">{{ selectedTask.type }}</p>
-                    <i @click.stop="selectedTask = null; selectedDay = null" class="fa-solid fa-xmark text-xs p-2 ml-4 cursor-pointer"></i>
-                  </div>
-                  <!-- --- Body --- -->
-                  <div class="px-3">
-                    <p class="font-bold text-left pb-[2px] pl-1">{{ selectedTask?.title }}</p>
-                    <div class="grid grid-cols-2 border-y border-[#9A9A9A] p-1 text-left">
+
+    <!-- -------------- calendar section --------------- -->
+    <section @click="selectedDay = null" class="w-11/12 mx-auto mb-24 overflow-x-scroll">
+      <table class="w-full mt-12">
+        <tr class="text-center">
+          <th class="py-2 w-[14.28%] border border-[#9A9A9A]">DOM</th>
+          <th class="py-2 w-[14.28%] border border-[#9A9A9A]">LUN</th>
+          <th class="py-2 w-[14.28%] border border-[#9A9A9A]">MAR</th>
+          <th class="py-2 w-[14.28%] border border-[#9A9A9A]">MIE</th>
+          <th class="py-2 w-[14.28%] border border-[#9A9A9A]">JUE</th>
+          <th class="py-2 w-[14.28%] border border-[#9A9A9A]">VIE</th>
+          <th class="py-2 w-[14.28%] border border-[#9A9A9A]">SAB</th>
+        </tr>
+        <tr v-for="(week, index) in weeks" :key="index" class="text-sm text-right">
+          <td v-for="day in week" :key="day" class="h-32 pb-4 border border-[#9A9A9A] relative">
+            <p class="absolute bottom-0 right-3">{{ day }}</p>
+            <!-- Agregar línea para tareas y eventos -->
+            <div v-for="task in tasks" :key="task.id">
+              <div class="" v-if="isTaskDay(task, day)">
+                <div @click.stop="selectedTask = task; selectedDay = day"
+                  :class="task.type === 'Tarea' ? 'bg-[#B9D9FE] border-[#0355B5] border-l-4 border' : 'bg-[#FDB9C9] border-[#D90537] border-l-4 border'"
+                  class="h-5 rounded-sm my-1 text-xs justify-center items-center cursor-pointer flex relative">
+                  <p :class="task.status === 'Terminada' ? 'line-through' : ''">{{ task.title }}</p>
+                  <div v-if="selectedTask === task && selectedDay == day" style="z-index: 999;"
+                    class="px-1 pb-3 absolute -bottom-56 w-56 h-auto bg-[#D9D9D9] rounded-md border cursor-default">
+                    <!-- --- Head --- -->
+                    <div class="flex items-center justify-end">
+                      <p :class="selectedTask.type === 'Tarea' ? 'border-[#0355B5] bg-[#B9D9FE]' : 'bg-[#FDB9C9] border-[#D90537]'"
+                        class="border inline rounded-md py-[1px] px-[2px]">{{ selectedTask.type }}</p>
+                      <i @click.stop="selectedTask = null; selectedDay = null"
+                        class="fa-solid fa-xmark text-xs p-2 ml-4 cursor-pointer"></i>
+                    </div>
+                    <!-- --- Body --- -->
+                    <div class="px-3">
+                      <p class="font-bold text-left pb-[2px] pl-1">{{ selectedTask?.title }}</p>
+                      <div class="grid grid-cols-2 border-y border-[#9A9A9A] p-1 text-left">
                         <p class="text-[#9A9A9A] text-xs">Fecha de inicio</p>
                         <p class="text-[#9A9A9A] text-xs ml-5">Fecha final</p>
                         <el-tooltip content="Año-Mes-Día" placement="top">
@@ -77,31 +75,31 @@
                         <p class="text-xs col-span-2">{{ getDurationTask() + ' Día(s)' }}</p>
                         <p class="text-[#9A9A9A] text-xs col-span-2">Descripción</p>
                         <p class="text-xs col-span-2">{{ selectedTask?.description }}</p>
+                      </div>
+                    </div>
+                    <!-- --- Footer --- -->
+                    <div class="px-4 pt-2 flex justify-between items-center">
+                      <el-popconfirm v-if="selectedTask?.status === 'Pendiente'" confirm-button-text="Si"
+                        cancel-button-text="No" icon-color="#0355B5" title="Tarea terminada?" @confirm="taskDone">
+                        <template #reference>
+                          <PrimaryButton class="text-xs h-5">Hecho</PrimaryButton>
+                        </template>
+                      </el-popconfirm>
+                      <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#D90537"
+                        title="Eliminar tarea?" @confirm="deleteTask">
+                        <template #reference>
+                          <i class="fa-regular fa-trash-can text-primary cursor-pointer"></i>
+                        </template>
+                      </el-popconfirm>
                     </div>
                   </div>
-                  <!-- --- Footer --- -->
-                  <div class="px-4 pt-2 flex justify-between items-center">
-                    <el-popconfirm v-if="selectedTask?.status === 'Pendiente'" confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
-                            title="Tarea terminada?" @confirm="taskDone">
-                            <template #reference>
-                                <PrimaryButton class="text-xs h-5">Hecho</PrimaryButton>
-                            </template>
-                        </el-popconfirm>
-                    <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#D90537"
-                            title="Eliminar tarea?" @confirm="deleteTask">
-                            <template #reference>
-                                <i class="fa-regular fa-trash-can text-primary cursor-pointer"></i>
-                            </template>
-                        </el-popconfirm>
-                  </div>
                 </div>
-                </div>
+              </div>
             </div>
-          </div>
-        </td>
-      </tr>
-    </table>
-  </section>
+          </td>
+        </tr>
+      </table>
+    </section>
   </AppLayoutNoHeader>
 </template>
 
@@ -117,9 +115,9 @@ import axios from 'axios';
 export default {
   data() {
     return {
-        currentMonth: new Date(),
-        selectedTask: null, // Variable para realizar un seguimiento de la tarea seleccionada
-        selectedDay: null, // Seguinmiento del dia seleccionado
+      currentMonth: new Date(),
+      selectedTask: null, // Variable para realizar un seguimiento de la tarea seleccionada
+      selectedDay: null, // Seguinmiento del dia seleccionado
     };
   },
   components: {
@@ -135,32 +133,32 @@ export default {
     // events: Array,
   },
   methods: {
-   async taskDone() {
-    try {
-      const response = await axios.put(route('calendars.task-done', this.selectedTask));
+    async taskDone() {
+      try {
+        const response = await axios.put(route('calendars.task-done', this.selectedTask));
 
-      if (response.status === 200) {
-        this.$notify({
+        if (response.status === 200) {
+          this.$notify({
             title: "Éxito",
             message: "Tarea terminada",
             type: "success",
           });
           this.selectedTask.status = 'Terminada';
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
-    }
-      
-      
+
+
     },
     deleteTask() {
       this.$inertia.delete(route('calendars.destroy', this.selectedTask));
       this.$notify({
-            title: "Éxito",
-            message: "Tarea terminada",
-            type: "success",
-          });
-      
+        title: "Éxito",
+        message: "Tarea terminada",
+        type: "success",
+      });
+
       this.selectedTask = null;
     },
     changeMonth(offset) {
@@ -174,10 +172,10 @@ export default {
         const currentDay = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), day);
         // this.selectedTask = task;
         return (currentDay >= taskStartDate) && (currentDay <= taskFinishDate);
-      } 
-        return
+      }
+      return
     },
-    getDurationTask(){
+    getDurationTask() {
       // Convierte las fechas en objetos Date
       const startDate = new Date(this.selectedTask.start_date);
       const finishDate = new Date(this.selectedTask.finish_date);

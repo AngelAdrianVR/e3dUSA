@@ -1,8 +1,7 @@
 <template>
     <!-- close notification screen layer -->
     <div v-if="showNotifications" @click="toggleNotifications" class="absolute top-0 right-0 inset-0 z-10"></div>
-
-    <div class="absolute top-5 right-0 flex z-20">
+    <div class="absolute right-0 flex z-20" :style="{top: topPosition}">
         <button @click="toggleNotifications" class="bg-[#D9D9D9] rounded-tl-xl rounded-bl-xl pl-3 pr-4 py-1 self-start"
             style="width: 40px;">
             <i class="fa-regular fa-bell text-[#9A9A9A] text-xl"></i>
@@ -80,6 +79,10 @@ export default {
     },
     props: {
         module: String,
+        topPosition: {
+            type: Number,
+            default: 20,
+        }
     },
     watch: {
         selectAll(newVal) {
@@ -99,7 +102,7 @@ export default {
         async getNotifications() {
             this.loading = true;
             try {
-                const response = await axios.post(route('users.get-notifications'), {module: this.module});
+                const response = await axios.post(route('users.get-notifications'), { module: this.module });
 
                 if (response.status === 200) {
                     this.userNotifications = response.data.items;
@@ -111,9 +114,9 @@ export default {
         },
         async markNotificationsAsRead() {
             try {
-                const response = await axios.post(route('users.read-notifications'), {notifications_ids: this.selectedNotifications});
+                const response = await axios.post(route('users.read-notifications'), { notifications_ids: this.selectedNotifications });
 
-                if(response.status === 200) {
+                if (response.status === 200) {
                     this.getNotifications();
                     this.selectedNotifications = [];
                 }
@@ -123,9 +126,9 @@ export default {
         },
         async deleteNotifications() {
             try {
-                const response = await axios.post(route('users.delete-notifications'), {notifications_ids: this.selectedNotifications});
+                const response = await axios.post(route('users.delete-notifications'), { notifications_ids: this.selectedNotifications });
 
-                if(response.status === 200) {
+                if (response.status === 200) {
                     this.getNotifications();
                     this.selectedNotifications = [];
                 }

@@ -24,7 +24,8 @@
             class="border border-t-0 border-[#9A9A9A] bg-transparent rounded-br-[5px] rounded-bl-[5px] p-2 flex justify-between">
             <button @click="showUsersList = !showUsersList" type="button"
                 class="text-primary text-sm cursor-pointer">@Mención</button>
-            <PrimaryButton type="button" @click="$emit('submitComment')" :disabled="disabled">Agregar comentarios</PrimaryButton>
+            <PrimaryButton type="button" @click="$emit('submitComment')" :disabled="disabled">Agregar comentarios
+            </PrimaryButton>
             <transition name="fade">
                 <ul v-if="showUsersList"
                     class="z-20 border border-[#a9a9a9] absolute -top-40 left-0 rounded-[3px] bg-[#CCCCCC] w-60 h-40 overflow-y-auto">
@@ -85,15 +86,10 @@ export default {
         },
         toggleStyle(style) {
             const editor = this.$refs.editor;
-            // Cambia el estado del estilo
-            this.styles[style] = !this.styles[style];
-
-            // Aplica el estilo seleccionado al texto seleccionado o al texto que se escribirá en el futuro
-            document.execCommand(style, false, null);
-
             editor.focus();
-            // Enfoca nuevamente el editor de texto después de aplicar el estilo
-            setCaretPositionToEnd(editor);
+            this.styles[style] = !this.styles[style];
+            document.execCommand(style, false, null);
+            editor.focus();
         },
         addUserToMentions(user) {
             const userWithSomeProperties = { id: user.id, name: user.name };

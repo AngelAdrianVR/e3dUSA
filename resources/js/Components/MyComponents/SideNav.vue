@@ -183,6 +183,9 @@ export default {
                     icon: '<i class="fa-solid fa-check"></i>',
                     route: route('projects.index'),
                     active: route().current('projects.*'),
+                    notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                        return notification.data.module === 'projects';
+                    }),
                     show: this.$page.props.auth.user.permissions.includes('Ver proyectos')
                 },
                 {

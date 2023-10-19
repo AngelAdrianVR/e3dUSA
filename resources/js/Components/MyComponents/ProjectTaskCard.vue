@@ -208,8 +208,6 @@
                 </div>
                 <RichText @submitComment="storeComment(taskComponentLocal)" @content="updateComment($event)"
                   ref="commentEditor" class="flex-1" withFooter :userList="users" :disabled="sendingComments" />
-                <!-- <PrimaryButton type="button" @click.stop="comment(taskComponentLocal)" class="h-9"><i
-                    class="fa-regular fa-paper-plane"></i></PrimaryButton> -->
               </div>
             </div>
           </div>
@@ -410,16 +408,18 @@ export default {
       }
     },
     async storeComment() {
+      const editor = this.$refs.commentEditor;
       if (this.form.comment) {
         this.sendingComments = true;
         try {
           const response = await axios.post(route("tasks.comment", this.taskComponentLocal.id), {
             comment: this.form.comment,
+            mentions: editor.mentions,
           });
           if (response.status === 200) {
             this.taskComponentLocal?.comments.push(response.data.item);
             this.form.comment = null;
-            this.$refs.commentEditor.clearContent();
+            editor.clearContent();
           }
         } catch (error) {
           console.log(error);
