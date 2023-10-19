@@ -199,5 +199,9 @@ return [
         'start_date' => 'Fecha de inicio',
         'amount' => ' ',
         'type' => ' ',
+        'p2' => ' ',
+        'p3' => ' ',
+        'p4' => ' ',
+        'p5' => ' ',
     ],
 ];
