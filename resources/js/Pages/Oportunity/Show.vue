@@ -53,6 +53,13 @@
               <PrimaryButton class="rounded-md">Enviar correo</PrimaryButton>
             </Link>
           </el-tooltip>
+            <el-tooltip
+            v-if="tabs == 5 && currentOportunity?.finished_at"
+            content="Genera la url para la encuesta de satisfacción"
+            placement="top"
+          >
+              <PrimaryButton @click="generateSurveyUrl" class="rounded-md">Generar url</PrimaryButton>
+          </el-tooltip>
 
             <Dropdown align="right" width="48" v-if="$page.props.auth.user.permissions.includes(
               'Crear ordenes de venta'
@@ -547,6 +554,10 @@ export default {
         console.log(error);
       }
     },
+    generateSurveyUrl()  {
+      alert('http://127.0.0.1:8000/surveys/create/' + this.currentOportunity.id);
+      // console.log('http://127.0.0.1:8000/surveys/create/' + this.currentOportunity.id);
+    }
  },
  watch: {
     oportunitySelected(newVal) {
