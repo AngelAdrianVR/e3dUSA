@@ -238,7 +238,7 @@
       <!-- {{ form }} -->
       <div class="flex justify-end space-x-3 pt-5 pb-1">
         <CancelButton @click="taskInformationModal = false">Cancelar</CancelButton>
-        <el-dropdown split-button type="secondary" @click="update" class="custom-dropdown">
+        <el-dropdown split-button type="primary" @click="update" class="custom-dropdown rounded-lg">
           Guarda cambios
           <template #dropdown>
             <el-dropdown-menu>
@@ -254,9 +254,9 @@
     <template #title> Eliminar tarea </template>
     <template #content> ¿Continuar con la eliminación? </template>
     <template #footer>
-      <div>
-        <PrimaryButton @click="deleteProjectTask">Eliminar</PrimaryButton>
+      <div class="flex space-x-1">
         <CancelButton @click="showConfirmModal = false" class="mr-2">Cancelar</CancelButton>
+        <PrimaryButton @click="deleteProjectTask">Eliminar</PrimaryButton>
       </div>
     </template>
   </ConfirmationModal>
@@ -469,6 +469,7 @@ export default {
   },
   mounted() {
     this.taskComponentLocal = this.taskComponent;
+    this.form.participants = this.taskComponent.participants.map(user => user.id);
   },
 };
 </script>

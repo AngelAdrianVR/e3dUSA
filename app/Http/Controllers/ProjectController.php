@@ -96,7 +96,6 @@ class ProjectController extends Controller
         return to_route('projects.show', $project);
     }
 
-
     public function show($project_id)
     {
         $project = ProjectResource::make(Project::with(['tasks' => ['participants', 'project', 'user'], 'owner', 'user', 'tags'])->find($project_id));

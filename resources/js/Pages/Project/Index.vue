@@ -1,23 +1,21 @@
 <template>
-  <AppLayoutNoHeader title="Gestor de proyectos |">
+  <AppLayoutNoHeader title="Gestor de proyectos">
     <div class="flex justify-between text-lg mx-14 mt-11">
       <span>Proyectos</span>
     </div>
 
     <div class="flex justify-between mt-5 mx-1 lg:mx-14">
-      <div class="flex items-center space-x-2 w-1/3">
-        <input @keyup.enter="handleSearch" v-model="inputSearch" type="search" class="input" placeholder="Buscar" />
-        <SecondaryButton @click="handleSearch" type="submit" class="rounded-lg">
-          <i class="fa-solid fa-magnifying-glass"></i>
-        </SecondaryButton>
+      <div class="w-1/3 relative">
+        <input @keyup.enter="handleSearch" v-model="inputSearch" class="input outline-none pr-8" placeholder="Buscar proyecto" />
+        <i class="fa-solid fa-magnifying-glass absolute top-2 right-4 text-xs text-[#9A9A9A]"></i>
       </div>
       <div>
         <PrimaryButton @click="$inertia.get(route('projects.create'))">Nuevo proyecto</PrimaryButton>
       </div>
     </div>
 
-    <div class="lg:px-16 px-4 py-7 text-sm overflow-x-scroll">
-      <table class="lg:w-[80%] w-full mx-auto">
+    <div class="lg:px-14 pb-7 pt-14 text-sm overflow-x-scroll">
+      <table class="w-full mx-auto">
         <thead>
           <tr class="text-left">
             <th class="font-bold pb-5">Nombre del proyecto <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
@@ -30,8 +28,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="project in filteredTableData" :key="project.id"
-            class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]" @click="$inertia.get(route('projects.show', project.id))">
+          <tr v-for="project in filteredTableData" :key="project.id" class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]"
+            @click="$inertia.get(route('projects.show', project.id))">
             <td class="text-left py-2 px-2 rounded-l-full">
               {{ project.project_name }}
             </td>
@@ -63,12 +61,13 @@
             <td class="text-left py-2 px-2">
               {{ project.finished_at ?? '--' }}
             </td>
-            <td v-if="$page.props.auth.user.permissions.includes('Eliminar proyectos')" class="text-left py-2 px-2 rounded-r-full">
-              <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#D90537"
-                  title="¿Eliminar?" @confirm="deleteProject(project)">
-                  <template #reference>
-                      <i @click.stop="" class="fa-regular fa-trash-can text-primary cursor-pointer p-2"></i>
-                  </template>
+            <td v-if="$page.props.auth.user.permissions.includes('Eliminar proyectos')"
+              class="text-left py-2 px-2 rounded-r-full">
+              <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#D90537" title="¿Eliminar?"
+                @confirm="deleteProject(project)">
+                <template #reference>
+                  <i @click.stop="" class="fa-regular fa-trash-can text-primary cursor-pointer p-2"></i>
+                </template>
               </el-popconfirm>
             </td>
           </tr>
@@ -109,11 +108,11 @@ export default {
     deleteProject(project) {
       this.$inertia.delete(route('projects.destroy', project));
       this.$notify({
-            title: "Éxito",
-            message: "Proyecto eliminado",
-            type: "success",
-          });
-          },
+        title: "Éxito",
+        message: "Proyecto eliminado",
+        type: "success",
+      });
+    },
     handleSearch() {
       this.search = this.inputSearch;
     },

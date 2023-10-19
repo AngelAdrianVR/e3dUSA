@@ -88,11 +88,11 @@ class TaskController extends Controller
         $task->update($validated);
         event(new RecordEdited($task));
 
+        $task->participants()->sync($request->participants);
         //agregar nuevos participantes
-        foreach ($request->participants as $user_id) {
-            // Adjuntar el usuario a la tarea
-            $task->participants()->attach($user_id);
-        }
+        // foreach ($request->participants as $user_id) {
+        //     // Adjuntar el usuario a la tarea
+        // }
 
         if ($request->comment) {
             $comment = new Comment([
