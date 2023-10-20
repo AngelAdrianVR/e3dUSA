@@ -62,7 +62,7 @@
           </div>
           <div class="mt-5 col-span-full">
             <label>Descripción</label>
-            <RichText @content="updateDescription($event)" />
+            <RichText @content="updateDescription($event)" :defaultValue="form.description" />
           </div>
           <div class="ml-2 mt-2 col-span-full flex">
             <FileUploader @files-selected="this.form.media = $event" />

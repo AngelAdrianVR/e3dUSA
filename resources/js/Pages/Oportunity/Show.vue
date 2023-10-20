@@ -135,7 +135,7 @@
           <span class="text-gray-500 my-2">Nombre de la oportunidad</span>
           <span>{{ currentOportunity?.name }}</span>
           <span class="text-gray-500 my-2">Descripción</span>
-          <span>{{ currentOportunity?.description }}</span>
+          <span v-html="currentOportunity?.description"></span>
           <span class="text-gray-500 my-2">Creado por</span>
           <span>{{ currentOportunity?.user?.name }}</span>
           <span class="text-gray-500 my-2">Estatus</span>
