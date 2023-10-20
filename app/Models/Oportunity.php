@@ -30,6 +30,7 @@ class Oportunity extends Model implements HasMedia
         'type_access_project',
         'company_id',
         'user_id',
+        'seller_id',
     ];
 
     protected $casts = [
@@ -46,6 +47,11 @@ class Oportunity extends Model implements HasMedia
     }
 
     public function user() :BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function seller() :BelongsTo
     {
         return $this->belongsTo(User::class);
     }

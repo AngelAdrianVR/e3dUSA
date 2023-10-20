@@ -30,7 +30,7 @@ class OportunityController extends Controller
     {
         $users = User::where('is_active', true)->get();
         $companies = Company::with('companyBranches.contacts')->latest()->get();
-        $tags = TagResource::collection(Tag::where('type', 'projects')->get());
+        $tags = TagResource::collection(Tag::where('type', 'crm')->get());
 
         // return $companies;
         return inertia('Oportunity/Create', compact('users', 'companies', 'tags'));
@@ -43,6 +43,7 @@ class OportunityController extends Controller
             'name' => 'required|string',
             'status' => 'required|string',
             'description' => 'required',
+            'seller_id' => 'required',
             'tags' => 'nullable|array',
             'probability' => 'nullable|numeric|min:0|max:100',
             'amount' => 'required|numeric|min:0',
@@ -55,7 +56,13 @@ class OportunityController extends Controller
             'company_id' => $request->is_new_company ? 'nullable' : 'required',
         ]);
 
-        $oportunity = Oportunity::create($validated + ['user_id' => auth()->id()]);
+        if ($request->status == 'Pagado') {
+            
+            $oportunity = Oportunity::create($validated + ['user_id' => auth()->id(), 'finished_at' => now()]);
+        } else {
+            
+            $oportunity = Oportunity::create($validated + ['user_id' => auth()->id()]);
+        }
 
         event(new RecordCreated($oportunity));
 
@@ -74,7 +81,7 @@ class OportunityController extends Controller
 
     public function show(Oportunity $oportunity)
     {
-        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitores.seller', 'oportunityTasks.comments.user', 'tags', 'media', 'survey')->latest()->get());
+        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitores.seller', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller')->latest()->get());
         $users = User::where('is_active', true)->get();
 
         // return $oportunities;
@@ -99,5 +106,25 @@ class OportunityController extends Controller
         $oportunity->delete();
 
         event(new RecordDeleted($oportunity));
+    }
+
+    public function updateStatus(Request $request, $oportunity_id)
+    {
+        $oportunity = Oportunity::find($oportunity_id);
+
+        if ($request->status == 'Pagado') {
+            $oportunity->update([
+                'status' => $request->status,
+                'finished_at' => now()
+            ]);
+        } else {
+
+            $oportunity->update([
+                'status' => $request->status
+            ]);
+        } 
+
+        
+
     }
 }

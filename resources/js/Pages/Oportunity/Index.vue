@@ -8,7 +8,7 @@
         <label class="text-lg">Oportunidades</label>
       </div>
       <div class="flex justify-between">
-        <div class="flex items-center space-x-2 w-1/3">
+        <div v-if="type_view == 'Lista'" class="flex items-center space-x-2 w-1/3">
           <input
           :disabled="type_view == 'Kanban'"
           @keyup.enter="handleSearch"
@@ -21,6 +21,7 @@
             <i class="fa-solid fa-magnifying-glass"></i>
           </SecondaryButton>
         </div>
+        <span v-if="type_view == 'Kanban'"></span>
         <div class="flex items-center space-x-2">
           <div
             @click.stop="show_type_view = !show_type_view"

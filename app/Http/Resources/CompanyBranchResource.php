@@ -24,7 +24,7 @@ class CompanyBranchResource extends JsonResource
         'sat_way' => $this->sat_way,
         'company' => $this->whenLoaded('company'),
         'quotes' => QuoteResource::collection($this->whenLoaded('quotes')),
-        'sales' => $this->whenLoaded('sales'),
+        'sales' => SaleResource::collection($this->whenLoaded('sales')),
         'contacts' => $this->whenLoaded('contacts'),
         'important_notes' => $this->important_notes,
         'created_at' => $this->created_at?->isoFormat('DD MMMM YYYY'),

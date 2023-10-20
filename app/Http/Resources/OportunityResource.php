@@ -52,6 +52,7 @@ class OportunityResource extends JsonResource
             'estimated_finish_date' => $this->estimated_finish_date?->isoFormat('DD MMMM YYYY'),
             'company' => $this->whenLoaded('company'),
             'user' => $this->whenLoaded('user'),
+            'seller' => $this->whenLoaded('seller'),
             'clientMonitores' => ClientMonitorResource::collection($this->whenLoaded('clientMonitores')),
             'oportunityTasks' => OportunityTaskResource::collection($this->whenLoaded('oportunityTasks')),
             'survey' => $this->whenLoaded('survey'),

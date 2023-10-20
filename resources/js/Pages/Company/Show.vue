@@ -89,6 +89,11 @@
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
           <p @click="tabs = 8" :class="tabs == 8 ? 'bg-secondary-gray rounded-xl text-primary' : ''
             " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Ordenes de venta
+          </p>
+          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p @click="tabs = 9" :class="tabs == 9 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Historial
           </p>
         </div>
@@ -219,12 +224,24 @@
       </div>
       <!-- ------------- Proyectos ends 7 ------------- -->
       
-      <!-- -------------Historial starts 8 ------------- -->
-      <div v-if="tabs == 8" class="p-7">
+      <!-- -------------Ordenes de venta starts 8 ------------- -->
+      <div v-if="tabs == 8" class="p-7 w-11/12 mx-auto my-4">
+      <div v-if="currentCompany?.company_branches?.some(branch => branch.sales.length > 0)">
+        <CompanySalesTable :projects="currentCompany?.projects" />
+      </div>
+      <div class="flex flex-col text-center justify-center" v-else>
+        <p class="text-sm text-center">No hay ordenes de venta de este cliente</p>
+        <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+      </div>
+      </div>
+      <!-- ------------- Ordenes de venta ends 8 ------------- -->
+
+      <!-- -------------Historial starts 9 ------------- -->
+      <div v-if="tabs == 9" class="p-7">
         <p class="text-secondary">Historial</p>
         
       </div>
-      <!-- ------------- Historial ends 8 ------------- -->
+      <!-- ------------- Historial ends 9 ------------- -->
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar cliente </template>
@@ -250,6 +267,7 @@ import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import CompanyOportunityTable from "@/Components/MyComponents/CompanyOportunityTable.vue";
 import CompanyClientMonitorTable from "@/Components/MyComponents/CompanyClientMonitorTable.vue";
+import CompanySalesTable from "@/Components/MyComponents/CompanySalesTable.vue";
 import ProjectTable from "@/Components/MyComponents/ProjectTable.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link } from "@inertiajs/vue3";
@@ -279,6 +297,7 @@ export default {
     ConfirmationModal,
     CancelButton,
     PrimaryButton,
+    CompanySalesTable,
     CompanyOportunityTable,
     CompanyClientMonitorTable,
     ProjectTable,
