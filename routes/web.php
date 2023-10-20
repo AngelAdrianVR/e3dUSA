@@ -171,6 +171,7 @@ Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseControlle
 //-------------- Projects routes ------------------
 Route::resource('projects', ProjectController::class)->middleware('auth');
 Route::get('projects-dashboard', [ProjectController::class, 'dashboard'])->middleware('auth')->name('projects.dashboard');
+Route::post('projects/update-with-media/{project}', [ProjectController::class, 'updateWithMedia'])->name('projects.update-with-media')->middleware('auth');
 
 
 //-------------------------- Tasks routes -------------------------
