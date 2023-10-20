@@ -43,6 +43,7 @@ use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
+use App\Models\CompanyBranch;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
@@ -88,6 +89,19 @@ Route::resource('tags', TagController::class)->middleware('auth')->names('tags')
 // --------------- Calendar routes -----------------
 Route::resource('calendars', CalendarController::class)->middleware('auth');
 Route::put('calendars-{calendar}-task-done', [CalendarController::class, 'taskDone'])->name('calendars.task-done')->middleware('auth');
+
+Route::get('customers-report', function () {
+    $customerWithSales = CompanyBranch::withCount(['sales' => function ($query) {
+        // Filtra las ventas con fecha de creación de hace un año hasta hoy
+        $query->whereBetween('created_at', [now()->subYear(), now()]);
+    }])->get();
+
+    $data = $customerWithSales->filter(function ($cliente) {
+        return $cliente->sales_count > 0;
+    });
+
+    return inertia('Sale/Report', compact('data'));
+})->name('sales.customers-report');
 
 
 // ------- Catalog Products Routes ---------
