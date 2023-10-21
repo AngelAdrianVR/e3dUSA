@@ -226,8 +226,8 @@
       
       <!-- -------------Ordenes de venta starts 8 ------------- -->
       <div v-if="tabs == 8" class="p-7 w-11/12 mx-auto my-4">
-      <div v-if="currentCompany?.company_branches?.some(branch => branch.sales.length > 0)">
-        <CompanySalesTable :projects="currentCompany?.projects" />
+      <div v-if="currentCompany?.company_branches?.some(branch => branch.sales?.length > 0)">
+        <CompanySalesTable :company_sales="allSales" />
       </div>
       <div class="flex flex-col text-center justify-center" v-else>
         <p class="text-sm text-center">No hay ordenes de venta de este cliente</p>
@@ -360,6 +360,20 @@ export default {
 
   mounted() {
     this.selectedCompany = this.company.id;
+  },
+  computed: {
+    allSales() {
+      // Recopila todas las ventas de todos los company_branches
+      const sales = [];
+      if (this.currentCompany && this.currentCompany.company_branches) {
+        this.currentCompany.company_branches.forEach(branch => {
+          if (branch.sales) {
+            sales.push(...branch.sales);
+          }
+        });
+      }
+      return sales;
+    },
   },
 };
 </script>

@@ -6,44 +6,48 @@
               Folio <i class="fa-solid fa-arrow-down-long ml-3"></i>
             </th>
             <th class="font-bold pb-5">
-              Tipo de interacción <i class="fa-solid fa-arrow-down-long ml-3"></i>
-            </th>
-            <th class="font-bold pb-5">
-              Fecha <i class="fa-solid fa-arrow-down-long ml-3"></i>
-            </th>
-            <th class="font-bold pb-5">
-              Concepto <i class="fa-solid fa-arrow-down-long ml-3"></i>
-            </th>
-            <th class="font-bold pb-5">
               Vendedor <i class="fa-solid fa-arrow-down-long ml-3"></i>
+            </th>
+            <th class="font-bold pb-5">
+              Productos <i class="fa-solid fa-arrow-down-long ml-3"></i>
+            </th>
+            <th class="font-bold pb-5">
+              Estatus <i class="fa-solid fa-arrow-down-long ml-3"></i>
+            </th>
+            <th class="font-bold pb-5">
+              Creado el <i class="fa-solid fa-arrow-down-long ml-3"></i>
             </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="client_monitor in client_monitors" :key="client_monitor"
-            class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]"
-            @click="$inertia.get(route('client-monitors.show', client_monitor.id))"
+          <tr v-for="sale in company_sales" :key="sale"
+            class="mb-4"
           >
-            <td class="text-center text-secondary py-2 px-2 rounded-l-full">
-              {{ client_monitor.folio }}
+            <td class="text-center text-secondary py-2 px-2 rounded-l-full hover:underline">
+              <a :href="'/sales/' + sale.id">
+                {{ sale.folio }}
+              </a>
             </td>
-            <td class="text-center py-2 px-2 ">
-              {{ client_monitor.type }}
+            <td class="text-center text-secondary py-2 px-2 hover:underline">
+              <a :href="'/users/' + sale.user?.id">
+                {{ sale.user?.name }}
+              </a>
             </td>
             <td class="text-center py-2 px-2">
               <span
                 class="py-1 px-4 rounded-full"
-                >{{ client_monitor.date }}</span
+                >{{ sale.products ? sale.products + 'Producto(s)' : '--' }}</span
               >
             </td>
             <td class="text-center py-2 px-2">
               <span
-                class="py-1 px-2"
-                >{{ client_monitor.concept}}</span
+                class="py-1 px-4 rounded-full"
+                :class="getStatusColor(sale)"
+                >{{ sale.status.label }}</span
               >
             </td>
             <td class="text-center py-2 px-2 rounded-r-full">
-              {{ client_monitor.seller?.name }}
+              {{ sale.created_at }}
             </td>
           </tr>
         </tbody>
@@ -58,17 +62,26 @@ data(){
     }
 },
 components:{
-
 },
 props:{
-client_monitors: Array,
+company_sales: Array,
 },
-methods:{
-
+methods:{ 
+  getStatusColor(sale) {
+      if (sale.status.label == "Esperando autorización") {
+        return "bg-amber-400";
+      } else if (sale.status.label == "Producción sin iniciar") {
+        return "bg-gray-400";
+      } else if (sale.status.label == "Producción en proceso") {
+        return "bg-blue-400";
+      } else if (sale.status.label == "Producción terminada") {
+        return "bg-green-400";
+      } else if (sale.status.label == "Autorizado sin orden de producción") {
+        return "bg-amber-400";
+      } else {
+        return "bg-transparent";
+      }
+  }
 }
 }
 </script>
-
-<style>
-
-</style>
