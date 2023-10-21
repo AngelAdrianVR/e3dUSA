@@ -40,8 +40,11 @@
         <InputError :message="form.errors.status" />
       </div>
           <div>
-              <label>Creado por</label>
-              <input disabled v-model="owner" class="input text-gray-400" type="text">
+              <label>Vendedor</label>
+              <el-select v-model="form.seller_id" clearable filterable placeholder="Seleccione"
+                no-data-text="No hay vendedores registrados" no-match-text="No se encontraron coincidencias">
+                <el-option v-for="seller in users.filter(user => user.employee_properties?.department == 'Ventas')" :key="seller" :label="seller.name" :value="seller.id" />
+              </el-select>
           </div>
           <label class="inline-flex items-center">
               <Checkbox v-model:checked="form.is_new_company" @change="handleChecked" class="bg-transparent disabled:border-gray-400"/>
@@ -78,27 +81,17 @@
             </el-select>
           </div>
         </div>
-           <div class="lg:flex pt-3">
-          <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
-            <el-tooltip content="Fecha de inicio *" placement="top">
-              <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                <i class="fa-solid fa-calendar"></i>
-              </span>
-            </el-tooltip>
-            <el-date-picker v-model="form.start_date" type="date" placeholder="Fecha de inicio *"
-              format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
+        <div class="lg:flex pt-3">
+          <div class="lg:w-1/2 mt-2 lg:mt-0">
+            <label class="block">Fecha de inicio *</label>
+            <el-date-picker v-model="form.start_date" type="date" placeholder="Fecha de inicio *" format="YYYY/MM/DD"
+              value-format="YYYY-MM-DD" />
             <InputError :message="form.errors.start_date" />
           </div>
-          <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
-            <el-tooltip content="Fecha estimada de cierre" placement="top">
-              <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                <i class="fa-solid fa-calendar"></i>
-              </span>
-            </el-tooltip>
-            <el-date-picker v-model="form.estimated_finish_date" type="date" placeholder="Fecha estimada de cierre"
-              format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
+          <div class="lg:w-1/2 mt-2 lg:mt-0">
+            <label class="block">Fecha de inicio *</label>
+            <el-date-picker v-model="form.estimated_finish_date" type="date" placeholder="Fecha de inicio *" format="YYYY/MM/DD"
+              value-format="YYYY-MM-DD" />
             <InputError :message="form.errors.estimated_finish_date" />
           </div>
         </div>
@@ -114,7 +107,7 @@
         <FileUploader @files-selected="this.form.media = $event" />
       </div>
 
-<div class="flex items-center space-x-4">
+<div class="flex justify-between items-center space-x-4">
     <div>
       <div class="flex justify-between items-center mx-2">
         <label>Etiquetas</label>
@@ -157,7 +150,7 @@
 
     <div v-if="form.status === 'Perdida'" class="lg:w-1/2">
         <label>Causa oportunidad perdida 
-            <el-tooltip content="Escribe la causa por lo que se PERDIÓ esta oportunidad" placement="top">
+            <el-tooltip content="Escribe la causa por la cual se PERDIÓ esta oportunidad" placement="top">
                 <i class="fa-regular fa-circle-question ml-2 text-primary text-xs"></i>
              </el-tooltip>
         </label>
@@ -166,7 +159,16 @@
     </div>
 </div>
 <div class="lg:w-1/2">
-        <label>Valor de oportunidad $ *</label>
+      <div class="flex items-center space-x-2">
+        <label>Valor de oportunidad *</label>
+        <el-tooltip
+          content="Monto estimado que se espera generar si se cierra esta oportunidad"
+          placement="right">
+          <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+            <i class="fa-solid fa-info text-primary text-[7px]"></i>
+          </div>
+        </el-tooltip>
+      </div>
         <input v-model="form.amount" class="input" type="number" min="0" step="0.01">
         <InputError :message="form.errors.amount" />
     </div>
@@ -294,6 +296,7 @@ export default {
   data() {
     const form = useForm({
       name: null,
+      seller_id: null,
       status: null,
       description: null,
       company_id: null,
@@ -321,7 +324,7 @@ export default {
       company_branch: null,
       showTagFormModal: false,
       company_branch_obj: null,
-      owner: this.$page.props.auth.user.name,
+      // owner: this.$page.props.auth.user.name,
       mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
       editAccesFlag: false,
       statuses: [
@@ -398,7 +401,7 @@ export default {
     async storeTag() {
       try {
         this.tagForm.processing = true;
-        const response = await axios.post(route('tags.store'), { name: this.tagForm.name, color: this.tagForm.color, type: 'projects', user_id: this.$page.props.auth.user.id });
+        const response = await axios.post(route('tags.store'), { name: this.tagForm.name, color: this.tagForm.color, type: 'crm', user_id: this.$page.props.auth.user.id });
 
         if (response.status === 200) {
           this.$notify({

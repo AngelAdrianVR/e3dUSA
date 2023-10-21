@@ -39,13 +39,10 @@
             <h2 class="text-secondary pt-4">Detalles del pago</h2>
 
             <div class="lg:flex items-center pt-3">
-                <div class="flex items-center lg:w-1/2 lg:mt-0">
-                <el-tooltip content="Fecha de pago *" placement="top">
-                    <span class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                    <i class="fa-solid fa-calendar"></i>
-                    </span>
-                </el-tooltip>
-                <el-date-picker v-model="form.paid_at" type="date" placeholder="Fecha de pago *" />
+                <div class="lg:w-1/2 lg:mt-0">
+                <label class="block">Fecha de pago *</label>
+                <el-date-picker v-model="form.paid_at" type="date" placeholder="Fecha de pago *" format="YYYY/MM/DD"
+                value-format="YYYY-MM-DD" />
                 <InputError :message="form.errors.paid_at" />
                 </div>
                 <div class="w-1/2">

@@ -138,8 +138,24 @@
           <span v-html="currentOportunity?.description"></span>
           <span class="text-gray-500 my-2">Creado por</span>
           <span>{{ currentOportunity?.user?.name }}</span>
+          <span class="text-gray-500 my-2">Responsable</span>
+          <span>{{ currentOportunity?.seller?.name }}</span>
+          <!-- <span class="text-gray-500 my-2">Estatus</span>
+          <p :class="getStatusStyles()" class="rounded-full px-2 py-1 w-1/2 text-center">{{ currentOportunity?.status }}</p> -->
           <span class="text-gray-500 my-2">Estatus</span>
-          <p :class="getStatusStyles()" class="rounded-full px-2 py-1 w-1/2 text-center">{{ currentOportunity?.status }}</p>
+          <div class="flex items-center space-x-4 relative">
+            <!-- <i :class="getColorStatus()" class="fa-solid fa-circle absolute -left-3 top-4"></i> -->
+            <el-select @change="updateStatus" class="lg:w-1/2 mt-2" v-model="status" clearable
+              filterable placeholder="Seleccionar estatus" no-data-text="No hay estatus registrados"
+              no-match-text="No se encontraron coincidencias">
+              <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
+                <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
+                <span style="float: center; margin-left: 5px; font-size: 13px">{{
+                  item.label
+                }}</span>
+              </el-option>
+            </el-select>
+          </div>
           <span class="text-gray-500 my-2">Probabilidad</span>
           <span>{{ currentOportunity?.probability }}%</span>
           <span class="text-gray-500 my-2">Fecha de inicio</span>
@@ -431,11 +447,34 @@ export default {
     currentOportunity: null,
     tabs: 1,
     showConfirmModal: false,
+    status: null,
     todayTasksList: [],
     thisWeekTasksList: [],
     nextTasksList: [],
     finishedTasksList: [],
     lateTasksList: [],
+    statuses: [
+        {
+          label: "Nueva",
+          color: "text-[#9A9A9A]",
+        },
+        {
+          label: "Pendiente",
+          color: "text-[#F3FD85]",
+        },
+        {
+          label: "En proceso",
+          color: "text-[#FEDBBD]",
+        },
+        {
+          label: "Pagado",
+          color: "text-[#AFFDB2]",
+        },
+        {
+          label: "Perdida",
+          color: "text-[#F7B7FC]",
+        },
+      ],
     }
  },
  components:{
@@ -455,6 +494,37 @@ export default {
     users: Array
  },
  methods:{
+  async updateStatus() {
+    try {
+      const response = await axios.put(route('oportunities.update-status', this.currentOportunity.id), {
+        status: this.status
+      });
+      if (response.status === 200) {
+        this.$notify({
+            title: "Éxito",
+            message: "Se ha actulizado el estatus de la oportunidad",
+            type: "success",
+          });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  getColorStatus(){
+      if (this.status == "Nueva") {
+        return "text-[#9A9A9A]";
+      } else if (this.status == "Pendiente") {
+        return "text-[#F3FD85]";
+      } else if (this.status == "En proceso") {
+        return "text-[#FEDBBD]";
+      } else if (this.status == "Pagado") {
+        return "text-[#AFFDB2]";
+      } else if (this.status == "Perdida") {
+        return "text-[#F7B7FC]";
+      } else {
+        return "text-transparent";
+      }
+    },
   getFileTypeIcon(fileName) {
       // Asocia extensiones de archivo a iconos
       const fileExtension = fileName.split('.').pop().toLowerCase();
@@ -557,7 +627,7 @@ export default {
     generateSurveyUrl()  {
       alert('http://127.0.0.1:8000/surveys/create/' + this.currentOportunity.id);
       // console.log('http://127.0.0.1:8000/surveys/create/' + this.currentOportunity.id);
-    }
+    },
  },
  watch: {
     oportunitySelected(newVal) {
@@ -570,6 +640,7 @@ export default {
     this.currentOportunity = this.oportunities.data.find(
       (item) => item.id == this.oportunitySelected
     );
+    this.status = this.currentOportunity?.status;
   },
   computed: {
     uniqueAsignedNames() {
