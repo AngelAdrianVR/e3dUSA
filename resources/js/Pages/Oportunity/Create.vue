@@ -15,7 +15,7 @@
 
       <!-- Form -->
       <form @submit.prevent="store">
-        <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4">
+        <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4 mx-3">
           <div>
               <label>Nombre de la oportunidad *</label>
               <input v-model="form.name" class="input" type="text">
@@ -89,8 +89,8 @@
             <InputError :message="form.errors.start_date" />
           </div>
           <div class="lg:w-1/2 mt-2 lg:mt-0">
-            <label class="block">Fecha de inicio *</label>
-            <el-date-picker v-model="form.estimated_finish_date" type="date" placeholder="Fecha de inicio *" format="YYYY/MM/DD"
+            <label class="block">Fecha estimada de cierre *</label>
+            <el-date-picker v-model="form.estimated_finish_date" type="date" placeholder="Fecha estimada de cierre *" format="YYYY/MM/DD"
               value-format="YYYY-MM-DD" />
             <InputError :message="form.errors.estimated_finish_date" />
           </div>
@@ -148,9 +148,9 @@
         </div>
     </div>  
 
-    <div v-if="form.status === 'Perdida'" class="lg:w-1/2">
+    <div v-if="form.status == 'Perdida'" class="lg:w-1/2">
         <label>Causa oportunidad perdida 
-            <el-tooltip content="Escribe la causa por la cual se PERDIÓ esta oportunidad" placement="top">
+            <el-tooltip content="Escribe la causa por la cual se PERDIÓ esta oportunidad" placement="right">
                 <i class="fa-regular fa-circle-question ml-2 text-primary text-xs"></i>
              </el-tooltip>
         </label>

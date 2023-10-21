@@ -95,10 +95,10 @@
 
       
       <!-- ------------- tabs section starts ------------- -->
-      <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2">
-        <div class="flex">
+      <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2 overflow-x-auto">
+        <div class="flex items-center justify-center">
           <p @click="tabs = 1" :class="tabs == 1 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="h-10 p-2 cursor-pointer md:ml-5 transition duration-300 ease-in-out text-sm md:text-base">
+            " class="h-10 w-40 lg:w-auto p-2 cursor-pointer md:ml-5 transition duration-300 ease-in-out text-sm md:text-base text-center">
             Info de oportunidad
           </p>
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
@@ -108,7 +108,7 @@
           </p>
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
           <p @click="tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            " class="md:ml-3 h-10 w-[147px] lg:w-auto p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Seguimiento integral
           </p>
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
@@ -118,7 +118,7 @@
           </p>
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
           <p @click="tabs = 5" :class="tabs == 5 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            " class="md:ml-3 h-10 w-48 lg:w-auto p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Encuesta post venta
           </p>
         </div>
@@ -145,7 +145,7 @@
           <span class="text-gray-500 my-2">Estatus</span>
           <div class="flex items-center space-x-4 relative">
             <!-- <i :class="getColorStatus()" class="fa-solid fa-circle absolute -left-3 top-4"></i> -->
-            <el-select @change="updateStatus" class="lg:w-1/2 mt-2" v-model="status" clearable
+            <el-select @change="status == 'Perdida' ? showLostOportunityModal = true : updateStatus()" class="lg:w-1/2 mt-2" v-model="status" clearable
               filterable placeholder="Seleccionar estatus" no-data-text="No hay estatus registrados"
               no-match-text="No se encontraron coincidencias">
               <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
@@ -214,7 +214,7 @@
 
       <div v-if="tabs == 2" class="contenedor text-left p-4 text-sm">
       <!-- -- TERMINAR HOY -- -->
-      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:pr-7 seccion">
+      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:pr-7 seccion mx-2 ">
         <h2 class="font-bold mb-10">
           TERMINAR HOY <span class="font-normal ml-7">{{ todayTasksList.length }}</span>
         </h2>
@@ -226,7 +226,7 @@
       </div>
       
       <!-- -- TERMINAR ESTA SEMANA -- -->
-      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:px-4 seccion">
+      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:px-4 seccion mx-2">
         <h2 class="font-bold mb-10 first-letter ml-2">
           TERMINAR ESTA SEMANA <span class="font-normal ml-7">{{ thisWeekTasksList.length }}</span>
         </h2>
@@ -238,7 +238,7 @@
       </div>
       
       <!-- -- ACTIVIDADES PROXIMAS -- -->
-      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:px-4  seccion">
+      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:px-4  seccion mx-2">
         <h2 class="font-bold mb-10 first-letter ml-2">
           ACTIVIDADES PROXIMAS <span class="font-normal ml-7">{{ nextTasksList.length }}</span>
         </h2>
@@ -250,7 +250,7 @@
       </div>
       
       <!-- -- TERMINADAS -- -->
-      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:px-4 seccion">
+      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:px-4 seccion mx-2">
         <h2 class="font-bold mb-10 first-letter ml-2">
           TERMINADAS <span class="font-normal ml-7">{{ finishedTasksList.length }}</span>
         </h2>
@@ -262,7 +262,7 @@
       </div>
       
       <!-- -- ATRASADAS -- -->
-      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:px-4 seccion">
+      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:px-4 seccion mx-2">
         <h2 class="font-bold mb-10 first-letter ml-2">
           ATRASADAS <span class="font-normal ml-7">{{ lateTasksList.length }}</span>
         </h2>
@@ -278,7 +278,8 @@
 
       <!-- ------------ tab 3 seguimiento integral starts ------------- -->
       <div v-if="tabs == 3" class="w-11/12 mx-auto my-8">
-      <table v-if="currentOportunity?.clientMonitores?.length" class="lg:w-[80%] w-full mx-auto text-sm">
+      <div v-if="currentOportunity?.clientMonitores?.length" class="overflow-x-auto">
+      <table class="lg:w-[80%] w-full mx-auto text-sm">
         <thead>
           <tr class="text-center">
             <th class="font-bold pb-5">
@@ -343,6 +344,7 @@
           </tr>
         </tbody>
       </table>
+      </div>
       <div v-else>
         <p class="text-sm text-center text-gray-400">No hay seguimiento en esta oportunidad</p>
       </div>
@@ -425,6 +427,23 @@
           </div>
         </template>
       </ConfirmationModal>
+
+      <Modal :show="showLostOportunityModal" @close="showLostOportunityModal = false">
+        <div class="mx-7 my-4 space-y-4 relative">
+          <div>
+            <label>Causa oportunidad perdida 
+                <el-tooltip content="Escribe la causa por la cual se PERDIÓ esta oportunidad" placement="top">
+                    <i class="fa-regular fa-circle-question ml-2 text-primary text-xs"></i>
+                </el-tooltip>
+            </label>
+            <textarea v-model="lost_oportunity_razon" required class="textarea mt-3"></textarea>
+
+          </div>
+          <div class="flex justify-end space-x-3 pt-5 pb-1">
+            <PrimaryButton @click="updateStatus">Actualizar estatus</PrimaryButton>
+          </div>
+        </div>
+      </Modal>
    </AppLayoutNoHeader>
 </template>
 
@@ -436,6 +455,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import OportunityTaskCard from "@/Components/MyComponents/OportunityTaskCard.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+import Modal from "@/Components/Modal.vue";
 import Tag from "@/Components/MyComponents/Tag.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
@@ -447,7 +467,9 @@ export default {
     currentOportunity: null,
     tabs: 1,
     showConfirmModal: false,
+    showLostOportunityModal: false,
     status: null,
+    lost_oportunity_razon: null,
     todayTasksList: [],
     thisWeekTasksList: [],
     nextTasksList: [],
@@ -485,6 +507,7 @@ export default {
     OportunityTaskCard,
     ConfirmationModal,
     CancelButton,
+    Modal,
     Link,
     Tag,
  },
@@ -497,7 +520,8 @@ export default {
   async updateStatus() {
     try {
       const response = await axios.put(route('oportunities.update-status', this.currentOportunity.id), {
-        status: this.status
+        status: this.status,
+        lost_oportunity_razon: this.lost_oportunity_razon
       });
       if (response.status === 200) {
         this.$notify({
@@ -505,6 +529,13 @@ export default {
             message: "Se ha actulizado el estatus de la oportunidad",
             type: "success",
           });
+          this.showLostOportunityModal = false;
+          if (this.lost_oportunity_razon) {
+            this.currentOportunity.lost_oportunity_razon = this.lost_oportunity_razon;
+            this.lost_oportunity_razon = null;
+          } else {
+            this.currentOportunity.lost_oportunity_razon = null;
+          }
       }
     } catch (error) {
       console.log(error);

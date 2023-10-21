@@ -115,12 +115,22 @@ class OportunityController extends Controller
         if ($request->status == 'Pagado') {
             $oportunity->update([
                 'status' => $request->status,
-                'finished_at' => now()
+                'finished_at' => now(),
+                'lost_oportunity_razon' => null,
             ]);
-        } else {
+        } elseif ($request->status == 'Perdida') {
+            $oportunity->update([
+                'status' => $request->status,
+                'finished_at' => null,
+                'lost_oportunity_razon' => $request->lost_oportunity_razon,
+            ]);
+        }
+        else {
 
             $oportunity->update([
-                'status' => $request->status
+                'status' => $request->status,
+                'finished_at' => null,
+                'lost_oportunity_razon' => null,
             ]);
         } 
 

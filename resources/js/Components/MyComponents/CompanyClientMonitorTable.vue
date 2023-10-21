@@ -1,21 +1,22 @@
 <template>
-    <table class="lg:w-[80%] w-full mx-auto">
+<div class="overflow-x-auto">
+    <table class="w-full mx-auto">
         <thead>
           <tr class="text-center">
             <th class="font-bold pb-5">
-              Folio <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Folio <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
             </th>
             <th class="font-bold pb-5">
-              Tipo de interacción <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Tipo de interacción <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
             </th>
             <th class="font-bold pb-5">
-              Fecha <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Fecha <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
             </th>
             <th class="font-bold pb-5">
-              Concepto <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Concepto <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
             </th>
             <th class="font-bold pb-5">
-              Vendedor <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Vendedor <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
             </th>
           </tr>
         </thead>
@@ -48,6 +49,7 @@
           </tr>
         </tbody>
       </table>
+</div>
 </template>
 
 <script>

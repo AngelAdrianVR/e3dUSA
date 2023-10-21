@@ -1,5 +1,5 @@
 <template>
-  <div @click="taskInformationModal = true" class="rounded-md shadow-md shadow-gray-400/100 group relative h-[196px] cursor-pointer">
+  <div @click="taskInformationModal = true" class="rounded-md shadow-md shadow-gray-400/100 group relative h-[196px] cursor-pointer w-80">
   <el-tooltip :content="'Prioridad: ' + oportunityTask?.priority " placement="top">
         <i :class="getPriorityStyles()" class="fa-solid fa-circle text-[9px] absolute top-3 right-2 p-1"></i>
     </el-tooltip>
@@ -85,7 +85,7 @@
             </el-option>
           </el-select>
           <i :class="getColorPriority(form.priority)"
-            class="fa-solid fa-circle text-xs top-3 left-16 absolute z-30"></i>
+            class="fa-solid fa-circle text-xs top-3 left-12 lg:left-16 absolute z-30"></i>
           <InputError :message="form.errors.priority" />
       </div>
 
@@ -315,11 +315,4 @@ mounted() {
 }
 </script>
 
-<style scoped>
-.custom-dropdown {
-  background-color: red; /* Fondo rojo */
-  border-radius: 9999px; /* Redondeo completo */
-  padding: 5px 20px; /* 5px de relleno vertical, 20px de relleno horizontal (ajusta según tus necesidades) */
-}
-</style>
 

@@ -51,9 +51,9 @@
       </p>
       <!-- ------------- tabs section starts ------------- -->
       <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2">
-        <div class="flex">
+        <div class="flex overflow-x-auto pb-3 lg:pb-0">
           <p @click="tabs = 1" :class="tabs == 1 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="h-10 p-2 cursor-pointer ml-5 transition duration-300 ease-in-out text-sm md:text-base">
+            " class="h-10 w-96 lg:w-auto p-2 cursor-pointer ml-5 transition duration-300 ease-in-out text-sm md:text-base">
             Información general
           </p>
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
@@ -135,7 +135,7 @@
       <!-- ------------- Productos ends 3 ------------- -->
       
       <!-- -------------Oportunidades starts 4 ------------- -->
-      <div v-if="tabs == 4" class="p-7 w-11/12 mx-auto my-4">
+      <div v-if="tabs == 4" class="p-7 w-full mx-auto my-4">
       <div v-if="currentCompany?.oportunities.length">
         <CompanyOportunityTable :oportunities="currentCompany?.oportunities" />
       </div>
@@ -147,51 +147,53 @@
       <!-- ------------- Oportunidades ends 4 ------------- -->
       
       <!-- -------------Cotizaciones starts 5 ------------- -->
-      <div v-if="tabs == 5" class="p-7 w-11/12 mx-auto my-4">
-        <table v-if="hasQuotes()" class="lg:w-[80%] w-full mx-auto">
-  <thead>
-    <tr class="text-center">
-      <th class="font-bold pb-5">
-        Folio <i class="fa-solid fa-arrow-down-long ml-3"></i>
-      </th>
-      <th class="font-bold pb-5">
-        Creado por <i class="fa-solid fa-arrow-down-long ml-3"></i>
-      </th>
-      <th class="font-bold pb-5">
-        Receptor <i class="fa-solid fa-arrow-down-long ml-3"></i>
-      </th>
-      <th class="font-bold pb-5">
-        Autorizado por <i class="fa-solid fa-arrow-down-long ml-3"></i>
-      </th>
-      <th class="font-bold pb-5">
-        Creado el <i class="fa-solid fa-arrow-down-long ml-3"></i>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <template v-for="branch in currentCompany?.company_branches">
-      <tr v-for="quote in branch.quotes" :key="quote.id" class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]"
-        @click="$inertia.get(route('quotes.show', quote.id))"
-      >
-        <td class="text-center text-secondary py-2 px-2 rounded-l-full">
-          {{ quote.folio }}
-        </td>
-        <td class="text-center py-2 px-2">
-          {{ quote.user ? quote.user.name : '' }}
-        </td>
-        <td class="text-center py-2 px-2">
-          <span class="py-1 px-4 rounded-full">{{ quote.receiver }}</span>
-        </td>
-        <td class="text-center py-2 px-2">
-          <span class="py-1 px-2">{{ quote.authorized_user_name ?? '--' }}</span>
-        </td>
-        <td class="text-center py-2 px-2 rounded-r-full">
-          {{ quote.created_at }}
-        </td>
+      <div v-if="tabs == 5" class="p-7 w-full mx-auto my-4">
+<div v-if="hasQuotes()" class="overflow-x-auto">
+  <table  class="w-full mx-auto">
+    <thead>
+      <tr class="text-center">
+        <th class="font-bold pb-5">
+          Folio <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
+        </th>
+        <th class="font-bold pb-5">
+          Creado por <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
+        </th>
+        <th class="font-bold pb-5">
+          Receptor <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
+        </th>
+        <th class="font-bold pb-5">
+          Autorizado por <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
+        </th>
+        <th class="font-bold pb-5">
+          Creado el <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
+        </th>
       </tr>
-    </template>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <template v-for="branch in currentCompany?.company_branches">
+        <tr v-for="quote in branch.quotes" :key="quote.id" class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]"
+          @click="$inertia.get(route('quotes.show', quote.id))"
+        >
+          <td class="text-center text-secondary py-2 px-2 rounded-l-full">
+            {{ quote.folio }}
+          </td>
+          <td class="text-center py-2 px-2">
+            {{ quote.user ? quote.user.name : '' }}
+          </td>
+          <td class="text-center py-2 px-2">
+            <span class="py-1 px-4 rounded-full">{{ quote.receiver }}</span>
+          </td>
+          <td class="text-center py-2 px-2">
+            <span class="py-1 px-2">{{ quote.authorized_user_name ?? '--' }}</span>
+          </td>
+          <td class="text-center py-2 px-2 rounded-r-full">
+            {{ quote.created_at }}
+          </td>
+        </tr>
+      </template>
+    </tbody>
+  </table>
+</div>
       <div class="flex flex-col text-center justify-center" v-else>
         <p class="text-sm text-center">No hay cotizaciones para mostrar</p>
         <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
@@ -201,7 +203,7 @@
       <!-- ------------- Cotizaciones ends 5 ------------- -->
 
       <!-- -------------Seguimiento integral starts 6 ------------- -->
-      <div v-if="tabs == 6" class="p-7 w-11/12 mx-auto my-4">
+      <div v-if="tabs == 6" class="p-7 w-full mx-auto my-4">
       <div v-if=" currentCompany?.clientMonitors?.length">
         <CompanyClientMonitorTable :client_monitors="currentCompany?.clientMonitors" />
       </div>
@@ -213,7 +215,7 @@
       <!-- ------------- Seguimiento integral ends 6 ------------- -->
 
       <!-- -------------Proyectos starts 7 ------------- -->
-      <div v-if="tabs == 7" class="p-7 w-11/12 mx-auto my-4">
+      <div v-if="tabs == 7" class="p-7 w-full mx-auto my-4">
       <div v-if=" currentCompany?.projects?.length">
         <ProjectTable :projects="currentCompany?.projects" />
       </div>
@@ -225,7 +227,7 @@
       <!-- ------------- Proyectos ends 7 ------------- -->
       
       <!-- -------------Ordenes de venta starts 8 ------------- -->
-      <div v-if="tabs == 8" class="p-7 w-11/12 mx-auto my-4">
+      <div v-if="tabs == 8" class="p-7 w-full mx-auto my-4">
       <div v-if="currentCompany?.company_branches?.some(branch => branch.sales?.length > 0)">
         <CompanySalesTable :company_sales="allSales" />
       </div>

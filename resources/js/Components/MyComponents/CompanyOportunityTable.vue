@@ -1,23 +1,24 @@
 <template>
+<div class="overflow-x-auto">
   <table class="lg:w-[80%] w-full mx-auto">
         <thead>
           <tr class="text-center">
-            <th class="font-bold pb-5">
+            <th class="font-bold pb-5 px-14 lg:px-2">
               Folio <i class="fa-solid fa-arrow-down-long ml-3"></i>
             </th>
-            <th class="font-bold pb-5">
+            <th class="font-bold pb-5 px-14 lg:px-2">
               Oportunidades <i class="fa-solid fa-arrow-down-long ml-3"></i>
             </th>
-            <th class="font-bold pb-5">
-              Fecha inicio <i class="fa-solid fa-arrow-down-long ml-3"></i>
-            </th>
-            <th class="font-bold pb-5">
-              Estimación de cierre <i class="fa-solid fa-arrow-down-long ml-3"></i>
-            </th>
-            <th class="font-bold pb-5">
+            <th class="font-bold pb-5 px-14 lg:px-2">
               Estatus <i class="fa-solid fa-arrow-down-long ml-3"></i>
             </th>
-            <th class="font-bold pb-5">
+            <th class="font-bold pb-5 px-14 lg:px-2">
+              Fecha inicio <i class="fa-solid fa-arrow-down-long ml-3"></i>
+            </th>
+            <th class="font-bold pb-5 px-14 lg:px-2">
+              Estimación de cierre <i class="fa-solid fa-arrow-down-long ml-3"></i>
+            </th>
+            <th class="font-bold pb-5 px-14 lg:px-2">
               Cerrada el <i class="fa-solid fa-arrow-down-long ml-3"></i>
             </th>
           </tr>
@@ -43,7 +44,7 @@
             <td class="text-center py-2 px-2">
               <span
                 class="py-1 px-2"
-                >{{ oportunity.created_at.isoFormat}}</span
+                >{{ oportunity.start_date}}</span
               >
             </td>
             <td class="text-center py-2 px-2">
@@ -55,14 +56,15 @@
           </tr>
         </tbody>
       </table>
+  </div>
 </template>
 
 <script>
 export default {
-data(){
+  data(){
     return{
-
-    }
+      
+      }
 },
 components:{
 
