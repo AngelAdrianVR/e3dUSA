@@ -169,9 +169,9 @@ methods:{
     showMonitorType(monitor) {
       console.log(monitor);
       if (monitor.type == 'Correo') {
-        this.$inertia.get(route('payment-monitors.show', monitor.id));
+        this.$inertia.get(route('payment-monitors.show', monitor.paymentMonitor?.id));
       } else if (monitor.type == 'Pago') {
-        this.$inertia.get(route('payment-monitors.show', monitor.id));
+        this.$inertia.get(route('payment-monitors.show', monitor.paymentMonitor?.id));
       } else if (monitor.type == 'Reunión') {
         this.$inertia.get(route('meeting-monitors.show', monitor.id));
       }

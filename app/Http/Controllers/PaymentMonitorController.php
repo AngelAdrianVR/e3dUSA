@@ -6,6 +6,7 @@ use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\OportunityResource;
+use App\Http\Resources\PaymentMonitorResource;
 use App\Models\ClientMonitor;
 use App\Models\Oportunity;
 use App\Models\PaymentMonitor;
@@ -14,17 +15,13 @@ use Illuminate\Support\Facades\Route;
 
 class PaymentMonitorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    
     public function create()
     {
         $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
@@ -34,9 +31,7 @@ class PaymentMonitorController extends Controller
         return inertia('PaymentMonitor/Create', compact('oportunities'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    
     public function store(Request $request)
     {
         $request->validate([
@@ -51,7 +46,8 @@ class PaymentMonitorController extends Controller
 
         $payment_monitor = PaymentMonitor::create($request->all());
 
-        $payment_monitor->addAllMediaFromRequest('media')->each(fn ($file) => $file->toMediaCollection('files'));
+        $payment_monitor->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+
 
         ClientMonitor::create([
             'type' => 'Pago',
@@ -68,32 +64,72 @@ class PaymentMonitorController extends Controller
     }
 
     
-    public function show(PaymentMonitor $payment_monitor)
+    public function show($payment_monitor_id)
     {
-        //
+        $payment_monitor = PaymentMonitorResource::make(PaymentMonitor::with('seller', 'oportunity', 'media')->find($payment_monitor_id));
+
+        return inertia('PaymentMonitor/Show', compact('payment_monitor'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(PaymentMonitor $payment_monitor)
+    
+    public function edit($payment_monitor_id)
     {
-        //
+        $payment_monitor = PaymentMonitorResource::make(PaymentMonitor::with('oportunity')->find($payment_monitor_id));
+        $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
+
+        // return $payment_monitor;
+
+        return inertia('PaymentMonitor/Edit', compact('payment_monitor', 'oportunities'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    
     public function update(Request $request, PaymentMonitor $payment_monitor)
     {
-        // event(new RecordEdited($payment_monitor));
+        $request->validate([
+            'oportunity_id' => 'required',
+            'paid_at' => 'required|date',
+            'amount' => 'required|numeric|min:0',
+            'payment_method' => 'required|string',
+            'concept' => 'required|string',
+            'notes' => 'nullable|string',
+        ]);
+
+        $payment_monitor->update($request->all());
+
+        event(new RecordEdited($payment_monitor));
+        
+        return to_route('client-monitors.index');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(PaymentMonitor $payment_monitor)
+    public function updateWithMedia(Request $request, PaymentMonitor $payment_monitor)
     {
-        // event(new RecordDeleted($payment_monitor));
+        $request->validate([
+            'oportunity_id' => 'required',
+            'paid_at' => 'required|date',
+            'amount' => 'required|numeric|min:0',
+            'payment_method' => 'required|string',
+            'concept' => 'required|string',
+            'notes' => 'nullable|string',
+        ]);
+
+        $payment_monitor->update($request->all());
+
+        $payment_monitor->clearMediaCollection();
+        $payment_monitor->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+
+        // event(new RecordEdited($payment_monitor));
+        
+        return to_route('client-monitors.index');
+    }
+
+    
+    public function destroy(PaymentMonitor $payment_monitor)
+    {   
+        $client_monitor = ClientMonitor::find($payment_monitor->oportunity_id);
+        $client_monitor->delete();
+        $payment_monitor->delete();
+        event(new RecordDeleted($payment_monitor));
+
+        return to_route('client-monitors.index');
     }
 }

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ClientMonitor extends Model
 {
@@ -38,5 +39,10 @@ class ClientMonitor extends Model
     public function company() :BelongsTo 
     {
         return $this->belongsTo(company::class);
+    }
+
+    public function paymentMonitor() :HasOne 
+    {
+        return $this->hasOne(PaymentMonitor::class);
     }
 }

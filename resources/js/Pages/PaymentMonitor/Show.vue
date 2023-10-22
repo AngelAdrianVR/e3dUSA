@@ -9,10 +9,10 @@
           </Link>
         </div>
         <div class="flex justify-between">
-
+            <span></span>
           <div class="flex items-center space-x-2">
             <el-tooltip content="Editar pago o transacción" placement="top">
-              <Link :href="route('payment-monitors.edit', clientMonitorSelected)">
+              <Link :href="route('payment-monitors.edit', payment_monitor.data.id)">
               <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
                 <i class="fa-solid fa-pen text-sm"></i>
               </button>
@@ -34,7 +34,7 @@
                 </button>
               </template>
               <template #content>
-                <DropdownLink v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades')" @click="showConfirmModal = true" as="button">
+                <DropdownLink @click="showConfirmModal = true" as="button">
                   Eliminar
                 </DropdownLink>
               </template>
@@ -43,7 +43,7 @@
         </div>
     </div>
     <p class="text-center font-bold text-lg mb-4">
-        {{ currentClientMonitor?.folio }}
+        {{ payment_monitor.data?.concept }}
       </p>
 
       <!-- ------------- tabs section starts ------------- -->
@@ -58,38 +58,42 @@
       <!-- ------------- tabs section ends ------------- -->
 
       <!-- ------------- Pago o transacción Starts 1 ------------- -->
-      <div v-if="tabs == 2" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
+      <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
 
-          <span class="text-gray-500">Creado por</span>
-          <span>{{ currentOportunity?.folio }}</span>
           <p class="text-secondary col-span-2 mb-2">Información de la oportunidad</p>
           <span class="text-gray-500 my-2">Folio de oportunidad</span>
-          <span>{{ currentOportunity?.name }}</span>
+          <span>{{ payment_monitor.data.oportunity?.folio ?? '--' }}</span>
           <span class="text-gray-500 my-2">Cliente</span>
-          <span>{{ currentOportunity?.description }}</span>
+          <span>{{ payment_monitor.data.description ?? '--' }}</span>
           <span class="text-gray-500 my-2">Vendedor</span>
-          <span>{{ currentOportunity?.user?.name }}</span>
+          <span>{{ payment_monitor.data.seller?.name }}</span>
         </div>
 
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
           <p class="text-secondary col-span-2 mb-2">Datos del pago</p>
 
             <span class="text-gray-500">Monto</span>
-            <span>{{ currentOportunity?.folio }}</span>
+            <span>${{ payment_monitor.data.amount?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
             <span class="text-gray-500">Método de pago</span>
-            <span>{{ currentOportunity?.folio }}</span>
+            <span>{{ payment_monitor.data.payment_method }}</span>
             <span class="text-gray-500">Concepto</span>
-            <span>{{ currentOportunity?.folio }}</span>
+            <span>{{ payment_monitor.data.concept }}</span>
             <span class="text-gray-500">Fecha de pago</span>
-            <span>{{ currentOportunity?.folio }}</span>
+            <span>{{ payment_monitor.data.paid_at }}</span>
             <span class="text-gray-500">Observaciones</span>
-            <span>{{ currentOportunity?.folio }}</span>
+            <span>{{ payment_monitor.data.notes }}</span>
 
-          <p class="text-secondary col-span-2 mt-7">Archivos adjuntos</p>
-
-          <span class="text-gray-500 my-2">Nombre</span>
-          <span>{{ currentOportunity?.contact?.name }}</span>
+          <p class="text-secondary col-span-2 mb-2 mt-5">Archivos adjuntos</p>
+          <div v-if=" payment_monitor.data.media?.length">
+            <li v-for="file in payment_monitor.data.media" :key="file" class="flex items-center justify-between col-span-full">
+              <a :href="file.original_url" target="_blank" class="flex items-center">
+                <i :class="getFileTypeIcon(file.file_name)"></i>
+                <span class="ml-2">{{ file.file_name }}</span>
+              </a>
+            </li>
+          </div>
+          <p class="text-sm text-gray-400" v-else><i class="fa-regular fa-file-excel mr-3"></i>No hay archivos adjuntos</p>
 
         </div>
       </div>
@@ -114,13 +118,12 @@ import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import { Link } from "@inertiajs/vue3";
 
 export default {
 data() {
     return{
-        clientMonitorSelected: '',
-        currentClientMonitor: null,
         showConfirmModal: false,
         tabs: 1,
     }
@@ -131,22 +134,31 @@ components:{
     DropdownLink,
     ConfirmationModal,
     PrimaryButton,
+    CancelButton,
     Link
 },
 props:{
-    client_monitor: Object,
-    client_monitors: Array,
+    payment_monitor: Object,
 },
 methods:{
     deleteItem() {
-      this.$inertia.delete(route('payment-monitors.destroy', this.oportunitySelected));
+      this.$inertia.delete(route('payment-monitors.destroy', this.payment_monitor.data.id));
+    },
+    getFileTypeIcon(fileName) {
+      // Asocia extensiones de archivo a iconos
+      const fileExtension = fileName.split('.').pop().toLowerCase();
+      switch (fileExtension) {
+        case 'pdf':
+          return 'fa-regular fa-file-pdf text-red-700';
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+        case 'gif':
+          return 'fa-regular fa-image text-blue-300';
+        default:
+          return 'fa-regular fa-file-lines';
+      }
     },
 },
-watch: {
-
-},
-mounted() {
-
-  },
 };
 </script>

@@ -176,7 +176,7 @@
           <p class="text-sm text-gray-400" v-else><i class="fa-solid fa-user-slash mr-3"></i>No hay tareas asignadas a usuarios</p>
 
 
-          <p class="text-secondary col-span-2 mb-2 mt-5">Documentos adjuntos</p>
+          <p class="text-secondary col-span-2 mb-2 mt-5">Archivos adjuntos</p>
           <div v-if=" currentOportunity?.media?.length">
             <li v-for="file in currentOportunity?.media" :key="file" class="flex items-center justify-between col-span-full">
               <a :href="file.original_url" target="_blank" class="flex items-center">
