@@ -40,13 +40,13 @@
               <label class="block">Fecha de inicio *</label>
               <el-date-picker v-model="form.start_date" type="date" placeholder="Fecha de inicio *" format="YYYY/MM/DD"
                 value-format="YYYY-MM-DD" />
-              <InputError :message="form.errors.start_date" :disabled-date="disabledDate" />
+              <InputError :message="form.errors.start_date" />
             </div>
             <div class="lg:w-1/2 mt-2 lg:mt-0">
               <label class="block">Fecha de final *</label>
               <el-date-picker v-model="form.limit_date" type="date" placeholder="Fecha de final *" format="YYYY/MM/DD"
                 value-format="YYYY-MM-DD" />
-              <InputError :message="form.errors.limit_date" :disabled-date="disabledDate" />
+              <InputError :message="form.errors.limit_date" />
             </div>
           </div>
           <div class="flex justify-end items-center space-x-3 mr-auto mt-2">
@@ -565,7 +565,7 @@ export default {
     disabledDate(time) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      return time.getTime() > today.getTime();
+      return time.getTime() < today.getTime();
     },
   },
   computed: {

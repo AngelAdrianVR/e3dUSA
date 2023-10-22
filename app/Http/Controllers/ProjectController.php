@@ -21,7 +21,9 @@ class ProjectController extends Controller
 
     public function index()
     {
-        $projects = ProjectResource::collection(Project::with('tasks')->latest()->paginate(30));
+        $projects = ProjectResource::collection(Project::with('tasks')->whereHas('users', function ($query) {
+            $query->where('users.id', auth()->id());
+        })->latest()->paginate(30));
 
         // return $projects;
         return inertia('Project/Index', compact('projects'));
