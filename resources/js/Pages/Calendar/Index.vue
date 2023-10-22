@@ -8,7 +8,6 @@
       </Link>
     </div>
 
-
     <div class="flex justify-between text-lg mx-2 lg:mx-14 mt-11">
       <!-- <span class="text-primary text-sm cursor-pointer">Mes <i class="fa-solid fa-angle-down text-xs ml-2"></i></span> -->
       <span></span>
@@ -26,10 +25,8 @@
       </div>
     </div>
 
-
-
     <!-- -------------- calendar section --------------- -->
-    <section @click="selectedDay = null" class="w-11/12 mx-auto mb-24 overflow-x-scroll">
+    <section @click="selectedDay = null" class="w-11/12 mx-auto mb-24 overflow-x-scroll min-h-screen">
       <table class="w-full mt-12">
         <tr class="text-center">
           <th class="py-2 w-[14.28%] border border-[#9A9A9A]">DOM</th>

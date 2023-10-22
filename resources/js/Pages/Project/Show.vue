@@ -433,7 +433,7 @@ export default {
   mounted() {
     this.selectedProject = this.project.data.id;
     this.currentProject = this.projects.data.find((item) => item.id == this.selectedProject);
-    if (this.defaultTab != null) { 
+    if (this.defaultTab != null) {
       this.tabs = parseInt(this.defaultTab);
     }
   },
@@ -449,4 +449,5 @@ export default {
   /* Color del texto al hacer hover */
   border-radius: 20px;
   /* Redondeo */
-}</style>
+}
+</style>
