@@ -90,7 +90,7 @@
         </div>
       </div>
       <p class="text-center font-bold text-lg mb-4">
-        {{ currentOportunity?.name }}
+        {{ currentOportunity?.folio }} - {{ currentOportunity?.name }}
       </p>
 
       
@@ -111,11 +111,11 @@
             " class="md:ml-3 h-10 w-[147px] lg:w-auto p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Seguimiento integral
           </p>
-          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <!-- <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
           <p @click="tabs = 4" :class="tabs == 4 ? 'bg-secondary-gray rounded-xl text-primary' : ''
             " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Historial
-          </p>
+          </p> -->
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
           <p @click="tabs = 5" :class="tabs == 5 ? 'bg-secondary-gray rounded-xl text-primary' : ''
             " class="md:ml-3 h-10 w-48 lg:w-auto p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">

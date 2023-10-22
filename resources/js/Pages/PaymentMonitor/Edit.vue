@@ -146,7 +146,7 @@ export default {
       concept: this.payment_monitor.data.concept,
       priority: null,
       notes: this.payment_monitor.data.notes,
-      media: this.payment_monitor.data.media,
+      media: [],
     });
 
     return {
