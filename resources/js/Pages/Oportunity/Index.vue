@@ -1,5 +1,5 @@
 <template>
-  <AppLayoutNoHeader title="Oportunidades|">
+  <AppLayoutNoHeader title="Oportunidades">
     <div
       @click="show_type_view = false"
       class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1"
