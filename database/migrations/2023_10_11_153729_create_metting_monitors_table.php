@@ -19,11 +19,13 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->string('phone')->nullable();
             $table->text('description');
+            $table->string('contact_name')->nullable();
             $table->foreignId('company_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('company_branch_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('oportunity_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('seller_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('client_monitor_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('client_monitor_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('contact_id')->nullable()->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
