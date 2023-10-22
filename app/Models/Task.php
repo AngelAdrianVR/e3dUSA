@@ -53,4 +53,9 @@ class Task extends Model implements HasMedia
         return $this->morphMany(Comment::class, 'commentable');
     }
 
+    public function history(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'historable');
+    }
+
 }

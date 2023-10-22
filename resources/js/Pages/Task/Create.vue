@@ -73,25 +73,15 @@
           </el-select>
           <InputError :message="form.errors.priority" />
         </div>
-        <div class="lg:flex pt-3">
-          <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
-            <el-tooltip content="Fecha de inicio *" placement="top">
-              <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                <i class="fa-solid fa-calendar"></i>
-              </span>
-            </el-tooltip>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block">Fecha de inicio *</label>
             <el-date-picker v-model="form.start_date" type="date" placeholder="Fecha de inicio *"
               :disabled-date="disabledStartOrLimitDate" />
             <InputError :message="form.errors.start_date" />
           </div>
-          <div class="flex items-center lg:w-1/2 mt-2 lg:mt-0">
-            <el-tooltip content="Fecha de final *" placement="top">
-              <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                <i class="fa-solid fa-calendar"></i>
-              </span>
-            </el-tooltip>
+          <div>
+            <label class="block">Fecha límite *</label>
             <el-date-picker v-model="form.end_date" type="date" placeholder="Fecha de final *"
               :disabled-date="disabledStartOrLimitDate" />
             <InputError :message="form.errors.end_date" />
