@@ -132,8 +132,9 @@ class TaskController extends Controller
             $user = User::find($mention['id']);
             $user->notify(new MentionNotification($task, "", 'projects'));
         }
-        // event(new RecordCreated($comment)); me dice que el id del usuario no tiene un valor por default.
-        // return to_route('projects.show', ['project' => $request->project_id]);
+        
+        event(new RecordCreated($comment)); //me dice que el id del usuario no tiene un valor por default.
+
         return response()->json(['item' => $comment->fresh('user')]);
     }
 

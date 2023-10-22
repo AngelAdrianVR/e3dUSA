@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('flow_histories', function (Blueprint $table) {
             $table->id();
+            $table->text('description');
+            $table->morphs('historable');
             $table->timestamps();
         });
     }
