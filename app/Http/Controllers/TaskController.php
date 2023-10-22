@@ -64,7 +64,7 @@ class TaskController extends Controller
 
         $task->addAllMediaFromRequest('media')->each(fn ($file) => $file->toMediaCollection('files'));
 
-        return to_route('projects.show', ['project' => $request->project_id]);
+        return to_route('projects.show', ['project' => $request->project_id, 'defaultTab' => 2]);
     }
 
 

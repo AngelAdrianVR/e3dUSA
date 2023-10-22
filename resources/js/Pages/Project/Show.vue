@@ -307,6 +307,7 @@ export default {
     projects: Object,
     project: Object,
     users: Array,
+    defaultTab: Number,
   },
   computed: {
     authUserPermissions() {
@@ -432,6 +433,9 @@ export default {
   mounted() {
     this.selectedProject = this.project.data.id;
     this.currentProject = this.projects.data.find((item) => item.id == this.selectedProject);
+    if (this.defaultTab != null) { 
+      this.tabs = parseInt(this.defaultTab);
+    }
   },
 };
 </script>
