@@ -13,7 +13,7 @@
           <div class="md:w-1/3">
             <el-select v-model="selectedPurchase" clearable filterable placeholder="Buscar órden de compra"
               no-data-text="No hay órdenes en el catálogo" no-match-text="No se encontraron coincidencias">
-              <el-option v-for="item in purchases.data" :key="item.id" :label="item.id + '-' + item.created_at"
+              <el-option v-for="item in purchases.data" :key="item.id" :label="item.folio"
                 :value="item.id" />
             </el-select>
           </div>

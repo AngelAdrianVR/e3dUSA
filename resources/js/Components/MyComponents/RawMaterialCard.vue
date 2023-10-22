@@ -7,9 +7,17 @@
     <el-tooltip content="Número de parte" placement="top">
         <i class="fa-solid fa-question text-[9px] h-3 w-3 bg-primary-gray rounded-full text-center absolute right-2 top-1"></i>
     </el-tooltip>
-    <figure class="bg-[#D9D9D9] w-full h-48 my-3">
-        fotografia
-    </figure>
+    <figure class="w-full my-3 rounded-[10px]">
+        <el-image style="height: 100%; border-radius: 10px;"
+          :src="raw_material.media[0]?.original_url"
+          fit="contain">
+          <template #error>
+            <div class="flex justify-center items-center text-[#ababab]">
+              <i class="fa-solid fa-image text-6xl"></i>
+            </div>
+          </template>
+        </el-image>
+      </figure>
      
         <p class="text-primary text-left text-sm">Unidades ordenadas: <span class="text-gray-900"> {{raw_material.quantity + ' ' + raw_material.measure_unit}} </span> </p>
         <div class="border-b border-[#888888] mb-2"></div>

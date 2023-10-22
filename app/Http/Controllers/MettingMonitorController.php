@@ -121,16 +121,15 @@ class MettingMonitorController extends Controller
         
         event(new RecordEdited($metting_monitor));
         
-        $client_monitor = ClientMonitor::where('oportunity_id', $metting_monitor->oportunity_id)->get();
+        $client_monitor = ClientMonitor::where('oportunity_id', $metting_monitor->oportunity_id)->first();
         
-        // return $client_monitor;
 
-        // $client_monitor->update([
-        //     'date' => $request->meeting_date,
-        //     'concept' => $request->description,
-        //     'oportunity_id' => $request->oportunity_id,
-        //     'company_id' => $request->company_id,
-        // ]);
+        $client_monitor->update([
+            'date' => $request->meeting_date,
+            'concept' => $request->description,
+            'oportunity_id' => $request->oportunity_id,
+            'company_id' => $request->company_id,
+        ]);
         
         return to_route('meeting-monitors.show', ['meeting_monitor'=> $metting_monitor]);
     }

@@ -13,9 +13,9 @@
           class="input"
           placeholder="Buscar"
           />
-          <SecondaryButton @click="handleSearch" type="submit" class="rounded-lg">
+          <!-- <SecondaryButton @click="handleSearch" type="submit" class="rounded-lg">
             <i class="fa-solid fa-magnifying-glass"></i>
-          </SecondaryButton>
+          </SecondaryButton> -->
         </div>
         <div class="flex items-center space-x-2">
             <Link v-if="$page.props.auth.user.permissions.includes('Enviar correos en seguimiento integral')" :href="route('client-monitors.index')">
