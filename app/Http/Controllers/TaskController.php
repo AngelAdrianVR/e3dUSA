@@ -11,6 +11,7 @@ use App\Models\Comment;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
+use App\Notifications\AssignedProjectTaskNotification;
 use App\Notifications\MentionNotification;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -53,13 +54,17 @@ class TaskController extends Controller
         foreach ($request->participants as $user_id) {
             // Adjuntar el usuario a la tarea
             $task->participants()->attach($user_id);
+
+            // notificar a usuario
+            $participant = User::find($user_id);
+            $participant->notify(new AssignedProjectTaskNotification($task, "", 'projects'));
         }
 
         event(new RecordCreated($task));
 
         $task->addAllMediaFromRequest('media')->each(fn ($file) => $file->toMediaCollection('files'));
 
-        return to_route('projects.show', ['project' => $request->project_id]);
+        return to_route('projects.show', ['project' => $request->project_id, 'defaultTab' => 2]);
     }
 
 
@@ -121,14 +126,15 @@ class TaskController extends Controller
         ]);
 
         $task->comments()->save($comment);
-        
+
         $mentions = $request->mentions;
         foreach ($mentions as $mention) {
             $user = User::find($mention['id']);
             $user->notify(new MentionNotification($task, "", 'projects'));
         }
-        // event(new RecordCreated($comment)); me dice que el id del usuario no tiene un valor por default.
-        // return to_route('projects.show', ['project' => $request->project_id]);
+        
+        event(new RecordCreated($comment)); //me dice que el id del usuario no tiene un valor por default.
+
         return response()->json(['item' => $comment->fresh('user')]);
     }
 

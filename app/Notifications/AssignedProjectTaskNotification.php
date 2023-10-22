@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class MentionNotification extends Notification
+class AssignedProjectTaskNotification extends Notification
 {
     use Queueable;
 
@@ -33,10 +33,10 @@ class MentionNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Mención en comentario')
-            ->markdown('emails.mention', [
+            ->subject('Tarea asignada')
+            ->markdown('emails.assigned-projet-task', [
                 'greeting' => '¡Hola!',
-                'intro' => "Te han mencionado en un comentario de la tarea <span class='text-primary'>{$this->task->title}</span> perteneciente al proyecto <span class='text-primary'>{$this->task->project->project_name}</span>",
+                'intro' => "Te han asignado una tarea con el nombre de <span class='text-primary'>{$this->task->title}</span> perteneciente al proyecto <span class='text-primary'>{$this->task->project->project_name}</span>",
                 'url' => route('projects.show', $this->task->project->id),
                 'salutation' => 'Saludos',
             ]);
@@ -45,7 +45,7 @@ class MentionNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'description' => "Te han mencionado en un comentario de la tarea <span class='text-primary'>{$this->task->title}</span> perteneciente al proyecto <span class='text-primary'>{$this->task->project->project_name}</span>.",
+            'description' => "Te han asignado una tarea con el nombre de <span class='text-primary'>{$this->task->title}</span> perteneciente al proyecto <span class='text-primary'>{$this->task->project->project_name}</span>.",
             'additional_info' => "$this->additional_info",
             'module' => "$this->module",
         ];

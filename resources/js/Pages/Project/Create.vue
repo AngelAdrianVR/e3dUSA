@@ -238,72 +238,73 @@
                   <h2 class="font-bold border-b border-[#9A9A9A] w-1/3">Permisos</h2>
                 </div>
                 <div class="pl-3 overflow-y-auto min-h-[100px] max-h-[340px]">
-                  <div class="flex mt-2 border-b border-[#9A9A9A]" v-for="user in form.selectedUsersToPermissions"
-                    :key="user.id">
-                    <div class="w-2/3 flex space-x-2">
-                      <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm rounded-full w-12">
-                        <img class="h-10 w-10 rounded-full object-cover" :src="user.profile_photo_url" :alt="user.name" />
+                  <template v-for="user in form.selectedUsersToPermissions" :key="user.id">
+                    <div v-if="user.id !== 1" class="flex mt-2 border-b border-[#9A9A9A]">
+                      <div class="w-2/3 flex space-x-2">
+                        <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm rounded-full w-12">
+                          <img class="h-10 w-10 rounded-full object-cover" :src="user.profile_photo_url"
+                            :alt="user.name" />
+                        </div>
+                        <div class="text-sm w-full">
+                          <p>{{ user.name }}</p>
+                          <p v-if="user.employee_properties">{{ 'Depto. ' + user.employee_properties?.department }}</p>
+                          <p v-else>Super admin</p>
+                        </div>
                       </div>
-                      <div class="text-sm w-full">
-                        <p>{{ user.name }}</p>
-                        <p v-if="user.employee_properties">{{ 'Depto. ' + user.employee_properties?.department }}</p>
-                        <p v-else>Super admin</p>
+
+                      <div class="w-1/3 flex items-center justify-between">
+                        <div class="space-y-1 mb-2">
+                          <label class="flex items-center">
+                            <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
+                              v-model="user.permissions[0]" :checked="user.permissions[0]" />{{ permissions }}
+                            <span
+                              :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
+                              class="ml-2 text-xs">
+                              Crea tareas
+                            </span>
+                          </label>
+                          <label class="flex items-center">
+                            <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
+                              v-model="user.permissions[1]" :checked="user.permissions[1]" />
+                            <span
+                              :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
+                              class="ml-2 text-xs">Ver</span>
+                          </label>
+                          <label class="flex items-center">
+                            <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
+                              v-model="user.permissions[2]" :checked="user.permissions[2]" />
+                            <span
+                              :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
+                              class="ml-2 text-xs">Editar</span>
+                          </label>
+                          <label class="flex items-center">
+                            <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
+                              v-model="user.permissions[3]" :checked="user.permissions[3]" />
+                            <span
+                              :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
+                              class="ml-2 text-xs">Eliminar</span>
+                          </label>
+                          <label class="flex items-center">
+                            <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
+                              v-model="user.permissions[4]" :checked="user.permissions[4]" />
+                            <span
+                              :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
+                              class="ml-2 text-xs">Comentar</span>
+                          </label>
+                        </div>
+                        <el-popconfirm v-if="typeAccessProject === 'Private'" confirm-button-text="Si"
+                          cancel-button-text="No" icon-color="#D90537" title="Remover?"
+                          @confirm="removeUserFromPermissions(user.id)">
+                          <template #reference>
+                            <button :disabled="user.employee_properties === null" type="button"
+                              class="text-primary mr-10 disabled:cursor-not-allowed disabled:opacity-50">
+                              <i class="fa-regular fa-circle-xmark"></i>
+                            </button>
+                          </template>
+                        </el-popconfirm>
                       </div>
                     </div>
-
-                    <div class="w-1/3 flex items-center justify-between">
-                      <div class="space-y-1 mb-2">
-                        <label class="flex items-center">
-                          <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                            v-model="user.permissions[0]" :checked="user.permissions[0]" />{{ permissions }}
-                          <span
-                            :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
-                            class="ml-2 text-xs">
-                            Crea tareas
-                          </span>
-                        </label>
-                        <label class="flex items-center">
-                          <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                            v-model="user.permissions[1]" :checked="user.permissions[1]" />
-                          <span
-                            :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
-                            class="ml-2 text-xs">Ver</span>
-                        </label>
-                        <label class="flex items-center">
-                          <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                            v-model="user.permissions[2]" :checked="user.permissions[2]" />
-                          <span
-                            :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
-                            class="ml-2 text-xs">Editar</span>
-                        </label>
-                        <label class="flex items-center">
-                          <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                            v-model="user.permissions[3]" :checked="user.permissions[3]" />
-                          <span
-                            :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
-                            class="ml-2 text-xs">Eliminar</span>
-                        </label>
-                        <label class="flex items-center">
-                          <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                            v-model="user.permissions[4]" :checked="user.permissions[4]" />
-                          <span
-                            :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
-                            class="ml-2 text-xs">Comentar</span>
-                        </label>
-                      </div>
-                      <el-popconfirm v-if="typeAccessProject === 'Private'" confirm-button-text="Si"
-                        cancel-button-text="No" icon-color="#D90537" title="Remover?"
-                        @confirm="removeUserFromPermissions(user.id)">
-                        <template #reference>
-                          <button :disabled="user.employee_properties === null" type="button"
-                            class="text-primary mr-10 disabled:cursor-not-allowed disabled:opacity-50">
-                            <i class="fa-regular fa-circle-xmark"></i>
-                          </button>
-                        </template>
-                      </el-popconfirm>
-                    </div>
-
-                  </div>
+                  </template>
                 </div>
               </div>
             </div>
@@ -527,6 +528,18 @@ export default {
       });
       this.form.selectedUsersToPermissions = admins;
     },
+    selectAuthUser() {
+      // obtener usuario que esta creando el proyecto para dar todos los permisos
+      const user = this.users.find(item => item.id === this.$page.props.auth.user.id);
+      const defaultPermissions = [true, true, true, true, true];
+      let authUser = {
+        id: user.id,
+        name: user.name,
+        profile_photo_url: user.profile_photo_url,
+        permissions: [...defaultPermissions],
+      };
+      this.form.selectedUsersToPermissions.push(authUser);
+    },
     removeUserFromPermissions(userId) {
       const index = this.form.selectedUsersToPermissions.findIndex(item => item.id === userId);
 
@@ -600,6 +613,7 @@ export default {
   },
   mounted() {
     this.selectAdmins();
+    this.selectAuthUser();
   }
 };
 </script>

@@ -185,11 +185,11 @@
               class="ml-3 h-8 p-1 cursor-pointer transition duration-300 ease-in-out text-xs md:text-base">
               Documentos
             </p>
-            <div class="border-r-2 border-[#cccccc] h-7 ml-3"></div>
-            <p @click="tabs = 3" :class="tabs == 3 ? 'border-b-2 border-[#D90537] text-primary' : ''"
+            <!-- <div class="border-r-2 border-[#cccccc] h-7 ml-3"></div> -->
+            <!-- <p @click="tabs = 3" :class="tabs == 3 ? 'border-b-2 border-[#D90537] text-primary' : ''"
               class="ml-3 h-8 p-1 cursor-pointer transition duration-300 ease-in-out text-xs md:text-base">
               Historial
-            </p>
+            </p> -->
           </div>
           <!-- -------------- Tab 1 comentarios starts ----------------->
           <div v-if="tabs == 1" class="mt-7 min-h-[170px]">

@@ -104,8 +104,9 @@ class ProjectController extends Controller
         $projects = ProjectResource::collection(Project::with(['tasks' => ['participants', 'project', 'user', 'comments.user', 'media'], 'user', 'users', 'company', 'owner', 'tags'])->latest()->get());
         $users = User::all();
 
-        // return $project;
-        return inertia('Project/Show', compact('project', 'projects', 'users'));
+        $defaultTab = request('defaultTab');
+
+        return inertia('Project/Show', compact('project', 'projects', 'users', 'defaultTab'));
     }
 
 
