@@ -31,6 +31,8 @@ class ClientMonitorResource extends JsonResource
             'seller' => $this->whenLoaded('seller'),
             'oportunity' => $this->whenLoaded('oportunity'),
             'company' => $this->whenLoaded('company'),
+            'paymentMonitor' => $this->whenLoaded('paymentMonitor'),
+            'mettingMonitor' => $this->whenLoaded('mettingMonitor'),
             'created_at' => $this->created_at?->isoFormat('DD MMMM YYYY'),
             'updated_at' => $this->updated_at?->isoFormat('DD MMMM YYYY'),
         ];

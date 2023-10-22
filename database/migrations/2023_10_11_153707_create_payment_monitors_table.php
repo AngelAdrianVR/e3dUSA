@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->foreignId('seller_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->foreignId('oportunity_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('client_monitor_id')->nullable()->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

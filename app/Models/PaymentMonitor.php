@@ -20,6 +20,7 @@ class PaymentMonitor extends Model implements HasMedia
         'notes',
         'seller_id',
         'oportunity_id',
+        'client_monitor_id',
     ];
 
     protected $casts = [
@@ -35,5 +36,10 @@ class PaymentMonitor extends Model implements HasMedia
     public function seller() :BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+    
+    public function clientMonitor() :BelongsTo
+    {
+        return $this->belongsTo(ClientMonitor::class);
     }
 }

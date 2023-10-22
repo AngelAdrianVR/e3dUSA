@@ -17,12 +17,14 @@ class PaymentMonitorResource extends JsonResource
         return [
             'id' => $this->id,
             'paid_at' => $this->paid_at?->isoFormat('DD MMMM YYYY, H:mm A'),
+            'paid_at_raw' => $this->paid_at,
             'amount' => $this->amount,
             'payment_method' => $this->payment_method,
             'concept' => $this->concept,
             'notes' => $this->notes,
-            'media' => $this->getMedia('files')->all(),
-            'oportunity' => $this->whenLoaded('oportunity'),
+            'media' => $this->getMedia()->all(),
+            'oportunity' => OportunityResource::make($this->whenLoaded('oportunity')),
+            'seller' => $this->whenLoaded('seller'),
             'created_at' => $this->created_at?->isoFormat('DD MMMM YYYY'),
             'updated_at' => $this->updated_at?->isoFormat('DD MMMM YYYY'),
         ];

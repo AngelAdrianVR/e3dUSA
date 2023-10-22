@@ -21,6 +21,7 @@ class MettingMonitor extends Model
         'company_branch_id',
         'oportunity_id',
         'seller_id',
+        'client_monitor_id',
     ];
 
     protected $casts = [
@@ -33,7 +34,7 @@ class MettingMonitor extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function company_branch() :BelongsTo
+    public function companyBranch() :BelongsTo
     {
         return $this->belongsTo(CompanyBranch::class);
     }
@@ -46,5 +47,10 @@ class MettingMonitor extends Model
     public function seller() :BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function clientMonitor() :BelongsTo
+    {
+        return $this->belongsTo(ClientMonitor::class);
     }
 }

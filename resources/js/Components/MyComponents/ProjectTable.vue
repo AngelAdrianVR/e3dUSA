@@ -1,13 +1,14 @@
 <template>
-    <table class="lg:w-[80%] w-full mx-auto">
+<div class="overflow-x-auto">
+    <table class="w-full mx-auto">
         <thead>
           <tr class="text-center">
-            <th class="font-bold pb-5">Nombre del proyecto <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
-            <th class="font-bold pb-5">Estatus <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
-            <th class="font-bold pb-5">Tareas <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
-            <th class="font-bold pb-5">Fecha de inicio <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
-            <th class="font-bold pb-5">Fecha final <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
-            <th class="font-bold pb-5">Completa <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
+            <th class="font-bold pb-5">Nombre del proyecto <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i></th>
+            <th class="font-bold pb-5">Estatus <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i></th>
+            <th class="font-bold pb-5">Tareas <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i></th>
+            <th class="font-bold pb-5">Fecha de inicio <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i></th>
+            <th class="font-bold pb-5">Fecha final <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i></th>
+            <th class="font-bold pb-5">Completa <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i></th>
           </tr>
         </thead>
         <tbody>
@@ -47,14 +48,15 @@
           </tr>
         </tbody>
       </table>
+  </div>
 </template>
 
 <script>
 export default {
-data(){
+  data(){
     return{
-
-    }
+      
+      }
 },
 components:{
 

@@ -3,9 +3,11 @@
     <AppLayout title="Crear Oportunidad |">
       <template #header>
         <div class="flex justify-between">
-          <Link :href="route('oportunities.index')"
-            class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
-          <i class="fa-solid fa-chevron-left"></i>
+          <Link
+            :href="route('oportunities.index')"
+            class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center"
+          >
+            <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">Crear Oportunidad</h2>
@@ -15,250 +17,446 @@
 
       <!-- Form -->
       <form @submit.prevent="store">
-        <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4">
+        <div
+          class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4 mx-3"
+        >
           <div>
-              <label>Nombre de la oportunidad *</label>
-              <input v-model="form.name" class="input" type="text">
-              <InputError :message="form.errors.name" />
+            <label>Nombre de la oportunidad *</label>
+            <input v-model="form.name" class="input" type="text" />
+            <InputError :message="form.errors.name" />
           </div>
           <div class="relative">
-        <i :class="getColorStatus(form.status)"
-          class="fa-solid fa-circle text-xs top-1 left-16 absolute z-30"></i>
-        <label>Estatus</label> <br />
-        <div class="flex items-center space-x-4">
-          <el-select class="lg:w-1/2 mt-2" v-model="form.status" clearable
-            filterable placeholder="Seleccionar estatus" no-data-text="No hay estatus registrados"
-            no-match-text="No se encontraron coincidencias">
-            <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
-              <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
-              <span style="float: center; margin-left: 5px; font-size: 13px">{{
-                item.label
-              }}</span>
-            </el-option>
-          </el-select>
-        </div>
-        <InputError :message="form.errors.status" />
-      </div>
-          <div>
-              <label>Vendedor</label>
-              <el-select v-model="form.seller_id" clearable filterable placeholder="Seleccione"
-                no-data-text="No hay vendedores registrados" no-match-text="No se encontraron coincidencias">
-                <el-option v-for="seller in users.filter(user => user.employee_properties?.department == 'Ventas')" :key="seller" :label="seller.name" :value="seller.id" />
+            <i
+              :class="getColorStatus(form.status)"
+              class="fa-solid fa-circle text-xs top-1 left-16 absolute z-30"
+            ></i>
+            <label>Estatus</label> <br />
+            <div class="flex items-center space-x-4">
+              <el-select
+                class="lg:w-1/2 mt-2"
+                v-model="form.status"
+                clearable
+                filterable
+                placeholder="Seleccionar estatus"
+                no-data-text="No hay estatus registrados"
+                no-match-text="No se encontraron coincidencias"
+              >
+                <el-option
+                  v-for="item in statuses"
+                  :key="item"
+                  :label="item.label"
+                  :value="item.label"
+                >
+                  <span style="float: left"
+                    ><i :class="item.color" class="fa-solid fa-circle"></i
+                  ></span>
+                  <span style="float: center; margin-left: 5px; font-size: 13px">{{
+                    item.label
+                  }}</span>
+                </el-option>
               </el-select>
+            </div>
+            <InputError :message="form.errors.status" />
+          </div>
+          <div>
+            <label>Vendedor</label>
+            <el-select
+              v-model="form.seller_id"
+              clearable
+              filterable
+              placeholder="Seleccione"
+              no-data-text="No hay vendedores registrados"
+              no-match-text="No se encontraron coincidencias"
+            >
+              <el-option
+                v-for="seller in users.filter(
+                  (user) => user.employee_properties?.department == 'Ventas'
+                )"
+                :key="seller"
+                :label="seller.name"
+                :value="seller.id"
+              />
+            </el-select>
           </div>
           <label class="inline-flex items-center">
-              <Checkbox v-model:checked="form.is_new_company" @change="handleChecked" class="bg-transparent disabled:border-gray-400"/>
-              <span class="ml-2 text-xs">Nuevo cliente</span>
-            </label>
-            <div v-if="form.is_new_company">
-              <label>Contacto *</label>
-              <input v-model="form.contact" class="input" type="text">
-              <InputError :message="form.errors.contact" />
+            <Checkbox
+              v-model:checked="form.is_new_company"
+              @change="handleChecked"
+              class="bg-transparent disabled:border-gray-400"
+            />
+            <span class="ml-2 text-xs">Nuevo cliente</span>
+          </label>
+          <div v-if="form.is_new_company">
+            <label>Contacto *</label>
+            <input v-model="form.contact" class="input" type="text" />
+            <InputError :message="form.errors.contact" />
           </div>
           <div v-if="!form.is_new_company" class="flex space-x-2 justify-between">
-          <div class="w-1/2">
-          <label>Cliente *</label> <br>
-            <el-select v-model="form.company_id" clearable filterable placeholder="Seleccione"
-            no-data-text="No hay clientes registrados" no-match-text="No se encontraron coincidencias">
-            <el-option v-for="company in companies" :key="company" :label="company.business_name" :value="company.id" />
-            </el-select>
-            <InputError :message="form.errors.company_id" />
+            <div class="w-1/2">
+              <label>Cliente *</label> <br />
+              <el-select
+                v-model="form.company_id"
+                clearable
+                filterable
+                placeholder="Seleccione"
+                no-data-text="No hay clientes registrados"
+                no-match-text="No se encontraron coincidencias"
+              >
+                <el-option
+                  v-for="company in companies"
+                  :key="company"
+                  :label="company.business_name"
+                  :value="company.id"
+                />
+              </el-select>
+              <InputError :message="form.errors.company_id" />
+            </div>
+            <div class="w-1/2">
+              <label>Sucursal *</label> <br />
+              <el-select
+                @change="saveCompanyBranchAddress"
+                v-model="company_branch"
+                clearable
+                filterable
+                placeholder="Seleccione"
+                no-data-text="No hay sucursales registradas"
+                no-match-text="No se encontraron coincidencias"
+              >
+                <el-option
+                  v-for="company_branch in companies.find(
+                    (item) => item.id == form.company_id
+                  )?.company_branches"
+                  :key="company_branch"
+                  :label="company_branch.name"
+                  :value="company_branch.name"
+                />
+              </el-select>
+            </div>
+            <div class="w-1/2">
+              <label>Contacto *</label> <br />
+              <el-select
+                v-model="form.contact"
+                clearable
+                filterable
+                placeholder="Seleccione"
+                no-data-text="No hay contactos registrados"
+                no-match-text="No se encontraron coincidencias"
+              >
+                <el-option
+                  v-for="contact in company_branch_obj?.contacts"
+                  :key="contact"
+                  :label="contact.name"
+                  :value="contact.name"
+                />
+              </el-select>
+            </div>
           </div>
-          <div class="w-1/2">
-          <label>Sucursal *</label> <br>
-            <el-select @change="saveCompanyBranchAddress" v-model="company_branch" clearable filterable placeholder="Seleccione"
-            no-data-text="No hay sucursales registradas" no-match-text="No se encontraron coincidencias">
-            <el-option v-for="company_branch in companies.find((item) => item.id == form.company_id)?.company_branches"
-             :key="company_branch" :label="company_branch.name" :value="company_branch.name" />
-            </el-select>
+          <div class="lg:flex pt-3">
+            <div class="lg:w-1/2 mt-2 lg:mt-0">
+              <label class="block">Fecha de inicio *</label>
+              <el-date-picker
+                v-model="form.start_date"
+                type="date"
+                placeholder="Fecha de inicio *"
+                format="YYYY/MM/DD"
+                value-format="YYYY-MM-DD"
+              />
+              <InputError :message="form.errors.start_date" />
+            </div>
+            <div class="lg:w-1/2 mt-2 lg:mt-0">
+              <label class="block">Fecha estimada de cierre *</label>
+              <el-date-picker
+                v-model="form.estimated_finish_date"
+                type="date"
+                placeholder="Fecha estimada de cierre *"
+                format="YYYY/MM/DD"
+                value-format="YYYY-MM-DD"
+              />
+              <InputError :message="form.errors.estimated_finish_date" />
+            </div>
           </div>
-          <div class="w-1/2">
-          <label>Contacto *</label> <br>
-            <el-select v-model="form.contact" clearable filterable placeholder="Seleccione"
-            no-data-text="No hay contactos registrados" no-match-text="No se encontraron coincidencias">
-            <el-option v-for="contact in company_branch_obj?.contacts"
-             :key="contact" :label="contact.name" :value="contact.name" />
-            </el-select>
+          <div>
+            <label>Descripción *</label>
+            <RichText @content="updateDescription($event)" v-model="form.description" />
           </div>
-        </div>
-        <div class="lg:flex pt-3">
-          <div class="lg:w-1/2 mt-2 lg:mt-0">
-            <label class="block">Fecha de inicio *</label>
-            <el-date-picker v-model="form.start_date" type="date" placeholder="Fecha de inicio *" format="YYYY/MM/DD"
-              value-format="YYYY-MM-DD" />
-            <InputError :message="form.errors.start_date" />
-          </div>
-          <div class="lg:w-1/2 mt-2 lg:mt-0">
-            <label class="block">Fecha de inicio *</label>
-            <el-date-picker v-model="form.estimated_finish_date" type="date" placeholder="Fecha de inicio *" format="YYYY/MM/DD"
-              value-format="YYYY-MM-DD" />
-            <InputError :message="form.errors.estimated_finish_date" />
-          </div>
-        </div>
-      <div>
-        <label>Descripción *</label>
-        <RichText @content="updateDescription($event)" v-model="form.description" />
-      </div>
-      <!-- <div>
+          <!-- <div>
         <label>Descripción *</label>
         <input type="text" class="input" v-model="form.description">
       </div> -->
-      <div class="ml-2 mt-2 col-span-full flex">
-        <FileUploader @files-selected="this.form.media = $event" />
-      </div>
-
-<div class="flex justify-between items-center space-x-4">
-    <div>
-      <div class="flex justify-between items-center mx-2">
-        <label>Etiquetas</label>
-        <button @click="showTagFormModal = true" type="button"
-          class="rounded-full border border-primary w-4 h-4 flex items-center justify-center">
-          <i class="fa-solid fa-plus text-primary text-[9px]"></i>
-        </button>
-      </div>
-      <el-select v-model="form.tags" clearable placeholder="Seleccione" multiple class="w-full"
-        no-data-text="No hay opciones para mostrar" no-match-text="No se encontraron coincidencias">
-        <el-option v-for="(item, index) in tags.data" :key="item.id" :label="item.name" :value="item.id">
-          <Tag :name="item.name" :color="item.color" />
-        </el-option>
-      </el-select>
-    </div>  
-    <div class="lg:w-1/2">
-        <label>Probabilidad %</label>
-        <input v-model="form.probability" class="input" type="number" min="0" max="100">
-    </div>
-</div>
-<div class="flex items-center space-x-4">
-    <div class="lg:w-1/2 relative">
-    <i :class="getColorPriority(form.priority)"
-        class="fa-solid fa-circle text-xs top-1 left-20 absolute z-30"></i>
-       <label class="block">Prioridad</label>
-        <div class="flex items-center space-x-4">
-          <el-select class="lg:w-1/2" v-model="form.priority" clearable
-            filterable placeholder="Seleccione" no-data-text="No hay opciones registradas"
-            no-match-text="No se encontraron coincidencias">
-            <el-option v-for="item in priorities" :key="item" :label="item.label" :value="item.label">
-              <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
-              <span style="float: center; margin-left: 5px; font-size: 13px">{{
-                item.label
-              }}</span>
-            </el-option>
-          </el-select>
-        <InputError :message="form.errors.priority" /> 
-        </div>
-    </div>  
-
-    <div v-if="form.status === 'Perdida'" class="lg:w-1/2">
-        <label>Causa oportunidad perdida 
-            <el-tooltip content="Escribe la causa por la cual se PERDIÓ esta oportunidad" placement="top">
-                <i class="fa-regular fa-circle-question ml-2 text-primary text-xs"></i>
-             </el-tooltip>
-        </label>
-        <input v-model="form.lost_oportunity_razon" class="input" type="text">
-        <InputError :message="form.errors.lost_oportunity_razon" />
-    </div>
-</div>
-<div class="lg:w-1/2">
-      <div class="flex items-center space-x-2">
-        <label>Valor de oportunidad *</label>
-        <el-tooltip
-          content="Monto estimado que se espera generar si se cierra esta oportunidad"
-          placement="right">
-          <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
-            <i class="fa-solid fa-info text-primary text-[7px]"></i>
+          <div class="ml-2 mt-2 col-span-full flex">
+            <FileUploader @files-selected="this.form.media = $event" />
           </div>
-        </el-tooltip>
-      </div>
-        <input v-model="form.amount" class="input" type="number" min="0" step="0.01">
-        <InputError :message="form.errors.amount" />
-    </div>
 
-    <div class="text-sm">
-      <h3 class="font-bold text-lg mb-2 mt-10">Acceso al proyecto</h3>
-      <div class="my-1">
-        <input v-model="form.type_access_project" value="Publico" class="checked:bg-primary focus:text-primary focus:ring-[#D90537] border-transparent" type="radio" name="type_access_project"> Público
-        <p class="text-[#9A9A9A] ml-4">Los usuarios del portal solo pueden  ver, seguir y comentar, mientras que los usuarios del proyecto tendrán acceso directo.</p>
-      </div>
-      <div class="my-1">
-        <input v-model="form.type_access_project" value="Privado" class="checked:bg-primary focus:text-primary focus:ring-[#D90537] border-transparent" type="radio" name="type_access_project"> Privado
-        <p class="text-[#9A9A9A] ml-4">Solo los usuarios de proyecto pueden ver y acceder a este proyecto</p>
-      </div>
-    </div>
-
-    <section class="rounded-lg bg-[#CCCCCC] py-4 px-7 h-[545px]">
-      <div class="text-right">
-        <ThirthButton type="button" @click.stop="editAccesFlag = !editAccesFlag">{{ editAccesFlag ? 'Actualizar' : 'Editar'}}</ThirthButton>
-      </div>
-
-      <div class="flex justify-between overflow-y-scroll h-[460px] mt-4">
-        <div class="w-full">
-          <div class="flex">
-            <h2 class="font-bold border-b border-[#9A9A9A] w-2/3 pl-3">Usuarios</h2>
-            <h2 class="font-bold border-b border-[#9A9A9A] w-1/3">Permisos</h2>
+          <div class="flex justify-between items-center space-x-4">
+            <div class="w-full">
+              <div class="flex justify-between items-center mx-2">
+                <label>Etiquetas</label>
+                <button
+                  @click="showTagFormModal = true"
+                  type="button"
+                  class="rounded-full border border-primary w-4 h-4 flex items-center justify-center"
+                >
+                  <i class="fa-solid fa-plus text-primary text-[9px]"></i>
+                </button>
+              </div>
+              <el-select
+                v-model="form.tags"
+                clearable
+                placeholder="Seleccione"
+                multiple
+                class="w-full"
+                no-data-text="No hay opciones para mostrar"
+                no-match-text="No se encontraron coincidencias"
+              >
+                <el-option
+                  v-for="(item, index) in tags.data"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                >
+                  <Tag :name="item.name" :color="item.color" />
+                </el-option>
+              </el-select>
+            </div>
+            <div class="w-full">
+              <label>Probabilidad %</label>
+              <input
+                v-model="form.probability"
+                class="input"
+                type="number"
+                min="0"
+                max="100"
+              />
+            </div>
           </div>
-          <div class="pl-3">
-            <figure class="flex mt-2 border-b border-[#9A9A9A]"  v-for="user in (users)" :key="user">
-              <div class="w-2/3 flex space-x-2">
-                <div v-if="$page.props.jetstream.managesProfilePhotos"
-                    class="flex text-sm rounded-full w-12">
-                    <img class="h-10 w-10 rounded-full object-cover" :src="user.profile_photo_url"
-                    :alt="user.name" />
+          <div class="flex items-center space-x-4">
+            <div class="lg:w-1/2 relative">
+              <i
+                :class="getColorPriority(form.priority)"
+                class="fa-solid fa-circle text-xs top-1 left-20 absolute z-30"
+              ></i>
+              <label class="block">Prioridad</label>
+              <div class="flex items-center space-x-4">
+                <el-select
+                  class="lg:w-1/2"
+                  v-model="form.priority"
+                  clearable
+                  filterable
+                  placeholder="Seleccione"
+                  no-data-text="No hay opciones registradas"
+                  no-match-text="No se encontraron coincidencias"
+                >
+                  <el-option
+                    v-for="item in priorities"
+                    :key="item"
+                    :label="item.label"
+                    :value="item.label"
+                  >
+                    <span style="float: left"
+                      ><i :class="item.color" class="fa-solid fa-circle"></i
+                    ></span>
+                    <span style="float: center; margin-left: 5px; font-size: 13px">{{
+                      item.label
+                    }}</span>
+                  </el-option>
+                </el-select>
+                <InputError :message="form.errors.priority" />
+              </div>
+            </div>
+
+            <div v-if="form.status == 'Perdida'" class="lg:w-1/2">
+              <label
+                >Causa oportunidad perdida
+                <el-tooltip
+                  content="Escribe la causa por la cual se PERDIÓ esta oportunidad"
+                  placement="right"
+                >
+                  <i class="fa-regular fa-circle-question ml-2 text-primary text-xs"></i>
+                </el-tooltip>
+              </label>
+              <input v-model="form.lost_oportunity_razon" class="input" type="text" />
+              <InputError :message="form.errors.lost_oportunity_razon" />
+            </div>
+          </div>
+          <div class="lg:w-1/2">
+            <div class="flex items-center space-x-2">
+              <label>Valor de oportunidad *</label>
+              <el-tooltip
+                content="Monto estimado que se espera generar si se cierra esta oportunidad"
+                placement="right"
+              >
+                <div
+                  class="rounded-full border border-primary w-3 h-3 flex items-center justify-center"
+                >
+                  <i class="fa-solid fa-info text-primary text-[7px]"></i>
                 </div>
-                <div class="text-sm w-full">
-                    <p class="font-bold">{{ user.name }}</p>
-                    <p v-if="user.employee_properties">{{ 'Depto.' + user.employee_properties?.department }}</p>
-                    <p v-else>Super admin</p>
+              </el-tooltip>
+            </div>
+            <input
+              v-model="form.amount"
+              class="input"
+              type="number"
+              min="0"
+              step="0.01"
+            />
+            <InputError :message="form.errors.amount" />
+          </div>
+
+          <div class="text-sm">
+            <h3 class="font-bold text-lg mb-2 mt-10">Acceso al proyecto</h3>
+            <div class="my-1">
+              <input
+                v-model="form.type_access_project"
+                value="Publico"
+                class="checked:bg-primary focus:text-primary focus:ring-[#D90537] border-transparent"
+                type="radio"
+                name="type_access_project"
+              />
+              Público
+              <p class="text-[#9A9A9A] ml-4">
+                Los usuarios del portal solo pueden ver, seguir y comentar, mientras que
+                los usuarios del proyecto tendrán acceso directo.
+              </p>
+            </div>
+            <div class="my-1">
+              <input
+                v-model="form.type_access_project"
+                value="Privado"
+                class="checked:bg-primary focus:text-primary focus:ring-[#D90537] border-transparent"
+                type="radio"
+                name="type_access_project"
+              />
+              Privado
+              <p class="text-[#9A9A9A] ml-4">
+                Solo los usuarios de proyecto pueden ver y acceder a este proyecto
+              </p>
+            </div>
+          </div>
+
+          <section class="rounded-lg bg-[#CCCCCC] py-4 px-7 h-[545px]">
+            <div class="text-right">
+              <ThirthButton type="button" @click.stop="editAccesFlag = !editAccesFlag">{{
+                editAccesFlag ? "Actualizar" : "Editar"
+              }}</ThirthButton>
+            </div>
+
+            <div class="flex justify-between overflow-y-scroll h-[460px] mt-4">
+              <div class="w-full">
+                <div class="flex">
+                  <h2 class="font-bold border-b border-[#9A9A9A] w-2/3 pl-3">Usuarios</h2>
+                  <h2 class="font-bold border-b border-[#9A9A9A] w-1/3">Permisos</h2>
+                </div>
+                <div class="pl-3">
+                  <figure
+                    class="flex mt-2 border-b border-[#9A9A9A]"
+                    v-for="user in users"
+                    :key="user"
+                  >
+                    <div class="w-2/3 flex space-x-2">
+                      <div
+                        v-if="$page.props.jetstream.managesProfilePhotos"
+                        class="flex text-sm rounded-full w-12"
+                      >
+                        <img
+                          class="h-10 w-10 rounded-full object-cover"
+                          :src="user.profile_photo_url"
+                          :alt="user.name"
+                        />
+                      </div>
+                      <div class="text-sm w-full">
+                        <p class="font-bold">{{ user.name }}</p>
+                        <p v-if="user.employee_properties">
+                          {{ "Depto." + user.employee_properties?.department }}
+                        </p>
+                        <p v-else>Super admin</p>
+                      </div>
+                    </div>
+
+                    <div class="w-1/3">
+                      <div class="space-y-1 mb-2">
+                        <label class="flex items-center">
+                          <Checkbox
+                            :disabled="!editAccesFlag"
+                            v-model:checked="form.is_strict_proyect"
+                            class="bg-transparent disabled:border-gray-400"
+                          />
+                          <span
+                            :class="
+                              !editAccesFlag ? 'text-gray-500/80 cursor-not-allowed' : ''
+                            "
+                            class="ml-2 text-xs"
+                            >Crea tarea</span
+                          >
+                        </label>
+                        <label class="flex items-center">
+                          <Checkbox
+                            v-model:checked="form.is_strict_proyect"
+                            class="bg-transparent disabled:border-gray-400"
+                          />
+                          <span class="ml-2 text-xs">Ver</span>
+                        </label>
+                        <label class="flex items-center">
+                          <Checkbox
+                            :disabled="!editAccesFlag"
+                            v-model:checked="form.is_strict_proyect"
+                            class="bg-transparent disabled:border-gray-400"
+                          />
+                          <span
+                            :class="
+                              !editAccesFlag ? 'text-gray-500/80 cursor-not-allowed' : ''
+                            "
+                            class="ml-2 text-xs"
+                            >Editar</span
+                          >
+                        </label>
+                        <label class="flex items-center">
+                          <Checkbox
+                            :disabled="!editAccesFlag"
+                            v-model:checked="form.is_strict_proyect"
+                            class="bg-transparent disabled:border-gray-400"
+                          />
+                          <span
+                            :class="
+                              !editAccesFlag ? 'text-gray-500/80 cursor-not-allowed' : ''
+                            "
+                            class="ml-2 text-xs"
+                            >Eliminar</span
+                          >
+                        </label>
+                        <label class="flex items-center">
+                          <Checkbox
+                            v-model:checked="form.is_strict_proyect"
+                            class="bg-transparent disabled:border-gray-400"
+                          />
+                          <span class="ml-2 text-xs">Comentar</span>
+                        </label>
+                      </div>
+                    </div>
+                  </figure>
                 </div>
               </div>
-
-              <div class="w-1/3">
-          <div class="space-y-1 mb-2">
-            <label class="flex items-center">
-              <Checkbox :disabled="!editAccesFlag" v-model:checked="form.is_strict_proyect" class="bg-transparent disabled:border-gray-400"/>
-              <span :class="!editAccesFlag ? 'text-gray-500/80 cursor-not-allowed' : ''" class="ml-2 text-xs">Crea tarea</span>
-            </label>
-            <label class="flex items-center">
-              <Checkbox v-model:checked="form.is_strict_proyect" class="bg-transparent disabled:border-gray-400"/>
-              <span class="ml-2 text-xs">Ver</span>
-            </label>
-            <label class="flex items-center">
-              <Checkbox :disabled="!editAccesFlag" v-model:checked="form.is_strict_proyect" class="bg-transparent disabled:border-gray-400"/>
-              <span :class="!editAccesFlag ? 'text-gray-500/80 cursor-not-allowed' : ''" class="ml-2 text-xs">Editar</span>
-            </label>
-            <label class="flex items-center">
-              <Checkbox :disabled="!editAccesFlag" v-model:checked="form.is_strict_proyect" class="bg-transparent disabled:border-gray-400"/>
-              <span :class="!editAccesFlag ? 'text-gray-500/80 cursor-not-allowed' : ''" class="ml-2 text-xs">Eliminar</span>
-            </label>
-            <label class="flex items-center">
-              <Checkbox v-model:checked="form.is_strict_proyect" class="bg-transparent disabled:border-gray-400"/>
-              <span class="ml-2 text-xs">Comentar</span>
-            </label>
-          </div>
-        </div>
-
-            </figure>
-          </div>
-        </div>
-      </div>
-    </section>
-<!-- {{ form }} -->
+            </div>
+          </section>
+          <!-- {{ form }} -->
           <div class="mt-9 mx-3 md:text-right">
-            <PrimaryButton :disabled="form.processing">
-              Crear oportunidad
-            </PrimaryButton>
+            <PrimaryButton :disabled="form.processing"> Crear oportunidad </PrimaryButton>
           </div>
         </div>
       </form>
       <!-- tag form -->
       <DialogModal :show="showTagFormModal" @close="showTagFormModal = false">
-        <template #title>
-          Agregar etiqueta
-        </template>
+        <template #title> Agregar etiqueta </template>
         <template #content>
           <form @submit.prevent="storeTag" ref="tagForm">
             <div>
               <label>Nombre de la etiqueta *</label>
-              <input v-model="tagForm.name" type="text" class="input mt-1" placeholder="Escribe el nombre" required>
+              <input
+                v-model="tagForm.name"
+                type="text"
+                class="input mt-1"
+                placeholder="Escribe el nombre"
+                required
+              />
               <InputError :message="tagForm.errors.name" />
             </div>
             <div class="mt-3">
@@ -269,8 +467,12 @@
           </form>
         </template>
         <template #footer>
-          <CancelButton @click="showTagFormModal = false" :disabled="tagForm.processing">Cancelar</CancelButton>
-          <PrimaryButton @click="submitTagForm()" :disabled="tagForm.processing">Crear</PrimaryButton>
+          <CancelButton @click="showTagFormModal = false" :disabled="tagForm.processing"
+            >Cancelar</CancelButton
+          >
+          <PrimaryButton @click="submitTagForm()" :disabled="tagForm.processing"
+            >Crear</PrimaryButton
+          >
         </template>
       </DialogModal>
     </AppLayout>
@@ -307,7 +509,7 @@ export default {
       priority: null,
       start_date: null,
       estimated_finish_date: null,
-      type_access_project: 'Publico',
+      type_access_project: "Publico",
       lost_oportunity_razon: null,
       media: [],
       is_new_company: false,
@@ -349,16 +551,16 @@ export default {
           color: "text-[#F7B7FC]",
         },
       ],
-      priorities:[
-         {
+      priorities: [
+        {
           label: "Baja",
           color: "text-[#87CEEB]",
         },
-         {
+        {
           label: "Media",
           color: "text-[#D97705]",
         },
-         {
+        {
           label: "Alta",
           color: "text-[#D90537]",
         },
@@ -394,20 +596,24 @@ export default {
             message: "Se ha creado una nueva oportunidad",
             type: "success",
           });
-
         },
       });
     },
     async storeTag() {
       try {
         this.tagForm.processing = true;
-        const response = await axios.post(route('tags.store'), { name: this.tagForm.name, color: this.tagForm.color, type: 'crm', user_id: this.$page.props.auth.user.id });
+        const response = await axios.post(route("tags.store"), {
+          name: this.tagForm.name,
+          color: this.tagForm.color,
+          type: "crm",
+          user_id: this.$page.props.auth.user.id,
+        });
 
         if (response.status === 200) {
           this.$notify({
-            title: 'Correcto',
+            title: "Correcto",
             message: response.data.message,
-            type: 'success'
+            type: "success",
           });
 
           this.showTagFormModal = false;
@@ -422,13 +628,13 @@ export default {
           this.tagForm.errors.name = error.response.data.errors.name[0];
           this.tagForm.errors.color = error.response.data.errors.color[0];
         }
-        console.log(error)
+        console.log(error);
       } finally {
         this.tagForm.processing = false;
       }
     },
     submitTagForm() {
-      this.$refs.tagForm.dispatchEvent(new Event('submit', { cancelable: true }));
+      this.$refs.tagForm.dispatchEvent(new Event("submit", { cancelable: true }));
     },
     disabledDate(time) {
       const today = new Date();
@@ -450,7 +656,7 @@ export default {
         return "text-transparent";
       }
     },
-    getColorPriority(oportunityPriority){
+    getColorPriority(oportunityPriority) {
       if (oportunityPriority === "Baja") {
         return "text-[#87CEEB]";
       } else if (oportunityPriority === "Media") {
@@ -461,20 +667,22 @@ export default {
         return "text-transparent";
       }
     },
-  handleChecked() {
-    //resetea la busqueda de contacto en formulario
-    this.form.company_id = null;
-    this.company_branch_obj = null;
-    this.company_branch = null;
-    this.form.contact = null;
-  },
-  saveCompanyBranchAddress(){
-      this.company_branch_obj = this.companies.find((item) => item.id == this.form.company_id)?.company_branches[0];
+    handleChecked() {
+      //resetea la busqueda de contacto en formulario
+      this.form.company_id = null;
+      this.company_branch_obj = null;
+      this.company_branch = null;
+      this.form.contact = null;
+    },
+    saveCompanyBranchAddress() {
+      this.company_branch_obj = this.companies.find(
+        (item) => item.id == this.form.company_id
+      )?.company_branches[0];
       // console.log(this.company_branch_obj);
     },
     updateDescription(content) {
       this.form.description = content;
-    }
+    },
   },
 };
 </script>

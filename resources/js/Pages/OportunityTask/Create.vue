@@ -14,7 +14,7 @@
 
       <!-- Form -->
       <form @submit.prevent="store">
-        <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4">
+        <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4 mx-2 text-sm lg:text-base">
             <div class="flex items-center space-x-2">
                 <div class="w-1/2">
                     <label>Nombre de la actividad *</label>

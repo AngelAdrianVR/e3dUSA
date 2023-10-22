@@ -142,6 +142,7 @@ Route::resource('client-monitors', ClientMonitorController::class)->middleware('
 
 // ------- CRM (Payment monior Routes)  ---------
 Route::resource('payment-monitors', PaymentMonitorController::class)->middleware('auth');
+Route::post('payment-monitors/update-with-media/{payment_monitor}', [PaymentMonitorController::class, 'updateWithMedia'])->name('payment-monitors.update-with-media')->middleware('auth');
 
 // ------- CRM (meeting monior Routes)  ---------
 Route::resource('meeting-monitors', MettingMonitorController::class)->middleware('auth');
