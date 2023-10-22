@@ -25,7 +25,7 @@ return new class extends Migration
             $table->timestamp('finished_at')->nullable();
             $table->timestamp('start_date')->nullable();
             $table->timestamp('estimated_finish_date')->nullable();
-            $table->string('type_access_project');
+            $table->string('type_access_project')->nullable();
             $table->foreignId('company_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('seller_id')->constrained('users')->cascadeOnDelete();
