@@ -139,10 +139,12 @@ class SaleController extends Controller
             }
         }
 
-        // Eliminar los productos que no se actualizaron o crearon en esta solicitud
-        CatalogProductCompanySale::where('sale_id', $sale->id)
-            ->whereNotIn('id', $updatedProductIds)
+        // Eliminar los productos que no se actualizaron o crearon en esta solicitud y las producciones asignadas
+        $sold_products = CatalogProductCompanySale::where('sale_id', $sale->id)
+            ->whereNotIn('id', $updatedProductIds);
+        $sold_products->first()?->productions()
             ->delete();
+        $sold_products->delete();
 
         event(new RecordEdited($sale));
 

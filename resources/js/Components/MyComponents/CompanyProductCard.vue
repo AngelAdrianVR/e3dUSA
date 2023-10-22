@@ -40,7 +40,7 @@
         company_product.pivot.old_date
       }}</span>
 
-      <span class="text-sm">Precio Anterior:</span>
+      <span class="text-sm">Precio Actual:</span>
       <span class="text-secondary text-sm"
         >{{ company_product.pivot.new_price }}
         {{ company_product.pivot.new_currency }}</span

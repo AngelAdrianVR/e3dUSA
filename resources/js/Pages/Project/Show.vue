@@ -16,14 +16,16 @@
         </el-select>
       </div>
       <div v-if="tabs == 1" class="flex space-x-2 w-full justify-end">
-        <PrimaryButton @click="$inertia.get(route('projects.create'))" class="!rounded-[10px]">Nuevo proyecto</PrimaryButton>
+        <PrimaryButton @click="$inertia.get(route('projects.create'))" class="!rounded-[10px]">Nuevo proyecto
+        </PrimaryButton>
         <button @click="$inertia.get(route('projects.edit', currentProject?.id ?? 1))"
           class="w-9 h-9 rounded-[10px] bg-[#D9D9D9]">
           <i class="fa-solid fa-pen text-sm"></i>
         </button>
       </div>
-      <div v-if="tabs == 2 || tabs == 3" class="flex space-x-2 w-full justify-end">
-        <PrimaryButton @click="$inertia.get(route('tasks.create', { projectId: currentProject?.id ?? 1 }))" class="!rounded-[10px]">Nueva tarea
+      <div v-if="(tabs == 2 || tabs == 3) && toBool(authUserPermissions[0])" class="flex space-x-2 w-full justify-end">
+        <PrimaryButton @click="$inertia.get(route('tasks.create', { projectId: currentProject?.id ?? 1 }))"
+          class="!rounded-[10px]">Nueva tarea
         </PrimaryButton>
       </div>
     </div>
@@ -35,7 +37,8 @@
         <div v-for="(user, index) in currentProject?.users" :key="index">
           <el-tooltip :content="user.name" placement="top">
             <div v-if="index < 3" class="flex text-sm rounded-full w-8">
-              <img class="h-7 w-7 rounded-full border border-[#cccccc] object-cover" :src="user.profile_photo_url" :alt="user.name" />
+              <img class="h-7 w-7 rounded-full border border-[#cccccc] object-cover" :src="user.profile_photo_url"
+                :alt="user.name" />
             </div>
           </el-tooltip>
         </div>
@@ -176,7 +179,8 @@
           :class="(drag && !pendingTasksList?.length) ? 'h-40' : ''">
           <template #item="{ element: task }">
             <li>
-              <ProjectTaskCard @delete-task="deleteProjectTask" @updated-status="updateTask($event)" :taskComponent="task" :users="currentProject?.users" :id="task.id" />
+              <ProjectTaskCard @delete-task="deleteProjectTask" @updated-status="updateTask($event)" :taskComponent="task"
+                :users="currentProject?.users" :id="task.id" />
             </li>
           </template>
         </draggable>
@@ -196,7 +200,8 @@
           :class="(drag && !inProgressTasksList?.length) ? 'h-40' : ''">
           <template #item="{ element: task }">
             <li>
-              <ProjectTaskCard @delete-task="deleteProjectTask" @updated-status="updateTask($event)" :taskComponent="task" :users="currentProject?.users" />
+              <ProjectTaskCard @delete-task="deleteProjectTask" @updated-status="updateTask($event)" :taskComponent="task"
+                :users="currentProject?.users" />
             </li>
           </template>
         </draggable>
@@ -216,7 +221,8 @@
           :class="(drag && !finishedTasksList?.length) ? 'h-40' : ''">
           <template #item="{ element: task }">
             <li>
-              <ProjectTaskCard @delete-task="deleteProjectTask" @updated-status="updateTask($event)" :taskComponent="task" :users="currentProject?.users" />
+              <ProjectTaskCard @delete-task="deleteProjectTask" @updated-status="updateTask($event)" :taskComponent="task"
+                :users="currentProject?.users" />
             </li>
           </template>
         </draggable>
@@ -302,7 +308,21 @@ export default {
     project: Object,
     users: Array,
   },
+  computed: {
+    authUserPermissions() {
+      const permissions = this.currentProject?.users.find(item => item.id == this.$page.props.auth.user.id)?.pivot.permissions;
+      if (permissions) {
+        return JSON.parse(permissions);
+      } else {
+        return [0, 0, 0, 0, 0];
+      }
+    }
+  },
   methods: {
+    toBool(value) {
+      if (value == 1 || value == true) return true;
+      return false;
+    },
     getFileTypeIcon(fileName) {
       // Asocia extensiones de archivo a iconos
       const fileExtension = fileName.split('.').pop().toLowerCase();
@@ -374,8 +394,8 @@ export default {
       try {
         const response = await axios.delete(route('tasks.destroy', data));
 
-      if (response.status === 200) {
-           this.$notify({
+        if (response.status === 200) {
+          this.$notify({
             title: "Éxito",
             message: "Se ha eliminado correctamente",
             type: "success",
@@ -383,15 +403,15 @@ export default {
 
           const index = this.currentProject.tasks.findIndex(item => item.id === data);
 
-        if (index !== -1) {
-          this.currentProject.tasks.splice(index, 1);
+          if (index !== -1) {
+            this.currentProject.tasks.splice(index, 1);
+          }
+          this.updateTasksLists();
         }
-        this.updateTasksLists();
-      }
       } catch (error) {
         console.log(error);
       }
-      
+
     },
   },
   watch: {
@@ -425,5 +445,4 @@ export default {
   /* Color del texto al hacer hover */
   border-radius: 20px;
   /* Redondeo */
-}
-</style>
+}</style>
