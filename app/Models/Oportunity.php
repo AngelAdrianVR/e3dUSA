@@ -85,4 +85,13 @@ class Oportunity extends Model implements HasMedia
     {
         return $this->hasOne(Survey::class);
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class)
+        ->withPivot([
+            'id',
+            'permissions',
+        ])->withTimestamps();
+    }
 }

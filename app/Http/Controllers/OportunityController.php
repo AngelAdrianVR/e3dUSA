@@ -42,7 +42,7 @@ class OportunityController extends Controller
         $validated = $request->validate([
             'name' => 'required|string',
             'status' => 'required|string',
-            'description' => 'required',
+            'description' => 'nullable',
             'seller_id' => 'required',
             'tags' => 'nullable|array',
             'probability' => 'nullable|numeric|min:0|max:100',
@@ -50,18 +50,26 @@ class OportunityController extends Controller
             'priority' => 'required|string',
             'start_date' => 'required|date',
             'estimated_finish_date' => 'nullable|date',
-            'type_access_project' => 'required|string',
+            // 'type_access_project' => 'required|string',
             'lost_oportunity_razon' => $request->status === 'Perdida' ? 'required' : 'nullable',
             'contact' => 'required|string',
             'company_id' => $request->is_new_company ? 'nullable' : 'required',
         ]);
 
         if ($request->status == 'Pagado') {
-            
+
             $oportunity = Oportunity::create($validated + ['user_id' => auth()->id(), 'finished_at' => now()]);
         } else {
-            
+
             $oportunity = Oportunity::create($validated + ['user_id' => auth()->id()]);
+        }
+
+        // permisos
+        foreach ($request->selectedUsersToPermissions as $user) {
+            $allowedUser = [
+                "permissions" => json_encode($user['permissions']), // Serializa los permisos en formato JSON
+            ];
+            $oportunity->users()->attach($user['id'], $allowedUser);
         }
 
         event(new RecordCreated($oportunity));
@@ -124,17 +132,13 @@ class OportunityController extends Controller
                 'finished_at' => null,
                 'lost_oportunity_razon' => $request->lost_oportunity_razon,
             ]);
-        }
-        else {
+        } else {
 
             $oportunity->update([
                 'status' => $request->status,
                 'finished_at' => null,
                 'lost_oportunity_razon' => null,
             ]);
-        } 
-
-        
-
+        }
     }
 }
