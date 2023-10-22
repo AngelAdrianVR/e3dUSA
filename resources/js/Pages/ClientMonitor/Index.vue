@@ -91,7 +91,7 @@
               {{ monitor.folio}}
             </td>
             <td class="text-center py-2 px-2">
-              {{ monitor.company?.business_name ?? monitor.oportunity?.name }}
+              {{ monitor.company?.business_name ? monitor.company?.business_name : 'Oportunidad: ' + monitor.oportunity?.name }}
             </td>
             <td class="text-center py-2 px-2">
               <span

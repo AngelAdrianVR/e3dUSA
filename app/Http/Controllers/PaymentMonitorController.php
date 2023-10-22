@@ -49,7 +49,7 @@ class PaymentMonitorController extends Controller
         $payment_monitor->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
 
 
-        ClientMonitor::create([
+        $client_monitor = ClientMonitor::create([
             'type' => 'Pago',
             'date' => now(),
             'concept' => $request->concept,
@@ -57,6 +57,9 @@ class PaymentMonitorController extends Controller
             'oportunity_id' => $request->oportunity_id,
             'company_id' => $request->company_id,
         ]);
+
+        $payment_monitor->client_monitor_id = $client_monitor->id;
+        $payment_monitor->save();
 
         event(new RecordCreated($payment_monitor));
         
@@ -119,13 +122,14 @@ class PaymentMonitorController extends Controller
 
         // event(new RecordEdited($payment_monitor));
         
-        return to_route('client-monitors.index');
+        return to_route('payment-monitors.show', ['payment_monitor'=> $payment_monitor]);
     }
 
     
-    public function destroy(PaymentMonitor $payment_monitor)
+    public function destroy($payment_monitor_id)
     {   
-        $client_monitor = ClientMonitor::find($payment_monitor->oportunity_id);
+        $payment_monitor = PaymentMonitor::find($payment_monitor_id);
+        $client_monitor = ClientMonitor::where('oportunity_id', $payment_monitor->oportunity_id)->first();
         $client_monitor->delete();
         $payment_monitor->delete();
         event(new RecordDeleted($payment_monitor));

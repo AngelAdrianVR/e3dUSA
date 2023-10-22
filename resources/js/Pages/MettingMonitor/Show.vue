@@ -80,13 +80,13 @@
           <p class="text-secondary col-span-2 mb-2">Información del cliente</p>
 
             <span class="text-gray-500">Cliente</span>
-            <span>{{ metting_monitor.data.company?.business_name }}</span>
+            <span>{{ metting_monitor.data.company?.business_name ?? 'Cita agendada a oportunidad sin cliente registrado'  }}</span>
             <span class="text-gray-500">Contacto</span>
-            <span>{{ metting_monitor.data.folio }}</span>
+            <span>{{ metting_monitor.data.contact ? metting_monitor.data.contact?.name : metting_monitor.data.contact_name    }}</span>
             <span class="text-gray-500">Sucursal</span>
-            <span>{{ metting_monitor.data.companyBranch?.name }}</span>
+            <span>{{ metting_monitor.data.companyBranch?.name ?? 'Cita agendada a oportunidad sin cliente registrado' }}</span>
             <span class="text-gray-500">Teléfono</span>
-            <span>{{ metting_monitor.data.folio }}</span>
+            <span>{{ metting_monitor.data.phone }}</span>
         </div>
       </div>
       <!-- ------------- Cita ends 1 ------------- -->

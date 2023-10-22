@@ -120,7 +120,7 @@
           <FileUploader @files-selected="this.form.media = $event" />
         </div>
         <div class="flex justify-end items-center">
-          <PrimaryButton :disabled="form.processing"> Agregar </PrimaryButton>
+          <PrimaryButton :disabled="form.processing"> Actualizar </PrimaryButton>
         </div>
       </div>
     </form>

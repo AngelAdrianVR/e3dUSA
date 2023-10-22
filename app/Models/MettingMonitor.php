@@ -17,11 +17,13 @@ class MettingMonitor extends Model
         'location',
         'phone',
         'description',
+        'contact_name',
         'company_id',
         'company_branch_id',
         'oportunity_id',
         'seller_id',
         'client_monitor_id',
+        'contact_id',
     ];
 
     protected $casts = [
@@ -52,5 +54,10 @@ class MettingMonitor extends Model
     public function clientMonitor() :BelongsTo
     {
         return $this->belongsTo(ClientMonitor::class);
+    }
+
+    public function contact() :BelongsTo
+    {
+        return $this->belongsTo(Contact::class);
     }
 }
