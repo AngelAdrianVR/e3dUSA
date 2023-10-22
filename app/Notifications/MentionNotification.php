@@ -26,8 +26,8 @@ class MentionNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        // return ['database'];
-        return ['mail', 'database'];
+        return ['database'];
+        // return ['mail', 'database'];
     }
 
     /**

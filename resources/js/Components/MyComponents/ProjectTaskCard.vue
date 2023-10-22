@@ -81,14 +81,12 @@
           <i :class="getColorStatus(form.status)" class="fa-solid fa-circle text-xs ml-1"></i>
         </label> <br />
         <div class="flex items-center space-x-4">
-          <el-select :disabled="taskComponentLocal?.is_paused" class="lg:w-1/2" v-model="form.status" clearable filterable
-            placeholder="Seleccionar estatus" no-data-text="No hay estatus registrados"
-            no-match-text="No se encontraron coincidencias">
+          <el-select :disabled="taskComponentLocal?.is_paused || !authUserIsParticipant" class="lg:w-1/2"
+            v-model="form.status" @change="updateStatus()" clearable filterable placeholder="Seleccionar estatus"
+            no-data-text="No hay estatus registrados" no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
               <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
-              <span style="float: center; margin-left: 5px; font-size: 13px">{{
-                item.label
-              }}</span>
+              <span style="float: center; margin-left: 5px; font-size: 13px">{{ item.label }}</span>
             </el-option>
           </el-select>
           <el-tooltip v-if="taskComponentLocal?.status == 'En curso'"
@@ -115,7 +113,7 @@
         </div>
         <div class="flex space-x-2 justify-between items-center mt-2">
           <label>Departamento</label>
-          <el-select class="!w-[78%]" v-model="form.department" clearable filterable
+          <el-select class="!w-[78%]" v-model="form.department" clearable filterable :disabled="!canEdit"
             placeholder="Seleccionar departamento" no-data-text="No hay departamentos registrados"
             no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in departments" :key="item" :label="item" :value="item" />
@@ -124,7 +122,7 @@
         </div>
         <div class="flex space-x-2 justify-between items-center mt-2">
           <label>Agregar participantes</label> <br>
-          <el-select class="!w-[95%]" v-model="form.participants" clearable filterable multiple
+          <el-select class="!w-[95%]" v-model="form.participants" clearable filterable multiple :disabled="!canEdit"
             placeholder="Seleccionar participantes" no-data-text="No hay usuarios registrados"
             no-match-text="No se encontraron coincidencias">
             <el-option v-for="user in users" :key="user.id" :label="user.name" :value="user.id" />
@@ -133,7 +131,8 @@
         </div>
         <div class="mt-2">
           <label>Descripción</label>
-          <RichText @content="updateDescription($event)" />
+          <RichText v-if="canEdit" @content="updateDescription($event)" />
+          <div v-else class="rounded-[10px] bg-[#cccccc] px-3 py-2 min-h-[100px] text-sm">{{ form.description }}</div>
           <InputError :message="form.errors.description" />
         </div>
         <div class="mt-3 relative">
@@ -142,7 +141,7 @@
             <i :class="getColorPriority(form.priority)" class="fa-solid fa-circle text-xs ml-1"></i>
           </label>
           <el-select class="w-full" v-model="form.priority" clearable filterable placeholder="Seleccionar prioridad"
-            no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
+            :disabled="!canEdit" no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in priorities" :key="item" :label="item.label" :value="item.label">
               <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
               <span style="float: center; margin-left: 5px; font-size: 13px">{{
@@ -152,15 +151,19 @@
           </el-select>
           <InputError :message="form.errors.priority" />
         </div>
-        <div class="flex space-x-5 justify-between mt-3">
-          <div class="w-1/2">
-            <label>fecha de inicio</label>
-            <input v-model="form.start_date" disabled class="input" type="text" />
+        <div class="grid grid-cols-2 gap-4 mt-3">
+          <div>
+            <label class="block">fecha de inicio</label>
+            <el-date-picker v-model="form.start_date" type="date"
+              :disabled="authUser.id != taskComponent.user.id && authUser.id != taskComponent.project_owner.id"
+              placeholder="Fecha de inicio *" format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
             <InputError :message="form.errors.start_date" />
           </div>
-          <div class="w-1/2">
-            <label>fecha final</label>
-            <input v-model="form.limit_date" disabled class="input" type="text" />
+          <div>
+            <label class="block">fecha final</label>
+            <el-date-picker v-model="form.limit_date" type="date"
+              :disabled="authUser.id != taskComponent.user.id && authUser.id != taskComponent.project_owner.id"
+              placeholder="Fecha límite *" format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
             <InputError :message="form.errors.limit_date" />
           </div>
         </div>
@@ -201,7 +204,7 @@
                   <p v-html="comment.body"></p>
                 </div>
               </figure>
-              <div class="flex space-x-1 mt-5">
+              <div v-if="toBool(authUserPermissions[4])" class="flex space-x-1 mt-5">
                 <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm rounded-full w-10">
                   <img class="h-8 w-8 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url"
                     :alt="$page.props.auth.user.name" />
@@ -229,17 +232,19 @@
           <!-- -------------- Tab 3 historial starts ----------------->
           <div v-if="tabs == 3" class="mt-7 min-h-[170px]"></div>
           <!-- ---------------- tab 3 historial ends  -------------->
-
-
         </section>
       </div>
       <!-- {{ form }} -->
       <div class="flex justify-end space-x-3 pt-5 pb-1">
-        <CancelButton @click="taskInformationModal = false">Cancelar</CancelButton>
-        <el-dropdown split-button type="primary" @click="update" class="custom-dropdown rounded-lg">
-          Guarda cambios
+        <CancelButton @click="!canEdit ? taskInformationModal = false : canEdit = false">
+          {{ !canEdit ? 'Cancelar' : 'Cancelar edición' }}
+        </CancelButton>
+        <el-dropdown v-if="toBool(authUserPermissions[2])" split-button type="primary"
+          @click="candEdit ? update : canEdit = true" class="custom-dropdown rounded-lg">
+          <span v-if="canEdit">Guardar cambios</span>
+          <span v-else>Editar</span>
           <template #dropdown>
-            <el-dropdown-menu>
+            <el-dropdown-menu v-if="toBool(authUserPermissions[3])">
               <el-dropdown-item @click="showConfirmModal = true">Eliminar</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -281,8 +286,8 @@ export default {
       participants: null,
       description: this.taskComponent.description,
       priority: this.taskComponent.priority.label,
-      start_date: this.taskComponent.start_date,
-      limit_date: this.taskComponent.end_date,
+      start_date: this.taskComponent.start_date_raw,
+      limit_date: this.taskComponent.end_date_raw,
       reminder: this.taskComponent.reminder,
       comment: null,
     });
@@ -293,6 +298,7 @@ export default {
       sendingComments: false,
       taskComponentLocal: null,
       tabs: 1,
+      canEdit: false,
       taskInformationModal: false,
       itemToShow: null,
       statuses: [
@@ -345,7 +351,39 @@ export default {
   events: [
     'updated-status'
   ],
+  computed: {
+    authUser() {
+      return this.users.find(item => item.id == this.$page.props.auth.user?.id);
+    },
+    authUserIsParticipant() {
+      return this.taskComponent.participants?.some(user => user.id === this.authUser?.id);
+    },
+    authUserPermissions() {
+      const permissions = this.authUser?.pivot.permissions;
+      if (permissions) {
+        return JSON.parse(permissions);
+      } else {
+        return [0, 0, 0, 0, 0];
+      }
+    }
+  },
   methods: {
+    async updateStatus() {
+      try {
+        const response = await axios.put(route('tasks.update-status', this.taskComponentLocal.id), { status: this.form.status });
+
+        if (response.status === 200) {
+          this.taskComponentLocal.status = this.form.status;
+          this.$emit('updated-status', this.taskComponentLocal);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    toBool(value) {
+      if (value == 1 || value == true) return true;
+      return false;
+    },
     updateDescription(content) {
       this.form.description = content;
     },
