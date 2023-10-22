@@ -45,4 +45,9 @@ class ClientMonitor extends Model
     {
         return $this->hasOne(PaymentMonitor::class);
     }
+
+    public function mettingMonitor() :HasOne 
+    {
+        return $this->hasOne(MettingMonitor::class);
+    }
 }

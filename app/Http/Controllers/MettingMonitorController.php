@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Http\Resources\MeetingMonitorResource;
 use App\Http\Resources\OportunityResource;
 use App\Models\ClientMonitor;
 use App\Models\Company;
@@ -69,34 +70,29 @@ class MettingMonitorController extends Controller
         return to_route('client-monitors.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(MettingMonitor $mettingMonitor)
+   
+    public function show($metting_monitor_id)
+    {
+        $metting_monitor = MeetingMonitorResource::make(MettingMonitor::with('seller', 'oportunity', 'company', 'companyBranch')->find($metting_monitor_id));
+
+        // return $metting_monitor;
+        return inertia('MettingMonitor/Show', compact('metting_monitor'));
+    }
+
+    
+    public function edit(MettingMonitor $metting_monitor)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(MettingMonitor $mettingMonitor)
+    
+    public function update(Request $request, MettingMonitor $metting_monitor)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, MettingMonitor $mettingMonitor)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(MettingMonitor $mettingMonitor)
+    
+    public function destroy(MettingMonitor $metting_monitor)
     {
         //
     }

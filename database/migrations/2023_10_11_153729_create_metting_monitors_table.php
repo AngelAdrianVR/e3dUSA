@@ -23,6 +23,7 @@ return new class extends Migration
             $table->foreignId('company_branch_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('oportunity_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('seller_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('client_monitor_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
