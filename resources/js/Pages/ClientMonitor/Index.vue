@@ -7,14 +7,13 @@
         <div class="flex justify-between">
         <div class="flex items-center space-x-2 w-1/3">
           <input
-          :disabled="type_view == 'Kanban'"
           @keyup.enter="handleSearch"
           v-model="inputSearch"
           type="search"
           class="input"
           placeholder="Buscar"
           />
-          <SecondaryButton :disabled="type_view == 'Kanban'" @click="handleSearch" type="submit" class="rounded-lg">
+          <SecondaryButton @click="handleSearch" type="submit" class="rounded-lg">
             <i class="fa-solid fa-magnifying-glass"></i>
           </SecondaryButton>
         </div>
@@ -85,13 +84,13 @@
         </thead>
         <tbody>
           <tr  v-for="monitor in filteredTableData" :key="monitor.id"
-          @click="$inertia.get(route('client-monitors.show', monitor.id))"
+          @click="showMonitorType(monitor)"
             class="mb-4 hover:bg-[#dfdbdba8] cursor-pointer"
           >
-            <td class="text-center py-2 px-2 rounded-l-full text-secondary">
+            <td class="text-center py-2 px-2 rounded-l-full">
               {{ monitor.folio}}
             </td>
-            <td class="text-center py-2 px-2 text-secondary">
+            <td class="text-center py-2 px-2">
               {{ monitor.company?.business_name ?? monitor.oportunity?.name }}
             </td>
             <td class="text-center py-2 px-2">
@@ -109,7 +108,7 @@
             <td class="text-center py-2 px-2">
               {{ monitor.concept }}
             </td>
-            <td class="text-center py-2 px-2 text-secondary">
+            <td class="text-center py-2 px-2">
               {{ monitor.seller?.name }}
             </td>
             <td
@@ -167,6 +166,16 @@ props:{
     client_monitors: Object,
 },
 methods:{
+    showMonitorType(monitor) {
+      console.log(monitor);
+      if (monitor.type == 'Correo') {
+        this.$inertia.get(route('payment-monitors.show', monitor.id));
+      } else if (monitor.type == 'Pago') {
+        this.$inertia.get(route('payment-monitors.show', monitor.id));
+      } else if (monitor.type == 'Reunión') {
+        this.$inertia.get(route('meeting-monitors.show', monitor.id));
+      }
+    },
     handleSearch() {
       this.search = this.inputSearch;
     },

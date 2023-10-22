@@ -31,7 +31,7 @@ class PaymentMonitorController extends Controller
 
         // return $oportunities;
 
-        return inertia('ClientMonitor/PaymentCreate', compact('oportunities'));
+        return inertia('PaymentMonitor/Create', compact('oportunities'));
     }
 
     /**

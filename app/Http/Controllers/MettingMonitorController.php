@@ -28,7 +28,7 @@ class MettingMonitorController extends Controller
         $companies = Company::with('companyBranches.contacts')->get();
         $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
 
-        return inertia('ClientMonitor/MeetingCreate', compact('companies', 'oportunities'));
+        return inertia('MettingMonitor/Create', compact('companies', 'oportunities'));
     }
 
     /**
