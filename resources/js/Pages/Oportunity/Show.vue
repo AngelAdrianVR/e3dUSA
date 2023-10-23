@@ -18,14 +18,14 @@
         </div>
 
         <div class="flex items-center space-x-2">
-          <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar oportunidades') && tabs == 1"
+          <!-- <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar oportunidades') && tabs == 1"
             content="Editar oportunidad" placement="top">
             <Link :href="route('oportunities.edit', oportunitySelected)">
             <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
               <i class="fa-solid fa-pen text-sm"></i>
             </button>
             </Link>
-          </el-tooltip>
+          </el-tooltip> -->
           <el-tooltip v-if="$page.props.auth.user.permissions.includes('Crear oportunidades') && tabs == 1"
             content="Crear oportunidad" placement="top">
             <Link :href="route('oportunities.create')">
@@ -39,9 +39,9 @@
             </Link>
           </el-tooltip>
           <el-tooltip v-if="tabs == 3" content="Enviar un correo a prospecto" placement="top">
-            <Link :href="route('oportunity-tasks.create', oportunitySelected)">
+            <!-- <Link :href="route('oportunity-tasks.create', oportunitySelected)"> -->
             <PrimaryButton class="rounded-md">Enviar correo</PrimaryButton>
-            </Link>
+            <!-- </Link> -->
           </el-tooltip>
           <el-tooltip v-if="tabs == 5 && currentOportunity?.finished_at"
             content="Genera la url para la encuesta de satisfacción" placement="top">
@@ -217,7 +217,7 @@
         </h2>
         <OportunityTaskCard @updated-oportunityTask="updateOportunityTask" @delete-task="deleteTask"
           @task-done="markAsDone" class="mb-3" v-for="todayTask in todayTasksList" :key="todayTask"
-          :oportunityTask="todayTask" :users="users" />
+          :oportunityTask="todayTask" :users="currentOportunity?.users" />
         <div class="text-center" v-if="!todayTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -231,7 +231,7 @@
         </h2>
         <OportunityTaskCard @updated-oportunityTask="updateOportunityTask" @delete-task="deleteTask"
           @task-done="markAsDone" class="mb-3" v-for="thisWeekTask in thisWeekTasksList" :key="thisWeekTask"
-          :oportunityTask="thisWeekTask" :users="users" />
+          :oportunityTask="thisWeekTask" :users="currentOportunity?.users" />
         <div class="text-center" v-if="!thisWeekTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -245,7 +245,7 @@
         </h2>
         <OportunityTaskCard @updated-oportunityTask="updateOportunityTask" @delete-task="deleteTask"
           @task-done="markAsDone" class="mb-3" v-for="nextTask in nextTasksList" :key="nextTask"
-          :oportunityTask="nextTask" :users="users" />
+          :oportunityTask="nextTask" :users="currentOportunity?.users" />
         <div class="text-center" v-if="!nextTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -259,7 +259,7 @@
         </h2>
         <OportunityTaskCard @updated-oportunityTask="updateOportunityTask" @delete-task="deleteTask"
           @task-done="markAsDone" class="mb-3" v-for="finishedTask in finishedTasksList" :key="finishedTask"
-          :oportunityTask="finishedTask" :users="users" />
+          :oportunityTask="finishedTask" :users="currentOportunity?.users" />
         <div class="text-center" v-if="!finishedTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -273,7 +273,7 @@
         </h2>
         <OportunityTaskCard @updated-oportunityTask="updateOportunityTask" @delete-task="deleteTask"
           @task-done="markAsDone" class="mb-3" v-for="lateTask in lateTasksList" :key="lateTask"
-          :oportunityTask="lateTask" :users="users" />
+          :oportunityTask="lateTask" :users="currentOportunity?.users" />
         <div class="text-center" v-if="!lateTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
@@ -498,7 +498,8 @@ export default {
   props: {
     oportunity: Object,
     oportunities: Object,
-    users: Array
+    users: Array,
+    defaultTab: Number,
   },
   methods: {
     toBool(value) {
@@ -660,6 +661,9 @@ export default {
       (item) => item.id == this.oportunitySelected
     );
     this.status = this.currentOportunity?.status;
+    if (this.defaultTab != null) {
+      this.tabs = parseInt(this.defaultTab);
+    }
   },
   computed: {
     authUserPermissions() {

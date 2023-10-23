@@ -131,7 +131,7 @@
         </div>
         <div class="mt-2">
           <label>Descripción</label>
-          <RichText v-if="canEdit" @content="updateDescription($event)" />
+          <RichText v-if="canEdit" @content="updateDescription($event)" :defaultValue="form.description" />
           <div v-else class="rounded-[10px] bg-[#cccccc] px-3 py-2 min-h-[100px] text-sm">{{ form.description }}</div>
           <InputError :message="form.errors.description" />
         </div>
@@ -296,9 +296,9 @@ export default {
       form,
       showConfirmModal: false,
       sendingComments: false,
+      canEdit: false,
       taskComponentLocal: null,
       tabs: 1,
-      canEdit: false,
       taskInformationModal: false,
       itemToShow: null,
       statuses: [
@@ -387,9 +387,6 @@ export default {
     updateDescription(content) {
       this.form.description = content;
     },
-    updateComment(content) {
-      this.form.comment = content;
-    },
     async playPauseTask(task) {
       try {
         const response = await axios.put(route('tasks.pause-play', task));
@@ -444,6 +441,9 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    updateComment(content) {
+      this.form.comment = content;
     },
     async storeComment() {
       const editor = this.$refs.commentEditor;

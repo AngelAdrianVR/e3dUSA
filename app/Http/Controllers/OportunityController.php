@@ -19,9 +19,10 @@ class OportunityController extends Controller
 
     public function index()
     {
-        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks')->latest()->get());
+        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks')->whereHas('users', function ($query) {
+            $query->where('users.id', auth()->id());
+        })->latest()->get());
 
-        // return $oportunities;
         return inertia('Oportunity/Index',  compact('oportunities'));
     }
 
@@ -32,7 +33,6 @@ class OportunityController extends Controller
         $companies = Company::with('companyBranches.contacts')->latest()->get();
         $tags = TagResource::collection(Tag::where('type', 'crm')->get());
 
-        // return $companies;
         return inertia('Oportunity/Create', compact('users', 'companies', 'tags'));
     }
 
@@ -91,9 +91,9 @@ class OportunityController extends Controller
     {
         $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitores.seller', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller', 'users')->latest()->get());
         $users = User::where('is_active', true)->get();
+        $defaultTab = request('defaultTab');
 
-        // return $oportunities;
-        return inertia('Oportunity/Show', compact('oportunity', 'oportunities', 'users'));
+        return inertia('Oportunity/Show', compact('oportunity', 'oportunities', 'users', 'defaultTab'));
     }
 
 

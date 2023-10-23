@@ -49,7 +49,7 @@ class OportunityTaskController extends Controller
         // archivos adjuntos
         $oportunity_task->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
 
-        return to_route('oportunities.show', ['oportunity'=> $oportunity_task->oportunity_id]);
+        return to_route('oportunities.show', ['oportunity'=> $oportunity_task->oportunity_id, 'defaultTab' => 2]);
     }
     
     public function show(OportunityTask $oportunity_task)
