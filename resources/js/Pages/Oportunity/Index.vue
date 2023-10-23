@@ -1,55 +1,36 @@
 <template>
   <AppLayoutNoHeader title="Oportunidades">
-    <div
-      @click="show_type_view = false"
-      class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1"
-    >
+    <div @click="show_type_view = false" class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
       <div class="flex justify-between">
         <label class="text-lg">Oportunidades</label>
       </div>
       <div class="flex justify-between">
-        <div v-if="type_view == 'Lista'" class="flex items-center space-x-2 w-1/3">
-          <input
-          :disabled="type_view == 'Kanban'"
-          @keyup.enter="handleSearch"
-          v-model="inputSearch"
-          type="search"
-          class="input"
-          placeholder="Buscar"
-          />
-          <SecondaryButton :disabled="type_view == 'Kanban'" @click="handleSearch" type="submit" class="rounded-lg">
-            <i class="fa-solid fa-magnifying-glass"></i>
-          </SecondaryButton>
+        <div v-if="type_view == 'Lista'" class="w-1/3 relative ">
+          <input @keyup.enter="handleSearch" v-model="inputSearch" class="input outline-none pr-8"
+            placeholder="Buscar proyecto" />
+          <i class="fa-solid fa-magnifying-glass absolute top-2 right-4 text-xs text-[#9A9A9A]"></i>
         </div>
         <span v-if="type_view == 'Kanban'"></span>
         <div class="flex items-center space-x-2">
-          <div
-            @click.stop="show_type_view = !show_type_view"
-            class="flex items-center text-primary mr-7 cursor-pointer relative"
-          >
+          <div @click.stop="show_type_view = !show_type_view"
+            class="flex items-center text-primary mr-7 cursor-pointer relative">
             <p class="text-sm">{{ type_view }}</p>
             <i class="fa-solid fa-angle-down text-sm ml-2"></i>
-            <div
-              v-if="show_type_view"
-              class="text-sm absolute -bottom-16 border rounded-md py-1 px-1"
-            >
-              <p
-                @click="type_view = 'Kanban'"
-                class="cursor-pointer hover:bg-red-100 rounded-full py-1 px-3"
-              >
+            <div v-if="show_type_view" class="text-sm absolute -bottom-10 -left-4 border rounded-md py-1 px-1">
+              <p v-if="type_view == 'Lista'" @click="type_view = 'Kanban'"
+                class="cursor-pointer hover:bg-red-100 rounded-full py-1 px-3">
                 Kanban
               </p>
-              <p
-                @click="type_view = 'Lista'"
-                class="cursor-pointer hover:bg-red-100 rounded-full py-1 px-3"
-              >
+              <p v-if="type_view == 'Kanban'" @click="type_view = 'Lista'"
+                class="cursor-pointer hover:bg-red-100 rounded-full py-1 px-3">
                 Lista
               </p>
             </div>
           </div>
-            <Link v-if="$page.props.auth.user.permissions.includes('Crear oportunidades')" :href="route('oportunities.create')">
-              <PrimaryButton class="rounded-lg">Nueva oportunidad</PrimaryButton>
-            </Link>
+          <Link v-if="$page.props.auth.user.permissions.includes('Crear oportunidades')"
+            :href="route('oportunities.create')">
+          <PrimaryButton class="rounded-lg">Nueva oportunidad</PrimaryButton>
+          </Link>
           <!-- <Dropdown
             align="right"
             width="48"
@@ -77,10 +58,7 @@
     </div>
 
     <!-- ------------ Kanban view starts ----------------- -->
-    <div
-      v-if="type_view === 'Kanban'"
-      class="mx-4 contenedor text-center text-sm my-16 pb-9"
-    >
+    <div v-if="type_view === 'Kanban'" class="mx-4 contenedor text-center text-sm my-16 pb-9">
       <!-- ---- Nueva --- -->
       <section class="seccion">
         <h2 class="text-[#9A9A9A] bg-[#D9D9D9] border border-[#9A9A9A] py-1">Nueva</h2>
@@ -89,13 +67,18 @@
           <p class="text-secondary text-xl my-2">
             ${{ newTotal?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0.00" }}
           </p>
-
-          <OportunityCard
-            class="my-3"
-            v-for="oportunity in newOportunitiesLocal"
-            :key="oportunity"
-            :oportunity="oportunity"
-          />
+          <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="newOportunitiesLocal"
+            :animation="300" item-key="id" tag="ul" group="oportunities" id="new"
+            :class="(drag && !newOportunitiesLocal?.length) ? 'h-40' : ''">
+            <template #item="{ element: oportunity }">
+              <li>
+                <OportunityCard class="my-3" :oportunity="oportunity" />
+              </li>
+            </template>
+          </draggable>
+          <div class="text-center" v-if="!newOportunitiesLocal?.length">
+            <p class="text-xs text-gray-500 mt-6">No hay oportunidades en este estatus</p>
+          </div>
         </div>
       </section>
 
@@ -111,13 +94,18 @@
               pendingTotal?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0.00"
             }}
           </p>
-
-          <OportunityCard
-            class="my-3"
-            v-for="oportunity in pendingOportunitiesLocal"
-            :key="oportunity"
-            :oportunity="oportunity"
-          />
+          <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="pendingOportunitiesLocal"
+            :animation="300" item-key="id" tag="ul" group="oportunities" id="pending"
+            :class="(drag && !pendingOportunitiesLocal?.length) ? 'h-40' : ''">
+            <template #item="{ element: oportunity }">
+              <li>
+                <OportunityCard class="my-3" :oportunity="oportunity" />
+              </li>
+            </template>
+          </draggable>
+          <div class="text-center" v-if="!pendingOportunitiesLocal?.length">
+            <p class="text-xs text-gray-500 mt-6">No hay oportunidades en este estatus</p>
+          </div>
         </div>
       </section>
 
@@ -133,13 +121,18 @@
               inProgressTotal?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0.00"
             }}
           </p>
-
-          <OportunityCard
-            class="my-3"
-            v-for="oportunity in progressOportunitiesLocal"
-            :key="oportunity"
-            :oportunity="oportunity"
-          />
+          <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="progressOportunitiesLocal"
+            :animation="300" item-key="id" tag="ul" group="oportunities" id="progress"
+            :class="(drag && !progressOportunitiesLocal?.length) ? 'h-40' : ''">
+            <template #item="{ element: oportunity }">
+              <li>
+                <OportunityCard class="my-3" :oportunity="oportunity" />
+              </li>
+            </template>
+          </draggable>
+          <div class="text-center" v-if="!progressOportunitiesLocal?.length">
+            <p class="text-xs text-gray-500 mt-6">No hay oportunidades en este estatus</p>
+          </div>
         </div>
       </section>
 
@@ -151,13 +144,18 @@
           <p class="text-secondary text-xl my-2">
             ${{ paidTotal?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0.00" }}
           </p>
-
-          <OportunityCard
-            class="my-3"
-            v-for="oportunity in paidOportunitiesLocal"
-            :key="oportunity"
-            :oportunity="oportunity"
-          />
+          <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="paidOportunitiesLocal"
+            :animation="300" item-key="id" tag="ul" group="oportunities" id="paid"
+            :class="(drag && !paidOportunitiesLocal?.length) ? 'h-40' : ''">
+            <template #item="{ element: oportunity }">
+              <li>
+                <OportunityCard class="my-3" :oportunity="oportunity" />
+              </li>
+            </template>
+          </draggable>
+          <div class="text-center" v-if="!paidOportunitiesLocal?.length">
+            <p class="text-xs text-gray-500 mt-6">No hay oportunidades en este estatus</p>
+          </div>
         </div>
       </section>
 
@@ -169,13 +167,18 @@
           <p class="text-secondary text-xl my-2">
             ${{ lostTotal?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0.00" }}
           </p>
-
-          <OportunityCard
-            class="my-3"
-            v-for="oportunity in lostOportunitiesLocal"
-            :key="oportunity"
-            :oportunity="oportunity"
-          />
+          <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="lostOportunitiesLocal"
+            :animation="300" item-key="id" tag="ul" group="oportunities" id="lost"
+            :class="(drag && !lostOportunitiesLocal?.length) ? 'h-40' : ''">
+            <template #item="{ element: oportunity }">
+              <li>
+                <OportunityCard class="my-3" :oportunity="oportunity" />
+              </li>
+            </template>
+          </draggable>
+          <div class="text-center" v-if="!lostOportunitiesLocal?.length">
+            <p class="text-xs text-gray-500 mt-6">No hay oportunidades en este estatus</p>
+          </div>
         </div>
       </section>
     </div>
@@ -183,7 +186,7 @@
 
     <!-- ------------ Lista view starts ----------------- -->
     <div v-if="type_view === 'Lista'" class="w-11/12 mx-auto my-16">
-      <table class="lg:w-[80%] w-full mx-auto">
+      <table class="lg:w-[90%] w-full mx-auto">
         <thead>
           <tr class="text-left">
             <th class="font-bold pb-5">
@@ -205,27 +208,17 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="oportunity in filteredTableData"
-            :key="oportunity.id"
+          <tr v-for="oportunity in filteredTableData" :key="oportunity.id"
             class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]"
-            @click="$inertia.get(route('oportunities.show', oportunity.id))"
-          >
+            @click="$inertia.get(route('oportunities.show', oportunity.id))">
             <td class="text-left py-2 px-2 rounded-l-full">
               {{ oportunity.name }}
             </td>
             <td class="text-left py-2 px-2">
-              <span
-                class="py-1 px-4 rounded-full"
-                :class="getStatusStyles(oportunity)"
-                >{{ oportunity.status }}</span
-              >
+              <span class="py-1 px-4 rounded-full" :class="getStatusStyles(oportunity)">{{ oportunity.status }}</span>
             </td>
             <td class="text-left py-2 px-2">
-              <span
-                class="py-1 px-2 rounded-full"
-                >{{ oportunity.created_at.isoFormat }}</span
-              >
+              <span class="py-1 px-2 rounded-full">{{ oportunity.created_at.isoFormat }}</span>
             </td>
             <td class="text-left py-2 px-2">
               {{ oportunity.estimated_finish_date }}
@@ -233,22 +226,12 @@
             <td class="text-left py-2 px-2">
               {{ oportunity.finished_at ?? "--" }}
             </td>
-            <td
-              v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades')"
-              class="text-left py-2 px-2 rounded-r-full"
-            >
-              <el-popconfirm
-                confirm-button-text="Si"
-                cancel-button-text="No"
-                icon-color="#D90537"
-                title="¿Eliminar?"
-                @confirm="deleteOportunity(oportunity)"
-              >
+            <td v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades')"
+              class="text-left py-2 px-2 rounded-r-full">
+              <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#D90537" title="¿Eliminar?"
+                @confirm="deleteOportunity(oportunity)">
                 <template #reference>
-                  <i
-                    @click.stop=""
-                    class="fa-regular fa-trash-can text-primary cursor-pointer p-2"
-                  ></i>
+                  <i @click.stop="" class="fa-regular fa-trash-can text-primary cursor-pointer p-2"></i>
                 </template>
               </el-popconfirm>
             </td>
@@ -267,6 +250,7 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import OportunityCard from "@/Components/MyComponents/OportunityCard.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import draggable from 'vuedraggable';
 import { Link } from "@inertiajs/vue3";
 
 export default {
@@ -286,6 +270,9 @@ export default {
       progressOportunitiesLocal: [],
       paidOportunitiesLocal: [],
       lostOportunitiesLocal: [],
+      drag: false,
+      draggingOpportunityId: null,
+      oportunitiesLocal: null,
     };
   },
   components: {
@@ -295,24 +282,60 @@ export default {
     PrimaryButton,
     SecondaryButton,
     OportunityCard,
+    draggable,
     Link,
   },
   props: {
     oportunities: Object,
   },
   methods: {
-    getStatusStyles(oportunity){
-        if (oportunity.status === 'Nueva') {
-            return 'text-[#9A9A9A] bg-[#CCCCCCCC]';
-        } else if (oportunity.status === 'Pendiente') {
-             return 'text-[#C88C3C] bg-[#F3FD85]';
-        } else if (oportunity.status === 'En proceso') {
-             return 'text-[#FD8827] bg-[#FEDBBD]';
-        } else if (oportunity.status === 'Pagado') {
-             return 'text-[#37951F] bg-[#ADFEB5]';
-        } else if (oportunity.status === 'Perdida') {
-             return 'text-[#9E0FA9] bg-[#F7B7FC]';
+    handleStartDrag(evt) {
+      this.draggingOpportunityId = evt.item.__draggable_context.element.id;
+      this.drag = true;
+    },
+    handleAddDrag(evt) {
+      let status = 'Perdida';
+      if (evt.to.id === 'new') {
+        status = 'Nueva';
+      } else if (evt.to.id === 'pending') {
+        status = 'Pendiente';
+      } else if (evt.to.id === 'progress') {
+        status = 'En proceso';
+      } else if (evt.to.id === 'paid') {
+        status = 'Pagado';
+      } else if (evt.to.id === 'lost') {
+        status = 'Perdida';
+      }
+
+      this.updateOpportunityStatus(status);
+      this.drag = false;
+    },
+    async updateOpportunityStatus(status) {
+      try {
+        const response = await axios.put(route('oportunities.update-status', this.draggingOpportunityId), { status: status });
+
+        if (response.status === 200) {
+          const OpportunityIndex = this.oportunitiesLocal.findIndex(item => item.id === this.draggingOpportunityId);
+          this.oportunitiesLocal[OpportunityIndex].status = status;
+          this.updateLists();
+          this.calculateTotals();
         }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    getStatusStyles(oportunity) {
+      if (oportunity.status === 'Nueva') {
+        return 'text-[#9A9A9A] bg-[#CCCCCCCC]';
+      } else if (oportunity.status === 'Pendiente') {
+        return 'text-[#C88C3C] bg-[#F3FD85]';
+      } else if (oportunity.status === 'En proceso') {
+        return 'text-[#FD8827] bg-[#FEDBBD]';
+      } else if (oportunity.status === 'Pagado') {
+        return 'text-[#37951F] bg-[#ADFEB5]';
+      } else if (oportunity.status === 'Perdida') {
+        return 'text-[#9E0FA9] bg-[#F7B7FC]';
+      }
     },
     handleSearch() {
       this.search = this.inputSearch;
@@ -320,51 +343,57 @@ export default {
     deleteOportunity(oportunity) {
       this.$inertia.delete(route('oportunities.destroy', oportunity));
       this.$notify({
-            title: "Éxito",
-            message: "Oportunidad eliminado",
-            type: "success",
-          });
-          },
-    
+        title: "Éxito",
+        message: "Oportunidad eliminado",
+        type: "success",
+      });
+    },
+    calculateTotals() {
+      this.newTotal = this.newOportunitiesLocal.reduce(
+        (total, oportunity) => total + oportunity.amount,
+        0
+      );
+      this.pendingTotal = this.pendingOportunitiesLocal.reduce(
+        (total, oportunity) => total + oportunity.amount,
+        0
+      );
+      this.inProgressTotal = this.progressOportunitiesLocal.reduce(
+        (total, oportunity) => total + oportunity.amount,
+        0
+      );
+      this.paidTotal = this.paidOportunitiesLocal.reduce(
+        (total, oportunity) => total + oportunity.amount,
+        0
+      );
+      this.lostTotal = this.lostOportunitiesLocal.reduce(
+        (total, oportunity) => total + oportunity.amount,
+        0
+      );
+    },
+    updateLists() {
+      this.newOportunitiesLocal = this.oportunitiesLocal.filter(
+        (oportunity) => oportunity.status === "Nueva"
+      );
+      this.pendingOportunitiesLocal = this.oportunitiesLocal.filter(
+        (oportunity) => oportunity.status === "Pendiente"
+      );
+      this.progressOportunitiesLocal = this.oportunitiesLocal.filter(
+        (oportunity) => oportunity.status === "En proceso"
+      );
+      this.paidOportunitiesLocal = this.oportunitiesLocal.filter(
+        (oportunity) => oportunity.status === "Pagado"
+      );
+      this.lostOportunitiesLocal = this.oportunitiesLocal.filter(
+        (oportunity) => oportunity.status === "Perdida"
+      );
+    },
+
   },
   mounted() {
-    this.newOportunitiesLocal = this.oportunities?.data.filter(
-      (oportunity) => oportunity.status === "Nueva"
-    );
-    this.pendingOportunitiesLocal = this.oportunities?.data.filter(
-      (oportunity) => oportunity.status === "Pendiente"
-    );
-    this.progressOportunitiesLocal = this.oportunities?.data.filter(
-      (oportunity) => oportunity.status === "En proceso"
-    );
-    this.paidOportunitiesLocal = this.oportunities?.data.filter(
-      (oportunity) => oportunity.status === "Pagado"
-    );
-    this.lostOportunitiesLocal = this.oportunities?.data.filter(
-      (oportunity) => oportunity.status === "Perdida"
-    );
-
+    this.oportunitiesLocal = this.oportunities.data;
+    this.updateLists();
     // Calcula el dinero total de cada sección
-    this.newTotal = this.newOportunitiesLocal.reduce(
-      (total, oportunity) => total + oportunity.amount,
-      0
-    );
-    this.pendingTotal = this.pendingOportunitiesLocal.reduce(
-      (total, oportunity) => total + oportunity.amount,
-      0
-    );
-    this.inProgressTotal = this.progressOportunitiesLocal.reduce(
-      (total, oportunity) => total + oportunity.amount,
-      0
-    );
-    this.paidTotal = this.paidOportunitiesLocal.reduce(
-      (total, oportunity) => total + oportunity.amount,
-      0
-    );
-    this.lostTotal = this.lostOportunitiesLocal.reduce(
-      (total, oportunity) => total + oportunity.amount,
-      0
-    );
+    this.calculateTotals();
   },
   computed: {
     filteredTableData() {
@@ -384,11 +413,14 @@ export default {
 <style>
 .contenedor {
   display: flex;
-  overflow-x: scroll; /* Permite el desplazamiento horizontal */
-  white-space: nowrap; /* Evita el salto de línea de las secciones */
+  overflow-x: scroll;
+  /* Permite el desplazamiento horizontal */
+  white-space: nowrap;
+  /* Evita el salto de línea de las secciones */
 }
 
 .seccion {
-  flex: 0 0 25%; /* Establece el ancho de cada sección al 25% */
+  flex: 0 0 25%;
+  /* Establece el ancho de cada sección al 25% */
 }
 </style>
