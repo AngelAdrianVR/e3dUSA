@@ -51,7 +51,7 @@ class PaymentMonitorController extends Controller
 
         $client_monitor = ClientMonitor::create([
             'type' => 'Pago',
-            'date' => now(),
+            'date' => $request->paid_at,
             'concept' => $request->concept,
             'seller_id' => $request->seller_id,
             'oportunity_id' => $request->oportunity_id,
@@ -100,6 +100,16 @@ class PaymentMonitorController extends Controller
         $payment_monitor->update($request->all());
 
         event(new RecordEdited($payment_monitor));
+
+        //recupero el seguimiento integral para actualizarlo tambien
+        $client_monitor = ClientMonitor::where('oportunity_id', $payment_monitor->oportunity_id)->first();
+              
+        $client_monitor->update([
+            'date' => $request->paid_at,
+            'concept' => $request->concept,
+            'oportunity_id' => $request->oportunity_id,
+            'company_id' => $request->company_id,
+        ]);
         
         return to_route('client-monitors.index');
     }
@@ -119,8 +129,18 @@ class PaymentMonitorController extends Controller
 
         $payment_monitor->clearMediaCollection();
         $payment_monitor->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+        
+        event(new RecordEdited($payment_monitor));
 
-        // event(new RecordEdited($payment_monitor));
+         //recupero el seguimiento integral para actualizarlo tambien
+         $client_monitor = ClientMonitor::where('oportunity_id', $payment_monitor->oportunity_id)->first();
+
+         $client_monitor->update([
+             'date' => $request->paid_at,
+             'concept' => $request->concept,
+             'oportunity_id' => $request->oportunity_id,
+             'company_id' => $request->company_id,
+         ]);
         
         return to_route('payment-monitors.show', ['payment_monitor'=> $payment_monitor]);
     }

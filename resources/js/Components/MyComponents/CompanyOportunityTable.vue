@@ -1,6 +1,6 @@
 <template>
 <div class="overflow-x-auto">
-  <table class="lg:w-[80%] w-full mx-auto">
+  <table class="w-full mx-auto">
         <thead>
           <tr class="text-center">
             <th class="font-bold pb-5 px-14 lg:px-2">

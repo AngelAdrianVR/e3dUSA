@@ -32,9 +32,8 @@
             <PrimaryButton class="rounded-md">Nueva oportunidad</PrimaryButton>
             </Link>
           </el-tooltip>
-          <el-tooltip
-            v-if="tabs == 2 && toBool(authUserPermissions[0])"
-            content="Crear actividad en la oportunidad" placement="top">
+          <el-tooltip v-if="tabs == 2 && toBool(authUserPermissions[0])" content="Crear actividad en la oportunidad"
+            placement="top">
             <Link :href="route('oportunity-tasks.create', oportunitySelected)">
             <PrimaryButton class="rounded-md">Nueva actividad</PrimaryButton>
             </Link>
@@ -78,42 +77,40 @@
           </Dropdown>
         </div>
       </div>
-    </div>
-    <p class="text-center font-bold text-lg mb-4">
-      {{ currentOportunity?.name }}
-    </p>
-
-
-    <!-- ------------- tabs section starts ------------- -->
-    <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2 overflow-x-auto">
-      <div class="flex items-center justify-center">
-        <p @click="tabs = 1" :class="tabs == 1 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-          "
-          class="h-10 w-40 lg:w-auto p-2 cursor-pointer md:ml-5 transition duration-300 ease-in-out text-sm md:text-base text-center">
-          Info de oportunidad
-        </p>
-        <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
-        <p @click="tabs = 2" :class="tabs == 2 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-          " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-          Actividades
-        </p>
-        <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
-        <p @click="tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-          "
-          class="md:ml-3 h-10 w-[147px] lg:w-auto p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-          Seguimiento integral
-        </p>
-        <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
-        <p @click="tabs = 4" :class="tabs == 4 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-          " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-          Historial
-        </p>
-        <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
-        <p @click="tabs = 5" :class="tabs == 5 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-          "
-          class="md:ml-3 h-10 w-48 lg:w-auto p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-          Encuesta post venta
-        </p>
+      <p class="text-center font-bold text-lg mb-4">
+        {{ currentOportunity?.folio }} - {{ currentOportunity?.name }}
+      </p>
+      <!-- ------------- tabs section starts ------------- -->
+      <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2 overflow-x-auto">
+        <div class="flex items-center justify-center">
+          <p @click="tabs = 1" :class="tabs == 1 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            "
+            class="h-10 w-40 lg:w-auto p-2 cursor-pointer md:ml-5 transition duration-300 ease-in-out text-sm md:text-base text-center">
+            Info de oportunidad
+          </p>
+          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p @click="tabs = 2" :class="tabs == 2 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Actividades
+          </p>
+          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p @click="tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            "
+            class="md:ml-3 h-10 w-[147px] lg:w-auto p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Seguimiento integral
+          </p>
+          <!-- <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p @click="tabs = 4" :class="tabs == 4 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Historial
+          </p> -->
+          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p @click="tabs = 5" :class="tabs == 5 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            "
+            class="md:ml-3 h-10 w-48 lg:w-auto p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Encuesta post venta
+          </p>
+        </div>
       </div>
     </div>
     <!-- ------------- tabs section ends ------------- -->

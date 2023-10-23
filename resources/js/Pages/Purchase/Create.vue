@@ -16,7 +16,6 @@
           </div>
         </div>
       </template>
-      {{ productSelected }}
       <!-- Form -->
       <form @submit.prevent="store">
         <div
@@ -58,16 +57,17 @@
               </span>
             </el-tooltip>
             <el-select
-              v-model="form.bank_information"
+            @change="saveBankObj()"
+              v-model="bank_index"
               class="mt-2"
               clearable filterable
               placeholder="Selecciona la información bancaria"
             >
               <el-option
-                v-for="item in currentSupplier?.banks"
+                v-for="(item, index) in currentSupplier?.banks"
                 :key="item.id"
                 :label="item['beneficiary_name'] + '-' + item['bank_name']"
-                :value="item"
+                :value="index"
               />
             </el-select>
           </div>
@@ -260,6 +260,7 @@ export default {
     return {
       form,
       currentSupplier: null,
+      bank_index: null,
       productSelected: null,
       editProductIndex: null,
       productValidation: false,
@@ -279,6 +280,9 @@ export default {
     contacts: Array,
   },
   methods: {
+    saveBankObj(){
+      this.form.bank_information = this.currentSupplier.banks[this.bank_index];
+    },
     store() {
       this.form.post(route("purchases.store"), {
         onSuccess: () => {
