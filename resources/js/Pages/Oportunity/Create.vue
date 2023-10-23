@@ -236,7 +236,7 @@
                             <span
                               :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                               class="ml-2 text-xs">
-                              Crea tareas
+                              Crea actividades
                             </span>
                           </label>
                           <label class="flex items-center">

@@ -25,7 +25,6 @@ class ProjectController extends Controller
             $query->where('users.id', auth()->id());
         })->latest()->paginate(30));
 
-        // return $projects;
         return inertia('Project/Index', compact('projects'));
     }
 
@@ -41,7 +40,6 @@ class ProjectController extends Controller
         $project_groups = ProjectGroupResource::collection(ProjectGroup::all());
         $users = User::where('is_active', true)->get();
 
-        // return $users;
         return inertia('Project/Create', compact('companies', 'users', 'tags', 'project_groups'));
     }
 

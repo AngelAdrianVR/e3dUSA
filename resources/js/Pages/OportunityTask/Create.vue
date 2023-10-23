@@ -1,78 +1,85 @@
 <template>
-    <AppLayout title="Crear actividad de oportunidad">
-      <template #header>
-        <div class="flex justify-between">
-          <Link :href="route('oportunities.show', oportunity_id)"
-            class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
-          <i class="fa-solid fa-chevron-left"></i>
-          </Link>
-          <div class="flex items-center space-x-2">
-            <h2 class="font-semibold text-xl leading-tight">Nueva actividad de oportunidad</h2>
+  <AppLayout title="Crear actividad de oportunidad">
+    <template #header>
+      <div class="flex justify-between">
+        <Link :href="route('oportunities.show', oportunity_id)"
+          class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
+        <i class="fa-solid fa-chevron-left"></i>
+        </Link>
+        <div class="flex items-center space-x-2">
+          <h2 class="font-semibold text-xl leading-tight">Nueva actividad de oportunidad</h2>
+        </div>
+      </div>
+    </template>
+
+    <!-- Form -->
+    <form @submit.prevent="store">
+      <div
+        class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4 mx-2 text-sm lg:text-base">
+        <div class="flex items-center space-x-2">
+          <div class="w-1/2">
+            <label>Nombre de la actividad *</label>
+            <input v-model="form.name" class="input" type="text" placeholder="Escribe el nombre">
+            <InputError :message="form.errors.name" />
+          </div>
+          <div class="w-1/2">
+            <label>Asignado a *</label>
+            <el-select class="w-full" v-model="form.asigned_id" clearable filterable placeholder="Seleccionar usuario"
+              no-data-text="No hay usuarios registrados" no-match-text="No se encontraron coincidencias">
+              <el-option v-for="user in users" :key="user" :label="user.name" :value="user.id">
+                <div v-if="$page.props.jetstream.managesProfilePhotos"
+                  class="flex text-sm rounded-full items-center mt-[3px]">
+                  <img class="h-7 w-7 rounded-full object-cover mr-4" :src="user.profile_photo_url" :alt="user.name" />
+                  <p>{{ user.name }}</p>
+                </div>
+              </el-option>
+            </el-select>
+            <InputError :message="form.errors.asigned_id" />
           </div>
         </div>
-      </template>
-
-      <!-- Form -->
-      <form @submit.prevent="store">
-        <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4 mx-2 text-sm lg:text-base">
-            <div class="flex items-center space-x-2">
-                <div class="w-1/2">
-                    <label>Nombre de la actividad *</label>
-                    <input v-model="form.name" class="input" type="text">
-                    <InputError :message="form.errors.name" />
-                </div>
-                <div class="w-1/2">
-                    <label>Asignado a *</label>
-                    <el-select class="w-full" v-model="form.asigned_id" clearable filterable placeholder="Seleccionar usuario"
-                        no-data-text="No hay usuarios registrados" no-match-text="No se encontraron coincidencias">
-                        <el-option v-for="user in users" :key="user" :label="user.name" :value="user.id" />
-                    </el-select>
-                    <InputError :message="form.errors.asigned_id" />
-                </div>
-            </div>
-            <div class="lg:flex items-center pt-3">
-                <div class="lg:w-1/2 lg:mt-0">
-                <label class="block">Fecha límite *</label>
-                <el-date-picker v-model="form.limit_date" type="date" placeholder="Fecha límite *" format="YYYY/MM/DD"
-                value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
-                <InputError :message="form.errors.limit_date" />
-                </div>
-                <div class="w-1/2">
-                    <label>Hora *</label>
-                    <input v-model="form.time" class="input" type="time">
-                    <InputError :message="form.errors.time" />
-                </div>
-            </div>
-            <div>
-                <label>Prioridad *</label>
-                <el-select class="w-full mt-2" v-model="form.priority" clearable filterable placeholder="Seleccionar prioridad"
-                  no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
-                  <el-option v-for="item in priorities" :key="item" :label="item.label" :value="item.label">
-                    <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
-                    <span style="float: center; margin-left: 5px; font-size: 13px">{{
-                      item.label
-                    }}</span>
-                  </el-option>
-                </el-select>
-                <InputError :message="form.errors.priority" />
-            </div>
-          <div class="mt-5 col-span-full">
-            <label>Descripción</label>
-            <RichText @content="updateDescription($event)" />
+        <div class="lg:flex items-center pt-3">
+          <div class="lg:w-1/2 lg:mt-0">
+            <label class="block">Fecha límite *</label>
+            <el-date-picker v-model="form.limit_date" type="date" placeholder="Fecha límite *" format="YYYY/MM/DD"
+              value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
+            <InputError :message="form.errors.limit_date" />
           </div>
-            <div class="ml-2 mt-2 col-span-full flex">
-              <FileUploader @files-selected="this.form.media = $event" />
-            </div>
-          <div class="flex justify-end items-center">
-            <PrimaryButton :disabled="form.processing">
-              Agregar
-            </PrimaryButton>
-
+          <div class="w-1/2">
+            <label>Hora *</label>
+            <input v-model="form.time" class="input" type="time">
+            <InputError :message="form.errors.time" />
           </div>
         </div>
-      </form>
+        <div>
+          <label>Prioridad *</label>
+          <el-select class="w-full mt-2" v-model="form.priority" clearable filterable placeholder="Seleccionar prioridad"
+            no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
+            <el-option v-for="item in priorities" :key="item" :label="item.label" :value="item.label">
+              <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
+              <span style="float: center; margin-left: 5px; font-size: 13px">{{
+                item.label
+              }}</span>
+            </el-option>
+          </el-select>
+          <InputError :message="form.errors.priority" />
+        </div>
+        <div class="mt-5 col-span-full">
+          <label>Descripción</label>
+          <RichText @content="updateDescription($event)" />
+        </div>
+        <div class="ml-2 mt-2 col-span-full flex">
+          <FileUploader @files-selected="this.form.media = $event" />
+        </div>
+        <div class="flex justify-end items-center">
+          <PrimaryButton :disabled="form.processing">
+            Agregar
+          </PrimaryButton>
 
-    </AppLayout>
+        </div>
+      </div>
+    </form>
+
+  </AppLayout>
 </template>
 
 <script>
@@ -93,7 +100,7 @@ export default {
       priority: null,
       description: null,
       media: [],
-          });
+    });
 
     return {
       form,
@@ -127,7 +134,7 @@ export default {
     oportunity_id: Number,
   },
   methods: {
-    store(){
+    store() {
       this.form.post(route("oportunity-tasks.store", this.oportunity_id), {
         onSuccess: () => {
           this.$notify({
@@ -152,11 +159,12 @@ export default {
 </script>
 
 <style scoped>
-
 /* Estilo para el hover de las opciones */
 .el-select-dropdown .el-select-dropdown__item:hover {
-  background-color: #D90537; /* Color de fondo al hacer hover */
-  color: white; /* Color del texto al hacer hover */
-  border-radius: 20px; /* Redondeo */
-}
-</style>
+  background-color: #D90537;
+  /* Color de fondo al hacer hover */
+  color: white;
+  /* Color del texto al hacer hover */
+  border-radius: 20px;
+  /* Redondeo */
+}</style>
