@@ -127,8 +127,8 @@ Route::resource('oportunities', OportunityController::class)->middleware('auth')
 Route::put('/oportunities/update-status/{oportunity_id}', [OportunityController::class, 'updateStatus'])->name('oportunities.update-status')->middleware('auth');
 
 // ------- CRM (surveys Routes)  ---------
-Route::get('/surveys/create/{oportunity_id}', [SurveyController::class, 'create'])->name('surveys.create')->middleware('auth');
-Route::post('/surveys/store/{oportunity_id}', [SurveyController::class, 'store'])->name('surveys.store')->middleware('auth');
+Route::get('/surveys/create/{oportunity_id}', [SurveyController::class, 'create'])->name('surveys.create');
+Route::post('/surveys/store/{oportunity_id}', [SurveyController::class, 'store'])->name('surveys.store');
 
 // ------- CRM (oportunityTasks Routes)  ---------
 Route::resource('oportunity-tasks', OportunityTaskController::class)->except(['store', 'create'])->middleware('auth');
