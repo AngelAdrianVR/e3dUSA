@@ -220,4 +220,12 @@ class SaleController extends Controller
                 'message' => "Orden de venta clonada: $new_item_folio", 'newItem' => saleResource::make(Sale::with('companyBranch', 'user')->find($clone->id))
             ]);
     }
+
+    public function print($sale_id)
+    {
+        $sale = SaleResource::make(Sale::with('productions', 'catalogProductCompanySales.catalogProductCompany.catalogProduct.media', 'catalogProductCompanySales.sale.user')->find($sale_id));
+
+        // return $sale;
+        return inertia('Sale/Print', compact('sale'));
+    }
 }

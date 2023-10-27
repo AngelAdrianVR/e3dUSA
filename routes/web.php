@@ -152,6 +152,7 @@ Route::resource('sales', SaleController::class)->middleware('auth');
 Route::post('sales/massive-delete', [SaleController::class, 'massiveDelete'])->name('sales.massive-delete');
 Route::post('sales/clone', [SaleController::class, 'clone'])->name('sales.clone');
 Route::put('sales/authorize/{sale}', [SaleController::class, 'authorizeOrder'])->name('sales.authorize');
+Route::get('sales/print/{sale}', [SaleController::class, 'print'])->name('sales.print');
 
 // ------- CRM(Companybranches sucursales Routes)  ---------
 Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');

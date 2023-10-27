@@ -42,13 +42,13 @@
             </td>
             <td class="text-left py-2 flex space-x-1 items-center px-2">
               <p class="text-xs">{{ project.tasks.filter(task => task.status === 'Terminada').length }}</p>
-              <div class="relative bg-[#D9D9D9] rounded-full h-5 w-24">
+              <div class="relative bg-[#c7c6c6] rounded-full h-5 w-36">
                 <div
                   :class="(project.tasks.filter(task => task.status === 'Terminada').length / project.tasks.length) * 100 == 100 ? 'rounded-full' : 'rounded-l-full'"
                   class="absolute top-0 left-0 bg-secondary h-5"
                   :style="{ width: (project.tasks.filter(task => task.status === 'Terminada').length / project.tasks.length) * 100 + '%' }">
                 </div>
-                <p class="text-sm font-bold absolute top-0 right-8 text-white">{{ project.tasks.length != 0 ?
+                <p class="text-sm font-bold absolute top-0 right-14 text-white">{{ project.tasks.length != 0 ?
                   Math.round((project.tasks.filter(task => task.status === 'Terminada').length / project.tasks.length) *
                     100) : '0' }}%</p>
               </div>
