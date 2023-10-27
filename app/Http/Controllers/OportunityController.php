@@ -49,14 +49,17 @@ class OportunityController extends Controller
             'amount' => 'required|numeric|min:0',
             'priority' => 'required|string',
             'start_date' => 'required|date',
-            'estimated_finish_date' => 'nullable|date',
+            'estimated_finish_date' => 'required|date|after:start_date',
             // 'type_access_project' => 'required|string',
             'lost_oportunity_razon' => $request->status === 'Perdida' ? 'required' : 'nullable',
             'contact' => 'required|string',
             'company_id' => $request->is_new_company ? 'nullable' : 'required',
+            'company_name' => $request->is_new_company ? 'required' : 'nullable',
+            'contact_phone' => $request->is_new_company ? 'required' : 'nullable',
+
         ]);
 
-        if ($request->status == 'Pagado') {
+        if ($request->status == 'Cerrada') {
 
             $oportunity = Oportunity::create($validated + ['user_id' => auth()->id(), 'finished_at' => now()]);
         } else {
@@ -89,7 +92,7 @@ class OportunityController extends Controller
 
     public function show(Oportunity $oportunity)
     {
-        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitores.seller', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller', 'users')->latest()->get());
+        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitores.seller', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller', 'users', 'company')->latest()->get());
         $users = User::where('is_active', true)->get();
         $defaultTab = request('defaultTab');
 
@@ -120,7 +123,7 @@ class OportunityController extends Controller
     {
         $oportunity = Oportunity::find($oportunity_id);
 
-        if ($request->status == 'Pagado') {
+        if ($request->status == 'Cerrada') {
             $oportunity->update([
                 'status' => $request->status,
                 'finished_at' => now(),
@@ -132,6 +135,19 @@ class OportunityController extends Controller
                 'finished_at' => null,
                 'lost_oportunity_razon' => $request->lost_oportunity_razon,
             ]);
+        } elseif ($request->status == 'Pagado') {
+            if ($oportunity->finished_at !== null) {
+                $oportunity->update([
+                    'status' => $request->status,
+                    'lost_oportunity_razon' => $request->lost_oportunity_razon,
+                ]);
+            } else {
+                $oportunity->update([
+                    'status' => $request->status,
+                    'finished_at' => now(),
+                    'lost_oportunity_razon' => $request->lost_oportunity_razon,
+                ]);
+            }
         } else {
 
             $oportunity->update([

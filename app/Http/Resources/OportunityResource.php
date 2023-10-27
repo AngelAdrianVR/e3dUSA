@@ -38,6 +38,8 @@ class OportunityResource extends JsonResource
             'folio' => 'OP-' . strtoupper(substr($this->name, 0, 3)) . '-' . str_pad($this->id, 3, '0', STR_PAD_LEFT),
             'name' => $this->name,
             'contact' => $this->contact,
+            'contact_phone' => $this->contact_phone,
+            'company_name' => $this->company_name,
             'lost_oportunity_razon' => $this->lost_oportunity_razon,
             'amount' => $this->amount,
             'status' => $this->status,
