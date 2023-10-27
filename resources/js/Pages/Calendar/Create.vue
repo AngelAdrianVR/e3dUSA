@@ -92,7 +92,7 @@
           </div>
           <div>
             <label>Descripción</label>
-            <textarea class="textarea"> </textarea>
+            <textarea v-model="form.description" class="textarea"> </textarea>
             <InputError :message="form.errors.description" />
           </div>
           <!-- <div>

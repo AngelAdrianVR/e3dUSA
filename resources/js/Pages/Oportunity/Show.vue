@@ -69,6 +69,10 @@
                 v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Agendar citas en seguimiento integral')">
                 Agendar Cita
               </DropdownLink>
+              <DropdownLink :href="route('whatsapp-monitors.create')"
+                v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Registrar interaccion whatsapp en seguimiento integral')">
+                Interacción WhatsApp
+              </DropdownLink>
               <DropdownLink v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades') && tabs == 1
                 " @click="showConfirmModal = true" as="button">
                 Eliminar
@@ -81,9 +85,9 @@
       <p class="text-center font-bold text-lg">
         {{ currentOportunity?.folio }} - {{ currentOportunity?.name }}
       </p>
-      <p :class="getColorStatus" class="px-2 py-1 font-bold rounded-sm">
+      <!-- <p :class="getColorStatus" class="px-2 py-1 font-bold rounded-sm">
         {{ currentOportunity?.status }}
-      </p>
+      </p> -->
       </div> 
       <!-- ------------- tabs section starts ------------- -->
       <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2 overflow-x-auto">

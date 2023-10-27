@@ -26,7 +26,7 @@
     </div>
 
     <!-- -------------- calendar section --------------- -->
-    <section @click="selectedDay = null" class="w-11/12 mx-auto mb-24 overflow-x-scroll min-h-screen">
+    <section @click="selectedDay = null" class="w-11/12 mx-auto mb-24 min-h-screen">
       <table class="w-full mt-12">
         <tr class="text-center">
           <th class="py-2 w-[14.28%] border border-[#9A9A9A]">DOM</th>
@@ -60,18 +60,12 @@
                     <div class="px-3">
                       <p class="font-bold text-left pb-[2px] pl-1">{{ selectedTask?.title }}</p>
                       <div class="grid grid-cols-2 border-y border-[#9A9A9A] p-1 text-left">
-                        <p class="text-[#9A9A9A] text-xs">Fecha de inicio</p>
-                        <p class="text-[#9A9A9A] text-xs ml-5">Fecha final</p>
-                        <el-tooltip content="Año-Mes-Día" placement="top">
-                          <p class="text-xs">{{ selectedTask?.start_date.split('T')[0] }}</p>
-                        </el-tooltip>
-                        <el-tooltip content="Año-Mes-Día" placement="top">
-                          <p class="text-xs ml-5">{{ selectedTask?.finish_date.split('T')[0] }}</p>
-                        </el-tooltip>
-                        <p class="text-[#9A9A9A] text-xs col-span-2">duración</p>
-                        <p class="text-xs col-span-2">{{ getDurationTask() + ' Día(s)' }}</p>
+                        <p class="text-[#9A9A9A] text-xs">Hora inicio</p>
+                        <p class="text-[#9A9A9A] text-xs">Hora termino</p>
+                        <p class="text-xs mb-3">{{ formatDate(selectedTask?.start_at) }}</p>
+                        <p class="text-xs mb-3">{{ formatDate(selectedTask?.finish_at) }}</p>
                         <p class="text-[#9A9A9A] text-xs col-span-2">Descripción</p>
-                        <p class="text-xs col-span-2">{{ selectedTask?.description }}</p>
+                        <p class="text-xs col-span-2">{{ selectedTask?.description ?? 'Sin descripción' }}</p>
                       </div>
                     </div>
                     <!-- --- Footer --- -->
@@ -185,6 +179,18 @@ export default {
 
       return duracionEnDias;
     },
+     formatDate(dateString) {
+    if (dateString) {
+      const date = new Date(dateString);
+      const options = {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true, // Habilitar el formato AM/PM
+      };
+      return date.toLocaleTimeString(undefined, options);
+    }
+    return ''; // Manejar el caso en el que la fecha sea nula
+  }
   },
   computed: {
     weeks() {

@@ -43,6 +43,7 @@ use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WhatsappMonitorController;
 use App\Models\CompanyBranch;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Artisan;
@@ -146,6 +147,9 @@ Route::post('payment-monitors/update-with-media/{payment_monitor}', [PaymentMoni
 
 // ------- CRM (meeting monior Routes)  ---------
 Route::resource('meeting-monitors', MettingMonitorController::class)->middleware('auth');
+
+// ------- CRM (whatsapp monior Routes)  ---------
+Route::resource('whatsapp-monitors', WhatsappMonitorController::class)->middleware('auth');
 
 // ------- CRM(sale orders Routes)  ---------
 Route::resource('sales', SaleController::class)->middleware('auth');
