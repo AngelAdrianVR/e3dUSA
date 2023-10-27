@@ -1,5 +1,5 @@
 <template>
-    <AppLayout title="Registro de pago">
+    <AppLayout title="Interacción Whatsapp">
       <template #header>
         <div class="flex justify-between">
           <Link :href="route('client-monitors.index')"
@@ -7,7 +7,7 @@
           <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
-            <h2 class="font-semibold text-xl leading-tight">Registro de pago o transacción</h2>
+            <h2 class="font-semibold text-xl leading-tight">Interacción Whatsaap</h2>
           </div>
         </div>
       </template>
@@ -27,47 +27,37 @@
                     <InputError :message="form.errors.oportunity_id" />
                 </div>
                 <div class="w-1/2">
-                    <label>Cliente</label>
-                    <input v-model="company_name" disabled class="input cursor-not-allowed" type="text">
-                </div>
-            </div>
-            <div class="w-1/2">
-                <label>Vendedor</label>
-                <input v-model="seller_name" disabled class="input cursor-not-allowed" type="text">
-            </div>
-
-            <h2 class="text-secondary pt-4">Detalles del pago</h2>
-
-            <div class="lg:flex items-center pt-3">
-                <div class="lg:w-1/2 lg:mt-0">
-                <label class="block">Fecha de pago *</label>
-                <el-date-picker v-model="form.paid_at" type="date" placeholder="Fecha de pago *" format="YYYY/MM/DD"
-                value-format="YYYY-MM-DD" />
-                <InputError :message="form.errors.paid_at" />
-                </div>
-                <div class="w-1/2">
-                    <label>Monto pagado *</label>
-                    <input v-model="form.amount" class="input" type="number" min="0">
-                    <InputError :message="form.errors.amount" />
+                    <label>Vendedor*</label>
+                    <el-select class="w-full" v-model="form.seller_id" clearable filterable placeholder="Seleccione"
+                        no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
+                        <el-option v-for="seller in users.filter(item => item.employee_properties?.department == 'Ventas')" :key="seller" :label="seller.name" :value="seller.id" />
+                    </el-select>
+                    <InputError :message="form.errors.seller_id" />
                 </div>
             </div>
             <div class="flex items-center space-x-2">
                 <div class="w-1/2">
-                    <label>Método de pago *</label>
-                    <el-select class="w-full" v-model="form.payment_method" clearable filterable placeholder="Seleccione"
-                        no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
-                        <el-option v-for="payment_method in payment_methods" :key="payment_method" :label="payment_method" :value="payment_method" />
-                    </el-select>
-                    <InputError :message="form.errors.payment_method" />
+                    <label>Cliente *</label>
+                    <input v-model="company_id" class="input" type="text">
+                    <InputError :message="form.errors.company_id" />
                 </div>
                 <div class="w-1/2">
-                    <label>Concepto</label>
-                    <input v-model="form.concept" class="input" type="text">
-                    <InputError :message="form.errors.concept" />
+                    <label>Teléfono</label>
+                    <input v-model="contact_phone" class="input" type="text">
+                    <InputError :message="form.errors.contact_phone" />
                 </div>
             </div>
+
+            <h2 class="text-secondary pt-4">Interacción de Whatsaap</h2>
+
+                <div class="lg:w-1/2 lg:mt-0">
+                <label class="block">Fecha *</label>
+                <el-date-picker v-model="form.date" type="date" placeholder="Fecha de pago *" format="YYYY/MM/DD"
+                value-format="YYYY-MM-DD" />
+                <InputError :message="form.errors.date" />
+                </div>
             <div>
-                <label>Observaciones</label>
+                <label>Notas</label>
                 <textarea v-model="form.notes" class="textarea" rows="2">
                 </textarea>
                 <InputError :message="form.errors.notes" />
@@ -99,12 +89,9 @@ export default {
     const form = useForm({
     oportunity_id: null,
     company_id: null,
-    seller_id: this.$page.props.auth.user.id,
-    paid_at: null,
-    amount: null,
-    payment_method: null,
-    concept: null,
-    priority: null,
+    seller_id: null,
+    contact_phone: null,
+    date: null,
     notes: null,
     media: [],
         });
@@ -112,7 +99,6 @@ export default {
     return {
       form,
       company_name: null,
-      seller_name: this.$page.props.auth.user.name,
       mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
       payment_methods: [
         'Transferencia electrónica',
@@ -129,6 +115,7 @@ export default {
   },
   props: {
     oportunities: Object,
+    users: Array,
   },
   methods: {
     store(){

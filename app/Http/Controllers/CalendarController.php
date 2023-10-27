@@ -18,6 +18,8 @@ class CalendarController extends Controller
 
         $tasks = Calendar::where('user_id', $my_id)->get();
 
+        // return $tasks;
+
         return inertia('Calendar/Index', compact('tasks'));
     }
 
