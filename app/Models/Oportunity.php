@@ -17,6 +17,8 @@ class Oportunity extends Model implements HasMedia
     protected $fillable = [
         'name',
         'contact',
+        'contact_phone',
+        'company_name',
         'amount',
         'status',
         'priority',

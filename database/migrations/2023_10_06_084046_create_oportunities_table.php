@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('contact');
+            $table->string('contact_phone')->nullable();
+            $table->string('company_name')->nullable();
             $table->unsignedFloat('amount')->nullable();
             $table->string('status')->default('Nueva');
             $table->string('priority');

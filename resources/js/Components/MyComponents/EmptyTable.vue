@@ -12,6 +12,7 @@
         >
             <template #empty>
             <div class="flex items-center justify-center h-100% border-amber-500 text-amber-700 bg-[#0355B5] bg-green-500">
+                <p class="bg-[#F2F2F2]"></p>
                 <el-empty />
             </div>
             </template>

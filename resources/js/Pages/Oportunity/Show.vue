@@ -77,9 +77,14 @@
           </Dropdown>
         </div>
       </div>
-      <p class="text-center font-bold text-lg mb-4">
+      <div class="flex items-center justify-center space-x-5 mb-4">
+      <p class="text-center font-bold text-lg">
         {{ currentOportunity?.folio }} - {{ currentOportunity?.name }}
       </p>
+      <p :class="getColorStatus" class="px-2 py-1 font-bold rounded-sm">
+        {{ currentOportunity?.status }}
+      </p>
+      </div> 
       <!-- ------------- tabs section starts ------------- -->
       <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2 overflow-x-auto">
         <div class="flex items-center justify-center">
@@ -152,6 +157,12 @@
         <span>{{ currentOportunity?.start_date }}</span>
         <span class="text-gray-500 my-2">Fecha estimada de cierre</span>
         <span>{{ currentOportunity?.estimated_finish_date }}</span>
+        <span class="text-gray-500 my-2">Cliente</span>
+        <span>{{ currentOportunity?.company_name ? currentOportunity?.company_name : currentOportunity?.company.business_name  }}</span>
+        <span class="text-gray-500 my-2">Contacto</span>
+        <span>{{ currentOportunity?.contact  }}</span>
+        <span v-if="currentOportunity?.contact_phone" class="text-gray-500 my-2">Teléfono</span>
+        <span v-if="currentOportunity?.contact_phone">{{ currentOportunity?.contact_phone  }}</span>
         <span v-if="currentOportunity?.lost_oportunity_razon" class="text-gray-500 my-2">Causa de pérdida</span>
         <span class="bg-red-300 py-1 px-2 rounded-full" v-if="currentOportunity?.lost_oportunity_razon">{{
           currentOportunity?.lost_oportunity_razon }}</span>
@@ -440,6 +451,7 @@
 
         </div>
         <div class="flex justify-end space-x-3 pt-5 pb-1">
+          <CancelButton @click="showLostOportunityModal = false">Cancelar</CancelButton>
           <PrimaryButton @click="updateStatus">Actualizar estatus</PrimaryButton>
         </div>
       </div>
@@ -485,7 +497,7 @@ export default {
           color: "text-[#F3FD85]",
         },
         {
-          label: "En proceso",
+          label: "Cerrada",
           color: "text-[#FEDBBD]",
         },
         {
@@ -541,24 +553,10 @@ export default {
           } else {
             this.currentOportunity.lost_oportunity_razon = null;
           }
+          this.getColorStatus();
         }
       } catch (error) {
         console.log(error);
-      }
-    },
-    getColorStatus() {
-      if (this.status == "Nueva") {
-        return "text-[#9A9A9A]";
-      } else if (this.status == "Pendiente") {
-        return "text-[#F3FD85]";
-      } else if (this.status == "En proceso") {
-        return "text-[#FEDBBD]";
-      } else if (this.status == "Pagado") {
-        return "text-[#AFFDB2]";
-      } else if (this.status == "Perdida") {
-        return "text-[#F7B7FC]";
-      } else {
-        return "text-transparent";
       }
     },
     getFileTypeIcon(fileName) {
@@ -581,7 +579,7 @@ export default {
         return 'text-[#9A9A9A] bg-[#CCCCCCCC]';
       } else if (this.currentOportunity?.status === 'Pendiente') {
         return 'text-[#C88C3C] bg-[#F3FD85]';
-      } else if (this.currentOportunity?.status === 'En proceso') {
+      } else if (this.currentOportunity?.status === 'Cerrada') {
         return 'text-[#FD8827] bg-[#FEDBBD]';
       } else if (this.currentOportunity?.status === 'Pagado') {
         return 'text-[#37951F] bg-[#ADFEB5]';
@@ -668,7 +666,8 @@ export default {
   watch: {
     oportunitySelected(newVal) {
       this.currentOportunity = this.oportunities.data.find((item) => item.id == newVal);
-      this.oportunitySelected = this.currentOportunity?.id
+      this.oportunitySelected = this.currentOportunity?.id;
+      this.status = this.currentOportunity?.status;
     },
   },
   mounted() {
@@ -682,6 +681,21 @@ export default {
     }
   },
   computed: {
+    getColorStatus() {
+      if (this.currentOportunity?.status == "Nueva") {
+        return "bg-[#F2F2F2] text-[#97989A]";
+      } else if (this.currentOportunity?.status == "Pendiente") {
+        return "bg-[#F3FD85] text-[#C88C3C]";
+      } else if (this.currentOportunity?.status == "Cerrada") {
+        return "bg-[#FEDBBD] text-[#FD8827]";
+      } else if (this.currentOportunity?.status == "Pagado") {
+        return "bg-[#AFFDB2] text-[#37951F]";
+      } else if (this.currentOportunity?.status == "Perdida") {
+        return "bg-[#F7B7FC] text-[#9E0FA9]";
+      } else {
+        return "bg-transparent";
+      }
+    },
     authUserPermissions() {
       const permissions = this.currentOportunity?.users.find(item => item.id == this.$page.props.auth.user.id)?.pivot.permissions;
       if (permissions) {

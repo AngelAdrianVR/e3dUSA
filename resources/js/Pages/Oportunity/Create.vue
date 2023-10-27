@@ -52,14 +52,26 @@
               class="bg-transparent disabled:border-gray-400" />
             <span class="ml-2 text-xs">Nuevo cliente</span>
           </label>
-          <div v-if="form.is_new_company">
-            <label>Contacto *</label>
-            <input v-model="form.contact" class="input" type="text" />
-            <InputError :message="form.errors.contact" />
+          <div class="flex justify-between space-x-3 col-span-2" v-if="form.is_new_company">
+            <div class="w-full">
+                <InputLabel value="Cliente *" class="ml-2" />
+                <input v-model="form.company_name" class="input" type="text" required />
+                <InputError :message="form.errors.contact_name" />
+            </div>
+            <div class="w-full">
+                <InputLabel value="Contacto *" class="ml-2" />
+                <input v-model="form.contact" class="input" type="text" required />
+                <InputError :message="form.errors.contact_name" />
+            </div>
+            <div class="w-full">
+                <InputLabel value="Teléfono *" class="ml-2" />
+                <input v-model="form.contact_phone" class="input" type="text" required />
+                <InputError :message="form.errors.contact_phone" />
+            </div>
           </div>
           <div v-if="!form.is_new_company" class="flex space-x-2 justify-between">
             <div class="w-1/2">
-              <label>Cliente *</label> <br />
+              <label class="text-sm">Cliente *</label> <br />
               <el-select v-model="form.company_id" clearable filterable placeholder="Seleccione"
                 no-data-text="No hay clientes registrados" no-match-text="No se encontraron coincidencias">
                 <el-option v-for="company in companies" :key="company" :label="company.business_name"
@@ -68,7 +80,7 @@
               <InputError :message="form.errors.company_id" />
             </div>
             <div class="w-1/2">
-              <label>Sucursal *</label> <br />
+              <label class="text-sm">Sucursal *</label> <br />
               <el-select @change="saveCompanyBranchAddress" v-model="company_branch" clearable filterable
                 placeholder="Seleccione" no-data-text="No hay sucursales registradas"
                 no-match-text="No se encontraron coincidencias">
@@ -78,7 +90,7 @@
               </el-select>
             </div>
             <div class="w-1/2">
-              <label>Contacto *</label> <br />
+              <label class="text-sm">Contacto *</label> <br />
               <el-select v-model="form.contact" clearable filterable placeholder="Seleccione"
                 no-data-text="No hay contactos registrados" no-match-text="No se encontraron coincidencias">
                 <el-option v-for="contact in company_branch_obj?.contacts" :key="contact" :label="contact.name"
@@ -332,6 +344,7 @@ import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import FileUploader from "@/Components/MyComponents/FileUploader.vue";
+import InputLabel from "@/Components/InputLabel.vue";
 import Tag from "@/Components/MyComponents/Tag.vue";
 import DialogModal from "@/Components/DialogModal.vue";
 
@@ -355,6 +368,8 @@ export default {
       media: [],
       selectedUsersToPermissions: [],
       is_new_company: false,
+      company_name: null,
+      contact_phone: null,
     });
 
     const tagForm = useForm({
@@ -423,6 +438,7 @@ export default {
     FileUploader,
     DialogModal,
     CancelButton,
+    InputLabel,
     Tag,
   },
   props: {
@@ -516,6 +532,8 @@ export default {
       this.company_branch_obj = null;
       this.company_branch = null;
       this.form.contact = null;
+      this.form.contact_phone = null;
+      this.form.company_name = null;
     },
     saveCompanyBranchAddress() {
       this.company_branch_obj = this.companies.find(

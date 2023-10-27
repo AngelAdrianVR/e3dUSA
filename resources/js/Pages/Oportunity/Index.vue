@@ -109,28 +109,28 @@
         </div>
       </section>
 
-      <!-- ---- En progreso --- -->
+      <!-- ---- Cerrada --- -->
       <section class="seccion">
         <h2 class="text-[#FD8827] bg-[#FEDBBD] border border-[#9A9A9A] py-1">
-          En progreso
+          Cerrada
         </h2>
         <div class="border border-[#9A9A9A] p-2 min-h-full">
           <!-- <p class="text-[#9A9A9A] cursor-pointer mt-1">+ Agregar</p> -->
           <p class="text-secondary text-xl my-2">
             ${{
-              inProgressTotal?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0.00"
+              closedTotal?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0.00"
             }}
           </p>
-          <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="progressOportunitiesLocal"
-            :animation="300" item-key="id" tag="ul" group="oportunities" id="progress"
-            :class="(drag && !progressOportunitiesLocal?.length) ? 'h-40' : ''">
+          <draggable @start="handleStartDrag" @add="handleAddDrag" @end="drag = false" v-model="closedOportunitiesLocal"
+            :animation="300" item-key="id" tag="ul" group="oportunities" id="closed"
+            :class="(drag && !closedOportunitiesLocal?.length) ? 'h-40' : ''">
             <template #item="{ element: oportunity }">
               <li>
                 <OportunityCard class="my-3" :oportunity="oportunity" />
               </li>
             </template>
           </draggable>
-          <div class="text-center" v-if="!progressOportunitiesLocal?.length">
+          <div class="text-center" v-if="!closedOportunitiesLocal?.length">
             <p class="text-xs text-gray-500 mt-6">No hay oportunidades en este estatus</p>
           </div>
         </div>
@@ -262,12 +262,12 @@ export default {
       type_view: "Kanban",
       newTotal: null,
       pendingTotal: null,
-      inProgressTotal: null,
+      closedTotal: null,
       paidTotal: null,
       lostTotal: null,
       newOportunitiesLocal: [],
       pendingOportunitiesLocal: [],
-      progressOportunitiesLocal: [],
+      closedOportunitiesLocal: [],
       paidOportunitiesLocal: [],
       lostOportunitiesLocal: [],
       drag: false,
@@ -299,8 +299,8 @@ export default {
         status = 'Nueva';
       } else if (evt.to.id === 'pending') {
         status = 'Pendiente';
-      } else if (evt.to.id === 'progress') {
-        status = 'En proceso';
+      } else if (evt.to.id === 'closed') {
+        status = 'Cerrada';
       } else if (evt.to.id === 'paid') {
         status = 'Pagado';
       } else if (evt.to.id === 'lost') {
@@ -329,7 +329,7 @@ export default {
         return 'text-[#9A9A9A] bg-[#CCCCCCCC]';
       } else if (oportunity.status === 'Pendiente') {
         return 'text-[#C88C3C] bg-[#F3FD85]';
-      } else if (oportunity.status === 'En proceso') {
+      } else if (oportunity.status === 'Cerrada') {
         return 'text-[#FD8827] bg-[#FEDBBD]';
       } else if (oportunity.status === 'Pagado') {
         return 'text-[#37951F] bg-[#ADFEB5]';
@@ -357,7 +357,7 @@ export default {
         (total, oportunity) => total + oportunity.amount,
         0
       );
-      this.inProgressTotal = this.progressOportunitiesLocal.reduce(
+      this.closedTotal = this.closedOportunitiesLocal.reduce(
         (total, oportunity) => total + oportunity.amount,
         0
       );
@@ -377,8 +377,8 @@ export default {
       this.pendingOportunitiesLocal = this.oportunitiesLocal.filter(
         (oportunity) => oportunity.status === "Pendiente"
       );
-      this.progressOportunitiesLocal = this.oportunitiesLocal.filter(
-        (oportunity) => oportunity.status === "En proceso"
+      this.closedOportunitiesLocal = this.oportunitiesLocal.filter(
+        (oportunity) => oportunity.status === "Cerrada"
       );
       this.paidOportunitiesLocal = this.oportunitiesLocal.filter(
         (oportunity) => oportunity.status === "Pagado"
