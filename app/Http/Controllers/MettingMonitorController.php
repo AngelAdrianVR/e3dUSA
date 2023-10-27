@@ -11,6 +11,7 @@ use App\Models\ClientMonitor;
 use App\Models\Company;
 use App\Models\MettingMonitor;
 use App\Models\Oportunity;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class MettingMonitorController extends Controller
@@ -30,8 +31,9 @@ class MettingMonitorController extends Controller
     {
         $companies = Company::with('companyBranches.contacts')->get();
         $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
+        $users = User::where('is_active', true)->get();
 
-        return inertia('MettingMonitor/Create', compact('companies', 'oportunities'));
+        return inertia('MettingMonitor/Create', compact('companies', 'oportunities', 'users'));
     }
 
     /**
@@ -52,6 +54,7 @@ class MettingMonitorController extends Controller
             'meeting_via' => 'required',
             'location' => 'nullable',
             'description' => 'required',
+            'participants' => 'required|array|min:1',
         ]);
 
         $meeting_monitor = MettingMonitor::create($request->all() + ['seller_id' => auth()->id()]);

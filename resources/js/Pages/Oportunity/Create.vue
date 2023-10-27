@@ -112,7 +112,7 @@
             <div class="w-full">
               <div class="flex justify-between items-center mx-2">
                 <label>Etiquetas</label>
-                <button @click="showTagFormModal = true" type="button"
+                <button v-if="$page.props.auth.user.permissions.includes('Crear etiquetas crm')" @click="showTagFormModal = true" type="button"
                   class="rounded-full border border-primary w-4 h-4 flex items-center justify-center">
                   <i class="fa-solid fa-plus text-primary text-[9px]"></i>
                 </button>

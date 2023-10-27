@@ -51,8 +51,25 @@
           </div>
         </div>
         <div>
-          <label>Prioridad *</label>
-          <el-select class="w-full mt-2" v-model="form.priority" clearable filterable placeholder="Seleccionar prioridad"
+          <div class="lg:w-1/2 relative">
+            <i :class="getColorPriority(form.priority)"
+              class="fa-solid fa-circle text-xs top-1 left-20 absolute z-30"></i>
+            <label class="block">Prioridad</label>
+            <div class="flex items-center space-x-4">
+              <el-select class="lg:w-1/2" v-model="form.priority" clearable filterable placeholder="Seleccione"
+                no-data-text="No hay opciones registradas" no-match-text="No se encontraron coincidencias">
+                <el-option v-for="item in priorities" :key="item" :label="item.label" :value="item.label">
+                  <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
+                  <span style="float: center; margin-left: 5px; font-size: 13px">{{
+                    item.label
+                  }}</span>
+                </el-option>
+              </el-select>
+              <InputError :message="form.errors.priority" />
+            </div>
+          </div>
+          <!-- <label>Prioridad *</label> -->
+          <!-- <el-select class="w-full mt-2" v-model="form.priority" clearable filterable placeholder="Seleccionar prioridad"
             no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in priorities" :key="item" :label="item.label" :value="item.label">
               <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
@@ -61,7 +78,7 @@
               }}</span>
             </el-option>
           </el-select>
-          <InputError :message="form.errors.priority" />
+          <InputError :message="form.errors.priority" /> -->
         </div>
         <div class="mt-5 col-span-full">
           <label>Descripción</label>
@@ -153,6 +170,17 @@ export default {
     updateDescription(content) {
       this.form.description = content;
     },
+    getColorPriority(oportunityPriority) {
+      if (oportunityPriority === "Baja") {
+        return "text-[#87CEEB]";
+      } else if (oportunityPriority === "Media") {
+        return "text-[#D97705]";
+      } else if (oportunityPriority === "Alta") {
+        return "text-[#D90537]";
+      } else {
+        return "text-transparent";
+      }
+    },
 
   },
 };
@@ -167,4 +195,5 @@ export default {
   /* Color del texto al hacer hover */
   border-radius: 20px;
   /* Redondeo */
-}</style>
+}
+</style>

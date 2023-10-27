@@ -28,26 +28,31 @@
         <p class="mt-3">2. ¿Nuestros productos cumplieron con tus expectativas?</p>
         <div class="flex space-x-7 items-center lg:ml-5">
           <label>
-            <input v-model="form.p2" :value="true" type="radio" name="group1"
+            <input v-model="form.p2" value="Si" type="radio" name="group1"
               class="mr-1 bg-transparent border-black checked:bg-primary focus:ring-primary focus:text-primary hover:text-red-500">
             Sí
           </label>
           <label>
-            <input v-model="form.p2" :value="false" type="radio" name="group1"
+            <input v-model="form.p2" value="No" type="radio" name="group1"
               class="mr-1 bg-transparent border-black checked:bg-primary focus:ring-primary focus:text-primary hover:text-red-500">
             No
+          </label>
+          <label>
+            <input v-model="form.p2" value="Rebasaron mis expectativas" type="radio" name="group1"
+              class="mr-1 bg-transparent border-black checked:bg-primary focus:ring-primary focus:text-primary hover:text-red-500">
+            Rebasaron mis expectativas
           </label>
           <InputError :message="form.errors.p2" />
         </div>
         <p class="mt-3">3. ¿Consideras que nuestro equipo de trabajo fue profesional y cortés?</p>
         <div class="flex space-x-7 items-center lg:ml-5">
           <label>
-            <input v-model="form.p3" :value="true" type="radio" name="group2"
+            <input v-model="form.p3" value="Si" type="radio" name="group2"
               class="mr-1 bg-transparent border-black checked:bg-primary focus:ring-primary focus:text-primary hover:text-red-500">
             Sí
           </label>
           <label>
-            <input v-model="form.p3" :value="false" type="radio" name="group2"
+            <input v-model="form.p3" value="No" type="radio" name="group2"
               class="mr-1 bg-transparent border-black checked:bg-primary focus:ring-primary focus:text-primary hover:text-red-500">
             No
           </label>
@@ -56,12 +61,12 @@
         <p class="mt-3">4. ¿Recomendarías nuestros productos a otros?</p>
         <div class="flex space-x-7 items-center lg:ml-5">
           <label>
-            <input v-model="form.p4" :value="true" type="radio" name="group3"
+            <input v-model="form.p4" value="Si" type="radio" name="group3"
               class="mr-1 bg-transparent border-black checked:bg-primary focus:ring-primary focus:text-primary hover:text-red-500">
             Sí
           </label>
           <label>
-            <input v-model="form.p4" :value="false" type="radio" name="group3"
+            <input v-model="form.p4" value="No" type="radio" name="group3"
               class="mr-1 bg-transparent border-black checked:bg-primary focus:ring-primary focus:text-primary hover:text-red-500">
             No
           </label>

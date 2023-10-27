@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('surveys', function (Blueprint $table) {
             $table->id();
             $table->unsignedTinyInteger('p1');
-            $table->boolean('p2');
-            $table->boolean('p3');
-            $table->boolean('p4');
+            $table->string('p2');
+            $table->string('p3');
+            $table->string('p4');
             $table->string('p5');
             $table->foreignId('oportunity_id')->constrained()->cascadeOnDelete();
             $table->timestamps();

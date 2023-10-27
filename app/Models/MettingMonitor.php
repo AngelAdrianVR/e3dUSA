@@ -24,10 +24,12 @@ class MettingMonitor extends Model
         'seller_id',
         'client_monitor_id',
         'contact_id',
+        'participants',
     ];
 
     protected $casts = [
-        'meeting_date' => 'date'
+        'meeting_date' => 'date',
+        'participants' => 'array',
     ];
 
     //relationships
