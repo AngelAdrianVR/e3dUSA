@@ -71,6 +71,9 @@
                                         <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')" :command="'clone-' + scope.row.id"><i
                                                 class="fa-solid fa-clone"></i>
                                             Clonar</el-dropdown-item>
+                                        <el-dropdown-item :command="'print-' + scope.row.id">
+                                            <i class="fa-solid fa-print"></i>
+                                            Imprimir</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>

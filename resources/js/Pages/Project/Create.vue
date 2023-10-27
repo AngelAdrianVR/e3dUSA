@@ -187,14 +187,14 @@
             </div>
           </div>
 
-          <div class="w-1/2">
+          <!-- <div class="w-1/2">
             <label>Método de facturación</label>
             <el-select v-model="form.sat_method" clearable filterable placeholder="seleccione"
               no-data-text="No hay metodos registrados" no-match-text="No se encontraron coincidencias">
               <el-option v-for="sat_method in sat_methods" :key="sat_method" :label="sat_method" :value="sat_method" />
             </el-select>
             <InputError :message="form.errors.sat_method" />
-          </div>
+          </div> -->
 
           <h2 class="font-bold text-sm my-2 col-span-full">Acceso al proyecto</h2>
           <div class="col-span-full text-sm">
@@ -427,11 +427,11 @@ export default {
         'MXN - Peso Mexicano',
         'USD - Dolar',
       ],
-      sat_methods: [
-        'Facturación al contado',
-        'Facturación a crédito',
-        'Facturación por adelantado',
-      ],
+      // sat_methods: [
+      //   'Facturación al contado',
+      //   'Facturación a crédito',
+      //   'Facturación por adelantado',
+      // ],
     };
   },
   components: {

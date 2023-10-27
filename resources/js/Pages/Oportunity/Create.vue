@@ -350,7 +350,7 @@ export default {
       priority: null,
       start_date: null,
       estimated_finish_date: null,
-      // typeAccessProject: "Private",
+      typeAccessProject: "Private",
       lost_oportunity_razon: null,
       media: [],
       selectedUsersToPermissions: [],
@@ -382,7 +382,7 @@ export default {
           color: "text-[#F3FD85]",
         },
         {
-          label: "En proceso",
+          label: "Cerrada",
           color: "text-[#FEDBBD]",
         },
         {
@@ -489,7 +489,7 @@ export default {
         return "text-[#9A9A9A]";
       } else if (oportunityStatus === "Pendiente") {
         return "text-[#F3FD85]";
-      } else if (oportunityStatus === "En proceso") {
+      } else if (oportunityStatus === "Cerrada") {
         return "text-[#FEDBBD]";
       } else if (oportunityStatus === "Pagado") {
         return "text-[#AFFDB2]";

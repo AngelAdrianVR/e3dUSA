@@ -15,7 +15,7 @@
         <i @click="changeMonth(-1)" class="fa-solid fa-angle-left text-primary text-xs mr-5 cursor-pointer p-1"></i>
         <i class="fa-solid fa-calendar-days text-primary text-sm mr-2"></i>
         <p class="text-[#cccccc]">|</p>
-        <p class="text-sm ml-2">{{ currentMonth.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }) }}</p>
+        <p class="text-sm ml-2 uppercase">{{ currentMonth.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }) }}</p>
         <i @click="changeMonth(1)" class="fa-solid fa-angle-right text-primary text-xs ml-5 cursor-pointer p-1"></i>
       </div>
       <div class="flex space-x-2">
@@ -46,7 +46,7 @@
                 <div @click.stop="selectedTask = task; selectedDay = day"
                   :class="task.type === 'Tarea' ? 'bg-[#B9D9FE] border-[#0355B5] border-l-4 border' : 'bg-[#FDB9C9] border-[#D90537] border-l-4 border'"
                   class="h-5 rounded-sm my-1 text-xs justify-center items-center cursor-pointer flex relative">
-                  <p :class="task.status === 'Terminada' ? 'line-through' : ''">{{ task.title }}</p>
+                  <p>{{ task.title }} <i v-if="task.status === 'Terminada'" class="fa-solid fa-check ml-3 text-sm font-bold text-green-600"></i></p>
                   <div v-if="selectedTask === task && selectedDay == day" style="z-index: 999;"
                     class="px-1 pb-3 absolute -bottom-56 w-56 h-auto bg-[#D9D9D9] rounded-md border cursor-default">
                     <!-- --- Head --- -->

@@ -19,6 +19,13 @@
             </el-select>
           </div>
           <div class="flex items-center space-x-2">
+            <el-tooltip content="Imprimir" placement="top">
+              <Link :href="route('sales.print', saleSelected)">
+              <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
+                <i class="fa-solid fa-print text-sm"></i>
+              </button>
+              </Link>
+            </el-tooltip>
             <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar ordenes de venta') ||
                        currentSale?.user.id == $page.props.auth.user.id" content="Editar" placement="top">
               <Link :href="route('sales.edit', saleSelected)">
