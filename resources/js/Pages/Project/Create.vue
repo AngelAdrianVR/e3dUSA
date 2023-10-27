@@ -388,7 +388,7 @@ export default {
       project_name: null,
       start_date: null,
       limit_date: null,
-      is_strict_project: false,
+      is_strict_project: true,
       description: null,
       tags: [],
       project_group_id: null,

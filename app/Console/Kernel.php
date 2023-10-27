@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\closePayrollCommand::class,
         \App\Console\Commands\StockReposition::class,
         \App\Console\Commands\TestCron::class,
+        \App\Console\Commands\CheckMachinesMaintenance::class,
     ];
     /**
      * Define the application's command schedule.
@@ -26,6 +27,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:reactivate-product-sale')->weekly();
         $schedule->command('app:backup-database')->daily();
         $schedule->command('app:stock-reposition')->daily();
+        $schedule->command('app:machines-maintenance')->daily();
     }
 
     /**
