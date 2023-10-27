@@ -357,18 +357,34 @@
             <th class="font-bold pb-5">
               ID <i class="fa-solid fa-arrow-down-long ml-3"></i>
             </th>
-            <th class="font-bold pb-5">
-              P1 <i class="fa-solid fa-arrow-down-long ml-3"></i>
-            </th>
-            <th class="font-bold pb-5">
-              P2 <i class="fa-solid fa-arrow-down-long ml-3"></i>
-            </th>
-            <th class="font-bold pb-5">
-              P3 <i class="fa-solid fa-arrow-down-long ml-3"></i>
-            </th>
-            <th class="font-bold pb-5">
-              P4 <i class="fa-solid fa-arrow-down-long ml-3"></i>
-            </th>
+            <el-tooltip
+              content="En una escala del 0 al 10, ¿qué tan satisfecho/a estás con la calidad de nuestros productos?"
+              placement="top">
+              <th class="font-bold pb-5">
+                P1 <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              </th>
+            </el-tooltip>
+            <el-tooltip
+              content="¿Nuestros productos cumplieron con tus expectativas?"
+              placement="top">
+              <th class="font-bold pb-5">
+                P2 <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              </th>
+            </el-tooltip>
+            <el-tooltip
+              content="¿Consideras que nuestro equipo de trabajo fue profesional y cortés?"
+              placement="top">
+              <th class="font-bold pb-5">
+                P3 <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              </th>
+            </el-tooltip>
+            <el-tooltip
+              content="¿Recomendarías nuestros productos a otros?"
+              placement="top">
+              <th class="font-bold pb-5">
+                P4 <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              </th>
+            </el-tooltip>
             <th class="font-bold pb-5">Comentario</th>
           </tr>
         </thead>
@@ -378,16 +394,16 @@
               {{ currentOportunity?.survey?.oportunity_id }}
             </td>
             <td class="text-center py-2 px-2">
-              <span class="py-1 px-4 rounded-full">{{ currentOportunity?.survey?.p1 ? 'Sí' : ' No' }}</span>
+              <span class="py-1 px-4 rounded-full">{{ currentOportunity?.survey?.p1 }}</span>
             </td>
             <td class="text-center py-2 px-2">
-              <span class="py-1 px-2 rounded-full">{{ currentOportunity?.survey?.p2 ? 'Sí' : ' No' }}</span>
+              <span class="py-1 px-2 rounded-full">{{ currentOportunity?.survey?.p2 }}</span>
             </td>
             <td class="text-center py-2 px-2">
-              {{ currentOportunity?.survey?.p3 ? 'Sí' : ' No' }}
+              {{ currentOportunity?.survey?.p3 }}
             </td>
             <td class="text-center py-2 px-2">
-              {{ currentOportunity?.survey?.p4 ? 'Sí' : ' No' }}
+              {{ currentOportunity?.survey?.p4 }}
             </td>
             <td class="text-center py-2 px-2 rounded-r-full">
               {{ currentOportunity?.survey?.p5 }}

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->string('phone')->nullable();
             $table->text('description');
+            $table->json('participants')->nullable();
             $table->string('contact_name')->nullable();
             $table->foreignId('company_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('company_branch_id')->nullable()->constrained()->cascadeOnDelete();

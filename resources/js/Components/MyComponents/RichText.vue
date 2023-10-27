@@ -1,9 +1,9 @@
 <template>
     <div v-if="showUsersList" @click="showUsersList = false" class="inset-0 absolute top-0 left-0 z-10"></div>
     <div class="relative w-full">
-        <header
+        <!-- <header
             class="border border-b-0 border-[#9A9A9A] bg-[#CCCCCC] rounded-tl-[3px] rounded-tr-[3px] h-7 flex items-center">
-            <!-- <button type="button" @click="toggleStyle('bold')" :class="{ 'text-primary': styles.bold }"
+           <button type="button" @click="toggleStyle('bold')" :class="{ 'text-primary': styles.bold }"
                 class="border-r border-[#9A9A9A] px-3 text-sm">
                 <i class="fa-solid fa-bold"></i>
             </button>
@@ -14,10 +14,10 @@
             <button type="button" @click="toggleStyle('underline')" :class="{ 'text-primary': styles.underline }"
                 class="border-r border-[#9A9A9A] px-3 text-sm">
                 <i class="fa-solid fa-underline"></i>
-            </button> -->
-        </header>
+            </button> 
+        </header> -->
         <div contenteditable="true" @input="onInput" ref="editor" id="editor" @keypress="checkForAtSign"
-            class="bg-transparent border border-[#9A9A9A] placeholder:text-gray-400 text-gray-700 text-sm rounded-[5px] focus:border-primary block w-full p-2.5 rounded-tr-none rounded-tl-none min-h-[85px] focus:outline-none"
+            class="bg-transparent border border-[#9A9A9A] placeholder:text-gray-400 text-gray-700 text-sm rounded-[5px] focus:border-primary block w-full p-2.5 min-h-[85px] focus:outline-none"
             :class="{ 'rounded-none': withFooter }">
         </div>
         <footer v-if="withFooter"

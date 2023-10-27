@@ -14,7 +14,6 @@
                 </div>
             </template>
 
-
             <div class="flex space-x-6 items-center justify-center text-xs mt-2">
                 <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Producción sin iniciar</p>
                 <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Producción en proceso</p>

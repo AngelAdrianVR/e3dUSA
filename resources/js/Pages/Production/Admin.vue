@@ -19,7 +19,6 @@
                 <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Producción en proceso</p>
                 <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Producción terminada</p>
             </div>
-
             <!-- tabla -->
             <div class="relative overflow-hidden">
                 <NotificationCenter module="production" />
@@ -55,8 +54,8 @@
                         <el-table-column align="right" fixed="right" width="190">
                             <template #header>
                                 <div class="flex space-x-2">
-                                    <TextInput v-model="inputSearch" @keyup.enter="handleSearch" type="search" class="w-full text-gray-600"
-                                        placeholder="Buscar" />
+                                    <TextInput v-model="inputSearch" @keyup.enter="handleSearch" type="search"
+                                        class="w-full text-gray-600" placeholder="Buscar" />
                                     <el-button @click="handleSearch" type="primary" plain class="mb-3"><i
                                             class="fa-solid fa-magnifying-glass"></i></el-button>
                                 </div>
@@ -218,7 +217,10 @@ export default {
                     (production) =>
                         production.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
                         production.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
-                        production.company_branch.name.toLowerCase().includes(this.search.toLowerCase())
+                        production.company_branch.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                        production.productions.map((prd) => {
+                            return prd.catalog_product_company_sale.catalog_product_company?.catalog_product.name;
+                        }).join(', ').toLowerCase().includes(this.search.toLowerCase())
                 )
             }
         }

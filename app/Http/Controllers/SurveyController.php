@@ -37,9 +37,9 @@ class SurveyController extends Controller
     {
         $request->validate([
             'p1' => 'required|numeric|min:0|max:10',
-            'p2' => 'required|boolean',
-            'p3' => 'required|boolean',
-            'p4' => 'required|boolean',
+            'p2' => 'required|string',
+            'p3' => 'required|string',
+            'p4' => 'required|string',
             'p5' => 'required|string',
         ]);
 
