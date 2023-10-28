@@ -78,6 +78,11 @@ class Oportunity extends Model implements HasMedia
         return $this->hasMany(MettingMonitor::class);
     }
 
+    public function whatsappMoniors() :HasMany
+    {
+        return $this->hasMany(WhatsappMonitor::class);
+    }
+
     public function tags()
     {
         return $this->morphToMany(Tag::class, 'taggable');

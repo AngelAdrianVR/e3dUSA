@@ -204,5 +204,8 @@ return [
         'p4' => ' ',
         'p5' => ' ',
         'participants' => 'participantes',
+        'contact_phone' => 'teléfono de contacto',
+        'oportunity_id' => 'oportunidad',
+        'seller_id' => 'vendedor',
     ],
 ];

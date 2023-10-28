@@ -9,6 +9,7 @@ use App\Http\Resources\OportunityResource;
 use App\Http\Resources\TagResource;
 use App\Models\Company;
 use App\Models\Oportunity;
+use App\Models\OportunityTask;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Auth\Events\Validated;
@@ -65,6 +66,59 @@ class OportunityController extends Controller
         } else {
 
             $oportunity = Oportunity::create($validated + ['user_id' => auth()->id()]);
+            $time = \Carbon\Carbon::createFromFormat('h A', '7 PM')->format('H:i:s'); //tiempo limite de realización de tarea
+        //Tarea 1. Contactar al cliente
+            OportunityTask::create([
+                'name' => 'Contactar al cliente',
+                'limit_date' =>now()->addDays(2),
+                'time' =>  $time,
+                'finished_at' => null,
+                'description' => 'Tener contacto con el cliente',
+                'priority' => 'Media',
+                'reminder' => null,
+                'user_id' => auth()->id(),
+                'oportunity_id' => $oportunity->id,
+                'asigned_id' => auth()->id(),
+            ]);
+        //Tarea 2. Mandar diseño
+            OportunityTask::create([
+                'name' => 'Mandar render del producto',
+                'limit_date' =>now()->addDays(4),
+                'time' =>  $time,
+                'finished_at' => null,
+                'description' => 'Mandar render del producto de interés',
+                'priority' => 'Media',
+                'reminder' => null,
+                'user_id' => auth()->id(),
+                'oportunity_id' => $oportunity->id,
+                'asigned_id' => auth()->id(),
+            ]);
+        //Tarea 3. Mandar cotización
+            OportunityTask::create([
+                'name' => 'Mandar coización',
+                'limit_date' =>now()->addDays(6),
+                'time' =>  $time,
+                'finished_at' => null,
+                'description' => 'Mandar cotización a cliente',
+                'priority' => 'Media',
+                'reminder' => null,
+                'user_id' => auth()->id(),
+                'oportunity_id' => $oportunity->id,
+                'asigned_id' => auth()->id(),
+            ]);
+        //Tarea 4. Mandar muestra      
+            OportunityTask::create([
+                'name' => 'Mandar muestra',
+                'limit_date' =>now()->addDays(8),
+                'time' =>  $time,
+                'finished_at' => null,
+                'description' => 'Mandar muestra de producto(s) al cliente',
+                'priority' => 'Media',
+                'reminder' => null,
+                'user_id' => auth()->id(),
+                'oportunity_id' => $oportunity->id,
+                'asigned_id' => auth()->id(),
+            ]);
         }
 
         // permisos
