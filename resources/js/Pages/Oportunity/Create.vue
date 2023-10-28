@@ -91,7 +91,7 @@
             </div>
             <div class="w-1/2">
               <label class="text-sm">Contacto *</label> <br />
-              <el-select v-model="form.contact" clearable filterable placeholder="Seleccione"
+              <el-select @change="saveContactPhone()" v-model="form.contact" clearable filterable placeholder="Seleccione"
                 no-data-text="No hay contactos registrados" no-match-text="No se encontraron coincidencias">
                 <el-option v-for="contact in company_branch_obj?.contacts" :key="contact" :label="contact.name"
                   :value="contact.name" />
@@ -540,6 +540,11 @@ export default {
         (item) => item.id == this.form.company_id
       )?.company_branches[0];
       // console.log(this.company_branch_obj);
+    },
+    saveContactPhone() {
+      // console.log( this.company_branch_obj.contacts[0].phone);
+      this.form.contact_phone = this.company_branch_obj.contacts[0].phone;
+      console.log(this.form.contact_phone);
     },
     updateDescription(content) {
       this.form.description = content;

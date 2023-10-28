@@ -165,8 +165,8 @@
         <span>{{ currentOportunity?.company_name ? currentOportunity?.company_name : currentOportunity?.company.business_name  }}</span>
         <span class="text-gray-500 my-2">Contacto</span>
         <span>{{ currentOportunity?.contact  }}</span>
-        <span v-if="currentOportunity?.contact_phone" class="text-gray-500 my-2">Teléfono</span>
-        <span v-if="currentOportunity?.contact_phone">{{ currentOportunity?.contact_phone  }}</span>
+        <span class="text-gray-500 my-2">Teléfono</span>
+        <span>{{ currentOportunity?.contact_phone  }}</span>
         <span v-if="currentOportunity?.lost_oportunity_razon" class="text-gray-500 my-2">Causa de pérdida</span>
         <span class="bg-red-300 py-1 px-2 rounded-full" v-if="currentOportunity?.lost_oportunity_razon">{{
           currentOportunity?.lost_oportunity_razon }}</span>

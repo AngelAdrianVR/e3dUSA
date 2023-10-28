@@ -50,6 +50,14 @@
               >
                 Agendar cita
               </DropdownLink>
+              <DropdownLink
+              :href="route('whatsapp-monitors.create')"
+                v-if="
+                  $page.props.auth.user.permissions.includes('Registrar interaccion whatsapp en seguimiento integral')
+                "
+              >
+                Interacción WhatsApp
+              </DropdownLink>
             </template>
           </Dropdown>
         </div>

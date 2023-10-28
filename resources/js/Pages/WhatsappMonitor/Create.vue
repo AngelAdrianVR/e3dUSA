@@ -7,7 +7,7 @@
           <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
-            <h2 class="font-semibold text-xl leading-tight">Interacción Whatsaap</h2>
+            <h2 class="font-semibold text-xl leading-tight">Interacción WhatsApp</h2>
           </div>
         </div>
       </template>
@@ -38,12 +38,12 @@
             <div class="flex items-center space-x-2">
                 <div class="w-1/2">
                     <label>Cliente *</label>
-                    <input v-model="company_id" class="input" type="text">
+                    <input v-model="form.company_name" disabled class="input" type="text">
                     <InputError :message="form.errors.company_id" />
                 </div>
                 <div class="w-1/2">
                     <label>Teléfono</label>
-                    <input v-model="contact_phone" class="input" type="text">
+                    <input v-model="form.contact_phone" class="input" type="text">
                     <InputError :message="form.errors.contact_phone" />
                 </div>
             </div>
@@ -89,6 +89,7 @@ export default {
     const form = useForm({
     oportunity_id: null,
     company_id: null,
+    company_name: null,
     seller_id: null,
     contact_phone: null,
     date: null,
@@ -98,7 +99,6 @@ export default {
 
     return {
       form,
-      company_name: null,
       mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
       payment_methods: [
         'Transferencia electrónica',
@@ -119,11 +119,11 @@ export default {
   },
   methods: {
     store(){
-      this.form.post(route('payment-monitors.store'), {
+      this.form.post(route('whatsapp-monitors.store'), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: "Registro de pago exitoso",
+            message: "Se registró interacción vía Whatsapp",
             type: "success",
           });
         },
@@ -151,13 +151,18 @@ export default {
   getCompany() {
     const oportunity = this.oportunities.data.find(oportunity => oportunity.id === this.form.oportunity_id);
     // console.log(oportunity);
+    
+    this.form.company_id = null;
+    this.form.company_name = null;
+    this.form.contact_phone = null;
 
-    if (oportunity.company) {
-      this.form.company_id = oportunity.company.id;
-      this.company_name = oportunity.company.business_name;
+    if (oportunity.company_name) { 
+      this.form.company_name = oportunity.company_name; 
+      this.form.contact_phone = oportunity.contact_phone; 
+      this.form.company_id = null;
       } else {
-        this.company_name = 'Nuevo cliente. Contacto: ' + oportunity.contact; 
-        this.form.company_id = null;
+      this.form.company_id = oportunity.company.id;
+      this.form.company_name = oportunity.company.business_name;
       }
   },
 

@@ -156,6 +156,7 @@
         <CancelButton v-if="canEdit" @click="canEdit = false">
           Cancelar edición
         </CancelButton>
+        <PrimaryButton v-if="canEdit" type="button" @click="update()">Guardar cambios</PrimaryButton>
       </div>
     </form>
   </Modal>
