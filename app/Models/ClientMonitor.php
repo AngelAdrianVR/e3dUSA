@@ -50,4 +50,9 @@ class ClientMonitor extends Model
     {
         return $this->hasOne(MettingMonitor::class);
     }
+
+    public function whatsappMonitor() :HasOne 
+    {
+        return $this->hasOne(WhatsappMonitor::class);
+    }
 }

@@ -323,7 +323,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="monitor in currentOportunity?.clientMonitores" :key="monitor" class="mb-4 hover:bg-[#dfdbdba8]">
+            <tr @click="showMonitorType(monitor)"
+            v-for="monitor in currentOportunity?.clientMonitores" :key="monitor" class="mb-4 hover:bg-[#dfdbdba8] cursor-pointer">
               <td class="text-left py-2 px-2 rounded-l-full text-secondary">
                 {{ monitor.folio }}
               </td>
@@ -561,6 +562,17 @@ export default {
         }
       } catch (error) {
         console.log(error);
+      }
+    },
+    showMonitorType(monitor) {
+      if (monitor.type == 'Correo') {
+        this.$inertia.get(route('payment-monitors.show', monitor.paymentMonitor?.id));
+      } else if (monitor.type == 'Pago') {
+        this.$inertia.get(route('payment-monitors.show', monitor.paymentMonitor?.id));
+      } else if (monitor.type == 'Reunión') {
+        this.$inertia.get(route('meeting-monitors.show', monitor.mettingMonitor?.id));
+      } else if (monitor.type == 'WhatsApp') {
+        this.$inertia.get(route('whatsapp-monitors.show', monitor.whatsappMonitor?.id));
       }
     },
     getFileTypeIcon(fileName) {

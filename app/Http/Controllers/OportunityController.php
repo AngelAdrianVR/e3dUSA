@@ -146,7 +146,7 @@ class OportunityController extends Controller
 
     public function show(Oportunity $oportunity)
     {
-        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitores.seller', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller', 'users', 'company')->latest()->get());
+        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitores.seller', 'clientMonitores.paymentMonitor', 'clientMonitores.mettingMonitor', 'clientMonitores.whatsappMonitor', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller', 'users', 'company')->latest()->get());
         $users = User::where('is_active', true)->get();
         $defaultTab = request('defaultTab');
 
