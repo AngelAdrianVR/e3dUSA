@@ -142,7 +142,7 @@ export default {
   },
   methods: {
     update() {
-      if (this.form.media !== null) {
+      if (this.form.media.length > 0) {
         this.form.post(route("whatsapp-monitors.update-with-media", this.whatsapp_monitor.data.id), {
           method: '_put',
           onSuccess: () => {

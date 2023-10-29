@@ -18,14 +18,14 @@
         </div>
 
         <div class="flex items-center space-x-2">
-          <!-- <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar oportunidades') && tabs == 1"
+          <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar oportunidades') && tabs == 1"
             content="Editar oportunidad" placement="top">
             <Link :href="route('oportunities.edit', oportunitySelected)">
             <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
               <i class="fa-solid fa-pen text-sm"></i>
             </button>
             </Link>
-          </el-tooltip> -->
+          </el-tooltip>
           <el-tooltip v-if="$page.props.auth.user.permissions.includes('Crear oportunidades') && tabs == 1"
             content="Crear oportunidad" placement="top">
             <Link :href="route('oportunities.create')">
@@ -157,10 +157,14 @@
         </div>
         <span class="text-gray-500 my-2">Probabilidad</span>
         <span>{{ currentOportunity?.probability }}%</span>
+        <span class="text-gray-500 my-2">Valor de oportunidad</span>
+        <span>${{ currentOportunity?.amount?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
         <span class="text-gray-500 my-2">Fecha de inicio</span>
         <span>{{ currentOportunity?.start_date }}</span>
         <span class="text-gray-500 my-2">Fecha estimada de cierre</span>
         <span>{{ currentOportunity?.estimated_finish_date }}</span>
+
+        <p class="text-secondary col-span-2 mt-4 mb-2">Información del cliente</p>
         <span class="text-gray-500 my-2">Cliente</span>
         <span>{{ currentOportunity?.company_name ? currentOportunity?.company_name : currentOportunity?.company.business_name  }}</span>
         <span class="text-gray-500 my-2">Contacto</span>
