@@ -18,14 +18,14 @@
         </div>
 
         <div class="flex items-center space-x-2">
-          <!-- <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar oportunidades') && tabs == 1"
+          <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar oportunidades') && tabs == 1"
             content="Editar oportunidad" placement="top">
             <Link :href="route('oportunities.edit', oportunitySelected)">
             <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
               <i class="fa-solid fa-pen text-sm"></i>
             </button>
             </Link>
-          </el-tooltip> -->
+          </el-tooltip>
           <el-tooltip v-if="$page.props.auth.user.permissions.includes('Crear oportunidades') && tabs == 1"
             content="Crear oportunidad" placement="top">
             <Link :href="route('oportunities.create')">
