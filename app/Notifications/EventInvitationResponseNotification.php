@@ -7,14 +7,14 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class EventInvitationNotification extends Notification
+class EventInvitationResponseNotification extends Notification
 {
     use Queueable;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(public $event)
+    public function __construct(public $event, public $status, public $participant)
     {
         //
     }
@@ -34,9 +34,9 @@ class EventInvitationNotification extends Notification
     {
         return (new MailMessage)
             ->subject('Mención en comentario')
-            ->markdown('emails.event-invitation', [
+            ->markdown('emails.event-response-invitation', [
                 'greeting' => '¡Hola!',
-                'intro' => "Te han invitado a un evento llamado <span class='text-primary'>{$this->event->title}</span>. Se requiere de tu respuesta.",
+                'intro' => "El participante <span class='text-primary'>{$this->participant->name}</span> ha respondido tu invitación al evento <span class='text-primary'>{$this->event->title}</span>. Respuesta: <span class='text-primary'>{$this->status}</span>",
                 'url' => route('calendars.index'),
                 'salutation' => 'Saludos',
             ]);
@@ -45,7 +45,7 @@ class EventInvitationNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'description' => "Te han invitado a un evento llamado <span class='text-primary'>{$this->event->title}</span>. Se requiere de tu respuesta.",
+            'description' => "El participante <span class='text-primary'>{$this->participant->name}</span> ha respondido tu invitación al evento <span class='text-primary'>{$this->event->title}</span>. Respuesta: <span class='text-primary'>{$this->status}</span>",
             'additional_info' => "",
             'module' => "calendar",
         ];

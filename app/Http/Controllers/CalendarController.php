@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
+use App\Http\Resources\CalendarResource;
 use App\Models\Calendar;
 use App\Models\User;
 use App\Notifications\EventInvitationNotification;
+use App\Notifications\EventInvitationResponseNotification;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -16,10 +18,11 @@ class CalendarController extends Controller
     public function index()
     {
         $my_id = auth()->id();
-
-        $tasks = Calendar::where('user_id', $my_id)->get();
+        $tasks = CalendarResource::collection(Calendar::where('user_id', $my_id)->get());
         $pendent_invitations = Calendar::with(['user'])->where('participants', 'like', '%"user_id":' . auth()->id() . ',"status":"Pendiente"%')
             ->get();
+
+        // return $pendent_invitations;
 
         return inertia('Calendar/Index', compact('tasks', 'pendent_invitations'));
     }
@@ -27,7 +30,7 @@ class CalendarController extends Controller
 
     public function create()
     {
-        $users = User::where('is_active', true)->get();
+        $users = User::where('is_active', true)->where('id', '!=', auth()->id())->get();
 
         return inertia('Calendar/Create', compact('users'));
     }
@@ -54,9 +57,6 @@ class CalendarController extends Controller
             })]],
             'start_date' => 'required',
         ]);
-
-        // Obtén los valores del array 'time' y asígnalos a las variables 'start_at' y 'finish_at'
-        // list($start_at, $finish_at) = $request->input('time');
 
         // procesar arreglo de participantes
         foreach ($request->participants as $key => $participantId) {
@@ -123,5 +123,32 @@ class CalendarController extends Controller
         $calendar->update([
             'status' => 'Terminada'
         ]);
+    }
+
+    public function setAttendanceConfirmation(Calendar $calendar, Request $request)
+    {
+        // cambiar status de invitación del usuario
+        $participants = $calendar->participants;
+        foreach ($participants as $key => $participant) {
+            if ($participant['user_id'] == auth()->id()) {
+                $participants[$key]['status'] = $request->status;
+            }
+        }
+
+        // actualizar participantes de registro original
+        $calendar->update(['participants' => $participants]);
+
+        // crear registro en calendario del invitado si confirmó
+        if ($request->status == 'Confirmado') {
+            $clone = $calendar->replicate()->fill([
+                'user_id' => auth()->id(),
+            ]);
+            $clone->save();
+        }
+
+        // notificar a creador de evento
+        $calendar->user->notify(new EventInvitationResponseNotification($calendar, $request->status, auth()->user()));
+
+        return response()->json(['item' => $clone]);
     }
 }

@@ -51,7 +51,7 @@
             <td v-for="day in week" :key="day" class="h-32 pb-4 border border-[#9A9A9A] relative">
               <p class="absolute bottom-0 right-3">{{ day }}</p>
               <!-- Agregar línea para tareas y eventos -->
-              <div v-for="task in tasks" :key="task.id">
+              <div v-for="task in tasks.data" :key="task.id">
                 <div class="" v-if="isTaskDay(task, day)">
                   <div @click.stop="selectedTask = task; selectedDay = day"
                     :class="task.type === 'Tarea' ? 'bg-[#B9D9FE] border-[#0355B5] border-l-4 border' : 'bg-[#FDB9C9] border-[#D90537] border-l-4 border'"
@@ -73,8 +73,8 @@
                         <div class="grid grid-cols-2 border-y border-[#9A9A9A] p-1 text-left">
                           <p class="text-[#9A9A9A] text-xs">Hora inicio</p>
                           <p class="text-[#9A9A9A] text-xs">Hora termino</p>
-                          <p class="text-xs mb-3">{{ formatDate(selectedTask?.start_at) }}</p>
-                          <p class="text-xs mb-3">{{ formatDate(selectedTask?.finish_at) }}</p>
+                          <p class="text-xs mb-3">{{ selectedTask?.start_time ?? 'Todo el día' }}</p>
+                          <p class="text-xs mb-3">{{ selectedTask?.end_time ?? 'Todo el día' }}</p>
                           <p class="text-[#9A9A9A] text-xs col-span-2">Descripción</p>
                           <p class="text-xs col-span-2">{{ selectedTask?.description ?? 'Sin descripción' }}</p>
                         </div>
@@ -109,7 +109,7 @@
         Invitaciones pendientes
       </template>
       <template #content>
-        <div v-for="(meeting, index) in pendent_invitations" :key="index"
+        <div v-for="(meeting, index) in pendent_invitations_local" :key="index"
           class="lg:grid grid-cols-3 px-3 py-2 border-b border-[#a9a9a9]">
           <div>
             <h2 class="font-bold ml-2 mb-3">{{ meeting.title }}</h2>
@@ -120,8 +120,6 @@
           <div
             class="grid grid-cols-2 lg:grid-cols-5 border-t-2 border-[#cccccc] pt-2 mt-2 lg:border-none col-span-2 text-sm">
             <p>Anfitrión:</p> <span class="lg:col-span-4 truncate">{{ meeting.user?.name }}</span>
-            <!-- <p>Participantes:</p> <span class="lg:col-span-4 truncate">{{ meeting.participants?.map(objeto =>
-              objeto.name).join(', ') }}</span> -->
             <p>Descripción:</p> <span class="lg:col-span-4 truncate">{{ meeting.description }}</span>
             <p v-if="meeting.user.id !== $page.props.auth.user.id">Asistenca:</p>
             <span v-if="meeting.user.id !== $page.props.auth.user.id" class="lg:col-span-4 flex space-x-2">
@@ -145,14 +143,6 @@
                 </el-popconfirm>
                 <i v-if="loading" class="fa-solid fa-spinner fa-spin text-sm text-primary"></i>
               </div>
-              <!-- <span class="text-sm text-green-500 flex items-center"
-                v-else-if="meeting.participants.find(item => item.id == $page.props.auth.user.id)?.pivot?.attendance_confirmation == 'Confirmado'">
-                Solicitud aceptada <i class="fa-solid fa-check ml-3"></i>
-              </span>
-              <span class="text-sm text-red-500 flex items-center"
-                v-else-if="meeting.participants.find(item => item.id == $page.props.auth.user.id)?.pivot?.attendance_confirmation == 'Rechazado'">
-                Solicitud rechazada <i class="fa-solid fa-xmark ml-3"></i>
-              </span> -->
             </span>
           </div>
         </div>
@@ -176,6 +166,7 @@ import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue
 import axios from 'axios';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import moment from 'moment';
 
 export default {
   data() {
@@ -184,6 +175,7 @@ export default {
       selectedTask: null, // Variable para realizar un seguimiento de la tarea seleccionada
       selectedDay: null, // Seguinmiento del dia seleccionado
       showPendentInvitationsModal: false,
+      pendent_invitations_local: this.pendent_invitations,
     };
   },
   components: {
@@ -197,10 +189,37 @@ export default {
     DialogModal,
   },
   props: {
-    tasks: Array,
+    tasks: Object,
     pendent_invitations: Array,
   },
   methods: {
+    async setAttendanceConfirmation(status, index) {
+      this.loading = true;
+      try {
+        const response = await axios.put(route('calendars.set-attendance-confirmation', this.pendent_invitations[index].id), {
+          status: status
+        });
+
+        if (response.status === 200) {
+          this.pendent_invitations_local.splice(index, 1);
+          this.tasks.data.push(response.data.item);
+
+          this.$notify({
+            title: 'Éxito',
+            message: 'Se ha cambiado el status de la invitacion a ' + status,
+            type: 'success'
+          });
+        }
+      } catch (error) {
+        this.$notify({
+          title: 'Error',
+          message: error.message,
+          type: 'error'
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
     formatDateDns(date) {
       const parsedDate = new Date(date);
       return format(parsedDate, "dd MMM, yyyy", { locale: es }); // Formato personalizado
@@ -240,12 +259,15 @@ export default {
     isTaskDay(task, day) {
       if (day) {
         const taskStartDate = new Date(task.start_date);
-        const taskFinishDate = new Date(task.finish_date);
         const currentDay = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), day);
-        // this.selectedTask = task;
-        return (currentDay >= taskStartDate) && (currentDay <= taskFinishDate);
+
+        // Convierte las fechas a objetos Moment
+        const momentFecha1 = moment(taskStartDate);
+        const momentFecha2 = moment(currentDay);
+
+        return momentFecha1.isSame(momentFecha2);
       }
-      return
+      return false;
     },
     getDurationTask() {
       // Convierte las fechas en objetos Date
