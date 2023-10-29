@@ -502,14 +502,18 @@ onMounted(() => {
                     </SecondaryButton>
                   </template>
                 </el-popconfirm>
-                
-                <div class="mr-9">
+
+                <div class="mr-9 relative">
                   <el-tooltip content="Calendario">
                     <Link :href="route('calendars.index')">
-                      <i class="fa-solid fa-calendar-days text-[#9A9A9A]"></i>
+                    <i class="fa-solid fa-calendar-days text-[#9A9A9A]"></i>
                     </Link>
                   </el-tooltip>
-                </div>  
+                  <div v-if="$page.props.auth.user?.notifications?.some(notification => {
+                    return notification.data.module === 'calendar';
+                  })" class="bg-primary w-[10px] h-[10px] border border-white rounded-full absolute -top-1 -right-2">
+                  </div>
+                </div>
 
                 <div class="relative">
                   <el-tooltip v-if="$page.props.auth.user.permissions.includes('Chatear')" content="Chat"
@@ -888,8 +892,8 @@ onMounted(() => {
         <!-- -------------- Catalog Product found in search ends--------------------- -->
 
         <div class="flex justify-between items-center">
-          <button type="button" @click="QRMachineScan()" class="text-primary text-sm flex items-center">Escanear máquinas <i
-              class="fa-solid fa-arrow-right-long ml-2 mt-1"></i></button>
+          <button type="button" @click="QRMachineScan()" class="text-primary text-sm flex items-center">Escanear máquinas
+            <i class="fa-solid fa-arrow-right-long ml-2 mt-1"></i></button>
           <div class="flex justify-end space-x-3 pt-5 pb-1">
             <CancelButton @click="
               qrScan = false;
@@ -996,7 +1000,8 @@ onMounted(() => {
         </div>
 
         <div class="flex items-center justify-between">
-          <button @click="QRScan()" class="text-primary text-sm flex items-center"><i class="fa-solid fa-arrow-left-long mr-2 mt-1"></i> Escanear productos</button>
+          <button @click="QRScan()" class="text-primary text-sm flex items-center"><i
+              class="fa-solid fa-arrow-left-long mr-2 mt-1"></i> Escanear productos</button>
           <div class="flex justify-end space-x-3 pt-5 pb-1">
             <CancelButton @click="
               qrScan = false;

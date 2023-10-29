@@ -93,10 +93,9 @@ class MettingMonitorController extends Controller
         $metting_monitor = MeetingMonitorResource::make(MettingMonitor::with('oportunity', 'company', 'companyBranch', 'contact')->find($metting_monitor_id));
         $companies = Company::with('companyBranches.contacts')->get();
         $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
+        $users = User::where('is_active', true)->get();
 
-        // return $metting_monitor;
-
-        return inertia('MettingMonitor/Edit', compact('metting_monitor', 'oportunities', 'companies'));
+        return inertia('MettingMonitor/Edit', compact('metting_monitor', 'oportunities', 'companies', 'users'));
     }
 
     
@@ -115,10 +114,10 @@ class MettingMonitorController extends Controller
             'meeting_via' => 'required',
             'location' => 'nullable',
             'description' => 'required',
+            'participants' => 'required|array|min:1',
         ]);
 
         $metting_monitor = MettingMonitor::find($metting_monitor_id);
-
         
         $metting_monitor->update($request->all());
         
