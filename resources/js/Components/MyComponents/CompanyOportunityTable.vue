@@ -78,7 +78,7 @@ methods:{
             return 'text-[#9A9A9A] bg-[#CCCCCCCC]';
         } else if (oportunity.status === 'Pendiente') {
              return 'text-[#C88C3C] bg-[#F3FD85]';
-        } else if (oportunity.status === 'En progreso') {
+        } else if (oportunity.status === 'Cerrada') {
              return 'text-[#FD8827] bg-[#FEDBBD]';
         } else if (oportunity.status === 'Pagado') {
              return 'text-[#37951F] bg-[#ADFEB5]';

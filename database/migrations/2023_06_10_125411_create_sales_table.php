@@ -25,6 +25,7 @@ return new class extends Migration
             $table->timestamp('recieved_at')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('company_branch_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('oportunity_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('contact_id')->nullable()->constrained()->cascadeOnDelete();
             $table->timestamps();
         });

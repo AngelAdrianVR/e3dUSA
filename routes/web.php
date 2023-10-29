@@ -126,6 +126,7 @@ Route::get('crm', [DashboardController::class, 'crmDashboard'])->middleware('aut
 // ------- CRM (oportunities Routes)  ---------
 Route::resource('oportunities', OportunityController::class)->middleware('auth');
 Route::put('/oportunities/update-status/{oportunity_id}', [OportunityController::class, 'updateStatus'])->name('oportunities.update-status')->middleware('auth');
+Route::put('/oportunities/create-sale/{oportunity_id}', [OportunityController::class, 'createSale'])->name('oportunities.create-sale')->middleware('auth');
 Route::post('oportunities/update-with-media/{oportunity}', [OportunityController::class, 'updateWithMedia'])->name('oportunities.update-with-media')->middleware('auth');
 
 // ------- CRM (surveys Routes)  ---------

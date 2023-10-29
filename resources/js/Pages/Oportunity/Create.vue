@@ -86,7 +86,7 @@
                 no-match-text="No se encontraron coincidencias">
                 <el-option v-for="company_branch in companies.find(
                   (item) => item.id == form.company_id
-                )?.company_branches" :key="company_branch" :label="company_branch.name" :value="company_branch.name" />
+                )?.company_branches" :key="company_branch" :label="company_branch.name" :value="company_branch.id" />
               </el-select>
             </div>
             <div class="w-1/2">
@@ -356,6 +356,7 @@ export default {
       status: null,
       description: null,
       company_id: null,
+      company_branch_id: null,
       contact: null,
       tags: [],
       probability: null,
@@ -539,12 +540,13 @@ export default {
       this.company_branch_obj = this.companies.find(
         (item) => item.id == this.form.company_id
       )?.company_branches[0];
+      this.form.company_branch_id = this.company_branch;
       // console.log(this.company_branch_obj);
     },
     saveContactPhone() {
       // console.log( this.company_branch_obj.contacts[0].phone);
       this.form.contact_phone = this.company_branch_obj.contacts[0].phone;
-      console.log(this.form.contact_phone);
+      // console.log(this.form.contact_phone);
     },
     updateDescription(content) {
       this.form.description = content;

@@ -10,6 +10,8 @@ use App\Http\Resources\TagResource;
 use App\Models\Company;
 use App\Models\Oportunity;
 use App\Models\OportunityTask;
+use App\Models\Project;
+use App\Models\Sale;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Auth\Events\Validated;
@@ -55,6 +57,7 @@ class OportunityController extends Controller
             'lost_oportunity_razon' => $request->status === 'Perdida' ? 'required' : 'nullable',
             'contact' => 'required|string',
             'company_id' => $request->is_new_company ? 'nullable' : 'required',
+            'company_branch_id' => $request->is_new_company ? 'nullable' : 'required',
             'company_name' => $request->is_new_company ? 'required' : 'nullable',
             'contact_phone' => $request->is_new_company ? 'required' : 'nullable',
 
@@ -160,9 +163,11 @@ class OportunityController extends Controller
 
     public function show(Oportunity $oportunity)
     {
-        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitores.seller', 'clientMonitores.paymentMonitor', 'clientMonitores.mettingMonitor', 'clientMonitores.whatsappMonitor', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller', 'users', 'company')->latest()->get());
+        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitores.seller', 'clientMonitores.paymentMonitor', 'clientMonitores.mettingMonitor', 'clientMonitores.whatsappMonitor', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller', 'users', 'company', 'companyBranch')->latest()->get());
         $users = User::where('is_active', true)->get();
         $defaultTab = request('defaultTab');
+
+        // return $oportunities;
 
         return inertia('Oportunity/Show', compact('oportunity', 'oportunities', 'users', 'defaultTab'));
     }
@@ -197,6 +202,7 @@ class OportunityController extends Controller
             'lost_oportunity_razon' => $request->status === 'Perdida' ? 'required' : 'nullable',
             'contact' => 'required|string',
             'company_id' => $request->is_new_company ? 'nullable' : 'required',
+            'company_branch_id' => $request->is_new_company ? 'nullable' : 'required',
             'company_name' => $request->is_new_company ? 'required' : 'nullable',
             'contact_phone' => $request->is_new_company ? 'required' : 'nullable',
         ]);
@@ -230,6 +236,7 @@ class OportunityController extends Controller
             'lost_oportunity_razon' => $request->status === 'Perdida' ? 'required' : 'nullable',
             'contact' => 'required|string',
             'company_id' => $request->is_new_company ? 'nullable' : 'required',
+            'company_branch_id' => $request->is_new_company ? 'nullable' : 'required',
             'company_name' => $request->is_new_company ? 'required' : 'nullable',
             'contact_phone' => $request->is_new_company ? 'required' : 'nullable',
         ]);
@@ -258,6 +265,18 @@ class OportunityController extends Controller
         event(new RecordDeleted($oportunity));
     }
 
+//-----------Revisa si la oportunidad ya tiene una orden de venta creada, si no la tiene, redirecciona al formulario para crearla
+    public function createSale(Request $request, $oportunity_id)
+    {
+        $oportunity = Oportunity::find($oportunity_id);
+
+        $sale = Sale::where('oportunity_id', $oportunity_id)->first(); //Busca una venta de esta oportunidad
+
+        if ($sale != null) {
+            return response()->json(['message' => 'Ya existe una venta de esta oportunidad']);
+        }
+
+    }
     public function updateStatus(Request $request, $oportunity_id)
     {
         $oportunity = Oportunity::find($oportunity_id);

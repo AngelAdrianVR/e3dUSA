@@ -144,7 +144,9 @@
         <span class="text-gray-500 my-2">Estatus</span>
         <div class="flex items-center space-x-4 relative">
           <!-- <i :class="getColorStatus()" class="fa-solid fa-circle absolute -left-3 top-4"></i> -->
-          <el-select @change="status == 'Perdida' ? showLostOportunityModal = true : updateStatus()" class="lg:w-1/2 mt-2"
+          <el-select @change="status == 'Perdida' ? showLostOportunityModal = true 
+          : status == 'Cerrada' || status == 'Pagado' ? showCreateSaleModal = true 
+          : updateStatus()" class="lg:w-1/2 mt-2"
             v-model="status" clearable filterable placeholder="Seleccionar estatus"
             no-data-text="No hay estatus registrados" no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
@@ -167,6 +169,8 @@
         <p class="text-secondary col-span-2 mt-4 mb-2">Información del cliente</p>
         <span class="text-gray-500 my-2">Cliente</span>
         <span>{{ currentOportunity?.company_name ? currentOportunity?.company_name : currentOportunity?.company.business_name  }}</span>
+        <span class="text-gray-500 my-2">Sucursal</span>
+        <span>{{ currentOportunity?.companyBranch?.name ?? '--' }}</span>
         <span class="text-gray-500 my-2">Contacto</span>
         <span>{{ currentOportunity?.contact  }}</span>
         <span class="text-gray-500 my-2">Teléfono</span>
@@ -448,8 +452,8 @@
       </template>
     </ConfirmationModal>
 
-    <Modal :show="showLostOportunityModal" @close="showLostOportunityModal = false">
-      <div class="mx-7 my-4 space-y-4 relative">
+    <Modal :show="showLostOportunityModal || showCreateSaleModal" @close="showLostOportunityModal = false; showCreateSaleModal = false">
+      <section v-if="showLostOportunityModal" class="mx-7 my-4 space-y-4 relative">
         <div>
           <label>Causa oportunidad perdida
             <el-tooltip content="Escribe la causa por la cual se PERDIÓ esta oportunidad" placement="top">
@@ -457,13 +461,29 @@
             </el-tooltip>
           </label>
           <textarea v-model="lost_oportunity_razon" required class="textarea mt-3"></textarea>
-
         </div>
         <div class="flex justify-end space-x-3 pt-5 pb-1">
           <CancelButton @click="showLostOportunityModal = false">Cancelar</CancelButton>
           <PrimaryButton @click="updateStatus">Actualizar estatus</PrimaryButton>
         </div>
-      </div>
+      </section>
+
+      <section v-if="showCreateSaleModal" class="mx-7 my-4 space-y-4 relative">
+        <div>
+          <div class="flex justify-center items-center my-3">
+            <i class="fa-solid fa-info text-primary"></i>
+            <p class="ml-4 font-bold mt-1 text-primary">ATENCIÓN</p>
+          </div>
+          <p class="px-5 text-secondary">Es necesario crear una orden de venta al haber cerrado la oportunidad para llevar un correcto seguimiento y flujo de trabajo.
+            En caso de ya haberla creado, presiona el botón de "Venta creada"
+          </p>
+        </div>
+        <div class="flex justify-end space-x-3 pt-5 pb-1">
+          <CancelButton @click="showCreateSaleModal = false">Cancelar</CancelButton>
+          <SecondaryButton @click="updateStatus">Venta creada</SecondaryButton>
+          <PrimaryButton @click="CreateSale">Crear venta</PrimaryButton>
+        </div>
+      </section>
     </Modal>
   </AppLayoutNoHeader>
 </template>
@@ -473,6 +493,7 @@ import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
 import OportunityTaskCard from "@/Components/MyComponents/OportunityTaskCard.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
@@ -489,6 +510,7 @@ export default {
       tabs: 1,
       showConfirmModal: false,
       showLostOportunityModal: false,
+      showCreateSaleModal: false,
       status: null,
       lost_oportunity_razon: null,
       todayTasksList: [],
@@ -525,6 +547,7 @@ export default {
     Dropdown,
     DropdownLink,
     PrimaryButton,
+    SecondaryButton,
     OportunityTaskCard,
     ConfirmationModal,
     CancelButton,
@@ -543,6 +566,25 @@ export default {
       if (value == 1 || value == true) return true;
       return false;
     },
+    async CreateSale() {
+      try {
+        const response = await axios.put(route('oportunities.create-sale', this.currentOportunity.id));
+        if (response.status === 200) {
+          if (response.data.message) {
+            this.$notify({
+            title: "Denegado",
+            message: response.data.message,
+            type: "error",
+          });
+          } else {
+            this.updateStatus();
+            this.$inertia.get(route('sales.create'), {data: {company_branch_id: this.currentOportunity.companyBranch?.id, oportunity_id: this.currentOportunity.id}} );
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
     async updateStatus() {
       try {
         const response = await axios.put(route('oportunities.update-status', this.currentOportunity.id), {
@@ -556,13 +598,13 @@ export default {
             type: "success",
           });
           this.showLostOportunityModal = false;
+          this.showCreateSaleModal = false;
           if (this.lost_oportunity_razon) {
             this.currentOportunity.lost_oportunity_razon = this.lost_oportunity_razon;
             this.lost_oportunity_razon = null;
           } else {
             this.currentOportunity.lost_oportunity_razon = null;
           }
-          this.getColorStatus();
         }
       } catch (error) {
         console.log(error);
@@ -607,9 +649,9 @@ export default {
         return 'text-[#9E0FA9] bg-[#F7B7FC]';
       }
     },
-    deleteItem() {
-      this.$inertia.delete(route('oportunities.destroy', this.oportunitySelected));
-      this.$inertia.get(route('oportunities.index'));
+    async deleteItem() {
+      await this.$inertia.delete(route('oportunities.destroy', this.oportunitySelected));
+      window.location.reload();
     },
     async markAsDone(data) {
       try {

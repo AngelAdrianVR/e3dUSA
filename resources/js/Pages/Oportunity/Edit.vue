@@ -86,7 +86,7 @@
                 no-match-text="No se encontraron coincidencias">
                 <el-option v-for="company_branch in companies.find(
                   (item) => item.id == form.company_id
-                )?.company_branches" :key="company_branch" :label="company_branch.name" :value="company_branch.name" />
+                )?.company_branches" :key="company_branch" :label="company_branch.name" :value="company_branch.id" />
               </el-select>
             </div>
             <div class="w-1/2">
@@ -307,7 +307,7 @@
           </div>
         </div>
       </form>
-          {{ form }}
+          <!-- {{ form }} -->
       <!-- tag form -->
       <DialogModal :show="showTagFormModal" @close="showTagFormModal = false">
         <template #title> Agregar etiqueta </template>
@@ -358,6 +358,7 @@ export default {
       seller_id: this.oportunity.seller_id,
       is_new_company: this.oportunity.company_id ? false : true,
       company_id: this.oportunity.company_id,
+      company_branch_id: this.oportunity.company_branch_id,
       company_name: this.oportunity.company_name,
       contact: this.oportunity.contact,
       contact_phone: this.oportunity.contact_phone,
@@ -555,12 +556,13 @@ export default {
       this.company_branch_obj = this.companies.find(
         (item) => item.id == this.form.company_id
       )?.company_branches[0];
+      this.form.company_branch_id = this.company_branch;
       // console.log(this.company_branch_obj);
     },
     saveContactPhone() {
       // console.log( this.company_branch_obj.contacts[0].phone);
       this.form.contact_phone = this.company_branch_obj.contacts[0].phone;
-      console.log(this.form.contact_phone);
+      // console.log(this.form.contact_phone);
     },
     updateDescription(content) {
       this.form.description = content;
