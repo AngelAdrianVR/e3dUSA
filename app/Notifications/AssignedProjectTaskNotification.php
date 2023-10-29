@@ -26,8 +26,11 @@ class AssignedProjectTaskNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
-        // return ['mail', 'database'];
+        if (app()->environment() === 'local') {
+            return ['database'];
+        } else {
+            return ['mail', 'database'];
+        }
     }
 
     public function toMail(object $notifiable): MailMessage

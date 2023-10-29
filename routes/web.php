@@ -13,6 +13,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\DesignModificationController;
 use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\EmailMonitorController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\KioskDeviceController;
@@ -127,6 +128,7 @@ Route::get('crm', [DashboardController::class, 'crmDashboard'])->middleware('aut
 // ------- CRM (oportunities Routes)  ---------
 Route::resource('oportunities', OportunityController::class)->middleware('auth');
 Route::put('/oportunities/update-status/{oportunity_id}', [OportunityController::class, 'updateStatus'])->name('oportunities.update-status')->middleware('auth');
+Route::put('/oportunities/create-sale/{oportunity_id}', [OportunityController::class, 'createSale'])->name('oportunities.create-sale')->middleware('auth');
 Route::post('oportunities/update-with-media/{oportunity}', [OportunityController::class, 'updateWithMedia'])->name('oportunities.update-with-media')->middleware('auth');
 
 // ------- CRM (surveys Routes)  ---------
@@ -150,8 +152,12 @@ Route::post('payment-monitors/update-with-media/{payment_monitor}', [PaymentMoni
 // ------- CRM (meeting monior Routes)  ---------
 Route::resource('meeting-monitors', MettingMonitorController::class)->middleware('auth');
 
+// ------- CRM (email monior Routes)  ---------
+Route::resource('email-monitors', EmailMonitorController::class)->middleware('auth');
+
 // ------- CRM (whatsapp monior Routes)  ---------
 Route::resource('whatsapp-monitors', WhatsappMonitorController::class)->middleware('auth');
+Route::post('whatsapp-monitors/update-with-media/{whatsapp_monitor}', [WhatsappMonitorController::class, 'updateWithMedia'])->name('whatsapp-monitors.update-with-media')->middleware('auth');
 
 // ------- CRM(sale orders Routes)  ---------
 Route::resource('sales', SaleController::class)->middleware('auth');

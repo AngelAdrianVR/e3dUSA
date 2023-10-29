@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PaymentMonitorResource extends JsonResource
+class WhatsappMonitorResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,16 +16,18 @@ class PaymentMonitorResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'paid_at' => $this->paid_at?->isoFormat('DD MMMM YYYY, H:mm A'),
-            'paid_at_raw' => $this->paid_at,
-            'amount' => $this->amount,
-            'payment_method' => $this->payment_method,
-            'concept' => $this->concept,
+            'contact_phone' => $this->contact_phone,
             'notes' => $this->notes,
+            'date' => $this->date?->isoFormat('DD MMMM YYYY'),
+            'date_raw' => $this->date,
+            'company_name' => $this->company_name,
             'media' => $this->getMedia()->all(),
             'oportunity' => OportunityResource::make($this->whenLoaded('oportunity')),
+            'company' => $this->whenLoaded('company'),
             'seller' => $this->whenLoaded('seller'),
             'clientMonitor' => $this->whenLoaded('clientMonitor'),
+            'companyBranch' => $this->whenLoaded('companyBranch'),
+            'contact' => $this->whenLoaded('contact'),
             'created_at' => $this->created_at?->isoFormat('DD MMMM YYYY'),
             'updated_at' => $this->updated_at?->isoFormat('DD MMMM YYYY'),
         ];

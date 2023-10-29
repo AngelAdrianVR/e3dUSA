@@ -1,5 +1,5 @@
 <template>
-    <AppLayout title="Interacción Whatsapp">
+    <AppLayout title="Editar interacción Whatsapp">
       <template #header>
         <div class="flex justify-between">
           <Link :href="route('client-monitors.index')"
@@ -7,13 +7,13 @@
           <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
-            <h2 class="font-semibold text-xl leading-tight">Interacción WhatsApp</h2>
+            <h2 class="font-semibold text-xl leading-tight">Editar interacción WhatsApp</h2>
           </div>
         </div>
       </template>
 
       <!-- Form -->
-      <form @submit.prevent="store">
+      <form @submit.prevent="update">
         <div class="md:w-1/2 md:mx-auto text-sm my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4">
         <h2 class="text-secondary">Datos del cliente</h2>
         
@@ -88,7 +88,7 @@
             </div>
           <div class="flex justify-end items-center">
             <PrimaryButton :disabled="form.processing">
-              Agregar
+              Guardar cambios
             </PrimaryButton>
 
           </div>
@@ -108,15 +108,15 @@ import FileUploader from "@/Components/MyComponents/FileUploader.vue";
 export default {
   data() {
     const form = useForm({
-    oportunity_id: null,
-    company_id: null,
-    contact_id: null,
-    company_branch_id: null,
-    company_name: null,
-    seller_id: null,
-    contact_phone: null,
-    date: null,
-    notes: null,
+    oportunity_id: this.whatsapp_monitor.data.oportunity?.id,
+    company_id: this.whatsapp_monitor.data.company?.id,
+    contact_id: this.whatsapp_monitor.data.contact.id,
+    company_branch_id: this.whatsapp_monitor.data.companyBranch?.id,
+    company_name: this.whatsapp_monitor.data.company_name,
+    seller_id: this.whatsapp_monitor.data.seller?.id,
+    contact_phone: this.whatsapp_monitor.data.contact_phone,
+    date: this.whatsapp_monitor.data.date_raw,
+    notes: this.whatsapp_monitor.data.notes,
     media: [],
         });
 
@@ -136,20 +136,34 @@ export default {
   },
   props: {
     oportunities: Object,
+    whatsapp_monitor: Object,
     companies: Array,
     users: Array,
   },
   methods: {
-    store(){
-      this.form.post(route('whatsapp-monitors.store'), {
-        onSuccess: () => {
-          this.$notify({
-            title: "Éxito",
-            message: "Se registró interacción vía Whatsapp",
-            type: "success",
-          });
-        },
-      });
+    update() {
+      if (this.form.media.length > 0) {
+        this.form.post(route("whatsapp-monitors.update-with-media", this.whatsapp_monitor.data.id), {
+          method: '_put',
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Registro de pago editado",
+              type: "success",
+            });
+          },
+        });
+      } else {
+        this.form.put(route("whatsapp-monitors.update", this.whatsapp_monitor.data.id), {
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Registro de pago editado",
+              type: "success",
+            });
+          },
+        });
+      }
     },
     disabledDate(time) {
         const today = new Date();
@@ -200,8 +214,20 @@ export default {
       this.form.company_name = oportunity.company.business_name;
       }
   },
-
   },
+  mounted(){
+     this.company_branch_obj = this.companies.find((item) => item.id == this.whatsapp_monitor.data.company.id)?.company_branches[0];
+     const oportunity = this.oportunities.data.find(oportunity => oportunity.id === this.form.oportunity_id);
+
+      if (oportunity.company_name) { 
+      this.form.company_name = oportunity.company_name; 
+      this.form.contact_phone = oportunity.contact_phone; 
+      this.form.company_id = null;
+      } else {
+      this.form.company_id = oportunity.company.id;
+      this.form.company_name = oportunity.company.business_name;
+      }
+  }
 };
 </script>
 

@@ -18,7 +18,7 @@
           </SecondaryButton> -->
         </div>
         <div class="flex items-center space-x-2">
-            <Link v-if="$page.props.auth.user.permissions.includes('Enviar correos en seguimiento integral')" :href="route('client-monitors.index')">
+            <Link v-if="$page.props.auth.user.permissions.includes('Enviar correos en seguimiento integral')" :href="route('email-monitors.create')">
               <PrimaryButton class="rounded-xl">Enviar correo</PrimaryButton>
             </Link>
           <Dropdown
@@ -113,7 +113,7 @@
                 >{{ monitor.date }}</span
               >
             </td>
-            <td class="text-center py-2 px-2">
+            <td class="text-center py-2 px-2 truncate">
               {{ monitor.concept }}
             </td>
             <td class="text-center py-2 px-2">
@@ -175,13 +175,14 @@ props:{
 },
 methods:{
     showMonitorType(monitor) {
-      console.log(monitor);
       if (monitor.type == 'Correo') {
         this.$inertia.get(route('payment-monitors.show', monitor.paymentMonitor?.id));
       } else if (monitor.type == 'Pago') {
         this.$inertia.get(route('payment-monitors.show', monitor.paymentMonitor?.id));
       } else if (monitor.type == 'Reunión') {
         this.$inertia.get(route('meeting-monitors.show', monitor.mettingMonitor?.id));
+      } else if (monitor.type == 'WhatsApp') {
+        this.$inertia.get(route('whatsapp-monitors.show', monitor.whatsappMonitor?.id));
       }
     },
     handleSearch() {

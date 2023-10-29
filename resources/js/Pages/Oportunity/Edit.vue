@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppLayout title="Crear Oportunidad">
+    <AppLayout title="Editar Oportunidad">
       <template #header>
         <div class="flex justify-between">
           <Link :href="route('oportunities.index')"
@@ -8,13 +8,13 @@
           <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
-            <h2 class="font-semibold text-xl leading-tight">Crear Oportunidad</h2>
+            <h2 class="font-semibold text-xl leading-tight">Editar Oportunidad</h2>
           </div>
         </div>
       </template>
 
       <!-- Form -->
-      <form @submit.prevent="store">
+      <form @submit.prevent="update">
         <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4 mx-3">
           <div>
             <label>Nombre de la oportunidad *</label>
@@ -114,7 +114,9 @@
           </div>
           <div>
             <label>Descripción</label>
-            <RichText @content="updateDescription($event)" v-model="form.description" />
+            <textarea v-model="form.description" class="textarea" rows="3">
+            </textarea>
+            <!-- <RichText @content="updateDescription($event)" v-model="form.description" /> -->
           </div>
           <div class="ml-2 mt-2 col-span-full flex">
             <FileUploader @files-selected="this.form.media = $event" />
@@ -183,7 +185,7 @@
             <InputError :message="form.errors.amount" />
           </div>
 
-          <h2 class="font-bold text-sm my-2 col-span-full">Acceso al proyecto</h2>
+          <!-- <h2 class="font-bold text-sm my-2 col-span-full">Acceso al proyecto</h2>
           <div class="col-span-full text-sm">
             <div class="my-1">
               <input v-model="typeAccessProject" value="Public"
@@ -201,9 +203,9 @@
               <p class="text-[#9A9A9A] ml-7 text-xs">Solo los usuarios de proyecto pueden ver y acceder a este proyecto
               </p>
             </div>
-          </div>
+          </div> -->
 
-          <section class="rounded-[10px] py-12 mx-1 mt-5 max-h-[540px] col-span-full bg-[#CCCCCC]">
+          <!-- <section class="rounded-[10px] py-12 mx-1 mt-5 max-h-[540px] col-span-full bg-[#CCCCCC]">
             <div class="flex px-16 mb-8">
               <div v-if="typeAccessProject === 'Private'" class="w-full">
                 <h2 class="font-bold text-sm my-2 ml-2 col-span-full">Asignar participantes </h2>
@@ -296,16 +298,16 @@
                 </div>
               </div>
             </div>
-          </section>
-          <!-- {{ form }} -->
+          </section> -->
 
           <div class="mt-9 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing || (editAccesFlag && typeAccessProject == 'Public')">
-              Crear oportunidad
+              Guardar cambios
             </PrimaryButton>
           </div>
         </div>
       </form>
+          <!-- {{ form }} -->
       <!-- tag form -->
       <DialogModal :show="showTagFormModal" @close="showTagFormModal = false">
         <template #title> Agregar etiqueta </template>
@@ -351,26 +353,26 @@ import DialogModal from "@/Components/DialogModal.vue";
 export default {
   data() {
     const form = useForm({
-      name: null,
-      seller_id: null,
-      status: null,
-      description: null,
-      company_id: null,
-      company_branch_id: null,
-      contact: null,
-      tags: [],
-      probability: null,
-      amount: null,
-      priority: null,
-      start_date: null,
-      estimated_finish_date: null,
-      type_access_project: "Private",
-      lost_oportunity_razon: null,
+      name: this.oportunity.name,
+      status: this.oportunity.status,
+      seller_id: this.oportunity.seller_id,
+      is_new_company: this.oportunity.company_id ? false : true,
+      company_id: this.oportunity.company_id,
+      company_branch_id: this.oportunity.company_branch_id,
+      company_name: this.oportunity.company_name,
+      contact: this.oportunity.contact,
+      contact_phone: this.oportunity.contact_phone,
+      start_date: this.oportunity.start_date,
+      estimated_finish_date: this.oportunity.estimated_finish_date,
+      description: this.oportunity.description,
+      tags: this.oportunity.tags,
+      probability: this.oportunity.probability,
+      amount: this.oportunity.amount,
+      priority: this.oportunity.priority,
+      type_access_project: this.oportunity.type_access_project,
+      lost_oportunity_razon: this.oportunity.lost_oportunity_razon,
       media: [],
       selectedUsersToPermissions: [],
-      is_new_company: false,
-      company_name: null,
-      contact_phone: null,
     });
 
     const tagForm = useForm({
@@ -445,19 +447,33 @@ export default {
   props: {
     companies: Array,
     users: Array,
+    oportunity: Object,
     tags: Object,
   },
   methods: {
-    store() {
-      this.form.post(route("oportunities.store"), {
-        onSuccess: () => {
-          this.$notify({
-            title: "Éxito",
-            message: "Se ha creado una nueva oportunidad",
-            type: "success",
-          });
-        },
-      });
+    update() {
+      if (this.form.media.length > 0) {
+        this.form.post(route("oportunities.update-with-media", this.oportunity.id), {
+          method: '_put',
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Oportunidad editada",
+              type: "success",
+            });
+          },
+        });
+      } else {
+        this.form.put(route("oportunities.update", this.oportunity.id), {
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Oportunidad editada",
+              type: "success",
+            });
+          },
+        });
+      }
     },
     async storeTag() {
       try {

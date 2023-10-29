@@ -29,7 +29,8 @@ class Sale extends Model implements HasMedia
         'recieved_at',
         'user_id',
         'company_branch_id',
-        'contact_id'
+        'contact_id',
+        'oportunity_id'
     ];
 
     protected $casts = [
@@ -42,6 +43,11 @@ class Sale extends Model implements HasMedia
     public function contact(): BelongsTo
     {
         return $this->belongsTo(Contact::class);
+    }
+
+    public function oportunity(): BelongsTo
+    {
+        return $this->belongsTo(Oportunity::class);
     }
 
     public function user(): BelongsTo

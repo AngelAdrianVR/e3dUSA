@@ -68,8 +68,6 @@
           </div>
         </div>
 
-        <h2 class="text-secondary pt-4">Detalles de la cita</h2>
-
         <div class="lg:flex items-center pt-3">
           <div class="lg:w-1/2 lg:mt-0">
             <label class="block">Fecha*</label>
@@ -79,8 +77,7 @@
           </div>
           <div class="w-1/2">
             <label>Hora *</label>
-            <el-time-select v-model="form.time" start="07:00" step="00:15" end="23:30"
-              placeholder="Seleccione una hora" />
+            <input v-model="form.time" class="input" type="time">
             <InputError :message="form.errors.time" />
           </div>
         </div>
@@ -103,23 +100,73 @@
             <InputError :message="form.errors.location" />
           </div>
         </div>
+        <!-- <div class="mt-5 col-span-full">
+              <label>Descripción</label>
+              <RichText @content="updateDescription($event)" />
+            </div> -->
         <div>
-          <label class="block" for="">Participante(s) *</label>
-          <el-select class="w-full mt-2" v-model="form.participants" clearable filterable multiple
-            placeholder="Seleccionar participantes" no-data-text="No hay usuarios registrados"
-            no-match-text="No se encontraron coincidencias">
-            <el-option v-for="user in users" :key="user.id" :label="user.name" :value="user.id" />
-          </el-select>
-          <InputError :message="form.errors.participants" />
-        </div>
-        <div class="mt-5 col-span-full">
           <label>Descripción</label>
-          <RichText @content="updateDescription($event)" :defaultValue="form.description" />
+          <textarea v-model="form.description" class="textarea" rows="2">
+                </textarea>
+          <InputError :message="form.errors.description" />
         </div>
+
         <div class="flex justify-end items-center">
           <PrimaryButton :disabled="form.processing">
-            Actualizar
+            Guardar cambios
           </PrimaryButton>
+
+          <div class="lg:flex items-center pt-3">
+            <div class="lg:w-1/2 lg:mt-0">
+              <label class="block">Fecha*</label>
+              <el-date-picker v-model="form.meeting_date" type="date" placeholder="Fecha*" format="YYYY/MM/DD"
+                value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
+              <InputError :message="form.errors.meeting_date" />
+            </div>
+            <div class="w-1/2">
+              <label>Hora *</label>
+              <el-time-select v-model="form.time" start="07:00" step="00:15" end="23:30"
+                placeholder="Seleccione una hora" />
+              <InputError :message="form.errors.time" />
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <div class="w-1/2">
+              <label>Vía de cita *</label>
+              <el-select class="w-full" v-model="form.meeting_via" clearable filterable placeholder="Seleccione"
+                no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
+                <el-option v-for="meeting_via in meetingVias" :key="meeting_via" :label="meeting_via"
+                  :value="meeting_via" />
+              </el-select>
+              <InputError :message="form.errors.meeting_via" />
+            </div>
+            <div class="w-1/2 relative">
+              <label>Ubicacion</label>
+              <input v-model="form.location" class="input" type="text">
+              <label @click="getCompanyBranchAddress"
+                class="text-primary text-xs underline cursor-pointer absolute -bottom-5 left-3">Agregar ubicación de la
+                sucursal</label>
+              <InputError :message="form.errors.location" />
+            </div>
+          </div>
+          <div>
+            <label class="block" for="">Participante(s) *</label>
+            <el-select class="w-full mt-2" v-model="form.participants" clearable filterable multiple
+              placeholder="Seleccionar participantes" no-data-text="No hay usuarios registrados"
+              no-match-text="No se encontraron coincidencias">
+              <el-option v-for="user in users" :key="user.id" :label="user.name" :value="user.id" />
+            </el-select>
+            <InputError :message="form.errors.participants" />
+          </div>
+          <div class="mt-5 col-span-full">
+            <label>Descripción</label>
+            <RichText @content="updateDescription($event)" :defaultValue="form.description" />
+          </div>
+          <div class="flex justify-end items-center">
+            <PrimaryButton :disabled="form.processing">
+              Actualizar
+            </PrimaryButton>
+          </div>
         </div>
       </div>
     </form>

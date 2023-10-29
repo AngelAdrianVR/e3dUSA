@@ -11,18 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('whatsapp_monitors', function (Blueprint $table) {
+        Schema::create('email_monitors', function (Blueprint $table) {
             $table->id();
-            $table->string('contact_phone');
+            $table->string('subject');
+            $table->text('content');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('oportunity_id')->constrained()->cascadeOnDelete();
             $table->string('company_name')->nullable();
-            $table->text('notes')->nullable();
-            $table->timestamp('date')->nullable();
-            $table->foreignId('oportunity_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('company_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('client_monitor_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('company_branch_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('contact_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('seller_id')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('whatsapp_monitors');
+        Schema::dropIfExists('email_monitors');
     }
 };
