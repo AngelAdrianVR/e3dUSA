@@ -20,6 +20,8 @@ return new class extends Migration
             $table->foreignId('oportunity_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('company_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('client_monitor_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('company_branch_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('contact_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('seller_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });

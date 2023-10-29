@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
+use App\Events\RecordEdited;
 use App\Http\Resources\OportunityResource;
 use App\Http\Resources\WhatsappMonitorResource;
 use App\Models\ClientMonitor;
@@ -44,6 +45,9 @@ class WhatsappMonitorController extends Controller
             'contact_phone' => 'required',
             'date' => 'required|date',
             'notes' => 'nullable',
+            'company_id' => 'nullable',
+            'contact_id' => 'nullable',
+            'company_branch_id' => 'nullable',
         ]);
 
         $whatsapp_monitor = WhatsappMonitor::create($request->all());
@@ -72,7 +76,7 @@ class WhatsappMonitorController extends Controller
     
     public function show($whatsapp_monitor_id)
     {
-        $whatsapp_monitor = WhatsappMonitorResource::make(WhatsappMonitor::with('seller', 'oportunity', 'media')->find($whatsapp_monitor_id));
+        $whatsapp_monitor = WhatsappMonitorResource::make(WhatsappMonitor::with('seller', 'oportunity', 'media', 'contact', 'companyBranch')->find($whatsapp_monitor_id));
 
         // return $whatsapp_monitor;
         
@@ -80,15 +84,93 @@ class WhatsappMonitorController extends Controller
     }
 
     
-    public function edit(WhatsappMonitor $whatsapp_monitor)
+    public function edit($whatsapp_monitor_id)
     {
-        //
+        $whatsapp_monitor = WhatsappMonitorResource::make(WhatsappMonitor::with('oportunity', 'company', 'companyBranch', 'contact', 'seller')->find($whatsapp_monitor_id));
+        $companies = Company::with('companyBranches.contacts')->get();
+        $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
+        $users = User::where('is_active', true)->get();
+
+        // return $whatsapp_monitor;
+
+        return inertia('WhatsappMonitor/Edit', compact('whatsapp_monitor', 'companies', 'oportunities', 'users', 'whatsapp_monitor'));
     }
 
     
     public function update(Request $request, WhatsappMonitor $whatsapp_monitor)
     {
-        //
+        $request->validate([
+            'oportunity_id' => 'required',
+            'company_id' => 'nullable',
+            'company_name' => 'nullable',
+            'seller_id' => 'required',
+            'contact_phone' => 'required',
+            'date' => 'required|date',
+            'notes' => 'nullable',
+            'company_id' => 'nullable',
+            'contact_id' => 'nullable',
+            'company_branch_id' => 'nullable',
+        ]);
+
+        $whatsapp_monitor->update($request->all());
+
+        //recupero el seguimiento integral para actualizarlo tambien
+        $client_monitor = ClientMonitor::where('oportunity_id', $whatsapp_monitor->oportunity_id)->first();
+
+        $client_monitor->update([
+            'date' => $request->date,
+            'concept' => $request->notes ?? 'Interacción vía WhatsApp',
+            'oportunity_id' => $request->oportunity_id,
+            'company_id' => $request->company_id,
+        ]);
+
+        $whatsapp_monitor->client_monitor_id = $client_monitor->id;
+        $whatsapp_monitor->save();
+
+        event(new RecordCreated($whatsapp_monitor));
+
+        
+        return to_route('whatsapp-monitors.show', ['whatsapp_monitor'=> $whatsapp_monitor]);
+    }
+
+    public function updateWithMedia(Request $request, WhatsappMonitor $whatsapp_monitor)
+    {
+        $request->validate([
+            'oportunity_id' => 'required',
+            'company_id' => 'nullable',
+            'company_name' => 'nullable',
+            'seller_id' => 'required',
+            'contact_phone' => 'required',
+            'date' => 'required|date',
+            'notes' => 'nullable',
+            'company_id' => 'nullable',
+            'contact_id' => 'nullable',
+            'company_branch_id' => 'nullable',
+        ]);
+
+        $whatsapp_monitor->update($request->all());
+
+        $whatsapp_monitor->clearMediaCollection();
+        $whatsapp_monitor->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+
+        event(new RecordCreated($whatsapp_monitor));
+
+        //recupero el seguimiento integral para actualizarlo tambien
+        $client_monitor = ClientMonitor::where('oportunity_id', $whatsapp_monitor->oportunity_id)->first();
+
+        $client_monitor->update([
+            'date' => $request->date,
+            'concept' => $request->notes ?? 'Interacción vía WhatsApp',
+            'oportunity_id' => $request->oportunity_id,
+            'company_id' => $request->company_id,
+        ]);
+
+        $whatsapp_monitor->client_monitor_id = $client_monitor->id;
+        $whatsapp_monitor->save();
+
+
+        
+        return to_route('whatsapp-monitors.show', ['whatsapp_monitor'=> $whatsapp_monitor]);
     }
 
     

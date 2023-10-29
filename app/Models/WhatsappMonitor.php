@@ -21,6 +21,8 @@ class WhatsappMonitor extends Model implements HasMedia
         'company_name',
         'seller_id',
         'client_monitor_id',
+        'company_branch_id',
+        'contact_id',
     ];
 
     protected $casts = [
@@ -31,6 +33,11 @@ class WhatsappMonitor extends Model implements HasMedia
     public function company() :BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function companyBranch() :BelongsTo
+    {
+        return $this->belongsTo(CompanyBranch::class);
     }
 
     public function oportunity() :BelongsTo
@@ -46,6 +53,11 @@ class WhatsappMonitor extends Model implements HasMedia
     public function clientMonitor() :BelongsTo
     {
         return $this->belongsTo(ClientMonitor::class);
+    }
+
+    public function contact() :BelongsTo
+    {
+        return $this->belongsTo(Contact::class);
     }
 
 }

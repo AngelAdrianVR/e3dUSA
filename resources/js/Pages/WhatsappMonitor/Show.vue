@@ -73,8 +73,10 @@
 
             <span class="text-gray-500 my-2">Cliente</span>
             <span>{{ whatsapp_monitor.data.company ?? whatsapp_monitor.data.company_name  }}</span>
+            <span class="text-gray-500 my-2">Sucursal</span>
+            <span>{{ whatsapp_monitor.data.companyBranch?.name ?? '--'  }}</span>
             <span class="text-gray-500 my-2">Contacto</span>
-            <span>{{ whatsapp_monitor.data.contact ? whatsapp_monitor.data.contact?.name : whatsapp_monitor.data.contact_name    }}</span>
+            <span>{{ whatsapp_monitor.data.contact?.name ?? '--' }}</span>
             <span class="text-gray-500 my-2">Teléfono</span>
             <span>{{ whatsapp_monitor.data.contact_phone }}</span>
         </div>

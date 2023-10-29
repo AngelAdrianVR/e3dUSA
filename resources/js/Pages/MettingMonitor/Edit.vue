@@ -101,14 +101,20 @@
                     <InputError :message="form.errors.location" />
                 </div>
             </div>
-            <div class="mt-5 col-span-full">
+            <!-- <div class="mt-5 col-span-full">
               <label>Descripción</label>
               <RichText @content="updateDescription($event)" />
+            </div> -->
+            <div>
+                <label>Descripción</label>
+                <textarea v-model="form.description" class="textarea" rows="2">
+                </textarea>
+                <InputError :message="form.errors.description" />
             </div>
             
           <div class="flex justify-end items-center">
             <PrimaryButton :disabled="form.processing">
-              Actualizar
+              Guardar cambios
             </PrimaryButton>
 
           </div>
@@ -227,12 +233,7 @@ export default {
     },
   },
   mounted(){
-     this.company_branch_obj = this.metting_monitor.data.companyBranch;
-     if (this.metting_monitor.data.oportunity?.id) {
-        this.form.is_oportunity = true;
-     } else {
-        this.form.is_oportunity = false;
-     }
+     this.company_branch_obj = this.companies.find((item) => item.id == this.metting_monitor.data.company.id)?.company_branches[0];
   }
 };
 </script>

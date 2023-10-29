@@ -42,18 +42,39 @@
                     <InputError :message="form.errors.company_id" />
                 </div>
                 <div class="w-1/2">
+                  <label>Sucursal</label> <br>
+                  <el-select @change="saveCompanyBranchAddress" v-model="form.company_branch_id" clearable filterable
+                    placeholder="Seleccione" no-data-text="No hay sucursales registradas"
+                    no-match-text="No se encontraron coincidencias">
+                    <el-option v-for="company_branch in companies.find((item) => item.id == form.company_id)?.company_branches"
+                      :key="company_branch" :label="company_branch.name" :value="company_branch.id" />
+                  </el-select>
+                  <InputError :message="form.errors.company_branch" />
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <div v-if="!has_contact" class="w-1/2">
+                  <label>Contacto</label>
+                  <el-select @change="getContactPhone" v-model="form.contact_id" clearable filterable placeholder="Seleccione"
+                    no-data-text="No hay contactos registrados" no-match-text="No se encontraron coincidencias">
+                    <el-option v-for="contact in company_branch_obj?.contacts" :key="contact" :label="contact.name"
+                      :value="contact.id" />
+                  </el-select>
+                  <InputError :message="form.errors.contact_id" />
+                </div>
+                <div class="w-1/2">
                     <label>Teléfono</label>
                     <input v-model="form.contact_phone" class="input" type="text">
                     <InputError :message="form.errors.contact_phone" />
                 </div>
-            </div>
+              </div>
 
             <h2 class="text-secondary pt-4">Interacción de Whatsaap</h2>
 
                 <div class="lg:w-1/2 lg:mt-0">
                 <label class="block">Fecha *</label>
                 <el-date-picker v-model="form.date" type="date" placeholder="Fecha de pago *" format="YYYY/MM/DD"
-                value-format="YYYY-MM-DD" />
+                value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
                 <InputError :message="form.errors.date" />
                 </div>
             <div>
@@ -89,6 +110,8 @@ export default {
     const form = useForm({
     oportunity_id: null,
     company_id: null,
+    contact_id: null,
+    company_branch_id: null,
     company_name: null,
     seller_id: null,
     contact_phone: null,
@@ -99,11 +122,9 @@ export default {
 
     return {
       form,
+      company_branch_obj: null,
+      has_contact: false,
       mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
-      payment_methods: [
-        'Transferencia electrónica',
-        'Otro',
-      ],
     };
   },
   components: {
@@ -115,6 +136,7 @@ export default {
   },
   props: {
     oportunities: Object,
+    companies: Array,
     users: Array,
   },
   methods: {
@@ -128,6 +150,17 @@ export default {
           });
         },
       });
+    },
+    disabledDate(time) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return time.getTime() > today.getTime();
+    },
+    saveCompanyBranchAddress() {
+      this.company_branch_obj = this.companies.find((item) => item.id == this.form.company_id)?.company_branches[0];
+    },
+    getContactPhone() {
+      this.form.contact_phone = this.company_branch_obj?.contacts?.find(contact => contact.id == this.form.contact_id)?.phone;
     },
     activateFileInput() {
     // Simula un clic en el campo de entrada de archivos al hacer clic en el párrafo
@@ -153,6 +186,8 @@ export default {
     // console.log(oportunity);
     
     this.form.company_id = null;
+    this.form.company_branch_id = null;
+    this.form.contact_id = null;
     this.form.company_name = null;
     this.form.contact_phone = null;
 
