@@ -31,6 +31,7 @@ class Oportunity extends Model implements HasMedia
         'estimated_finish_date',
         'type_access_project',
         'company_id',
+        'company_branch_id',
         'user_id',
         'seller_id',
     ];
@@ -46,6 +47,11 @@ class Oportunity extends Model implements HasMedia
     public function company() :BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function companyBranch() :BelongsTo
+    {
+        return $this->belongsTo(CompanyBranch::class);
     }
 
     public function user() :BelongsTo
@@ -91,6 +97,11 @@ class Oportunity extends Model implements HasMedia
     public function survey() :HasOne
     {
         return $this->hasOne(Survey::class);
+    }
+
+    public function sale() :HasOne
+    {
+        return $this->hasOne(Sale::class);
     }
 
     public function users()

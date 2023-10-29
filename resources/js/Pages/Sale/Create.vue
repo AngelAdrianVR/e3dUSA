@@ -268,6 +268,7 @@
                     <CancelButton @click="showImportantNotesModal = false">Cancelar</CancelButton>
                 </template>
             </DialogModal>
+            <!-- {{data}} -->
         </AppLayout>
     </div>
 </template>
@@ -286,6 +287,7 @@ export default {
     data() {
         const form = useForm({
             company_branch_id: null,
+            oportunity_id: null,
             contact_id: null,
             shipping_company: null,
             freight_cost: null,
@@ -324,7 +326,8 @@ export default {
         DialogModal,
     },
     props: {
-        company_branches: Array
+        company_branches: Array,
+        data: Array,
     },
     methods: {
         store() {
@@ -429,5 +432,11 @@ export default {
             this.product.notes = null;
         }
     },
+    mounted(){
+        if(this.data) {
+            this.form.company_branch_id = this.data.company_branch_id;
+            this.form.oportunity_id = this.data.oportunity_id;
+        }
+    }
 };
 </script>

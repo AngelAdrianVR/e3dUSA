@@ -32,9 +32,11 @@ class SaleController extends Controller
 
     public function create()
     {
+        $data = request('data');
+
         $company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
 
-        return inertia('Sale/Create', compact('company_branches'));
+        return inertia('Sale/Create', compact('company_branches', 'data'));
     }
 
     public function store(Request $request)
