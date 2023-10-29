@@ -1,5 +1,5 @@
 <template>
-  <AppLayout title="Agendar tarea |">
+  <AppLayout title="Agendar tarea">
     <template #header>
       <div class="flex justify-between">
         <Link :href="route('calendars.index')"
@@ -43,7 +43,13 @@
             <el-select class="w-full mt-2" v-model="form.participants" clearable filterable multiple
               placeholder="Seleccionar participantes" no-data-text="No hay usuarios registrados"
               no-match-text="No se encontraron coincidencias">
-              <el-option v-for="user in users" :key="user.id" :label="user.name" :value="user.id" />
+              <el-option v-for="user in users" :key="user.id" :label="user.name" :value="user.id">
+                <div v-if="$page.props.jetstream.managesProfilePhotos"
+                  class="flex text-sm rounded-full items-center mt-[3px]">
+                  <img class="h-7 w-7 rounded-full object-cover mr-4" :src="user.profile_photo_url" :alt="user.name" />
+                  <p>{{ user.name }}</p>
+                </div>
+              </el-option>
             </el-select>
             <InputError :message="form.errors.participants" />
           </div>
@@ -58,13 +64,13 @@
               <span class="ml-2 text-xs">Todo el día</span>
             </label>
           </div>
-          <div v-if="!form.is_full_day">
-            <label>Horario</label>
-            <div class="demo-range">
-              <el-time-picker v-model="form.time" is-range range-separator="-" start-placeholder="Hora inicio"
-                end-placeholder="Hora final" />
-            </div>
-            <InputError :message="form.errors.time" />
+          <div v-if="!form.is_full_day" class="grid grid-cols-2 gap-x-4">
+            <label class="col-span-full">Horario</label>
+            <el-time-select v-model="form.start_time" start="08:00" step="00:30" end="20:30"
+              placeholder="Hora de inicio" :max-time="form.end_time" format="hh:mm A" />
+            <el-time-select v-model="form.end_time" start="08:00" step="00:30" end="20:30"
+              placeholder="Hora de término" :min-time="form.start_time" format="hh:mm A" />
+            <!-- <InputError :message="form.errors.time" /> -->
           </div>
           <!-- <div>
             <label class="block">Repetir</label>
@@ -139,13 +145,17 @@
               <span class="ml-2 text-xs">Todo el día</span>
             </label>
           </div>
-          <div v-if="!form.is_full_day">
-            <label>Horario</label>
-            <div class="demo-range">
+          <div v-if="!form.is_full_day" class="grid grid-cols-2 gap-x-4">
+            <label class="col-span-full">Horario</label>
+            <el-time-select v-model="form.start_time" start="08:00" step="00:30" end="20:30"
+              placeholder="Hora de inicio" :max-time="form.end_time" format="hh:mm A" />
+            <el-time-select v-model="form.end_time" start="08:00" step="00:30" end="20:30"
+              placeholder="Hora de término" :min-time="form.start_time" format="hh:mm A" />
+            <!-- <div class="demo-range">
               <el-time-picker v-model="form.time" is-range range-separator="-" start-placeholder="Hora inicio"
                 end-placeholder="Hora final" />
             </div>
-            <InputError :message="form.errors.time" />
+            <InputError :message="form.errors.time" /> -->
           </div>
           <!-- <div>
             <label class="block">Repetir</label>
@@ -201,7 +211,9 @@ export default {
       description: null,
       reminder: null,
       is_full_day: false,
-      time: null,
+      // time: null,
+      start_time: null,
+      end_time: null,
       start_date: null,
     });
 
@@ -262,5 +274,4 @@ export default {
   /* Color del texto al hacer hover */
   border-radius: 20px;
   /* Redondeo */
-}
-</style>
+}</style>
