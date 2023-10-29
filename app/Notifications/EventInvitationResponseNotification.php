@@ -7,14 +7,14 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class AssignedProjectTaskNotification extends Notification
+class EventInvitationResponseNotification extends Notification
 {
     use Queueable;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(public $task, public $additional_info, public $module)
+    public function __construct(public $event, public $status, public $participant)
     {
         //
     }
@@ -36,11 +36,11 @@ class AssignedProjectTaskNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Tarea asignada')
-            ->markdown('emails.assigned-projet-task', [
+            ->subject('Mención en comentario')
+            ->markdown('emails.event-response-invitation', [
                 'greeting' => '¡Hola!',
-                'intro' => "Te han asignado una tarea con el nombre de <span class='text-primary'>{$this->task->title}</span> perteneciente al proyecto <span class='text-primary'>{$this->task->project->project_name}</span>",
-                'url' => route('projects.show', $this->task->project->id),
+                'intro' => "El participante <span class='text-primary'>{$this->participant->name}</span> ha respondido tu invitación al evento <span class='text-primary'>{$this->event->title}</span>. Respuesta: <span class='text-primary'>{$this->status}</span>",
+                'url' => route('calendars.index'),
                 'salutation' => 'Saludos',
             ]);
     }
@@ -48,9 +48,9 @@ class AssignedProjectTaskNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'description' => "Te han asignado una tarea con el nombre de <span class='text-primary'>{$this->task->title}</span> perteneciente al proyecto <span class='text-primary'>{$this->task->project->project_name}</span>.",
-            'additional_info' => "$this->additional_info",
-            'module' => "$this->module",
+            'description' => "El participante <span class='text-primary'>{$this->participant->name}</span> ha respondido tu invitación al evento <span class='text-primary'>{$this->event->title}</span>. Respuesta: <span class='text-primary'>{$this->status}</span>",
+            'additional_info' => "",
+            'module' => "calendar",
         ];
     }
 }

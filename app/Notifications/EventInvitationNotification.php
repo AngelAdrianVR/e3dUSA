@@ -7,14 +7,14 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class AssignedProjectTaskNotification extends Notification
+class EventInvitationNotification extends Notification
 {
     use Queueable;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(public $task, public $additional_info, public $module)
+    public function __construct(public $event)
     {
         //
     }
@@ -36,11 +36,11 @@ class AssignedProjectTaskNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Tarea asignada')
-            ->markdown('emails.assigned-projet-task', [
+            ->subject('Mención en comentario')
+            ->markdown('emails.event-invitation', [
                 'greeting' => '¡Hola!',
-                'intro' => "Te han asignado una tarea con el nombre de <span class='text-primary'>{$this->task->title}</span> perteneciente al proyecto <span class='text-primary'>{$this->task->project->project_name}</span>",
-                'url' => route('projects.show', $this->task->project->id),
+                'intro' => "Te han invitado a un evento llamado <span class='text-primary'>{$this->event->title}</span>. Se requiere de tu respuesta.",
+                'url' => route('calendars.index'),
                 'salutation' => 'Saludos',
             ]);
     }
@@ -48,9 +48,9 @@ class AssignedProjectTaskNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'description' => "Te han asignado una tarea con el nombre de <span class='text-primary'>{$this->task->title}</span> perteneciente al proyecto <span class='text-primary'>{$this->task->project->project_name}</span>.",
-            'additional_info' => "$this->additional_info",
-            'module' => "$this->module",
+            'description' => "Te han invitado a un evento llamado <span class='text-primary'>{$this->event->title}</span>. Se requiere de tu respuesta.",
+            'additional_info' => "",
+            'module' => "calendar",
         ];
     }
 }

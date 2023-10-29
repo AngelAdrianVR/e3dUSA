@@ -24,6 +24,7 @@ class MeetingMonitorResource extends JsonResource
             'phone' => $this->phone,
             'description' => $this->description,
             'contact_name' => $this->contact_name,
+            'participants' => $this->participants,
             'company' => $this->whenLoaded('company'),
             'companyBranch' => $this->whenLoaded('companyBranch'),
             'oportunity' => OportunityResource::make($this->whenLoaded('oportunity')),

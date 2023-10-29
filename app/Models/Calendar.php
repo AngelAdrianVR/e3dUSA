@@ -17,20 +17,19 @@ class Calendar extends Model
         'reminder',
         'participants',
         'description',
+        'location',
         'status',
         'is_full_day',
         'start_date',
         'finish_date',
-        'start_at',
-        'finish_at',
+        'start_time',
+        'end_time',
         'user_id',  
     ];
 
     protected $casts = [
         'start_date' => 'date',
         'finish_date' => 'date',
-        'start_at' => 'datetime',
-        'finish_at' => 'datetime',
         'participants' => 'array',
     ];
 
