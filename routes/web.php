@@ -13,6 +13,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\DesignModificationController;
 use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\EmailMonitorController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\KioskDeviceController;
@@ -148,6 +149,9 @@ Route::post('payment-monitors/update-with-media/{payment_monitor}', [PaymentMoni
 
 // ------- CRM (meeting monior Routes)  ---------
 Route::resource('meeting-monitors', MettingMonitorController::class)->middleware('auth');
+
+// ------- CRM (email monior Routes)  ---------
+Route::resource('email-monitors', EmailMonitorController::class)->middleware('auth');
 
 // ------- CRM (whatsapp monior Routes)  ---------
 Route::resource('whatsapp-monitors', WhatsappMonitorController::class)->middleware('auth');
