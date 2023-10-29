@@ -202,7 +202,10 @@ export default {
 
         if (response.status === 200) {
           this.pendent_invitations_local.splice(index, 1);
-          this.tasks.data.push(response.data.item);
+
+          if (response.data.item) {
+            this.tasks.data.push(response.data.item);
+          }
 
           this.$notify({
             title: 'Éxito',

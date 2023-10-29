@@ -149,6 +149,6 @@ class CalendarController extends Controller
         // notificar a creador de evento
         $calendar->user->notify(new EventInvitationResponseNotification($calendar, $request->status, auth()->user()));
 
-        return response()->json(['item' => $clone]);
+        return response()->json(['item' => isset($clone) ? $clone : null]);
     }
 }

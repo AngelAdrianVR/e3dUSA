@@ -26,8 +26,11 @@ class EventInvitationResponseNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        // return ['mail', 'database'];
-        return ['database'];
+        if (app()->environment() === 'local') {
+            return ['database'];
+        } else {
+            return ['mail', 'database'];
+        }
     }
 
     public function toMail(object $notifiable): MailMessage
