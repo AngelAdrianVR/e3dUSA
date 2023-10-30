@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
+use App\Http\Resources\EmailMonitorResource;
 use App\Http\Resources\OportunityResource;
 use App\Models\ClientMonitor;
 use App\Models\Company;
@@ -65,9 +67,13 @@ class EmailMonitorController extends Controller
     }
 
     
-    public function show(EmailMonitor $email_monitor)
+    public function show($email_monitor_id)
     {
-        return inertia('EmailMonitor/Show');
+        $email_monitor = EmailMonitorResource::make(EmailMonitor::with('seller', 'oportunity', 'company')->find($email_monitor_id));
+
+        // return $email_monitor;
+
+        return inertia('EmailMonitor/Show', compact('email_monitor'));
     }
 
     
@@ -83,8 +89,14 @@ class EmailMonitorController extends Controller
     }
 
     
-    public function destroy(EmailMonitor $email_monitor)
+    public function destroy($email_monitor_id)
     {
-        //
+        $email_monitor = EmailMonitor::find($email_monitor_id);
+        $client_monitor = ClientMonitor::where('oportunity_id', $email_monitor->oportunity_id)->first();
+        $client_monitor->delete();
+        $email_monitor->delete();
+        event(new RecordDeleted($email_monitor));
+
+        return to_route('client-monitors.index');
     }
 }

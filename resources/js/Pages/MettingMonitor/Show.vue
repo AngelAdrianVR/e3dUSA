@@ -42,9 +42,6 @@
           </div>
         </div>
     </div>
-    <p class="text-center font-bold text-lg mb-4">
-        {{ metting_monitor.data.description }}
-      </p>
 
       <!-- ------------- tabs section starts ------------- -->
       <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2">
