@@ -14,6 +14,16 @@ class EmailMonitorResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'subject' => $this->subject,
+            'content' => $this->content,
+            'seller' => $this->whenLoaded('seller'),
+            'oportunity' => $this->whenLoaded('oportunity'),
+            'company' => $this->whenLoaded('company'),
+            'clientMonitor' => $this->whenLoaded('clientMonitor'),
+            'created_at' => $this->created_at?->isoFOrmat('DD MMMM YYYY'),
+            'updated_at' => $this->updated_at?->isoFOrmat('DD MMMM YYYY'),
+        ];
     }
 }
