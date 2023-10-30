@@ -24,7 +24,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->boolean('is_strict_project')->default(false);
             $table->boolean('is_internal_project')->default(false);
-            $table->unsignedFloat('budget')->nullable();
+            $table->unsignedFloat('budget', 10, 2)->nullable();
             // $table->string('type_access_project');
             $table->date('start_date');
             $table->date('limit_date');

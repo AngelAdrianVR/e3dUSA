@@ -244,7 +244,7 @@
                         <div class="space-y-1 mb-2">
                           <label class="flex items-center">
                             <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                              v-model="user.permissions[0]" :checked="user.permissions[0]" />{{ permissions }}
+                              v-model:checked="user.permissions[0]" :checked="user.permissions[0]" />{{ permissions }}
                             <span
                               :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                               class="ml-2 text-xs">
@@ -253,28 +253,28 @@
                           </label>
                           <label class="flex items-center">
                             <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                              v-model="user.permissions[1]" :checked="user.permissions[1]" />
+                              v-model:checked="user.permissions[1]" :checked="user.permissions[1]" />
                             <span
                               :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                               class="ml-2 text-xs">Ver</span>
                           </label>
                           <label class="flex items-center">
                             <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                              v-model="user.permissions[2]" :checked="user.permissions[2]" />
+                              v-model:checked="user.permissions[2]" :checked="user.permissions[2]" />
                             <span
                               :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                               class="ml-2 text-xs">Editar</span>
                           </label>
                           <label class="flex items-center">
                             <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                              v-model="user.permissions[3]" :checked="user.permissions[3]" />
+                              v-model:checked="user.permissions[3]" :checked="user.permissions[3]" />
                             <span
                               :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                               class="ml-2 text-xs">Eliminar</span>
                           </label>
                           <label class="flex items-center">
                             <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                              v-model="user.permissions[4]" :checked="user.permissions[4]" />
+                              v-model:checked="user.permissions[4]" :checked="user.permissions[4]" />
                             <span
                               :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                               class="ml-2 text-xs">Comentar</span>
@@ -561,16 +561,18 @@ export default {
       this.form.selectedUsersToPermissions = admins;
     },
     selectAuthUser() {
-      // obtener usuario que esta creando el proyecto para dar todos los permisos
-      const user = this.users.find(item => item.id === this.$page.props.auth.user.id);
-      const defaultPermissions = [true, true, true, true, true];
-      let authUser = {
-        id: user.id,
-        name: user.name,
-        profile_photo_url: user.profile_photo_url,
-        permissions: [...defaultPermissions],
-      };
-      this.form.selectedUsersToPermissions.push(authUser);
+      // obtener usuario que esta creando el proyecto para dar todos los permisos siempre y cuando no sea super admin
+      if (this.$page.props.auth.user.employee_properties !== null) {
+        const user = this.users.find(item => item.id === this.$page.props.auth.user.id);
+        const defaultPermissions = [true, true, true, true, true];
+        let authUser = {
+          id: user.id,
+          name: user.name,
+          profile_photo_url: user.profile_photo_url,
+          permissions: [...defaultPermissions],
+        };
+        this.form.selectedUsersToPermissions.push(authUser);
+      }
     },
     removeUserFromPermissions(userId) {
       const index = this.form.selectedUsersToPermissions.findIndex(item => item.id === userId);

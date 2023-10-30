@@ -84,10 +84,10 @@ class OportunityController extends Controller
 
             $oportunity = Oportunity::create($validated + ['user_id' => auth()->id()]);
             $time = \Carbon\Carbon::createFromFormat('h A', '7 PM')->format('H:i:s'); //tiempo limite de realización de tarea en formato am y pm
-        //Tarea 1. Contactar al cliente
+            //Tarea 1. Contactar al cliente
             OportunityTask::create([
                 'name' => 'Contactar al cliente',
-                'limit_date' =>now()->addDays(2),
+                'limit_date' => now()->addDays(2),
                 'time' =>  $time,
                 'finished_at' => null,
                 'description' => 'Tener contacto con el cliente',
@@ -97,10 +97,10 @@ class OportunityController extends Controller
                 'oportunity_id' => $oportunity->id,
                 'asigned_id' => auth()->id(),
             ]);
-        //Tarea 2. Mandar diseño
+            //Tarea 2. Mandar diseño
             OportunityTask::create([
                 'name' => 'Mandar render del producto',
-                'limit_date' =>now()->addDays(4),
+                'limit_date' => now()->addDays(4),
                 'time' =>  $time,
                 'finished_at' => null,
                 'description' => 'Mandar render del producto de interés',
@@ -110,10 +110,10 @@ class OportunityController extends Controller
                 'oportunity_id' => $oportunity->id,
                 'asigned_id' => auth()->id(),
             ]);
-        //Tarea 3. Mandar cotización
+            //Tarea 3. Mandar cotización
             OportunityTask::create([
                 'name' => 'Mandar coización',
-                'limit_date' =>now()->addDays(6),
+                'limit_date' => now()->addDays(6),
                 'time' =>  $time,
                 'finished_at' => null,
                 'description' => 'Mandar cotización a cliente',
@@ -123,10 +123,10 @@ class OportunityController extends Controller
                 'oportunity_id' => $oportunity->id,
                 'asigned_id' => auth()->id(),
             ]);
-        //Tarea 4. Mandar muestra      
+            //Tarea 4. Mandar muestra      
             OportunityTask::create([
                 'name' => 'Mandar muestra',
-                'limit_date' =>now()->addDays(8),
+                'limit_date' => now()->addDays(8),
                 'time' =>  $time,
                 'finished_at' => null,
                 'description' => 'Mandar muestra de producto(s) al cliente',
@@ -178,10 +178,11 @@ class OportunityController extends Controller
         $users = User::where('is_active', true)->get();
         $companies = Company::with('companyBranches.contacts')->latest()->get();
         $tags = TagResource::collection(Tag::where('type', 'crm')->get());
+        $oportunity = Oportunity::with('users')->find($oportunity->id);
 
         // return $oportunity;
 
-        return inertia('Oportunity/Edit', compact('oportunity','users', 'companies', 'tags'));
+        return inertia('Oportunity/Edit', compact('users', 'companies', 'tags', 'oportunity'));
     }
 
 
@@ -212,6 +213,21 @@ class OportunityController extends Controller
         } else {
             $oportunity->update($validated + ['finished_at' => null]);
         }
+
+        // permisos
+        $oportunity->users()->detach();
+        foreach ($request->selectedUsersToPermissions as $user) {
+            $allowedUser = [
+                "permissions" => json_encode($user['permissions']), // Serializa los permisos en formato JSON
+            ];
+            $oportunity->users()->attach($user['id'], $allowedUser);
+        }
+
+        // etiquetas
+        // Obtiene los IDs de las etiquetas seleccionadas desde el formulario
+        $tagIds = $request->input('tags', []);
+        // Adjunta las etiquetas al proyecto utilizando la relación polimórfica
+        $oportunity->tags()->sync($tagIds);
         
         event(new RecordEdited($oportunity));
 
@@ -243,6 +259,24 @@ class OportunityController extends Controller
 
         $oportunity->update($validated);
 
+        // permisos
+        $oportunity->users()->detach();
+        foreach ($request->selectedUsersToPermissions as $user) {
+            $allowedUser = [
+                "permissions" => json_encode($user['permissions']), // Serializa los permisos en formato JSON
+            ];
+            $oportunity->users()->attach($user['id'], $allowedUser);
+        }
+
+        event(new RecordCreated($oportunity));
+
+        // etiquetas
+        // Obtiene los IDs de las etiquetas seleccionadas desde el formulario
+        $tagIds = $request->input('tags', []);
+        // Adjunta las etiquetas al proyecto utilizando la relación polimórfica
+        $oportunity->tags()->sync($tagIds);
+        
+        // media
         $oportunity->clearMediaCollection();
         $oportunity->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
         
@@ -256,7 +290,6 @@ class OportunityController extends Controller
 
         return to_route('oportunities.index');
     }
-
 
     public function destroy(Oportunity $oportunity)
     {

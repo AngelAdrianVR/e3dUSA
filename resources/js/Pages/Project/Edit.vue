@@ -195,16 +195,16 @@
             </div>
           </div>
 
-          <div class="w-1/2">
+          <!-- <div class="w-1/2">
             <label>Método de facturación</label>
             <el-select v-model="form.sat_method" clearable filterable placeholder="seleccione"
               no-data-text="No hay metodos registrados" no-match-text="No se encontraron coincidencias">
               <el-option v-for="sat_method in sat_methods" :key="sat_method" :label="sat_method" :value="sat_method" />
             </el-select>
             <InputError :message="form.errors.sat_method" />
-          </div>
+          </div> -->
 
-          <!-- <h2 class="font-bold text-sm my-2 col-span-full">Acceso al proyecto</h2>
+          <h2 class="font-bold text-sm my-2 col-span-full">Acceso al proyecto</h2>
           <div class="col-span-full text-sm">
             <div class="my-1">
               <input v-model="typeAccessProject" value="Public"
@@ -263,7 +263,7 @@
                       <div class="space-y-1 mb-2">
                         <label class="flex items-center">
                           <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                            v-model="user.permissions[0]" :checked="user.permissions[0]" />{{ permissions }}
+                            v-model:checked="user.permissions[0]" :checked="user.permissions[0]" />{{ permissions }}
                           <span
                             :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                             class="ml-2 text-xs">
@@ -272,28 +272,28 @@
                         </label>
                         <label class="flex items-center">
                           <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                            v-model="user.permissions[1]" :checked="user.permissions[1]" />
+                            v-model:checked="user.permissions[1]" :checked="user.permissions[1]" />
                           <span
                             :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                             class="ml-2 text-xs">Ver</span>
                         </label>
                         <label class="flex items-center">
                           <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                            v-model="user.permissions[2]" :checked="user.permissions[2]" />
+                            v-model:checked="user.permissions[2]" :checked="user.permissions[2]" />
                           <span
                             :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                             class="ml-2 text-xs">Editar</span>
                         </label>
                         <label class="flex items-center">
                           <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                            v-model="user.permissions[3]" :checked="user.permissions[3]" />
+                            v-model:checked="user.permissions[3]" :checked="user.permissions[3]" />
                           <span
                             :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                             class="ml-2 text-xs">Eliminar</span>
                         </label>
                         <label class="flex items-center">
                           <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                            v-model="user.permissions[4]" :checked="user.permissions[4]" />
+                            v-model:checked="user.permissions[4]" :checked="user.permissions[4]" />
                           <span
                             :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                             class="ml-2 text-xs">Comentar</span>
@@ -315,7 +315,7 @@
                 </div>
               </div>
             </div>
-          </section> -->
+          </section>
           <!-- {{form}} -->
 
           <div class="mt-9 mx-3 md:text-right">
@@ -408,7 +408,7 @@ export default {
       budget: this.project.data.budget,
       sat_method: this.project.data.sat_method,
       owner_id: this.project.data.owner.id,
-      // selectedUsersToPermissions: [],
+      selectedUsersToPermissions: [],
       media: [],
     });
 
@@ -637,8 +637,19 @@ export default {
     }
   },
   mounted() {
-    // this.selectAdmins();
+    // inicializar tags
     this.form.tags = this.project.data.tags.map(tag => tag.id);
+
+    // inicializar permisos
+    this.project.data.users.forEach(user => {
+      const participant = {
+        id: user.id,
+        name: user.name,
+        profile_photo_url: user.profile_photo_url,
+        permissions: JSON.parse(user.pivot.permissions),
+      };
+      this.form.selectedUsersToPermissions.push(participant);
+    });
   }
 };
 </script>

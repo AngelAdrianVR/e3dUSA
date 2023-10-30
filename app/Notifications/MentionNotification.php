@@ -11,12 +11,21 @@ class MentionNotification extends Notification
 {
     use Queueable;
 
+    public $concept;
+    public $parent_name;
+
     /**
      * Create a new notification instance.
      */
     public function __construct(public $task, public $additional_info, public $module)
     {
-        //
+        if ($module == 'opportunities') {
+            $this->concept = 'actividad';
+            $this->parent_name = $task->oportunity->name;
+        } else {
+            $this->concept = 'tarea';
+            $this->parent_name = $task->project->project_name;
+        }
     }
 
     /**
@@ -39,7 +48,7 @@ class MentionNotification extends Notification
             ->subject('Mención en comentario')
             ->markdown('emails.mention', [
                 'greeting' => '¡Hola!',
-                'intro' => "Te han mencionado en un comentario de la tarea <span class='text-primary'>{$this->task->title}</span> perteneciente al proyecto <span class='text-primary'>{$this->task->project->project_name}</span>",
+                'intro' => "Te han mencionado en un comentario de la ". $this->concept ." <span class='text-primary'>{$this->task->title}</span> perteneciente al proyecto <span class='text-primary'>{$this->parent_name}</span>",
                 'url' => route('projects.show', $this->task->project->id),
                 'salutation' => 'Saludos',
             ]);
@@ -48,7 +57,7 @@ class MentionNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'description' => "Te han mencionado en un comentario de la tarea <span class='text-primary'>{$this->task->title}</span> perteneciente al proyecto <span class='text-primary'>{$this->task->project->project_name}</span>.",
+            'description' => "Te han mencionado en un comentario de la ". $this->concept ." <span class='text-primary'>{$this->task->title}</span> perteneciente al proyecto <span class='text-primary'>{$this->parent_name}</span>.",
             'additional_info' => "$this->additional_info",
             'module' => "$this->module",
         ];

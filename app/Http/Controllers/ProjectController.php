@@ -110,7 +110,7 @@ class ProjectController extends Controller
 
     public function edit($project_id)
     {
-        $project = ProjectResource::make(Project::with(['tags', 'company', 'owner'])->find($project_id));
+        $project = ProjectResource::make(Project::with(['tags', 'company', 'owner', 'users'])->find($project_id));
         $companies = Company::with('companyBranches.sales')->latest()->get();
         $tags = TagResource::collection(Tag::where('type', 'projects')->get());
         $project_groups = ProjectGroupResource::collection(ProjectGroup::all());
@@ -154,13 +154,15 @@ class ProjectController extends Controller
         $project->update($validated);
         event(new RecordEdited($project));
 
-        // // permisos
-        // foreach ($request->selectedUsersToPermissions as $user) {
-        //     $allowedUser = [
-        //         "permissions" => json_encode($user['permissions']), // Serializa los permisos en formato JSON
-        //     ];
-        //     $project->users()->attach($user['id'], $allowedUser);
-        // }
+        // permisos
+        // Eliminar todos los permisos actuales para el proyecto
+        $project->users()->detach();
+        foreach ($request->selectedUsersToPermissions as $user) {
+            $allowedUser = [
+                "permissions" => json_encode($user['permissions']), // Serializa los permisos en formato JSON
+            ];
+            $project->users()->attach($user['id'], $allowedUser);
+        }
 
         // etiquetas
         // Obtiene los IDs de las etiquetas seleccionadas desde el formulario
@@ -203,13 +205,15 @@ class ProjectController extends Controller
         $project->update($validated);
         event(new RecordEdited($project));
 
-        // // permisos
-        // foreach ($request->selectedUsersToPermissions as $user) {
-        //     $allowedUser = [
-        //         "permissions" => json_encode($user['permissions']), // Serializa los permisos en formato JSON
-        //     ];
-        //     $project->users()->attach($user['id'], $allowedUser);
-        // }
+        // permisos
+        // Eliminar todos los permisos actuales para el proyecto
+        $project->users()->detach();
+        foreach ($request->selectedUsersToPermissions as $user) {
+            $allowedUser = [
+                "permissions" => json_encode($user['permissions']), // Serializa los permisos en formato JSON
+            ];
+            $project->users()->attach($user['id'], $allowedUser);
+        }
 
         // etiquetas
         // Obtiene los IDs de las etiquetas seleccionadas desde el formulario
@@ -221,7 +225,6 @@ class ProjectController extends Controller
         $project->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
 
         return to_route('projects.show', $project);
-        //event(new RecordEdited($project));
     }
 
 
