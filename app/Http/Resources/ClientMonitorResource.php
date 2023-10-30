@@ -31,6 +31,7 @@ class ClientMonitorResource extends JsonResource
             'seller' => $this->whenLoaded('seller'),
             'oportunity' => $this->whenLoaded('oportunity'),
             'company' => $this->whenLoaded('company'),
+            'emailMonitor' => $this->whenLoaded('emailMonitor'),
             'paymentMonitor' => $this->whenLoaded('paymentMonitor'),
             'mettingMonitor' => $this->whenLoaded('mettingMonitor'),
             'whatsappMonitor' => $this->whenLoaded('whatsappMonitor'),

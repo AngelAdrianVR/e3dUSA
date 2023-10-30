@@ -65,6 +65,11 @@
               </div>
 
             <div>
+                <label>Asunto</label>
+                <input v-model="form.subject" class="input" type="text" >
+                <InputError :message="form.errors.subject" />
+            </div>
+            <div>
                 <label>Contenido</label>
                 <textarea v-model="form.content" class="textarea" rows="4">
                 </textarea>
@@ -75,7 +80,7 @@
             </div> -->
           <div class="flex justify-end items-center">
             <PrimaryButton :disabled="form.processing">
-              Agregar
+              Enviar
             </PrimaryButton>
 
           </div>
@@ -100,6 +105,7 @@ export default {
     company_branch_id: null,
     contact_id: null,
     contact_email: null,
+    subject: null,
     content: null,
     media: [],
         });
@@ -125,11 +131,11 @@ export default {
   },
   methods: {
     store(){
-      this.form.post(route('whatsapp-monitors.store'), {
+      this.form.post(route('email-monitors.store'), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: "Se registró interacción vía Whatsapp",
+            message: "Se registró interacción de correo electrónico",
             type: "success",
           });
         },

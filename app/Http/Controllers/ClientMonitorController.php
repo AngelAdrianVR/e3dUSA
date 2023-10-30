@@ -16,7 +16,7 @@ class ClientMonitorController extends Controller
    
     public function index()
     {
-        $client_monitors = ClientMonitorResource::collection(ClientMonitor::with('company', 'seller', 'oportunity', 'paymentMonitor', 'mettingMonitor', 'whatsappMonitor')->latest()->get());
+        $client_monitors = ClientMonitorResource::collection(ClientMonitor::with('company', 'seller', 'oportunity', 'emailMonitor', 'paymentMonitor', 'mettingMonitor', 'whatsappMonitor')->latest()->get());
 
         // return $client_monitors;
 
