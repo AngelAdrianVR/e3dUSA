@@ -268,7 +268,22 @@
                     <CancelButton @click="showImportantNotesModal = false">Cancelar</CancelButton>
                 </template>
             </DialogModal>
-            <!-- {{data}} -->
+
+            <Modal :show="showCreateProjectModal" @close="showCreateProjectModal = false">
+                <section class="mx-7 my-4 space-y-4">
+                    <div>
+                    <p class="text-secondary text-center mt-10 font-bold">
+                        ¿Quieres crear un proyecto de esta venta para llevar un mejor flujo de trabajo?
+                    </p>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-5 pb-1">
+                    <a :href="route('sales.index')">
+                        <CancelButton>No crear proyecto</CancelButton>
+                    </a>
+                    <PrimaryButton @click="$inertia.get(route('projects.create'))">Crear proyecto</PrimaryButton>
+                    </div>
+                </section>
+            </Modal>
         </AppLayout>
     </div>
 </template>
@@ -281,6 +296,7 @@ import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import DialogModal from "@/Components/DialogModal.vue";
+import Modal from "@/Components/Modal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 
 export default {
@@ -306,6 +322,7 @@ export default {
             showImportantNotesModal: false,
             importantNotesToStore: null,
             isEditImportantNotes: false,
+            showCreateProjectModal: false,
             product: {
                 catalog_product_company_id: null,
                 quantity: null,
@@ -324,6 +341,7 @@ export default {
         IconInput,
         CancelButton,
         DialogModal,
+        Modal,
     },
     props: {
         company_branches: Array,
@@ -338,8 +356,7 @@ export default {
                         message: 'Orden de venta creada. Se han descontado las cantidades del stock automáticamente',
                         type: 'success'
                     });
-
-                    this.form.reset();
+                    this.showCreateProjectModal = true;
                 }
             });
         },

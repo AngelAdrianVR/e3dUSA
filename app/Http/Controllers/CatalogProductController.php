@@ -236,6 +236,15 @@ class CatalogProductController extends Controller
 
         $part_number = explode('#', $request->barCode)[0];
 
+        // Verifica si el formato es incorrecto (contiene "'") y realiza el reemplazo solo en ese caso
+        if (strpos($part_number, "'") !== false) {
+            $part_number = str_replace("'", "-", $part_number);
+        }
+
+        if (strpos($part_number, "´") !== false) {
+            $part_number = str_replace("´", "-", $part_number);
+        }
+
         $catalog_product = CatalogProductResource::make(CatalogProduct::with(['storages', 'companies'])->where('part_number', $part_number)->first());
 
         $companies = $catalog_product->companies;
