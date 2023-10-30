@@ -4,16 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
 use App\Http\Resources\OportunityResource;
+use App\Mail\EmailMonitorTemplateMail;
 use App\Models\ClientMonitor;
 use App\Models\Company;
 use App\Models\EmailMonitor;
 use App\Models\Oportunity;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class EmailMonitorController extends Controller
 {
-    
+
     public function index()
     {
         //
@@ -30,7 +32,7 @@ class EmailMonitorController extends Controller
         return inertia('EmailMonitor/Create', compact('companies', 'oportunities', 'users'));
     }
 
-    
+
     public function store(Request $request)
     {
         $request->validate([
@@ -44,10 +46,10 @@ class EmailMonitorController extends Controller
         ]);
 
         $email_monitor = EmailMonitor::create($request->all() + ['seller_id' => auth()->id()]);
-        
+
         event(new RecordCreated($email_monitor));
 
-       $client_monitor = ClientMonitor::create([
+        $client_monitor = ClientMonitor::create([
             'type' => 'Correo electrónico',
             'date' => now(),
             'concept' => $request->subject,
@@ -60,29 +62,34 @@ class EmailMonitorController extends Controller
         $email_monitor->save();
 
         event(new RecordCreated($client_monitor));
-        
+
+        // enviar correo a contacto
+        if (app()->environment() == 'production') {
+            Mail::to($request->contact_email)->send(new EmailMonitorTemplateMail($request->subject, $request->content));
+        }
+
         return to_route('client-monitors.index');
     }
 
-    
+
     public function show(EmailMonitor $email_monitor)
     {
         return inertia('EmailMonitor/Show');
     }
 
-    
+
     public function edit(EmailMonitor $email_monitor)
     {
         //
     }
 
-    
+
     public function update(Request $request, EmailMonitor $email_monitor)
     {
         //
     }
 
-    
+
     public function destroy(EmailMonitor $email_monitor)
     {
         //
