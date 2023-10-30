@@ -24,7 +24,6 @@ class Oportunity extends Model implements HasMedia
         'priority',
         'description',
         'lost_oportunity_razon',
-        'tags',
         'probability',
         'finished_at',
         'start_date',
@@ -40,7 +39,6 @@ class Oportunity extends Model implements HasMedia
         'start_date' => 'datetime',
         'finished_at' => 'datetime',
         'estimated_finish_date' => 'date',
-        'tags' => 'array',
     ];
 
     //relationships

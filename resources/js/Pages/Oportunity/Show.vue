@@ -82,13 +82,13 @@
         </div>
       </div>
       <div class="flex items-center justify-center space-x-5 mb-4">
-      <p class="text-center font-bold text-lg">
-        {{ currentOportunity?.folio }} - {{ currentOportunity?.name }}
-      </p>
-      <!-- <p :class="getColorStatus" class="px-2 py-1 font-bold rounded-sm">
+        <p class="text-center font-bold text-lg">
+          {{ currentOportunity?.folio }} - {{ currentOportunity?.name }}
+        </p>
+        <!-- <p :class="getColorStatus" class="px-2 py-1 font-bold rounded-sm">
         {{ currentOportunity?.status }}
       </p> -->
-      </div> 
+      </div>
       <!-- ------------- tabs section starts ------------- -->
       <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2 overflow-x-auto">
         <div class="flex items-center justify-center">
@@ -144,11 +144,11 @@
         <span class="text-gray-500 my-2">Estatus</span>
         <div class="flex items-center space-x-4 relative">
           <!-- <i :class="getColorStatus()" class="fa-solid fa-circle absolute -left-3 top-4"></i> -->
-          <el-select @change="status == 'Perdida' ? showLostOportunityModal = true 
-          : status == 'Cerrada' || status == 'Pagado' ? showCreateSaleModal = true 
-          : updateStatus()" class="lg:w-1/2 mt-2"
-            v-model="status" clearable filterable placeholder="Seleccionar estatus"
-            no-data-text="No hay estatus registrados" no-match-text="No se encontraron coincidencias">
+          <el-select @change="status == 'Perdida' ? showLostOportunityModal = true
+            : status == 'Cerrada' || status == 'Pagado' ? showCreateSaleModal = true
+              : updateStatus()" class="lg:w-1/2 mt-2" v-model="status" clearable filterable
+            placeholder="Seleccionar estatus" no-data-text="No hay estatus registrados"
+            no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
               <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
               <span style="float: center; margin-left: 5px; font-size: 13px">{{
@@ -168,13 +168,14 @@
 
         <p class="text-secondary col-span-2 mt-4 mb-2">Información del cliente</p>
         <span class="text-gray-500 my-2">Cliente</span>
-        <span>{{ currentOportunity?.company_name ? currentOportunity?.company_name : currentOportunity?.company.business_name  }}</span>
+        <span>{{ currentOportunity?.company_name ? currentOportunity?.company_name :
+          currentOportunity?.company.business_name }}</span>
         <span class="text-gray-500 my-2">Sucursal</span>
         <span>{{ currentOportunity?.companyBranch?.name ?? '--' }}</span>
         <span class="text-gray-500 my-2">Contacto</span>
-        <span>{{ currentOportunity?.contact  }}</span>
+        <span>{{ currentOportunity?.contact }}</span>
         <span class="text-gray-500 my-2">Teléfono</span>
-        <span>{{ currentOportunity?.contact_phone  }}</span>
+        <span>{{ currentOportunity?.contact_phone }}</span>
         <span v-if="currentOportunity?.lost_oportunity_razon" class="text-gray-500 my-2">Causa de pérdida</span>
         <span class="bg-red-300 py-1 px-2 rounded-full" v-if="currentOportunity?.lost_oportunity_razon">{{
           currentOportunity?.lost_oportunity_razon }}</span>
@@ -204,9 +205,6 @@
         </div>
         <p class="text-sm text-gray-400" v-else><i class="fa-regular fa-file-excel mr-3"></i>No hay archivos adjuntos en
           esta oportunidad</p>
-
-
-
         <p class="text-secondary col-span-full mt-7 mb-2">Etiquetas</p>
         <div class="col-span-full flex space-x-3">
           <Tag v-for="(item, index) in currentOportunity?.tags" :key="index" :name="item.name" :color="item.color" />
@@ -331,8 +329,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr @click="showMonitorType(monitor)"
-            v-for="monitor in currentOportunity?.clientMonitores" :key="monitor" class="mb-4 hover:bg-[#dfdbdba8] cursor-pointer">
+            <tr @click="showMonitorType(monitor)" v-for="monitor in currentOportunity?.clientMonitores" :key="monitor"
+              class="mb-4 hover:bg-[#dfdbdba8] cursor-pointer">
               <td class="text-left py-2 px-2 rounded-l-full text-secondary">
                 {{ monitor.folio }}
               </td>
@@ -388,23 +386,17 @@
                 P1 <i class="fa-solid fa-arrow-down-long ml-3"></i>
               </th>
             </el-tooltip>
-            <el-tooltip
-              content="¿Nuestros productos cumplieron con tus expectativas?"
-              placement="top">
+            <el-tooltip content="¿Nuestros productos cumplieron con tus expectativas?" placement="top">
               <th class="font-bold pb-5">
                 P2 <i class="fa-solid fa-arrow-down-long ml-3"></i>
               </th>
             </el-tooltip>
-            <el-tooltip
-              content="¿Consideras que nuestro equipo de trabajo fue profesional y cortés?"
-              placement="top">
+            <el-tooltip content="¿Consideras que nuestro equipo de trabajo fue profesional y cortés?" placement="top">
               <th class="font-bold pb-5">
                 P3 <i class="fa-solid fa-arrow-down-long ml-3"></i>
               </th>
             </el-tooltip>
-            <el-tooltip
-              content="¿Recomendarías nuestros productos a otros?"
-              placement="top">
+            <el-tooltip content="¿Recomendarías nuestros productos a otros?" placement="top">
               <th class="font-bold pb-5">
                 P4 <i class="fa-solid fa-arrow-down-long ml-3"></i>
               </th>
@@ -452,7 +444,8 @@
       </template>
     </ConfirmationModal>
 
-    <Modal :show="showLostOportunityModal || showCreateSaleModal" @close="showLostOportunityModal = false; showCreateSaleModal = false">
+    <Modal :show="showLostOportunityModal || showCreateSaleModal"
+      @close="showLostOportunityModal = false; showCreateSaleModal = false">
       <section v-if="showLostOportunityModal" class="mx-7 my-4 space-y-4 relative">
         <div>
           <label>Causa oportunidad perdida
@@ -474,7 +467,8 @@
             <i class="fa-solid fa-info text-primary"></i>
             <p class="ml-4 font-bold mt-1 text-primary">ATENCIÓN</p>
           </div>
-          <p class="px-5 text-secondary">Es necesario crear una orden de venta al haber cerrado la oportunidad para llevar un correcto seguimiento y flujo de trabajo.
+          <p class="px-5 text-secondary">Es necesario crear una orden de venta al haber cerrado la oportunidad para llevar
+            un correcto seguimiento y flujo de trabajo.
             En caso de ya haberla creado, presiona el botón de "Venta creada"
           </p>
         </div>
@@ -572,13 +566,13 @@ export default {
         if (response.status === 200) {
           if (response.data.message) {
             this.$notify({
-            title: "Denegado",
-            message: response.data.message,
-            type: "error",
-          });
+              title: "Denegado",
+              message: response.data.message,
+              type: "error",
+            });
           } else {
             this.updateStatus();
-            this.$inertia.get(route('sales.create'), {data: {company_branch_id: this.currentOportunity.companyBranch?.id, oportunity_id: this.currentOportunity.id}} );
+            this.$inertia.get(route('sales.create'), { data: { company_branch_id: this.currentOportunity.companyBranch?.id, oportunity_id: this.currentOportunity.id } });
           }
         }
       } catch (error) {
