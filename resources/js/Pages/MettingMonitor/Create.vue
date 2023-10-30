@@ -196,6 +196,23 @@ export default {
         },
       });
     },
+      getCompany() {
+        const oportunity = this.oportunities.data.find(oportunity => oportunity.id === this.form.oportunity_id);
+        this.form.company_branch_id = null;
+        this.form.contact_id = null;
+        this.form.contact_name = null;
+        this.form.phone = null;
+        this.company_branch_obj = null;
+  
+        if (oportunity.company) {
+          this.form.company_id = oportunity.company.id;
+          this.has_contact = false;
+        } else {
+          this.has_contact = true;
+          this.form.company_id = null;
+          this.form.contact_name = oportunity.contact;
+        }
+      },
     saveCompanyBranchAddress() {
       this.company_branch_obj = this.companies.find((item) => item.id == this.form.company_id)?.company_branches[0];
     },
@@ -204,23 +221,6 @@ export default {
     },
     getCompanyBranchAddress() {
       this.form.location = this.company_branch_obj?.address;
-    },
-    getCompany() {
-      const oportunity = this.oportunities.data.find(oportunity => oportunity.id === this.form.oportunity_id);
-      this.form.company_branch_id = null;
-      this.form.contact_id = null;
-      this.form.contact_name = null;
-      this.form.phone = null;
-      this.company_branch_obj = null;
-
-      if (oportunity.company) {
-        this.form.company_id = oportunity.company.id;
-        this.has_contact = false;
-      } else {
-        this.has_contact = true;
-        this.form.company_id = null;
-        this.form.contact_name = oportunity.contact;
-      }
     },
     clearOportunityForm() {
       if (!this.form.is_oportunity) {

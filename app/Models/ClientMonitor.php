@@ -41,6 +41,11 @@ class ClientMonitor extends Model
         return $this->belongsTo(company::class);
     }
 
+    public function emailMonitor() :HasOne 
+    {
+        return $this->hasOne(EmailMonitor::class);
+    }
+
     public function paymentMonitor() :HasOne 
     {
         return $this->hasOne(PaymentMonitor::class);

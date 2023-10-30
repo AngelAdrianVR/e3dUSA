@@ -87,7 +87,7 @@ class SaleController extends Controller
 
         event(new RecordCreated($sale));
 
-        return to_route('sales.index');
+        // return to_route('sales.index');
     }
 
     public function show(Sale $sale)

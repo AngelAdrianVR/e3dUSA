@@ -262,8 +262,18 @@ class StorageController extends Controller
             'barCode' => 'required|string'
         ]);
 
+        
         $part_number = explode('#', $request->barCode)[0];
         $quantity = explode('#', $request->barCode)[1];
+        
+        // Verifica si el formato es incorrecto (contiene "'") y realiza el reemplazo solo en ese caso
+    if (strpos($part_number, "'") !== false) {
+        $part_number = str_replace("'", "-", $part_number);
+    }
+
+    if (strpos($part_number, "´") !== false) {
+        $part_number = str_replace("´", "-", $part_number);
+    }
 
         $storage = Storage::whereHas('storageable', function ($query) use ($part_number) {
             $query->where('part_number', $part_number);
@@ -305,6 +315,15 @@ class StorageController extends Controller
         ]);
 
         $part_number = explode('#', $request->barCode)[0];
+
+        // Verifica si el formato es incorrecto (contiene "'") y realiza el reemplazo solo en ese caso
+            if (strpos($part_number, "'") !== false) {
+                $part_number = str_replace("'", "-", $part_number);
+            }
+
+            if (strpos($part_number, "´") !== false) {
+                $part_number = str_replace("´", "-", $part_number);
+            }
 
         $storage = Storage::with('storageable.media')->whereHas('storageable', function ($query) use ($part_number) {
             $query->where('part_number', $part_number);
