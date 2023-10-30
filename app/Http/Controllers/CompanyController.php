@@ -73,7 +73,7 @@ class CompanyController extends Controller
     public function show($company_id)
     {
         $company = Company::with('companyBranches.contacts')->find($company_id);
-        $companies = CompanyResource::collection(Company::with('companyBranches.contacts', 'companyBranches.sales', 'companyBranches.sales.user', 'companyBranches.quotes', 'catalogProducts.media', 'oportunities', 'clientMonitors.seller', 'projects.tasks')->get());
+        $companies = CompanyResource::collection(Company::with('companyBranches.contacts', 'companyBranches.sales', 'companyBranches.sales.user', 'companyBranches.quotes', 'catalogProducts.media', 'oportunities', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'projects.tasks')->get());
 
         // return $companies;
 

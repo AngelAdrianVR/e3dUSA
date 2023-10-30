@@ -21,30 +21,30 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="client_monitor in client_monitors" :key="client_monitor"
+          <tr v-for="monitor in client_monitors" :key="monitor"
             class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]"
-            @click="$inertia.get(route('client-monitors.show', client_monitor.id))"
+            @click="showMonitorType(monitor)"
           >
             <td class="text-center text-secondary py-2 px-2 rounded-l-full">
-              {{ client_monitor.folio }}
+              {{ monitor.folio }}
             </td>
             <td class="text-center py-2 px-2 ">
-              {{ client_monitor.type }}
+              {{ monitor.type }}
             </td>
             <td class="text-center py-2 px-2">
               <span
                 class="py-1 px-4 rounded-full"
-                >{{ client_monitor.date }}</span
+                >{{ monitor.date }}</span
               >
             </td>
             <td class="text-center py-2 px-2">
               <span
                 class="py-1 px-2"
-                >{{ client_monitor.concept}}</span
+                >{{ monitor.concept}}</span
               >
             </td>
             <td class="text-center py-2 px-2 rounded-r-full">
-              {{ client_monitor.seller?.name }}
+              {{ monitor.seller?.name }}
             </td>
           </tr>
         </tbody>
@@ -66,7 +66,17 @@ props:{
 client_monitors: Array,
 },
 methods:{
-
+showMonitorType(monitor) {
+      if (monitor.type == 'Correo electrónico') {
+        this.$inertia.get(route('email-monitors.show', monitor.emailMonitor?.id));
+      } else if (monitor.type == 'Pago') {
+        this.$inertia.get(route('payment-monitors.show', monitor.paymentMonitor?.id));
+      } else if (monitor.type == 'Reunión') {
+        this.$inertia.get(route('meeting-monitors.show', monitor.mettingMonitor?.id));
+      } else if (monitor.type == 'WhatsApp') {
+        this.$inertia.get(route('whatsapp-monitors.show', monitor.whatsappMonitor?.id));
+      }
+    },
 }
 }
 </script>
