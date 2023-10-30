@@ -178,6 +178,9 @@ class OportunityController extends Controller
         $users = User::where('is_active', true)->get();
         $companies = Company::with('companyBranches.contacts')->latest()->get();
         $tags = TagResource::collection(Tag::where('type', 'crm')->get());
+        $oportunity = Oportunity::with('users')->find($oportunity->id);
+
+        // return $oportunity;
 
         return inertia('Oportunity/Edit', compact('users', 'companies', 'tags', 'oportunity'));
     }
@@ -210,6 +213,21 @@ class OportunityController extends Controller
         } else {
             $oportunity->update($validated + ['finished_at' => null]);
         }
+
+        // permisos
+        $oportunity->users()->detach();
+        foreach ($request->selectedUsersToPermissions as $user) {
+            $allowedUser = [
+                "permissions" => json_encode($user['permissions']), // Serializa los permisos en formato JSON
+            ];
+            $oportunity->users()->attach($user['id'], $allowedUser);
+        }
+
+        // etiquetas
+        // Obtiene los IDs de las etiquetas seleccionadas desde el formulario
+        $tagIds = $request->input('tags', []);
+        // Adjunta las etiquetas al proyecto utilizando la relación polimórfica
+        $oportunity->tags()->sync($tagIds);
         
         event(new RecordEdited($oportunity));
 
@@ -257,6 +275,8 @@ class OportunityController extends Controller
         $tagIds = $request->input('tags', []);
         // Adjunta las etiquetas al proyecto utilizando la relación polimórfica
         $oportunity->tags()->sync($tagIds);
+        
+        // media
         $oportunity->clearMediaCollection();
         $oportunity->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
         

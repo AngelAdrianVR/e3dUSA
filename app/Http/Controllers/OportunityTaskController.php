@@ -9,6 +9,7 @@ use App\Http\Resources\OportunityTaskResource;
 use App\Models\Comment;
 use App\Models\OportunityTask;
 use App\Models\User;
+use App\Notifications\MentionNotification;
 use Illuminate\Http\Request;
 
 class OportunityTaskController extends Controller
@@ -116,8 +117,14 @@ class OportunityTaskController extends Controller
         ]);
 
         $oportunity_task->comments()->save($comment);
-        // event(new RecordCreated($comment)); me dice que el id del usuario no tiene un valor por default.
-        // return to_route('projects.show', ['project' => $request->project_id]);
+
+        $mentions = $request->mentions;
+        foreach ($mentions as $mention) {
+            $user = User::find($mention['id']);
+            $user->notify(new MentionNotification($oportunity_task, "", 'opportunities'));
+        }
+        
+        event(new RecordCreated($comment));
         return response()->json(['item' => $comment->fresh('user')]);
     }
 }

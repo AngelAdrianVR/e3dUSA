@@ -133,7 +133,7 @@ class TaskController extends Controller
             $user->notify(new MentionNotification($task, "", 'projects'));
         }
         
-        event(new RecordCreated($comment)); //me dice que el id del usuario no tiene un valor por default.
+        event(new RecordCreated($comment));
 
         return response()->json(['item' => $comment->fresh('user')]);
     }

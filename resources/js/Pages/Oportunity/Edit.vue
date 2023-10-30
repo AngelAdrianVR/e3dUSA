@@ -54,26 +54,27 @@
           </label>
           <div class="flex justify-between space-x-3 col-span-2" v-if="form.is_new_company">
             <div class="w-full">
-                <InputLabel value="Cliente *" class="ml-2" />
-                <input v-model="form.company_name" class="input" type="text" required />
-                <InputError :message="form.errors.contact_name" />
+              <InputLabel value="Cliente *" class="ml-2" />
+              <input v-model="form.company_name" class="input" type="text" required />
+              <InputError :message="form.errors.contact_name" />
             </div>
             <div class="w-full">
-                <InputLabel value="Contacto *" class="ml-2" />
-                <input v-model="form.contact" class="input" type="text" required />
-                <InputError :message="form.errors.contact_name" />
+              <InputLabel value="Contacto *" class="ml-2" />
+              <input v-model="form.contact" class="input" type="text" required />
+              <InputError :message="form.errors.contact_name" />
             </div>
             <div class="w-full">
-                <InputLabel value="Teléfono *" class="ml-2" />
-                <input v-model="form.contact_phone" class="input" type="text" required />
-                <InputError :message="form.errors.contact_phone" />
+              <InputLabel value="Teléfono *" class="ml-2" />
+              <input v-model="form.contact_phone" class="input" type="text" required />
+              <InputError :message="form.errors.contact_phone" />
             </div>
           </div>
           <div v-if="!form.is_new_company" class="flex space-x-2 justify-between">
             <div class="w-1/2">
               <label class="text-sm">Cliente *</label> <br />
-              <el-select @change="cleanCompanyForm" v-model="form.company_id" clearable filterable placeholder="Seleccione"
-                no-data-text="No hay clientes registrados" no-match-text="No se encontraron coincidencias">
+              <el-select @change="cleanCompanyForm" v-model="form.company_id" clearable filterable
+                placeholder="Seleccione" no-data-text="No hay clientes registrados"
+                no-match-text="No se encontraron coincidencias">
                 <el-option v-for="company in companies" :key="company" :label="company.business_name"
                   :value="company.id" />
               </el-select>
@@ -126,7 +127,8 @@
             <div class="w-full">
               <div class="flex justify-between items-center mx-2">
                 <label>Etiquetas</label>
-                <button v-if="$page.props.auth.user.permissions.includes('Crear etiquetas crm')" @click="showTagFormModal = true" type="button"
+                <button v-if="$page.props.auth.user.permissions.includes('Crear etiquetas crm')"
+                  @click="showTagFormModal = true" type="button"
                   class="rounded-full border border-primary w-4 h-4 flex items-center justify-center">
                   <i class="fa-solid fa-plus text-primary text-[9px]"></i>
                 </button>
@@ -185,7 +187,7 @@
             <InputError :message="form.errors.amount" />
           </div>
 
-          <!-- <h2 class="font-bold text-sm my-2 col-span-full">Acceso al proyecto</h2>
+          <h2 class="font-bold text-sm my-2 col-span-full">Acceso al proyecto</h2>
           <div class="col-span-full text-sm">
             <div class="my-1">
               <input v-model="typeAccessProject" value="Public"
@@ -203,9 +205,9 @@
               <p class="text-[#9A9A9A] ml-7 text-xs">Solo los usuarios de proyecto pueden ver y acceder a este proyecto
               </p>
             </div>
-          </div> -->
+          </div>
 
-          <!-- <section class="rounded-[10px] py-12 mx-1 mt-5 max-h-[540px] col-span-full bg-[#CCCCCC]">
+          <section class="rounded-[10px] py-12 mx-1 mt-5 max-h-[540px] col-span-full bg-[#CCCCCC]">
             <div class="flex px-16 mb-8">
               <div v-if="typeAccessProject === 'Private'" class="w-full">
                 <h2 class="font-bold text-sm my-2 ml-2 col-span-full">Asignar participantes </h2>
@@ -246,7 +248,7 @@
                         <div class="space-y-1 mb-2">
                           <label class="flex items-center">
                             <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                              v-model="user.permissions[0]" :checked="user.permissions[0]" />{{ permissions }}
+                              v-model:checked="user.permissions[0]" :checked="user.permissions[0]" />{{ permissions }}
                             <span
                               :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                               class="ml-2 text-xs">
@@ -255,28 +257,28 @@
                           </label>
                           <label class="flex items-center">
                             <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                              v-model="user.permissions[1]" :checked="user.permissions[1]" />
+                              v-model:checked="user.permissions[1]" :checked="user.permissions[1]" />
                             <span
                               :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                               class="ml-2 text-xs">Ver</span>
                           </label>
                           <label class="flex items-center">
                             <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                              v-model="user.permissions[2]" :checked="user.permissions[2]" />
+                              v-model:checked="user.permissions[2]" :checked="user.permissions[2]" />
                             <span
                               :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                               class="ml-2 text-xs">Editar</span>
                           </label>
                           <label class="flex items-center">
                             <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                              v-model="user.permissions[3]" :checked="user.permissions[3]" />
+                              v-model:checked="user.permissions[3]" :checked="user.permissions[3]" />
                             <span
                               :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                               class="ml-2 text-xs">Eliminar</span>
                           </label>
                           <label class="flex items-center">
                             <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                              v-model="user.permissions[4]" :checked="user.permissions[4]" />
+                              v-model:checked="user.permissions[4]" :checked="user.permissions[4]" />
                             <span
                               :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                               class="ml-2 text-xs">Comentar</span>
@@ -298,7 +300,7 @@
                 </div>
               </div>
             </div>
-          </section> -->
+          </section>
 
           <div class="mt-9 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing || (editAccesFlag && typeAccessProject == 'Public')">
@@ -307,7 +309,7 @@
           </div>
         </div>
       </form>
-          <!-- {{ form }} -->
+
       <!-- tag form -->
       <DialogModal :show="showTagFormModal" @close="showTagFormModal = false">
         <template #title> Agregar etiqueta </template>
@@ -605,8 +607,8 @@ export default {
       this.form.selectedUsersToPermissions.push(foundUser);
     },
     cleanCompanyForm() {
-        this.company_branch = null;
-        this.form.contact = null;
+      this.company_branch = null;
+      this.form.contact = null;
     }
   },
   computed: {
@@ -641,8 +643,16 @@ export default {
     }
   },
   mounted() {
-    this.selectAdmins();
-    this.selectAuthUser();
+    // inicializar permisos
+    this.oportunity.users.forEach(user => {
+      const participant = {
+        id: user.id,
+        name: user.name,
+        profile_photo_url: user.profile_photo_url,
+        permissions: JSON.parse(user.pivot.permissions),
+      };
+      this.form.selectedUsersToPermissions.push(participant);
+    });
   }
 };
 </script>
