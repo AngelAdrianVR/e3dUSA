@@ -18,6 +18,8 @@ class EmailMonitorResource extends JsonResource
             'id' => $this->id,
             'subject' => $this->subject,
             'content' => $this->content,
+            'contact_name' => $this->contact_name,
+            'contact_email' => $this->contact_email,
             'seller' => $this->whenLoaded('seller'),
             'oportunity' => $this->whenLoaded('oportunity'),
             'company' => $this->whenLoaded('company'),
