@@ -115,19 +115,19 @@
             <p class="mt-7 mb-3">Dimensiones</p>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Peso</p>
-              <p>{{ currentMachine?.weight?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} kg</p>
+              <p>{{ currentMachine?.weight }} kg</p>
             </div>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Ancho</p>
-              <p>{{ currentMachine?.width?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} cm</p>
+              <p>{{ currentMachine?.width }} cm</p>
             </div>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Largo</p>
-              <p>{{ currentMachine?.large?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} cm</p>
+              <p>{{ currentMachine?.large }} cm</p>
             </div>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Alto</p>
-              <p>{{ currentMachine?.height?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} cm</p>
+              <p>{{ currentMachine?.height }} cm</p>
             </div>
             <p class="mt-7 mb-3">Datos de compra</p>
             <div class="flex mb-2 space-x-2">
@@ -170,16 +170,16 @@
                     {{ index + 1 }}
                   </td>
                   <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
-                    {{ maintenance.maintenance_type_id }}
+                    {{ maintenance?.maintenance_type_id }}
                   </td>
                   <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
-                    {{ maintenance.created_at }}
+                    {{ maintenance?.created_at }}
                   </td>
                   <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
-                    ${{ maintenance.cost }}
+                    ${{ maintenance?.cost }}
                   </td>
                   <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
-                    {{ maintenance.responsible }}
+                    {{ maintenance?.responsible }}
                   </td>
                   <td class="text-center pb-3">
                     <div>
@@ -218,19 +218,19 @@
                     {{ index + 1 }}
                   </td>
                   <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
-                    {{ spare_part.name }}
+                    {{ spare_part?.name }}
                   </td>
                   <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
-                    {{ spare_part.quantity }}
+                    {{ spare_part?.quantity }}
                   </td>
                   <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
-                    ${{ spare_part.cost }}
+                    ${{ spare_part?.cost }}
                   </td>
                   <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
-                    {{ spare_part.created_at }}
+                    {{ spare_part?.created_at }}
                   </td>
                   <td @click="openSparePartModal(spare_part, index)" class="text-center pb-3">
-                    {{ spare_part.location }}
+                    {{ spare_part?.location }}
                   </td>
                   <td class="text-center pb-3">
                     <div>
@@ -267,7 +267,7 @@
           <section v-if="maintenanceModal">
             <div class="flex justify-center mb-4">
               <h2 class="font-bold text-center mr-2">
-                {{ currentMachine.name }}
+                {{ currentMachine?.name }}
               </h2>
               <div @click="maintenanceModal = false"
                 class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
@@ -338,7 +338,7 @@
           <section v-if="sparePartModal">
             <div class="flex justify-center mb-7">
               <h2 class="font-bold text-center mr-2">
-                {{ currentMachine.name }}
+                {{ currentMachine?.name }}
               </h2>
               <div @click="sparePartModal = false"
                 class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
@@ -665,7 +665,6 @@ export default {
   mounted() {
     this.selectedMachine = this.machine.id;
   this.currentIndexMachine = this.machines.data.findIndex((obj) => obj.id == this.selectedMachine);
-
   },
 };
 </script>

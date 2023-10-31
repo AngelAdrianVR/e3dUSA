@@ -71,6 +71,9 @@
                                         <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')" :command="'clone-' + scope.row.id"><i
                                                 class="fa-solid fa-clone"></i>
                                             Clonar</el-dropdown-item>
+                                        <el-dropdown-item :command="'print-' + scope.row.id">
+                                            <i class="fa-solid fa-print"></i>
+                                            Imprimir</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -256,7 +259,7 @@ export default {
              } else {
                 return this.sales.data.filter(
                     (sale) =>
-                        // sale.id.toLowerCase().includes(this.search.toLowerCase()) ||
+                        sale.folio.toLowerCase().includes(this.search.toLowerCase()) ||
                         sale.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
                         sale.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
                         sale.folio.toLowerCase().includes(this.search.toLowerCase()) ||

@@ -23,6 +23,7 @@ class MachineResource extends JsonResource
             'large' => $this->large ?? '--',
             'height' => $this->height ?? '--',
             'cost' => $this->cost ?? '--',
+            'needs_maintenance' => $this->needsMaintenance() ? 'Si' : 'No',
             'cost_number_format' => number_format($this->cost) ?? '--',
             'supplier' => $this->supplier ?? '--',
             'aquisition_date' => $this->aquisition_date?->isoFormat('YYYY MMM DD') ?? '--',

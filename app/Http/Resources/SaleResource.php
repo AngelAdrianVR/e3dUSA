@@ -72,6 +72,7 @@ class SaleResource extends JsonResource
             'productions' => $this->whenLoaded('productions'),
             'catalogProductCompanySales' => $this->whenLoaded('catalogProductCompanySales'),
             'contact' => $this->whenLoaded('contact'),
+            'oportunity' => $this->whenLoaded('oportunity'),
             'media' => $this->getMedia('oce')->all(),
             'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
         ];

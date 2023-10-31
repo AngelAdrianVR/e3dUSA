@@ -6,7 +6,6 @@ use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\SaleResource;
-use App\Models\CatalogProduct;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Production;
 use App\Models\Sale;
@@ -24,14 +23,14 @@ class ProductionController extends Controller
     {
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de produccion todas')) {
             // $productions = ProductionResource::collection(Production::with('user', 'catalogProductCompanySale.catalogProductCompany.company')->latest()->get());
-            $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale', 'companyBranch')->whereHas('productions')->latest()->get());
+            $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch')->whereHas('productions')->latest()->get());
             // return $productions;
             return inertia('Production/Admin', compact('productions'));
         } elseif (auth()->user()->can('Ordenes de produccion personal')) {
-            $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale', 'companyBranch')->whereHas('productions')->where('user_id', auth()->id())->latest()->get());
+            $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch')->whereHas('productions')->where('user_id', auth()->id())->latest()->get());
             return inertia('Production/Index', compact('productions'));
         } else {
-            $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale', 'companyBranch')->whereHas('productions', function ($query) {
+            $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch')->whereHas('productions', function ($query) {
                 $query->where('productions.operator_id', auth()->id());
             })->latest()->get());
             return inertia('Production/Operator', compact('productions'));

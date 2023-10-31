@@ -50,10 +50,16 @@ export default {
                     show: this.$page.props.auth.user.permissions.includes('Ver catalogo de productos')
                 },
                 {
-                    label: 'Ventas',
-                    icon: '<i class="fa-solid fa-shop text-xs"></i>',
-                    active: route().current('quotes.*') || route().current('companies.*') || route().current('sales.*'),
+                    label: 'CRM',
+                    icon: '<i class="fa-solid fa-chart-line text-xs"></i>',
+                    active:  route().current('crm.*') || route().current('quotes.*') || route().current('companies.*') || route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*') || route().current('client-monitors.*'),
                     options: [
+                        {
+                            label: 'Inicio',
+                            route: route('crm.dashboard'),
+                            active: route().current('crm.*'),
+                            show: this.$page.props.auth.user.permissions.includes('Inicio crm')
+                        },
                         {
                             label: 'Cotizaciones',
                             route: route('quotes.index'),
@@ -72,22 +78,37 @@ export default {
                             active: route().current('sales.*'),
                             show: this.$page.props.auth.user.permissions.includes('Ver ordenes de venta')
                         },
+                        {
+                            label: 'Oportunidades',
+                            route: route('oportunities.index'),
+                            active: route().current('oportunities.*'),
+                            show: this.$page.props.auth.user.permissions.includes('Ver oportunidades')
+                        },
+                        {
+                            label: 'Seguimiento integral',
+                            route: route('client-monitors.index'),
+                            active: route().current('client-monitors.*'),
+                            show: this.$page.props.auth.user.permissions.includes('Ver seguimiento integral')
+                        },
+                        
 
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones') ||
                         this.$page.props.auth.user.permissions.includes('Ver clientes') ||
-                        this.$page.props.auth.user.permissions.includes('Ver ordenes de venta')
+                        this.$page.props.auth.user.permissions.includes('Ver ordenes de venta') ||
+                        this.$page.props.auth.user.permissions.includes('Ver oportunidades')||
+                        this.$page.props.auth.user.permissions.includes('Ver seguimiento integral')
                 },
-                // {
-                //     label: 'Proyectos',
-                //     icon: '<i class="fa-solid fa-check"></i>',
-                //     route: route('projects.index'),
-                //     active: route().current('projects.*'),
-                //     options: [],
-                //     dropdown: false,
-                //     show: this.$page.props.auth.user.permissions.includes('Ver proyectos')
-                // },
+                {
+                    label: 'Proyectos',
+                    icon: '<i class="fa-solid fa-check"></i>',
+                    route: route('projects.index'),
+                    active: route().current('projects.*'),
+                    options: [],
+                    dropdown: false,
+                    show: this.$page.props.auth.user.permissions.includes('Ver proyectos')
+                },
                 {
                     label: 'Compras',
                     icon: '<i class="fa-solid fa-cart-shopping text-xs"></i>',
@@ -277,7 +298,7 @@ export default {
                         },
                         {
                             label: 'Historial de acciones',
-                            route: 'audits.index',
+                            route: route('audits.index'),
                             show: this.$page.props.auth.user.permissions.includes('Ver historial de acciones')
                         },
                     ],

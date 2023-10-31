@@ -42,6 +42,25 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Eliminar ordenes de venta', 'category' => 'Ventas']);
         Permission::create(['name' => 'Autorizar ordenes de venta', 'category' => 'Ventas']);
 
+        Permission::create(['name' => 'Ver oportunidades', 'category' => 'Ventas']); //oportunidades (CRM)
+        Permission::create(['name' => 'Crear oportunidades', 'category' => 'Ventas']); //oportunidades (CRM)
+        Permission::create(['name' => 'Editar oportunidades', 'category' => 'Ventas']); //oportunidades (CRM)
+        Permission::create(['name' => 'Eliminar oportunidades', 'category' => 'Ventas']); //oportunidades (CRM)
+
+        Permission::create(['name' => 'Ver tareas de oportunidades', 'category' => 'Ventas']); //tareas de oportunidad (CRM)
+        Permission::create(['name' => 'Crear tareas de oportunidades', 'category' => 'Ventas']); //tareas de oportunidad (CRM)
+        Permission::create(['name' => 'Editar tareas de oportunidades', 'category' => 'Ventas']); //tareas de oportunidad (CRM)
+        Permission::create(['name' => 'Eliminar tareas de oportunidades', 'category' => 'Ventas']); //tareas de oportunidad (CRM)
+
+        Permission::create(['name' => 'Ver seguimiento integral', 'category' => 'Ventas']); //seguimiento integral (CRM)
+        Permission::create(['name' => 'Crear seguimiento integral', 'category' => 'Ventas']); //seguimiento integral (CRM)
+        Permission::create(['name' => 'Editar seguimiento integral', 'category' => 'Ventas']); //seguimiento integral (CRM)
+        Permission::create(['name' => 'Eliminar seguimiento integral', 'category' => 'Ventas']); //seguimiento integral (CRM)
+        Permission::create(['name' => 'Enviar correos en seguimiento integral', 'category' => 'Ventas']); //seguimiento integral (CRM)
+        Permission::create(['name' => 'Registrar pagos en seguimiento integral', 'category' => 'Ventas']); //seguimiento integral (CRM)
+        Permission::create(['name' => 'Agendar citas en seguimiento integral', 'category' => 'Ventas']); //seguimiento integral (CRM)
+        Permission::create(['name' => 'Registrar interaccion whatsapp en seguimiento integral', 'category' => 'Ventas']); //seguimiento integral (CRM)
+
         Permission::create(['name' => 'Ver muestra', 'category' => 'Ventas']);
         Permission::create(['name' => 'Crear muestra', 'category' => 'Ventas']);
         Permission::create(['name' => 'Editar muestra', 'category' => 'Ventas']);
@@ -155,7 +174,14 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Solicitudes de tiempo adicional personal', 'category' => 'Generales']);
         Permission::create(['name' => 'Reuniones personal', 'category' => 'Generales']);
         Permission::create(['name' => 'Ver historial de acciones', 'category' => 'Generales']);
-        Permission::create(['name' => 'Ver proyectos', 'category' => 'Generales']);
+        Permission::create(['name' => 'Ver proyectos', 'category' => 'Generales']); //PMS
+        Permission::create(['name' => 'Crear proyectos', 'category' => 'Generales']); //PMS
+        Permission::create(['name' => 'Editar proyectos', 'category' => 'Generales']); //PMS
+        Permission::create(['name' => 'Eliminar proyectos', 'category' => 'Generales']); //PMS
+        Permission::create(['name' => 'Ver tareas', 'category' => 'Generales']); //tareas de proyectos (PMS)
+        Permission::create(['name' => 'Crear tareas', 'category' => 'Generales']); //tareas de proyectos (PMS)
+        Permission::create(['name' => 'Editar tareas', 'category' => 'Generales']); //tareas de proyectos (PMS)
+        Permission::create(['name' => 'Eliminar tareas', 'category' => 'Generales']); //tareas de proyectos (PMS)
 
         Permission::create(['name' => 'Ordenes de diseño todas', 'category' => 'Diseño']);
         Permission::create(['name' => 'Autorizar ordenes de diseño', 'category' => 'Diseño']);

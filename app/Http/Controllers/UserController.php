@@ -353,4 +353,11 @@ class UserController extends Controller
 
         return $data;
     }
+
+    public function getPendentTasks() 
+    {
+        $pendent_tasks = auth()->user()->tasks()->where('status', '!=', 'Terminada')->get();
+
+        return response()->json(['items' => $pendent_tasks]);
+    }
 }

@@ -31,8 +31,7 @@ class PurchaseController extends Controller
         $suppliers = Supplier::with('contacts')->get();
         $raw_materials = RawMaterialResource::collection(RawMaterial::all());
 
-        // return $raw_materials;
-
+        // return $suppliers;
 
         return inertia('Purchase/Create', compact('suppliers', 'raw_materials'));
     }
@@ -70,7 +69,9 @@ class PurchaseController extends Controller
     public function show(Purchase $purchase)
     {
         $purchases = PurchaseResource::collection(Purchase::with('user','supplier')->latest()->get());
+
         // return $purchases;
+
         return inertia('Purchase/Show', compact('purchase', 'purchases'));
     }
 

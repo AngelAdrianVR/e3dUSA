@@ -32,9 +32,11 @@ class SaleController extends Controller
 
     public function create()
     {
+        $data = request('data');
+
         $company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
 
-        return inertia('Sale/Create', compact('company_branches'));
+        return inertia('Sale/Create', compact('company_branches', 'data'));
     }
 
     public function store(Request $request)
@@ -85,7 +87,7 @@ class SaleController extends Controller
 
         event(new RecordCreated($sale));
 
-        return to_route('sales.index');
+        // return to_route('sales.index');
     }
 
     public function show(Sale $sale)
@@ -219,5 +221,13 @@ class SaleController extends Controller
             ->json([
                 'message' => "Orden de venta clonada: $new_item_folio", 'newItem' => saleResource::make(Sale::with('companyBranch', 'user')->find($clone->id))
             ]);
+    }
+
+    public function print($sale_id)
+    {
+        $sale = SaleResource::make(Sale::with('productions', 'catalogProductCompanySales.catalogProductCompany.catalogProduct.media', 'catalogProductCompanySales.sale.user')->find($sale_id));
+
+        // return $sale;
+        return inertia('Sale/Print', compact('sale'));
     }
 }

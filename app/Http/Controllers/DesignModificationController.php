@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Models\DesignModification;
 use Illuminate\Http\Request;
 
@@ -25,6 +26,8 @@ class DesignModificationController extends Controller
         ]);
 
         $modification = DesignModification::create($request->all());
+
+        event(new RecordCreated($modification));
 
         return response()->json(['item' => $modification]);
     }

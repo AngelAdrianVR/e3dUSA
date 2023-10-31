@@ -3,28 +3,36 @@
 use App\Http\Controllers\AdditionalTimeRequestController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BonusController;
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CatalogProductController;
+use App\Http\Controllers\ClientMonitorController;
 use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CustomerMeetingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\DesignModificationController;
 use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\EmailMonitorController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\KioskDeviceController;
 use App\Http\Controllers\MachineController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MeetingController;
+use App\Http\Controllers\MettingMonitorController;
+use App\Http\Controllers\OportunityController;
+use App\Http\Controllers\OportunityTaskController;
+use App\Http\Controllers\PaymentMonitorController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\ProductionCostController;
 use App\Http\Controllers\ProductionProgressController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectGroupController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RawMaterialController;
-use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SampleController;
@@ -32,7 +40,11 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\TagController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WhatsappMonitorController;
 use App\Models\CompanyBranch;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Artisan;
@@ -69,6 +81,18 @@ Route::middleware([
 });
 
 
+// -------------- project groups routes ------------
+Route::resource('project-groups', ProjectGroupController::class)->middleware('auth')->names('project-groups');
+
+
+// -------------- tags routes ------------
+Route::resource('tags', TagController::class)->middleware('auth')->names('tags');
+
+// --------------- Calendar routes -----------------
+Route::resource('calendars', CalendarController::class)->middleware('auth');
+Route::put('calendars-{calendar}-task-done', [CalendarController::class, 'taskDone'])->name('calendars.task-done')->middleware('auth');
+Route::put('calendars/set-attendance-confirmation/{calendar}', [CalendarController::class, 'SetAttendanceConfirmation'])->name('calendars.set-attendance-confirmation');
+
 Route::get('customers-report', function () {
     $customerWithSales = CompanyBranch::withCount(['sales' => function ($query) {
         // Filtra las ventas con fecha de creación de hace un año hasta hoy
@@ -95,15 +119,54 @@ Route::post('catalog-products/QR-search-catalog-product', [CatalogProductControl
 Route::resource('companies', CompanyController::class)->middleware('auth');
 Route::post('companies/massive-delete', [CompanyController::class, 'massiveDelete'])->name('companies.massive-delete');
 Route::post('companies/clone', [CompanyController::class, 'clone'])->name('companies.clone');
+Route::post('companies/get-all-companies', [CompanyController::class, 'getAllCompanies'])->name('companies.get-all-companies')->middleware('auth');
 
 
-// ------- Ventas(sale orders Routes)  ---------
+// ------- CRM (Clients Routes)  ---------
+Route::get('crm', [DashboardController::class, 'crmDashboard'])->middleware('auth')->name('crm.dashboard');
+
+// ------- CRM (oportunities Routes)  ---------
+Route::resource('oportunities', OportunityController::class)->middleware('auth');
+Route::put('/oportunities/update-status/{oportunity_id}', [OportunityController::class, 'updateStatus'])->name('oportunities.update-status')->middleware('auth');
+Route::put('/oportunities/create-sale/{oportunity_id}', [OportunityController::class, 'createSale'])->name('oportunities.create-sale')->middleware('auth');
+Route::post('oportunities/update-with-media/{oportunity}', [OportunityController::class, 'updateWithMedia'])->name('oportunities.update-with-media')->middleware('auth');
+
+// ------- CRM (surveys Routes)  ---------
+Route::get('/surveys/create/{oportunity_id}', [SurveyController::class, 'create'])->name('surveys.create');
+Route::post('/surveys/store/{oportunity_id}', [SurveyController::class, 'store'])->name('surveys.store');
+
+// ------- CRM (oportunityTasks Routes)  ---------
+Route::resource('oportunity-tasks', OportunityTaskController::class)->except(['store', 'create'])->middleware('auth');
+Route::get('oportunity-tasks/create/{oportunity_id}', [OportunityTaskController::class, 'create'])->name('oportunity-tasks.create')->middleware('auth');
+Route::post('oportunity-tasks/store/{oportunity_id}', [OportunityTaskController::class, 'store'])->name('oportunity-tasks.store')->middleware('auth');
+Route::post('oportunity-tasks/{oportunity_task}/comment', [OportunityTaskController::class, 'comment'])->name('oportunity-tasks.comment')->middleware('auth');
+Route::put('oportunity-tasks/mark-as-done/{oportunityTask}', [OportunityTaskController::class, 'markAsDone'])->name('oportunity-tasks.mark-as-done')->middleware('auth');
+
+// ------- CRM (Client monior Routes)  ---------
+Route::resource('client-monitors', ClientMonitorController::class)->middleware('auth');
+
+// ------- CRM (Payment monior Routes)  ---------
+Route::resource('payment-monitors', PaymentMonitorController::class)->middleware('auth');
+Route::post('payment-monitors/update-with-media/{payment_monitor}', [PaymentMonitorController::class, 'updateWithMedia'])->name('payment-monitors.update-with-media')->middleware('auth');
+
+// ------- CRM (meeting monior Routes)  ---------
+Route::resource('meeting-monitors', MettingMonitorController::class)->middleware('auth');
+
+// ------- CRM (email monior Routes)  ---------
+Route::resource('email-monitors', EmailMonitorController::class)->middleware('auth');
+
+// ------- CRM (whatsapp monior Routes)  ---------
+Route::resource('whatsapp-monitors', WhatsappMonitorController::class)->middleware('auth');
+Route::post('whatsapp-monitors/update-with-media/{whatsapp_monitor}', [WhatsappMonitorController::class, 'updateWithMedia'])->name('whatsapp-monitors.update-with-media')->middleware('auth');
+
+// ------- CRM(sale orders Routes)  ---------
 Route::resource('sales', SaleController::class)->middleware('auth');
 Route::post('sales/massive-delete', [SaleController::class, 'massiveDelete'])->name('sales.massive-delete');
 Route::post('sales/clone', [SaleController::class, 'clone'])->name('sales.clone');
 Route::put('sales/authorize/{sale}', [SaleController::class, 'authorizeOrder'])->name('sales.authorize');
+Route::get('sales/print/{sale}', [SaleController::class, 'print'])->name('sales.print');
 
-// ------- Ventas(Companybranches sucursales Routes)  ---------
+// ------- CRM(Companybranches sucursales Routes)  ---------
 Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');
 Route::put('company-branches/clear-important-notes/{company_branch}', [CompanyBranchController::class, 'clearImportantNotes'])->name('company-branches.clear-important-notes')->middleware('auth');
 Route::put('company-branches/store-important-notes/{company_branch}', [CompanyBranchController::class, 'storeImportantNotes'])->name('company-branches.store-important-notes')->middleware('auth');
@@ -122,6 +185,16 @@ Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseControlle
 
 //-------------- Projects routes ------------------
 Route::resource('projects', ProjectController::class)->middleware('auth');
+Route::get('projects-dashboard', [ProjectController::class, 'dashboard'])->middleware('auth')->name('projects.dashboard');
+Route::post('projects/update-with-media/{project}', [ProjectController::class, 'updateWithMedia'])->name('projects.update-with-media')->middleware('auth');
+
+
+//-------------------------- Tasks routes -------------------------
+Route::resource('tasks', TaskController::class)->middleware('auth');
+Route::post('tasks-{task}-comment', [TaskController::class, 'comment'])->name('tasks.comment')->middleware('auth');
+Route::put('tasks-{task}-pause-play', [TaskController::class, 'pausePlayTask'])->name('tasks.pause-play')->middleware('auth');
+Route::put('tasks-{task}-update-status', [TaskController::class, 'updateStatus'])->name('tasks.update-status')->middleware('auth');
+Route::get('tasks-late-tasks', [TaskController::class, 'getLateTasks'])->middleware('auth')->name('tasks.get-late-tasks');
 
 
 // ------- Raw Material routes  ---------
@@ -159,6 +232,7 @@ Route::get('users-get-pause-status', [UserController::class, 'getPauseStatus'])-
 Route::get('users-set-attendance', [UserController::class, 'setAttendance'])->middleware('auth')->name('users.set-attendance');
 Route::get('users-set-pause', [UserController::class, 'setPause'])->middleware('auth')->name('users.set-pause');
 Route::get('users-get-additional-time-requested-days/{user_id}/{payroll_id}', [UserController::class, 'getRequestedDays'])->middleware('auth')->name('users.get-additional-time-requested-days');
+Route::get('users-get-pendent-tasks', [UserController::class, 'getPendentTasks'])->middleware('auth')->name('users.get-pendent-tasks');
 Route::put('users-reset-pass/{user}', [UserController::class, 'resetPass'])->middleware('auth')->name('users.reset-pass');
 Route::put('users-change-status/{user}', [UserController::class, 'changeStatus'])->middleware('auth')->name('users.change-status');
 Route::put('users-update-pausas/{payroll_user}', [UserController::class, 'updatePausas'])->middleware('auth')->name('users.update-pausas');
@@ -268,8 +342,6 @@ Route::resource('spare-parts', SparePartController::class)->except('create')->mi
 Route::get('spare-parts/create/{selectedMachine}', [SparePartController::class, 'create'])->name('spare-parts.create')->middleware('auth');
 Route::post('spare-parts/update-with-media/{spare_part}', [SparePartController::class, 'updateWithMedia'])->name('spare-parts.update-with-media')->middleware('auth');
 
-
-
 //------------------ Meetings routes ----------------
 Route::resource('meetings', MeetingController::class)->middleware('auth');
 Route::post('meetings/massive-delete', [MeetingController::class, 'massiveDelete'])->name('meetings.massive-delete');
@@ -290,6 +362,10 @@ Route::resource('settings', SettingController::class)->middleware('auth');
 
 //------------------ Production progress routes ----------------
 Route::resource('production-progress', ProductionProgressController::class)->middleware('auth');
+
+//------------------ Customer dates routes ----------------
+Route::resource('customer-meetings', CustomerMeetingController::class)->middleware('auth');
+Route::post('customer-meetings/get-soon-dates', [CustomerMeetingController::class, 'getSoonDates'])->name('customer-meetings.get-soon-dates')->middleware('auth');
 
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');

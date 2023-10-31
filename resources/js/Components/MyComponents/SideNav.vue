@@ -93,13 +93,19 @@ export default {
                     show: this.$page.props.auth.user.permissions.includes('Ver catalogo de productos')
                 },
                 {
-                    label: 'Ventas',
-                    icon: '<i class="fa-solid fa-shop text-xs"></i>',
-                    active: route().current('quotes.*') || route().current('companies.*') || route().current('sales.*'),
+                    label: 'CRM',
+                    icon: '<i class="fa-solid fa-chart-line text-sm"></i>',
+                    active: route().current('crm.*') || route().current('quotes.*') || route().current('companies.*') || route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*') || route().current('client-monitors.*') || route().current('meeting-monitors.*') || route().current('payment-monitors.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                        return ['quote', 'sale'].includes(notification.data.module);
+                        return ['quote', 'sale', 'opportunities'].includes(notification.data.module);
                     }),
                     options: [
+                        {
+                            label: 'Inicio',
+                            route: 'crm.dashboard',
+                            show: this.$page.props.auth.user.permissions.includes('Inicio crm'),
+                            notifications: false,
+                        },
                         {
                             label: 'Cotizaciones',
                             route: 'quotes.index',
@@ -120,12 +126,26 @@ export default {
                             show: this.$page.props.auth.user.permissions.includes('Ver ordenes de venta'),
                             notifications: false,
                         },
+                        {
+                            label: 'Oportunidades',
+                            route: 'oportunities.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver oportunidades'),
+                            notifications: false,
+                        },
+                        {
+                            label: 'Seguimiento integral',
+                            route: 'client-monitors.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver seguimiento integral'),
+                            notifications: false,
+                        },
 
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones') ||
                         this.$page.props.auth.user.permissions.includes('Ver clientes') ||
-                        this.$page.props.auth.user.permissions.includes('Ver ordenes de venta')
+                        this.$page.props.auth.user.permissions.includes('Ver ordenes de venta') ||
+                        this.$page.props.auth.user.permissions.includes('Ver oportunidades') ||
+                        this.$page.props.auth.user.permissions.includes('Ver seguimiento integral')
                 },
                 {
                     label: 'Compras',
@@ -158,13 +178,16 @@ export default {
                     show: this.$page.props.auth.user.permissions.includes('Ver proveedores') ||
                         this.$page.props.auth.user.permissions.includes('Ver ordenes de compra')
                 },
-                // {
-                //     label: 'Proyectos',
-                //     icon: '<i class="fa-solid fa-check"></i>',
-                //     route: route('projects.index'),
-                //     active: route().current('projects.*'),
-                //     show: this.$page.props.auth.user.permissions.includes('Ver proyectos')
-                // },
+                {
+                    label: 'Proyectos',
+                    icon: '<i class="fa-solid fa-check"></i>',
+                    route: route('projects.index'),
+                    active: route().current('projects.*'),
+                    notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                        return notification.data.module === 'projects';
+                    }),
+                    show: this.$page.props.auth.user.permissions.includes('Ver proyectos')
+                },
                 {
                     label: 'Almacén',
                     icon: '<i class="fa-solid fa-warehouse text-xs"></i>',

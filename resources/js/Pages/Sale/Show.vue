@@ -13,12 +13,19 @@
         <div class="flex justify-between">
           <div class="md:w-1/3 mr-2">
             <el-select @change="saleSelection" v-model="saleSelected" clearable filterable
-              placeholder="Buscar órden de venta" no-data-text="No hay órdenes en el catálogo"
+              placeholder="Buscar órden de venta" no-data-text="No hay órdenes registradas"
               no-match-text="No se encontraron coincidencias">
               <el-option v-for="item in sales.data" :key="item.id" :label="item.folio" :value="item.id" />
             </el-select>
           </div>
           <div class="flex items-center space-x-2">
+            <el-tooltip content="Imprimir" placement="top">
+              <Link :href="route('sales.print', saleSelected)">
+              <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
+                <i class="fa-solid fa-print text-sm"></i>
+              </button>
+              </Link>
+            </el-tooltip>
             <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar ordenes de venta') ||
                        currentSale?.user.id == $page.props.auth.user.id" content="Editar" placement="top">
               <Link :href="route('sales.edit', saleSelected)">
@@ -100,6 +107,11 @@
             " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Productos
           </p>
+          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p @click="tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Historial
+          </p>
         </div>
       </div>
       <!-- ------------- tabs section ends ------------- -->
@@ -126,10 +138,6 @@
           <span>{{ currentSale?.created_at }}</span>
           <span class="text-gray-500 my-2">Medio de petición</span>
           <span>{{ currentSale?.order_via }}</span>
-          <!-- <span class="text-gray-500 my-2">Prioridad</span>
-          <span>{{ "currentSale?.status" }}</span>
-          <span class="text-gray-500 my-2">Operadores</span>
-          <span>{{ "currentSale?.authorized_at" }}</span> -->
           <span class="text-gray-500 my-2">OCE</span>
           <span>{{ currentSale?.oce_name }}</span>
           <span class="text-gray-500 my-2">Factura</span>
@@ -177,13 +185,22 @@
       <div v-if="tabs == 2" class="p-7">
         <p class="text-secondary mb-2">Productos Ordenados</p>
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-7">
-          <ProductSaleCard @selected="" is_view_for_seller
-            v-for="(productSale, index) in currentSale?.catalogProductCompanySales" :key="productSale.id"
+          <ProductSaleCard is_view_for_seller
+            v-for="productSale in currentSale?.catalogProductCompanySales" :key="productSale.id"
             :catalog_product_company_sale="productSale" />
         </div>
       </div>
 
       <!-- ------------- tab 2 products ends ------------ -->
+      
+      <!-- -------------tab 3 history starts ------------- -->
+
+      <div v-if="tabs == 3" class="p-7">
+        <p class="text-secondary mb-2">Historial</p>
+        
+      </div>
+
+      <!-- ------------- tab 3 history ends ------------ -->
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar Órden de venta </template>
@@ -304,7 +321,8 @@ export default {
             message: "Orden de venta autorizada",
             type: "success",
           });
-
+          
+          this.$inertia.get(route('sales.index'));
           this.currentSale.authorized_at = response.data.item.authorized_at;
           this.currentSale.status = response.data.item.status;
         }
@@ -315,9 +333,6 @@ export default {
           type: "error",
         });
       }
-    },
-    productionOrder() {
-
     },
   },
 

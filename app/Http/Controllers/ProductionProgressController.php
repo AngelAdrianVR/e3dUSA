@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
 use App\Models\Production;
 use App\Models\ProductionProgress;
 use Illuminate\Http\Request;
@@ -27,7 +28,8 @@ class ProductionProgressController extends Controller
             'production_id' => 'required|numeric|min:1',
         ]);
 
-        ProductionProgress::create($request->all());
+       $production_progress = ProductionProgress::create($request->all());
+        event(new RecordCreated($production_progress));
         $production = Production::find($request->production_id);
         $production->is_paused = 1;
         $production->save();
