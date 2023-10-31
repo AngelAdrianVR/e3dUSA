@@ -51,11 +51,13 @@
           <span class="text-gray-500">Enviado por</span>
           <span>{{ email_monitor.data.seller.name }}</span>
           <span class="text-gray-500 my-2">Cliente</span>
-          <span>{{ email_monitor.data.company?.business_name }}</span>
+          <span>{{ email_monitor.data.company?.business_name ?? '--' }}</span>
           <span class="text-gray-500 my-2">Sucursal</span>
-          <span>{{ email_monitor.data.company?.business_name }}</span>
+          <span>{{ email_monitor.data.company?.business_name ?? '--' }}</span>
           <span class="text-gray-500 my-2">Enviado a</span>
-          <span>{{ email_monitor.data.meeting_date }}</span>
+          <span>{{ email_monitor.data.contact_name }}</span>
+          <span class="text-gray-500 my-2">Correo del contacto</span>
+          <span>{{ email_monitor.data.contact_email }}</span>
           <span class="text-gray-500 my-2">Asunto</span>
           <span>{{ email_monitor.data.subject }}</span>
           <span class="text-gray-500 my-2">Contenido</span>

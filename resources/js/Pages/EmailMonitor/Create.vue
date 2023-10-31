@@ -86,7 +86,7 @@
           </div>
         </div>
       </form>
-
+{{form}}
     </AppLayout>
 </template>
 
@@ -104,6 +104,7 @@ export default {
     company_id: null,
     company_branch_id: null,
     contact_id: null,
+    contact_name: null,
     contact_email: null,
     subject: null,
     content: null,
@@ -157,6 +158,7 @@ export default {
     },
     getContactEmail() {
       this.form.contact_email = this.company_branch_obj?.contacts?.find(contact => contact.id == this.form.contact_id)?.email;
+      this.form.contact_name = this.company_branch_obj?.contacts?.find(contact => contact.id == this.form.contact_id)?.name;
     },
     activateFileInput() {
     // Simula un clic en el campo de entrada de archivos al hacer clic en el párrafo
