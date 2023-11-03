@@ -43,17 +43,23 @@
       </div>
       <!-- ------------- tabs section ends ------------- -->
 
-      <!-- ------------- Cita Starts 1 ------------- -->
+      <!-- ------------- Email Starts 1 ------------- -->
       <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
 
-          <p class="text-secondary col-span-2 mb-2">Información del correo electrónico</p>
+          <p class="text-secondary col-span-2 mb-2">Información de oportuindad</p>
+          <span class="text-gray-500">Folio</span>
+          <a class="text-secondary hover:underline" :href="route('oportunities.show', email_monitor.data.oportunity?.id )">
+            <span>{{ email_monitor.data.oportunity?.folio }} - {{ email_monitor.data.oportunity?.name }}
+            </span></a>
+
+          <p class="text-secondary col-span-2 mt-5 mb-2">Información del correo electrónico</p>
           <span class="text-gray-500">Enviado por</span>
-          <span>{{ email_monitor.data.seller.name }}</span>
+          <span>{{ email_monitor.data.seller?.name }}</span>
           <span class="text-gray-500 my-2">Cliente</span>
           <span>{{ email_monitor.data.company?.business_name ?? '--' }}</span>
           <span class="text-gray-500 my-2">Sucursal</span>
-          <span>{{ email_monitor.data.company?.business_name ?? '--' }}</span>
+          <span>{{ email_monitor.data.companyBranch?.name ?? '--' }}</span>
           <span class="text-gray-500 my-2">Enviado a</span>
           <span>{{ email_monitor.data.contact_name }}</span>
           <span class="text-gray-500 my-2">Correo del contacto</span>
@@ -66,10 +72,10 @@
           <span>{{ email_monitor.data.created_at }}</span>
         </div>
       </div>
-      <!-- ------------- Cita ends 1 ------------- -->
+      <!-- ------------- Email ends 1 ------------- -->
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
-        <template #title> Eliminar Registro de cita </template>
+        <template #title> Eliminar Registro de correo electrónico </template>
         <template #content> ¿Continuar con la eliminación? </template>
         <template #footer>
           <div>

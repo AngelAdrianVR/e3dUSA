@@ -76,7 +76,7 @@ class EmailMonitorController extends Controller
     
     public function show($email_monitor_id)
     {
-        $email_monitor = EmailMonitorResource::make(EmailMonitor::with('seller', 'oportunity', 'company')->find($email_monitor_id));
+        $email_monitor = EmailMonitorResource::make(EmailMonitor::with('seller', 'oportunity', 'company', 'companyBranch')->find($email_monitor_id));
 
         // return $email_monitor;
 

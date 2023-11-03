@@ -299,6 +299,9 @@ export default {
       const today = new Date(); // Obtener la fecha de hoy
       return time.getTime() < today.getTime();
     },
+    updateDescription(content) {
+      this.form.description = content;
+    },
     getColorPriority(taskPriority) {
       if (taskPriority === "Baja") {
         return "text-[#87CEEB]";

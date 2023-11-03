@@ -18,14 +18,10 @@
               </button>
               </Link>
             </el-tooltip>
-            <el-tooltip
-            content="Registrar pago o transacción"
-            placement="top"
-          >
+            
             <Link :href="route('meeting-monitors.create')">
               <PrimaryButton class="rounded-md">Crear</PrimaryButton>
             </Link>
-          </el-tooltip>
 
             <Dropdown align="right" width="48">
               <template #trigger>

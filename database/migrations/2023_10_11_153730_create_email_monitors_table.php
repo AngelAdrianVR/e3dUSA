@@ -19,7 +19,9 @@ return new class extends Migration
             $table->string('contact_email')->nullable();
             $table->foreignId('seller_id')->constrained('users')->cascadeOnDelete(); //quien creó el correo
             $table->foreignId('oportunity_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('contact_id')->constrained()->cascadeOnDelete();
             $table->foreignId('company_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('company_branch_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('client_monitor_id')->nullable()->constrained()->cascadeOnDelete();
             $table->timestamps();
         });

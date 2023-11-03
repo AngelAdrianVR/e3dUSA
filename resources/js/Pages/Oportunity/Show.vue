@@ -39,9 +39,9 @@
             </Link>
           </el-tooltip>
           <el-tooltip v-if="tabs == 3" content="Enviar un correo a prospecto" placement="top">
-            <!-- <Link :href="route('oportunity-tasks.create', oportunitySelected)"> -->
+            <Link :href="route('email-monitors.create')">
             <PrimaryButton class="rounded-md">Enviar correo</PrimaryButton>
-            <!-- </Link> -->
+            </Link>
           </el-tooltip>
           <el-tooltip v-if="tabs == 5 && currentOportunity?.finished_at"
             content="Genera la url para la encuesta de satisfacción" placement="top">
@@ -220,7 +220,8 @@
               class="fa-solid fa-money-bill text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
           </el-tooltip>
           <el-tooltip content="Enviar correo" placement="top">
-            <i class="fa-regular fa-envelope text-primary cursor-pointer text-lg px-3"></i>
+            <i @click="$inertia.get(route('email-monitors.create'))"
+             class="fa-regular fa-envelope text-primary cursor-pointer text-lg px-3"></i>
           </el-tooltip>
         </div>
 
@@ -331,23 +332,23 @@
           <tbody>
             <tr @click="showMonitorType(monitor)" v-for="monitor in currentOportunity?.clientMonitores" :key="monitor"
               class="mb-4 hover:bg-[#dfdbdba8] cursor-pointer">
-              <td class="text-left py-2 px-2 rounded-l-full text-secondary">
+              <td class="text-center py-2 px-2 rounded-l-full text-secondary">
                 {{ monitor.folio }}
               </td>
-              <td class="text-left py-2 px-2">
+              <td class="text-center py-2 px-2">
                 <span class="py-1 px-4 rounded-full">{{ monitor.type }}</span>
               </td>
-              <td class="text-left py-2 px-2">
+              <td class="text-center py-2 px-2">
                 <span class="py-1 px-2 rounded-full">{{ monitor.date }}</span>
               </td>
-              <td class="text-left py-2 px-2">
+              <td class="text-center py-2 px-2">
                 {{ monitor.concept }}
               </td>
-              <td class="text-left py-2 px-2 text-secondary">
+              <td class="text-center py-2 px-2 text-secondary">
                 {{ monitor.seller.name }}
               </td>
               <td v-if="$page.props.auth.user.permissions.includes('Eliminar tareas de oportunidades')"
-                class="text-left py-2 px-2 rounded-r-full">
+                class="text-center py-2 px-2 rounded-r-full">
                 <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#D90537" title="¿Eliminar?"
                   @confirm="deleteClientMonitor(monitor)">
                   <template #reference>

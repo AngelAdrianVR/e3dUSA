@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -18,10 +19,12 @@ class EmailMonitor extends Model implements HasMedia
         'content',
         'contact_name',
         'contact_email',
-        'seller_id',
-        'oportunity_id',
+        'company_branch_id',
         'company_id',
-        'client_monitor_id',
+        'oportunity_id',
+        'seller_id',
+        'contact_id',
+        'client_monitor_id'
     ];
 
     //relationships
@@ -40,9 +43,19 @@ class EmailMonitor extends Model implements HasMedia
         return $this->belongsTo(User::class);
     }
 
+    public function contact() :MorphOne
+    {
+        return $this->morphOne(Contact::class, 'contactable');
+    }
+
     public function clientMonitor() :BelongsTo
     {
         return $this->belongsTo(ClientMonitor::class);
+    }
+
+    public function companyBranch(): BelongsTo
+    {
+        return $this->belongsTo(CompanyBranch::class);
     }
 
 }
