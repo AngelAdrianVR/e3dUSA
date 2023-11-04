@@ -31,7 +31,7 @@ class MettingMonitorController extends Controller
     {
         $companies = Company::with('companyBranches.contacts')->get();
         $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
-        $users = User::where('is_active', true)->get();
+        $users = User::where('is_active', true)->whereNot('id', 1)->get();
 
         return inertia('MettingMonitor/Create', compact('companies', 'oportunities', 'users'));
     }
@@ -68,6 +68,7 @@ class MettingMonitorController extends Controller
             'seller_id' => auth()->id(),
             'oportunity_id' => $request->oportunity_id,
             'company_id' => $request->company_id,
+            'monitor_id' => $meeting_monitor->id,
         ]);
 
         $meeting_monitor->client_monitor_id = $client_monitor->id;
@@ -93,7 +94,7 @@ class MettingMonitorController extends Controller
         $metting_monitor = MeetingMonitorResource::make(MettingMonitor::with('oportunity', 'company', 'companyBranch', 'contact')->find($metting_monitor_id));
         $companies = Company::with('companyBranches.contacts')->get();
         $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
-        $users = User::where('is_active', true)->get();
+        $users = User::where('is_active', true)->whereNot('id', 1)->get();
 
         return inertia('MettingMonitor/Edit', compact('metting_monitor', 'oportunities', 'companies', 'users'));
     }
@@ -137,10 +138,10 @@ class MettingMonitorController extends Controller
     }
 
     
-    public function destroy($metting_monitor)
+    public function destroy($metting_monitor_id)
     {
-        $metting_monitor = MettingMonitor::find($metting_monitor);
-        $client_monitor = ClientMonitor::where('oportunity_id', $metting_monitor->oportunity_id)->first();
+        $metting_monitor = MettingMonitor::find($metting_monitor_id);
+        $client_monitor = ClientMonitor::where('monitor_id', $metting_monitor_id)->where('type', 'Reunión')->first();
         $client_monitor->delete();
         $metting_monitor->delete();
         event(new RecordDeleted($metting_monitor));

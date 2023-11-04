@@ -27,7 +27,7 @@ class WhatsappMonitorController extends Controller
     {
         $companies = Company::with('companyBranches.contacts')->get();
         $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
-        $users = User::where('is_active', true)->get();
+        $users = User::where('is_active', true)->whereNot('id', 1)->get();
 
         // return $oportunities;
 
@@ -62,6 +62,7 @@ class WhatsappMonitorController extends Controller
             'seller_id' => $request->seller_id,
             'oportunity_id' => $request->oportunity_id,
             'company_id' => $request->company_id,
+            'monitor_id' => $whatsapp_monitor->id,
         ]);
 
         $whatsapp_monitor->client_monitor_id = $client_monitor->id;
@@ -89,7 +90,7 @@ class WhatsappMonitorController extends Controller
         $whatsapp_monitor = WhatsappMonitorResource::make(WhatsappMonitor::with('oportunity', 'company', 'companyBranch', 'contact', 'seller')->find($whatsapp_monitor_id));
         $companies = Company::with('companyBranches.contacts')->get();
         $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
-        $users = User::where('is_active', true)->get();
+        $users = User::where('is_active', true)->whereNot('id', 1)->get();
 
         // return $whatsapp_monitor;
 
@@ -177,7 +178,7 @@ class WhatsappMonitorController extends Controller
     public function destroy($whatsapp_monitor_id)
     {
         $whatsapp_monitor = WhatsappMonitor::find($whatsapp_monitor_id);
-        $client_monitor = ClientMonitor::where('oportunity_id', $whatsapp_monitor->oportunity_id)->first();
+        $client_monitor = ClientMonitor::where('monitor_id', $whatsapp_monitor_id)->where('type', 'WhatsApp')->first();
         $client_monitor->delete();
         $whatsapp_monitor->delete();
         event(new RecordDeleted($whatsapp_monitor));

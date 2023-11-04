@@ -11,7 +11,7 @@
         <div class="flex justify-between">
             <span></span>
           <div class="flex items-center space-x-2">
-            <el-tooltip content="Editar pago o transacción" placement="top">
+            <el-tooltip content="Editar cita" placement="top">
               <Link :href="route('meeting-monitors.edit', metting_monitor.data.id)">
               <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
                 <i class="fa-solid fa-pen text-sm"></i>
@@ -20,7 +20,7 @@
             </el-tooltip>
             
             <Link :href="route('meeting-monitors.create')">
-              <PrimaryButton class="rounded-md">Crear</PrimaryButton>
+              <PrimaryButton class="rounded-md">Agendar cita</PrimaryButton>
             </Link>
 
             <Dropdown align="right" width="48">
@@ -54,7 +54,14 @@
       <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
 
-          <p class="text-secondary col-span-2 mb-2">Información de la cita</p>
+          <p class="text-secondary col-span-2 mb-2">Información de oportuindad</p>
+          <span class="text-gray-500">Folio</span>
+          <a class="text-secondary hover:underline" :href="route('oportunities.show', metting_monitor.data.oportunity?.id )">
+            <span>{{ metting_monitor.data.oportunity?.folio }} - {{ metting_monitor.data.oportunity?.name }}
+            </span>
+          </a>
+
+          <p class="text-secondary col-span-2 mt-5 mb-2">Información de la cita</p>
           <span class="text-gray-500">Creado por</span>
           <span>{{ metting_monitor.data.seller.name }}</span>
           <span class="text-gray-500 my-2">Fecha</span>

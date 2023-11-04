@@ -73,7 +73,7 @@
                 v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Registrar interaccion whatsapp en seguimiento integral')">
                 Interacción WhatsApp
               </DropdownLink>
-              <DropdownLink v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades') && tabs == 1
+              <DropdownLink v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades') && tabs == 1 && toBool(authUserPermissions[3])
                 " @click="showConfirmModal = true" as="button">
                 Eliminar
               </DropdownLink>
@@ -85,9 +85,9 @@
         <p class="text-center font-bold text-lg">
           {{ currentOportunity?.folio }} - {{ currentOportunity?.name }}
         </p>
-        <!-- <p :class="getColorStatus" class="px-2 py-1 font-bold rounded-sm">
+        <p :class="getColorStatus()" class="px-2 py-1 font-bold rounded-sm">
         {{ currentOportunity?.status }}
-      </p> -->
+      </p>
       </div>
       <!-- ------------- tabs section starts ------------- -->
       <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2 overflow-x-auto">
@@ -601,6 +601,7 @@ export default {
             this.currentOportunity.lost_oportunity_razon = null;
           }
           this.currentOportunity.finished_at = response.data.item.finished_at;
+          this.currentOportunity.status = this.status;
         }
       } catch (error) {
         console.log(error);
@@ -689,6 +690,21 @@ export default {
       }
 
     },
+    getColorStatus() {
+      if (this.currentOportunity?.status == "Nueva") {
+        return "bg-gray-300 text-[#97989A]";
+      } else if (this.currentOportunity?.status == "Pendiente") {
+        return "bg-[#F3FD85] text-[#C88C3C]";
+      } else if (this.currentOportunity?.status == "Cerrada") {
+        return "bg-[#FEDBBD] text-[#FD8827]";
+      } else if (this.currentOportunity?.status == "Pagado") {
+        return "bg-[#AFFDB2] text-[#37951F]";
+      } else if (this.currentOportunity?.status == "Perdida") {
+        return "bg-[#F7B7FC] text-[#9E0FA9]";
+      } else {
+        return "bg-transparent";
+      }
+    },
     updateOportunityTask(task) {
       const index = this.currentOportunity.oportunityTasks.findIndex(item => item.id === task.id);
 
@@ -739,21 +755,6 @@ export default {
     }
   },
   computed: {
-    getColorStatus() {
-      if (this.currentOportunity?.status == "Nueva") {
-        return "bg-[#F2F2F2] text-[#97989A]";
-      } else if (this.currentOportunity?.status == "Pendiente") {
-        return "bg-[#F3FD85] text-[#C88C3C]";
-      } else if (this.currentOportunity?.status == "Cerrada") {
-        return "bg-[#FEDBBD] text-[#FD8827]";
-      } else if (this.currentOportunity?.status == "Pagado") {
-        return "bg-[#AFFDB2] text-[#37951F]";
-      } else if (this.currentOportunity?.status == "Perdida") {
-        return "bg-[#F7B7FC] text-[#9E0FA9]";
-      } else {
-        return "bg-transparent";
-      }
-    },
     authUserPermissions() {
       const permissions = this.currentOportunity?.users.find(item => item.id == this.$page.props.auth.user.id)?.pivot.permissions;
       if (permissions) {

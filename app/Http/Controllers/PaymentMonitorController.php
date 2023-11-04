@@ -56,6 +56,7 @@ class PaymentMonitorController extends Controller
             'seller_id' => $request->seller_id,
             'oportunity_id' => $request->oportunity_id,
             'company_id' => $request->company_id,
+            'monitor_id' => $payment_monitor->id,
         ]);
 
         $payment_monitor->client_monitor_id = $client_monitor->id;
@@ -151,7 +152,7 @@ class PaymentMonitorController extends Controller
     public function destroy($payment_monitor_id)
     {   
         $payment_monitor = PaymentMonitor::find($payment_monitor_id);
-        $client_monitor = ClientMonitor::where('oportunity_id', $payment_monitor->oportunity_id)->first();
+        $client_monitor = ClientMonitor::where('monitor_id', $payment_monitor_id)->where('type', 'Pago')->first();
         $client_monitor->delete();
         $payment_monitor->delete();
         event(new RecordDeleted($payment_monitor));

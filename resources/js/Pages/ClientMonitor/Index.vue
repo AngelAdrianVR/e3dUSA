@@ -175,7 +175,7 @@ props:{
 },
 methods:{
     showMonitorType(monitor) {
-      if (monitor.type == 'Correo electrónico') {
+      if (monitor.type == 'Correo') {
         this.$inertia.get(route('email-monitors.show', monitor.emailMonitor?.id));
       } else if (monitor.type == 'Pago') {
         this.$inertia.get(route('payment-monitors.show', monitor.paymentMonitor?.id));
