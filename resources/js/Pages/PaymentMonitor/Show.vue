@@ -61,11 +61,16 @@
       <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
 
-          <p class="text-secondary col-span-2 mb-2">Información de la oportunidad</p>
-          <span class="text-gray-500 my-2">Folio de oportunidad</span>
-          <span>{{ payment_monitor.data.oportunity?.folio ?? '--' }}</span>
+          <p class="text-secondary col-span-2 mb-2">Información de oportuindad</p>
+          <span class="text-gray-500">Folio</span>
+          <a class="text-secondary hover:underline" :href="route('oportunities.show', payment_monitor.data.oportunity?.id )">
+            <span>{{ payment_monitor.data.oportunity?.folio }} - {{ payment_monitor.data.oportunity?.name }}
+            </span>
+          </a>
           <span class="text-gray-500 my-2">Cliente</span>
-          <span>{{ payment_monitor.data.description ?? '--' }}</span>
+          <span>{{ payment_monitor.data.oportunity.company?.business_name ?? '--' }}</span>
+          <span class="text-gray-500 my-2">sucursal</span>
+          <span>{{ payment_monitor.data.oportunity.companyBranch?.name ?? '--' }}</span>
           <span class="text-gray-500 my-2">Vendedor</span>
           <span>{{ payment_monitor.data.seller?.name }}</span>
         </div>
@@ -73,15 +78,15 @@
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
           <p class="text-secondary col-span-2 mb-2">Datos del pago</p>
 
-            <span class="text-gray-500">Monto</span>
+            <span class="text-gray-500 my-1">Monto</span>
             <span>${{ payment_monitor.data.amount?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
-            <span class="text-gray-500">Método de pago</span>
+            <span class="text-gray-500 my-1">Método de pago</span>
             <span>{{ payment_monitor.data.payment_method }}</span>
-            <span class="text-gray-500">Concepto</span>
+            <span class="text-gray-500 my-1">Concepto</span>
             <span>{{ payment_monitor.data.concept }}</span>
-            <span class="text-gray-500">Fecha de pago</span>
+            <span class="text-gray-500 my-1">Fecha de pago</span>
             <span>{{ payment_monitor.data.paid_at }}</span>
-            <span class="text-gray-500">Observaciones</span>
+            <span class="text-gray-500 my-1">Observaciones</span>
             <span>{{ payment_monitor.data.notes }}</span>
 
           <p class="text-secondary col-span-2 mb-2 mt-5">Archivos adjuntos</p>

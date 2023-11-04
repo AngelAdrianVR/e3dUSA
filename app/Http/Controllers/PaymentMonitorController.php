@@ -69,7 +69,9 @@ class PaymentMonitorController extends Controller
     
     public function show($payment_monitor_id)
     {
-        $payment_monitor = PaymentMonitorResource::make(PaymentMonitor::with('seller', 'oportunity', 'media')->find($payment_monitor_id));
+        $payment_monitor = PaymentMonitorResource::make(PaymentMonitor::with(['seller', 'oportunity' => ['company', 'companyBranch'], 'media'])->find($payment_monitor_id));
+
+        // return $payment_monitor;
 
         return inertia('PaymentMonitor/Show', compact('payment_monitor'));
     }

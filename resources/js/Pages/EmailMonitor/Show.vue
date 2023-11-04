@@ -51,7 +51,8 @@
           <span class="text-gray-500">Folio</span>
           <a class="text-secondary hover:underline" :href="route('oportunities.show', email_monitor.data.oportunity?.id )">
             <span>{{ email_monitor.data.oportunity?.folio }} - {{ email_monitor.data.oportunity?.name }}
-            </span></a>
+            </span>
+          </a>
 
           <p class="text-secondary col-span-2 mt-5 mb-2">Información del correo electrónico</p>
           <span class="text-gray-500">Enviado por</span>

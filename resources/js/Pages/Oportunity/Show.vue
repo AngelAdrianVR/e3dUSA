@@ -307,7 +307,7 @@
 
     <!-- ------------ tab 3 seguimiento integral starts ------------- -->
     <div v-if="tabs == 3" class="w-11/12 mx-auto my-8">
-      <div v-if="currentOportunity?.clientMonitores?.length" class="overflow-x-auto">
+      <div v-if="currentOportunity?.clientMonitors?.length" class="overflow-x-auto">
         <table class="lg:w-[80%] w-full mx-auto text-sm">
           <thead>
             <tr class="text-center">
@@ -330,7 +330,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr @click="showMonitorType(monitor)" v-for="monitor in currentOportunity?.clientMonitores" :key="monitor"
+            <tr @click="showMonitorType(monitor)" v-for="monitor in currentOportunity?.clientMonitors" :key="monitor"
               class="mb-4 hover:bg-[#dfdbdba8] cursor-pointer">
               <td class="text-center py-2 px-2 rounded-l-full text-secondary">
                 {{ monitor.folio }}
@@ -352,7 +352,7 @@
                 <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#D90537" title="¿Eliminar?"
                   @confirm="deleteClientMonitor(monitor)">
                   <template #reference>
-                    <i class="fa-regular fa-trash-can text-primary cursor-pointer p-2"></i>
+                    <i @click.stop="" class="fa-regular fa-trash-can text-primary cursor-pointer p-2"></i>
                   </template>
                 </el-popconfirm>
               </td>
@@ -600,6 +600,7 @@ export default {
           } else {
             this.currentOportunity.lost_oportunity_razon = null;
           }
+          this.currentOportunity.finished_at = response.data.item.finished_at;
         }
       } catch (error) {
         console.log(error);
@@ -607,7 +608,7 @@ export default {
     },
     showMonitorType(monitor) {
       if (monitor.type == 'Correo') {
-        this.$inertia.get(route('payment-monitors.show', monitor.paymentMonitor?.id));
+        this.$inertia.get(route('email-monitors.show', monitor.emailMonitor?.id));
       } else if (monitor.type == 'Pago') {
         this.$inertia.get(route('payment-monitors.show', monitor.paymentMonitor?.id));
       } else if (monitor.type == 'Reunión') {
@@ -705,10 +706,10 @@ export default {
             message: "Se ha eliminado correctamente",
             type: "success",
           });
-          const index = this.currentOportunity.clientMonitores.findIndex(item => item.id === monitor.id);
+          const index = this.currentOportunity.clientMonitors.findIndex(item => item.id === monitor.id);
 
           if (index !== -1) {
-            this.currentOportunity.clientMonitores.splice(index, 1);
+            this.currentOportunity.clientMonitors.splice(index, 1);
           }
         }
       } catch (error) {

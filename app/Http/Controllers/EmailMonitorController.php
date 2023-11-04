@@ -52,7 +52,7 @@ class EmailMonitorController extends Controller
         event(new RecordCreated($email_monitor));
 
         $client_monitor = ClientMonitor::create([
-            'type' => 'Correo electrónico',
+            'type' => 'Correo',
             'date' => now(),
             'concept' => $request->subject,
             'seller_id' => auth()->id(),
