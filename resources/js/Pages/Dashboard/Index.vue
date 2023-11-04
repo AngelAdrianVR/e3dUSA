@@ -75,17 +75,16 @@
             <hr class="lg:hidden block border-[#cccccc] mt-8 mb-6">
 
             <!-- meetings -->
-            <div
+            <!-- <div
                 v-if="$page.props.auth.user.permissions.some(item => ['Reuniones personal', 'Reuniones todas'].includes(item))">
                 <div class="flex justify-between items-center lg:mt-14 mt-0">
                     <h2 class="text-primary lg:text-xl text-lg">Reuniones</h2>
                     <Link :href="route('meetings.create')">
                     <thirthButton>Registrar reunion</thirthButton>
                     </Link>
-                    <!-- <thirthButton @click="showMeetingModal = true">Registrar reunion</thirthButton> -->
                 </div>
                 <MeetingCard :meetings="meetings" class="mt-4" />
-            </div>
+            </div> -->
 
             <!-- operative -->
             <div v-if="this.$page.props.auth.user.permissions.includes('Autorizar cotizaciones') ||

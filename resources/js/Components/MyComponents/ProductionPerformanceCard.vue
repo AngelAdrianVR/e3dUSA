@@ -50,7 +50,10 @@
                 </thead>
                 <tbody>
                     <tr v-for="(dayPoints, day) in selectedUser.weekly_points" :key="day">
-                        <td class="bg-white py-1 px-2 text-xs">{{ day }}</td>
+                        <el-tooltip content="Click para mostrar u ocultar detalles" placement="top">
+                            <td @click="showDetails = !showDetails" class="bg-white py-1 px-2 text-xs cursor-pointer">{{ day
+                            }}</td>
+                        </el-tooltip>
                         <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.punctuality < 0 }">{{
                             dayPoints.punctuality
                         }}</td>
@@ -70,6 +73,12 @@
                     </tr>
                 </tfoot>
             </table>
+            <ul v-if="showDetails" class="my-2 text-xs">
+                <h1 class="mt-3 text-secondary">Detalles de día seleccionado</h1>
+                <li v-for="(item, index) in selectedUser.productions" :key="item.id" style="white-space: pre-line;">
+                    <span class="text-primary">{{ index + 1 }}.</span>(OP-{{ item.catalog_product_company_sale.sale_id }}) {{ formatDate(item.finished_at) }}: {{ item.tasks }}
+                </li>
+            </ul>
             <div class="text-xs text-secondary px-10 mt-5">
                 <li><strong>Puntualidad: </strong>Este se refiere a llegar a tiempo para trabajar. Si llegas a tiempo, ganas
                     10 puntos. Si llegas tarde, perderás puntos equivalentes a los minutos de retraso. Así que, ¡llegar a
@@ -78,7 +87,8 @@
                     Cada minuto que trabajas se convierte en puntos, y estos se suman a tu puntaje total. Así que, cuantos
                     más minutos de trabajo productivo tengas, mejor será tu calificación.</li>
                 <li><strong>Merma: </strong>La merma se refiere a productos defectuosos o piezas que salieron mal durante la
-                    producción. Si tienes merma, perderás puntos equivalentes a la cantidad de merma. Pero si logras evitar cualquier problema y no hay
+                    producción. Si tienes merma, perderás puntos equivalentes a la cantidad de merma. Pero si logras evitar
+                    cualquier problema y no hay
                     merma, ganarás 1 punto extra. Así que, tratar de reducir los errores en el trabajo es importante para
                     tu calificación.</li>
             </div>
@@ -92,13 +102,15 @@
 <script>
 import DialogModal from "@/Components/DialogModal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
-import moment from 'moment';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default {
     data() {
         return {
             showModal: false,
             selectedUser: null,
+            showDetails: false,
         }
     },
     components: {
@@ -109,6 +121,10 @@ export default {
         users: Array,
     },
     methods: {
+        formatDate(date) {
+            const parsedDate = new Date(date);
+            return format(parsedDate, 'EEE dd MMM', { locale: es });
+        },
         calculatePercentage() {
             const maxPoints = Math.max(...this.users.map(user => user.total_points));
 

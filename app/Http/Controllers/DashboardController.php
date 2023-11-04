@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\MeetingResource;
-use App\Http\Resources\PayrollUserResource;
 use App\Http\Resources\SaleResource;
-use App\Http\Resources\UserResource;
 use App\Models\AdditionalTimeRequest;
 use App\Models\Contact;
 use App\Models\Design;
@@ -17,9 +15,6 @@ use App\Models\Quote;
 use App\Models\Sale;
 use App\Models\Storage;
 use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -98,14 +93,14 @@ class DashboardController extends Controller
         $weekEnd = $current_payroll->start_date->addDays(6);
 
         $users = User::where('employee_properties->department', 'Producción')
-            ->with(['productions.catalogProductCompanySale'])
+            ->with(['productions.catalogProductCompanySale.sale'])
             ->where('is_active', true)
             ->get();
 
         foreach ($users as $user) {
             $weekly_points = [];
 
-            $productionsFinishedThisWeek = $user->productions()->whereNotNull('finished_at')->whereBetween('finished_at', [$weekStart, $weekEnd])->get();
+            $productionsFinishedThisWeek = $user->productions()->with('catalogProductCompanySale.sale')->whereNotNull('finished_at')->whereBetween('finished_at', [$weekStart, $weekEnd])->get();
             foreach ($productionsFinishedThisWeek as $production) {
                 $day = $production->finished_at->isoFormat('ddd DD MMM'); // para la clave
                 // Agregar el día al arreglo de weekly_points
@@ -153,12 +148,14 @@ class DashboardController extends Controller
 
             $user->weekly_points = $weekly_points; // Asignar weekly_points al usuario
             $user->total_points = $totalPoints; // Asignar total_points al usuario
+            $user->productions = $productionsFinishedThisWeek;
         }
 
         $users = $users->sortByDesc('total_points')->values();
         $filtered = $users->sortByDesc('points')->values()->map(function ($user) {
             return [
                 'name' => $user->name,
+                'productions' => $user->productions,
                 'total_points' => $user->total_points,
                 'weekly_points' => $user->weekly_points,
             ];
