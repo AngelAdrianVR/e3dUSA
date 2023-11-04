@@ -15,6 +15,7 @@ class ClientMonitor extends Model
         'type',
         'date',
         'concept',
+        'monitor_id', // no es una llave foranea.
         'seller_id',
         'oportunity_id',
         'company_id',

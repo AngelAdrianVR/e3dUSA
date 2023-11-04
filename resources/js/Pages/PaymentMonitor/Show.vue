@@ -18,14 +18,9 @@
               </button>
               </Link>
             </el-tooltip>
-            <el-tooltip
-            content="Registrar pago o transacción"
-            placement="top"
-          >
             <Link :href="route('payment-monitors.create')">
-              <PrimaryButton class="rounded-md">Crear</PrimaryButton>
+              <PrimaryButton class="rounded-md">Registrar pago</PrimaryButton>
             </Link>
-          </el-tooltip>
 
             <Dropdown align="right" width="48">
               <template #trigger>

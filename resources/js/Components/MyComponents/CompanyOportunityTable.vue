@@ -7,7 +7,7 @@
               Folio <i class="fa-solid fa-arrow-down-long ml-3"></i>
             </th>
             <th class="font-bold pb-5 px-14 lg:px-2">
-              Oportunidades <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Oportunidad <i class="fa-solid fa-arrow-down-long ml-3"></i>
             </th>
             <th class="font-bold pb-5 px-14 lg:px-2">
               Estatus <i class="fa-solid fa-arrow-down-long ml-3"></i>

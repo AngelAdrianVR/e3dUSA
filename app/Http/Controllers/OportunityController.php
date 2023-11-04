@@ -110,13 +110,13 @@ class OportunityController extends Controller
                 'oportunity_id' => $oportunity->id,
                 'asigned_id' => auth()->id(),
             ]);
-            //Tarea 3. Mandar cotización
+            //Tarea 3. Enviar cotización
             OportunityTask::create([
-                'name' => 'Mandar coización',
+                'name' => 'Enviar cotización',
                 'limit_date' => now()->addDays(6),
                 'time' =>  $time,
                 'finished_at' => null,
-                'description' => 'Mandar cotización a cliente',
+                'description' => 'Enviar cotización a cliente',
                 'priority' => 'Media',
                 'reminder' => null,
                 'user_id' => auth()->id(),
@@ -164,7 +164,7 @@ class OportunityController extends Controller
     public function show(Oportunity $oportunity)
     {
         $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller', 'users', 'company', 'companyBranch')->latest()->get());
-        $users = User::where('is_active', true)->get();
+        $users = User::where('is_active', true)->whereNot('id', 1)->get();
         $defaultTab = request('defaultTab');
 
         // return $oportunities;
@@ -175,7 +175,7 @@ class OportunityController extends Controller
 
     public function edit(Oportunity $oportunity)
     {
-        $users = User::where('is_active', true)->get();
+        $users = User::where('is_active', true)->whereNot('id', 1)->get();
         $companies = Company::with('companyBranches.contacts')->latest()->get();
         $tags = TagResource::collection(Tag::where('type', 'crm')->get());
         $oportunity = Oportunity::with('users')->find($oportunity->id);

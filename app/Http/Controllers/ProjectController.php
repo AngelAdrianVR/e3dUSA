@@ -38,7 +38,7 @@ class ProjectController extends Controller
         $companies = Company::with('companyBranches.sales')->latest()->get();
         $tags = TagResource::collection(Tag::where('type', 'projects')->get());
         $project_groups = ProjectGroupResource::collection(ProjectGroup::all());
-        $users = User::where('is_active', true)->get();
+        $users = User::where('is_active', true)->whereNot('id', 1)->get();
 
         return inertia('Project/Create', compact('companies', 'users', 'tags', 'project_groups'));
     }
@@ -114,7 +114,7 @@ class ProjectController extends Controller
         $companies = Company::with('companyBranches.sales')->latest()->get();
         $tags = TagResource::collection(Tag::where('type', 'projects')->get());
         $project_groups = ProjectGroupResource::collection(ProjectGroup::all());
-        $users = User::where('is_active', true)->get();
+        $users = User::where('is_active', true)->whereNot('id', 1)->get();
         $media = $project->getMedia()->all();
 
         // return $project;

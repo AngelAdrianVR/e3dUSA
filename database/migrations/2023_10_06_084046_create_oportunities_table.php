@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('priority');
             $table->text('description')->nullable();
             $table->text('lost_oportunity_razon')->nullable();
-            $table->json('tags')->nullable(); //se guardan varias etiquetas
             $table->unsignedTinyInteger('probability')->nullable(); // 1 al 100
             $table->timestamp('finished_at')->nullable();
             $table->timestamp('start_date')->nullable();

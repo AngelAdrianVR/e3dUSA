@@ -63,7 +63,9 @@
 
           <p class="text-secondary col-span-2 mb-2">Información de la oportunidad</p>
           <span class="text-gray-500 my-2">Folio de oportunidad</span>
-          <a class="text-secondary hover:underline" :href="route('oportunities.show', whatsapp_monitor.data.oportunity?.id)"><span>{{ whatsapp_monitor.data.oportunity?.folio ?? '--' }}</span></a>
+          <a class="text-secondary hover:underline" :href="route('oportunities.show', whatsapp_monitor.data.oportunity?.id)">
+            <span>{{ whatsapp_monitor.data.oportunity?.folio ?? '--' }} - {{ whatsapp_monitor.data.oportunity?.name ?? '--' }}</span>
+          </a>
           <span class="text-gray-500 my-2">Fecha de creación</span>
           <span>{{ whatsapp_monitor.data.created_at }}</span>
           <span class="text-gray-500 my-2">Vendedor</span>

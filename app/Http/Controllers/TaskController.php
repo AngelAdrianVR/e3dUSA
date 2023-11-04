@@ -28,7 +28,7 @@ class TaskController extends Controller
     public function create(Request $request)
     {
         $projects = Project::with(['users'])->latest()->get();
-        $users = User::where('is_active', true)->get();
+        $users = User::where('is_active', true)->whereNot('id', 1)->get();
         $parent_id = $request->input('projectId') ?? 1;
 
         return inertia('Task/Create', compact('projects', 'users', 'parent_id'));
