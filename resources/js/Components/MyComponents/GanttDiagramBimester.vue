@@ -25,7 +25,7 @@
               </label>
             </div>
           </th>
-          <th class="border border-[#9A9A9A] text-center font-thin">
+          <th class="border border-[#9A9A9A] text-center font-thin text-xs">
             <strong class="text-base uppercase font-bold tex">{{ monthName }}</strong><br />
             <div class="flex space-x-3 justify-center w-[95%] mx-auto">
               <p
@@ -34,11 +34,11 @@
                 class="text-secondary relative"
               >
                 {{ daysOfWeek[(day + startDayOfWeek - 2) % 7] }}
-                <span class="absolute -bottom-3 -left-0 text-[11px] text-black">{{ day }}</span>
+                <span class="absolute -bottom-3 -left-0 text-[10px] text-black">{{ day }}</span>
               </p>
             </div>
           </th>
-          <th class="border border-[#9A9A9A] text-center font-thin">
+          <th class="border border-[#9A9A9A] text-center font-thin text-xs">
           <strong class="text-base uppercase font-bold">{{ nextMonthName }}</strong>
            <div class="flex space-x-3 justify-center w-[95%] mx-auto">
               <p
@@ -47,7 +47,7 @@
                 class="text-secondary relative"
               >
                 {{ daysOfWeek[(day + startDayOfWeekNextMonth - 2) % 7] }}
-                <span class="absolute -bottom-3 -left-0 text-[11px] text-black">{{ day }}</span>
+                <span class="absolute -bottom-3 -left-0 text-[10px] text-black">{{ day }}</span>
               </p>
             </div>
         </th>
