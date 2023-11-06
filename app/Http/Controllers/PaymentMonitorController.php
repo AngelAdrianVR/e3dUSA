@@ -115,7 +115,7 @@ class PaymentMonitorController extends Controller
             'company_id' => $request->company_id,
         ]);
         
-        return to_route('client-monitors.index');
+        return to_route('payment-monitors.show', ['payment_monitor'=> $payment_monitor]);
     }
 
     public function updateWithMedia(Request $request, PaymentMonitor $payment_monitor)

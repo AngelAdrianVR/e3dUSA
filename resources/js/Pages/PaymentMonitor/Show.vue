@@ -70,7 +70,7 @@
           <span>{{ payment_monitor.data.seller?.name }}</span>
         </div>
 
-        <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
+        <div class="grid grid-cols-2 text-left p-4 md:ml-10">
           <p class="text-secondary col-span-2 mb-2">Datos del pago</p>
 
             <span class="text-gray-500 my-1">Monto</span>
