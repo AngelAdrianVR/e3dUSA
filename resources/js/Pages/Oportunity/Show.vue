@@ -86,8 +86,8 @@
           {{ currentOportunity?.folio }} - {{ currentOportunity?.name }}
         </p>
         <p :class="getColorStatus()" class="px-2 py-1 font-bold rounded-sm">
-        {{ currentOportunity?.status }}
-      </p>
+          {{ currentOportunity?.status }}
+        </p>
       </div>
       <!-- ------------- tabs section starts ------------- -->
       <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2 overflow-x-auto">
@@ -139,11 +139,9 @@
         <span>{{ currentOportunity?.user?.name }}</span>
         <span class="text-gray-500 my-2">Responsable</span>
         <span>{{ currentOportunity?.seller?.name }}</span>
-        <!-- <span class="text-gray-500 my-2">Estatus</span>
-          <p :class="getStatusStyles()" class="rounded-full px-2 py-1 w-1/2 text-center">{{ currentOportunity?.status }}</p> -->
         <span class="text-gray-500 my-2">Estatus</span>
-        <div class="flex items-center space-x-4 relative">
-          <!-- <i :class="getColorStatus()" class="fa-solid fa-circle absolute -left-3 top-4"></i> -->
+        <div class="flex items-center relative">
+          <div :class="getColorStatus()" class="absolute -left-10 top-5 rounded-full w-3 h-3"></div>
           <el-select @change="status == 'Perdida' ? showLostOportunityModal = true
             : status == 'Cerrada' || status == 'Pagado' ? showCreateSaleModal = true
               : updateStatus()" class="lg:w-1/2 mt-2" v-model="status" clearable filterable
@@ -181,14 +179,14 @@
           currentOportunity?.lost_oportunity_razon }}</span>
       </div>
 
-      <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
+      <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center self-start">
         <p class="text-secondary col-span-2 mb-2">Usuarios</p>
 
-        <div v-if="uniqueAsignedNames">
-          <span v-for="asignedName in uniqueAsignedNames" :key="asignedName" class="text-gray-500">{{ asignedName
-          }}</span>
-          <span>{{ currentOportunity?.company_branch }}</span>
-        </div>
+        <ul v-if="currentOportunity?.users.length">
+          <li v-for="item in currentOportunity?.users" :key="item.id" class="text-gray-500">
+            {{ item.name }}
+          </li>
+        </ul>
         <p class="text-sm text-gray-400" v-else><i class="fa-solid fa-user-slash mr-3"></i>No hay tareas asignadas a
           usuarios</p>
 
@@ -209,10 +207,9 @@
         <div class="col-span-full flex space-x-3">
           <Tag v-for="(item, index) in currentOportunity?.tags" :key="index" :name="item.name" :color="item.color" />
         </div>
-
         <div class="flex items-center justify-end space-x-2 col-span-2 mr-4">
           <el-tooltip content="Agendar reunión" placement="top">
-            <i @click="$inertia.get(route('meeting-monitors.create'))"
+            <i @click="$inertia.get(route('meeting-monitors.create'), {opportunityId: currentOportunity?.id})"
               class="fa-regular fa-calendar text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
           </el-tooltip>
           <el-tooltip content="Registrar pago" placement="top">
@@ -221,10 +218,9 @@
           </el-tooltip>
           <el-tooltip content="Enviar correo" placement="top">
             <i @click="$inertia.get(route('email-monitors.create'))"
-             class="fa-regular fa-envelope text-primary cursor-pointer text-lg px-3"></i>
+              class="fa-regular fa-envelope text-primary cursor-pointer text-lg px-3"></i>
           </el-tooltip>
         </div>
-
       </div>
     </div>
     <!-- ------------- Informacion general ends 1 ------------- -->
@@ -516,7 +512,7 @@ export default {
       statuses: [
         {
           label: "Nueva",
-          color: "text-[#9A9A9A]",
+          color: "text-[#d9d9d9]",
         },
         {
           label: "Pendiente",
