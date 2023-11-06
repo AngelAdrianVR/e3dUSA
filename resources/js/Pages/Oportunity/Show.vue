@@ -213,11 +213,11 @@
               class="fa-regular fa-calendar text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
           </el-tooltip>
           <el-tooltip content="Registrar pago" placement="top">
-            <i @click="$inertia.get(route('payment-monitors.create'))"
+            <i @click="$inertia.get(route('payment-monitors.create'), {opportunityId: currentOportunity?.id})"
               class="fa-solid fa-money-bill text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
           </el-tooltip>
           <el-tooltip content="Enviar correo" placement="top">
-            <i @click="$inertia.get(route('email-monitors.create'))"
+            <i @click="$inertia.get(route('email-monitors.create'), {opportunityId: currentOportunity?.id})"
               class="fa-regular fa-envelope text-primary cursor-pointer text-lg px-3"></i>
           </el-tooltip>
         </div>
