@@ -22,7 +22,7 @@ class OportunityController extends Controller
 
     public function index()
     {
-        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks')->whereHas('users', function ($query) {
+        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks','company', 'companyBranch')->whereHas('users', function ($query) {
             $query->where('users.id', auth()->id());
         })->latest()->get());
 

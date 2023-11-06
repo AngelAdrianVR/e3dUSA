@@ -243,6 +243,43 @@
       </div>
       <!-- ------------ Lista view ends ----------------- -->
     </div>
+
+<!-- ----------------- Lost modal ----------- -->
+    <Modal :show="showLostOportunityModal || showCreateSaleModal"
+      @close="showLostOportunityModal = false; showCreateSaleModal = false">
+      <section v-if="showLostOportunityModal" class="mx-7 my-4 space-y-4 relative">
+        <div>
+          <label>Causa oportunidad perdida
+            <el-tooltip content="Escribe la causa por la cual se PERDIÓ esta oportunidad" placement="top">
+              <i class="fa-regular fa-circle-question ml-2 text-primary text-xs"></i>
+            </el-tooltip>
+          </label>
+          <textarea v-model="lost_oportunity_razon" required class="textarea mt-3"></textarea>
+        </div>
+        <div class="flex justify-end space-x-3 pt-5 pb-1">
+          <CancelButton @click="showLostOportunityModal = false">Cancelar</CancelButton>
+          <PrimaryButton @click="updateOpportunityStatus('Perdida')">Actualizar estatus</PrimaryButton>
+        </div>
+      </section>
+
+      <section v-if="showCreateSaleModal" class="mx-7 my-4 space-y-4 relative">
+        <div>
+          <div class="flex justify-center items-center my-3">
+            <i class="fa-solid fa-info text-primary"></i>
+            <p class="ml-4 font-bold mt-1 text-primary">ATENCIÓN</p>
+          </div>
+          <p class="px-5 text-secondary">Es necesario crear una orden de venta al haber cerrado la oportunidad para llevar
+            un correcto seguimiento y flujo de trabajo.
+            En caso de ya haberla creado, presiona el botón de "Venta creada"
+          </p>
+        </div>
+        <div class="flex justify-end space-x-3 pt-5 pb-1">
+          <CancelButton @click="showCreateSaleModal = false">Cancelar</CancelButton>
+          <SecondaryButton @click="updateOpportunityStatus(localStatus)">Venta creada</SecondaryButton>
+          <PrimaryButton @click="CreateSale">Crear venta</PrimaryButton>
+        </div>
+      </section>
+    </Modal>
   </AppLayoutNoHeader>
 </template>
 
@@ -253,7 +290,9 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import OportunityCard from "@/Components/MyComponents/OportunityCard.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import draggable from 'vuedraggable';
+import Modal from "@/Components/Modal.vue";
 import { Link } from "@inertiajs/vue3";
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 
@@ -263,7 +302,11 @@ export default {
       search: "",
       inputSearch: "",
       show_type_view: false,
+      showLostOportunityModal: false,
+      showCreateSaleModal: false,
       type_view: "Kanban",
+      localStatus: null,
+      lost_oportunity_razon: null,
       newTotal: null,
       pendingTotal: null,
       closedTotal: null,
@@ -281,14 +324,16 @@ export default {
   },
   components: {
     AppLayoutNoHeader,
+    NotificationCenter,
     Dropdown,
     DropdownLink,
     PrimaryButton,
     SecondaryButton,
+    CancelButton,
     OportunityCard,
     draggable,
+    Modal,
     Link,
-    NotificationCenter,
   },
   props: {
     oportunities: Object,
@@ -312,18 +357,48 @@ export default {
         status = 'Perdida';
       }
 
-      this.updateOpportunityStatus(status);
+       if (evt.to.id === "lost") {
+        this.showLostOportunityModal = true;
+      }else if (evt.to.id === "closed" || evt.to.id === "paid") {
+        this.showCreateSaleModal = true;
+        this.localStatus = status;
+      } else {
+        this.updateOpportunityStatus(status);
+      }
+       
       this.drag = false;
     },
     async updateOpportunityStatus(status) {
+      //cierra los modales antes de actualizar el estado
+        this.showLostOportunityModal = false;
+        this.showCreateSaleModal = false;
       try {
-        const response = await axios.put(route('oportunities.update-status', this.draggingOpportunityId), { status: status });
+        const response = await axios.put(route('oportunities.update-status', this.draggingOpportunityId), { status: status, lost_oportunity_razon: this.lost_oportunity_razon });
 
         if (response.status === 200) {
           const OpportunityIndex = this.oportunitiesLocal.findIndex(item => item.id === this.draggingOpportunityId);
           this.oportunitiesLocal[OpportunityIndex].status = status;
           this.updateLists();
           this.calculateTotals();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async CreateSale() {
+      try {
+        const response = await axios.put(route('oportunities.create-sale', this.draggingOpportunityId));
+        if (response.status === 200) {
+          if (response.data.message) {
+            this.$notify({
+              title: "Denegado",
+              message: response.data.message,
+              type: "error",
+            });
+          } else {
+            this.updateOpportunityStatus(this.localStatus);
+            this.$inertia.get(route('sales.create'), { data: { company_branch_id: this.draggingOpportunityId.companyBranch?.id, oportunity_id: this.draggingOpportunityId } });
+          }
         }
       } catch (error) {
         console.log(error);
@@ -425,7 +500,7 @@ export default {
 }
 
 .seccion {
-  flex: 0 0 25%;
+  flex: 0 0 22%;
   /* Establece el ancho de cada sección al 25% */
 }
 </style>
