@@ -203,7 +203,7 @@
             </div>
           </div>
 
-          <section class="rounded-[10px] py-12 mx-1 mt-5 max-h-[540px] col-span-full bg-[#CCCCCC]">
+          <section class="rounded-[10px] py-12 mx-1 mt-5 max-h-[580px] col-span-full bg-[#CCCCCC]">
             <div class="flex px-16 mb-8">
               <div v-if="typeAccessProject === 'Private'" class="w-full">
                 <h2 class="font-bold text-sm my-2 ml-2 col-span-full">Asignar participantes </h2>
@@ -225,7 +225,7 @@
                   <h2 class="font-bold border-b border-[#9A9A9A] w-2/3 pl-3">Usuarios</h2>
                   <h2 class="font-bold border-b border-[#9A9A9A] w-1/3">Permisos</h2>
                 </div>
-                <div class="pl-3 overflow-y-auto min-h-[100px] max-h-[340px]">
+                <div class="pl-3 overflow-y-auto min-h-[100px] max-h-[380px]">
                   <template v-for="user in form.selectedUsersToPermissions" :key="user.id">
                     <div v-if="user.id !== 1" class="flex mt-2 border-b border-[#9A9A9A]">
                       <div class="w-2/3 flex space-x-2">

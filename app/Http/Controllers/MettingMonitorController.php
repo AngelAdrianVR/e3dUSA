@@ -16,29 +16,24 @@ use Illuminate\Http\Request;
 
 class MettingMonitorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $companies = Company::with('companyBranches.contacts')->get();
         $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
         $users = User::where('is_active', true)->whereNot('id', 1)->get();
+        $opportunity = null;
+        if (request('opportunityId')) {
+            $opportunity = Oportunity::with(['companyBranch'])->find(request('opportunityId'));
+        }
 
-        return inertia('MettingMonitor/Create', compact('companies', 'oportunities', 'users'));
+        return inertia('MettingMonitor/Create', compact('companies', 'oportunities', 'users', 'opportunity'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -84,7 +79,6 @@ class MettingMonitorController extends Controller
     {
         $metting_monitor = MeetingMonitorResource::make(MettingMonitor::with('seller', 'oportunity', 'company', 'companyBranch', 'contact')->find($metting_monitor_id));
 
-        // return $metting_monitor;
         return inertia('MettingMonitor/Show', compact('metting_monitor'));
     }
 

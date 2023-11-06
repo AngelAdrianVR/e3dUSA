@@ -25,10 +25,11 @@ class PaymentMonitorController extends Controller
     public function create()
     {
         $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
+        if (request('opportunityId')) {
+            $opportunity = Oportunity::with(['companyBranch'])->find(request('opportunityId'));
+        }
 
-        // return $oportunities;
-
-        return inertia('PaymentMonitor/Create', compact('oportunities'));
+        return inertia('PaymentMonitor/Create', compact('oportunities', 'opportunity'));
     }
 
     
