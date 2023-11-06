@@ -346,7 +346,7 @@ export default {
     },
     props: {
         company_branches: Array,
-        data: Array,
+        opportunityId: Number,
     },
     methods: {
         store() {
@@ -451,9 +451,9 @@ export default {
         }
     },
     mounted() {
-        if (this.data) {
-            this.form.company_branch_id = parseInt(this.data.company_branch_id);
-            this.form.oportunity_id = parseInt(this.data.oportunity_id);
+        if (this.opportunityId) {
+            this.form.company_branch_id = parseInt(this.opportunityId.company_branch_id);
+            this.form.oportunity_id = parseInt(this.opportunityId);
         }
     }
 };

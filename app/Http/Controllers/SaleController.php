@@ -9,6 +9,7 @@ use App\Http\Resources\SaleResource;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Company;
 use App\Models\CompanyBranch;
+use App\Models\Oportunity;
 use App\Models\Sale;
 use App\Models\StockMovementHistory;
 use App\Models\Storage;
@@ -32,11 +33,11 @@ class SaleController extends Controller
 
     public function create()
     {
-        $data = request('data');
-
         $company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
 
-        return inertia('Sale/Create', compact('company_branches', 'data'));
+        $opportunityId = Oportunity::find(request('opportunityId'));
+
+        return inertia('Sale/Create', compact('company_branches', 'opportunityId'));
     }
 
     public function store(Request $request)

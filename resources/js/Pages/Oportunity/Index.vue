@@ -397,7 +397,7 @@ export default {
             });
           } else {
             this.updateOpportunityStatus(this.localStatus);
-            this.$inertia.get(route('sales.create'), { data: { company_branch_id: this.draggingOpportunityId.companyBranch?.id, oportunity_id: this.draggingOpportunityId } });
+            this.$inertia.get(route('sales.create'), { opportunityId: this.draggingOpportunityId });
           }
         }
       } catch (error) {

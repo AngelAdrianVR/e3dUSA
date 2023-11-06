@@ -569,7 +569,7 @@ export default {
             });
           } else {
             this.updateStatus();
-            this.$inertia.get(route('sales.create'), { data: { company_branch_id: this.currentOportunity.companyBranch?.id, oportunity_id: this.currentOportunity.id } });
+            this.$inertia.get(route('sales.create'), {opportunityId: this.currentOportunity.id});
           }
         }
       } catch (error) {
