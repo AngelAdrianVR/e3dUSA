@@ -46,7 +46,8 @@
           </div>
           <div class="w-1/2">
             <label>Hora *</label>
-            <input v-model="form.time" class="input" type="time">
+            <el-time-select v-model="form.time" start="07:00" step="00:15" end="23:30"
+              placeholder="Seleccione una hora" />
             <InputError :message="form.errors.time" />
           </div>
         </div>

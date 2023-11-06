@@ -274,20 +274,6 @@
         </div>
       </div>
 
-      <!-- -- TERMINADAS -- -->
-      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:px-4 seccion mx-2">
-        <h2 class="font-bold mb-10 first-letter ml-2">
-          TERMINADAS <span class="font-normal ml-7">{{ finishedTasksList.length }}</span>
-        </h2>
-        <OportunityTaskCard @updated-oportunityTask="updateOportunityTask" @delete-task="deleteTask"
-          @task-done="markAsDone" class="mb-3" v-for="finishedTask in finishedTasksList" :key="finishedTask"
-          :oportunityTask="finishedTask" :users="currentOportunity?.users" />
-        <div class="text-center" v-if="!finishedTasksList.length">
-          <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
-          <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
-        </div>
-      </div>
-
       <!-- -- ATRASADAS -- -->
       <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:px-4 seccion mx-2">
         <h2 class="font-bold mb-10 first-letter ml-2">
@@ -297,6 +283,20 @@
           @task-done="markAsDone" class="mb-3" v-for="lateTask in lateTasksList" :key="lateTask"
           :oportunityTask="lateTask" :users="currentOportunity?.users" />
         <div class="text-center" v-if="!lateTasksList.length">
+          <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
+          <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
+        </div>
+      </div>
+
+      <!-- -- TERMINADAS -- -->
+      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:px-4 seccion mx-2">
+        <h2 class="font-bold mb-10 first-letter ml-2">
+          TERMINADAS <span class="font-normal ml-7">{{ finishedTasksList.length }}</span>
+        </h2>
+        <OportunityTaskCard @updated-oportunityTask="updateOportunityTask" @delete-task="deleteTask"
+          @task-done="markAsDone" class="mb-3" v-for="finishedTask in finishedTasksList" :key="finishedTask"
+          :oportunityTask="finishedTask" :users="currentOportunity?.users" />
+        <div class="text-center" v-if="!finishedTasksList.length">
           <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
           <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
         </div>
@@ -806,7 +806,7 @@ export default {
 }
 
 .seccion {
-  flex: 0 0 25%;
+  flex: 0 0 22%;
   /* Establece el ancho de cada sección al 25% */
 }
 

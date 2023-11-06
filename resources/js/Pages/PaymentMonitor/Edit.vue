@@ -197,6 +197,17 @@ export default {
       // Simula un clic en el campo de entrada de archivos al hacer clic en el párrafo
       document.getElementById("fileInput").click();
     },
+    getCompany() {
+    const oportunity = this.oportunities.data.find(oportunity => oportunity.id === this.payment_monitor.data.oportunity?.id );
+
+    // if (oportunity.company) {
+      this.form.company_id = oportunity.company.id;
+      this.company_name = oportunity.company.business_name;
+      // } else {
+      //   this.company_name = 'Nuevo cliente. Contacto: ' + oportunity.contact; 
+      //   this.form.company_id = null;
+      // }
+  },
     handleFileUpload(event) {
       // Este método se llama cuando se selecciona un archivo en el input file
       const selectedFiles = event.target.files;
@@ -213,16 +224,13 @@ export default {
       this.form.mediaNames = fileNames;
     },
     mounted() {
-      const oportunity = this.oportunities.data.find(
-        (oportunity) => oportunity.id === this.form.oportunity_id
-      );
-      // console.log(oportunity);
+     const oportunity = this.oportunities.data.find(oportunity => oportunity.id === this.form.oportunity_id);
 
-      if (oportunity.company) {
-        this.form.company_id = oportunity.company.id;
-        this.company_name = oportunity.company.business_name;
+    if (oportunity.company) {
+      this.form.company_id = oportunity.company.id;
+      this.company_name = oportunity.company.business_name;
       } else {
-        this.company_name = "Nuevo cliente. Contacto: " + oportunity.contact;
+        this.company_name = 'Nuevo cliente. Contacto: ' + oportunity.contact; 
         this.form.company_id = null;
       }
     },

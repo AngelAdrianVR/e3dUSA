@@ -9,7 +9,10 @@
       <div class="flex justify-between items-center">
         <p class="text-gray-400 mt-3 mb-2">Asignado a</p>
         <el-tooltip v-if="oportunityTask?.media?.length" content="Archivos adjuntos" placement="top">
+          <div class="flex items-center">
           <i @click.stop="" class="fa-solid fa-paperclip rounded-full p-2"></i>
+          <p>({{oportunityTask?.media?.length}})</p>
+          </div>
         </el-tooltip>
       </div>
       <figure>
@@ -74,7 +77,8 @@
         </div>
         <div class="flex items-center space-x-2">
           <label class="text-sm">Hora</label>
-          <input v-model="form.time" class="input" type="time" :disabled="!canEdit">
+          <el-time-select v-model="form.time" start="07:00" step="00:15" end="23:30"
+              placeholder="Seleccione una hora" :disabled="!canEdit" />
           <InputError :message="form.errors.time" />
         </div>
       </div>
@@ -296,8 +300,9 @@ export default {
       }
     },
     disabledDate(time) {
-      const today = new Date(); // Obtener la fecha de hoy
-      return time.getTime() < today.getTime();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return time.getTime() < today.getTime();
     },
     updateDescription(content) {
       this.form.description = content;
