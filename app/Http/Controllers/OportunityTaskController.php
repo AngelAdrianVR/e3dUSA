@@ -95,6 +95,7 @@ class OportunityTaskController extends Controller
     
     public function destroy(OportunityTask $oportunity_task)
     {
+        $oportunity_task->comments()->delete();
         $oportunity_task->delete();
         event(new RecordDeleted($oportunity_task));
     }
@@ -102,7 +103,6 @@ class OportunityTaskController extends Controller
     public function markAsDone($oportunity_task_id)
     {
         $oportunity_task = OportunityTask::find($oportunity_task_id);
-        // return $oportunity_task;
         $oportunity_task->update([
             'finished_at' => now()
         ]);

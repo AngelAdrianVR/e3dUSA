@@ -239,16 +239,26 @@
         <CancelButton @click="!canEdit ? taskInformationModal = false : canEdit = false">
           {{ !canEdit ? 'Cancelar' : 'Cancelar edición' }}
         </CancelButton>
-        <el-dropdown v-if="toBool(authUserPermissions[2])" split-button type="primary"
-          @click="candEdit ? update : canEdit = true" class="custom-dropdown rounded-lg">
-          <span v-if="canEdit">Guardar cambios</span>
-          <span v-else>Editar</span>
-          <template #dropdown>
-            <el-dropdown-menu v-if="toBool(authUserPermissions[3])">
-              <el-dropdown-item @click="showConfirmModal = true">Eliminar</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+        <div v-if="toBool(authUserPermissions[2])">
+          <el-dropdown v-if="canEdit" split-button type="primary"
+            @click="update" class="custom-dropdown rounded-lg">
+            <span>Guardar cambios</span>
+            <template #dropdown>
+              <el-dropdown-menu v-if="toBool(authUserPermissions[3])">
+                <el-dropdown-item @click="showConfirmModal = true">Eliminar</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          <el-dropdown v-else split-button type="primary"
+            @click="canEdit = true" class="custom-dropdown rounded-lg">
+            <span>Editar</span>
+            <template #dropdown>
+              <el-dropdown-menu v-if="toBool(authUserPermissions[3])">
+                <el-dropdown-item @click="showConfirmModal = true">Eliminar</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
       </div>
     </div>
   </Modal>

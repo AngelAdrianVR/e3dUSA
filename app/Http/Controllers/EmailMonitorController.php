@@ -28,10 +28,11 @@ class EmailMonitorController extends Controller
         $companies = Company::with('companyBranches.contacts')->get();
         $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
         $users = User::where('is_active', true)->whereNot('id', 1)->get();
+        if (request('opportunityId')) {
+            $opportunity = Oportunity::with(['companyBranch'])->find(request('opportunityId'));
+        }
 
-        // return $oportunities;
-
-        return inertia('EmailMonitor/Create', compact('companies', 'oportunities', 'users'));
+        return inertia('EmailMonitor/Create', compact('companies', 'oportunities', 'users', 'opportunity'));
     }
 
 
@@ -74,7 +75,7 @@ class EmailMonitorController extends Controller
         return to_route('client-monitors.index');
     }
 
-    
+
     public function show($email_monitor_id)
     {
         $email_monitor = EmailMonitorResource::make(EmailMonitor::with('seller', 'oportunity', 'company', 'companyBranch')->find($email_monitor_id));
@@ -96,7 +97,7 @@ class EmailMonitorController extends Controller
         //
     }
 
-    
+
     public function destroy($email_monitor_id)
     {
         $email_monitor = EmailMonitor::find($email_monitor_id);
