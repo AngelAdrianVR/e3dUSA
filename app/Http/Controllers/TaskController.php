@@ -112,6 +112,7 @@ class TaskController extends Controller
 
     public function destroy(Task $task)
     {
+        $task->comments()->delete();
         $task->delete();
         event(new RecordDeleted($task));
     }

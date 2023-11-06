@@ -148,8 +148,6 @@
         <span class="mb-6">{{ currentProject?.currency }}</span>
         <span class="text-gray-500 mt-2">Monto</span>
         <span>${{ currentProject?.budget?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
-        <span class="text-gray-500 my-2">Método de facturación</span>
-        <span>{{ currentProject?.sat_method }}</span>
 
         <p class="text-secondary col-span-2 mb-2 mt-5">Documentos adjuntos</p>
         <li v-for="file in currentProject?.media" :key="file" class="flex items-center justify-between col-span-full">
@@ -243,7 +241,7 @@
       <div class="text-right mr-9">
         <div class="border border-[#9A9A9A] rounded-md inline-flex justify-end mt-4">
           <p :class="period == 'Mes' ? 'bg-primary text-white rounded-sm' : 'border-[#9A9A9A]'
-            " @click="period = 'Mes'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer border-x">
+            " @click="period = 'Mes'" class="px-4 py-2 text-[#9A9A9A] cursor-pointer">
             Mes
           </p>
           <p :class="period == 'Bimestre'
@@ -351,8 +349,8 @@ export default {
         status = 'En curso';
       }
 
-      this.updateTaskStatus(status);
       this.drag = false;
+      this.updateTaskStatus(status);
     },
     async updateTaskStatus(status) {
       try {
@@ -361,6 +359,7 @@ export default {
         if (response.status === 200) {
           const taskIndex = this.currentProject.tasks.findIndex(item => item.id === this.draggingTaskId);
           this.currentProject.tasks[taskIndex].status = status;
+          console.log(this.currentProject.tasks[taskIndex]);
         }
       } catch (error) {
         console.log(error);

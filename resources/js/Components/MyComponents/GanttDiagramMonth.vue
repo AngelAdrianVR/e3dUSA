@@ -30,7 +30,7 @@
         <div class="flex space-x-8 justify-center w-[95%] mx-auto">
           <p v-for="day in daysInMonth" :key="day" class="text-secondary relative">
             {{ daysOfWeek[(day + startDayOfWeek - 2) % 7] }}
-            <span class="absolute -bottom-3 -left-0 text-[11px] text-black">{{ day }}</span>
+            <span class="absolute -bottom-3 -left-0 text-[9px] text-black">{{ day }}</span>
           </p>
         </div>
       </th>
