@@ -1,5 +1,5 @@
 <template>
-<div class=" overflow-x-auto">
+<div class="w-10/12 overflow-x-auto">
     <table class="w-full mx-auto">
         <thead>
           <tr class="text-center">
@@ -7,11 +7,11 @@
               Folio <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
             </th>
             <th class="font-bold pb-5">
-              Vendedor <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
+              Vendedor <i class="fa-solid fa-arrow-down-long ml-3 px-10 lg:px-2"></i>
             </th>
-            <th class="font-bold pb-5">
+            <!-- <th class="font-bold pb-5">
               Productos <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
-            </th>
+            </th> -->
             <th class="font-bold pb-5">
               Estatus <i class="fa-solid fa-arrow-down-long ml-3 px-24 lg:px-2"></i>
             </th>
@@ -34,12 +34,12 @@
                 {{ sale.user?.name }}
               </a>
             </td>
-            <td class="text-center py-2 px-2">
+            <!-- <td class="text-center py-2 px-2">
               <span
                 class="py-1 px-4 rounded-full"
                 >{{ sale.products ? sale.products + 'Producto(s)' : '--' }}</span
               >
-            </td>
+            </td> -->
             <td class="text-center py-2 px-2">
               <span
                 class="py-1 px-4 rounded-full"

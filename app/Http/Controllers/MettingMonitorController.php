@@ -29,8 +29,9 @@ class MettingMonitorController extends Controller
         $opportunity = null;
         if (request('opportunityId')) {
             $opportunity = Oportunity::with(['companyBranch'])->find(request('opportunityId'));
+        } else {
+            $opportunity = null;
         }
-
         return inertia('MettingMonitor/Create', compact('companies', 'oportunities', 'users', 'opportunity'));
     }
 
