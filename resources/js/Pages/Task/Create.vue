@@ -104,7 +104,6 @@
             </el-tooltip> -->
         </div>
       </div>
-      {{ selectedProject }}
     </form>
 
     <!-- -------------- Remainder Modal -------------- -->
