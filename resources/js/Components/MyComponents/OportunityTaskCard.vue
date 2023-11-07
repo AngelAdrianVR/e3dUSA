@@ -4,8 +4,8 @@
     <el-tooltip :content="'Prioridad: ' + oportunityTask?.priority" placement="top">
       <i :class="getPriorityStyles()" class="fa-solid fa-circle text-[9px] absolute top-3 right-2 p-1"></i>
     </el-tooltip>
-    <div class="py-3 px-4">
-      <p :class="oportunityTask?.finished_at ? 'line-through' : ''">{{ oportunityTask?.name }}</p>
+    <div class="py-3 px-5">
+      <p class="truncate" :class="oportunityTask?.finished_at ? 'line-through' : ''">{{ oportunityTask?.name }}</p>
       <div class="flex justify-between items-center">
         <p class="text-gray-400 mt-3 mb-2">Responsable</p>
         <el-tooltip v-if="oportunityTask?.media?.length" content="Archivos adjuntos" placement="top">

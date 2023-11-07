@@ -631,7 +631,7 @@ export default {
       this.selectAdmins();
       if (newVal === 'Public') {
         let defaultPermissions = [false, true, false, false, true];
-        let usersWithSelectedProperties = this.users.filter(element => element.employee_properties !== null).map(user => ({
+        let usersWithSelectedProperties = this.users.filter(element => element.employee_properties?.department === "Ventas").map(user => ({
           id: user.id,
           name: user.name,
           employee_properties: user.employee_properties,

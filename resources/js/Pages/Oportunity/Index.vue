@@ -188,7 +188,7 @@
 
       <!-- ------------ Lista view starts ----------------- -->
       <div v-if="type_view === 'Lista'" class="w-11/12 mx-auto my-16">
-        <table class="lg:w-[90%] w-full mx-auto">
+        <table v-if="oportunities.data.length > 0" class="lg:w-[90%] w-full mx-auto">
           <thead>
             <tr class="text-left">
               <th class="font-bold pb-5">
@@ -240,6 +240,7 @@
             </tr>
           </tbody>
         </table>
+        <p class="text-center text-sm text-gray-600" v-else>No hay oportunidades</p>
       </div>
       <!-- ------------ Lista view ends ----------------- -->
     </div>
@@ -270,7 +271,7 @@
           </p>
         </div>
         <div class="flex justify-end space-x-3 pt-5 pb-1">
-          <CancelButton @click="showCreateSaleModal = false">Cancelar</CancelButton>  
+          <CancelButton @click="cancelUpdating">Cancelar</CancelButton>  
           <PrimaryButton @click="CreateSale">Continuar</PrimaryButton>
         </div>
       </section>
@@ -334,6 +335,9 @@ export default {
     oportunities: Object,
   },
   methods: {
+    cancelUpdating() {
+      window.location.reload()
+    },
     handleStartDrag(evt) {
       this.draggingOpportunityId = evt.item.__draggable_context.element.id;
       this.drag = true;

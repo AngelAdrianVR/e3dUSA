@@ -466,7 +466,7 @@
           </p>
         </div>
         <div class="flex justify-end space-x-3 pt-5 pb-1">
-          <CancelButton @click="showCreateSaleModal = false">Cancelar</CancelButton>  
+          <CancelButton @click="cancelUpdating">Cancelar</CancelButton>  
           <PrimaryButton @click="CreateSale">Continuar</PrimaryButton>
         </div>
       </section>
@@ -548,6 +548,9 @@ export default {
     defaultTab: Number,
   },
   methods: {
+    cancelUpdating() {
+      window.location.reload()
+    },
     toBool(value) {
       if (value == 1 || value == true) return true;
       return false;
