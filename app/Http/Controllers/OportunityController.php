@@ -36,6 +36,8 @@ class OportunityController extends Controller
         $companies = Company::with('companyBranches.contacts')->latest()->get();
         $tags = TagResource::collection(Tag::where('type', 'crm')->get());
 
+        // return $users;
+
         return inertia('Oportunity/Create', compact('users', 'companies', 'tags'));
     }
 

@@ -7,7 +7,7 @@
     <div class="py-3 px-4">
       <p :class="oportunityTask?.finished_at ? 'line-through' : ''">{{ oportunityTask?.name }}</p>
       <div class="flex justify-between items-center">
-        <p class="text-gray-400 mt-3 mb-2">Asignado a</p>
+        <p class="text-gray-400 mt-3 mb-2">Responsable</p>
         <el-tooltip v-if="oportunityTask?.media?.length" content="Archivos adjuntos" placement="top">
           <div class="flex items-center">
           <i @click.stop="" class="fa-solid fa-paperclip rounded-full p-2"></i>
@@ -60,7 +60,7 @@
       </div>
 
       <div class="flex justify-between items-center space-x-3 text-sm">
-        <label class="lg:pr-20">Asignado a</label>
+        <label class="lg:pr-16">Responsable</label>
         <el-select class="w-2/3" v-model="form.asigned_id" clearable filterable placeholder="Seleccionar usuario"
           :disabled="!canEdit" no-data-text="No hay usuarios registrados" no-match-text="No se encontraron coincidencias">
           <el-option v-for="user in users" :key="user" :label="user.name" :value="user.id" />
@@ -127,17 +127,20 @@
 
       <!-- ------- Comments ------- -->
       <div class="mt-7">
-        <figure class="flex space-x-2 mt-4" v-for="comment in oportunityTask?.comments" :key="comment">
-          <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm rounded-full w-10">
-            <img class="h-8 w-8 rounded-full object-cover" :src="comment.user?.profile_photo_url"
-              :alt="comment.user?.name" />
-          </div>
-          <div class="text-sm w-full">
-            <p class="font-bold">{{ comment.user?.name }}</p>
-            <p v-html="comment.body"></p>
-          </div>
-        </figure>
-        <div v-if="toBool(authUserPermissions[4])" class="flex space-x-1 mt-5">
+        <section v-if="oportunityTask?.comments?.length > 0">
+          <figure class="flex space-x-2 mt-4" v-for="comment in oportunityTask?.comments" :key="comment">
+            <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm rounded-full w-10">
+              <img class="h-8 w-8 rounded-full object-cover" :src="comment.user?.profile_photo_url"
+                :alt="comment.user?.name" />
+            </div>
+            <div class="text-sm w-full">
+              <p class="font-bold">{{ comment.user?.name }}</p>
+              <p v-html="comment.body"></p>
+            </div>
+          </figure>
+        </section>
+        <p class="text-sm text-center text-gray-600" v-else>No hay comentarios</p>
+        <div v-if="toBool(authUserPermissions[4]) && oportunityTask?.finished_at == null" class="flex space-x-1 mt-5">
           <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm rounded-full w-10">
             <img class="h-8 w-8 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url"
               :alt="$page.props.auth.user.name" />
@@ -148,7 +151,7 @@
       </div>
 
       <div class="flex justify-start space-x-3 pt-5 pb-1">
-        <el-dropdown v-if="taskComponentLocal.finished_at === null" split-button type="primary" @click="handleClick" class="custom-dropdown" :disabled="!toBool(authUserPermissions[2]) && !authUserIsParticipant">
+        <el-dropdown v-if="taskComponentLocal.finished_at === null" split-button type="primary" @click="handleClick" class="custom-dropdown" :disabled="(!toBool(authUserPermissions[2]) && !authUserIsParticipant) || canEdit">
           Marcar como hecho
           <template #dropdown>
             <el-dropdown-menu>

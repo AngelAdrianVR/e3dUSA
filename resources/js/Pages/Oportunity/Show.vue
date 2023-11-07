@@ -144,7 +144,7 @@
           <div :class="getColorStatus()" class="absolute -left-10 top-5 rounded-full w-3 h-3"></div>
           <el-select @change="status == 'Perdida' ? showLostOportunityModal = true
             : status == 'Cerrada' || status == 'Pagado' ? showCreateSaleModal = true
-              : updateStatus()" class="lg:w-1/2 mt-2" v-model="status" clearable filterable
+              : updateStatus()" class="lg:w-1/2 mt-2" v-model="status" filterable
             placeholder="Seleccionar estatus" no-data-text="No hay estatus registrados"
             no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
@@ -460,19 +460,14 @@
 
       <section v-if="showCreateSaleModal" class="mx-7 my-4 space-y-4 relative">
         <div>
-          <div class="flex justify-center items-center my-3">
-            <i class="fa-solid fa-info text-primary"></i>
-            <p class="ml-4 font-bold mt-1 text-primary">ATENCIÓN</p>
-          </div>
-          <p class="px-5 text-secondary">Es necesario crear una orden de venta al haber cerrado la oportunidad para llevar
-            un correcto seguimiento y flujo de trabajo.
-            En caso de ya haberla creado, presiona el botón de "Venta creada"
+          <h2 class="font bold text-center font-bold mb-5">Paso clave - Crear Orden de Venta</h2>
+          <p class="px-5">Es necesario crear una orden de venta al haber marcado como <span class="text-[#FD8827]">”cerrada”</span>  
+          o <span class="text-[#37951F]">”Pagada”</span> la oportunidad para llevar un correcto seguimiento y flujo de trabajo. 
           </p>
         </div>
         <div class="flex justify-end space-x-3 pt-5 pb-1">
-          <CancelButton @click="showCreateSaleModal = false">Cancelar</CancelButton>
-          <SecondaryButton @click="updateStatus">Venta creada</SecondaryButton>
-          <PrimaryButton @click="CreateSale">Crear venta</PrimaryButton>
+          <CancelButton @click="showCreateSaleModal = false">Cancelar</CancelButton>  
+          <PrimaryButton @click="CreateSale">Continuar</PrimaryButton>
         </div>
       </section>
     </Modal>
@@ -567,6 +562,8 @@ export default {
               message: response.data.message,
               type: "error",
             });
+            this.showCreateSaleModal = false;
+            this.updateStatus();
           } else {
             this.updateStatus();
             this.$inertia.get(route('sales.create'), {opportunityId: this.currentOportunity.id});

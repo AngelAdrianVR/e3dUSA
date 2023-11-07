@@ -17,13 +17,13 @@
       <form @submit.prevent="update">
         <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4 mx-3">
           <div>
-            <label>Nombre de la oportunidad *</label>
+            <label class="text-sm">Nombre de la oportunidad *</label>
             <input v-model="form.name" class="input" type="text" />
             <InputError :message="form.errors.name" />
           </div>
           <div class="relative">
             <i :class="getColorStatus(form.status)" class="fa-solid fa-circle text-xs top-1 left-16 absolute z-30"></i>
-            <label>Estatus</label> <br />
+            <label class="text-sm">Estatus</label> <br />
             <div class="flex items-center space-x-4">
               <el-select class="lg:w-1/2 mt-2" v-model="form.status" clearable filterable
                 placeholder="Seleccionar estatus" no-data-text="No hay estatus registrados"
@@ -39,7 +39,7 @@
             <InputError :message="form.errors.status" />
           </div>
           <div>
-            <label>Vendedor</label>
+            <label class="text-sm">Vendedor</label>
             <el-select v-model="form.seller_id" clearable filterable placeholder="Seleccione"
               no-data-text="No hay vendedores registrados" no-match-text="No se encontraron coincidencias">
               <el-option v-for="seller in users.filter(
@@ -47,11 +47,11 @@
               )" :key="seller" :label="seller.name" :value="seller.id" />
             </el-select>
           </div>
-          <label class="inline-flex items-center">
+          <!-- <label class="inline-flex items-center">
             <Checkbox v-model:checked="form.is_new_company" @change="handleChecked"
               class="bg-transparent disabled:border-gray-400" />
             <span class="ml-2 text-xs">Nuevo cliente</span>
-          </label>
+          </label> -->
           <div class="flex justify-between space-x-3 col-span-2" v-if="form.is_new_company">
             <div class="w-full">
               <InputLabel value="Cliente *" class="ml-2" />
@@ -89,6 +89,7 @@
                   (item) => item.id == form.company_id
                 )?.company_branches" :key="company_branch" :label="company_branch.name" :value="company_branch.id" />
               </el-select>
+              <p v-if="$page.props.errors?.company_branch_id" class="text-xs text-red-600">El campo sucursal es obligatorio</p>
             </div>
             <div class="w-1/2">
               <label class="text-sm">Contacto *</label> <br />
@@ -101,20 +102,20 @@
           </div>
           <div class="lg:flex pt-3">
             <div class="lg:w-1/2 mt-2 lg:mt-0">
-              <label class="block">Fecha de inicio *</label>
+              <label class="block text-sm">Fecha de inicio *</label>
               <el-date-picker v-model="form.start_date" type="date" placeholder="Fecha de inicio *" format="YYYY/MM/DD"
                 value-format="YYYY-MM-DD" />
               <InputError :message="form.errors.start_date" />
             </div>
             <div class="lg:w-1/2 mt-2 lg:mt-0">
-              <label class="block">Fecha estimada de cierre *</label>
+              <label class="block text-sm">Fecha estimada de cierre *</label>
               <el-date-picker v-model="form.estimated_finish_date" type="date" placeholder="Fecha estimada de cierre *"
                 format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
               <InputError :message="form.errors.estimated_finish_date" />
             </div>
           </div>
           <div>
-            <label>Descripción</label>
+            <label class="text-sm">Descripción</label>
             <textarea v-model="form.description" class="textarea" rows="3">
             </textarea>
             <!-- <RichText @content="updateDescription($event)" v-model="form.description" /> -->
@@ -126,7 +127,7 @@
           <div class="flex justify-between items-center space-x-4">
             <div class="w-full">
               <div class="flex justify-between items-center mx-2">
-                <label>Etiquetas</label>
+                <label class="text-sm">Etiquetas</label>
                 <button v-if="$page.props.auth.user.permissions.includes('Crear etiquetas crm')"
                   @click="showTagFormModal = true" type="button"
                   class="rounded-full border border-primary w-4 h-4 flex items-center justify-center">
@@ -141,7 +142,7 @@
               </el-select>
             </div>
             <div class="w-full">
-              <label>Probabilidad %</label>
+              <label class="text-sm">Probabilidad %</label>
               <input v-model="form.probability" class="input" type="number" min="0" max="100" />
             </div>
           </div>
@@ -149,7 +150,7 @@
             <div class="lg:w-1/2 relative">
               <i :class="getColorPriority(form.priority)"
                 class="fa-solid fa-circle text-xs top-1 left-20 absolute z-30"></i>
-              <label class="block">Prioridad</label>
+              <label class="block text-sm">Prioridad</label>
               <div class="flex items-center space-x-4">
                 <el-select class="lg:w-1/2" v-model="form.priority" clearable filterable placeholder="Seleccione"
                   no-data-text="No hay opciones registradas" no-match-text="No se encontraron coincidencias">
@@ -165,7 +166,7 @@
             </div>
 
             <div v-if="form.status == 'Perdida'" class="lg:w-1/2">
-              <label>Causa oportunidad perdida
+              <label class="text-sm">Causa oportunidad perdida
                 <el-tooltip content="Escribe la causa por la cual se PERDIÓ esta oportunidad" placement="right">
                   <i class="fa-regular fa-circle-question ml-2 text-primary text-xs"></i>
                 </el-tooltip>
@@ -176,7 +177,7 @@
           </div>
           <div class="lg:w-1/2">
             <div class="flex items-center space-x-2">
-              <label>Valor de oportunidad *</label>
+              <label class="text-sm">Valor de oportunidad *</label>
               <el-tooltip content="Monto estimado que se espera generar si se cierra esta oportunidad" placement="right">
                 <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
                   <i class="fa-solid fa-info text-primary text-[7px]"></i>
@@ -316,12 +317,12 @@
         <template #content>
           <form @submit.prevent="storeTag" ref="tagForm">
             <div>
-              <label>Nombre de la etiqueta *</label>
+              <label class="text-sm">Nombre de la etiqueta *</label>
               <input v-model="tagForm.name" type="text" class="input mt-1" placeholder="Escribe el nombre" required />
               <InputError :message="tagForm.errors.name" />
             </div>
             <div class="mt-3">
-              <label>Seleccione el color *</label>
+              <label class="text-sm">Seleccione el color *</label>
               <el-color-picker v-model="tagForm.color" class="mt-1" />
               <InputError :message="tagForm.errors.color" />
             </div>
@@ -601,6 +602,7 @@ export default {
       let foundUser = {
         id: user.id,
         name: user.name,
+        employee_properties: user.employee_properties,
         profile_photo_url: user.profile_photo_url,
         permissions: [...defaultPermissions],
       };
@@ -632,6 +634,7 @@ export default {
         let usersWithSelectedProperties = this.users.filter(element => element.employee_properties !== null).map(user => ({
           id: user.id,
           name: user.name,
+          employee_properties: user.employee_properties,
           profile_photo_url: user.profile_photo_url,
           permissions: [...defaultPermissions],
         }));
@@ -648,6 +651,7 @@ export default {
       const participant = {
         id: user.id,
         name: user.name,
+        employee_properties: user.employee_properties,
         profile_photo_url: user.profile_photo_url,
         permissions: JSON.parse(user.pivot.permissions),
       };
