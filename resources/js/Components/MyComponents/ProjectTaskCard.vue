@@ -20,8 +20,8 @@
     </div>
     <!-- </el-tooltip> -->
     <!-- ------------ body -------------------------- -->
-    <div class="flex items-center justify-between p-3">
-      <p class="text-sm">{{ taskComponentLocal?.title }}</p>
+    <div class="flex items-center justify-between p-3 truncate">
+      <p class="text-sm" :title="taskComponentLocal?.title">{{ taskComponentLocal?.title }}</p>
       <div>
         <!-- <el-tooltip content="Tienes una tarea por cumplir antes de poder comenzar" placement="top">
                             <i @click.stop="" class="fa-solid fa-hourglass cursor-default mr-3"></i>
@@ -73,7 +73,7 @@
         class="cursor-pointer w-5 h-5 rounded-full flex items-center justify-center absolute top-0 right-0">
         <i class="fa-solid fa-xmark"></i>
       </div>
-      <h1 class="font-bold">{{ taskComponentLocal?.title }}</h1>
+      <h1 class="font-bold w-4/5 truncate">{{ taskComponentLocal?.title }}</h1>
 
       <div class="relative">
         <label>
@@ -105,6 +105,11 @@
           <label>Proyecto</label>
           <input v-model="form.project_name" disabled class="input w-[78%]" type="text" />
           <InputError :message="form.errors.project_name" />
+        </div>
+        <div class="flex space-x-2 justify-between items-center mt-2">
+          <label>Nombre de tarea</label>
+          <input v-model="form.title" :disabled="!canEdit" class="input w-[78%]" type="text" />
+          <InputError :message="form.errors.title" />
         </div>
         <div class="flex space-x-2 justify-between items-center mt-2">
           <label>Creado por</label>
@@ -151,23 +156,13 @@
           </el-select>
           <InputError :message="form.errors.priority" />
         </div>
-        <div class="grid grid-cols-2 gap-4 mt-3">
-          <div>
-            <label class="block">fecha de inicio</label>
-            <el-date-picker v-model="form.start_date" type="date"
-              :disabled="authUser.id != taskComponent.user.id && authUser.id != taskComponent.project_owner.id"
-              placeholder="Fecha de inicio *" format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
-            <InputError :message="form.errors.start_date" />
-          </div>
-          <div>
-            <label class="block">fecha final</label>
-            <el-date-picker v-model="form.limit_date" type="date"
-              :disabled="authUser.id != taskComponent.user.id && authUser.id != taskComponent.project_owner.id"
-              placeholder="Fecha límite *" format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
-            <InputError :message="form.errors.limit_date" />
-          </div>
+        <div class="pt-1">
+          <label class="block">Duración *</label>
+          <el-date-picker @change="handleDateRange" v-model="range" type="daterange" range-separator="A"
+            start-placeholder="Fecha de inicio" end-placeholder="Fecha límite" value-format="YYYY-MM-DD" />
+          <InputError :message="form.errors.start_date" />
+          <InputError :message="form.errors.limit_date" />
         </div>
-
         <!-- <div class="w-1/2 mt-3">
           <label>Recordatorio</label>
           <textarea v-model="form.reminder" disabled class="textarea w-full"> </textarea>
@@ -239,9 +234,8 @@
         <CancelButton @click="!canEdit ? taskInformationModal = false : canEdit = false">
           {{ !canEdit ? 'Cancelar' : 'Cancelar edición' }}
         </CancelButton>
-        <div v-if="toBool(authUserPermissions[2])">
-          <el-dropdown v-if="canEdit" split-button type="primary"
-            @click="update" class="custom-dropdown rounded-lg">
+        <div v-if="toBool(authUserPermissions[2]) && toBool(authUserPermissions[3])">
+          <el-dropdown v-if="canEdit" split-button type="primary" @click="update" class="custom-dropdown rounded-lg">
             <span>Guardar cambios</span>
             <template #dropdown>
               <el-dropdown-menu v-if="toBool(authUserPermissions[3])">
@@ -249,8 +243,7 @@
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-          <el-dropdown v-else split-button type="primary"
-            @click="canEdit = true" class="custom-dropdown rounded-lg">
+          <el-dropdown v-else split-button type="primary" @click="canEdit = true" class="custom-dropdown rounded-lg">
             <span>Editar</span>
             <template #dropdown>
               <el-dropdown-menu v-if="toBool(authUserPermissions[3])">
@@ -258,6 +251,10 @@
               </el-dropdown-menu>
             </template>
           </el-dropdown>
+        </div>
+        <div v-else-if="!toBool(authUserPermissions[3])">
+          <PrimaryButton @click="update" v-if="canEdit">Guardar cambios</PrimaryButton>
+          <PrimaryButton @click="canEdit = true" v-else>Editar</PrimaryButton>
         </div>
       </div>
     </div>
@@ -284,12 +281,14 @@ import InputError from "@/Components/InputError.vue";
 import RichText from "@/Components/MyComponents/RichText.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import axios from "axios";
+import { isSameDay, parseISO } from "date-fns";
+
 
 export default {
   data() {
     const form = useForm({
       status: this.taskComponent.status,
-      title: null,
+      title: this.taskComponent.title,
       project_name: this.taskComponent.project.project_name,
       user: this.taskComponent.user.name,
       department: this.taskComponent.department,
@@ -311,6 +310,7 @@ export default {
       tabs: 1,
       taskInformationModal: false,
       itemToShow: null,
+      range: null,
       statuses: [
         {
           label: "Por hacer",
@@ -378,6 +378,22 @@ export default {
     }
   },
   methods: {
+    handleDateRange(range) {
+      this.form.start_date = range[0];
+      this.form.limit_date = range[1];
+
+      const date1 = parseISO(range[0]);
+      const date2 = parseISO(range[1]);
+
+      // Compara si son del mismo día
+      if (isSameDay(date1, date2)) {
+        this.canSelectTime = true;
+      } else {
+        this.canSelectTime = false;
+        this.enabledTime = false;
+      }
+
+    },
     async updateStatus() {
       try {
         const response = await axios.put(route('tasks.update-status', this.taskComponentLocal.id), { status: this.form.status });
@@ -428,12 +444,13 @@ export default {
       try {
         const response = await axios.put(route("tasks.update", this.taskComponentLocal), {
           status: this.form.status,
+          title: this.form.title,
           department: this.form.department,
           participants: this.form.participants,
           description: this.form.description,
           priority: this.form.priority,
           start_date: this.form.start_date,
-          limit_date: this.form.end_date,
+          end_date: this.form.limit_date,
           reminder: this.form.reminder,
           comment: this.form.comment,
         });
@@ -518,6 +535,9 @@ export default {
   mounted() {
     this.taskComponentLocal = this.taskComponent;
     this.form.participants = this.taskComponent.participants.map(user => user.id);
+
+    // inicializar fechas en range
+    this.range = [this.taskComponentLocal.start_date_raw, this.taskComponentLocal.end_date_raw];
   },
 };
 </script>

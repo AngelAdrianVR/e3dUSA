@@ -3,7 +3,7 @@
     <tr>
       <th class="border-y border-[#9A9A9A] text-left pl-7 py-3 font-thin relative w-1/4" scope="row">
         Proyecto <br />
-        <strong class="text-lg font-bold">{{ currentProject?.project_name }}</strong>
+        <strong class="text-base font-bold truncate w-4/5">{{ currentProject?.project_name }}</strong>
         <i @click="showDepartmentFilter = !showDepartmentFilter"
           class="fa-solid fa-ellipsis text-primary absolute bottom-4 right-4 cursor-pointer hover:bg-[#dfdede] rounded-full p-2"></i>
         <div v-if="showDepartmentFilter" class="absolute right-4 top-[60px] bg-[#D9D9D9] rounded-md px-4 py-2">
@@ -27,7 +27,7 @@
       </th>
       <th class="border border-[#9A9A9A] text-center font-thin">
         <strong class="text-base uppercase font-bold tex">{{ monthName }}</strong><br />
-        <div class="flex space-x-8 justify-center w-[95%] mx-auto">
+        <div class="flex space-x-8 justify-center w-[95%] mx-4">
           <p v-for="day in daysInMonth" :key="day" class="text-secondary relative">
             {{ daysOfWeek[(day + startDayOfWeek - 2) % 7] }}
             <span class="absolute -bottom-3 -left-0 text-[9px] text-black">{{ day }}</span>
@@ -37,10 +37,10 @@
     </tr>
 
     <tr v-for="task in currentProject?.tasks" :key="task" v-show="taskMatchesFilters(task)">
-      <th class="text-lg font-normal pl-7 py-2 border-y border-[#9A9A9A]">
+      <th class="font-normal pl-7 py-2 border-y border-[#9A9A9A]">
         <div :class="task.priority.color_border" class="border-r-4">
-          {{ task.title }}
-          <p class="text-[#9A9A9A] text-sm">Depto. {{ task.department }}</p>
+          <p class="w-[300px] truncate text-sm" :title="task.title">{{ task.title }}</p>
+          <p class="text-[#9A9A9A] text-xs">Depto. {{ task.department }}</p>
         </div>
       </th>
       <td class="border-x border-[#CCCCCC] overflow-x-hidden">

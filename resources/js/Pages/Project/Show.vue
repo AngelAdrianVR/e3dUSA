@@ -79,7 +79,7 @@
 
     <!-- ------------- info project Starts 1 ------------- -->
     <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
-      <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
+      <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc]">
         <p class="text-secondary col-span-2 mb-2">Información del proyecto</p>
 
         <span class="text-gray-500">Creado por</span>
@@ -157,7 +157,7 @@
           </a>
         </li>
 
-        <p class="text-secondary col-span-full mt-7 mb-2">Etiquetas</p>
+        <p v-if="currentProject?.tags.length" class="text-secondary col-span-full mt-7 mb-2">Etiquetas</p>
         <div class="col-span-full flex space-x-3">
           <Tag v-for="(item, index) in currentProject?.tags" :key="index" :name="item.name" :color="item.color" />
         </div>

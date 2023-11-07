@@ -60,7 +60,7 @@ class Project extends Model implements HasMedia
 
     public function companyBranch(): BelongsTo
     {
-        return $this->belongsTo(companyBranch::class);
+        return $this->belongsTo(CompanyBranch::class);
     }
 
     public function company(): BelongsTo
