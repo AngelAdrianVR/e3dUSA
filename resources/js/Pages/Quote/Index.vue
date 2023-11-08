@@ -20,7 +20,7 @@
                     <!-- pagination -->
                     <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                            :total="quotes.data.length" />
+                            :total="quotes.length" />
                     </div>
 
                     <!-- buttons -->
@@ -158,7 +158,7 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.quotes.data.forEach((quote, index) => {
+                    this.quotes.forEach((quote, index) => {
                         if (this.$refs.multipleTableRef.value.includes(quote)) {
                             deletedIndexes.push(index);
                         }
@@ -169,7 +169,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.quotes.data.splice(index, 1);
+                        this.quotes.splice(index, 1);
                     }
 
                 } else {
@@ -214,7 +214,7 @@ export default {
                         type: 'success'
                     });
 
-                    this.quotes.data.unshift(response.data.newItem);
+                    this.quotes.unshift(response.data.newItem);
 
                 } else {
                     this.$notify({
@@ -266,9 +266,9 @@ export default {
                 const response = await axios.put(route('quotes.authorize', quote_id));
 
                 if (response.status == 200) {
-                    const index = this.quotes.data.findIndex(item => item.id == quote_id);
-                    this.quotes.data[index].authorized_at = response.data.item.authorized_at;
-                    this.quotes.data[index].authorized_user_name = response.data.item.authorized_user_name;
+                    const index = this.quotes.findIndex(item => item.id == quote_id);
+                    this.quotes[index].authorized_at = response.data.item.authorized_at;
+                    this.quotes[index].authorized_user_name = response.data.item.authorized_user_name;
                     this.$notify({
                         title: 'Éxito',
                         message: response.data.message,
@@ -308,9 +308,9 @@ export default {
     computed: {
         filteredTableData() {
             if (!this.search) {
-                return this.quotes.data.filter((item, index) => index >= this.start && index < this.end);
+                return this.quotes.filter((item, index) => index >= this.start && index < this.end);
             } else {
-                return this.quotes.data.filter(
+                return this.quotes.filter(
                     (quote) =>
                         quote.folio.toLowerCase().includes(this.search.toLowerCase()) ||
                         quote.user.name.toLowerCase().includes(this.search.toLowerCase()) ||

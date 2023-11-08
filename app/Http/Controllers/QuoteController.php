@@ -23,9 +23,30 @@ class QuoteController extends Controller
 {
     public function index()
     {
-        $quotes = QuoteResource::collection(Quote::latest()->get());
+        // $quotes = QuoteResource::collection(Quote::latest()->get());
 
-        return inertia('Quote/Index', compact('quotes'));
+        // return inertia('Quote/Index', compact('quotes'));
+
+         //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
+         $pre_quotes = Quote::latest()->get();
+         $quotes = $pre_quotes->map(function ($quote) {
+             return [
+                 'id' => $quote->id,
+                 'folio' => 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT),
+                 'user' => ['id' => $quote->user->id,
+                            'name' => $quote->user->name
+                            ],
+                 'receiver' => $quote->receiver,
+                 'companyBranch' => ['id' => $quote->companyBranch->id,
+                                    'name' => $quote->companyBranch->name
+                                     ],
+                 'authorized_user_name' => $quote->authorized_user_name ?? '--',
+                 'created_at' => $quote->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+                    ];
+                });
+        //  return $quotes;
+
+         return inertia('Quote/Index', compact('quotes'));
     }
 
     public function create()

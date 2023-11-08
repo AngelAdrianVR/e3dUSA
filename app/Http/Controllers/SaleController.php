@@ -23,11 +23,63 @@ class SaleController extends Controller
 
     public function index()
     {
-        $sales = SaleResource::collection(Sale::with('companyBranch', 'user')->latest()->get());
+        // $sales = SaleResource::collection(Sale::with('companyBranch', 'user')->latest()->get());
 
         // return $sales;
 
-        return inertia('Sale/Index', compact('sales'));
+        // return inertia('Sale/Index', compact('sales'));
+
+        $pre_sales = Sale::with('companyBranch', 'user')->latest()->get();
+
+//Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
+    $sales = $pre_sales->map(function ($sale) {
+        $hasStarted = $sale->productions?->whereNotNull('started_at')->count();
+        $hasNotFinished = $sale->productions?->whereNull('finished_at')->count();
+
+        if ($sale->authorized_at == null) {
+            $status = [
+                'label' => 'Esperando autorización',
+                'text-color' => 'text-amber-500',
+            ];
+        } elseif ($sale->productions) {
+            if (!$hasStarted) {
+                $status = [
+                    'label' => 'Producción sin iniciar',
+                    'text-color' => 'text-gray-500',
+                ];
+            } elseif ($hasStarted && $hasNotFinished) {
+                $status = [
+                    'label' => 'Producción en proceso',
+                    'text-color' => 'text-blue-500',
+                ];
+            } else {
+                $status = [
+                    'label' => 'Producción terminada',
+                    'text-color' => 'text-green-500',
+                ];
+            }
+        } else {
+            $status = [
+                'label' => 'Autorizado sin orden de producción',
+                'text-color' => 'text-amber-500',
+            ];
+        }
+        return [
+            'id' => $sale->id,
+            'folio' => 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT),
+            'user' => ['id' => $sale->user->id,
+                            'name' => $sale->user->name
+                        ],
+            'company_branch' => ['id' => $sale->companyBranch->id,
+            'name' => $sale->companyBranch->name
+                        ],
+            'authorized_user_name' => $sale->authorized_user_name ?? 'No autorizado',
+            'status' => $status,
+            'created_at' => $sale->created_at->isoFormat('DD MMM, YYYY h:mm A'),
+        ];
+    });
+    // return $sales;
+    return inertia('Sale/Index', compact('sales'));
     }
 
 
@@ -125,6 +177,55 @@ class SaleController extends Controller
 
         $updatedProductIds = [];
         $sale->update($request->except('products'));
+
+
+        foreach ($request->products as $product) {
+            $productData = $product + ['sale_id' => $sale->id];
+
+            if (isset($product['id'])) {
+                // Actualizar la relaci贸n existente en catalogProductCompanySales
+                $existingRelation = CatalogProductCompanySale::findOrFail($product['id']);
+                $existingRelation->update($productData);
+                $updatedProductIds[] = $product['id'];
+            } else {
+                // Crear una nueva relaci贸n en catalogProductCompanySales
+                $new = CatalogProductCompanySale::create($productData);
+                $updatedProductIds[] = $new->id;
+            }
+        }
+
+        // Eliminar los productos que no se actualizaron o crearon en esta solicitud y las producciones asignadas
+        $sold_products = CatalogProductCompanySale::where('sale_id', $sale->id)
+            ->whereNotIn('id', $updatedProductIds);
+        $sold_products->first()?->productions()
+            ->delete();
+        $sold_products->delete();
+
+        event(new RecordEdited($sale));
+
+        return to_route('sales.index');
+    }
+
+    public function updateWithMedia(Request $request, Sale $sale)
+    {
+        $request->validate([
+            'shipping_company' => 'nullable',
+            'freight_cost' => 'required|numeric|min:0',
+            'order_via' => 'required',
+            'tracking_guide' => 'nullable',
+            'invoice' => 'nullable',
+            'notes' => 'nullable',
+            'company_branch_id' => 'required|numeric|min:1',
+            'contact_id' => 'required|numeric|min:1',
+            'products' => 'array|min:1'
+        ]);
+
+        $updatedProductIds = [];
+        $sale->update($request->except('products'));
+
+        // media
+        $sale->clearMediaCollection();
+        $sale->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
 
 
         foreach ($request->products as $product) {

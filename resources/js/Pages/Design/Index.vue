@@ -29,7 +29,7 @@
                         <!-- pagination -->
                         <div>
                             <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                                :total="designs.data.length" />
+                                :total="designs.length" />
                         </div>
     
                         <!-- buttons -->
@@ -47,7 +47,7 @@
                         @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                         <el-table-column type="selection" width="45" />
                         <el-table-column prop="user.name" label="Solicitante" />
-                        <el-table-column prop="name" label="Deseño" />
+                        <el-table-column prop="design" label="Diseño" />
                         <el-table-column prop="designer.name" label="Diseñador(a)" />
                         <el-table-column prop="created_at" label="Solicitado el" />
                         <el-table-column prop="status[label]" label="Estatus" />
@@ -150,7 +150,7 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.designs.data.forEach((design, index) => {
+                    this.designs.forEach((design, index) => {
                         if (this.$refs.multipleTableRef.value.includes(design)) {
                             deletedIndexes.push(index);
                         }
@@ -161,7 +161,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.designs.data.splice(index, 1);
+                        this.designs.splice(index, 1);
                     }
 
                 } else {
@@ -212,11 +212,11 @@ export default {
     computed: {
         filteredTableData() {
             if (!this.search) {
-                return this.designs.data.filter((item, index) => index >= this.start && index < this.end);
+                return this.designs.filter((item, index) => index >= this.start && index < this.end);
             } else {
-                return this.designs.data.filter(
+                return this.designs.filter(
                     (design) =>
-                        design.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                        design.design.toLowerCase().includes(this.search.toLowerCase()) ||
                         design.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
                         design.designer.name.toLowerCase().includes(this.search.toLowerCase()) ||
                         design.user.name.toLowerCase().includes(this.search.toLowerCase())
