@@ -22,9 +22,81 @@ class ProductionController extends Controller
     public function index()
     {
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de produccion todas')) {
-            // $productions = ProductionResource::collection(Production::with('user', 'catalogProductCompanySale.catalogProductCompany.company')->latest()->get());
-            $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch')->whereHas('productions')->latest()->get());
-            // return $productions;
+            // $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch')->whereHas('productions')->latest()->get());
+        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
+        $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch', 'productions.operator')->whereHas('productions')->latest()->get();
+        $productions = $pre_productions->map(function ($production) {
+            $hasStarted = $production->productions?->whereNotNull('started_at')->count();
+             $hasNotFinished = $production->productions?->whereNull('finished_at')->count();
+
+        if ($production->authorized_at == null) {
+            $status = [
+                'label' => 'Esperando autorización',
+                'text-color' => 'text-amber-500',
+            ];
+        } elseif ($production->productions) {
+            if (!$hasStarted) {
+                $status = [
+                    'label' => 'Producción sin iniciar',
+                    'text-color' => 'text-gray-500',
+                ];
+            } elseif ($hasStarted && $hasNotFinished) {
+                $status = [
+                    'label' => 'Producción en proceso',
+                    'text-color' => 'text-blue-500',
+                ];
+            } else {
+                $status = [
+                    'label' => 'Producción terminada',
+                    'text-color' => 'text-green-500',
+                ];
+            }
+        } else {
+            $status = [
+                'label' => 'Autorizado sin orden de producción',
+                'text-color' => 'text-amber-500',
+            ];
+        }
+        //Guarda en un array "productionNames" los nombres de los operadores de esa orden de produccion
+        $productionNames = [];
+        foreach ($production->productions as $productionItem) {
+            $productionNames[] = $productionItem['operator']['name'];
+        }
+        $uniqueProductionNames = array_unique($productionNames);
+        $operators = implode(', ', $uniqueProductionNames);
+
+        //Guarda en un array "productNames" los nombres de los productos de la orden
+        // $productNames = [];
+        // foreach ($production->productions as $product) {
+        //     if (
+        //         isset($product['catalog_product_company_sale']) &&
+        //         isset($product['catalog_product_company_sale']['catalog_product_company']) &&
+        //         isset($product['catalog_product_company_sale']['catalog_product_company']['catalog_product'])
+        //     ) {
+        //         $productName = $product['catalog_product_company_sale']['catalog_product_company']['catalog_product']['name'];
+        //         $productNames[] = $productName;
+        //     }
+            
+        // }
+        
+        // $uniqueProductNames = array_unique($productNames);
+        // $products = implode(', ', $uniqueProductNames);
+            return [
+                'id' => $production->id,
+                'folio' => 'OP-' . str_pad($production->id, 4, "0", STR_PAD_LEFT),
+                'user' => ['id' => $production->user->id,
+                            'name' => $production->user->name
+                        ],
+                'status' => $status,
+                'operators' => $operators, //nombres de operadores asignados
+                'company_branch' => ['id' => $production->companyBranch->id,
+                                    'name' => $production->companyBranch->name
+                                     ],
+                // 'products' => $production->productions, no me arroja ningun nombre
+                'created_at' => $production->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+                   ];
+               });
+            return $productions;
             return inertia('Production/Admin', compact('productions'));
         } elseif (auth()->user()->can('Ordenes de produccion personal')) {
             $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch')->whereHas('productions')->where('user_id', auth()->id())->latest()->get());

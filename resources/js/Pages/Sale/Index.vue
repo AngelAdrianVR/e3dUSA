@@ -26,7 +26,7 @@
                     <!-- pagination -->
                     <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                            :total="sales.data.length" />
+                            :total="sales.length" />
                     </div>
 
                     <!-- buttons -->
@@ -160,7 +160,7 @@ export default {
 
                     // update list of sales
                     let deletedIndexes = [];
-                    this.sales.data.forEach((sale, index) => {
+                    this.sales.forEach((sale, index) => {
                         if (this.$refs.multipleTableRef.value.includes(sale)) {
                             deletedIndexes.push(index);
                         }
@@ -171,7 +171,7 @@ export default {
 
                     // Eliminar OV por índice
                     for (const index of deletedIndexes) {
-                        this.sales.data.splice(index, 1);
+                        this.sales.splice(index, 1);
                     }
 
                 } else {
@@ -220,7 +220,7 @@ export default {
                         type: 'success'
                     });
 
-                    this.sales.data.unshift(response.data.newItem);
+                    this.sales.unshift(response.data.newItem);
 
                 } else {
                     this.$notify({
@@ -255,9 +255,9 @@ export default {
     computed: {
         filteredTableData() {
             if (!this.search) {
-                return this.sales.data.filter((item, index) => index >= this.start && index < this.end);
+                return this.sales.filter((item, index) => index >= this.start && index < this.end);
              } else {
-                return this.sales.data.filter(
+                return this.sales.filter(
                     (sale) =>
                         sale.folio.toLowerCase().includes(this.search.toLowerCase()) ||
                         sale.user.name.toLowerCase().includes(this.search.toLowerCase()) ||

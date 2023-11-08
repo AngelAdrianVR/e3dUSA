@@ -17,7 +17,25 @@ class CatalogProductController extends Controller
 
     public function index()
     {
-        $catalog_products = CatalogProductResource::collection(CatalogProduct::latest()->get());
+        // $catalog_products = CatalogProductResource::collection(CatalogProduct::latest()->get());
+        // return $catalog_products;
+        // return inertia('CatalogProduct/Index', compact('catalog_products'));
+
+        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
+        $pre_catalog_products = CatalogProduct::latest()->get();
+        $catalog_products = $pre_catalog_products->map(function ($catalog_product) {
+            return [
+                'id' => $catalog_product->id,
+                'part_number' => $catalog_product->part_number,
+                'name' => strtoupper($catalog_product->name),
+                'cost' => [
+                'raw' => $catalog_product->cost,
+                'number_format' => number_format($catalog_product->cost, 2) . ' ' . '$MXN'
+                ],
+                'description' => $catalog_product->description ?? '--',
+                   ];
+               });
+        // return $catalog_products;
         return inertia('CatalogProduct/Index', compact('catalog_products'));
     }
 

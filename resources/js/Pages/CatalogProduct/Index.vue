@@ -20,7 +20,7 @@
                     <!-- pagination -->
                     <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                            :total="catalog_products.data.length" />
+                            :total="catalog_products.length" />
                     </div>
 
                     <!-- buttons -->
@@ -140,7 +140,7 @@ export default {
                         type: 'success'
                     });
 
-                    this.catalog_products.data.unshift(response.data.newItem);
+                    this.catalog_products.unshift(response.data.newItem);
 
                 } else {
                     this.$notify({
@@ -174,7 +174,7 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.catalog_products.data.forEach((catalog_product, index) => {
+                    this.catalog_products.forEach((catalog_product, index) => {
                         if (this.$refs.multipleTableRef.value.includes(catalog_product)) {
                             deletedIndexes.push(index);
                         }
@@ -185,7 +185,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.catalog_products.data.splice(index, 1);
+                        this.catalog_products.splice(index, 1);
                     }
 
                 } else {
@@ -234,13 +234,12 @@ export default {
     computed: {
         filteredTableData() {
             if (!this.search) {
-                return this.catalog_products.data.filter((item, index) => index >= this.start && index < this.end);
+                return this.catalog_products.filter((item, index) => index >= this.start && index < this.end);
             } else {
-                return this.catalog_products.data.filter(
+                return this.catalog_products.filter(
                     (catalog_product) =>
                         catalog_product.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                        catalog_product.part_number.toLowerCase().includes(this.search.toLowerCase()) ||
-                        catalog_product.measure_unit.toLowerCase().includes(this.search.toLowerCase())
+                        catalog_product.part_number.toLowerCase().includes(this.search.toLowerCase())
                 )
             }
         }
