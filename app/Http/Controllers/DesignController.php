@@ -59,7 +59,7 @@ class DesignController extends Controller
                 'created_at' => $design->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
                    ];
                });
-            return inertia('Design/Index', compact('designs'));
+            return inertia('Design/Admin', compact('designs'));
         } elseif (auth()->user()->can('Ordenes de diseño personal')) {
             $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->where('user_id', auth()->id())->latest()->get());
             return inertia('Design/Index', compact('designs'));
