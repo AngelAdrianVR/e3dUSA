@@ -81,6 +81,20 @@ class ProductionController extends Controller
         
         // $uniqueProductNames = array_unique($productNames);
         // $products = implode(', ', $uniqueProductNames);
+
+        //Calulo del porcentage de avance de producción.
+        // Contador para llevar el registro de cuántas producciones tienen fecha en "finished_at"
+        $finishedCount = 0;
+        foreach ($production->productions as $productionItem) {
+            if ($productionItem->finished_at != null) {
+                $finishedCount ++;
+            }
+        }
+
+        // Calcular el porcentaje
+        $percentage = $finishedCount > 0 ? (100 / count($production->productions)) * $finishedCount : 0;
+
+
             return [
                 'id' => $production->id,
                 'folio' => 'OP-' . str_pad($production->id, 4, "0", STR_PAD_LEFT),
@@ -93,10 +107,13 @@ class ProductionController extends Controller
                                     'name' => $production->companyBranch->name
                                      ],
                 // 'products' => $production->productions, no me arroja ningun nombre
+                'production' => ['percentage' => $percentage . '%',
+                                'productions_quantity' => count($production->productions)
+                                ],
                 'created_at' => $production->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
                    ];
                });
-            // return $productions;
+            // return $pre_productions;
             return inertia('Production/Admin', compact('productions'));
         } elseif (auth()->user()->can('Ordenes de produccion personal')) {
             $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch')->whereHas('productions')->where('user_id', auth()->id())->latest()->get());
@@ -178,10 +195,10 @@ class ProductionController extends Controller
 
     public function show($sale_id)
     {
-        $sale = SaleResource::make(Sale::with(['contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress']], 'productions' => ['user', 'operator', 'progress']])->find($sale_id));
-        $sales = SaleResource::collection(Sale::with(['contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress']], 'productions' => ['user', 'operator', 'progress']])->whereHas('productions')->get());
+        $sale = SaleResource::make(Sale::with(['user','contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress']], 'productions' => ['user', 'operator', 'progress']])->find($sale_id));
+        $sales = SaleResource::collection(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress']], 'productions' => ['user', 'operator', 'progress']])->whereHas('productions')->get());
 
-        // return compact('sale', 'sales');
+        // return $sale;
         return inertia('Production/Show', compact('sale', 'sales'));
     }
 
