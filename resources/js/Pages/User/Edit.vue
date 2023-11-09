@@ -122,6 +122,25 @@
                 <el-option v-for="item in discounts" :key="item.id" :label="item.name" :value="item.id" />
               </el-select>
             </div>
+            <div class="col-span-full">
+                <div class="flex space-x-2 mb-1">
+                    <IconInput v-model="newSkill" inputPlaceholder="Ingresa una habilidad (opcional)" inputType="text"
+                        class="w-full">
+                        <el-tooltip content="Habilidades" placement="top">
+                            <i class="fa-solid fa-pen"></i>
+                        </el-tooltip>
+                    </IconInput>
+                    <SecondaryButton @click="addSkill" type="button">
+                        Agregar
+                        <i class="fa-solid fa-arrow-down ml-2"></i>
+                    </SecondaryButton>
+                </div>
+                <el-select v-model="form.employee_properties.skills" multiple clearable placeholder="Habilidades"
+                    no-data-text="Agrega primero una caracteristica">
+                    <el-option v-for="habiliy in skills" :key="habiliy" :label="habiliy"
+                        :value="habiliy"></el-option>
+                </el-select>
+            </div>
           </div>
 
           <br><el-divider content-position="left" class="col-span-full">Días de trabajo y hora de entrada</el-divider>
@@ -190,6 +209,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
 
 export default {
   data() {
@@ -198,64 +218,67 @@ export default {
       email: this.user.email,
       employee_properties: {
         salary: {
-          hour: this.user.employee_properties.salary.hour,
-          day: this.user.employee_properties.salary.day,
-          week: this.user.employee_properties.salary.week
+          hour: this.user.employee_properties?.salary.hour,
+          day: this.user.employee_properties?.salary.day,
+          week: this.user.employee_properties?.salary.week
         },
-        hours_per_week: this.user.employee_properties.hours_per_week,
+        hours_per_week: this.user.employee_properties?.hours_per_week,
         vacations: {
-          available_days: this.user.employee_properties.vacations?.available_days ?? 0,
-          updated_date: this.user.employee_properties.vacations?.updated_date ?? null,
+          available_days: this.user.employee_properties?.vacations?.available_days ?? 0,
+          updated_date: this.user.employee_properties?.vacations?.updated_date ?? null,
         },
-        birthdate: this.user.employee_properties.birthdate.raw,
-        bonuses: this.user.employee_properties.bonuses,
-        discounts: this.user.employee_properties.discounts,
-        job_position: this.user.employee_properties.job_position,
-        department: this.user.employee_properties.department,
+        birthdate: this.user.employee_properties?.birthdate.raw,
+        bonuses: this.user.employee_properties?.bonuses,
+        discounts: this.user.employee_properties?.discounts,
+        job_position: this.user.employee_properties?.job_position,
+        department: this.user.employee_properties?.department,
         work_days: [
           {
             day: 0,
-            check_in: this.user.employee_properties.work_days[0].check_in,
-            check_out: this.user.employee_properties.work_days[0].check_out,
+            check_in: this.user.employee_properties?.work_days[0].check_in,
+            check_out: this.user.employee_properties?.work_days[0].check_out,
           },
           {
             day: 1,
-            check_in: this.user.employee_properties.work_days[1].check_in,
-            check_out: this.user.employee_properties.work_days[1].check_out,
+            check_in: this.user.employee_properties?.work_days[1].check_in,
+            check_out: this.user.employee_properties?.work_days[1].check_out,
           },
           {
             day: 2,
-            check_in: this.user.employee_properties.work_days[2].check_in,
-            check_out: this.user.employee_properties.work_days[2].check_out,
+            check_in: this.user.employee_properties?.work_days[2].check_in,
+            check_out: this.user.employee_properties?.work_days[2].check_out,
           },
           {
             day: 3,
-            check_in: this.user.employee_properties.work_days[3].check_in,
-            check_out: this.user.employee_properties.work_days[3].check_out,
+            check_in: this.user.employee_properties?.work_days[3].check_in,
+            check_out: this.user.employee_properties?.work_days[3].check_out,
           },
           {
             day: 4,
-            check_in: this.user.employee_properties.work_days[4].check_in,
-            check_out: this.user.employee_properties.work_days[4].check_out,
+            check_in: this.user.employee_properties?.work_days[4].check_in,
+            check_out: this.user.employee_properties?.work_days[4].check_out,
           },
           {
             day: 5,
-            check_in: this.user.employee_properties.work_days[5].check_in,
-            check_out: this.user.employee_properties.work_days[5].check_out,
+            check_in: this.user.employee_properties?.work_days[5].check_in,
+            check_out: this.user.employee_properties?.work_days[5].check_out,
           },
           {
             day: 6,
-            check_in: this.user.employee_properties.work_days[6].check_in,
-            check_out: this.user.employee_properties.work_days[6].check_out,
+            check_in: this.user.employee_properties?.work_days[6].check_in,
+            check_out: this.user.employee_properties?.work_days[6].check_out,
           },
         ],
-        join_date: this.user.employee_properties.join_date,
+        join_date: this.user.employee_properties?.join_date,
+        skills: this.user.employee_properties?.skills,
       },
       roles: this.user_roles
     });
 
     return {
       form,
+      newSkill: null,
+      skills: [],
       departments: [
         'Almacén',
         'Calidad',
@@ -286,6 +309,7 @@ export default {
   components: {
     AppLayout,
     PrimaryButton,
+    SecondaryButton,
     Link,
     InputError,
     IconInput,
@@ -315,6 +339,13 @@ export default {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       return time.getTime() > today.getTime();
+    },
+    addSkill() {
+      if (this.newSkill.trim() !== '') {
+          this.form.employee_properties.skills.push(this.newSkill);
+          this.skills.push(this.newSkill);
+          this.newSkill = '';
+      }
     },
   },
 };

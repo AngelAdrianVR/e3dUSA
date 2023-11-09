@@ -53,6 +53,7 @@ class UserController extends Controller
             'employee_properties.bonuses' => 'nullable',
             'employee_properties.discounts' => 'nullable',
             'employee_properties.vacations' => 'nullable',
+            'employee_properties.skills' => 'nullable',
         ]);
 
         $password = $request['employee_properties']['password'];
@@ -131,6 +132,8 @@ class UserController extends Controller
             ["label" => "Total de cotizaciones creadas", "value" => $user->quotes->count()],
         ];
 
+        // return $users;
+
         return inertia('User/Show', compact(
             'user',
             'users',
@@ -167,6 +170,7 @@ class UserController extends Controller
             'employee_properties.vacations' => 'array',
             'employee_properties.bonuses' => 'nullable',
             'employee_properties.discounts' => 'nullable',
+            'employee_properties.skills' => 'nullable',
         ]);
 
         $validated = $this->processUserData($validated);
