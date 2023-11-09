@@ -71,6 +71,7 @@
           " class="h-32 w-32 rounded-full object-cover hidden md:block border-2" :src="currentUser?.profile_photo_url"
           :alt="currentUser?.name" />
         <p class="font-bold text-lg">{{ currentUser?.name }}</p>
+        <p v-if="currentUser?.is_active.bool">Experiencia. {{ currentUser?.experience }}</p>
       </div>
       <!-- ------------- tabs section starts ------------- -->
       <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2">
@@ -190,6 +191,15 @@
                 </li>
               </div>
             </div>
+            <div>
+              <h2 class="text-secondary">Habilidades</h2>
+              <div v-if="currentUser.employee_properties?.skills?.length > 0" class="px-6">
+                <li v-for="(item, index) in currentUser.employee_properties?.skills" :key="index">
+                  {{ item }}
+                </li>
+              </div>
+              <p v-else class="text-xs text-gray-500">No hay habilidades registradas en este usuario</p>
+            </div>
           </div>
 
           <!-- --------------------------- performance tab ends --------------------------- -->
@@ -265,17 +275,13 @@ import { Link, useForm } from "@inertiajs/vue3";
 
 export default {
   data() {
-    // const form = useForm({
-    //   expected_end_at: null,
-    // });
+
 
     return {
-      //   form,
       userSelected: "",
       currentUser: null,
+      employeeExperience: "",
       showConfirmModal: false,
-      //   startOrderModal: false,
-      //   helpDialog: false,
       tabs: 1,
     };
   },

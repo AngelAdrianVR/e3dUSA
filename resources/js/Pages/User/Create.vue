@@ -131,7 +131,27 @@
                 <el-option v-for="item in discounts" :key="item.id" :label="item.name" :value="item.id" />
               </el-select>
             </div>
+            <div class="col-span-full">
+                <div class="flex space-x-2 mb-1">
+                    <IconInput v-model="newSkill" inputPlaceholder="Ingresa una habilidad (opcional)" inputType="text"
+                        class="w-full">
+                        <el-tooltip content="Habilidades" placement="top">
+                            <i class="fa-solid fa-pen"></i>
+                        </el-tooltip>
+                    </IconInput>
+                    <SecondaryButton @click="addSkill" type="button">
+                        Agregar
+                        <i class="fa-solid fa-arrow-down ml-2"></i>
+                    </SecondaryButton>
+                </div>
+                <el-select v-model="form.employee_properties.skills" multiple clearable placeholder="Habilidades"
+                    no-data-text="Agrega primero una caracteristica">
+                    <el-option v-for="habiliy in skills" :key="habiliy" :label="habiliy"
+                        :value="habiliy"></el-option>
+                </el-select>
+            </div>
           </div>
+
 
           <br><el-divider content-position="left" class="col-span-full">Días de trabajo y hora de entrada</el-divider>
           <br>
@@ -196,6 +216,7 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
@@ -210,7 +231,8 @@ export default {
         salary: {
           hour: null,
           day: null,
-          week: null
+          week: null,
+          skills: [],
         },
         hours_per_week: null,
         vacations: {
@@ -267,6 +289,8 @@ export default {
 
     return {
       form,
+      newSkill: null,
+      skills: [],
       departments: [
         'Administración',
         'Almacén',
@@ -298,6 +322,7 @@ export default {
   components: {
     AppLayout,
     PrimaryButton,
+    SecondaryButton,
     Link,
     InputError,
     IconInput,
@@ -339,6 +364,13 @@ export default {
 
       return randomString;
     },
+    addSkill() {
+            if (this.newSkill.trim() !== '') {
+                this.form.employee_properties.skills.push(this.newSkill);
+                this.skills.push(this.newSkill);
+                this.newSkill = '';
+            }
+        }
   },
   mounted() {
     this.form.employee_properties.password = this.getRandomString();

@@ -96,7 +96,7 @@ class ProductionController extends Controller
                 'created_at' => $production->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
                    ];
                });
-            return $productions;
+            // return $productions;
             return inertia('Production/Admin', compact('productions'));
         } elseif (auth()->user()->can('Ordenes de produccion personal')) {
             $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch')->whereHas('productions')->where('user_id', auth()->id())->latest()->get());
