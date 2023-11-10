@@ -54,26 +54,27 @@
           </label> -->
           <div class="flex justify-between space-x-3 col-span-2" v-if="form.is_new_company">
             <div class="w-full">
-                <InputLabel value="Cliente *" class="ml-2" />
-                <input v-model="form.company_name" class="input" type="text" required />
-                <InputError :message="form.errors.contact_name" />
+              <InputLabel value="Cliente *" class="ml-2" />
+              <input v-model="form.company_name" class="input" type="text" required />
+              <InputError :message="form.errors.contact_name" />
             </div>
             <div class="w-full">
-                <InputLabel value="Contacto *" class="ml-2" />
-                <input v-model="form.contact" class="input" type="text" required />
-                <InputError :message="form.errors.contact_name" />
+              <InputLabel value="Contacto *" class="ml-2" />
+              <input v-model="form.contact" class="input" type="text" required />
+              <InputError :message="form.errors.contact_name" />
             </div>
             <div class="w-full">
-                <InputLabel value="Teléfono *" class="ml-2" />
-                <input v-model="form.contact_phone" class="input" type="text" required />
-                <InputError :message="form.errors.contact_phone" />
+              <InputLabel value="Teléfono *" class="ml-2" />
+              <input v-model="form.contact_phone" class="input" type="text" required />
+              <InputError :message="form.errors.contact_phone" />
             </div>
           </div>
           <div v-if="!form.is_new_company" class="flex space-x-2 justify-between">
             <div class="w-1/2">
               <label class="text-sm">Cliente *</label> <br />
-              <el-select @change="cleanCompanyForm" v-model="form.company_id" clearable filterable placeholder="Seleccione"
-                no-data-text="No hay clientes registrados" no-match-text="No se encontraron coincidencias">
+              <el-select @change="cleanCompanyForm" v-model="form.company_id" clearable filterable
+                placeholder="Seleccione" no-data-text="No hay clientes registrados"
+                no-match-text="No se encontraron coincidencias">
                 <el-option v-for="company in companies" :key="company" :label="company.business_name"
                   :value="company.id" />
               </el-select>
@@ -88,7 +89,8 @@
                   (item) => item.id == form.company_id
                 )?.company_branches" :key="company_branch" :label="company_branch.name" :value="company_branch.id" />
               </el-select>
-              <p v-if="$page.props.errors?.company_branch_id" class="text-xs text-red-600">El campo sucursal es obligatorio</p>
+              <p v-if="$page.props.errors?.company_branch_id" class="text-xs text-red-600">El campo sucursal es
+                obligatorio</p>
             </div>
             <div class="w-1/2">
               <label class="text-sm">Contacto *</label> <br />
@@ -126,7 +128,8 @@
             <div class="w-full">
               <div class="flex justify-between items-center mx-2">
                 <label class="text-sm">Etiquetas</label>
-                <button v-if="$page.props.auth.user.permissions.includes('Crear etiquetas crm')" @click="showTagFormModal = true" type="button"
+                <button v-if="$page.props.auth.user.permissions.includes('Crear etiquetas crm')"
+                  @click="showTagFormModal = true" type="button"
                   class="rounded-full border border-primary w-4 h-4 flex items-center justify-center">
                   <i class="fa-solid fa-plus text-primary text-[9px]"></i>
                 </button>
@@ -237,7 +240,8 @@
                         </div>
                         <div class="text-sm w-full">
                           <p>{{ user.name }}</p>
-                          <p v-if="user.employee_properties !== null">{{ 'Depto. ' + user.employee_properties?.department }}</p>
+                          <p v-if="user.employee_properties !== null">{{ 'Depto. ' + user.employee_properties?.department
+                          }}</p>
                           <p v-else>Super admin</p>
                         </div>
                       </div>
@@ -555,11 +559,14 @@ export default {
     },
     selectAdmins() {
       // obtener los usuarios admin para que siempre aparezcan en los proyectos y dar todos los permisos
-      let admins = this.users.filter(item => item.employee_properties == null);
-      admins.forEach(admin => {
-        const defaultPermissions = [true, true, true, true, true];
-        admin.permissions = defaultPermissions;
-      });
+      const defaultPermissions = [true, true, true, true, true];
+      let admins = this.users.filter(item => item.employee_properties == null).map(user => ({
+        id: user.id,
+        name: user.name,
+        employee_properties: null,
+        profile_photo_url: user.profile_photo_url,
+        permissions: [...defaultPermissions],
+      }));
       this.form.selectedUsersToPermissions = admins;
     },
     selectAuthUser() {
@@ -570,7 +577,7 @@ export default {
         let authUser = {
           id: user.id,
           name: user.name,
-          employee_properties: user.employee_properties,
+          employee_properties: { department: user.employee_properties.department },
           profile_photo_url: user.profile_photo_url,
           permissions: [...defaultPermissions],
         };
@@ -588,15 +595,15 @@ export default {
       let foundUser = {
         id: user.id,
         name: user.name,
-        employee_properties: user.employee_properties,
+        employee_properties: { department: user.employee_properties.department },
         profile_photo_url: user.profile_photo_url,
         permissions: [...defaultPermissions],
       };
       this.form.selectedUsersToPermissions.push(foundUser);
     },
     cleanCompanyForm() {
-        this.company_branch = null;
-        this.form.contact = null;
+      this.company_branch = null;
+      this.form.contact = null;
     }
   },
   computed: {
@@ -616,17 +623,19 @@ export default {
       this.form.type_access_project = newVal;
       this.selectAdmins();
       if (newVal === 'Public') {
+        this.selectAuthUser();
         let defaultPermissions = [false, true, false, false, true];
         let usersWithSelectedProperties = this.users.filter(element => element.employee_properties?.department === "Ventas").map(user => ({
           id: user.id,
           name: user.name,
-          employee_properties: user.employee_properties,
+          employee_properties: { department: user.employee_properties.department },
           profile_photo_url: user.profile_photo_url,
           permissions: [...defaultPermissions],
         }));
         this.form.selectedUsersToPermissions = [...this.form.selectedUsersToPermissions, ...usersWithSelectedProperties];
         this.editAccesFlag = false;
       } else {
+        this.selectAuthUser();
         this.editAccesFlag = true;
       }
     }

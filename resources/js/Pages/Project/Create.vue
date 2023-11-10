@@ -121,9 +121,8 @@
             <div class="flex space-x-7 justify-between">
               <div class="w-1/2">
                 <label>Cliente *</label> <br>
-                <el-select v-model="form.company_id" @change="companyChanged()" filterable
-                  placeholder="Seleccione" no-data-text="No hay clientes registrados"
-                  no-match-text="No se encontraron coincidencias">
+                <el-select v-model="form.company_id" @change="companyChanged()" filterable placeholder="Seleccione"
+                  no-data-text="No hay clientes registrados" no-match-text="No se encontraron coincidencias">
                   <el-option v-for="company in companies" :key="company" :label="company.business_name"
                     :value="company.id" />
                 </el-select>
@@ -138,7 +137,7 @@
                     v-for="company_branch in companies.find((item) => item.id == form.company_id)?.company_branches"
                     :key="company_branch" :label="company_branch.name" :value="company_branch.id" />
                 </el-select>
-                <InputError :message="form.errors.company_branch" />
+                <InputError :message="form.errors.company_branch_id" />
               </div>
             </div>
 
@@ -152,7 +151,8 @@
               <div class="w-1/2">
                 <label>OV *</label> <br>
                 <el-select v-model="form.sale_id" filterable placeholder="Seleccione"
-                  no-data-text="No hay órdenes registradas" no-match-text="No se encontraron coincidencias">
+                  :no-data-text="form.company_branch_id ? 'No hay órdenes de venta relacionadas a esta sucursal o las existentes ya tienen un proyecto' : 'Seleccionar sucursal para mostrar ov disponibles'"
+                  no-match-text="No se encontraron coincidencias">
                   <el-option v-for="ov in company_branch_obj?.sales" :key="ov?.id" :label="'OV-0' + ov?.id"
                     :value="ov?.id" />
                 </el-select>
@@ -218,9 +218,8 @@
             <div class="flex px-16 mb-8">
               <div v-if="typeAccessProject === 'Private'" class="w-full">
                 <h2 class="font-bold text-sm my-2 ml-2 col-span-full">Asignar participantes </h2>
-                <el-select @change="addToSelectedUsers" filterable placeholder="Seleccionar usuario"
-                  class="w-1/2" no-data-text="No hay más usuarios para añadir"
-                  no-match-text="No se encontraron coincidencias">
+                <el-select @change="addToSelectedUsers" filterable placeholder="Seleccionar usuario" class="w-1/2"
+                  no-data-text="No hay más usuarios para añadir" no-match-text="No se encontraron coincidencias">
                   <el-option v-for="(item, index) in availableUsersToPermissions" :key="item.id" :label="item.name"
                     :value="item.id" />
                 </el-select>
@@ -476,6 +475,8 @@ export default {
     companyChanged() {
       this.form.company_branch_id = null;
       this.form.shipping_address = null;
+      this.form.sale_id = null;
+      this.company_branch_obj = null;
     },
     submitGroupForm() {
       this.$refs.groupForm.dispatchEvent(new Event('submit', { cancelable: true }));
@@ -542,11 +543,14 @@ export default {
     },
     selectAdmins() {
       // obtener los usuarios admin para que siempre aparezcan en los proyectos y dar todos los permisos
-      let admins = this.users.filter(item => item.employee_properties == null);
-      admins.forEach(admin => {
-        const defaultPermissions = [true, true, true, true, true];
-        admin.permissions = defaultPermissions;
-      });
+      const defaultPermissions = [true, true, true, true, true];
+      let admins = this.users.filter(item => item.employee_properties == null).map(user => ({
+        id: user.id,
+        name: user.name,
+        employee_properties: null,
+        profile_photo_url: user.profile_photo_url,
+        permissions: [...defaultPermissions],
+      }));
       this.form.selectedUsersToPermissions = admins;
     },
     selectAuthUser() {
@@ -556,6 +560,7 @@ export default {
       let authUser = {
         id: user.id,
         name: user.name,
+        employee_properties: {department: user.employee_properties.department},
         profile_photo_url: user.profile_photo_url,
         permissions: [...defaultPermissions],
       };
@@ -572,7 +577,7 @@ export default {
       let foundUser = {
         id: user.id,
         name: user.name,
-        employee_properties: user.employee_properties,
+        employee_properties: {department: user.employee_properties.department},
         profile_photo_url: user.profile_photo_url,
         permissions: [...defaultPermissions],
       };
@@ -595,7 +600,6 @@ export default {
     },
     saveCompanyBranchAddress() {
       this.company_branch_obj = this.companies.find((item) => item.id == this.form.company_id)?.company_branches[0];
-      // console.log(this.company_branch_obj);
     },
     disabledDate(time) {
       const today = new Date();
@@ -623,13 +627,14 @@ export default {
         let usersWithSelectedProperties = this.users.filter(element => element.employee_properties !== null).map(user => ({
           id: user.id,
           name: user.name,
-          employee_properties: user.employee_properties,
+          employee_properties: {department: user.employee_properties.department},
           profile_photo_url: user.profile_photo_url,
           permissions: [...defaultPermissions],
         }));
         this.form.selectedUsersToPermissions = [...this.form.selectedUsersToPermissions, ...usersWithSelectedProperties];
         this.editAccesFlag = false;
       } else {
+        this.selectAuthUser();
         this.editAccesFlag = true;
       }
     }

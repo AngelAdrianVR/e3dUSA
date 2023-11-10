@@ -47,7 +47,7 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'project_name' => 'required|string',
+            'project_name' => 'required|string|max:255',
             'project_group_id' => 'required|numeric|min:0',
             'shipping_address' => 'nullable|string',
             'currency' => 'nullable|string',
@@ -125,7 +125,7 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project)
     {
         $validated = $request->validate([
-            'project_name' => 'required|string',
+            'project_name' => 'required|string|max:255',
             'project_group_id' => 'required|numeric|min:0',
             'shipping_address' => 'nullable|string',
             'currency' => 'nullable|string',
@@ -177,7 +177,7 @@ class ProjectController extends Controller
     public function updateWithMedia(Request $request, Project $project)
     {
         $validated = $request->validate([
-            'project_name' => 'required|string',
+            'project_name' => 'required|string|max:255',
             'project_group_id' => 'required|numeric|min:0',
             'shipping_address' => 'nullable|string',
             'currency' => 'nullable|string',

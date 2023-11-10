@@ -3,7 +3,7 @@
     <tr>
       <th class="border-y border-[#9A9A9A] text-left pl-7 py-3 font-thin relative w-1/4" scope="row">
         Proyecto <br />
-        <strong class="text-base font-bold truncate w-4/5">{{ currentProject?.project_name }}</strong>
+        <p class="text-base font-bold truncate w-4/5">{{ currentProject?.project_name }}</p>
         <i @click="showDepartmentFilter = !showDepartmentFilter"
           class="fa-solid fa-ellipsis text-primary absolute bottom-4 right-4 cursor-pointer hover:bg-[#dfdede] rounded-full p-2"></i>
         <div v-if="showDepartmentFilter" class="absolute right-4 top-[60px] bg-[#D9D9D9] rounded-md px-4 py-2">
