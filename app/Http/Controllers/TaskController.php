@@ -39,7 +39,7 @@ class TaskController extends Controller
     {
         $request->validate([
             'project_id' => 'required',
-            'title' => 'required|string',
+            'title' => 'required|string|max:255',
             'description' => 'nullable',
             'department' => 'required|string',
             'participants' => 'required|array|min:1',
@@ -83,7 +83,7 @@ class TaskController extends Controller
     public function update(Request $request, Task $task)
     {
         $validated = $request->validate([
-            'status' => 'required|string',
+            'status' => 'required|string|max:255',
             'description' => 'nullable',
             'title' => 'required|string|max:255',
             'department' => 'required|string',

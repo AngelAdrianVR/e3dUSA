@@ -20,8 +20,8 @@
     </div>
     <!-- </el-tooltip> -->
     <!-- ------------ body -------------------------- -->
-    <div class="flex items-center justify-between p-3 truncate">
-      <p class="text-sm" :title="taskComponentLocal?.title">{{ taskComponentLocal?.title }}</p>
+    <div class="flex items-center justify-between p-3">
+      <p class="text-sm w-11/12 truncate" :title="taskComponentLocal?.title">{{ taskComponentLocal?.title }}</p>
       <div>
         <!-- <el-tooltip content="Tienes una tarea por cumplir antes de poder comenzar" placement="top">
                             <i @click.stop="" class="fa-solid fa-hourglass cursor-default mr-3"></i>
@@ -178,7 +178,7 @@
             <div class="border-r-2 border-[#cccccc] h-7 ml-3"></div>
             <p @click="tabs = 2" :class="tabs == 2 ? 'border-b-2 border-[#D90537] text-primary' : ''"
               class="ml-3 h-8 p-1 cursor-pointer transition duration-300 ease-in-out text-xs md:text-base">
-              Documentos
+              Documentos ({{ taskComponentLocal?.media.length }})
             </p>
             <!-- <div class="border-r-2 border-[#cccccc] h-7 ml-3"></div> -->
             <!-- <p @click="tabs = 3" :class="tabs == 3 ? 'border-b-2 border-[#D90537] text-primary' : ''"
