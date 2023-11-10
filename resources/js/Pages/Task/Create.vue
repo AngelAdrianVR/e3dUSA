@@ -73,19 +73,10 @@
           </el-select>
           <InputError :message="form.errors.priority" />
         </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block">Fecha de inicio *</label>
-            <el-date-picker v-model="form.start_date" type="date" placeholder="Fecha de inicio *"
-              :disabled-date="disabledStartOrLimitDate" />
-            <InputError :message="form.errors.start_date" />
-          </div>
-          <div>
-            <label class="block">Fecha límite *</label>
-            <el-date-picker v-model="form.end_date" type="date" placeholder="Fecha de final *"
-              :disabled-date="disabledStartOrLimitDate" />
-            <InputError :message="form.errors.end_date" />
-          </div>
+        <div class="pt-1">
+          <label class="block">Duración *</label>
+          <el-date-picker @change="handleDateRange" v-model="range" type="daterange" range-separator="A"
+            start-placeholder="Fecha de inicio" end-placeholder="Fecha límite" value-format="YYYY-MM-DD" />
         </div>
         <!-- <div>
             <div class="flex items-center">
@@ -103,8 +94,6 @@
             <InputError :message="form.errors.reminder" />
         </div> -->
 
-
-
         <div class="flex md:text-left items-center">
           <PrimaryButton :disabled="form.processing">
             Agregar
@@ -115,7 +104,6 @@
             </el-tooltip> -->
         </div>
       </div>
-      {{ selectedProject }}
     </form>
 
     <!-- -------------- Remainder Modal -------------- -->
@@ -171,6 +159,7 @@ export default {
     return {
       form,
       remainderModal: false,
+      range: null,
       selectedProject: null,
       mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
       priorities: [
@@ -207,6 +196,22 @@ export default {
     users: Array,
   },
   methods: {
+    handleDateRange(range) {
+      this.form.start_date = range[0];
+      this.form.end_date = range[1];
+
+      const date1 = parseISO(range[0]);
+      const date2 = parseISO(range[1]);
+
+      // Compara si son del mismo día
+      if (isSameDay(date1, date2)) {
+        this.canSelectTime = true;
+      } else {
+        this.canSelectTime = false;
+        this.enabledTime = false;
+      }
+
+    },
     store() {
       this.form.post(route("tasks.store"), {
         // _method: 'post',

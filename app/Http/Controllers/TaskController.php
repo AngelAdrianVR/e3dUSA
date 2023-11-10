@@ -85,9 +85,12 @@ class TaskController extends Controller
         $validated = $request->validate([
             'status' => 'required|string',
             'description' => 'nullable',
+            'title' => 'required|string|max:255',
             'department' => 'required|string',
             'priority' => 'nullable|string',
             'participants' => 'nullable|array',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
         ]);
 
         $task->update($validated);

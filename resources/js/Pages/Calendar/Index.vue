@@ -163,9 +163,9 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import DialogModal from "@/Components/DialogModal.vue";
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 import axios from 'axios';
-// import moment from 'moment';
-// import { format } from 'date-fns';
-// import { es } from 'date-fns/locale';
+import moment from 'moment';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { Link } from "@inertiajs/vue3";
 
 export default {

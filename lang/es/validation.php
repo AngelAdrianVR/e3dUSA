@@ -207,5 +207,6 @@ return [
         'contact_phone' => 'teléfono de contacto',
         'oportunity_id' => 'oportunidad',
         'seller_id' => 'vendedor',
+        'budget' => 'monto',
     ],
 ];

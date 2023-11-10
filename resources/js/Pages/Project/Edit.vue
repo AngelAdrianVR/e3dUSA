@@ -23,7 +23,7 @@
           </div>
           <div>
             <label>Responsable *</label>
-            <el-select v-model="form.owner_id" clearable placeholder="Seleccione" class="w-full mt-1"
+            <el-select v-model="form.owner_id" placeholder="Seleccione" class="w-full mt-1"
               no-data-text="No hay opciones para mostrar" no-match-text="No se encontraron coincidencias">
               <el-option v-for="(item, index) in users" :key="item.id" :label="item.name" :value="item.id">
                 <div v-if="$page.props.jetstream.managesProfilePhotos"
@@ -35,19 +35,10 @@
             </el-select>
             <InputError :message="form.errors.owner_id" />
           </div>
-          <div class="lg:flex pt-3">
-            <div class="lg:w-1/2 mt-2 lg:mt-0">
-              <label class="block">Fecha de inicio *</label>
-              <el-date-picker v-model="form.start_date" type="date" placeholder="Fecha de inicio *" format="YYYY/MM/DD"
-                value-format="YYYY-MM-DD" />
-              <InputError :message="form.errors.start_date" :disabled-date="disabledDate" />
-            </div>
-            <div class="lg:w-1/2 mt-2 lg:mt-0">
-              <label class="block">Fecha de final *</label>
-              <el-date-picker v-model="form.limit_date" type="date" placeholder="Fecha de final *" format="YYYY/MM/DD"
-                value-format="YYYY-MM-DD" />
-              <InputError :message="form.errors.limit_date" :disabled-date="disabledDate" />
-            </div>
+          <div class="pt-1">
+            <label class="block">Duración *</label>
+            <el-date-picker @change="handleDateRange" v-model="range" type="daterange" range-separator="A"
+              start-placeholder="Fecha de inicio" end-placeholder="Fecha límite" value-format="YYYY-MM-DD" />
           </div>
           <div class="flex justify-end items-center space-x-3 mr-auto mt-2">
             <label class="flex items-center">
@@ -86,7 +77,7 @@
                   <i class="fa-solid fa-plus text-primary text-[9px]"></i>
                 </button>
               </div>
-              <el-select v-model="form.tags" clearable placeholder="Seleccione" multiple class="w-full"
+              <el-select v-model="form.tags" placeholder="Seleccione" multiple class="w-full"
                 no-data-text="No hay opciones para mostrar" no-match-text="No se encontraron coincidencias">
                 <el-option v-for="(item, index) in tags.data" :key="item.id" :label="item.name" :value="item.id">
                   <Tag :name="item.name" :color="item.color" />
@@ -109,7 +100,7 @@
                   Agregar grupo nuevo
                 </button>
               </div>
-              <el-select v-model="form.project_group_id" clearable placeholder="Seleccione" class="w-full mt-1"
+              <el-select v-model="form.project_group_id" placeholder="Seleccione" class="w-full mt-1"
                 no-data-text="No hay opciones para mostrar" no-match-text="No se encontraron coincidencias">
                 <el-option v-for="(item, index) in project_groups.data" :key="item.id" :label="item.name"
                   :value="item.id" />
@@ -125,7 +116,6 @@
             <el-tooltip class="ml-2"
               content="Seleccione esta opción si el proyecto es una iniciativa de la empresa y no esta relacionado con un cliente en específico"
               placement="right">
-              <!-- <i class="fa-solid fa-circle-info text-primary text-xs ml-2"></i> -->
               <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
                 <i class="fa-solid fa-info text-primary text-[7px]"></i>
               </div>
@@ -138,7 +128,7 @@
             <div class="flex space-x-7 justify-between">
               <div class="w-1/2">
                 <label>Cliente *</label> <br>
-                <el-select v-model="form.company_id" clearable filterable placeholder="Seleccione"
+                <el-select v-model="form.company_id" filterable placeholder="Seleccione"
                   no-data-text="No hay clientes registrados" no-match-text="No se encontraron coincidencias">
                   <el-option v-for="company in companies" :key="company" :label="company.business_name"
                     :value="company.id" />
@@ -147,7 +137,7 @@
               </div>
               <div class="w-1/2">
                 <label>Sucursal *</label> <br>
-                <el-select @change="saveCompanyBranchAddress" v-model="form.company_branch_id" clearable filterable
+                <el-select @change="saveCompanyBranchAddress" v-model="form.company_branch_id" filterable
                   placeholder="Seleccione" no-data-text="No hay sucursales registradas"
                   no-match-text="No se encontraron coincidencias">
                   <el-option
@@ -167,7 +157,7 @@
               </div>
               <div class="w-1/2">
                 <label>OV *</label> <br>
-                <el-select v-model="form.sale_id" clearable filterable placeholder="Seleccione"
+                <el-select v-model="form.sale_id" filterable placeholder="Seleccione"
                   no-data-text="No hay órdenes registradas" no-match-text="No se encontraron coincidencias">
                   <el-option v-for="ov in company_branch_obj?.sales" :key="ov?.id" :label="'OV-0' + ov?.id"
                     :value="ov?.id" />
@@ -182,22 +172,29 @@
           <div class="flex space-x-7 justify-between">
             <div class="w-1/2">
               <label>Moneda</label> <br>
-              <el-select v-model="form.currency" clearable filterable placeholder="Seleccione"
+              <el-select v-model="form.currency" filterable placeholder="Seleccione"
                 no-data-text="No hay opciones registradas" no-match-text="No se encontraron coincidencias">
                 <el-option v-for="currency in currencies" :key="currency" :label="currency" :value="currency" />
               </el-select>
               <InputError :message="form.errors.currency" />
             </div>
             <div class="w-1/2">
-              <label>Monto</label> <br>
-              <input v-model="form.budget" class="input" type="number" min="0">
+              <label class="flex items-center">
+                <span class="mr-2">Monto *</span>
+                <el-tooltip content="Es un estimado de cuanto se gastarán en hacer el proyecto" placement="top">
+                  <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                    <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                  </div>
+                </el-tooltip>
+              </label>
+              <input v-model="form.budget" class="input" type="number" min="0" step="0.01">
               <InputError :message="form.errors.budget" />
             </div>
           </div>
 
           <!-- <div class="w-1/2">
             <label>Método de facturación</label>
-            <el-select v-model="form.sat_method" clearable filterable placeholder="seleccione"
+            <el-select v-model="form.sat_method" filterable placeholder="seleccione"
               no-data-text="No hay metodos registrados" no-match-text="No se encontraron coincidencias">
               <el-option v-for="sat_method in sat_methods" :key="sat_method" :label="sat_method" :value="sat_method" />
             </el-select>
@@ -227,9 +224,8 @@
             <div class="flex px-16 mb-8">
               <div v-if="typeAccessProject === 'Private'" class="w-full">
                 <h2 class="font-bold text-sm my-2 ml-2 col-span-full">Asignar participantes </h2>
-                <el-select @change="addToSelectedUsers" filterable clearable placeholder="Seleccionar usuario"
-                  class="w-1/2" no-data-text="No hay más usuarios para añadir"
-                  no-match-text="No se encontraron coincidencias">
+                <el-select @change="addToSelectedUsers" filterable placeholder="Seleccionar usuario" class="w-1/2"
+                  no-data-text="No hay más usuarios para añadir" no-match-text="No se encontraron coincidencias">
                   <el-option v-for="(item, index) in availableUsersToPermissions" :key="item.id" :label="item.name"
                     :value="item.id" />
                 </el-select>
@@ -263,7 +259,7 @@
                       <div class="space-y-1 mb-2">
                         <label class="flex items-center">
                           <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
-                            v-model:checked="user.permissions[0]" :checked="user.permissions[0]" />{{ permissions }}
+                            v-model:checked="user.permissions[0]" :checked="user.permissions[0]" />
                           <span
                             :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
                             class="ml-2 text-xs">
@@ -388,6 +384,7 @@ import DialogModal from "@/Components/DialogModal.vue";
 import RichText from "@/Components/MyComponents/RichText.vue";
 import FileUploader from "@/Components/MyComponents/FileUploader.vue";
 import Tag from "@/Components/MyComponents/Tag.vue";
+import { isSameDay, parseISO } from "date-fns";
 
 export default {
   data() {
@@ -424,6 +421,7 @@ export default {
     return {
       form,
       groupForm,
+      range: null,
       tagForm,
       editAccesFlag: true,
       showGroupFormModal: false,
@@ -465,6 +463,26 @@ export default {
     media: Array,
   },
   methods: {
+    toBool(value) {
+      if (value == 1 || value == true) return true;
+      return false;
+    },
+    handleDateRange(range) {
+      this.form.start_date = range[0];
+      this.form.limit_date = range[1];
+
+      const date1 = parseISO(range[0]);
+      const date2 = parseISO(range[1]);
+
+      // Compara si son del mismo día
+      if (isSameDay(date1, date2)) {
+        this.canSelectTime = true;
+      } else {
+        this.canSelectTime = false;
+        this.enabledTime = false;
+      }
+
+    },
     getFileTypeIcon(fileName) {
       // Asocia extensiones de archivo a iconos
       const fileExtension = fileName.split('.').pop().toLowerCase();
@@ -642,15 +660,19 @@ export default {
 
     // inicializar permisos
     this.project.data.users.forEach(user => {
+      const permissions = JSON.parse(user.pivot.permissions).map(item => this.toBool(item));
       const participant = {
         id: user.id,
         name: user.name,
         employee_properties: user.employee_properties,
         profile_photo_url: user.profile_photo_url,
-        permissions: JSON.parse(user.pivot.permissions),
+        permissions: permissions,
       };
       this.form.selectedUsersToPermissions.push(participant);
     });
+
+    // inicializar fechas en range
+    this.range = [this.project.data.start_date_raw, this.project.data.limit_date_raw];
   }
 };
 </script>

@@ -26,7 +26,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:increase-product-price')->weekly();
         $schedule->command('app:reactivate-product-sale')->weekly();
         $schedule->command('app:backup-database')->daily();
-        $schedule->command('app:stock-reposition')->daily();
+        $schedule->command('app:stock-reposition')->daily()->mondays()->at('00:00');;
         $schedule->command('app:machines-maintenance')->daily();
     }
 
