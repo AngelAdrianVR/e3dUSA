@@ -22,7 +22,7 @@
             <!-- tabla -->
             <div class="relative overflow-hidden">
                 <NotificationCenter module="production" />
-                <div class="lg:w-5/6 mx-auto mt-6">
+                <div class="lg:w-[90%] mx-auto mt-6">
                     <div class="flex justify-between">
                         <!-- pagination -->
                         <div>
@@ -46,11 +46,12 @@
                         :row-class-name="tableRowClassName">
                         <el-table-column type="selection" width="55" />
                         <el-table-column prop="folio" label="Folio" width="90" />
-                        <el-table-column prop="user.name" label="Creador" />
+                        <el-table-column prop="user.name" label="Vendedor" />
                         <el-table-column prop="company_branch.name" label="Cliente" />
                         <el-table-column prop="created_at" label="Creada el" />
                         <el-table-column prop="status['label']" label="Estatus" />
                         <el-table-column prop="operators" label="Operadores" width="210" />
+                        <el-table-column prop="production.percentage" label="% Avance" width="115" />
                         <el-table-column align="right" fixed="right" width="190">
                             <template #header>
                                 <div class="flex space-x-2">
@@ -193,7 +194,7 @@ export default {
             return 'cursor-pointer';
         },
         handleRowClick(row) {
-            this.$inertia.get(route('productions.show', row));
+            this.$inertia.get(route('productions.show', row.id));
         },
         handleCommand(command) {
             const commandName = command.split('-')[0];

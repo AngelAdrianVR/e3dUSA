@@ -71,6 +71,8 @@
                                                 ($page.props.auth.user.permissions.includes('Ordenes de diseño todas') && scope.row.status['label'] != 'Terminado')"
                                                 :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                                 Editar</el-dropdown-item>
+                                            <el-dropdown-item @click.stop="authorizeOrder(scope.row)" v-if="scope.row.status['label'] == 'Esperando Autorización'"><i class="fa-solid fa-check"></i>
+                                                Autorizar</el-dropdown-item>
                                         </el-dropdown-menu>
                                     </template>
                                 </el-dropdown>
@@ -194,7 +196,8 @@ export default {
             }
         },
         handleRowClick(row) {
-            this.$inertia.get(route('designs.show', row));
+            this.$inertia.get(route('designs.show', row.id));
+            
         },
         handleCommand(command) {
             const commandName = command.split('-')[0];
@@ -208,6 +211,28 @@ export default {
                 this.$inertia.get(route('designs.' + commandName, rowId));
             }
         },
+        async authorizeOrder(row) {
+      try {
+        const response = await axios.put(route("designs.authorize", row.id));
+
+        if (response.status === 200) {
+          this.$notify({
+            title: "Éxito",
+            message: "Orden de diseño autorizada",
+            type: "success",
+          }); 
+          window.location.reload();
+            // this.designs.find(item => item.id == row.id).authorized_at = response.data.item.authorized_at;
+            // this.designs.find(item => item.id == row.id).authorized_user_name = response.data.item.authorized_user_name;
+        }
+      } catch (error) {
+        this.$notify({
+          title: "Error",
+          message: error.message,
+          type: "error",
+        });
+      }
+    },
     },
     computed: {
         filteredTableData() {

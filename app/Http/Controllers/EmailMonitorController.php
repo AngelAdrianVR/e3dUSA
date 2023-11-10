@@ -30,6 +30,8 @@ class EmailMonitorController extends Controller
         $users = User::where('is_active', true)->whereNot('id', 1)->get();
         if (request('opportunityId')) {
             $opportunity = Oportunity::with(['companyBranch'])->find(request('opportunityId'));
+        } else {
+            $opportunity = null;
         }
 
         return inertia('EmailMonitor/Create', compact('companies', 'oportunities', 'users', 'opportunity'));

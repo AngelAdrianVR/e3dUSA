@@ -158,12 +158,12 @@
                 ...
               </span>
             </el-tooltip>
-            <textarea
+            <!-- <textarea
               v-model="form.description"
               class="textarea"
               autocomplete="off"
               placeholder="Descripción"
-            ></textarea>
+            ></textarea> -->
             <InputError :message="form.errors.description" />
           </div>
 
