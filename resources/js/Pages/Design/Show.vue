@@ -492,7 +492,7 @@ export default {
             message: "Orden de diseño autorizada",
             type: "success",
           });
-
+          console.log(response);
           this.currentDesign.authorized_at = response.data.item.authorized_at;
           this.currentDesign.status = response.data.item.status;
         }

@@ -51,7 +51,7 @@ class OportunityController extends Controller
             'seller_id' => 'required',
             'tags' => 'nullable|array',
             'probability' => 'nullable|numeric|min:0|max:100',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:0|max:99000000',
             'priority' => 'required|string',
             'start_date' => 'required|date',
             'estimated_finish_date' => 'required|date|after_or_equal:start_date',

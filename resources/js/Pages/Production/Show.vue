@@ -63,7 +63,9 @@
                     <span>${{ currentSale?.freight_cost }}</span>
 
                     <h2 class="text-secondary col-span-full mt-6">Datos de la orden</h2>
-                    <span class="text-gray-500 my-2">Solicitada por</span>
+                    <span class="text-gray-500 my-2">Vendedor</span>
+                    <span>{{ currentSale?.user?.name }}</span>
+                    <span class="text-gray-500 my-2">Creador de orden de producción</span>
                     <span>{{ currentSale?.productions[0].user?.name }}</span>
                     <span class="text-gray-500 my-2">Solicitada el</span>
                     <span>{{ getDateFormtted(currentSale?.productions[0].created_at) }}</span>

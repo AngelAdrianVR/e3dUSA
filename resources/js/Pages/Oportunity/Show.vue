@@ -49,10 +49,10 @@
           </el-tooltip>
 
           <Dropdown align="right" width="48" v-if="$page.props.auth.user.permissions.includes(
-            'Crear ordenes de venta'
+            'Crear oportunidades'
           ) &&
             $page.props.auth.user.permissions.includes(
-              'Eliminar ordenes de venta'
+              'Eliminar oportunidades'
             )
             ">
             <template #trigger>
@@ -450,11 +450,11 @@
               <i class="fa-regular fa-circle-question ml-2 text-primary text-xs"></i>
             </el-tooltip>
           </label>
-          <textarea v-model="lost_oportunity_razon" required class="textarea mt-3"></textarea>
+          <textarea v-model="lost_oportunity_razon" class="textarea mt-3"></textarea>
         </div>
         <div class="flex justify-end space-x-3 pt-5 pb-1">
           <CancelButton @click="showLostOportunityModal = false">Cancelar</CancelButton>
-          <PrimaryButton @click="updateStatus">Actualizar estatus</PrimaryButton>
+          <PrimaryButton :disabled="!lost_oportunity_razon" @click="updateStatus">Actualizar estatus</PrimaryButton>
         </div>
       </section>
 

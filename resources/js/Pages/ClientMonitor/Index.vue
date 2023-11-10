@@ -113,8 +113,8 @@
                 >{{ monitor.date }}</span
               >
             </td>
-            <td class="py-2 truncate">
-              {{ monitor.concept }}
+            <td class="py-2">
+              <p class="w-36 truncate">{{ monitor.concept }}</p>
             </td>
             <td class="py-2">
               {{ monitor.seller?.name }}

@@ -112,7 +112,7 @@
         </div>
 
         <div class="flex justify-end items-center">
-          <PrimaryButton :disabled="form.processing">
+          <!-- <PrimaryButton :disabled="form.processing">
             Guardar cambios
           </PrimaryButton>
 
@@ -129,8 +129,8 @@
                 placeholder="Seleccione una hora" />
               <InputError :message="form.errors.time" />
             </div>
-          </div>
-          <div class="flex items-center space-x-2">
+          </div> -->
+          <!-- <div class="flex items-center space-x-2">
             <div class="w-1/2">
               <label>Vía de cita *</label>
               <el-select class="w-full" v-model="form.meeting_via" clearable filterable placeholder="Seleccione"
@@ -148,8 +148,8 @@
                 sucursal</label>
               <InputError :message="form.errors.location" />
             </div>
-          </div>
-          <div>
+          </div> -->
+          <!-- <div>
             <label class="block" for="">Participante(s) *</label>
             <el-select class="w-full mt-2" v-model="form.participants" clearable filterable multiple
               placeholder="Seleccionar participantes" no-data-text="No hay usuarios registrados"
@@ -157,11 +157,11 @@
               <el-option v-for="user in users" :key="user.id" :label="user.name" :value="user.id" />
             </el-select>
             <InputError :message="form.errors.participants" />
-          </div>
-          <div class="mt-5 col-span-full">
+          </div> -->
+          <!-- <div class="mt-5 col-span-full">
             <label>Descripción</label>
             <RichText @content="updateDescription($event)" :defaultValue="form.description" />
-          </div>
+          </div> -->
           <div class="flex justify-end items-center">
             <PrimaryButton :disabled="form.processing">
               Actualizar
