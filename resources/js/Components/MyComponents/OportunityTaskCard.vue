@@ -160,10 +160,10 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <CancelButton v-if="canEdit" @click="canEdit = false">
+        <CancelButton :disabled="form.comment" v-if="canEdit" @click="canEdit = false">
           Cancelar edición
         </CancelButton>
-        <PrimaryButton v-if="canEdit" type="button" @click="update()">Guardar cambios</PrimaryButton>
+        <PrimaryButton :disabled="form.comment" v-if="canEdit" type="button" @click="update()">Guardar cambios</PrimaryButton>
       </div>
     </form>
   </Modal>
