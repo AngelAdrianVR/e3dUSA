@@ -12,7 +12,12 @@ class ProductionCost extends Model
     protected $fillable = [
         'name',
         'description',
-        'cost'
+        'cost',
+        'time'
+    ];
+
+    protected $casts = [
+        'time' => 'datetime'
     ];
 
 

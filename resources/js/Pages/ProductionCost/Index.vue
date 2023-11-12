@@ -38,6 +38,7 @@
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="id" label="ID" width="45" />
                     <el-table-column prop="name" label="Nombre" width="200" />
+                    <el-table-column prop="time" label="Tiempo/u" width="150" />
                     <el-table-column prop="cost.format" label="Costo" width="120" />
                     <el-table-column prop="description" label="Descripción" width="300" />
                     <el-table-column align="right" fixed="right" width="120">

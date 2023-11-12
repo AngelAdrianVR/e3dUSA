@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
+use App\Http\Resources\ProductionCostResource;
 use App\Http\Resources\SaleResource;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Production;
+use App\Models\ProductionCost;
 use App\Models\Sale;
 use App\Models\Setting;
 use App\Models\StockMovementHistory;
@@ -131,8 +133,11 @@ class ProductionController extends Controller
         $operators = User::where('employee_properties->department', 'Producción')->where('is_active', 1)->get();
         $sales = SaleResource::collection(Sale::with('companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct')->whereNotNull('authorized_at')->whereDoesntHave('productions')->get());
         $is_automatic_assignment = boolval(Setting::where('key', 'AUTOMATIC_PRODUCTION_ASSIGNMENT')->first()->value);
+        $production_processes = ProductionCostResource::collection(ProductionCost::all());
 
-        return inertia('Production/Create', compact('operators', 'sales', 'is_automatic_assignment'));
+        // return $production_processes;
+
+        return inertia('Production/Create', compact('operators', 'sales', 'is_automatic_assignment', 'production_processes'));
     }
 
     public function store(Request $request)
