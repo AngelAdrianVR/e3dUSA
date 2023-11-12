@@ -17,6 +17,7 @@ class ProductionCostResource extends JsonResource
         return [
             'id'=> $this->id,
             'name'=> $this->name,
+            'time'=> $this->time?->format('H:i:s'),
             'description'=> $this->description,
             'cost'=> ['raw' => $this->cost,
                       'format' => '$' . number_format($this->cost,2)

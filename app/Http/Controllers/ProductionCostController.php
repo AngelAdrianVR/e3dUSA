@@ -7,6 +7,7 @@ use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\ProductionCostResource;
 use App\Models\ProductionCost;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ProductionCostController extends Controller
@@ -30,6 +31,7 @@ class ProductionCostController extends Controller
     {
         $request->validate([
             'name' => 'required|string',
+            'time' => 'required|after:00:00:00',
             'cost' => 'required|numeric|min:0',
             'description' => 'required|string',
         ]);
@@ -57,7 +59,8 @@ class ProductionCostController extends Controller
     public function update(Request $request, ProductionCost $production_cost)
     {
         $request->validate([
-            'name' => 'required|string',
+            'name' => 'required|string|max:190',
+            'time' => 'required|after:00:00:00',
             'cost' => 'required|numeric|min:0',
             'description' => 'required|string',
         ]);

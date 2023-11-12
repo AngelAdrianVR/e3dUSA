@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('production_costs', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->time('time')->nullable();
             $table->text('description');
             $table->unsignedFloat('cost');
             $table->timestamps();

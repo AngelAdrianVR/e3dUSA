@@ -131,7 +131,21 @@
                 <div v-else class="text-xs text-secondary">
                   La asignación automatica de operadores está activa. Si quieres cambiarlo a manual, ve a <Link :href="route('settings.index')" class="text-primary hover:underline">configuraciones</Link>
                 </div>
-                <div class="flex items-center">
+                <div class="flex items-center mt-3">
+                <el-tooltip content="Seleccionar proceso de producción" placement="top">
+                  <span
+                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                    <i class="fa-solid fa-person-digging text-sm"></i>
+                  </span>
+                </el-tooltip>
+                <el-select @change="getproductionProcess" v-model="task.tasks" clearable filterable
+                  placeholder="Selecciona el proceso de producción" no-data-text="No hay opciones registradas"
+                  no-match-text="No se encontraron coincidencias">
+                  <el-option v-for="item in production_processes.data" :key="item.id" :label="item.name"
+                    :value="item.name" />
+                </el-select>
+              </div>
+                <!-- <div class="flex items-center">
                   <el-tooltip content="Tareas" placement="top">
                     <span
                       class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
@@ -139,21 +153,21 @@
                     </span>
                   </el-tooltip>
                   <textarea v-model="task.tasks" class="textarea" autocomplete="off" placeholder="Tareas *"></textarea>
-                  <!-- <InputError :message="form.errors.user_tasks?.tasks" /> -->
-                </div>
+                  <InputError :message="form.errors.user_tasks?.tasks" />
+                </div> -->
                 <div class="flex items-center">
                   <el-tooltip content="Tiempo estimado de producción" placement="top">
                     <span
                       class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                      <i class="fa-solid fa-clock"></i>
+                      <i class="fa-regular fa-clock"></i>
                     </span>
                   </el-tooltip>
 
-                  <el-select v-model="task.estimated_time_hours" clearable placeholder="Horas"
+                  <el-select disabled v-model="task.estimated_time_hours" clearable placeholder="Horas"
                     no-data-text="No hay información" no-match-text="No se encontraron coincidencias">
                     <el-option v-for="hour in 50" :key="hour" :label="(hour - 1)" :value="(hour - 1)" />
                   </el-select>
-                  <el-select v-model="task.estimated_time_minutes" clearable placeholder="Minutos"
+                  <el-select disabled v-model="task.estimated_time_minutes" clearable placeholder="Minutos"
                     no-data-text="No hay información" no-match-text="No se encontraron coincidencias">
                     <el-option v-for="minute in 59" :key="minute" :label="minute" :value="minute" />
                   </el-select>
@@ -188,7 +202,6 @@
               </div>
             </div>
           </div>
-
           <el-divider />
 
           <div class="md:text-right">
@@ -246,6 +259,7 @@ export default {
   },
   props: {
     operators: Array,
+    production_processes: Object,
     sales: Object,
     is_automatic_assignment: Boolean,
   },
@@ -334,6 +348,36 @@ export default {
       this.production = production;
       this.editProductionIndex = index;
     },
+    getproductionProcess() {
+      const productionProcess = this.production_processes.data.find(item => item.name == this.task.tasks );
+      const orderedProduct = this.orderedProducts.find(item => item.id == this.production.catalog_product_company_sale_id);
+
+      // Verificamos si productionProcess existe y tiene la propiedad "time"
+        if (productionProcess && productionProcess.time) {
+          const [hours, minutes, seconds] = productionProcess.time.split(':');
+
+          // Convertimos las horas y minutos a números
+          const hoursNumeric = parseInt(hours, 10);
+          const minutesNumeric = parseInt(minutes, 10);
+          const secondsNumeric = parseInt(seconds, 10);
+
+          // Realizamos la multiplicación
+          const totalSeconds = (hoursNumeric * 3600 + minutesNumeric * 60 + secondsNumeric) * orderedProduct.quantity;
+
+          // Convertimos el resultado a horas y minutos
+          const totalHours = Math.floor(totalSeconds / 3600);
+          const remainingSeconds = totalSeconds % 3600;
+          const totalMinutes = Math.floor(remainingSeconds / 60);
+
+           // Sumamos el tiempo resultante al tiempo actual en task (si existe)
+          this.task.estimated_time_hours = (this.task.estimated_time_hours || 0) + totalHours;
+          this.task.estimated_time_minutes = (this.task.estimated_time_minutes || 0) + totalMinutes;
+
+          // Ajustamos los minutos si superan 60
+          this.task.estimated_time_hours += Math.floor(this.task.estimated_time_minutes / 60);
+          this.task.estimated_time_minutes %= 60;
+        }
+    }
   },
   watch: {
     saleId(newVal) {

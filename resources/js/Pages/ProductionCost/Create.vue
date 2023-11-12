@@ -22,7 +22,19 @@
             </IconInput>
             <InputError :message="form.errors.name" />
           </div>
-
+          <div>
+            <div class="flex">
+              <el-tooltip content="Tiempo invertido por unidad *" placement="top">
+                <span
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                  <i class="fa-regular fa-clock"></i>
+                </span>
+              </el-tooltip>
+              <el-time-picker v-model="form.time" placeholder="Seleccione" />
+            </div>
+            <InputError :message="form.errors.time" />
+          </div>
+          {{form}}
           <div>
             <IconInput v-model="form.cost" inputPlaceholder="Costo *" inputType="number" inputStep="0.01">
               <el-tooltip content="Costo *" placement="top">
@@ -32,7 +44,7 @@
             <InputError :message="form.errors.cost" />
           </div>
 
-          <div class="flex ml-3">
+          <div class="flex">
               <el-tooltip content="Descripción *" placement="top">
                 <span
                   class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
@@ -67,6 +79,7 @@ export default {
   data() {
     const form = useForm({
       name: null,
+      time: null,
       cost: null,
       description: null,
     });
