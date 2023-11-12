@@ -39,7 +39,7 @@
             </Link>
           </el-tooltip>
           <el-tooltip v-if="tabs == 3" content="Enviar un correo a prospecto" placement="top">
-            <Link :href="route('email-monitors.create')">
+            <Link :href="route('email-monitors.create', {opportunityId: currentOportunity?.id})">
             <PrimaryButton class="rounded-md">Enviar correo</PrimaryButton>
             </Link>
           </el-tooltip>
@@ -61,15 +61,15 @@
               </button>
             </template>
             <template #content>
-              <DropdownLink :href="route('payment-monitors.create')"
+              <DropdownLink :href="route('payment-monitors.create', {opportunityId: currentOportunity?.id})"
                 v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Registrar pagos en seguimiento integral')">
                 Registrar Pago
               </DropdownLink>
-              <DropdownLink :href="route('meeting-monitors.create')"
+              <DropdownLink :href="route('meeting-monitors.create', {opportunityId: currentOportunity?.id})"
                 v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Agendar citas en seguimiento integral')">
                 Agendar Cita
               </DropdownLink>
-              <DropdownLink :href="route('whatsapp-monitors.create')"
+              <DropdownLink :href="route('whatsapp-monitors.create', {opportunityId: currentOportunity?.id})"
                 v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Registrar interaccion whatsapp en seguimiento integral')">
                 Interacción WhatsApp
               </DropdownLink>
@@ -155,6 +155,8 @@
             </el-option>
           </el-select>
         </div>
+        <span class="text-gray-500 my-2">Prioridad</span>
+        <span class="relative">{{ currentOportunity?.priority.label }} <div :class="getColorPriority()" class="absolute -left-10 top-1 rounded-full w-3 h-3"></div></span>
         <span class="text-gray-500 my-2">Probabilidad</span>
         <span>{{ currentOportunity?.probability }}%</span>
         <span class="text-gray-500 my-2">Valor de oportunidad</span>
@@ -697,6 +699,17 @@ export default {
         return "bg-[#AFFDB2] text-[#37951F]";
       } else if (this.currentOportunity?.status == "Perdida") {
         return "bg-[#F7B7FC] text-[#9E0FA9]";
+      } else {
+        return "bg-transparent";
+      }
+    },
+    getColorPriority() {
+      if (this.currentOportunity?.priority?.label == "Baja") {
+        return "bg-[#87CEEB]";
+      } else if (this.currentOportunity?.priority?.label == "Media") {
+        return "bg-[#D97705]";
+      } else if (this.currentOportunity?.priority?.label == "Alta") {
+        return "bg-[#D90537]";
       } else {
         return "bg-transparent";
       }

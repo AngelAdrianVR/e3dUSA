@@ -45,7 +45,7 @@
 
       <!-- ------------- Email Starts 1 ------------- -->
       <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
-        <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
+        <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center self-start">
 
           <p class="text-secondary col-span-2 mb-2">Información de oportuindad</p>
           <span class="text-gray-500">Folio</span>
@@ -54,7 +54,7 @@
             </span>
           </a>
 
-          <p class="text-secondary col-span-2 mt-5 mb-2">Información del correo electrónico</p>
+          <p class="text-secondary col-span-2 mt-5 mb-2 self-start">Información del correo electrónico</p>
           <span class="text-gray-500">Enviado por</span>
           <span>{{ email_monitor.data.seller?.name }}</span>
           <span class="text-gray-500 my-2">Cliente</span>

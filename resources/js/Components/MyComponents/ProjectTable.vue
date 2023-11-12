@@ -2,7 +2,7 @@
 <div class="overflow-x-auto">
     <table class="w-full mx-auto">
         <thead>
-          <tr class="text-center">
+          <tr class="text-left">
             <th class="font-bold pb-5">Nombre del proyecto <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i></th>
             <th class="font-bold pb-5">Estatus <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i></th>
             <th class="font-bold pb-5">Tareas <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i></th>
@@ -14,15 +14,15 @@
         <tbody>
           <tr v-for="project in projects" :key="project.id"
             class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]" @click="$inertia.get(route('projects.show', project.id))">
-            <td class="text-center py-2 px-2 rounded-l-full">
-              {{ project.project_name }}
+            <td class="text-left py-2 px-2 rounded-l-full">
+              <p :title="project.project_name" class="w-44 truncate">{{ project.project_name }}</p>
             </td>
-            <td class="text-center py-2 px-2">
+            <td class="text-left py-2 px-2">
               <span
                 :class="calculateProjectStatus(project.tasks)?.text_color + ' ' + calculateProjectStatus(project.tasks)?.bg"
                 class="py-1 px-2 rounded-full">{{ calculateProjectStatus(project.tasks)?.label }}</span>
             </td>
-            <td class="text-center py-2 flex space-x-1 items-center px-2">
+            <td class="text-left py-2 flex space-x-1 items-center px-2">
               <p class="text-xs">{{ project.tasks.filter(task => task.status === 'Terminada').length }}</p>
               <div class="relative bg-[#D9D9D9] rounded-full h-5 w-24">
                 <div
@@ -36,13 +36,13 @@
               </div>
               <p class="text-xs">{{ project.tasks.length }}</p>
             </td>
-            <td class="text-center py-2 px-2">
+            <td class="text-left py-2 px-2">
               {{ project.start_date }}
             </td>
-            <td class="text-center py-2 px-2">
+            <td class="text-left py-2 px-2">
               {{ project.limit_date }}
             </td>
-            <td class="text-center py-2 px-2 rounded-r-full">
+            <td class="text-left py-2 px-2 rounded-r-full">
               {{ project.finished_at ?? '--' }}
             </td>
           </tr>

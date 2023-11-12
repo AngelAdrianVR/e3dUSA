@@ -28,10 +28,16 @@ class WhatsappMonitorController extends Controller
         $companies = Company::with('companyBranches.contacts')->get();
         $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
         $users = User::where('is_active', true)->whereNot('id', 1)->get();
+        $opportunity = null;
+        if (request('opportunityId')) {
+            $opportunity = Oportunity::with(['companyBranch'])->find(request('opportunityId'));
+        } else {
+            $opportunity = null;
+        }
 
         // return $oportunities;
 
-        return inertia('WhatsappMonitor/Create', compact('companies', 'oportunities', 'users'));
+        return inertia('WhatsappMonitor/Create', compact('companies', 'oportunities', 'users', 'opportunity'));
     }
 
     
