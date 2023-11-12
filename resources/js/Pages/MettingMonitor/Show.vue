@@ -76,16 +76,16 @@
           <span>{{ metting_monitor.data.description }}</span>
         </div>
 
-        <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
+        <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center self-start">
           <p class="text-secondary col-span-2 mb-2">Información del cliente</p>
 
-            <span class="text-gray-500">Cliente</span>
+            <span class="text-gray-500 my-1">Cliente</span>
             <span>{{ metting_monitor.data.company?.business_name ?? 'Cita agendada a oportunidad sin cliente registrado'  }}</span>
-            <span class="text-gray-500">Contacto</span>
+            <span class="text-gray-500 my-1">Contacto</span>
             <span>{{ metting_monitor.data.contact ? metting_monitor.data.contact?.name : metting_monitor.data.contact_name    }}</span>
-            <span class="text-gray-500">Sucursal</span>
+            <span class="text-gray-500 my-1">Sucursal</span>
             <span>{{ metting_monitor.data.companyBranch?.name ?? 'Cita agendada a oportunidad sin cliente registrado' }}</span>
-            <span class="text-gray-500">Teléfono</span>
+            <span class="text-gray-500 my-1">Teléfono</span>
             <span>{{ metting_monitor.data.phone }}</span>
         </div>
       </div>

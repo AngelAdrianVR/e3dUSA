@@ -59,7 +59,7 @@
 
       <!-- ------------- Interaccion whatsapp Starts 1 ------------- -->
       <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
-        <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
+        <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center self-start">
 
           <p class="text-secondary col-span-2 mb-2">Información de la oportunidad</p>
           <span class="text-gray-500 my-2">Folio de oportunidad</span>
@@ -83,7 +83,7 @@
             <span>{{ whatsapp_monitor.data.contact_phone }}</span>
         </div>
 
-        <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
+        <div class="grid grid-cols-2 text-left p-4 md:ml-10 self-start">
 
             <p class="text-secondary col-span-2 mb-2">Interacción de whatsapp</p>
 

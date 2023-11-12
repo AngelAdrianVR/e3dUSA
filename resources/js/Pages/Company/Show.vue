@@ -151,7 +151,7 @@
 <div v-if="hasQuotes()" class="overflow-x-auto">
   <table  class="w-full mx-auto">
     <thead>
-      <tr class="text-center">
+      <tr class="text-left">
         <th class="font-bold pb-5">
           Folio <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
         </th>
@@ -174,19 +174,19 @@
         <tr v-for="quote in branch.quotes" :key="quote.id" class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]"
           @click="$inertia.get(route('quotes.show', quote.id))"
         >
-          <td class="text-center text-secondary py-2 px-2 rounded-l-full">
+          <td class="text-left text-secondary py-2 px-2 rounded-l-full">
             {{ quote.folio }}
           </td>
-          <td class="text-center py-2 px-2">
+          <td class="text-left py-2 px-2">
             {{ quote.user ? quote.user.name : '' }}
           </td>
-          <td class="text-center py-2 px-2">
+          <td class="text-left py-2 px-2">
             <span class="py-1 px-4 rounded-full">{{ quote.receiver }}</span>
           </td>
-          <td class="text-center py-2 px-2">
+          <td class="text-left py-2 px-2">
             <span class="py-1 px-2">{{ quote.authorized_user_name ?? '--' }}</span>
           </td>
-          <td class="text-center py-2 px-2 rounded-r-full">
+          <td class="text-left py-2 px-2 rounded-r-full">
             {{ quote.created_at }}
           </td>
         </tr>

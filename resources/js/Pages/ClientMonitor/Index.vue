@@ -114,7 +114,7 @@
               >
             </td>
             <td class="py-2">
-              <p class="w-36 truncate">{{ monitor.concept }}</p>
+              <p :title="monitor.concept" class="w-36 truncate">{{ monitor.concept }}</p>
             </td>
             <td class="py-2">
               {{ monitor.seller?.name }}

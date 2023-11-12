@@ -2,7 +2,7 @@
     <AppLayout title="Interacción Whatsapp">
       <template #header>
         <div class="flex justify-between">
-          <Link :href="route('client-monitors.index')"
+          <Link :href="opportunity ? route('oportunities.show', opportunity) : route('client-monitors.index')"
             class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
           <i class="fa-solid fa-chevron-left"></i>
           </Link>
@@ -138,6 +138,7 @@ export default {
     oportunities: Object,
     companies: Array,
     users: Array,
+    opportunity: Object,
   },
   methods: {
     store(){
@@ -202,6 +203,14 @@ export default {
   },
 
   },
+  mounted() {
+    if (this.opportunity) {
+      this.form.oportunity_id = this.opportunity.id;
+      this.getCompany();
+      this.form.company_branch_id = this.opportunity.company_branch_id;
+      this.saveCompanyBranchAddress();
+    }
+  }
 };
 </script>
 
