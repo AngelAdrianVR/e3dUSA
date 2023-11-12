@@ -329,6 +329,13 @@ export default {
                     show: true
                 },
                 {
+                    label: 'Calidad',
+                    icon: '<i class="fa-solid fa-clipboard-check text-sm"></i>',
+                    route: route('qualities.index'),
+                    active: route().current('qualities.*'),
+                    show: this.$page.props.auth.user.permissions.includes('Ver modulo de calidad')
+                },
+                {
                     label: 'Mercadotecnia',
                     icon: '<i class="fa-solid fa-lightbulb text-xs"></i>',
                     route: route('dashboard'),
