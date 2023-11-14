@@ -72,14 +72,17 @@ class ProjectController extends Controller
             })],
         ]);
 
-
         $project = Project::create($validated + ['user_id' => auth()->id()]);
         event(new RecordCreated($project));
 
         // permisos
         foreach ($request->selectedUsersToPermissions as $user) {
+            $permissions_array = array_map(function ($item) {
+                // La función boolval() convierte un valor a booleano
+                return boolval($item);
+            }, $user['permissions']);
             $allowedUser = [
-                "permissions" => json_encode($user['permissions']), // Serializa los permisos en formato JSON
+                "permissions" => json_encode($permissions_array), // Serializa los permisos en formato JSON
             ];
             $project->users()->attach($user['id'], $allowedUser);
         }
@@ -209,8 +212,12 @@ class ProjectController extends Controller
         // Eliminar todos los permisos actuales para el proyecto
         $project->users()->detach();
         foreach ($request->selectedUsersToPermissions as $user) {
+            $permissions_array = array_map(function ($item) {
+                // La función boolval() convierte un valor a booleano
+                return boolval($item);
+            }, $user['permissions']);
             $allowedUser = [
-                "permissions" => json_encode($user['permissions']), // Serializa los permisos en formato JSON
+                "permissions" => json_encode($permissions_array), // Serializa los permisos en formato JSON
             ];
             $project->users()->attach($user['id'], $allowedUser);
         }
