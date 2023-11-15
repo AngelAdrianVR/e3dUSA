@@ -390,9 +390,9 @@ export default {
         if (response.status === 200) {
           if (response.data.message) {
             this.$notify({
-              title: "Denegado",
+              title: "Éxito",
               message: response.data.message,
-              type: "error",
+              type: "success",
             });
             this.showCreateSaleModal = false;
             this.updateStatus();
