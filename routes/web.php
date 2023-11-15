@@ -32,6 +32,7 @@ use App\Http\Controllers\ProductionProgressController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectGroupController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\QualityController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\SaleController;
@@ -309,6 +310,10 @@ Route::post('productions/massive-delete', [ProductionController::class, 'massive
 Route::get('productions/print/{productions}', [ProductionController::class, 'print'])->name('productions.print');
 Route::put('productions/change-status/{production}', [ProductionController::class, 'changeStatus'])->name('productions.change-status');
 Route::put('productions/continue-production/{production}', [ProductionController::class, 'continueProduction'])->name('productions.continue-production');
+
+// ------- Quality department routes  ---------
+Route::resource('qualities', QualityController::class)->middleware('auth');
+
 
 // ------- Machines Routes  ---------
 Route::resource('machines', MachineController::class)->middleware('auth');

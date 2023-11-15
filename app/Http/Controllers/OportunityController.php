@@ -319,7 +319,7 @@ class OportunityController extends Controller
         $sale = Sale::where('oportunity_id', $oportunity_id)->first(); //Busca una venta de esta oportunidad
 
         if ($sale != null) {
-            return response()->json(['message' => 'Ya existe una venta de esta oportunidad']);
+            return response()->json(['message' => 'Ya existe una venta de esta oportunidad. Estatus actualizado correctamente']);
         }
     }
     public function updateStatus(Request $request, $oportunity_id)
