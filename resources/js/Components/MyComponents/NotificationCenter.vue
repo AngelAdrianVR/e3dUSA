@@ -70,7 +70,7 @@ export default {
     },
     data() {
         return {
-            showNotifications: true,
+            showNotifications: false,
             selectedNotifications: [],
             userNotifications: [],
             loading: false,
@@ -137,8 +137,11 @@ export default {
             }
         },
     },
-    mounted() {
-        this.getNotifications();
+    async mounted() {
+        await this.getNotifications();
+        if (this.userNotifications.length) {
+            this.showNotifications = true;
+        }
     }
 }
 </script>

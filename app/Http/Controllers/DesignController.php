@@ -12,6 +12,7 @@ use App\Models\Design;
 use App\Models\DesignType;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
+use App\Notifications\DesignCompletedNotification;
 use App\Notifications\RequestApprovedNotification;
 use Illuminate\Http\Request;
 
@@ -251,7 +252,9 @@ class DesignController extends Controller
             'finished_at' => now()
         ]);
 
-        // $design = Design::find($design->id);
+        // notificar a solicitante
+        $design->user->notify(new DesignCompletedNotification(auth()->user()->name, $design->name, 'design'));
+
         $media = $design->getMedia('results')->all();
 
         return response()->json(['item' => $media]);

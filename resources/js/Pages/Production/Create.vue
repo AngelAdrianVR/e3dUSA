@@ -349,6 +349,8 @@ export default {
       this.editProductionIndex = index;
     },
     getproductionProcess() {
+      this.task.estimated_time_hours = null;
+      this.task.estimated_time_minutes = null;
       const productionProcess = this.production_processes.data.find(item => item.name == this.task.tasks );
       const orderedProduct = this.orderedProducts.find(item => item.id == this.production.catalog_product_company_sale_id);
 

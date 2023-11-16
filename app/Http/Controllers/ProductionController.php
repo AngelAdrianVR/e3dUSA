@@ -178,7 +178,7 @@ class ProductionController extends Controller
                 }
             }
 
-            // sub needed quantities from stock
+            // sub needed quantities from stock -------------------------------------------------------
             // $cpcs = CatalogProductCompanySale::find($production['catalog_product_company_sale_id']);
             // $raw_materials = $cpcs->catalogProductCompany->catalogProduct->rawMaterials;
             // foreach ($raw_materials as $raw_material) {
@@ -211,9 +211,10 @@ class ProductionController extends Controller
     {
         $operators = User::where('employee_properties->department', 'Producción')->get();
         $sale = SaleResource::make(Sale::with('companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct', 'productions')->find($sale_id));
+        $production_processes = ProductionCostResource::collection(ProductionCost::all());
 
         // return $sale;
-        return inertia('Production/Edit', compact('operators', 'sale'));
+        return inertia('Production/Edit', compact('operators', 'sale', 'production_processes'));
     }
 
     public function update(Request $request, $sale_id)
@@ -223,20 +224,30 @@ class ProductionController extends Controller
         ]);
 
         $sale = Sale::find($sale_id);
-        $sale->productions()->delete();
 
+        // return $request->editedIndexes;
+        //Busca si fue cambiado un usuario --------------------
+
+        
         foreach ($request->productions as $production) {
             $foreigns = [
                 'user_id' => $production['user_id'],
                 'catalog_product_company_sale_id' => $production['catalog_product_company_sale_id']
             ];
-
-            foreach ($production['tasks'] as $task) {
+            
+            foreach ($production['tasks'] as $taskIndex => $task) {
                 $data = $task + $foreigns;
-
-                $prod = Production::create($data);
-                event(new RecordEdited($prod));
+                
+                if (in_array($taskIndex, $request->editedIndexes)) {
+                $prod = $sale->productions[$taskIndex]->update($data);
+                // $prod = Production::create($data);
+                // event(new RecordEdited($prod));
+        
+                // Puedes usar $productionIndex y $taskIndex aquí
+                // $taskIndex es el índice del segundo foreach
+                }
             }
+
         }
 
 
