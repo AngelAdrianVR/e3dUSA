@@ -51,7 +51,7 @@ class CompanyController extends Controller
             'products' => 'array|min:0',
         ]);
 
-        $company = Company::create($request->except(['company_branches', 'products']));
+        $company = Company::create($request->except(['company_branches', 'products'] + ['user_id' => auth()->id()]));
         foreach ($request->company_branches as $branch) {
             $branch['company_id'] = $company->id;
             $compay_branch = CompanyBranch::create($branch);

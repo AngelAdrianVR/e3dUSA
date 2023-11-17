@@ -50,6 +50,7 @@
                 </thead>
                 <tbody>
                     <tr v-for="(dayPoints, day) in selectedUser.weekly_points" :key="day">
+                        <td class="bg-white py-1 text-xs px-6">{{ day }}</td>
                         <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.punctuality < 0 }">{{
                             dayPoints.punctuality
                         }}</td>
