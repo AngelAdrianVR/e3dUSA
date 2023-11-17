@@ -50,10 +50,6 @@
                 </thead>
                 <tbody>
                     <tr v-for="(dayPoints, day) in selectedUser.weekly_points" :key="day">
-                        <el-tooltip content="Click para mostrar u ocultar detalles" placement="top">
-                            <td @click="showDetails = !showDetails" class="bg-white py-1 px-2 text-xs cursor-pointer">{{ day
-                            }}</td>
-                        </el-tooltip>
                         <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.punctuality < 0 }">{{
                             dayPoints.punctuality
                         }}</td>
@@ -73,11 +69,38 @@
                     </tr>
                 </tfoot>
             </table>
-            <ul v-if="showDetails" class="my-2 text-xs">
-                <h1 class="mt-3 text-secondary">Detalles de día seleccionado</h1>
-                <li v-for="(item, index) in selectedUser.productions" :key="item.id" style="white-space: pre-line;">
-                    <span class="text-primary">{{ index + 1 }}.</span>(OP-{{ item.catalog_product_company_sale.sale_id }}) {{ formatDate(item.finished_at) }}: {{ item.tasks }}
-                </li>
+            <button @click="showDetails = !showDetails" class="text-primary font-semibold mt-5 flex items-center">
+                Ver detalle de productos realizados
+                <i class="fa-solid fa-angle-down ml-3 text-[9px] transform origin-center transition duration-200 ease-out"
+                    :class="{ '!rotate-180': showDetails }"></i>
+            </button>
+            <ul v-if="showDetails" class="my-2 text-xs overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr class="font-bold text-left">
+                            <th class="px-2">Día</th>
+                            <th class="px-2">Orden producción</th>
+                            <th class="px-2">Descripción</th>
+                            <th class="px-2">Tiempo estimado</th>
+                            <th class="px-2">Inicio y término de tareas </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="item in selectedUser.productions" :key="item.id" style="white-space: pre-line;">
+                            <td class="px-2 min-w-[140px]">{{ formatDate(item.finished_at) }}</td>
+                            <td class="px-2 min-w-[140px]">
+                                <Link :href="route('productions.show', item.catalog_product_company_sale.sale_id)"
+                                    class="text-secondary hover:underline">
+                                OP-{{ item.catalog_product_company_sale.sale_id }}
+                                </Link>
+                            </td>
+                            <td :title="item.tasks" class="px-2 min-w-[140px] max-w-[200px] truncate">{{ item.tasks }}</td>
+                            <td class="px-2 min-w-[120px]">{{ item.estimated_time_hours }}h {{ item.estimated_time_minutes
+                            }}m</td>
+                            <td class="px-2 min-w-[300px]">{{ formatDateTime(item.started_at) }} - {{ formatDateTime(item.finished_at) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </ul>
             <div class="text-xs text-secondary px-10 mt-5">
                 <li><strong>Puntualidad: </strong>Este se refiere a llegar a tiempo para trabajar. Si llegas a tiempo, ganas
@@ -104,6 +127,7 @@ import DialogModal from "@/Components/DialogModal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { Link } from '@inertiajs/vue3';
 
 export default {
     data() {
@@ -115,7 +139,8 @@ export default {
     },
     components: {
         DialogModal,
-        CancelButton
+        CancelButton,
+        Link,
     },
     props: {
         users: Array,
@@ -124,6 +149,10 @@ export default {
         formatDate(date) {
             const parsedDate = new Date(date);
             return format(parsedDate, 'EEE dd MMM', { locale: es });
+        },
+        formatDateTime(dateTime) {
+            const parsedDate = new Date(dateTime);
+            return format(parsedDate, 'EEE dd MMM, HH:mm a', { locale: es });
         },
         calculatePercentage() {
             const maxPoints = Math.max(...this.users.map(user => user.total_points));

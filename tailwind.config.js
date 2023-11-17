@@ -20,6 +20,7 @@ export default {
             colors: {
                 primary: '#D90537',
                 primarylight: '#FEBFCE',
+                secondary: '#0355B5',
             },
         },
     },
