@@ -1,49 +1,57 @@
 <template>
   <table class="border border-[#9A9A9A] default w-full">
-    <tr>
-      <th class="border-y border-[#9A9A9A] text-left pl-7 py-3 font-thin relative" scope="row">
-        Proyecto <br />
-        <p class="text-base font-bold truncate w-4/5">{{ currentProject?.project_name }}</p>
-        <i @click="showDepartmentFilter = !showDepartmentFilter"
-          class="fa-solid fa-ellipsis text-primary absolute bottom-4 right-4 cursor-pointer hover:bg-[#dfdede] rounded-full p-2"></i>
-        <div v-if="showDepartmentFilter" class="absolute right-4 top-[60px] bg-[#D9D9D9] rounded-md px-4 py-2">
-          <label class="flex items-center">
-            <Checkbox v-model:checked="productionCheck" class="bg-transparent" />
-            <span class="ml-2 text-sm text-[#9A9A9A]">Producción</span>
-          </label>
-          <label class="flex items-center">
-            <Checkbox v-model:checked="designCheck" class="bg-transparent" />
-            <span class="ml-2 text-sm text-[#9A9A9A]">Diseño</span>
-          </label>
-          <label class="flex items-center">
-            <Checkbox v-model:checked="salesCheck" class="bg-transparent" />
-            <span class="ml-2 text-sm text-[#9A9A9A]">Ventas</span>
-          </label>
-          <label class="flex items-center">
-            <Checkbox v-model:checked="marketingCheck" class="bg-transparent" />
-            <span class="ml-2 text-sm text-[#9A9A9A]">Marketing</span>
-          </label>
-        </div>
-      </th>
-      <th class="border border-[#9A9A9A] text-center font-thin text-xs">
-        <strong class="text-base uppercase font-bold tex">{{ monthName }}</strong><br />
-        <div class="flex space-x-3 justify-center w-[95%] mx-auto">
-          <p v-for="day in daysInMonth" :key="day" class="text-secondary relative">
-            {{ daysOfWeek[(day + startDayOfWeek - 2) % 7] }}
-            <span class="absolute -bottom-3 -left-0 text-[9px] text-black">{{ day }}</span>
-          </p>
-        </div>
-      </th>
-      <th class="border border-[#9A9A9A] text-center font-thin text-xs">
-        <strong class="text-base uppercase font-bold">{{ nextMonthName }}</strong>
-        <div class="flex space-x-3 justify-center w-[95%] mx-auto">
-          <p v-for="day in daysInNextMonth" :key="day" class="text-secondary relative">
-            {{ daysOfWeek[(day + startDayOfWeekNextMonth - 2) % 7] }}
-            <span class="absolute -bottom-3 -left-0 text-[9px] text-black">{{ day }}</span>
-          </p>
-        </div>
-      </th>
-    </tr>
+        <tr>
+          <th class="border-y border-[#9A9A9A] text-left pl-7 py-3 font-thin relative w-1/4" scope="row">
+            Proyecto <br />
+            <strong class="text-lg font-bold">{{ currentProject?.project_name }}</strong>
+            <i @click="showDepartmentFilter = !showDepartmentFilter"
+              class="fa-solid fa-ellipsis text-primary absolute bottom-4 right-4 cursor-pointer hover:bg-[#dfdede] rounded-full p-2"></i>
+            <div v-if="showDepartmentFilter" class="absolute right-4 top-[60px] bg-[#D9D9D9] rounded-md px-4 py-2">
+              <label class="flex items-center">
+                <Checkbox v-model:checked="productionCheck" class="bg-transparent" />
+                <span class="ml-2 text-sm text-[#9A9A9A]">Producción</span>
+              </label>
+              <label class="flex items-center">
+                <Checkbox v-model:checked="designCheck" class="bg-transparent" />
+                <span class="ml-2 text-sm text-[#9A9A9A]">Diseño</span>
+              </label>
+              <label class="flex items-center">
+                <Checkbox v-model:checked="salesCheck" class="bg-transparent" />
+                <span class="ml-2 text-sm text-[#9A9A9A]">Ventas</span>
+              </label>
+              <label class="flex items-center">
+                <Checkbox v-model:checked="marketingCheck" class="bg-transparent" />
+                <span class="ml-2 text-sm text-[#9A9A9A]">Marketing</span>
+              </label>
+            </div>
+          </th>
+          <th class="border border-[#9A9A9A] text-center font-thin text-xs">
+            <strong class="text-base uppercase font-bold tex">{{ monthName }}</strong><br />
+            <div class="flex space-x-3 justify-center w-[95%] mx-auto">
+              <p
+                v-for="day in daysInMonth"
+                :key="day"
+                class="text-secondary relative"
+              >
+                {{ daysOfWeek[(day + startDayOfWeek - 2) % 7] }}
+                <span class="absolute -bottom-3 -left-0 text-[10px] text-black">{{ day }}</span>
+              </p>
+            </div>
+          </th>
+          <th class="border border-[#9A9A9A] text-center font-thin text-xs">
+          <strong class="text-base uppercase font-bold">{{ nextMonthName }}</strong>
+           <div class="flex space-x-3 justify-center w-[95%] mx-auto">
+              <p
+                v-for="day in daysInNextMonth"
+                :key="day"
+                class="text-secondary relative"
+              >
+                {{ daysOfWeek[(day + startDayOfWeekNextMonth - 2) % 7] }}
+                <span class="absolute -bottom-3 -left-0 text-[10px] text-black">{{ day }}</span>
+              </p>
+            </div>
+        </th>
+        </tr>
 
     <tr v-for="task in currentProject?.tasks" :key="task" v-show="taskMatchesFilters(task)">
       <th class="font-normal pl-7 py-2 border-y border-[#9A9A9A]">
