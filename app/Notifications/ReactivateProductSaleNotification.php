@@ -26,7 +26,11 @@ class ReactivateProductSaleNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        if (app()->environment() === 'local') {
+            return ['database'];
+        } else {
+            return ['mail'];
+        }
     }
 
     /**
@@ -35,14 +39,14 @@ class ReactivateProductSaleNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-        ->subject('Productos sin movimiento')
-        ->markdown('emails.reactivate-product-sale', [
-            'greeting' => '¡Hola!',
-            'intro' => "Hay {$this->products->count()} producto(s) que no han tenido movimiento en un periodo de $this->days días. Favor de revisar y reactivar ventas:",
-            'products' => $this->products,
-            'url' => route('dashboard'),
-            'salutation' => 'Saludos',
-        ]);
+            ->subject('Productos sin movimiento')
+            ->markdown('emails.reactivate-product-sale', [
+                'greeting' => '¡Hola!',
+                'intro' => "Hay {$this->products->count()} producto(s) que no han tenido movimiento en un periodo de $this->days días. Favor de revisar y reactivar ventas:",
+                'products' => $this->products,
+                'url' => route('dashboard'),
+                'salutation' => 'Saludos',
+            ]);
     }
 
     /**
