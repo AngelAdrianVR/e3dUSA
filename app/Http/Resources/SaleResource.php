@@ -62,6 +62,7 @@ class SaleResource extends JsonResource
             'order_via' => $this->order_via,
             'tracking_guide' => $this->tracking_guide,
             'invoice' => $this->invoice,
+            'is_high_priority' => $this->is_high_priority,
             'products' => $this->products,
             'notes' => $this->notes ?? '--',
             'authorized_user_name' => $this->authorized_user_name ?? 'No autorizado',

@@ -101,6 +101,19 @@
                             </IconInput>
                             <InputError :message="form.errors.tracking_guide" />
                         </div>
+                        <div class="flex items-center space-x-2">
+                            <label class="flex items-center">
+                                <Checkbox v-model:checked="form.is_high_priority" class="bg-transparent" />
+                                <span class="ml-2 text-xs">Prioridad alta</span>
+                            </label>
+                            <el-tooltip
+                                content="Al seleccionar esta opción, se recordará diariamente por notificación si no se ha creado una orden de producción"
+                                placement="top">
+                                <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                                    <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                </div>
+                            </el-tooltip>
+                        </div>
                     </div>
 
                     <el-divider content-position="left">Datos de la órden</el-divider>
@@ -297,6 +310,7 @@ import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import DialogModal from "@/Components/DialogModal.vue";
+import Checkbox from "@/Components/Checkbox.vue";
 import Modal from "@/Components/Modal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 
@@ -313,6 +327,7 @@ export default {
             order_via: null,
             tracking_guide: null,
             notes: null,
+            is_high_priority: false,
             products: [],
             media: null,
         });
@@ -343,6 +358,7 @@ export default {
         CancelButton,
         DialogModal,
         Modal,
+        Checkbox,
     },
     props: {
         company_branches: Array,

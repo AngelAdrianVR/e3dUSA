@@ -31,55 +31,57 @@ class SaleController extends Controller
 
         $pre_sales = Sale::with('companyBranch', 'user')->latest()->get();
 
-//Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
-    $sales = $pre_sales->map(function ($sale) {
-        $hasStarted = $sale->productions?->whereNotNull('started_at')->count();
-        $hasNotFinished = $sale->productions?->whereNull('finished_at')->count();
+        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
+        $sales = $pre_sales->map(function ($sale) {
+            $hasStarted = $sale->productions?->whereNotNull('started_at')->count();
+            $hasNotFinished = $sale->productions?->whereNull('finished_at')->count();
 
-        if ($sale->authorized_at == null) {
-            $status = [
-                'label' => 'Esperando autorización',
-                'text-color' => 'text-amber-500',
-            ];
-        } elseif ($sale->productions) {
-            if (!$hasStarted) {
+            if ($sale->authorized_at == null) {
                 $status = [
-                    'label' => 'Producción sin iniciar',
-                    'text-color' => 'text-gray-500',
+                    'label' => 'Esperando autorización',
+                    'text-color' => 'text-amber-500',
                 ];
-            } elseif ($hasStarted && $hasNotFinished) {
-                $status = [
-                    'label' => 'Producción en proceso',
-                    'text-color' => 'text-blue-500',
-                ];
+            } elseif ($sale->productions) {
+                if (!$hasStarted) {
+                    $status = [
+                        'label' => 'Producción sin iniciar',
+                        'text-color' => 'text-gray-500',
+                    ];
+                } elseif ($hasStarted && $hasNotFinished) {
+                    $status = [
+                        'label' => 'Producción en proceso',
+                        'text-color' => 'text-blue-500',
+                    ];
+                } else {
+                    $status = [
+                        'label' => 'Producción terminada',
+                        'text-color' => 'text-green-500',
+                    ];
+                }
             } else {
                 $status = [
-                    'label' => 'Producción terminada',
-                    'text-color' => 'text-green-500',
+                    'label' => 'Autorizado sin orden de producción',
+                    'text-color' => 'text-amber-500',
                 ];
             }
-        } else {
-            $status = [
-                'label' => 'Autorizado sin orden de producción',
-                'text-color' => 'text-amber-500',
+            return [
+                'id' => $sale->id,
+                'folio' => 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT),
+                'user' => [
+                    'id' => $sale->user->id,
+                    'name' => $sale->user->name
+                ],
+                'company_branch' => [
+                    'id' => $sale->companyBranch->id,
+                    'name' => $sale->companyBranch->name
+                ],
+                'authorized_user_name' => $sale->authorized_user_name ?? 'No autorizado',
+                'status' => $status,
+                'created_at' => $sale->created_at->isoFormat('DD MMM, YYYY h:mm A'),
             ];
-        }
-        return [
-            'id' => $sale->id,
-            'folio' => 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT),
-            'user' => ['id' => $sale->user->id,
-                            'name' => $sale->user->name
-                        ],
-            'company_branch' => ['id' => $sale->companyBranch->id,
-            'name' => $sale->companyBranch->name
-                        ],
-            'authorized_user_name' => $sale->authorized_user_name ?? 'No autorizado',
-            'status' => $status,
-            'created_at' => $sale->created_at->isoFormat('DD MMM, YYYY h:mm A'),
-        ];
-    });
-    // return $sales;
-    return inertia('Sale/Index', compact('sales'));
+        });
+
+        return inertia('Sale/Index', compact('sales'));
     }
 
 
@@ -100,6 +102,7 @@ class SaleController extends Controller
             'order_via' => 'required',
             'tracking_guide' => 'nullable',
             'notes' => 'nullable',
+            'is_high_priority' => 'boolean',
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
             'products' => 'array|min:1'
@@ -170,6 +173,7 @@ class SaleController extends Controller
             'tracking_guide' => 'nullable',
             'invoice' => 'nullable',
             'notes' => 'nullable',
+            'is_high_priority' => 'boolean',
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
             'products' => 'array|min:1'
@@ -215,6 +219,7 @@ class SaleController extends Controller
             'tracking_guide' => 'nullable',
             'invoice' => 'nullable',
             'notes' => 'nullable',
+            'is_high_priority' => 'boolean',
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
             'products' => 'array|min:1'
@@ -226,7 +231,6 @@ class SaleController extends Controller
         // media
         $sale->clearMediaCollection();
         $sale->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
-
 
         foreach ($request->products as $product) {
             $productData = $product + ['sale_id' => $sale->id];

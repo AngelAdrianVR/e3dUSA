@@ -27,7 +27,7 @@
               </Link>
             </el-tooltip>
             <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar ordenes de venta') ||
-                       currentSale?.user.id == $page.props.auth.user.id" content="Editar" placement="top">
+              currentSale?.user.id == $page.props.auth.user.id" content="Editar" placement="top">
               <Link :href="route('sales.edit', saleSelected)">
               <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
                 <i class="fa-solid fa-pen text-sm"></i>
@@ -138,6 +138,11 @@
           <span>{{ currentSale?.created_at }}</span>
           <span class="text-gray-500 my-2">Medio de petición</span>
           <span>{{ currentSale?.order_via }}</span>
+          <span class="text-gray-500 my-2">Es prioridad alta</span>
+          <span>
+            <i v-if="currentSale?.is_high_priority" class="fa-solid fa-check text-green-500"></i>
+            <i v-else class="fa-solid fa-minus"></i>
+          </span>
           <span class="text-gray-500 my-2">OCE</span>
           <span>{{ currentSale?.oce_name }}</span>
           <span class="text-gray-500 my-2">Factura</span>
@@ -185,19 +190,18 @@
       <div v-if="tabs == 2" class="p-7">
         <p class="text-secondary mb-2">Productos Ordenados</p>
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-7">
-          <ProductSaleCard is_view_for_seller
-            v-for="productSale in currentSale?.catalogProductCompanySales" :key="productSale.id"
-            :catalog_product_company_sale="productSale" />
+          <ProductSaleCard is_view_for_seller v-for="productSale in currentSale?.catalogProductCompanySales"
+            :key="productSale.id" :catalog_product_company_sale="productSale" />
         </div>
       </div>
 
       <!-- ------------- tab 2 products ends ------------ -->
-      
+
       <!-- -------------tab 3 history starts ------------- -->
 
       <div v-if="tabs == 3" class="p-7">
         <p class="text-secondary mb-2">Historial</p>
-        
+
       </div>
 
       <!-- ------------- tab 3 history ends ------------ -->
@@ -321,7 +325,7 @@ export default {
             message: "Orden de venta autorizada",
             type: "success",
           });
-          
+
           this.$inertia.get(route('sales.index'));
           this.currentSale.authorized_at = response.data.item.authorized_at;
           this.currentSale.status = response.data.item.status;
