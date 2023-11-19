@@ -100,7 +100,7 @@ export default {
                         || route().current('client-monitors.*') || route().current('meeting-monitors.*') || route().current('payment-monitors.*')
                         || route().current('whatsapp-monitors.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                        return ['quote', 'sales', 'opportunities'].includes(notification.data.module);
+                        return ['quote', 'sales', 'opportunities', 'companies'].includes(notification.data.module);
                     }),
                     options: [
                         {
@@ -121,7 +121,9 @@ export default {
                             label: 'Clientes',
                             route: 'companies.index',
                             show: this.$page.props.auth.user.permissions.includes('Ver clientes'),
-                            notifications: false,
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'companies';
+                            }),
                         },
                         {
                             label: 'Órdenes de venta',

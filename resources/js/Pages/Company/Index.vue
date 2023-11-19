@@ -14,66 +14,76 @@
                 </div>
             </template>
 
-            <!-- tabla -->
-            <div class="lg:w-5/6 mx-auto mt-6">
-                <div class="flex justify-between">
-                    <!-- pagination -->
-                    <div>
-                        <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                            :total="companies.data.length" />
-                    </div>
-
-                    <!-- buttons -->
-                    <div v-if="$page.props.auth.user.permissions.includes('Eliminar clientes')">
-                        <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
-                            title="¿Continuar?" @confirm="deleteSelections">
-                            <template #reference>
-                                <el-button type="danger" plain class="mb-3"
-                                    :disabled="disableMassiveActions">Eliminar</el-button>
-                            </template>
-                        </el-popconfirm>
-                    </div>
-                </div>
-
-                <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
-                    @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
-                    <el-table-column type="selection" width="45" />
-                    <el-table-column prop="id" label="ID" width="55" />
-                    <el-table-column prop="business_name" label="Nombre" width="120" />
-                    <el-table-column prop="phone" label="Teléfono" width="120" />
-                    <el-table-column prop="rfc" label="RFC" width="100" />
-                    <el-table-column prop="post_code" label="Código postal" width="120" />
-                    <el-table-column prop="company_branches_names" label="Sucursales" />
-                    <el-table-column prop="fiscal_address" label="Domicilio Fiscal" />
-                    <el-table-column align="right" fixed="right" width="190">
-                        <template #header>
-                            <div class="flex space-x-2">
-                            <TextInput v-model="inputSearch" type="search" @keyup.enter="handleSearch" class="w-full text-gray-600" placeholder="Buscar" />
-                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
+            <div class="relative overflow-hidden">
+                <NotificationCenter module="companies" />
+                <!-- tabla -->
+                <div class="lg:w-5/6 mx-auto mt-6">
+                    <div class="flex justify-between">
+                        <!-- pagination -->
+                        <div>
+                            <el-pagination @current-change="handlePagination" layout="prev, pager, next"
+                                :total="companies.data.length" />
                         </div>
-                        </template>
-                        <template #default="scope">
-                            <el-dropdown trigger="click" @command="handleCommand">
-                                <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                </span>
-                                <template #dropdown>
-                                    <el-dropdown-menu>
-                                        <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
-                                            Ver</el-dropdown-item>
-                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar clientes')" :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
-                                            Editar</el-dropdown-item>
-                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear clientes')" :command="'clone-' + scope.row.id"><i
-                                                class="fa-solid fa-clone"></i>
-                                            Clonar</el-dropdown-item>
-                                    </el-dropdown-menu>
+
+                        <!-- buttons -->
+                        <div v-if="$page.props.auth.user.permissions.includes('Eliminar clientes')">
+                            <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                                title="¿Continuar?" @confirm="deleteSelections">
+                                <template #reference>
+                                    <el-button type="danger" plain class="mb-3"
+                                        :disabled="disableMassiveActions">Eliminar</el-button>
                                 </template>
-                            </el-dropdown>
-                        </template>
-                    </el-table-column>
-                </el-table>
+                            </el-popconfirm>
+                        </div>
+                    </div>
+
+                    <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
+                        @selection-change="handleSelectionChange" ref="multipleTableRef"
+                        :row-class-name="tableRowClassName">
+                        <el-table-column type="selection" width="45" />
+                        <el-table-column prop="id" label="ID" width="55" />
+                        <el-table-column prop="business_name" label="Nombre" width="120" />
+                        <el-table-column prop="phone" label="Teléfono" width="120" />
+                        <el-table-column prop="rfc" label="RFC" width="100" />
+                        <el-table-column prop="post_code" label="Código postal" width="120" />
+                        <el-table-column prop="company_branches_names" label="Sucursales" />
+                        <el-table-column prop="fiscal_address" label="Domicilio Fiscal" />
+                        <el-table-column align="right" fixed="right" width="190">
+                            <template #header>
+                                <div class="flex space-x-2">
+                                    <TextInput v-model="inputSearch" type="search" @keyup.enter="handleSearch"
+                                        class="w-full text-gray-600" placeholder="Buscar" />
+                                    <el-button @click="handleSearch" type="primary" plain class="mb-3"><i
+                                            class="fa-solid fa-magnifying-glass"></i></el-button>
+                                </div>
+                            </template>
+                            <template #default="scope">
+                                <el-dropdown trigger="click" @command="handleCommand">
+                                    <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
+                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    </span>
+                                    <template #dropdown>
+                                        <el-dropdown-menu>
+                                            <el-dropdown-item :command="'show-' + scope.row.id"><i
+                                                    class="fa-solid fa-eye"></i>
+                                                Ver</el-dropdown-item>
+                                            <el-dropdown-item
+                                                v-if="$page.props.auth.user.permissions.includes('Editar clientes')"
+                                                :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                                Editar</el-dropdown-item>
+                                            <el-dropdown-item
+                                                v-if="$page.props.auth.user.permissions.includes('Crear clientes')"
+                                                :command="'clone-' + scope.row.id"><i class="fa-solid fa-clone"></i>
+                                                Clonar</el-dropdown-item>
+                                        </el-dropdown-menu>
+                                    </template>
+                                </el-dropdown>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+                <!-- tabla -->
             </div>
-            <!-- tabla -->
         </AppLayout>
     </div>
 </template>
@@ -84,6 +94,7 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
+import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 
 
 export default {
@@ -105,12 +116,13 @@ export default {
         SecondaryButton,
         Link,
         TextInput,
+        NotificationCenter,
     },
     props: {
         companies: Object
     },
     methods: {
-        handleSearch(){
+        handleSearch() {
             this.search = this.inputSearch;
         },
         handleSelectionChange(val) {
@@ -239,7 +251,8 @@ export default {
                     (company) =>
                         company.business_name.toLowerCase().includes(this.search.toLowerCase()) ||
                         company.rfc.toLowerCase().includes(this.search.toLowerCase()) ||
-                        company.company_branches_names.toLowerCase().includes(this.search.toLowerCase())
+                        company.company_branches_names.toLowerCase().includes(this.search.toLowerCase()) ||
+                        company.id.toString().toLowerCase().includes(this.search.toLowerCase())
                 )
             }
         }
