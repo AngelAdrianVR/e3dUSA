@@ -309,6 +309,7 @@ Route::resource('productions', ProductionController::class)->middleware('auth');
 Route::post('productions/massive-delete', [ProductionController::class, 'massiveDelete'])->name('productions.massive-delete');
 Route::get('productions/print/{productions}', [ProductionController::class, 'print'])->name('productions.print');
 Route::put('productions/change-status/{production}', [ProductionController::class, 'changeStatus'])->name('productions.change-status');
+Route::put('productions/change-stock-status/{production}', [ProductionController::class, 'changeStockStatus'])->name('productions.change-stock-status');
 Route::put('productions/continue-production/{production}', [ProductionController::class, 'continueProduction'])->name('productions.continue-production');
 
 // ------- Quality department routes  ---------

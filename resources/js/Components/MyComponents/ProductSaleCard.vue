@@ -1,5 +1,11 @@
 <template>
-  <div class="rounded-xl bg-[#cccccc] px-7 py-3 relative text-xs shadow-lg">
+  <div class="rounded-xl px-7 py-3 relative text-xs shadow-lg bg-[#cccccc]">
+    <!-- low stock message -->
+    <div v-if="catalog_product_company_sale.productions.some(item => item.has_low_stock)"
+      class="z-20 rounded-md absolute border-2 border-gray-100 bg-[#FDB9C9] py-2 text-primary px-2 -top-3 -right-5 flex items-center justify-center">
+      <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+      No hay suficiente materia prima para continuar
+    </div>
     <!-- selection circle -->
     <div @click="handleSelection" v-if="!is_view_for_seller"
       class="w-5 h-5 border-2 rounded-full absolute top-3 left-3 cursor-pointer flex items-center justify-center"
@@ -33,7 +39,8 @@
       </figure>
       <div>
         <p class="text-primary text-left">Caracteristicas</p>
-        <li v-for="(feature, index) in catalog_product_company_sale.catalog_product_company?.catalog_product?.features"
+        <li
+          v-for="( feature, index ) in  catalog_product_company_sale.catalog_product_company?.catalog_product?.features "
           :key="index" class="text-gray-800 list-disc">{{ feature }}</li>
       </div>
     </div>
@@ -50,12 +57,13 @@
         <button @click="showProgressDetailsModal = true"
           class="bg-primary rounded-full px-1 py-px text-white text-[10px]">Avances</button>
       </div>
-      <p v-for="production in catalog_product_company_sale.productions" :key="production.id"
+      <p v-for=" production  in  catalog_product_company_sale.productions " :key="production.id"
         class="mt-1 flex justify-between items-center">
         <span :class="{
           'text-green-600': $page.props.auth.user.id == production.operator.id,
           'text-yellow-600': production.is_paused,
-        }">-{{ production.operator.name }} {{ production.is_paused ? ' (pausado)' : '' }}
+        }
+          ">-{{ production.operator.name }} {{ production.is_paused ? ' (pausado)' : '' }}
         </span>
         <el-tooltip placement="right">
           <template #content>
@@ -84,7 +92,23 @@
       </div>
       </p>
     </div>
-
+    <div v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id)">
+      <el-tooltip v-if="!catalog_product_company_sale.productions.find(item => item.operator_id ==
+        $page.props.auth.user.id)?.has_low_stock"
+        content="Con este botón se indica si no es posible continuar con la producción por materia prima insuficiente"
+        placement="top">
+        <button @click="toggleStockStatus" class="bg-primary rounded-full px-1 py-px mt-2 text-white text-[10px]">
+          No hay materia prima suficiente
+        </button>
+      </el-tooltip>
+      <el-tooltip v-else
+        content="Con este botón se indica que ya hay suficiente materia prima para continuar con la producción"
+        placement="top">
+        <button @click="toggleStockStatus" class="bg-primary rounded-full px-1 py-px mt-2 text-white text-[10px]">
+          Ya hay materia prima suficiente
+        </button>
+      </el-tooltip>
+    </div>
     <div class="bg-[#d9d9d9] rounded-lg p-2 grid grid-cols-2 my-3">
       <span class="">Precio Anterior:</span>
       <span class="text-secondary ">{{ catalog_product_company_sale.catalog_product_company?.old_price }}
@@ -107,7 +131,8 @@
         'border-[#0355B5] text-secondary': getOrderStatus() == 'En proceso',
         'border-green-600 text-green-600': getOrderStatus() == 'Terminado',
         'border-[#9a9a9a] text-[#9a9a9a]': getOrderStatus() == 'Sin iniciar',
-      }">{{ getOrderStatus() }}</p>
+      }
+        ">{{ getOrderStatus() }}</p>
     </div>
 
     <div class="absolute bottom-3 right-4">
@@ -191,7 +216,7 @@
         <thead class="text-left">
           <tr>
             <el-tooltip content="Año-Mes-Día" placement="top">
-            <th>Fecha</th>
+              <th>Fecha</th>
             </el-tooltip>
             <th>Colaborador</th>
             <th>Tarea</th>
@@ -200,9 +225,10 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="(production, index) in catalog_product_company_sale.productions" :key="index">
-            <tr v-for="progress in production.progress" :key="progress.id">
-              <td>{{ progress.created_at.split('T')[0] }} a las {{ progress.created_at.split('T')[1].split('.')[0] }}  </td>
+          <template v-for="( production, index ) in  catalog_product_company_sale.productions " :key="index">
+            <tr v-for=" progress  in  production.progress " :key="progress.id">
+              <td>{{ progress.created_at.split('T')[0] }} a las {{ progress.created_at.split('T')[1].split('.')[0] }}
+              </td>
               <td>{{ production.operator.name }}</td>
               <td>{{ progress.task }}</td>
               <td>{{ progress.progress }} unidades</td>
@@ -364,6 +390,28 @@ export default {
     getDateFormtted(dateTime) {
       if (!dateTime) return null;
       return moment(dateTime).format("DD MMM YYYY, hh:mmA");
+    },
+    async toggleStockStatus() {
+      try {
+        let task = this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id);
+        const response = await axios.put(route('productions.change-stock-status', task.id));
+
+        if (response.status === 200) {
+          this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id).has_low_stock = !task.has_low_stock;
+
+          this.$notify({
+            title: 'Éxito',
+            message: response.data.message,
+            type: 'success'
+          });
+        }
+      } catch (error) {
+        this.$notify({
+          title: 'Error',
+          message: error.message,
+          type: 'error'
+        });
+      }
     },
     async changeTaskStatus() {
       try {

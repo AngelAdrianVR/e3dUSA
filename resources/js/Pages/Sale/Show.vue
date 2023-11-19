@@ -140,7 +140,7 @@
           <span>{{ currentSale?.order_via }}</span>
           <span class="text-gray-500 my-2">Es prioridad alta</span>
           <span>
-            <i v-if="currentSale?.is_high_priority" class="fa-solid fa-check text-green-500"></i>
+            <i v-if="currentSale?.is_high_priority" class="fa-solid fa-check text-red-500"></i>
             <i v-else class="fa-solid fa-minus"></i>
           </span>
           <span class="text-gray-500 my-2">OCE</span>
