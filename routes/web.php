@@ -242,6 +242,7 @@ Route::post('users-get-unseen-messages', [UserController::class, 'getUnseenMessa
 Route::post('users-get-notifications', [UserController::class, 'getNotifications'])->middleware('auth')->name('users.get-notifications');
 Route::post('users-read-notifications', [UserController::class, 'readNotifications'])->middleware('auth')->name('users.read-notifications');
 Route::post('users-delete-notifications', [UserController::class, 'deleteNotifications'])->middleware('auth')->name('users.delete-notifications');
+Route::get('users-get-all', [UserController::class, 'getAllUsers'])->middleware('auth')->name('users.get-all');
 
 // ------- Recursos humanos(Roles and permissions Routes)  ---------
 Route::get('role-permission', [RolePermissionController::class, 'index'])->middleware('auth')->name('role-permission.index');
@@ -311,6 +312,7 @@ Route::get('productions/print/{productions}', [ProductionController::class, 'pri
 Route::put('productions/change-status/{production}', [ProductionController::class, 'changeStatus'])->name('productions.change-status');
 Route::put('productions/change-stock-status/{production}', [ProductionController::class, 'changeStockStatus'])->name('productions.change-stock-status');
 Route::put('productions/continue-production/{production}', [ProductionController::class, 'continueProduction'])->name('productions.continue-production');
+Route::post('productions-{cpcs}-comment', [ProductionController::class, 'comment'])->name('productions.comment')->middleware('auth');
 
 // ------- Quality department routes  ---------
 Route::resource('qualities', QualityController::class)->middleware('auth');

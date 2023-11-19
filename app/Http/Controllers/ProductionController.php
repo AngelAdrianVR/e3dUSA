@@ -8,6 +8,7 @@ use App\Events\RecordEdited;
 use App\Http\Resources\ProductionCostResource;
 use App\Http\Resources\SaleResource;
 use App\Models\CatalogProductCompanySale;
+use App\Models\Comment;
 use App\Models\Production;
 use App\Models\ProductionCost;
 use App\Models\Sale;
@@ -15,6 +16,8 @@ use App\Models\Setting;
 use App\Models\StockMovementHistory;
 use App\Models\Storage;
 use App\Models\User;
+use App\Notifications\MentionInProductionNotification;
+use App\Notifications\MentionNotification;
 use App\Notifications\ProductionCompletedNotification;
 use Illuminate\Http\Request;
 
@@ -203,10 +206,9 @@ class ProductionController extends Controller
 
     public function show($sale_id)
     {
-        $sale = SaleResource::make(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress']], 'productions' => ['user', 'operator', 'progress']])->find($sale_id));
-        $sales = SaleResource::collection(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress']], 'productions' => ['user', 'operator', 'progress']])->whereHas('productions')->get());
+        $sale = SaleResource::make(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress'], 'comments.user'], 'productions' => ['user', 'operator', 'progress']])->find($sale_id));
+        $sales = SaleResource::collection(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress'], 'comments.user'], 'productions' => ['user', 'operator', 'progress']])->whereHas('productions')->get());
 
-        // return $sale;
         return inertia('Production/Show', compact('sale', 'sales'));
     }
 
@@ -331,7 +333,26 @@ class ProductionController extends Controller
 
         return response()->json(['message' => 'Producción reanudada']);
     }
+    
+    public function comment(Request $request, CatalogProductCompanySale $cpcs)
+    {
+        $comment = new Comment([
+            'body' => $request->comment,
+            'user_id' => auth()->id(),
+        ]);
 
+        $cpcs->comments()->save($comment);
+
+        $mentions = $request->mentions;
+        foreach ($mentions as $mention) {
+            $user = User::find($mention['id']);
+            $user->notify(new MentionInProductionNotification($cpcs));
+        }
+        
+        event(new RecordCreated($comment));
+
+        return response()->json(['item' => $comment->fresh('user')]);
+    }
     // private methods
     private function findSuitableEmployees($totalEstimatedTime)
     {
