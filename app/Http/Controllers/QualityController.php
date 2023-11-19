@@ -2,64 +2,109 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordCreated;
+use App\Http\Resources\QualityResource;
 use App\Models\Quality;
+use App\Models\Sale;
 use Illuminate\Http\Request;
 
 class QualityController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
-        //
+        $pre_qualities = QualityResource::collection(Quality::with('production.productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'supervisor')->latest()->get());
+        $qualities = $pre_qualities->map(function ($quality) {
+
+            return [
+                'id' => $quality->id,
+                'supervisor' => [
+                    'id' => $quality->supervisor->id,
+                    'name' => $quality->supervisor->name
+                ],
+                'folio' => 'OP-' . str_pad($quality->production->id, 4, "0", STR_PAD_LEFT),
+                'status' => $quality->status,
+                'created_at' => $quality->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+            ];
+        });
+
+        // return $qualities;
+
+        return inertia('Quality/Index', compact('qualities'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    
     public function create()
     {
-        //
+        $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct')->whereHas('productions')->latest()->get();
+        $productions = $pre_productions->map(function ($production) {
+
+            return [
+                'id' => $production->id,
+                'folio' => 'OP-' . str_pad($production->id, 4, "0", STR_PAD_LEFT),
+            ];
+        });
+
+        // return $productions;
+
+        return inertia('Quality/Create', compact('productions'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    
     public function store(Request $request)
     {
-        //
+       $request->validate([
+            'production_id' => 'required',
+            'product_inspection.status' => 'nullable|string|max:20',
+            'product_inspection.progress' => 'nullable|string|max:20',
+            'product_inspection.Pieces' => 'nullable|numeric|min:0',
+            'product_inspection.stop_explanation' => 'nullable|string|max:250',
+            'product_inspection.problem_description' => 'nullable|string|max:250',
+            'product_inspection.corrective_actions' => 'nullable|string|max:250',
+            'product_inspection.notes' => 'nullable|string|max:250',
+            'product_inspection.media' => 'nullable',
+        ]);
+
+       $quality = Quality::create($request->all() + ['supervisor_id' => auth()->id()]);
+
+       //guarda la media
+       $quality->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+
+        event(new RecordCreated($quality));
+
+        return to_route('qualities.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
+    
     public function show(Quality $quality)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    
     public function edit(Quality $quality)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    
     public function update(Request $request, Quality $quality)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    
     public function destroy(Quality $quality)
     {
-        //
+        $quality->delete();
+
+    }
+
+
+    public function getProduction($production_id)
+    {
+        $production = Sale::with('catalogProductCompanySales.catalogProductCompany.catalogProduct')->find($production_id);
+
+        return response()->json(['item' => $production]);
     }
 }

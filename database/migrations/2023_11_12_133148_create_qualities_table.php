@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('qualities', function (Blueprint $table) {
             $table->id();
+            $table->json('product_inspection')->nullable();
+            $table->foreignId('supervisor_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('production_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

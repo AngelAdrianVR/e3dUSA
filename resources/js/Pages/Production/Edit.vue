@@ -121,7 +121,18 @@
                                             :value="item.id" />
                                     </el-select>
                                 </div>
-                                <div class="flex items-center mt-3">
+                                <label class="flex items-center w-28">
+                                <Checkbox @change="clearVars" v-model:checked="isFreeTask" class="bg-transparent" />
+                                <span class="ml-2 text-sm">Tarea libre</span>
+                                <el-tooltip
+                                content="Asignas la instrucción y el tiempo manualmente"
+                                placement="top">
+                                <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
+                                    <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                </div>
+                                </el-tooltip>
+                                </label>
+                                <div v-if="!isFreeTask" class="flex items-center mt-3">
                                     <el-tooltip content="Seleccionar proceso de producción" placement="top">
                                     <span
                                         class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
@@ -135,7 +146,7 @@
                                         :value="item.name" />
                                     </el-select>
                                 </div>
-                                <!-- <div class="flex items-center">
+                                <div v-if="isFreeTask" class="flex items-center">
                                     <el-tooltip content="Tareas" placement="top">
                                         <span
                                             class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
@@ -145,7 +156,7 @@
                                     <textarea v-model="task.tasks" class="textarea" autocomplete="off"
                                         placeholder="Tareas *"></textarea>
                                     <InputError :message="form.errors.user_tasks?.tasks" />
-                                </div> -->
+                                </div>
                                 <div class="flex items-center">
                                     <el-tooltip content="Tiempo estimado de producción" placement="top">
                                         <span
@@ -154,11 +165,11 @@
                                         </span>
                                     </el-tooltip>
 
-                                    <el-select disabled v-model="task.estimated_time_hours" clearable placeholder="Horas"
+                                    <el-select :disabled="!isFreeTask" v-model="task.estimated_time_hours" clearable placeholder="Horas"
                                         no-data-text="No hay información" no-match-text="No se encontraron coincidencias">
                                         <el-option v-for="hour in 50" :key="hour" :label="(hour - 1)" :value="(hour - 1)" />
                                     </el-select>
-                                    <el-select disabled v-model="task.estimated_time_minutes" clearable placeholder="Minutos"
+                                    <el-select :disabled="!isFreeTask" v-model="task.estimated_time_minutes" clearable placeholder="Minutos"
                                         no-data-text="No hay información" no-match-text="No se encontraron coincidencias">
                                         <el-option v-for="minute in 59" :key="minute" :label="minute" :value="minute" />
                                     </el-select>
@@ -199,6 +210,8 @@
                     </div>
                 </div>
             </form>
+            product:{{form.editedProductIndexes}}
+            tasks:{{form.editedTaskIndexes}}
         </AppLayout>
     </div>
 </template>
@@ -210,12 +223,14 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
+import Checkbox from "@/Components/Checkbox.vue";
 
 export default {
     data() {
         const form = useForm({
             productions: [],
-            editedIndexes: [], //guarda los index editados para buscarlos en el controlador
+            editedProductIndexes: [], //guarda los index del producto editado para buscarlos en el controlador
+            editedTaskIndexes: [], //guarda los index de las tareas editados para buscarlos en el controlador
         });
 
         return {
@@ -224,6 +239,7 @@ export default {
             saleId: null,
             editProductionIndex: null,
             editTaskIndex: null,
+            isFreeTask: false,
             errorMessage: null,
             orderedProducts: [],
             production: {
@@ -243,9 +259,10 @@ export default {
         AppLayout,
         SecondaryButton,
         PrimaryButton,
-        Link,
         InputError,
         IconInput,
+        Checkbox,
+        Link,
     },
     props: {
         operators: Array,
@@ -272,7 +289,7 @@ export default {
 
             if (this.editTaskIndex !== null) {
                 this.tasks[this.editTaskIndex] = task;
-                this.form.editedIndexes.push(this.editTaskIndex);
+                this.form.editedTaskIndexes.push(this.editTaskIndex);
                 this.editTaskIndex = null;
             } else {
                 this.tasks.push(task);
@@ -295,12 +312,13 @@ export default {
 
         // productions
         addProduction() {
-            this.form.editedIndexes = null;
+            this.form.editedTaskIndexes = [];
             let production = { ...this.production };
             production.tasks = this.tasks;
 
             if (this.editProductionIndex !== null) {
                 this.form.productions[this.editProductionIndex] = production;
+                this.form.editedProductIndexes.push(this.editProductionIndex);
                 this.editProductionIndex = null;
             } else {
                 this.form.productions.push(production);
@@ -370,6 +388,11 @@ export default {
                 this.task.estimated_time_hours += Math.floor(this.task.estimated_time_minutes / 60);
                 this.task.estimated_time_minutes %= 60;
                 }
+            },
+            clearVars() {
+                this.task.tasks = null;
+                this.task.estimated_time_hours = null;
+                this.task.estimated_time_minutes = null;
             }
     },
     // watch: {

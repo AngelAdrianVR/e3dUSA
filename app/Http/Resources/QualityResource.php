@@ -14,6 +14,15 @@ class QualityResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'status' => $this->status,
+            'media' => $this->getMedia()->all(),
+            'product_inspection' => $this->product_inspection,
+            'supervisor' => $this->whenLoaded('supervisor'),
+            'production' => SaleResource::make($this->whenLoaded('production')),
+            'created_at' => $this->created_at?->isoFormat('DD MMMM YYYY, h:m A'),
+            'updated_at' => $this->updated_at?->isoFormat('DD MMMM YYYY, h:m A'),
+        ];
     }
 }

@@ -8,7 +8,7 @@
           <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
-            <h2 class="font-semibold text-xl leading-tight">Crear Oportunidad</h2>
+            <h2 class="font-semibold text-xl leading-tight">Crear oportunidad</h2>
           </div>
         </div>
       </template>
