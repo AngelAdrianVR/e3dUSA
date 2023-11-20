@@ -143,11 +143,18 @@ class SaleController extends Controller
         // return to_route('sales.index');
     }
 
-    public function show(Sale $sale)
+    public function show($sale_id)
     {
-        $sales = SaleResource::collection(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator'], 'productions' => ['user', 'operator']])->latest()->get());
+        $sale = SaleResource::make(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator'], 'productions' => ['user', 'operator']])->find($sale_id));
+        $pre_sales = Sale::latest()->get();
+        $sales = $pre_sales->map(function ($sale) {
+            return [
+                'id' => $sale->id,
+                'folio' => 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT),
+                   ];
+               });
 
-        // return $sales;
+        // return $sale;
         return inertia('Sale/Show', compact('sale', 'sales'));
     }
 

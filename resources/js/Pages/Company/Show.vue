@@ -266,7 +266,7 @@ export default {
   data() {
     return {
       selectedCompany: "",
-      currentCompany: null,
+      // currentCompany: null,
       // currentCompanyProducts: null,
       tabs: 1,
       showConfirmModal: false,
@@ -274,7 +274,7 @@ export default {
   },
   props: {
     company: Object,
-    companies: Object,
+    companies: Array,
     // company_products: Array,
   },
   components: {
@@ -305,14 +305,13 @@ export default {
             message: response.data.message,
             type: "success",
           });
-
-          const index = this.companies.data.findIndex(
-            (item) => item.id === this.company.data.id
-          );
-          if (index !== -1) {
-            this.company.data.splice(index, 1);
-            this.selectedCompany = "";
-          }
+          // const index = this.companies.data.findIndex(
+          //   (item) => item.id === this.company.data.id
+          // );
+          // if (index !== -1) {
+          //   this.company.data.splice(index, 1);
+          //   this.selectedCompany = "";
+          // }
         } else {
           this.$notify({
             title: "Algo salió mal",
@@ -329,6 +328,7 @@ export default {
         console.log(err);
       } finally {
         this.showConfirmModal = false;
+        this.$inertia.get(route('companies.index'));
       }
     },
     hasQuotes() {

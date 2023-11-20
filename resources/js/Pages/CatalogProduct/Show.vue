@@ -161,7 +161,7 @@ export default {
     data() {
         return {
             selectedCatalogProduct: '',
-            currentCatalogProduct: null,
+            // currentCatalogProduct: null,
             imageHovered: false,
             showConfirmModal: false,
             currentIndexProduct: null,
