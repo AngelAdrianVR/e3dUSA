@@ -20,7 +20,7 @@
                     <!-- pagination -->
                     <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                            :total="companies.data.length" />
+                            :total="companies.length" />
                     </div>
 
                     <!-- buttons -->
@@ -233,9 +233,9 @@ export default {
     computed: {
         filteredTableData() {
             if (!this.search) {
-                return this.companies.data.filter((item, index) => index >= this.start && index < this.end);
+                return this.companies.filter((item, index) => index >= this.start && index < this.end);
             } else {
-                return this.companies.data.filter(
+                return this.companies.filter(
                     (company) =>
                         company.business_name.toLowerCase().includes(this.search.toLowerCase()) ||
                         company.rfc.toLowerCase().includes(this.search.toLowerCase()) ||

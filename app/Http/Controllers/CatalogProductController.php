@@ -97,9 +97,17 @@ class CatalogProductController extends Controller
     }
 
 
-    public function show(CatalogProduct $catalog_product)
+    public function show($catalog_product_id)
     {
-        $catalog_products = CatalogProductResource::collection(CatalogProduct::with('storages')->get());
+        $catalog_product = CatalogProductResource::make(CatalogProduct::with('storages')->find($catalog_product_id));
+        $pre_catalog_products = CatalogProductResource::collection(CatalogProduct::latest()->get());
+        $catalog_products = $pre_catalog_products->map(function ($catalog_product) {
+            return [
+                'id' => $catalog_product->id,
+                'name' => $catalog_product->name,
+                   ];
+               });
+
         // return $catalog_products;
         return inertia('CatalogProduct/Show', compact('catalog_products', 'catalog_product'));
     }
