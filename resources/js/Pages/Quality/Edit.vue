@@ -1,5 +1,5 @@
 <template>
-  <AppLayout title="Registro de calidad">
+  <AppLayout title="Editar registro de calidad">
       <template #header>
         <div class="flex justify-between">
           <Link :href="route('qualities.index')"
@@ -7,13 +7,13 @@
           <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
-            <h2 class="font-semibold text-xl leading-tight">Crear registro de calidad</h2>
+            <h2 class="font-semibold text-xl leading-tight">Editar registro de calidad</h2>
           </div>
         </div>
       </template>
 
       <!-- Form -->
-      <form @submit.prevent="store">
+      <form @submit.prevent="update">
         <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9  p-4 shadow-md space-y-4 mx-3">
         <h1 class="font-bold text-lg text-left">Registro de supervisión de producción</h1>
         <div>
@@ -22,7 +22,7 @@
                 <el-select @change="getProduction" class="lg:w-1/2" v-model="form.production_id" filterable
                 placeholder="Orden de producción" no-data-text="No hay opciones registradas"
                 no-match-text="No se encontraron coincidencias">
-                    <el-option v-for="item in productions " :key="item" :label="item.folio" :value="item.id" />
+                    <el-option v-for="item in productions" :key="item" :label="item.folio" :value="item.id" />
                 </el-select>
             </div>
             <InputError :message="form.errors.production_id" />
@@ -112,7 +112,7 @@
         </section>
         <div class="mt-9 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing">
-              Guardar
+              Guardar cambios
             </PrimaryButton>
           </div>
         </div>
@@ -134,9 +134,9 @@ import axios from 'axios';
 export default {
 data() {
     const form = useForm({
-      production_id: null,
-      status: null,
-      product_inspection: [],
+      production_id: this.quality.production_id,
+      status: this.quality.status,
+      product_inspection: this.quality.product_inspection,
       media: []
     });
     return {
@@ -165,19 +165,34 @@ InputLabel,
 Link,
 },
 props:{
+quality: Object,
+production: Object,
 productions: Array,
 },
 methods:{
-    store() {
-      this.form.post(route("qualities.store"), {
-        onSuccess: () => {
-          this.$notify({
-            title: "Éxito",
-            message: "Se ha registrado la inspección de producción",
-            type: "success",
-          });
-        },
-      });
+    update() {
+      if (this.form.media.length > 0) {
+        this.form.post(route("qualities.update-with-media", this.quality.id), {
+          method: '_put',
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Registro de calidad editado",
+              type: "success",
+            });
+          },
+        });
+      } else {
+        this.form.put(route("qualities.update", this.quality.id), {
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Registro de calidad editado",
+              type: "success",
+            });
+          },
+        });
+      }
     },
    async getProduction() {
     try {
@@ -189,18 +204,17 @@ methods:{
                 this.form.product_inspection = [];
 
             // Iterar sobre los productos y agregar instancias al array
-            this.productionObj.catalog_product_company_sales.forEach((item) => {
+            this.quality.product_inspection.forEach((item) => {
                 this.form.product_inspection.push({
-                    name: item.catalog_product_company?.catalog_product?.name,
-                    status: null,
-                    progress: null,
-                    total_pieces: parseInt(item.quantity),
-                    pieces: null,
-                    stop_explanation: null,
-                    problem_description: null,
-                    corrective_actions: null,
-                    notes: null,
-                    // media: []
+                    name: item.name,
+                    status: item.status,
+                    progress: item.progress,
+                    total_pieces: parseInt(item.total_pieces),
+                    pieces: item.pieces,
+                    stop_explanation: item.stop_explanation,
+                    problem_description: item.problem_description,
+                    corrective_actions: item.corrective_actions,
+                    notes: item.notes,
                 });
             });
         }
@@ -215,6 +229,25 @@ methods:{
           });
     }
     },
+},
+mounted() {
+    this.productionObj = this.production; //guarda el objeto de la produccion recibida del controlador.
+
+        // Iterar sobre los productos y agregar instancias al array
+        this.productionObj.catalog_product_company_sales.forEach((item) => {
+            this.form.product_inspection.push({
+                name: item.catalog_product_company?.catalog_product?.name,
+                status: item.status,
+                progress: null,
+                total_pieces: parseInt(item.quantity),
+                pieces: null,
+                stop_explanation: null,
+                problem_description: null,
+                corrective_actions: null,
+                notes: null,
+                // media: []
+            });
+        });
 }
 };
 </script>

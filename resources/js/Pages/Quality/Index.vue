@@ -95,9 +95,12 @@
         </tbody>
       </table>
       <div v-else>
-        <p class="text-sm text-center text-gray-400">No hay seguimientos para mostrar</p>
+        <p class="text-sm text-center text-gray-400">No hay registros para mostrar</p>
       </div>
     </div>
+      <!-- <div class="mt-4">
+          <Pagination :pagination="qualities" />
+      </div> -->
 
 </AppLayoutNoHeader>
 </template>
@@ -108,6 +111,7 @@ import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import Pagination from "@/Components/MyComponents/Pagination.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 
@@ -124,6 +128,7 @@ components:{
     DropdownLink,
     PrimaryButton,
     SecondaryButton,
+    Pagination,
     Link,
 },
 props:{

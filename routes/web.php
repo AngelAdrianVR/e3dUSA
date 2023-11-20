@@ -313,6 +313,7 @@ Route::put('productions/continue-production/{production}', [ProductionController
 
 // ------- Quality department routes  ---------
 Route::resource('qualities', QualityController::class)->middleware('auth');
+Route::post('qualities/update-with-media/{quality}', [QualityController::class, 'updateWithMedia'])->name('qualities.update-with-media');
 Route::get('qualities/get-production/{production_id}', [QualityController::class, 'getProduction'])->name('qualities.get-production')->middleware('auth');
 Route::get('qualities/get-quality/{quality_id}', [QualityController::class, 'getQuality'])->name('qualities.get-quality')->middleware('auth');
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordEdited;
 use App\Http\Resources\QualityResource;
 use App\Models\Quality;
 use App\Models\Sale;
@@ -18,6 +19,8 @@ class QualityController extends Controller
 
             return [
                 'id' => $quality->id,
+                'links' => $quality->links,
+                'meta' => $quality->meta,
                 'supervisor' => [
                     'id' => $quality->supervisor->id,
                     'name' => $quality->supervisor->name
@@ -28,7 +31,7 @@ class QualityController extends Controller
             ];
         });
 
-        // return $qualities;
+    // return $qualities;
 
         return inertia('Quality/Index', compact('qualities'));
     }
@@ -79,7 +82,7 @@ class QualityController extends Controller
     
     public function show($quality_id)
     {
-        $quality = QualityResource::make(Quality::with('supervisor')->find($quality_id));
+        $quality = QualityResource::make(Quality::with('supervisor', 'production.catalogProductCompanySales.catalogProductCompany.catalogProduct')->find($quality_id));
         $pre_qualities = Quality::with('supervisor')->latest()->get();
         $qualities = $pre_qualities->map(function ($quality) {
 
@@ -95,13 +98,69 @@ class QualityController extends Controller
     
     public function edit(Quality $quality)
     {
-        //
+        $production = Sale::with('catalogProductCompanySales.catalogProductCompany.catalogProduct')->find($quality->production_id);
+        $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct')->whereHas('productions')->latest()->get();
+        $productions = $pre_productions->map(function ($production) {
+
+            return [
+                'id' => $production->id,
+                'folio' => 'OP-' . str_pad($production->id, 4, "0", STR_PAD_LEFT),
+            ];
+        });
+
+        // return $production;
+
+        return inertia('Quality/Edit', compact('quality', 'productions', 'production'));
     }
 
     
     public function update(Request $request, Quality $quality)
     {
-        //
+        $request->validate([
+            'production_id' => 'required',
+            'status' => 'required|string',
+            'product_inspection.status' => 'nullable|string|max:20',
+            'product_inspection.progress' => 'nullable|string|max:20',
+            'product_inspection.Pieces' => 'nullable|numeric|min:0',
+            'product_inspection.stop_explanation' => 'nullable|string|max:250',
+            'product_inspection.problem_description' => 'nullable|string|max:250',
+            'product_inspection.corrective_actions' => 'nullable|string|max:250',
+            'product_inspection.notes' => 'nullable|string|max:250',
+            'product_inspection.media' => 'nullable',
+        ]);
+
+       $quality->update($request->all());
+
+        event(new RecordEdited($quality));
+
+        return to_route('qualities.index');
+    }
+
+
+    public function updateWithMedia(Request $request, Quality $quality)
+    {
+        $request->validate([
+            'production_id' => 'required',
+            'status' => 'required|string',
+            'product_inspection.status' => 'nullable|string|max:20',
+            'product_inspection.progress' => 'nullable|string|max:20',
+            'product_inspection.Pieces' => 'nullable|numeric|min:0',
+            'product_inspection.stop_explanation' => 'nullable|string|max:250',
+            'product_inspection.problem_description' => 'nullable|string|max:250',
+            'product_inspection.corrective_actions' => 'nullable|string|max:250',
+            'product_inspection.notes' => 'nullable|string|max:250',
+            'product_inspection.media' => 'nullable',
+        ]);
+
+        $quality->update($request->all());
+
+        // media
+        $quality->clearMediaCollection();
+        $quality->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+
+        // event(new RecordEdited($quality));
+
+        return to_route('qualities.index');
     }
 
     

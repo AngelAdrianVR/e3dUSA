@@ -89,10 +89,71 @@
             <p>Fecha y hora</p>
             <p>{{ quality.data.created_at }}</p>
         </div>
-        <div class="flex space-x-7">
+        <div class="flex space-x-12">
             <p>Folio de producción</p>
-            <p>{{ quality.data.folio }}</p>
+            <a class="text-secondary hover:underline" :href="route('productions.show', quality.data.production.id)"><p>{{ quality.data.production.folio }}</p></a>
         </div>
+        <div class="flex flex-col mt-7">
+            <p>Productos y cantidades solicitadas</p>
+            <ul>
+              <li class="text-sm ml-2 my-2" v-for="product in quality.data.production.catalogProductCompanySales" :key="product">
+                <div class="flex items-center">
+                    <i class="fa-solid fa-circle text-[5px] mr-2"></i>
+                    {{ product.catalog_product_company?.catalog_product?.name }}
+                    <i class="fa-solid fa-arrow-right mx-2 text-xs"></i>
+                    {{ product.quantity }} Piezas.
+                </div>
+              </li>
+            </ul>
+        </div>
+        <div class="text-sm mb-9 mt-3" v-for="(inspection, index) in quality.data.product_inspection" :key="inspection">
+          <h2 class="text-secondary mb-1">Producto {{ (index + 1) + '. ' + inspection.name }}</h2>
+          <div class="flex space-x-12">
+            <p class="text-gray-500">Estado del progreso</p>
+            <p>{{ inspection.status }}</p>
+          </div>
+          <div class="flex space-x-[56px]">
+            <p class="text-gray-500">Avance del trabajo</p>
+            <p>{{ inspection.progress }}</p>
+          </div>
+          <div class="flex space-x-[55px]">
+            <p class="text-gray-500">Piezas planificadas</p>
+            <p>{{ inspection?.total_pieces }} unidades</p>
+          </div>
+          <div class="flex space-x-12">
+            <p class="text-gray-500">Piezas completadas</p>
+            <p>{{ inspection?.pieces }} unidades</p>
+          </div>
+          <div v-if="inspection.stop_explanation" class="flex space-x-4">
+            <p class="text-gray-500">Explicación de detención</p>
+            <p>{{ inspection?.stop_explanation }}</p>
+          </div>
+          <h3 class="font-bold my-3">Incidencias o problemas detectados</h3>
+          <div v-if="inspection.problem_description" class="flex space-x-24">
+            <p class="text-gray-500">Descripción</p>
+            <p>{{ inspection?.problem_description }}</p>
+          </div>
+          <div v-if="inspection.problem_description" class="flex space-x-10">
+            <p class="text-gray-500">Acciones correctivas</p>
+            <p>{{ inspection?.corrective_actions }}</p>
+          </div>
+          <h3 class="font-bold my-3">Observaciones y comentarios generales</h3>
+          <div class="flex space-x-32">
+            <p class="text-gray-500">Notas</p>
+            <p>{{ inspection?.notes ?? '--' }}</p>
+          </div>
+        </div>
+          <h3 class="font-bold my-3">Archivos adjuntos</h3>
+          <div class="mb-9" v-if="quality.data.media?.length">
+          <li v-for="file in quality.data.media" :key="file"
+            class="flex items-center justify-between col-span-full">
+            <a :href="file.original_url" target="_blank" class="flex items-center">
+              <i :class="getFileTypeIcon(file.file_name)"></i>
+              <span class="ml-2">{{ file.file_name }}</span>
+            </a>
+          </li>
+        </div>
+        <p class="text-sm text-gray-400 mb-9" v-else><i class="fa-regular fa-file-excel mr-3"></i>No hay archivos adjuntos</p>
     </div>
 
 
@@ -152,6 +213,21 @@ methods:{
     deleteItem() {
      this.$inertia.delete(route('qualities.destroy', this.qualitySelectedId));
       window.location.reload();
+    },
+    getFileTypeIcon(fileName) {
+      // Asocia extensiones de archivo a iconos
+      const fileExtension = fileName.split('.').pop().toLowerCase();
+      switch (fileExtension) {
+        case 'pdf':
+          return 'fa-regular fa-file-pdf text-red-700';
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+        case 'gif':
+          return 'fa-regular fa-image text-blue-300';
+        default:
+          return 'fa-regular fa-file-lines';
+      }
     },
 },
 // watch: {
