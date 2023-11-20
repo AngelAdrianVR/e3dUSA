@@ -51,7 +51,7 @@
         </thead>
         <tbody>
           <tr  v-for="quality in filteredTableData" :key="quality.id"
-          @click="showMonitorType(quality)"
+          @click="$inertia.get(route('qualities.show', quality.id))"
             class="mb-4 hover:bg-[#dfdbdba8] cursor-pointer"
           >
             <td class="py-2 pl-2 rounded-l-full">

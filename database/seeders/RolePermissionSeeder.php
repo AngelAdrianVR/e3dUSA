@@ -201,6 +201,7 @@ class RolePermissionSeeder extends Seeder
 
         Permission::create(['name' => 'Ver modulo de calidad', 'category' => 'Calidad']);
         Permission::create(['name' => 'Crear registro de calidad', 'category' => 'Calidad']);
+        Permission::create(['name' => 'Editar registro de calidad', 'category' => 'Calidad']);
         Permission::create(['name' => 'Eliminar registro de calidad', 'category' => 'Calidad']);
 
 

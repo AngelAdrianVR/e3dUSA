@@ -55,6 +55,7 @@ class QualityController extends Controller
     {
        $request->validate([
             'production_id' => 'required',
+            'status' => 'required|string',
             'product_inspection.status' => 'nullable|string|max:20',
             'product_inspection.progress' => 'nullable|string|max:20',
             'product_inspection.Pieces' => 'nullable|numeric|min:0',
@@ -76,9 +77,19 @@ class QualityController extends Controller
     }
 
     
-    public function show(Quality $quality)
+    public function show($quality_id)
     {
-        //
+        $quality = QualityResource::make(Quality::with('supervisor')->find($quality_id));
+        $pre_qualities = Quality::with('supervisor')->latest()->get();
+        $qualities = $pre_qualities->map(function ($quality) {
+
+            return [
+                'id' => $quality->id,
+                'folio' => 'OP-' . str_pad($quality->production->id, 4, "0", STR_PAD_LEFT),
+            ];
+        });
+        // return $quality;
+        return inertia('Quality/Show', compact('quality', 'qualities'));
     }
 
     
@@ -106,5 +117,12 @@ class QualityController extends Controller
         $production = Sale::with('catalogProductCompanySales.catalogProductCompany.catalogProduct')->find($production_id);
 
         return response()->json(['item' => $production]);
+    }
+
+    public function getQuality($quality_id)
+    {
+        $quality = Quality::with('supervisor')->find($quality_id);
+
+        return response()->json(['item' => $quality]);
     }
 }

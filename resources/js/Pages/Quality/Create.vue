@@ -99,7 +99,15 @@
                 <div class="ml-2 mt-2 col-span-full flex">
                     <FileUploader @files-selected="form.product_inspection[index].media = $event" />
                 </div>
-
+            </div>
+            <div class="w-full mt-5">
+                <InputLabel value="Estatus general de la orden de producción *" class="ml-2" />
+                <el-select class="lg:w-full" v-model="form.status" filterable
+                    placeholder="Seleccione" no-data-text="No hay opciones registradas"
+                    no-match-text="No se encontraron coincidencias">
+                    <el-option v-for="item in statuses" :key="item" :label="item" :value="item" />
+                </el-select>
+                <!-- <InputError :message="form.errors?.product_inspection[index]?.status" /> -->
             </div>
         </section>
         <div class="mt-9 mx-3 md:text-right">
@@ -128,6 +136,7 @@ export default {
 data() {
     const form = useForm({
       production_id: null,
+      status: null,
       product_inspection: []
     });
     return {
@@ -135,7 +144,7 @@ data() {
         productionObj: null,
         statuses:[
             'Sin iniciar',
-            'En preceso',
+            'En proceso',
             'Detenido',
             'Terminada',
         ],
