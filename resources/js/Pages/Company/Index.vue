@@ -151,7 +151,7 @@ export default {
                         type: 'success'
                     });
 
-                    this.companies.data.unshift(response.data.newItem);
+                    this.companies.unshift(response.data.newItem);
 
                 } else {
                     this.$notify({
@@ -164,7 +164,7 @@ export default {
             } catch (err) {
                 this.$notify({
                     title: 'Algo salió mal',
-                    message: err.message,
+                    message: err.message + ". Actualizar página",
                     type: 'error'
                 });
                 console.log(err);
@@ -185,7 +185,7 @@ export default {
 
                     // update list of companies
                     let deletedIndexes = [];
-                    this.companies.data.forEach((company, index) => {
+                    this.companies.forEach((company, index) => {
                         if (this.$refs.multipleTableRef.value.includes(company)) {
                             deletedIndexes.push(index);
                         }
@@ -196,7 +196,7 @@ export default {
 
                     // Eliminar clientes por índice
                     for (const index of deletedIndexes) {
-                        this.companies.data.splice(index, 1);
+                        this.companies.splice(index, 1);
                     }
 
                 } else {

@@ -90,9 +90,14 @@ class CompanyController extends Controller
 
     public function show($company_id)
     {
-        $company = Company::with('companyBranches.contacts')->find($company_id);
-        $companies = CompanyResource::collection(Company::with('companyBranches.contacts', 'companyBranches.sales', 'companyBranches.sales.user', 'companyBranches.quotes', 'catalogProducts.media', 'oportunities', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'projects.tasks')->get());
-
+        $company = CompanyResource::make(Company::with('companyBranches.contacts', 'companyBranches.sales', 'companyBranches.sales.user', 'companyBranches.quotes', 'catalogProducts.media', 'oportunities', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'projects.tasks')->find($company_id));
+        $pre_companies = CompanyResource::make(Company::latest()->get());
+        $companies = $pre_companies->map(function ($company) {
+            return [
+                'id' => $company->id,
+                'name' => $company->business_name,
+                   ];
+               });
         // return $companies;
 
         return inertia('Company/Show', compact('company', 'companies'));

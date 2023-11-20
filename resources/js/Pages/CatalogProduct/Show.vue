@@ -218,7 +218,7 @@ export default {
             } catch (err) {
                 this.$notify({
                     title: 'Algo salió mal',
-                    message: err.message,
+                    message: err.message + "Actualiza la página",
                     type: 'error'
                 });
                 console.log(err);
@@ -235,11 +235,13 @@ export default {
                         type: 'success'
                     });
 
-                    const index = this.catalog_products.data.findIndex(item => item.id === this.catalog_product.data.id);
-                    if (index !== -1) {
-                        this.catalog_products.data.splice(index, 1);
-                        this.selectedCatalogProduct = '';
-                    }
+                    this.$inertia.get(route('catalog-products.index'));
+
+                    // const index = this.catalog_products.data.findIndex(item => item.id === this.catalog_product.data.id);
+                    // if (index !== -1) {
+                    //     this.catalog_products.data.splice(index, 1);
+                    //     this.selectedCatalogProduct = '';
+                    // }
 
                 } else {
                     this.$notify({
