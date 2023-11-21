@@ -35,7 +35,7 @@ class ClientMonitorController extends Controller
                 'type' => $client_monitor->type,
                 'concept' => $client_monitor->concept,
                 'seller' => $client_monitor->seller->name,
-                'date' => $client_monitor->date?->isoFormat('DD MMMM YYYY, h:m A'),
+                'date' => $client_monitor->date?->isoFormat('DD MMMM YYYY, h:mm A'),
                    ];
                });
 

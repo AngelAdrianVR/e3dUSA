@@ -29,10 +29,10 @@ class SaleController extends Controller
 
         // return inertia('Sale/Index', compact('sales'));
 
+        
+        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
         $pre_sales = Sale::with('companyBranch', 'user')->latest()->get();
-
-//Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
-    $sales = $pre_sales->map(function ($sale) {
+        $sales = $pre_sales->map(function ($sale) {
         $hasStarted = $sale->productions?->whereNotNull('started_at')->count();
         $hasNotFinished = $sale->productions?->whereNull('finished_at')->count();
 
