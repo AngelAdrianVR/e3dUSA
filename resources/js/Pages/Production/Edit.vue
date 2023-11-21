@@ -210,8 +210,8 @@
                     </div>
                 </div>
             </form>
-            product:{{form.editedProductIndexes}}
-            tasks:{{form.editedTaskIndexes}}
+            <!-- product:{{form.editedProductIndexes}}
+            tasks:{{form.editedTaskIndexes}} -->
         </AppLayout>
     </div>
 </template>

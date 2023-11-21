@@ -204,7 +204,14 @@ class ProductionController extends Controller
     public function show($sale_id)
     {
         $sale = SaleResource::make(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress']], 'productions' => ['user', 'operator', 'progress']])->find($sale_id));
-        $sales = SaleResource::collection(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress']], 'productions' => ['user', 'operator', 'progress']])->whereHas('productions')->get());
+        $pre_sales = Sale::latest()->get();
+            $sales = $pre_sales->map(function ($sale) {
+            return [
+                'id' => $sale->id,
+                'folio' => 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT),
+                'company_name' => $sale->companyBranch?->name,
+                   ];
+               });
 
         // return $sale;
         return inertia('Production/Show', compact('sale', 'sales'));
