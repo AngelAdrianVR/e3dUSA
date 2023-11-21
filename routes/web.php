@@ -270,8 +270,16 @@ Route::post('holidays/massive-delete', [HolidayController::class, 'massiveDelete
 Route::get('/storage-raw-materials', [StorageController::class, 'index'])->middleware('auth')->name('storages.raw-materials.index');
 Route::get('/storage-consumables', [StorageController::class, 'index'])->middleware('auth')->name('storages.consumables.index');
 Route::get('/storage-finished-products', [StorageController::class, 'index'])->middleware('auth')->name('storages.finished-products.index');
+Route::get('/storage-obsolete', [StorageController::class, 'index'])->middleware('auth')->name('storages.obsolete.index');
+Route::get('/storage-tracking', [StorageController::class, 'index'])->middleware('auth')->name('storages.tracking.index');
 Route::get('/storage-finished-products/create', [StorageController::class, 'create'])->middleware('auth')->name('storages.finished-products.create');
 Route::get('/storage-finished-products/{storage}/edit', [StorageController::class, 'edit'])->middleware('auth')->name('storages.finished-products.edit');
+Route::get('/storage-obsolete/create', [StorageController::class, 'create'])->middleware('auth')->name('storages.obsolete.create');
+Route::get('/storage-obsolete/{storage}/edit', [StorageController::class, 'edit'])->middleware('auth')->name('storages.obsolete.edit');
+Route::post('/storage-obsolete/store', [StorageController::class, 'storeObsolete'])->middleware('auth')->name('storages.obsolete.store');
+Route::get('/storage-obsolete-show/{storage}', [StorageController::class, 'showObsolete'])->middleware('auth')->name('storages.obsolete.show');
+Route::get('/storage-tracking/create', [StorageController::class, 'create'])->middleware('auth')->name('storages.tracking.create');
+Route::get('/storage-tracking/{storage}/edit', [StorageController::class, 'edit'])->middleware('auth')->name('storages.tracking.edit');
 Route::post('/storage-store', [StorageController::class, 'store'])->middleware('auth')->name('storages.store');
 Route::get('/storage-scraps', [StorageController::class, 'index'])->middleware('auth')->name('storages.scraps.index');
 Route::get('/storage-scraps/create', [StorageController::class, 'create'])->middleware('auth')->name('storages.scraps.create');

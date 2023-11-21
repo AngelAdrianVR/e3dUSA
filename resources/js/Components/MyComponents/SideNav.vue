@@ -224,7 +224,7 @@ export default {
                             route: 'storages.finished-products.index',
                             show: this.$page.props.auth.user.permissions.includes('Ver producto terminado'),
                             notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                                return notification.data.module === 'finished-product';
+                                return notification.data.module === 'finished-products';
                             }),
                         },
                         {
@@ -235,7 +235,22 @@ export default {
                                 return notification.data.module === 'scrap';
                             }),
                         },
-
+                        {
+                            label: 'Obsoletos',
+                            route: 'storages.obsolete.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver producto obsoleto'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'obsoletes';
+                            }),
+                        },
+                        {
+                            label: 'Seguimiento',
+                            route: 'storages.tracking.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver producto de seguimiento'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'trackings';
+                            }),
+                        },
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver materia prima') ||
