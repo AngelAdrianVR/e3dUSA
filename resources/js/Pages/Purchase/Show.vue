@@ -227,6 +227,7 @@ export default {
         });
         console.log(err);
       } finally {
+        this.$inertia.get(route('purchases.index'));
         this.showConfirmModal = false;
       }
     },
