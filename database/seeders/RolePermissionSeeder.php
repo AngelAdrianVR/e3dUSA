@@ -200,6 +200,9 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Ordenes de mercadotecnia personal', 'category' => 'Mercadotecnia']);
 
         Permission::create(['name' => 'Ver modulo de calidad', 'category' => 'Calidad']);
+        Permission::create(['name' => 'Crear registro de calidad', 'category' => 'Calidad']);
+        Permission::create(['name' => 'Editar registro de calidad', 'category' => 'Calidad']);
+        Permission::create(['name' => 'Eliminar registro de calidad', 'category' => 'Calidad']);
 
 
         // create roles and assign existing permissions

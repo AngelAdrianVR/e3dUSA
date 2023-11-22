@@ -35,7 +35,8 @@ class MeetingController extends Controller
     {
         $validated = $request->validate([
             'subject' => 'required|string',
-            'location' => 'required|string',
+            'type' => 'required|string',
+            'location' => $request->type == 'Presencial' ? 'required|string' : 'nullable',
             'url' => 'nullable|string',
             'description' => 'nullable|string',
             'date' => 'required|date|after:today',
@@ -78,7 +79,8 @@ class MeetingController extends Controller
     {
         $validated = $request->validate([
             'subject' => 'required|string',
-            'location' => 'required|string',
+            'type' => 'required|string',
+            'location' => $request->type == 'Presencial' ? 'required|string' : 'nullable',
             'url' => 'nullable|string',
             'description' => 'nullable|string',
             'date' => 'required|date|after:today',

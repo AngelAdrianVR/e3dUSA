@@ -11,16 +11,16 @@
         </div>
         <div class="flex justify-between">
           <div class="md:w-1/3">
-            <el-select v-model="selectedPurchase" clearable filterable placeholder="Buscar órden de compra"
+            <el-select @change="$inertia.get(route('purchases.show', selectedPurchase))" v-model="selectedPurchase" clearable filterable placeholder="Buscar órden de compra"
               no-data-text="No hay órdenes en el catálogo" no-match-text="No se encontraron coincidencias">
-              <el-option v-for="item in purchases.data" :key="item.id" :label="item.folio"
+              <el-option v-for="item in purchases" :key="item.id" :label="item.folio"
                 :value="item.id" />
             </el-select>
           </div>
           <div class="flex items-center space-x-2">
 
             <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar ordenes de compra') &&
-                       currentPurchase?.user.id == $page.props.auth.user.id" content="Editar"
+                       purchase.data.user.id == $page.props.auth.user.id" content="Editar"
               placement="top">
               <Link :href="route('purchases.edit', selectedPurchase)">
               <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
@@ -41,11 +41,11 @@
                   v-if="$page.props.auth.user.permissions.includes('Crear ordenes de compra')">
                   Crear nueva órden
                 </DropdownLink>
-                <DropdownLink v-if="!currentPurchase?.emited_at"
-                  @click="$inertia.put(route('purchases.done', currentPurchase?.id))">
+                <DropdownLink v-if="!purchase.data.emited_at"
+                  @click="$inertia.put(route('purchases.done', purchase.data.id))">
                   Marcar como órden pedida
                 </DropdownLink>
-                <DropdownLink v-else @click="$inertia.put(route('purchases.recieved', currentPurchase?.id))">
+                <DropdownLink v-else @click="$inertia.put(route('purchases.recieved', purchase.data.id))">
                   Marcar como órden recibida
                 </DropdownLink>
                 <DropdownLink @click="showConfirmModal = true" as="button"
@@ -81,53 +81,53 @@
       <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
           <span class="text-gray-500">ID</span>
-          <span>{{ currentPurchase?.id }}</span>
+          <span>{{ purchase.data.id }}</span>
           <span class="text-gray-500 my-2">Creado por</span>
-          <span>{{ currentPurchase?.user.name }}</span>
+          <span>{{ purchase.data.user.name }}</span>
           <span class="text-gray-500 my-2">Proveedor</span>
-          <span>{{ currentPurchase?.supplier.name }}</span>
+          <span>{{ purchase.data.supplier.name }}</span>
           <span class="text-gray-500 my-2">Creado el</span>
-          <span>{{ currentPurchase?.created_at }}</span>
+          <span>{{ purchase.data.created_at }}</span>
           <span class="text-gray-500 my-2">Estatus</span>
-          <span :class="currentPurchase?.status == 'Pendiente' ? 'text-amber-600' : 'text-green-600'">{{
-            currentPurchase?.status }}</span>
+          <span :class="purchase.data.status == 'Pendiente' ? 'text-amber-600' : 'text-green-600'">{{
+            purchase.data.status }}</span>
           <span class="text-gray-500 my-2">Autorizado el</span>
-          <span>{{ currentPurchase?.authorized_at }}</span>
+          <span>{{ purchase.data.authorized_at }}</span>
           <span class="text-gray-500 my-2">Autorizado por</span>
-          <span>{{ currentPurchase?.authorized_user_name }}</span>
+          <span>{{ purchase.data.authorized_user_name }}</span>
           <span class="text-gray-500 my-2">Fecha de entrega esperada</span>
-          <span>{{ currentPurchase?.expected_delivery_date }}</span>
+          <span>{{ purchase.data.expected_delivery_date }}</span>
           <span class="text-gray-500 my-2">Fecha de realización de pedido</span>
-          <span>{{ currentPurchase?.emited_at }}</span>
+          <span>{{ purchase.data.emited_at }}</span>
           <span class="text-gray-500 my-2">Fecha de recibido</span>
-          <span>{{ currentPurchase?.recieved_at }}</span>
+          <span>{{ purchase.data.recieved_at }}</span>
           <span class="text-gray-500 my-2">Notas</span>
-          <span>{{ currentPurchase?.notes }}</span>
+          <span>{{ purchase.data.notes }}</span>
         </div>
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
           <p class="text-secondary col-span-2 mb-2">Datos del proveedor</p>
 
           <span class="text-gray-500">ID</span>
-          <span>{{ currentPurchase?.supplier.id }}</span>
+          <span>{{ purchase.data.supplier.id }}</span>
           <span class="text-gray-500 my-2">Nombre</span>
-          <span>{{ currentPurchase?.supplier.name }}</span>
+          <span>{{ purchase.data.supplier.name }}</span>
           <span class="text-gray-500 my-2">Dirección</span>
-          <span>{{ currentPurchase?.supplier.address }}</span>
+          <span>{{ purchase.data.supplier.address }}</span>
           <span class="text-gray-500 my-2">Código postal</span>
-          <span>{{ currentPurchase?.supplier.post_code }}</span>
+          <span>{{ purchase.data.supplier.post_code }}</span>
           <span class="text-gray-500 my-2">Teléfono</span>
-          <span>{{ currentPurchase?.supplier.phone }}</span>
+          <span>{{ purchase.data.supplier.phone }}</span>
 
           <p class="text-secondary col-span-2 mt-7">Datos Bancarios</p>
 
           <span class="text-gray-500 my-2">Nombre del beneficiario</span>
-          <span>{{ currentPurchase?.bank_information.beneficiary_name }}</span>
+          <span>{{ purchase.data.bank_information.beneficiary_name }}</span>
           <span class="text-gray-500 my-2">Número de cuenta</span>
-          <span>{{ currentPurchase?.bank_information.accountNumber }}</span>
+          <span>{{ purchase.data.bank_information.accountNumber }}</span>
           <span class="text-gray-500 my-2">Clabe</span>
-          <span>{{ currentPurchase?.bank_information.clabe }}</span>
+          <span>{{ purchase.data.bank_information.clabe }}</span>
           <span class="text-gray-500 my-2">Banco</span>
-          <span>{{ currentPurchase?.bank_information.bank_name }}</span>
+          <span>{{ purchase.data.bank_information.bank_name }}</span>
 
         </div>
       </div>
@@ -138,7 +138,7 @@
       <div v-if="tabs == 2" class="p-7">
         <p class="text-secondary">Productos Ordenados</p>
         <div class="grid lg:grid-cols-3 md:grid-cols-2 mt-7 gap-10">
-          <RawMaterialCard v-for="product in currentPurchase?.products" :key="product.id" :raw_material="product" />
+          <RawMaterialCard v-for="product in purchase.data.products" :key="product.id" :raw_material="product" />
         </div>
       </div>
 
@@ -148,7 +148,7 @@
         <template #title> Eliminar Órden de compra </template>
         <template #content> Continuar con la eliminación? </template>
         <template #footer>
-          <div class="">
+          <div>
             <CancelButton @click="showConfirmModal = false" class="mr-2">Cancelar</CancelButton>
             <PrimaryButton @click="deleteItem">Eliminar</PrimaryButton>
           </div>
@@ -172,7 +172,7 @@ export default {
   data() {
     return {
       selectedPurchase: "",
-      currentPurchase: null,
+      // currentPurchase: null,
       tabs: 1,
       showConfirmModal: false,
     };
@@ -185,17 +185,17 @@ export default {
     AppLayoutNoHeader,
     Dropdown,
     DropdownLink,
-    Link,
     ConfirmationModal,
     CancelButton,
     PrimaryButton,
-    RawMaterialCard
+    RawMaterialCard,
+    Link,
   },
   methods: {
     async deleteItem() {
       try {
         const response = await axios.delete(
-          route("purchases.destroy", this.currentPurchase?.id)
+          route("purchases.destroy", this.purchase.data.id)
         );
 
         if (response.status == 200) {
@@ -206,10 +206,10 @@ export default {
           });
 
           const index = this.purchases.data.findIndex(
-            (item) => item.id === this.currentPurchase.id
+            (item) => item.id === this.purchase.data.id
           );
           if (index !== -1) {
-            this.purchases.data.splice(index, 1);
+            this.purchases.splice(index, 1);
             this.selectedPurchase = "";
           }
         } else {
@@ -227,19 +227,20 @@ export default {
         });
         console.log(err);
       } finally {
+        this.$inertia.get(route('purchases.index'));
         this.showConfirmModal = false;
       }
     },
   },
 
-  watch: {
-    selectedPurchase(newVal) {
-      this.currentPurchase = this.purchases.data.find((item) => item.id == newVal);
-    },
-  },
+  // watch: {
+  //   selectedPurchase(newVal) {
+  //     this.currentPurchase = this.purchases.data.find((item) => item.id == newVal);
+  //   },
+  // },
 
   mounted() {
-    this.selectedPurchase = this.purchase.id;
+    this.selectedPurchase = this.purchase.data.id;
   },
 };
 </script>

@@ -11,10 +11,10 @@
                 </div>
                 <div class="flex justify-between">
                     <div class="w-1/3">
-                        <el-select v-model="selectedSale" clearable filterable placeholder="Buscar orden de producción"
+                        <el-select  @change="$inertia.get(route('productions.show', selectedSale))" v-model="selectedSale" clearable filterable placeholder="Buscar orden de producción"
                             no-data-text="No hay órdenes registradas" no-match-text="No se encontraron coincidencias">
-                            <el-option v-for="item in sales.data" :key="item.id"
-                                :label="item.folio.replace('OV', 'OP') + ' | ' + item.company_branch?.name"
+                            <el-option v-for="item in sales" :key="item.id"
+                                :label="item.folio.replace('OV', 'OP') + ' | ' + item.company_name"
                                 :value="item.id" />
                         </el-select>
                     </div>
@@ -29,7 +29,7 @@
                 </div>
             </div>
             <p class="text-center font-bold text-lg mb-4">
-                {{ currentSale?.folio.replace('OV', 'OP') + ' | ' + currentSale?.company_branch?.name }}
+                {{ sale.data?.folio.replace('OV', 'OP') + ' | ' + sale.data?.company_branch?.name }}
             </p>
             <!-- ------------- tabs section starts ------------- -->
             <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2">
@@ -54,63 +54,63 @@
                 <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
                     <h2 class="text-secondary col-span-full">Logística</h2>
                     <span class="text-gray-500">ID</span>
-                    <span>{{ currentSale?.folio.replace('OV', 'OP') }}</span>
+                    <span>{{ sale.data?.folio.replace('OV', 'OP') }}</span>
                     <span class="text-gray-500">Paquetería</span>
-                    <span>{{ currentSale?.shipping_company }}</span>
+                    <span>{{ sale.data?.shipping_company }}</span>
                     <span class="text-gray-500">Guía</span>
-                    <span>{{ currentSale?.tracking_guide ?? '--' }}</span>
+                    <span>{{ sale.data?.tracking_guide ?? '--' }}</span>
                     <span class="text-gray-500">Costo logística</span>
-                    <span>${{ currentSale?.freight_cost }}</span>
+                    <span>${{ sale.data?.freight_cost }}</span>
 
                     <h2 class="text-secondary col-span-full mt-6">Datos de la orden</h2>
                     <span class="text-gray-500 my-2">Vendedor</span>
-                    <span>{{ currentSale?.user?.name }}</span>
+                    <span>{{ sale.data?.user?.name }}</span>
                     <span class="text-gray-500 my-2">Creador de orden de producción</span>
-                    <span>{{ currentSale?.productions[0].user?.name }}</span>
+                    <span>{{ sale.data?.productions[0].user?.name }}</span>
                     <span class="text-gray-500 my-2">Solicitada el</span>
-                    <span>{{ getDateFormtted(currentSale?.productions[0].created_at) }}</span>
+                    <span>{{ getDateFormtted(sale.data?.productions[0].created_at) }}</span>
                     <span class="text-gray-500 my-2">Medio de petición</span>
-                    <span>{{ currentSale?.order_via }}</span>
+                    <span>{{ sale.data?.order_via }}</span>
                     <span class="text-gray-500 my-2">Factura</span>
-                    <span>{{ currentSale?.invoice ?? '--' }}</span>
+                    <span>{{ sale.data?.invoice ?? '--' }}</span>
                     <span class="text-gray-500 my-2">OCE</span>
-                    <a :href="currentSale?.media[0]?.original_url" target="_blank"
+                    <a :href="sale.data?.media[0]?.original_url" target="_blank"
                         class="text-secondary cursor-pointer hover:underline">
-                        {{ currentSale?.oce_name ?? currentSale?.media[0]?.file_name }}
+                        {{ sale.data?.oce_name ?? sale.data?.media[0]?.file_name }}
                     </a>
                     <span class="text-gray-500 my-2">Notas</span>
-                    <span>{{ currentSale?.notes ?? '--' }}</span>
+                    <span>{{ sale.data?.notes ?? '--' }}</span>
                     <span class="text-gray-500 my-2">Estatus</span>
-                    <span class="rounded-full border text-center" :class="currentSale?.status['text-color'] +
+                    <span class="rounded-full border text-center" :class="sale.data?.status['text-color'] +
                         ' ' +
-                        currentSale?.status['border-color']
-                        ">{{ currentSale?.status["label"] }}</span>
+                        sale.data?.status['border-color']
+                        ">{{ sale.data?.status["label"] }}</span>
                 </div>
 
                 <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
                     <h2 class="text-secondary col-span-full">Datos del cliente</h2>
                     <span class="text-gray-500">Razon social</span>
-                    <span>{{ currentSale?.company_branch.company.business_name }}</span>
+                    <span>{{ sale.data?.company_branch.company.business_name }}</span>
                     <span class="text-gray-500 my-2">RFC</span>
-                    <span>{{ currentSale?.company_branch.company.rfc }}</span>
+                    <span>{{ sale.data?.company_branch.company.rfc }}</span>
                     <span class="text-gray-500 my-2">Método de pago</span>
-                    <span>{{ currentSale?.company_branch.sat_method }}</span>
+                    <span>{{ sale.data?.company_branch.sat_method }}</span>
                     <span class="text-gray-500 my-2">Medio de pago</span>
-                    <span>{{ currentSale?.company_branch.sat_way }}</span>
+                    <span>{{ sale.data?.company_branch.sat_way }}</span>
                     <span class="text-gray-500 my-2">Uso de factura</span>
-                    <span>{{ currentSale?.company_branch.sat_type }}</span>
+                    <span>{{ sale.data?.company_branch.sat_type }}</span>
                     <span class="text-gray-500 my-2">Cliente / sucursal</span>
-                    <span>{{ currentSale?.company_branch.name }}</span>
+                    <span>{{ sale.data?.company_branch.name }}</span>
                     <span class="text-gray-500 my-2">Dirección de entrega</span>
-                    <span>{{ currentSale?.company_branch.address }}. C.P. {{ currentSale?.company_branch.post_code }}</span>
+                    <span>{{ sale.data?.company_branch.address }}. C.P. {{ sale.data?.company_branch.post_code }}</span>
 
                     <h2 class="text-secondary mt-6 col-span-full">Contacto</h2>
                     <span class="text-gray-500 my-2">Nombre</span>
-                    <span>{{ currentSale?.contact?.name }}</span>
+                    <span>{{ sale.data?.contact?.name }}</span>
                     <span class="text-gray-500 my-2">Correo electronico</span>
-                    <span>{{ currentSale?.contact?.email }}</span>
+                    <span>{{ sale.data?.contact?.email }}</span>
                     <span class="text-gray-500 my-2">Teléfono</span>
-                    <span>{{ currentSale?.contact?.phone }}</span>
+                    <span>{{ sale.data?.contact?.phone }}</span>
 
                 </div>
             </div>
@@ -129,7 +129,7 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-7">
                     <ProductSaleCard @selected="handleSelections(index, $event)"
-                        v-for="(productSale, index) in currentSale?.catalogProductCompanySales" :key="productSale.id"
+                        v-for="(productSale, index) in sale.data.catalogProductCompanySales" :key="productSale.id"
                         :catalog_product_company_sale="productSale" />
                 </div>
             </div>
@@ -164,7 +164,7 @@ export default {
         return {
             form,
             selectedSale: "",
-            currentSale: null,
+            // currentSale: null,
             // startOrderModal: false,
             // helpDialog: false,
             tabs: 1,
@@ -179,23 +179,23 @@ export default {
     },
     components: {
         AppLayoutNoHeader,
+        ProductSaleCard,
         Dropdown,
         DropdownLink,
-        Link,
         CancelButton,
         PrimaryButton,
         // Modal,
         CancelButton,
         InputError,
-        ProductSaleCard
+        Link
     },
     methods: {
         handleSelections(index, isSelected) {
             if (isSelected) {
-                this.orderedProductsSelected.push(this.currentSale.catalogProductCompanySales[index].id);
+                this.orderedProductsSelected.push(this.sale.data.catalogProductCompanySales[index].id);
             }
             else {
-                const opsIndex = this.orderedProductsSelected.findIndex(item => item == this.currentSale.catalogProductCompanySales[index].id)
+                const opsIndex = this.orderedProductsSelected.findIndex(item => item == this.sale.data.catalogProductCompanySales[index].id)
                 this.orderedProductsSelected.splice(opsIndex, 1);
             }
         },
@@ -205,11 +205,11 @@ export default {
         },
     },
 
-    watch: {
-        selectedSale(newVal) {
-            this.currentSale = this.sales.data.find((item) => item.id == newVal);
-        },
-    },
+    // watch: {
+    //     selectedSale(newVal) {
+    //         this.currentSale = this.sales.data.find((item) => item.id == newVal);
+    //     },
+    // },
 
     mounted() {
         this.selectedSale = this.sale.data.id;

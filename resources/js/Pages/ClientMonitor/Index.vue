@@ -99,7 +99,7 @@
               {{ monitor.folio}}
             </td>
             <td class="py-2">
-              {{ monitor.company?.business_name ? monitor.company?.business_name : 'Oportunidad: ' + monitor.oportunity?.name }}
+              {{ monitor.company_name ?? 'Oportunidad: ' + monitor.oportunity?.name }}
             </td>
             <td class="py-2">
               <span
@@ -117,7 +117,7 @@
               <p :title="monitor.concept" class="w-36 truncate">{{ monitor.concept }}</p>
             </td>
             <td class="py-2">
-              {{ monitor.seller?.name }}
+              {{ monitor.seller }}
             </td>
             <td
               v-if="$page.props.auth.user.permissions.includes('Eliminar seguimiento integral')"
@@ -176,13 +176,13 @@ props:{
 methods:{
     showMonitorType(monitor) {
       if (monitor.type == 'Correo') {
-        this.$inertia.get(route('email-monitors.show', monitor.emailMonitor?.id));
+        this.$inertia.get(route('email-monitors.show', monitor.emailMonitorId));
       } else if (monitor.type == 'Pago') {
-        this.$inertia.get(route('payment-monitors.show', monitor.paymentMonitor?.id));
+        this.$inertia.get(route('payment-monitors.show', monitor.paymentMonitorId));
       } else if (monitor.type == 'Reunión') {
-        this.$inertia.get(route('meeting-monitors.show', monitor.mettingMonitor?.id));
+        this.$inertia.get(route('meeting-monitors.show', monitor.mettingMonitorId));
       } else if (monitor.type == 'WhatsApp') {
-        this.$inertia.get(route('whatsapp-monitors.show', monitor.whatsappMonitor?.id));
+        this.$inertia.get(route('whatsapp-monitors.show', monitor.whatsappMonitorId));
       }
     },
     handleSearch() {
@@ -198,10 +198,10 @@ methods:{
             message: "Se ha eliminado correctamente",
             type: "success",
           });
-        const index = this.client_monitors.data.findIndex(item => item.id === monitor.id);
+        const index = this.client_monitors.findIndex(item => item.id === monitor.id);
 
         if (index !== -1) {
-          this.client_monitors.data.splice(index, 1);
+          this.client_monitors.splice(index, 1);
         }
       }
       } catch (error) {
@@ -212,9 +212,9 @@ methods:{
 computed: {
     filteredTableData() {
       if (!this.search) {
-        return this.client_monitors.data;
+        return this.client_monitors;
       } else {
-        return this.client_monitors.data.filter((monitor) =>
+        return this.client_monitors.filter((monitor) =>
           monitor.folio.toLowerCase().includes(this.search.toLowerCase()) ||
           monitor.type.toLowerCase().includes(this.search.toLowerCase()) ||
           monitor.concept.toLowerCase().includes(this.search.toLowerCase()) ||

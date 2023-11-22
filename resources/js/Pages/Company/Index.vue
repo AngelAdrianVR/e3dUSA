@@ -20,7 +20,7 @@
                     <!-- pagination -->
                     <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                            :total="companies.data.length" />
+                            :total="companies.length" />
                     </div>
 
                     <!-- buttons -->
@@ -151,7 +151,7 @@ export default {
                         type: 'success'
                     });
 
-                    this.companies.data.unshift(response.data.newItem);
+                    this.companies.unshift(response.data.newItem);
 
                 } else {
                     this.$notify({
@@ -164,7 +164,7 @@ export default {
             } catch (err) {
                 this.$notify({
                     title: 'Algo salió mal',
-                    message: err.message,
+                    message: err.message + ". Actualizar página",
                     type: 'error'
                 });
                 console.log(err);
@@ -185,7 +185,7 @@ export default {
 
                     // update list of companies
                     let deletedIndexes = [];
-                    this.companies.data.forEach((company, index) => {
+                    this.companies.forEach((company, index) => {
                         if (this.$refs.multipleTableRef.value.includes(company)) {
                             deletedIndexes.push(index);
                         }
@@ -196,7 +196,7 @@ export default {
 
                     // Eliminar clientes por índice
                     for (const index of deletedIndexes) {
-                        this.companies.data.splice(index, 1);
+                        this.companies.splice(index, 1);
                     }
 
                 } else {
@@ -233,9 +233,9 @@ export default {
     computed: {
         filteredTableData() {
             if (!this.search) {
-                return this.companies.data.filter((item, index) => index >= this.start && index < this.end);
+                return this.companies.filter((item, index) => index >= this.start && index < this.end);
             } else {
-                return this.companies.data.filter(
+                return this.companies.filter(
                     (company) =>
                         company.business_name.toLowerCase().includes(this.search.toLowerCase()) ||
                         company.rfc.toLowerCase().includes(this.search.toLowerCase()) ||

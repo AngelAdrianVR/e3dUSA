@@ -11,9 +11,9 @@
         </div>
         <div class="flex justify-between">
           <div class="w-1/3">
-            <el-select v-model="selectedSupplier" clearable filterable placeholder="Buscar producto"
+            <el-select @change="$inertia.get(route('suppliers.show', selectedSupplier))" v-model="selectedSupplier" clearable filterable placeholder="Buscar producto"
               no-data-text="No hay proveedores en el catálogo" no-match-text="No se encontraron coincidencias">
-              <el-option v-for="item in suppliers.data" :key="item.id" :label="item.name" :value="item.id" />
+              <el-option v-for="item in suppliers" :key="item.id" :label="item.name" :value="item.id" />
             </el-select>
           </div>
           <div class="flex items-center space-x-2">
@@ -44,7 +44,7 @@
         </div>
       </div>
       <p class="text-center font-bold text-lg mb-4">
-        {{ supplier.name }}
+        {{ supplier.data.name }}
       </p>
 
       <!-- ------------- tabs section starts ------------- -->
@@ -71,26 +71,26 @@
       <!-- ------------- Informacion general Starts 1 ------------- -->
       <div v-if="tabs == 1" class="md:w-1/2 grid grid-cols-2 text-left p-4 md:ml-20 text-sm">
         <span class="text-gray-500">ID</span>
-        <span>{{ currentSupplier?.id }}</span>
+        <span>{{ supplier.data.id }}</span>
 
         <span class="col-span-2 mt-8 mb-2">Datos</span>
 
         <span class="text-gray-500 my-2">Nombre</span>
-        <span>{{ currentSupplier?.name }}</span>
+        <span>{{ supplier.data.name }}</span>
         <span class="text-gray-500 my-2">Dirección</span>
-        <span>{{ currentSupplier?.address }}</span>
+        <span>{{ supplier.data.address }}</span>
         <span class="text-gray-500 my-2">Código postal</span>
-        <span>{{ currentSupplier?.post_code }}</span>
+        <span>{{ supplier.data.post_code }}</span>
         <span class="text-gray-500 my-2">Teléfono</span>
-        <span>{{ currentSupplier?.phone }}</span>
+        <span>{{ supplier.data.phone }}</span>
         <span class="text-gray-500 my-2">Agregado el</span>
-        <span>{{ currentSupplier?.created_at }}</span>
+        <span>{{ supplier.data.created_at }}</span>
       </div>
       <!-- ------------- Informacion general ends 1 ------------- -->
 
       <!-- -------------Sucursales starts 2 ------------- -->
       <div v-if="tabs == 2" class="lg:grid grid-cols-2 gap-8 md:mt-12 md:px-14">
-        <SupplierBankCard :banks="currentSupplier?.banks" :contacts="currentSupplier?.contacts" />
+        <SupplierBankCard :banks="supplier.data.banks" :contacts="supplier.data.contacts" />
       </div>
 
       <!-- ------------- Sucursales ends 2 ------------- -->
@@ -109,7 +109,7 @@
         <template #title> Eliminar proveedor </template>
         <template #content> Continuar con la eliminación? </template>
         <template #footer>
-          <div class="">
+          <div>
             <CancelButton @click="showConfirmModal = false" class="mr-2">Cancelar</CancelButton>
             <PrimaryButton @click="deleteItem">Eliminar</PrimaryButton>
           </div>
@@ -133,7 +133,7 @@ export default {
   data() {
     return {
       selectedSupplier: "",
-      currentSupplier: null,
+      // currentSupplier: null,
       tabs: 1,
       showConfirmModal: false,
     };
@@ -147,17 +147,17 @@ export default {
     AppLayoutNoHeader,
     Dropdown,
     DropdownLink,
-    Link,
     ConfirmationModal,
     CancelButton,
     PrimaryButton,
-    SupplierBankCard
+    SupplierBankCard,
+    Link
   },
   methods: {
     async deleteItem() {
       try {
         const response = await axios.delete(
-          route("suppliers.destroy", this.currentSupplier?.id)
+          route("suppliers.destroy", this.supplier.data.id)
         );
 
         if (response.status == 200) {
@@ -167,11 +167,11 @@ export default {
             type: "success",
           });
 
-          const index = this.suppliers.data.findIndex(
-            (item) => item.id === this.currentSupplier.id
+          const index = this.suppliers.findIndex(
+            (item) => item.id === this.supplier.data.id
           );
           if (index !== -1) {
-            this.suppliers.data.splice(index, 1);
+            this.suppliers.splice(index, 1);
             this.selectedSupplier = "";
           }
         } else {
@@ -190,18 +190,19 @@ export default {
         console.log(err);
       } finally {
         this.showConfirmModal = false;
+        this.$inertia.get(route('suppliers.index'));
       }
     },
   },
 
-  watch: {
-    selectedSupplier(newVal) {
-      this.currentSupplier = this.suppliers.data.find((item) => item.id == newVal);
-    },
-  },
+  // watch: {
+  //   selectedSupplier(newVal) {
+  //     this.currentSupplier = this.suppliers.data.find((item) => item.id == newVal);
+  //   },
+  // },
 
   mounted() {
-    this.selectedSupplier = this.supplier.id;
+    this.selectedSupplier = this.supplier.data.id;
   },
 };
 </script>

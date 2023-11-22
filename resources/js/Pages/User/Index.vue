@@ -25,7 +25,7 @@
                     <!-- pagination -->
                     <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                            :total="users.data.length" />
+                            :total="users.length" />
                     </div>
 
                     <!-- buttons -->
@@ -42,7 +42,7 @@
                 <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%" @selection-change="handleSelectionChange"
                     ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column prop="id" label="ID" width="45" />
-                    <el-table-column prop="name" label="Nombre" />
+                    <el-table-column prop="user_name" label="Nombre" />
                     <el-table-column prop="is_active.string" label="Estatus" />
                     <el-table-column prop="employee_properties.job_position" label="Puesto" />
                     <el-table-column prop="employee_properties.join_date" label="Fecha ingreso" width="160" />
@@ -162,9 +162,9 @@ export default {
     computed: {
         filteredTableData() {
             if (!this.search) {
-                return this.users.data.filter((item, index) => index >= this.start && index < this.end);
+                return this.users.filter((item, index) => index >= this.start && index < this.end);
             } else {
-                return this.users.data.filter(
+                return this.users.filter(
                     (user) =>
                         user.name.toLowerCase().includes(this.search.toLowerCase()) ||
                         user.id.toString().toLowerCase().includes(this.search.toLowerCase()) ||

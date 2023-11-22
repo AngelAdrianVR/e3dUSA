@@ -14,7 +14,21 @@ class SupplierController extends Controller
     
     public function index()
     {
-        $suppliers = SupplierResource::collection(Supplier::latest()->get());
+        // $suppliers = SupplierResource::collection(Supplier::latest()->get());
+         //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
+         $pre_suppliers = SupplierResource::collection(Supplier::latest()->get());
+         $suppliers = $pre_suppliers->map(function ($supplier) {
+             return [
+                 'id' => $supplier->id,
+                 'name' => $supplier->name,
+                 'phone' => $supplier->phone,
+                 'address' => $supplier->address,
+                 'post_code' => $supplier->post_code,
+                 'created_at' => $supplier->created_at?->isoFormat('DD MMMM YYYY, h:mm A'),
+                    ];
+                });
+
+                // return $suppliers;
 
         return inertia('Supplier/Index', compact('suppliers'));
     }
@@ -49,9 +63,17 @@ class SupplierController extends Controller
     }
 
     
-    public function show(Supplier $supplier)
+    public function show($supplier_id)
     {
-        $suppliers = SupplierResource::collection(Supplier::with('contacts')->latest()->get());
+        $supplier = SupplierResource::make(Supplier::with('contacts')->find($supplier_id));
+        $pre_suppliers = Supplier::latest()->get();
+        $suppliers = $pre_suppliers->map(function ($supplier) {
+            return [
+                'id' => $supplier->id,
+                'name' => $supplier->name,
+                   ];
+               });
+
         // return $suppliers;
 
         return inertia('Supplier/Show', compact('supplier', 'suppliers'));

@@ -16,7 +16,7 @@
           </el-select>
         </div>
         <div class="flex items-center space-x-2">
-          <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar maquinas')" content="Editar"
+          <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar maquinas') && currentMachine" content="Editar"
             placement="top">
             <Link :href="route('machines.edit', selectedMachine)">
             <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
@@ -25,7 +25,7 @@
             </Link>
           </el-tooltip>
           <Dropdown align="right" width="48"
-            v-if="$page.props.auth.user.permissions.includes('Crear maquinas') && $page.props.auth.user.permissions.includes('Crear mantenimientos') && $page.props.auth.user.permissions.includes('Crear refacciones') && $page.props.auth.user.permissions.includes('Eliminar maquinas')">
+            v-if="$page.props.auth.user.permissions.includes('Crear maquinas') && $page.props.auth.user.permissions.includes('Crear mantenimientos') && $page.props.auth.user.permissions.includes('Crear refacciones') && $page.props.auth.user.permissions.includes('Eliminar maquinas') && currentMachine">
             <template #trigger>
               <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
                 Más <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
@@ -140,19 +140,30 @@
                 ${{ currentMachine?.cost_number_format }}
               </p>
             </div>
-            <div class="flex mt-7 mb-2 items-center">
+            <!-- <div class="flex mt-7 mb-2 items-center">
               <i class="fa-solid fa-paperclip mr-2"></i>
               <p class="text-[#9A9A9A]">Archivos adjuntos</p>
+            </div> -->
+            <!-- <a class="hover:underline text-primary hover:text-secondary" v-for="file in currentMachine?.files" :key="file.id" :href="file.original_url" target="_blank">{{file.file_name }}</a> -->
+            <p class="text-secondary col-span-2 mb-2 mt-5">Archivos adjuntos</p>
+            <div v-if="currentMachine?.files?.length">
+              <li v-for="file in currentMachine?.files" :key="file"
+                class="flex items-center justify-between col-span-full">
+                <a :href="file.original_url" target="_blank" class="flex items-center">
+                  <i :class="getFileTypeIcon(file.file_name)"></i>
+                  <span class="ml-2">{{ file.file_name }}</span>
+                </a>
+              </li>
             </div>
+            <p class="text-sm text-gray-400" v-else><i class="fa-regular fa-file-excel mr-3"></i>No hay archivos adjuntos</p>
             <div class="flex flex-col">
-            <a class="hover:underline text-primary hover:text-secondary" v-for="file in currentMachine?.files" :key="file.id" :href="file.original_url" target="_blank">{{file.file_name }}</a>
-          </div>
+          </div>  
           </div>
           <!-- --------------------- Tab 1 Información general ends------------------ -->
 
           <!-- --------------------- Tab 2 Mantenimient starts------------------ -->
           <div v-if="tabs == 2" class="px-7 py-7 text-sm overflow-scroll h-96">
-            <table class="border-separate border-spacing-x-8">
+            <table v-if="currentMachine?.maintenances?.length > 0" class="border-separate border-spacing-x-8">
               <thead>
                 <tr>
                   <th class="pr-4">#</th>
@@ -194,12 +205,13 @@
                 </tr>
               </tbody>
             </table>
+            <p v-else class="text-center text-xs text-gray-500">No hay mantenimientos registrados</p>
           </div>
           <!-- --------------------- Tab 2 Mantenimient ends------------------ -->
 
           <!-- --------------------- Tab 3 refacciones starts------------------ -->
           <div v-if="tabs == 3" class="px-7 py-7 text-sm overflow-scroll h-96">
-            <table class="border-separate border-spacing-x-8">
+            <table v-if="currentMachine?.spare_parts?.length > 0" class="border-separate border-spacing-x-8">
               <thead>
                 <tr>
                   <th class="pr-4">#</th>
@@ -207,7 +219,7 @@
                   <th class="px-4">Cantidad</th>
                   <th class="px-4">Costo</th>
                   <th class="px-4">Adquirida el</th>
-                  <th class="px-4">Ubicación</th>
+                  <th class="px-4">Ubicación en bodega</th>
                   <th></th>
                 </tr>
               </thead>
@@ -245,6 +257,7 @@
                 </tr>
               </tbody>
             </table>
+            <p v-else class="text-center text-xs text-gray-500">No hay refacciones registradas</p>
           </div>
           <!-- --------------------- Tab 3 refacciones ends------------------ -->
         </div>
@@ -254,7 +267,7 @@
         <template #title> Eliminar máquina </template>
         <template #content> Continuar con la eliminación? </template>
         <template #footer>
-          <div class="">
+          <div>
             <CancelButton @click="showConfirmModal = false" class="mr-2">Cancelar</CancelButton>
             <PrimaryButton @click="deleteItem">Eliminar</PrimaryButton>
           </div>
@@ -513,6 +526,21 @@ export default {
     machines: Array,
   },
   methods: {
+    getFileTypeIcon(fileName) {
+      // Asocia extensiones de archivo a iconos
+      const fileExtension = fileName.split('.').pop().toLowerCase();
+      switch (fileExtension) {
+        case 'pdf':
+          return 'fa-regular fa-file-pdf text-red-700';
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+        case 'gif':
+          return 'fa-regular fa-image text-blue-300';
+        default:
+          return 'fa-regular fa-file-lines';
+      }
+    },
     deleteRow(obj) {
       if (this.tabs == 2) {
         this.$inertia.delete(route("maintenances.destroy", obj));
@@ -531,6 +559,7 @@ export default {
           type: "success",
         });
       }
+      window.location.reload();
     },
 
     openMaintenanceModal(maintenance, index) {

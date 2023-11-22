@@ -99,6 +99,16 @@
             <p class="text-gray-600">{{ date }}</p>
           </div>
 
+          <div class="mb-3 flex items-center">
+          <el-tooltip content="Tipo de reunión" placement="left">
+          <span
+                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                <i class="fa-solid fa-people-arrows"></i>
+              </span>
+        </el-tooltip>
+            <p class="text-gray-600">{{ type }}</p>
+          </div>
+
           <div class="flex mb-3 w-full">
             <div>
             <el-tooltip content="Hora de la reunión" placement="left">
@@ -187,6 +197,7 @@ export default {
             search: '',
             showMeetingModal: false,
             subject: null,
+            type: null,
             location: null,
             url: null,
             description: null,
@@ -226,6 +237,7 @@ export default {
         },
         handleRowClick(row) {
             this.subject = row.subject,
+            this.type = row.type,
             this.location = row.location,
             this.url = row.url,
             this.description = row.description,

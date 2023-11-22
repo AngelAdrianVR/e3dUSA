@@ -20,7 +20,33 @@ class PurchaseController extends Controller
     
     public function index()
     {
-        $purchases = PurchaseResource::collection(Purchase::with('contact', 'supplier', 'user')->latest()->get());
+        // $purchases = PurchaseResource::collection(Purchase::with('contact', 'supplier', 'user')->latest()->get());
+        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
+        $pre_purchases = PurchaseResource::collection(Purchase::with('supplier', 'user')->latest()->get());
+        $purchases = $pre_purchases->map(function ($purchase) {
+
+            if($purchase->status == 0){
+                $status = 'Pendiente';
+            }elseif($purchase->status == 1){
+                $status = 'Autorizado';
+            }elseif($purchase->status == 2){
+                $status = 'Emitido';
+            }else{
+                $status = 'Recibido';
+            }
+
+            return [
+                'id' => $purchase->id,
+                'folio' => 'OC-' . str_pad($purchase->id, 4, "0", STR_PAD_LEFT),
+                'user' => $purchase->user->name,
+                'authorized_user_name' => $purchase->authorized_user_name ?? 'No autorizado',
+                'status' => $status,
+                'emited_at' => $purchase->emited_at?->isoFormat('DD MMM, YYYY h:mm A') ?? 'Pedido no realizado',
+                'recieved_at' => $purchase->recieved_at?->isoFormat('YYYY MMM DD') ?? 'No recibido',
+                'supplier_name' => $purchase->supplier?->name,
+                'created_at' => $purchase->created_at?->isoFormat('DD MMMM YYYY, h:mm A'),
+                   ];
+               });
         // return $purchases;        
         return inertia('Purchase/Index', compact('purchases'));
     }
@@ -66,9 +92,16 @@ class PurchaseController extends Controller
     }
 
     
-    public function show(Purchase $purchase)
+    public function show($purchase_id)
     {
-        $purchases = PurchaseResource::collection(Purchase::with('user','supplier')->latest()->get());
+        $purchase = PurchaseResource::make(Purchase::with('user','supplier')->find($purchase_id));
+        $pre_purchases = Purchase::latest()->get();
+        $purchases = $pre_purchases->map(function ($purchase) {
+            return [
+                'id' => $purchase->id,
+                'folio' => 'OC-' . str_pad($purchase->id, 4, "0", STR_PAD_LEFT),
+                   ];
+               });
 
         // return $purchases;
 

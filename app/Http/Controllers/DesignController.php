@@ -122,17 +122,38 @@ class DesignController extends Controller
         return to_route('designs.index');
     }
 
-    public function show(Design $design)
+    public function show($design_id)
     {
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de diseño todas')) {
-            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType', 'modifications.media')->latest()->get());
-            // return $designs;
+            $design = DesignResource::make(Design::with('user', 'designer', 'designType', 'modifications.media')->find($design_id));
+            $pre_designs = Design::latest()->get();
+            $designs = $pre_designs->map(function ($design) {
+            return [
+                'id' => $design->id,
+                'name' => $design->name,
+                   ];
+               });
+            // return $design;
             return inertia('Design/Show', compact('design', 'designs'));
         } elseif (auth()->user()->can('Ordenes de diseño personal')) {
-            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType', 'modifications.media')->where('user_id', auth()->id())->latest()->get());
+            $design = DesignResource::make(Design::with('user', 'designer', 'designType', 'modifications.media')->where('user_id', auth()->id())->find($design_id));
+            $pre_designs = DesignResource::collection(Design::where('designer_id', auth()->id())->latest()->get());
+            $designs = $pre_designs->map(function ($design) {
+                return [
+                    'id' => $design->id,
+                    'name' => $design->name,
+                       ];
+                   });
             return inertia('Design/Show', compact('design', 'designs'));
         } else {
-            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType', 'modifications.media')->where('designer_id', auth()->id())->latest()->get());
+            $design = DesignResource::make(Design::with('user', 'designer', 'designType', 'modifications.media')->where('designer_id', auth()->id())->find($design_id));
+            $pre_designs = DesignResource::collection(Design::where('designer_id', auth()->id())->latest()->get());
+            $designs = $pre_designs->map(function ($design) {
+                return [
+                    'id' => $design->id,
+                    'name' => $design->name,
+                       ];
+                   });
             return inertia('Design/Show', compact('design', 'designs'));
         }
     }

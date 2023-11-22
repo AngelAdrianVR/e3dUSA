@@ -21,8 +21,9 @@ class MeetingResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'type' => $this->type,
             'subject' => $this->subject,
-            'location' => $this->location,
+            'location' => $this->location ?? '--',
             'url' => $this->url ?? '--',
             'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'status' => $status,

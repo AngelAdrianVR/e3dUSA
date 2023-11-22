@@ -11,9 +11,9 @@
         </div>
         <div class="flex justify-between">
           <div class="md:w-1/3">
-            <el-select v-model="selectedCompany" clearable filterable placeholder="Buscar cliente"
+            <el-select @change="$inertia.get(route('companies.show', selectedCompany))" v-model="selectedCompany" clearable filterable placeholder="Buscar cliente"
               no-data-text="No hay clientes en el catálogo" no-match-text="No se encontraron coincidencias">
-              <el-option v-for="item in companies.data" :key="item.id" :label="item.business_name" :value="item.id" />
+              <el-option v-for="item in companies" :key="item.id" :label="item.name" :value="item.id" />
             </el-select>
           </div>
           <div class="flex items-center space-x-2">
@@ -47,7 +47,7 @@
         </div>
       </div>
       <p class="text-center font-bold text-lg mb-4">
-        {{ company.business_name }}
+        {{ company.data.business_name }}
       </p>
       <!-- ------------- tabs section starts ------------- -->
       <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2">
@@ -91,11 +91,6 @@
             " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Ordenes de venta
           </p>
-          <!-- <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
-          <p @click="tabs = 9" :class="tabs == 9 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-            Historial
-          </p> -->
         </div>
       </div>
       <!-- ------------- tabs section ends ------------- -->
@@ -103,24 +98,24 @@
       <!-- ------------- Informacion general Starts 1 ------------- -->
       <div v-if="tabs == 1" class="md:w-1/2 grid grid-cols-2 text-left p-4 md:ml-20 text-sm items-center">
         <span class="text-gray-500">ID</span>
-        <span>{{ currentCompany?.id }}</span>
+        <span>{{ company.data.id }}</span>
 
         <span class="col-span-2 mt-8 mb-2">Datos fiscales</span>
 
         <span class="text-gray-500 my-2">Razón social</span>
-        <span>{{ currentCompany?.business_name }}</span>
+        <span>{{ company.data.business_name }}</span>
         <span class="text-gray-500 my-2">RFC</span>
-        <span>{{ currentCompany?.rfc }}</span>
+        <span>{{ company.data.rfc }}</span>
         <span class="text-gray-500 my-2">Código postal</span>
-        <span>{{ currentCompany?.post_code }}</span>
+        <span>{{ company.data.post_code }}</span>
         <span class="text-gray-500 my-2">Dirección</span>
-        <span>{{ currentCompany?.fiscal_address }}</span>
+        <span>{{ company.data.fiscal_address }}</span>
       </div>
       <!-- ------------- Informacion general ends 1 ------------- -->
 
       <!-- -------------Sucursales starts 2 ------------- -->
       <div v-if="tabs == 2" class="lg:grid grid-cols-2 gap-8 md:mt-12 md:px-14">
-        <CompanyBranchCard :company_branches="currentCompany?.company_branches" />
+        <CompanyBranchCard :company_branches="company.data.company_branches" />
       </div>
       <!-- ------------- Sucursales ends 2 ------------- -->
 
@@ -128,7 +123,7 @@
       <div v-if="tabs == 3" class="p-7">
         <p class="text-secondary">Productos registrados</p>
         <div class="grid lg:grid-cols-4 md:grid-cols-2 mt-7 gap-10">
-          <CompanyProductCard v-for="company_product in currentCompany?.catalogProducts" :key="company_product.id"
+          <CompanyProductCard v-for="company_product in company.data.catalogProducts" :key="company_product.id"
             :company_product="company_product" />
         </div>
       </div>
@@ -136,8 +131,8 @@
       
       <!-- -------------Oportunidades starts 4 ------------- -->
       <div v-if="tabs == 4" class="p-7 w-full mx-auto my-4">
-      <div v-if="currentCompany?.oportunities.length">
-        <CompanyOportunityTable :oportunities="currentCompany?.oportunities" />
+      <div v-if="company.data.oportunities.length">
+        <CompanyOportunityTable :oportunities="company.data.oportunities" />
       </div>
       <div class="flex flex-col text-center justify-center" v-else>
         <p class="text-sm text-center">No hay oportunidades para mostrar</p>
@@ -170,7 +165,7 @@
       </tr>
     </thead>
     <tbody>
-      <template v-for="branch in currentCompany?.company_branches">
+      <template v-for="branch in company.data.company_branches">
         <tr v-for="quote in branch.quotes" :key="quote.id" class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]"
           @click="$inertia.get(route('quotes.show', quote.id))"
         >
@@ -204,8 +199,8 @@
 
       <!-- -------------Seguimiento integral starts 6 ------------- -->
       <div v-if="tabs == 6" class="p-7 w-full mx-auto my-4">
-      <div v-if=" currentCompany?.clientMonitors?.length">
-        <CompanyClientMonitorTable :client_monitors="currentCompany?.clientMonitors" />
+      <div v-if=" company.data.clientMonitors?.length">
+        <CompanyClientMonitorTable :client_monitors="company.data.clientMonitors" />
       </div>
       <div class="flex flex-col text-center justify-center" v-else>
         <p class="text-sm text-center">No hay Seguimiento para mostrar</p>
@@ -216,8 +211,8 @@
 
       <!-- -------------Proyectos starts 7 ------------- -->
       <div v-if="tabs == 7" class="p-7 w-full mx-auto my-4">
-      <div v-if=" currentCompany?.projects?.length">
-        <ProjectTable :projects="currentCompany?.projects" />
+      <div v-if=" company.data.projects?.length">
+        <ProjectTable :projects="company.data.projects" />
       </div>
       <div class="flex flex-col text-center justify-center" v-else>
         <p class="text-sm text-center">No hay proyectos para mostrar</p>
@@ -228,7 +223,7 @@
       
       <!-- -------------Ordenes de venta starts 8 ------------- -->
       <div v-if="tabs == 8" class="p-7 w-full mx-auto my-4">
-      <div v-if="currentCompany?.company_branches?.some(branch => branch.sales?.length > 0)">
+      <div v-if="company.data.company_branches?.some(branch => branch.sales?.length > 0)">
         <CompanySalesTable :company_sales="allSales" />
       </div>
       <div class="flex flex-col text-center justify-center" v-else>
@@ -237,13 +232,6 @@
       </div>
       </div>
       <!-- ------------- Ordenes de venta ends 8 ------------- -->
-
-      <!-- -------------Historial starts 9 ------------- -->
-      <div v-if="tabs == 9" class="p-7">
-        <p class="text-secondary">Historial</p>
-        
-      </div>
-      <!-- ------------- Historial ends 9 ------------- -->
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar cliente </template>
@@ -278,7 +266,7 @@ export default {
   data() {
     return {
       selectedCompany: "",
-      currentCompany: null,
+      // currentCompany: null,
       // currentCompanyProducts: null,
       tabs: 1,
       showConfirmModal: false,
@@ -286,7 +274,7 @@ export default {
   },
   props: {
     company: Object,
-    companies: Object,
+    companies: Array,
     // company_products: Array,
   },
   components: {
@@ -308,7 +296,7 @@ export default {
     async deleteItem() {
       try {
         const response = await axios.delete(
-          route("companies.destroy", this.currentCompany?.id)
+          route("companies.destroy", this.company.data.id)
         );
 
         if (response.status == 200) {
@@ -317,14 +305,13 @@ export default {
             message: response.data.message,
             type: "success",
           });
-
-          const index = this.companies.data.findIndex(
-            (item) => item.id === this.currentCompany.id
-          );
-          if (index !== -1) {
-            this.companies.data.splice(index, 1);
-            this.selectedCompany = "";
-          }
+          // const index = this.companies.data.findIndex(
+          //   (item) => item.id === this.company.data.id
+          // );
+          // if (index !== -1) {
+          //   this.company.data.splice(index, 1);
+          //   this.selectedCompany = "";
+          // }
         } else {
           this.$notify({
             title: "Algo salió mal",
@@ -335,16 +322,17 @@ export default {
       } catch (err) {
         this.$notify({
           title: "Algo salió mal",
-          message: err.message,
+          message: err.message + "Actualiza la página",
           type: "error",
         });
         console.log(err);
       } finally {
         this.showConfirmModal = false;
+        this.$inertia.get(route('companies.index'));
       }
     },
     hasQuotes() {
-      const tieneCotizaciones = this.currentCompany?.company_branches
+      const tieneCotizaciones = this.company.data.company_branches
       .map((branch) => branch.quotes.length > 0)
       .some((tieneCotizacionesEnBranch) => tieneCotizacionesEnBranch);
 
@@ -353,22 +341,22 @@ export default {
     
   },
 
-  watch: {
-    selectedCompany(newVal) {
-      this.currentCompany = this.companies.data.find((item) => item.id == newVal);
-      // this.currentCompanyProducts = this.company_products.data.find((item) => item.company_id == this.selectedCompany);
-    },
-  },
+  // watch: {
+  //   selectedCompany(newVal) {
+  //     this.currentCompany = this.companies.data.find((item) => item.id == newVal);
+  //     // this.currentCompanyProducts = this.company_products.data.find((item) => item.company_id == this.selectedCompany);
+  //   },
+  // },
 
   mounted() {
-    this.selectedCompany = this.company.id;
+    this.selectedCompany = this.company.data.id;
   },
   computed: {
     allSales() {
       // Recopila todas las ventas de todos los company_branches
       const sales = [];
-      if (this.currentCompany && this.currentCompany.company_branches) {
-        this.currentCompany.company_branches.forEach(branch => {
+      if (this.company.data && this.company.data.company_branches) {
+        this.company.data.company_branches.forEach(branch => {
           if (branch.sales) {
             sales.push(...branch.sales);
           }

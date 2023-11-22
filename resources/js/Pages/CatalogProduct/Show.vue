@@ -10,9 +10,9 @@
             </div>
             <div class="flex justify-between mt-5 mx-14">
                 <div class="md:w-1/3">
-                    <el-select v-model="selectedCatalogProduct" clearable filterable placeholder="Buscar producto"
+                    <el-select @change="$inertia.get(route('catalog-products.show', selectedCatalogProduct))" v-model="selectedCatalogProduct" clearable filterable placeholder="Buscar producto"
                         no-data-text="No hay productos en el catalogo" no-match-text="No se encontraron coincidencias">
-                        <el-option v-for="item in catalog_products.data" :key="item.id" :label="item.name"
+                        <el-option v-for="item in catalog_products" :key="item.id" :label="item.name"
                             :value="item.id" />
                     </el-select>
                 </div>
@@ -50,33 +50,33 @@
             </div>
             <div class="lg:grid grid-cols-3 mt-12 border-b-2">
                 <div class="px-14">
-                    <h2 class="text-xl font-bold text-center mb-6">{{ currentCatalogProduct?.name }}</h2>
+                    <h2 class="text-xl font-bold text-center mb-6">{{ catalog_product.data.name }}</h2>
                     <div class="flex items-center">
-                    <i :class="currentIndexProduct == 0 ? 'hidden' : 'block'" @click="previus" class="fa-solid fa-chevron-left mr-4 text-lg text-gray-600 cursor-pointer p-1 rounded-full"></i>
+                    <!-- <i :class="currentIndexProduct == 0 ? 'hidden' : 'block'" @click="previus" class="fa-solid fa-chevron-left mr-4 text-lg text-gray-600 cursor-pointer p-1 rounded-full"></i> -->
                     <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
                         class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center">
-                        <el-image style="height: 100%; " :src="currentCatalogProduct?.media[0]?.original_url" fit="fit">
+                        <el-image style="height: 100%; " :src="catalog_product.data.media[0]?.original_url" fit="fit">
                             <template #error>
                                 <div class="flex justify-center items-center text-[#ababab]">
                                     <i class="fa-solid fa-image text-6xl"></i>
                                 </div>
                             </template>
                         </el-image>
-                        <div v-if="imageHovered" @click="openImage(currentCatalogProduct?.media[0]?.original_url)"
+                        <div v-if="imageHovered" @click="openImage(catalog_product.data.media[0]?.original_url)"
                             class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
                             <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
                         </div>
                     </figure>
-                    <i :class="currentIndexProduct == catalog_products.data.length - 1 ? 'hidden' : 'block'" @click="next" class="fa-solid fa-chevron-right ml-4 text-lg text-gray-600 cursor-pointer p-1 mb-2 rounded-full"></i>
+                    <!-- <i :class="currentIndexProduct == catalog_products.data.length - 1 ? 'hidden' : 'block'" @click="next" class="fa-solid fa-chevron-right ml-4 text-lg text-gray-600 cursor-pointer p-1 mb-2 rounded-full"></i> -->
                     </div>
                     <div class="mt-8 ml-6 text-sm">
                         <div class="flex mb-2">
                             <p class="w-1/3 text-primary">Existencias</p>
-                            <p>{{ currentCatalogProduct?.storages[0]?.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '0' }} {{ currentCatalogProduct?.measure_unit }}</p>
+                            <p>{{ catalog_product.data.storages[0]?.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '0' }} {{ catalog_product.data.measure_unit }}</p>
                         </div>
                         <div class="flex mb-3">
                             <p class="w-1/3 text-primary">Ubicación</p>
-                            <p>{{ currentCatalogProduct?.storages[0]?.location ?? '--' }}</p>
+                            <p>{{ catalog_product.data.storages[0]?.location ?? '--' }}</p>
                         </div>
                     </div>
                 </div>
@@ -87,45 +87,45 @@
                     <div class="px-7 py-7 text-sm">
                         <div class="flex space-x-2 mb-6">
                             <p class="w-1/3 text-[#9A9A9A]">Fecha de Alta</p>
-                            <p>{{ currentCatalogProduct?.created_at }}</p>
+                            <p>{{ catalog_product.data.created_at }}</p>
                         </div>
                         <div class="flex mb-2 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">ID del producto</p>
-                            <p>{{ currentCatalogProduct?.id }}</p>
+                            <p>{{ catalog_product.data.id }}</p>
                         </div>
                         <div class="flex mb-6 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Características</p>
-                            <!-- <p>{{ currentCatalogProduct?.features?.raw.join(', ') }}</p> -->
+                            <!-- <p>{{ catalog_product.data.features?.raw.join(', ') }}</p> -->
                         </div>
                         <div class="flex mb-2 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Número parte</p>
-                            <p>{{ currentCatalogProduct?.part_number }}</p>
+                            <p>{{ catalog_product.data.part_number }}</p>
                         </div>
                         <div class="flex mb-6 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Unidad de medida</p>
-                            <p>{{ currentCatalogProduct?.measure_unit }}</p>
+                            <p>{{ catalog_product.data.measure_unit }}</p>
                         </div>
                         <div class="flex mb-4 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Materia(s) prima(s)</p>
                             <div class="flex flex-col">
-                                <p v-for="raw_material in currentCatalogProduct?.rawMaterials" :key="raw_material">- {{ raw_material.name }},</p>
+                                <p v-for="raw_material in catalog_product.data.rawMaterials" :key="raw_material">- {{ raw_material.name }},</p>
                             </div>
                         </div>
                         <div class="flex mb-6 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Descripción</p>
-                            <p>{{ currentCatalogProduct?.description }}</p>
+                            <p>{{ catalog_product.data.description }}</p>
                         </div>
                         <div class="flex mb-6 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Costo de producción</p>
-                            <p class="text-[#4FC03D]">{{ currentCatalogProduct?.cost.number_format }}</p>
+                            <p class="text-[#4FC03D]">{{ catalog_product.data.cost.number_format }}</p>
                         </div>
                         <div class="flex mb-2 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Cantidad miníma permitida en almacén</p>
-                            <p>{{ currentCatalogProduct?.min_quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ currentCatalogProduct?.measure_unit }}</p>
+                            <p>{{ catalog_product.data.min_quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ catalog_product.data.measure_unit }}</p>
                         </div>
                         <div class="flex space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Cantidad máxima permitida en almacén</p>
-                            <p>{{ currentCatalogProduct?.max_quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ currentCatalogProduct?.measure_unit }}</p>
+                            <p>{{ catalog_product.data.max_quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ catalog_product.data.measure_unit }}</p>
                         </div>
                     </div>
                 </div>
@@ -138,7 +138,7 @@
                     Continuar con la eliminación?
                 </template>
                 <template #footer>
-                    <div class="">
+                    <div>
                         <CancelButton @click="showConfirmModal = false" class="mr-2">Cancelar</CancelButton>
                         <PrimaryButton @click="deleteItem">Eliminar</PrimaryButton>
                     </div>
@@ -161,7 +161,7 @@ export default {
     data() {
         return {
             selectedCatalogProduct: '',
-            currentCatalogProduct: null,
+            // currentCatalogProduct: null,
             imageHovered: false,
             showConfirmModal: false,
             currentIndexProduct: null,
@@ -193,7 +193,7 @@ export default {
         async clone() {
             try {
                 const response = await axios.post(route('catalog-products.clone', {
-                    catalog_product_id: this.currentCatalogProduct?.id
+                    catalog_product_id: this.catalog_product.data.id
                 }));
 
                 if (response.status == 200) {
@@ -205,7 +205,7 @@ export default {
                     console.log(response.data.newItem);
                     this.catalog_products.data.push(response.data.newItem);
                     this.selectedCatalogProduct = response.data.newItem.id;
-                    this.currentCatalogProduct = response.data.newItem
+                    this.catalog_product.data = response.data.newItem
 
                 } else {
                     this.$notify({
@@ -218,7 +218,7 @@ export default {
             } catch (err) {
                 this.$notify({
                     title: 'Algo salió mal',
-                    message: err.message,
+                    message: err.message + "Actualiza la página",
                     type: 'error'
                 });
                 console.log(err);
@@ -226,7 +226,7 @@ export default {
         },
         async deleteItem() {
             try {
-                const response = await axios.delete(route('catalog-products.destroy', this.currentCatalogProduct?.id));
+                const response = await axios.delete(route('catalog-products.destroy', this.catalog_product.data.id));
 
                 if (response.status == 200) {
                     this.$notify({
@@ -235,11 +235,13 @@ export default {
                         type: 'success'
                     });
 
-                    const index = this.catalog_products.data.findIndex(item => item.id === this.currentCatalogProduct.id);
-                    if (index !== -1) {
-                        this.catalog_products.data.splice(index, 1);
-                        this.selectedCatalogProduct = '';
-                    }
+                    this.$inertia.get(route('catalog-products.index'));
+
+                    // const index = this.catalog_products.data.findIndex(item => item.id === this.catalog_product.data.id);
+                    // if (index !== -1) {
+                    //     this.catalog_products.data.splice(index, 1);
+                    //     this.selectedCatalogProduct = '';
+                    // }
 
                 } else {
                     this.$notify({
@@ -260,25 +262,25 @@ export default {
                 this.showConfirmModal = false;
             }
         },
-        previus(){
-      this.currentIndexProduct -= 1;
-      this.currentCatalogProduct = this.catalog_products.data[this.currentIndexProduct];
-      this.selectedCatalogProduct = this.currentCatalogProduct.id;
+    //     previus(){
+    //   this.currentIndexProduct -= 1;
+    //   this.currentCatalogProduct = this.catalog_products.data[this.currentIndexProduct];
+    //   this.selectedCatalogProduct = this.currentCatalogProduct.id;
+    // },
+    // next(){
+    //   this.currentIndexProduct += 1;
+    //   this.currentCatalogProduct = this.catalog_products.data[this.currentIndexProduct];
+    //   this.selectedCatalogProduct = this.currentCatalogProduct.id;
+    // },
     },
-    next(){
-      this.currentIndexProduct += 1;
-      this.currentCatalogProduct = this.catalog_products.data[this.currentIndexProduct];
-      this.selectedCatalogProduct = this.currentCatalogProduct.id;
-    },
-    },
-    watch: {
-        selectedCatalogProduct(newVal) {
-            this.currentCatalogProduct = this.catalog_products.data.find(item => item.id == newVal);
-        }
-    },
+    // watch: {
+    //     selectedCatalogProduct(newVal) {
+    //         this.currentCatalogProduct = this.catalog_products.data.find(item => item.id == newVal);
+    //     }
+    // },
     mounted() {
-        this.selectedCatalogProduct = this.catalog_product.id;
-        this.currentIndexProduct = this.catalog_products.data.findIndex((obj) => obj.id == this.selectedCatalogProduct);
+        this.selectedCatalogProduct = this.catalog_product.data.id;
+        // this.currentIndexProduct = this.catalog_products.data.findIndex((obj) => obj.id == this.selectedCatalogProduct); //para carga dinamica
     }
 };
 </script>
