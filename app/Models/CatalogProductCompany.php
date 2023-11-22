@@ -22,6 +22,7 @@ class CatalogProductCompany extends Pivot
         'new_currency',
         'catalog_product_id',
         'company_id',
+        'user_id',
     ];
 
     //relationships
@@ -35,4 +36,10 @@ class CatalogProductCompany extends Pivot
     {
         return $this->belongsTo(CatalogProduct::class);
     }
+
+    public function user():BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }

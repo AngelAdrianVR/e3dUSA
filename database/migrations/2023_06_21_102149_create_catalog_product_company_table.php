@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('new_currency');
             $table->foreignId('catalog_product_id')->constrained()->cascadeOnDelete();
             $table->foreignId('company_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

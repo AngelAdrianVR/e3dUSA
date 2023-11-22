@@ -35,27 +35,39 @@
             <table class="w-full">
                 <thead>
                     <tr>
-                        <th class="bg-[#9a9a9a] rounded-tl-lg text-start px-6">Días</th>
-                        <th class="bg-[#9a9a9a] text-start">Ventas</th>
-                        <th class="bg-[#9a9a9a] rounded-tr-lg text-end pr-6">Puntos Totales</th>
+                        <th class="bg-[#9a9a9a] rounded-tl-lg">Días</th>
+                        <th class="bg-[#9a9a9a] border" colspan="3">Criterios</th>
+                        <th class="bg-[#9a9a9a] rounded-tr-lg">Puntos Totales</th>
+                    </tr>
+                    <tr>
+                        <th class="text-left bg-[#9a9a9a] border"></th>
+                        <th class="text-left bg-[#9a9a9a] border">Ventas</th>
+                        <th class="text-left bg-[#9a9a9a] border">Nuevos clientes</th>
+                        <th class="text-left bg-[#9a9a9a] border">Nuevos productos</th>
+                        <th class="text-left bg-[#9a9a9a] border"></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(dayPoints, day) in selectedUser.weekly_points" :key="day">
                         <td class="bg-white py-1 text-xs px-6">{{ day }}</td>
-                        <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.sales == 0 }">${{
-                            dayPoints.sales.toLocaleString('en-US', { minimumFractionDigits: 2 })
-                        }}</td>
-                        <td class="bg-white py-1 px-2 text-xs text-end pr-6"
-                            :class="{ 'text-red-500': dayPoints.sales == 0 }">{{
-                                dayPoints.sales / 100 }}</td>
+                        <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.sales <= 0 }">
+                            ${{ dayPoints.sales.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}
+                        </td>
+                        <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.new_companies <= 0 }">{{
+                            dayPoints.new_companies }}</td>
+                        <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.new_products <= 0 }">{{
+                            dayPoints.new_products }}</td>
                     </tr>
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs"></td>
-                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs"></td>
-                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs text-end pr-6">{{ calculateGrandTotal() / 100 }}</td>
+                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs">Total</td>
+                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs">${{ calculateTotal('sales').toLocaleString('en-US', {
+                            minimumFractionDigits: 2
+                        }) }} ({{ calculateTotal('sales') / 100 }})</td>
+                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateTotal('new_companies') }}</td>
+                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateTotal('new_products') }}</td>
+                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateGrandTotal() }}</td>
                     </tr>
                 </tfoot>
             </table>
@@ -63,6 +75,8 @@
                 <li><strong>Ventas: </strong>Este concepto se trata de calcular las ventas totales que realizaste durante la
                     semana. Luego, tomamos ese total y lo dividimos entre 100 para obtener tus puntos. Así que, cuanto más
                     vendas, más puntos ganarás. </li>
+                <li><strong>Nuevos clientes: </strong>Recibe 20 puntos por cada cliente nuevo registrado en la semana. </li>
+                <li><strong>Nuevos productos: </strong>Recibe 20 puntos por cada producto nuevo registrado en la semana. </li>
             </div>
         </template>
         <template #footer>
@@ -98,8 +112,14 @@ export default {
                 user.percentage = percentage.toFixed(2);
             });
         },
+        calculateTotalPoints(dayPoints) {
+            return (dayPoints.sales / 100) + dayPoints.new_companies;
+        },
+        calculateTotal(criterion) {
+            return Object.values(this.selectedUser.weekly_points).reduce((total, dayPoints) => total + dayPoints[criterion], 0);
+        },
         calculateGrandTotal() {
-            return Object.values(this.selectedUser.weekly_points).reduce((total, dayPoints) => total + dayPoints.sales, 0);
+            return Object.values(this.selectedUser.weekly_points).reduce((total, dayPoints) => total + this.calculateTotalPoints(dayPoints), 0);
         },
     },
     mounted() {

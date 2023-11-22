@@ -45,11 +45,13 @@
                         <th class="text-left bg-[#9a9a9a] border">Puntualidad</th>
                         <th class="text-left bg-[#9a9a9a] border">Tiempo</th>
                         <th class="text-left bg-[#9a9a9a] border">Merma</th>
+                        <th class="text-left bg-[#9a9a9a] border">Día terminado</th>
                         <th class="text-left bg-[#9a9a9a] border"></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(dayPoints, day) in selectedUser.weekly_points" :key="day">
+                        <td class="bg-white py-1 text-xs px-6">{{ day }}</td>
                         <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.punctuality < 0 }">{{
                             dayPoints.punctuality
                         }}</td>
@@ -57,6 +59,8 @@
                             dayPoints.time }}</td>
                         <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.scrap < 0 }">{{
                             dayPoints.scrap }}</td>
+                        <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.day_completed < 0 }">{{
+                            dayPoints.day_completed }}</td>
                     </tr>
                 </tbody>
                 <tfoot>
@@ -65,6 +69,7 @@
                         <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateTotal('punctuality') }}</td>
                         <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateTotal('time') }}</td>
                         <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateTotal('scrap') }}</td>
+                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateTotal('day_completed') }}</td>
                         <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateGrandTotal() }}</td>
                     </tr>
                 </tfoot>
@@ -97,7 +102,8 @@
                             <td :title="item.tasks" class="px-2 min-w-[140px] max-w-[200px] truncate">{{ item.tasks }}</td>
                             <td class="px-2 min-w-[120px]">{{ item.estimated_time_hours }}h {{ item.estimated_time_minutes
                             }}m</td>
-                            <td class="px-2 min-w-[300px]">{{ formatDateTime(item.started_at) }} - {{ formatDateTime(item.finished_at) }}</td>
+                            <td class="px-2 min-w-[300px]">{{ formatDateTime(item.started_at) }} - {{
+                                formatDateTime(item.finished_at) }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -114,6 +120,8 @@
                     cualquier problema y no hay
                     merma, ganarás 1 punto extra. Así que, tratar de reducir los errores en el trabajo es importante para
                     tu calificación.</li>
+                <li><strong>Día terminado: </strong>Se restarán 50 puntos si no terminaste las horas de tu jornada
+                    correspondiente a cada día en la tabla.</li>
             </div>
         </template>
         <template #footer>
@@ -163,7 +171,7 @@ export default {
             });
         },
         calculateTotalPoints(dayPoints) {
-            return dayPoints.punctuality + dayPoints.time + dayPoints.scrap;
+            return dayPoints.punctuality + dayPoints.time + dayPoints.scrap + dayPoints.day_completed;
         },
         calculateTotal(criterion) {
             return Object.values(this.selectedUser.weekly_points).reduce((total, dayPoints) => total + dayPoints[criterion], 0);

@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\StockReposition::class,
         \App\Console\Commands\TestCron::class,
         \App\Console\Commands\CheckMachinesMaintenance::class,
+        \App\Console\Commands\NotifyHighPrioritySales::class,
     ];
     /**
      * Define the application's command schedule.
@@ -28,6 +29,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:backup-database')->daily();
         $schedule->command('app:stock-reposition')->daily()->mondays()->at('00:00');;
         $schedule->command('app:machines-maintenance')->daily();
+        $schedule->command('app:high-priority-sales')->daily();
     }
 
     /**

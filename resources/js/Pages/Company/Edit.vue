@@ -170,6 +170,16 @@
               </el-select>
               <!-- <InputError :message="form.errors.sat_types" /> -->
             </div>
+            <div>
+              <IconInput v-model="branch.days_to_reactivate"
+                inputPlaceholder="Días para convertirse en sucursal inactiva *" inputType="number">
+                <el-tooltip
+                  content="Días sin movimientos (cotizaciones, OV o muestras) para notificar como sucursal inactiva y poder reactivar interacciones"
+                  placement="top">
+                  <i class="fa-solid fa-angles-down"></i>
+                </el-tooltip>
+              </IconInput>
+            </div>
             <div class="mt-2">
               <div class="flex">
                 <el-tooltip
@@ -232,7 +242,7 @@
                 <div>
                   <IconInput v-model="contact.phone" inputPlaceholder="Teléfono *" inputType="text">
                     <el-tooltip content="Teléfono" placement="top">
-                      important_notes    <i class="fa-solid fa-phone"></i>
+                      <i class="fa-solid fa-phone"></i>
                     </el-tooltip>
                   </IconInput>
                   <!-- <InputError :message="form.errors.phone" /> -->
@@ -455,6 +465,7 @@ export default {
         sat_type: null,
         sat_way: null,
         important_notes: null,
+        days_to_reactivate: null,
       },
       product: {
         catalog_product_id: null,
@@ -634,6 +645,7 @@ export default {
       this.branch.sat_type = null;
       this.branch.sat_way = null;
       this.branch.important_notes = null;
+      this.branch.days_to_reactivate = null;
       this.contacts = [];
     },
     deleteBranch(index) {
@@ -699,6 +711,7 @@ export default {
         sat_type: element.sat_type,
         sat_way: element.sat_way,
         important_notes: element.important_notes,
+        days_to_reactivate: element.days_to_reactivate,
         contacts: [],
       };
 

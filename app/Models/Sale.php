@@ -24,6 +24,7 @@ class Sale extends Model implements HasMedia
         'tracking_guide',
         'invoice',
         'notes',
+        'is_high_priority',
         'authorized_user_name',
         'authorized_at',
         'recieved_at',

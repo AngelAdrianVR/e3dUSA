@@ -384,7 +384,14 @@ class UserController extends Controller
     public function getPendentTasks() 
     {
         $pendent_tasks = auth()->user()->tasks()->where('status', '!=', 'Terminada')->get();
-
+    
         return response()->json(['items' => $pendent_tasks]);
+    }
+
+    public function getAllUsers() 
+    {
+        $users = User::whereNotIn('id', [1])->get();
+    
+        return response()->json(['items' => $users]);
     }
 }
