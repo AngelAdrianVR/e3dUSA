@@ -227,6 +227,41 @@ class ProductionController extends Controller
         return inertia('Production/Edit', compact('operators', 'sale', 'production_processes'));
     }
 
+    // public function update(Request $request, $sale_id) //No sirve 
+    // {
+    //     $request->validate([
+    //         'productions' => 'array|min:1',
+    //     ]);
+
+    //     $sale = Sale::find($sale_id);
+
+    //     // return $request->editedTaskIndexes;
+
+    //     foreach ($request->productions as $production) {
+    //         $foreigns = [
+    //             'user_id' => $production['user_id'],
+    //             'catalog_product_company_sale_id' => $production['catalog_product_company_sale_id']
+    //         ];
+
+    //         foreach ($production['tasks'] as $taskIndex => $task) {
+    //             $data = $task + $foreigns;
+
+    //             if (is_array($request->editedTaskIndexes) && in_array($taskIndex, $request->editedTaskIndexes)) {
+
+    //                 $sale->productions[$taskIndex]->update($data);
+    //                 //Production::create($data);
+
+    //             } else {
+    //                 $sale->productions[$taskIndex]->update($data);
+    //                 //Production::create($data);
+    //             }
+    //         }
+    //     }
+
+
+    //     return to_route('productions.index');
+    // }
+
     public function update(Request $request, $sale_id)
     {
         $request->validate([
@@ -234,8 +269,7 @@ class ProductionController extends Controller
         ]);
 
         $sale = Sale::find($sale_id);
-
-        // return $request->editedTaskIndexes;
+        $sale->productions()->delete();
 
         foreach ($request->productions as $production) {
             $foreigns = [
@@ -243,18 +277,11 @@ class ProductionController extends Controller
                 'catalog_product_company_sale_id' => $production['catalog_product_company_sale_id']
             ];
 
-            foreach ($production['tasks'] as $taskIndex => $task) {
+            foreach ($production['tasks'] as $task) {
                 $data = $task + $foreigns;
 
-                if (is_array($request->editedTaskIndexes) && in_array($taskIndex, $request->editedTaskIndexes)) {
-
-                    $sale->productions[$taskIndex]->update($data);
-                    //Production::create($data);
-
-                } else {
-                    $sale->productions[$taskIndex]->update($data);
-                    //Production::create($data);
-                }
+                $prod = Production::create($data);
+                event(new RecordEdited($prod));
             }
         }
 

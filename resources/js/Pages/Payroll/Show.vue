@@ -266,7 +266,7 @@ export default {
       }
     },
     printPayrolls() {
-      this.$inertia.get(route('payrolls.print-template', { users_id_to_show: JSON.stringify(this.payrollUsersToShow), payroll_id: this.currentPayroll.id }));
+      this.$inertia.get(route('payrolls.print-template', { users_id_to_show: JSON.stringify(this.payrollUsersToShow), payroll_id: this.payroll.data.id }));
     },
     calculateTotalAmount(showToast = false) {
       this.totalAmount = 0;
