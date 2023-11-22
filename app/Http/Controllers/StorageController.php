@@ -161,7 +161,7 @@ class StorageController extends Controller
     public function show($storage_id)
     {
         $storage = Storage::with('storageable.media', 'movements.user')->find($storage_id);
-        $storages = Storage::with('storageable.media', 'movements.user')->where('type', 'materia-prima')->get();
+        $storages = Storage::with('storageable.media', 'movements.user')->get();
 
         // Calcular la suma de la variable "cost" de todos los objetos
         $totalStorageMoney = collect($storages)->sum(function ($item) {
