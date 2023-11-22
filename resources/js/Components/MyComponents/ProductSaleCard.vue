@@ -111,7 +111,7 @@
         </el-tooltip>
       </div>
       <button @click="showCommentsModal = true" class="text-gray-500 mx-3">
-        {{ catalog_product_company_sale.comments.length }} <i class="fa-regular fa-comment"></i>
+        {{ catalog_product_company_sale.comments?.length }} <i class="fa-regular fa-comment"></i>
       </button>
     </div>
     <div class="bg-[#d9d9d9] rounded-lg p-2 grid grid-cols-2 my-3">

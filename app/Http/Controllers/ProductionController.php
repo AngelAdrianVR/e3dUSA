@@ -215,7 +215,6 @@ class ProductionController extends Controller
                 'company_name' => $sale->companyBranch?->name,
             ];
         });
-        $sales = SaleResource::collection(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress'], 'comments.user'], 'productions' => ['user', 'operator', 'progress']])->whereHas('productions')->get());
 
         return inertia('Production/Show', compact('sale', 'sales'));
     }
@@ -230,7 +229,7 @@ class ProductionController extends Controller
         return inertia('Production/Edit', compact('operators', 'sale', 'production_processes'));
     }
 
-    // public function update(Request $request, $sale_id) //No sirve 
+    // public function update(Request $request, $sale_id) //actualiza sin tener que volver a crear los registros. No sirve 
     // {
     //     $request->validate([
     //         'productions' => 'array|min:1',
@@ -274,7 +273,6 @@ class ProductionController extends Controller
         $sale = Sale::find($sale_id);
         $sale->productions()->delete();
 
-
         foreach ($request->productions as $production) {
             $foreigns = [
                 'user_id' => $production['user_id'],
@@ -284,30 +282,11 @@ class ProductionController extends Controller
             foreach ($production['tasks'] as $task) {
                 $data = $task + $foreigns;
 
-<<<<<<< HEAD
                 $prod = Production::create($data);
                 event(new RecordEdited($prod));
-=======
-                if (is_array($request->editedTaskIndexes) && in_array($taskIndex, $request->editedTaskIndexes)) {
-
-                    $sale->productions[$taskIndex]->update($data);
-                    //Production::create($data);
-
-                } else {
-                    $sale->productions[$taskIndex]->update($data);
-                    //Production::create($data);
-                    // if (in_array($taskIndex, $request->editedIndexes)) {
-                    //     $prod = $sale->productions[$taskIndex]->update($data);
-                    //     // $prod = Production::create($data);
-                    //     // event(new RecordEdited($prod));
-
-                    //     // Puedes usar $productionIndex y $taskIndex aquí
-                    //     // $taskIndex es el índice del segundo foreach
-                    // }
-                }
->>>>>>> 3c2fd8e9adf638a33a697f44ff769f26f4bc4f1f
             }
         }
+
 
         return to_route('productions.index');
     }
