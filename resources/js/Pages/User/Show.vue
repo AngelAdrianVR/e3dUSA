@@ -98,12 +98,12 @@
           <span>{{ user.data.name }}</span>
           <span class="text-gray-500 my-2">Fecha de nacimiento</span>
           <span>{{ user.data.employee_properties?.birthdate.raw }}</span>
-          <span class="text-gray-500 my-2">Dependientes económicos</span>
+          <!-- <span class="text-gray-500 my-2">Dependientes económicos</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Dirección</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Teléfono</span>
-          <span>{{ "--" }}</span>
+          <span>{{ "--" }}</span> -->
           <span class="text-gray-500 my-2">Correo personal</span>
           <span>{{ user.data.email }}</span>
 
@@ -119,17 +119,17 @@
           <span>{{ user.data.employee_properties?.department }}</span>
         </div>
 
-        <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
+        <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center self-start">
           <span class="text-gray-500 my-2">Puesto</span>
           <span>{{ user.data.employee_properties?.job_position }}</span>
-          <span class="text-gray-500">NSS</span>
+          <!-- <span class="text-gray-500">NSS</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">RFC</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Curp</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Nivel académico</span>
-          <span>{{ "--" }}</span>
+          <span>{{ "--" }}</span> -->
           <span class="text-gray-500 my-2">Salario semanal</span>
           <span>${{
             user.data.employee_properties?.salary.week
@@ -141,7 +141,7 @@
           <span class="text-gray-500 my-2">Vacaciones disponibles</span>
           <span>{{ user.data.employee_properties?.vacations.available_days.toFixed(3) }} dias</span>
 
-          <p class="text-secondary col-span-2 mt-7">Contacto de emergencia</p>
+          <!-- <p class="text-secondary col-span-2 mt-7">Contacto de emergencia</p>
 
           <span class="text-gray-500 my-2">Nombre</span>
           <span>{{ "--" }}</span>
@@ -149,7 +149,7 @@
           <span class="text-gray-500 my-2">Parentezco</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Teléfono</span>
-          <span>{{ "--" }}</span>
+          <span>{{ "--" }}</span> -->
         </div>
       </div>
       <!-- ------------- Informacion general ends 1 ------------- -->

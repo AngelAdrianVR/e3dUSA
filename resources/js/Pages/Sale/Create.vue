@@ -71,6 +71,7 @@
                                 {{ contact.name }} ({{ contact.email }})
                             </el-radio-button>
                         </el-radio-group>
+                        <p v-if="!form.contact_id" class="text-xs text-primary ml-2">No olvides seleccionar el contacto.</p>
                         <InputError :message="form.errors.contact_id" />
                     </div>
                     <el-divider content-position="left">Logistica</el-divider>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\DiscountResource;
 use App\Models\Discount;
@@ -74,5 +75,17 @@ class DiscountController extends Controller
     public function destroy(Discount $discount)
     {
         //
+    }
+
+    public function massiveDelete(Request $request)
+    {
+        foreach ($request->discounts as $discount) {
+            $discount = Discount::find($discount['id']);
+            $discount?->delete();
+            
+            event(new RecordDeleted($discount));
+        }
+
+        return response()->json(['message' => 'Descuento(s) eliminado(s)']);
     }
 }

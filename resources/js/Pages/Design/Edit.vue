@@ -131,7 +131,7 @@
           </div>
 
           <div class="flex items-center my-2">
-                        <el-tooltip content="Materias primas" placement="top">
+                        <el-tooltip content="Unidad de medida" placement="top">
                             <span
                                 class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
                                 <i class="fa-solid fa-ruler-vertical"></i>

@@ -17,6 +17,11 @@
             </el-select>
           </div>
           <div v-if="design.data" class="flex items-center space-x-2">
+            <el-tooltip content="Editar" placement="top">
+                  <Link :href="route('designs.edit', selectedDesign)">
+                  <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]"><i class="fa-solid fa-pen text-sm"></i></button>
+                  </Link>
+              </el-tooltip>
             <el-popconfirm
               v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de diseño') && design.data.authorized_at == 'No autorizado'"
               confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"

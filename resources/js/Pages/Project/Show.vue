@@ -79,7 +79,7 @@
 
     <!-- ------------- info project Starts 1 ------------- -->
     <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
-      <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc]">
+      <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
         <p class="text-secondary col-span-2 mb-2">Información del proyecto</p>
 
         <span class="text-gray-500">Creado por</span>
@@ -94,6 +94,7 @@
         <span>{{ currentProject?.start_date }}</span>
         <span class="text-gray-500 my-2">Fecha final</span>
         <span>{{ currentProject?.limit_date }}</span>
+        
         <div class="flex items-start my-2">
           <span class="text-gray-500">Proyecto estricto</span>
           <el-tooltip

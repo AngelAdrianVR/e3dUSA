@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('meetings', function (Blueprint $table) {
             $table->id();
+            $table->string('type');
             $table->string('subject');
-            $table->string('location');
+            $table->string('location')->nullable();
             $table->string('url')->nullable();
             $table->timestamp('authorized_at')->nullable();
             $table->text('description')->nullable();

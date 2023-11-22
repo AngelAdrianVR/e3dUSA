@@ -24,6 +24,16 @@
             <InputError :message="form.errors.subject" />
           </div>
 
+          <div class="flex items-center">
+            <el-tooltip content="Tipo de reunión" placement="top">
+              <i class="fa-solid fa-people-arrows text-gray-700 mr-1"></i>
+            </el-tooltip>
+            <el-select v-model="form.type" placeholder="Tipo de reunión" style="width: 240px">
+              <el-option v-for="item in types" :key="item" :label="item" :value="item" />
+            </el-select>
+            <InputError :message="form.errors.type" />
+          </div>
+
           <div class="mb-3 flex items-center">
             <el-tooltip content="Fecha de reunión *" placement="top">
               <span
@@ -37,7 +47,7 @@
           
           <div class="flex items-center">
             <el-tooltip content="Participantes de la reunion" placement="top">
-              <i class="fa-solid fa-users text-gray-700 mr-3"></i>
+              <i class="fa-solid fa-users text-gray-700 mr-1"></i>
             </el-tooltip>
             <el-select v-model="form.participants" multiple placeholder="Participantes" style="width: 240px">
               <el-option v-for="item in users" :key="item.id" :label="item.name" :value="item.id" />
@@ -73,7 +83,7 @@
               <span class="ml-2 text-sm text-[#9A9A9A]">Repetir</span>
             </label> -->
           </div>
-          <div class="w-3/5">
+          <div v-if="form.type == 'Presencial'" class="w-3/5">
             <IconInput v-model="form.location" inputPlaceholder="Ubicación *" inputType="text">
               <el-tooltip content="Lugar de la reunión. Si es en linea, indicarlo *" placement="top">
                 <i class="fa-solid fa-location-dot text-gray-700"></i>
@@ -83,7 +93,7 @@
             <InputError :message="form.errors.location" />
           </div>
 
-          <div class="w-full">
+          <div v-if="form.type == 'Videoconferencia'" class="w-full">
             <IconInput v-model="form.url" inputPlaceholder="URL" inputType="text">
               <el-tooltip content="URL de meeting en caso de ser en linea" placement="top">
                 <i class="fa-solid fa-chain text-gray-700"></i>
@@ -205,6 +215,7 @@ export default {
   data() {
     const form = useForm({
       subject: null,
+      type: null,
       location: null,
       url: null,
       description: null,
@@ -224,6 +235,12 @@ export default {
 
       shermansMeetings: null,
       loading: false,
+
+      types:[
+        'Videoconferencia',
+        'Presencial',
+        'Vía telefónica',
+      ],
 
       schedule: [
         {
