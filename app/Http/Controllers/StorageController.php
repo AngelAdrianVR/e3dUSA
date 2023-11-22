@@ -43,8 +43,16 @@ class StorageController extends Controller
             });
 
             return inertia('Storage/Index/FinishedProduct', compact('finished_products', 'totalFinishedProductMoney'));
-        } else {
+        } elseif (Route::currentRouteName() == 'storages.obsolete.index') {
+            $obsolete_products = Storage::with('storageable.media')->where('type', 'obsoleto')->latest()->get();
 
+            // Calcular la suma de costo de todo el producto obsoleto
+            $totalObsoleteMoney = collect($obsolete_products)->sum(function ($item) {
+                return $item->storageable?->cost * $item->quantity;
+            });
+
+            return inertia('Storage/Index/Obsolete', compact('obsolete_products', 'totalObsoleteMoney'));
+        } else {
             $scraps = Storage::with('storageable.media')->where('type', 'scrap')->latest()->get();
 
             // Calcular la suma de costo de todo el scrap
@@ -59,14 +67,17 @@ class StorageController extends Controller
 
     public function create()
     {
-
         if (Route::currentRouteName() == 'storages.scraps.create') {
             $storages = Storage::with('storageable.media')->get();
             return inertia('Storage/Create/Scrap', compact('storages'));
         } elseif (Route::currentRouteName() == 'storages.finished-products.create') {
             $catalog_products = CatalogProduct::with('media')->latest()->get();
             return inertia('Storage/Create/FinishedProduct', compact('catalog_products'));
+        } elseif (Route::currentRouteName() == 'storages.obsolete.create') {
+            $storages = Storage::with('storageable.media')->where('type', 'obsoleto')->get();
+            return inertia('Storage/Create/Obsolete', compact('storages'));
         }
+
     }
 
     public function store(Request $request)
@@ -113,7 +124,6 @@ class StorageController extends Controller
             ]);
             event(new RecordCreated($raw_material));
         } else {
-
             $finished_products = CatalogProduct::find($storage->storageable_id);
             $finished_products->storages()->create([
                 'quantity' => $request->quantity,
@@ -126,11 +136,27 @@ class StorageController extends Controller
         $storage->quantity -= $request->quantity;
         $storage->save();
 
-        
-
         return to_route('storages.scraps.index');
     }
 
+    public function storeObsolete(Request $request)
+    {
+        $storage = Storage::find($request->storage_id);
+
+        $request->validate([
+            'storage_id' => 'required|numeric|min:1',
+            'location' => 'required|string|max:255',
+        ]);
+
+        $storage->update([
+            'location' => $request->location,
+            'type' => 'obsoleto',
+        ]);
+
+        event(new RecordCreated($storage));
+
+        return to_route('storages.obsolete.index');
+    }
 
     public function show($storage_id)
     {
@@ -141,7 +167,6 @@ class StorageController extends Controller
         $totalStorageMoney = collect($storages)->sum(function ($item) {
             return $item->storageable?->cost * $item->quantity;
         });
-        // return $storage;
 
         return inertia('Storage/Show', compact('storage', 'storages', 'totalStorageMoney'));
     }
@@ -155,6 +180,22 @@ class StorageController extends Controller
         return inertia('Storage/ShowConsumable', compact('storage', 'storages'));
     }
 
+    public function showObsolete($storage_id)
+    {
+        $storage = Storage::with('storageable.media', 'movements.user')->find($storage_id);
+        $all_storages = Storage::with('storageable')
+            ->where('type', 'obsoleto')
+            ->get();
+
+        $storages = $all_storages->map(function ($storage) {
+            return [
+                'id' => $storage->id,
+                'storageable_name' => $storage->storageable?->name,
+            ];
+        });
+
+        return inertia('Storage/Show/Obsolete', compact('storage', 'storages'));
+    }
 
     public function edit(Storage $storage)
     {
@@ -237,7 +278,7 @@ class StorageController extends Controller
 
     public function subStorage(Request $request, Storage $storage)
     {
-        
+
         $validated = $request->validate([
             'quantity' => 'required|numeric|min:1|max:' . $storage->quantity,
             'notes' => 'nullable',
@@ -262,18 +303,18 @@ class StorageController extends Controller
             'barCode' => 'required|string'
         ]);
 
-        
+
         $part_number = explode('#', $request->barCode)[0];
         $quantity = explode('#', $request->barCode)[1];
-        
-        // Verifica si el formato es incorrecto (contiene "'") y realiza el reemplazo solo en ese caso
-    if (strpos($part_number, "'") !== false) {
-        $part_number = str_replace("'", "-", $part_number);
-    }
 
-    if (strpos($part_number, "´") !== false) {
-        $part_number = str_replace("´", "-", $part_number);
-    }
+        // Verifica si el formato es incorrecto (contiene "'") y realiza el reemplazo solo en ese caso
+        if (strpos($part_number, "'") !== false) {
+            $part_number = str_replace("'", "-", $part_number);
+        }
+
+        if (strpos($part_number, "´") !== false) {
+            $part_number = str_replace("´", "-", $part_number);
+        }
 
         $storage = Storage::whereHas('storageable', function ($query) use ($part_number) {
             $query->where('part_number', $part_number);
@@ -285,12 +326,12 @@ class StorageController extends Controller
 
         if ($request->scanType == 'Entrada') {
             $storage->increment('quantity', $quantity);
-        }else{
-            if ($quantity > $storage->quantity ) {
+        } else {
+            if ($quantity > $storage->quantity) {
                 return response()->json([
                     'message' => 'Solo hay ' . $storage->quantity . ' ' . $storage->storageable->measure_unit . ' en almacén'
                 ], 422);
-            }else{
+            } else {
 
                 $storage->decrement('quantity', $quantity);
             }
@@ -310,20 +351,20 @@ class StorageController extends Controller
     public function QRSearchProduct(Request $request)
     {
 
-        $request->validate([ 
+        $request->validate([
             'barCode' => 'required|string'
         ]);
 
         $part_number = explode('#', $request->barCode)[0];
 
         // Verifica si el formato es incorrecto (contiene "'") y realiza el reemplazo solo en ese caso
-            if (strpos($part_number, "'") !== false) {
-                $part_number = str_replace("'", "-", $part_number);
-            }
+        if (strpos($part_number, "'") !== false) {
+            $part_number = str_replace("'", "-", $part_number);
+        }
 
-            if (strpos($part_number, "´") !== false) {
-                $part_number = str_replace("´", "-", $part_number);
-            }
+        if (strpos($part_number, "´") !== false) {
+            $part_number = str_replace("´", "-", $part_number);
+        }
 
         $storage = Storage::with('storageable.media')->whereHas('storageable', function ($query) use ($part_number) {
             $query->where('part_number', $part_number);

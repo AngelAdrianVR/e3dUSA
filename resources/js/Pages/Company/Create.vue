@@ -170,15 +170,28 @@
               </el-select>
               <!-- <InputError :message="form.errors.sat_types" /> -->
             </div>
+            <div>
+              <IconInput v-model="branch.days_to_reactivate"
+                inputPlaceholder="Días para convertirse en sucursal inactiva *" inputType="number">
+                <el-tooltip
+                  content="Días sin movimientos (cotizaciones, OV o muestras) para notificar como sucursal inactiva y poder reactivar interacciones"
+                  placement="top">
+                  <i class="fa-solid fa-angles-down"></i>
+                </el-tooltip>
+              </IconInput>
+            </div>
             <div class="mt-2">
               <div class="flex">
-                <el-tooltip content="Estas notas se mostraran cuando se seleccione esta sucursal para crear cotizacion, orden de venta u otro movimiento" placement="top">
+                <el-tooltip
+                  content="Estas notas se mostraran cuando se seleccione esta sucursal para crear cotizacion, orden de venta u otro movimiento"
+                  placement="top">
                   <span
                     class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
                     <i class="fa-solid fa-grip-lines"></i>
                   </span>
                 </el-tooltip>
-                <textarea v-model="branch.important_notes" rows="4" class="textarea mb-1" autocomplete="off" placeholder="Notas. Ejemplo: Precio acordado de 'x' producto en siguiente cotizacion $45.30"></textarea>
+                <textarea v-model="branch.important_notes" rows="4" class="textarea mb-1" autocomplete="off"
+                  placeholder="Notas. Ejemplo: Precio acordado de 'x' producto en siguiente cotizacion $45.30"></textarea>
               </div>
               <InputError :message="branch.errors?.important_notes" />
             </div>
@@ -450,6 +463,7 @@ export default {
         sat_type: null,
         sat_way: null,
         important_notes: null,
+        days_to_reactivate: null,
       },
       product: {
         catalog_product_id: null,
@@ -627,6 +641,7 @@ export default {
       this.branch.sat_type = null;
       this.branch.sat_way = null;
       this.branch.important_notes = null;
+      this.branch.days_to_reactivate = null;
       this.contacts = [];
     },
     deleteBranch(index) {

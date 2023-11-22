@@ -18,6 +18,7 @@ class ProductionResource extends JsonResource
             'id' => $this->id,
             'catalog_product_company_sale' => $this->whenLoaded('catalogProductCompanySale'),
             'user_tasks' => $this->user_tasks,
+            'has_low_stock' => $this->has_low_stock,
             'user' => $this->whenLoaded('user'),
             'progress' => $this->whenLoaded('progress'),
             'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),

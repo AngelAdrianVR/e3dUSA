@@ -36,6 +36,7 @@
                             <p>{{ item.name }}</p>
                         </li>
                     </template>
+                    <p v-if="!userList.length" class="text-gray-500 text-xs text-center my-8">No hay usuarios para mencionar</p>
                 </ul>
             </transition>
         </footer>

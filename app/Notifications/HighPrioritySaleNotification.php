@@ -7,14 +7,14 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ReactivateProductSaleNotification extends Notification
+class HighPrioritySaleNotification extends Notification
 {
     use Queueable;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(public $products, public $days)
+    public function __construct(public $sale)
     {
         //
     }
@@ -29,35 +29,28 @@ class ReactivateProductSaleNotification extends Notification
         if (app()->environment() === 'local') {
             return ['database'];
         } else {
-            return ['mail'];
+            return ['mail', 'database'];
         }
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Productos sin movimiento')
-            ->markdown('emails.reactivate-product-sale', [
+            ->subject('OV urgente sin producción')
+            ->markdown('emails.high-priority-sale', [
                 'greeting' => '¡Hola!',
-                'intro' => "Hay {$this->products->count()} producto(s) que no han tenido movimiento en un periodo de $this->days días. Favor de revisar y reactivar ventas:",
-                'products' => $this->products,
-                'url' => route('dashboard'),
+                'intro' => "La OV {$this->sale->id} tiene prioridad alta y no se ha generado orden de producción. Comunicalo con dpto. de producción",
+                'url' => route('sales.show', $this->sale->id),
                 'salutation' => 'Saludos',
             ]);
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(object $notifiable): array
     {
         return [
-            //
+            'description' => "La OV <span class='text-primary'>{$this->sale->id}</span> tiene prioridad alta y no se ha generado orden de producción. Comunicalo con dpto. correspondiente.",
+            'additional_info' => "",
+            'module' => "sales",
         ];
     }
 }

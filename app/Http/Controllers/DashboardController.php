@@ -99,7 +99,7 @@ class DashboardController extends Controller
 
         foreach ($users as $user) {
             $weekly_points = [];
-
+            
             $productionsFinishedThisWeek = $user->productions()->with('catalogProductCompanySale.sale')->whereNotNull('finished_at')->whereBetween('finished_at', [$weekStart, $weekEnd])->get();
             foreach ($productionsFinishedThisWeek as $production) {
                 $day = $production->finished_at->isoFormat('ddd DD MMM'); // para la clave
@@ -109,6 +109,7 @@ class DashboardController extends Controller
                         "punctuality" => 0,
                         "scrap" => 0,
                         "time" => 0,
+                        "day_completed" => 0,
                     ];
                 }
 
@@ -131,18 +132,25 @@ class DashboardController extends Controller
                         "punctuality" => 0,
                         "scrap" => 0,
                         "time" => 0,
+                        "day_completed" => 0,
                     ];
                 }
 
                 // Restar el valor de 'late' o sumar 10 puntos si no hay retardo
                 $weekly_points[$day]["punctuality"] += $payroll->pivot->late > 0 ? -$payroll->pivot->late : 10;
+                // Restar 50 pts si no se terminó la jornada del día si es que ya ha registrado salida
+                if ($payroll->pivot->check_out) {
+                    $hours_to_work = $user->employee_properties['work_days'][$payroll->pivot->date->dayOfWeek]['hours'];
+                    $hours_worked = $payroll->pivot->totalWorkedTime()['hours'];
+                    $weekly_points[$day]["day_completed"] += $hours_worked < $hours_to_work ? -50 : 0;
+                }
             }
 
             // Calcular el total de puntos
             $totalPoints = 0;
             foreach ($weekly_points as $day => $points) {
                 // Suma los puntos de punctuality, scrap y time para cada día
-                $dailyTotal = $points["punctuality"] + $points["scrap"] + $points["time"];
+                $dailyTotal = $points["punctuality"] + $points["scrap"] + $points["time"] + $points["day_completed"];
                 $totalPoints += $dailyTotal;
             }
 
@@ -282,11 +290,13 @@ class DashboardController extends Controller
                 if (!isset($weekly_points[$day])) {
                     $weekly_points[$day] = [
                         "sales" => 0,
+                        "new_companies" => 0,
+                        "new_products" => 0,
                     ];
                 }
 
+                // ventas
                 $sold_products = $sale->catalogProductCompanySales;
-
                 foreach ($sold_products as $product) {
                     $price = $product->catalogProductCompany?->new_price ?? 0;
                     $weekly_points[$day]["sales"] += $product->quantity * $price;
@@ -294,8 +304,50 @@ class DashboardController extends Controller
                 }
             }
 
+            // nuevos clientes
+            $new_companies_added = $user->companies()->whereBetween('created_at', [$weekStart, $weekEnd])->get();
+            foreach ($new_companies_added as $company) {
+                $day = $company->created_at->isoFormat('ddd DD MMM'); // para la clave
+
+                // Agregar el día al arreglo de weekly_points
+                if (!isset($weekly_points[$day])) {
+                    $weekly_points[$day] = [
+                        "sales" => 0,
+                        "new_companies" => 0,
+                        "new_products" => 0,
+                    ];
+                }
+
+                $weekly_points[$day]["new_companies"] += 20;
+            }
+
+            // nuevos productos
+            $new_products_added = $user->catalogProductsCompany()->whereBetween('created_at', [$weekStart, $weekEnd])->get();
+            foreach ($new_products_added as $product) {
+                $day = $product->created_at->isoFormat('ddd DD MMM'); // para la clave
+
+                // Agregar el día al arreglo de weekly_points
+                if (!isset($weekly_points[$day])) {
+                    $weekly_points[$day] = [
+                        "sales" => 0,
+                        "new_companies" => 0,
+                        "new_products" => 0,
+                    ];
+                }
+
+                $weekly_points[$day]["new_products"] += 20;
+            }
+
+            // Calcular el total de puntos
+            $totalPoints = 0;
+            foreach ($weekly_points as $day => $points) {
+                // Suma los puntos de punctuality, scrap y time para cada día
+                $dailyTotal = round($points["sales"] / 100, 2) + $points["new_companies"] + $points["new_products"];
+                $totalPoints += $dailyTotal;
+            }
+
             // Calcular los puntos basados en el dinero ganado
-            $user->total_points = round($totalMoney / 100, 2);
+            $user->total_points = $totalPoints;
             $user->weekly_points = $weekly_points; // Asignar weekly_points al usuario
         }
 

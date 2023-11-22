@@ -21,6 +21,7 @@ class CompanyBranch extends Model
         'sat_way',
         'company_id',
         'important_notes',
+        'days_to_reactivate',
     ];
 
     //relationships
@@ -37,6 +38,11 @@ class CompanyBranch extends Model
     public function sales():HasMany
     {
         return $this->hasMany(Sale::class);
+    }
+    
+    public function samples():HasMany
+    {
+        return $this->hasMany(Sample::class);
     }
 
     public function quotes():HasMany

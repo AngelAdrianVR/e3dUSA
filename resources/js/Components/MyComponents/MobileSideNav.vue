@@ -161,6 +161,18 @@ export default {
                             active: route().current('storages.scraps.*'),
                             show: this.$page.props.auth.user.permissions.includes('Ver scrap')
                         },
+                        {
+                            label: 'Obsoletos',
+                            route: 'storages.obsolete.index',
+                            active: route().current('storages.obsolete.*'),
+                            show: this.$page.props.auth.user.permissions.includes('Ver producto obsoleto'),
+                        },
+                        {
+                            label: 'Seguimiento',
+                            route: 'storages.tracking.index',
+                            active: route().current('storages.tracking.*'),
+                            show: this.$page.props.auth.user.permissions.includes('Ver producto de seguimiento'),
+                        },
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver materia prima') ||
