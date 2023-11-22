@@ -23,10 +23,28 @@ class CompanyController extends Controller
 
     public function index()
     {
-        $companies = CompanyResource::collection(Company::with('companyBranches')->latest()->get());
+        // $companies = CompanyResource::collection(Company::with('companyBranches')->latest()->get());
 
-        // return $companies;
-        return inertia('Company/Index', compact('companies'));
+        /// Optimización para rapidez. No carga todos los datos, solo los necesarios para hacer la búsqueda y mostrar la tabla en index
+    $companies = Company::with('companyBranches')->latest()->get();
+
+    $pre_companies = CompanyResource::collection($companies);
+    $companies = $pre_companies->map(function ($company) {
+        $companyBranchNames = $company->companyBranches->pluck('name')->toArray();
+
+        return [
+            'id' => $company->id,
+            'business_name' => $company->business_name,
+            'phone' => $company->phone,
+            'rfc' => $company->rfc,
+            'post_code' => $company->post_code,
+            'company_branches_names' => implode(', ', $companyBranchNames),
+            'fiscal_address' => $company->fiscal_address,
+        ];
+    });
+
+    // return $companies;
+    return inertia('Company/Index', compact('companies'));
     }
 
 
@@ -72,9 +90,14 @@ class CompanyController extends Controller
 
     public function show($company_id)
     {
-        $company = Company::with('companyBranches.contacts')->find($company_id);
-        $companies = CompanyResource::collection(Company::with('companyBranches.contacts', 'companyBranches.sales', 'companyBranches.sales.user', 'companyBranches.quotes', 'catalogProducts.media', 'oportunities', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'projects.tasks')->get());
-
+        $company = CompanyResource::make(Company::with('companyBranches.contacts', 'companyBranches.sales', 'companyBranches.sales.user', 'companyBranches.quotes', 'catalogProducts.media', 'oportunities', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'projects.tasks')->find($company_id));
+        $pre_companies = CompanyResource::make(Company::latest()->get());
+        $companies = $pre_companies->map(function ($company) {
+            return [
+                'id' => $company->id,
+                'name' => $company->business_name,
+                   ];
+               });
         // return $companies;
 
         return inertia('Company/Show', compact('company', 'companies'));

@@ -626,6 +626,7 @@ export default {
       this.branch.sat_method = null;
       this.branch.sat_type = null;
       this.branch.sat_way = null;
+      this.branch.important_notes = null;
       this.contacts = [];
     },
     deleteBranch(index) {

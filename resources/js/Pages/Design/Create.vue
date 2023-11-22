@@ -68,6 +68,7 @@
                   {{ contact.name }} ({{ contact.email }})
                 </el-radio-button>
               </el-radio-group>
+              <p v-if="!form.contact_name" class="text-xs text-primary ml-2">No olvides seleccionar el contacto</p>
               <InputError :message="form.errors.contact_id" />
             </div>
             <div class="flex items-center">
@@ -149,7 +150,7 @@
             </div>
 
             <div class="flex items-center my-2">
-              <el-tooltip content="Materias primas" placement="top">
+              <el-tooltip content="Unidad de medida" placement="top">
                 <span
                   class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"
                 >

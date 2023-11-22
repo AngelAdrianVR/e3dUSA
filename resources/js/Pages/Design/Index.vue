@@ -47,7 +47,7 @@
                         @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                         <el-table-column type="selection" width="45" />
                         <el-table-column prop="user.name" label="Solicitante" />
-                        <el-table-column prop="name" label="Deseño" />
+                        <el-table-column prop="name" label="Diseño" />
                         <el-table-column prop="designer.name" label="Diseñador(a)" />
                         <el-table-column prop="created_at" label="Solicitado el" />
                         <el-table-column prop="status[label]" label="Estatus" />
@@ -216,7 +216,7 @@ export default {
             } else {
                 return this.designs.data.filter(
                     (design) =>
-                        design.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                        design.design.name.toLowerCase().includes(this.search.toLowerCase()) ||
                         design.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
                         design.designer.name.toLowerCase().includes(this.search.toLowerCase()) ||
                         design.user.name.toLowerCase().includes(this.search.toLowerCase())

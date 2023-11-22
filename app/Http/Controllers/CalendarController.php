@@ -30,7 +30,7 @@ class CalendarController extends Controller
 
     public function create()
     {
-        $users = User::where('is_active', true)->where('id', '!=', auth()->id())->get();
+        $users = User::where('is_active', true)->where('id', '!=', auth()->id())->whereNot('id', 1)->get();
 
         return inertia('Calendar/Create', compact('users'));
     }

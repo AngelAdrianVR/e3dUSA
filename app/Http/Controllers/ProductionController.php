@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
+use App\Http\Resources\ProductionCostResource;
 use App\Http\Resources\SaleResource;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Production;
+use App\Models\ProductionCost;
 use App\Models\Sale;
 use App\Models\Setting;
 use App\Models\StockMovementHistory;
@@ -22,9 +24,101 @@ class ProductionController extends Controller
     public function index()
     {
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de produccion todas')) {
-            // $productions = ProductionResource::collection(Production::with('user', 'catalogProductCompanySale.catalogProductCompany.company')->latest()->get());
-            $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch')->whereHas('productions')->latest()->get());
-            // return $productions;
+            // $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch')->whereHas('productions')->latest()->get());
+            //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
+            $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch', 'productions.operator')->whereHas('productions')->latest()->get();
+            $productions = $pre_productions->map(function ($production) {
+                $hasStarted = $production->productions?->whereNotNull('started_at')->count();
+                $hasNotFinished = $production->productions?->whereNull('finished_at')->count();
+
+                if ($production->authorized_at == null) {
+                    $status = [
+                        'label' => 'Esperando autorización',
+                        'text-color' => 'text-amber-500',
+                    ];
+                } elseif ($production->productions) {
+                    if (!$hasStarted) {
+                        $status = [
+                            'label' => 'Producción sin iniciar',
+                            'text-color' => 'text-gray-500',
+                        ];
+                    } elseif ($hasStarted && $hasNotFinished) {
+                        $status = [
+                            'label' => 'Producción en proceso',
+                            'text-color' => 'text-blue-500',
+                        ];
+                    } else {
+                        $status = [
+                            'label' => 'Producción terminada',
+                            'text-color' => 'text-green-500',
+                        ];
+                    }
+                } else {
+                    $status = [
+                        'label' => 'Autorizado sin orden de producción',
+                        'text-color' => 'text-amber-500',
+                    ];
+                }
+                //Guarda en un array "productionNames" los nombres de los operadores de esa orden de produccion
+                $productionNames = [];
+                foreach ($production->productions as $productionItem) {
+                    $productionNames[] = $productionItem['operator']['name'];
+                }
+                $uniqueProductionNames = array_unique($productionNames);
+                $operators = implode(', ', $uniqueProductionNames);
+
+                //Guarda en un array "productNames" los nombres de los productos de la orden
+                // $productNames = [];
+                // foreach ($production->productions as $product) {
+                //     if (
+                //         isset($product['catalog_product_company_sale']) &&
+                //         isset($product['catalog_product_company_sale']['catalog_product_company']) &&
+                //         isset($product['catalog_product_company_sale']['catalog_product_company']['catalog_product'])
+                //     ) {
+                //         $productName = $product['catalog_product_company_sale']['catalog_product_company']['catalog_product']['name'];
+                //         $productNames[] = $productName;
+                //     }
+
+                // }
+
+                // $uniqueProductNames = array_unique($productNames);
+                // $products = implode(', ', $uniqueProductNames);
+
+                //Calulo del porcentage de avance de producción.
+                // Contador para llevar el registro de cuántas producciones tienen fecha en "finished_at"
+                $finishedCount = 0;
+                foreach ($production->productions as $productionItem) {
+                    if ($productionItem->finished_at != null) {
+                        $finishedCount++;
+                    }
+                }
+
+                // Calcular el porcentaje
+                $percentage = $finishedCount > 0 ? (100 / count($production->productions)) * $finishedCount : 0;
+
+
+                return [
+                    'id' => $production->id,
+                    'folio' => 'OP-' . str_pad($production->id, 4, "0", STR_PAD_LEFT),
+                    'user' => [
+                        'id' => $production->user->id,
+                        'name' => $production->user->name
+                    ],
+                    'status' => $status,
+                    'operators' => $operators, //nombres de operadores asignados
+                    'company_branch' => [
+                        'id' => $production->companyBranch->id,
+                        'name' => $production->companyBranch->name
+                    ],
+                    // 'products' => $production->productions, no me arroja ningun nombre
+                    'production' => [
+                        'percentage' => $percentage . '%',
+                        'productions_quantity' => count($production->productions)
+                    ],
+                    'created_at' => $production->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+                ];
+            });
+            // return $pre_productions;
             return inertia('Production/Admin', compact('productions'));
         } elseif (auth()->user()->can('Ordenes de produccion personal')) {
             $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch')->whereHas('productions')->where('user_id', auth()->id())->latest()->get());
@@ -42,8 +136,11 @@ class ProductionController extends Controller
         $operators = User::where('employee_properties->department', 'Producción')->where('is_active', 1)->get();
         $sales = SaleResource::collection(Sale::with('companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct')->whereNotNull('authorized_at')->whereDoesntHave('productions')->get());
         $is_automatic_assignment = boolval(Setting::where('key', 'AUTOMATIC_PRODUCTION_ASSIGNMENT')->first()->value);
+        $production_processes = ProductionCostResource::collection(ProductionCost::all());
 
-        return inertia('Production/Create', compact('operators', 'sales', 'is_automatic_assignment'));
+        // return $production_processes;
+
+        return inertia('Production/Create', compact('operators', 'sales', 'is_automatic_assignment', 'production_processes'));
     }
 
     public function store(Request $request)
@@ -84,7 +181,7 @@ class ProductionController extends Controller
                 }
             }
 
-            // sub needed quantities from stock
+            // sub needed quantities from stock -------------------------------------------------------
             // $cpcs = CatalogProductCompanySale::find($production['catalog_product_company_sale_id']);
             // $raw_materials = $cpcs->catalogProductCompany->catalogProduct->rawMaterials;
             // foreach ($raw_materials as $raw_material) {
@@ -106,10 +203,17 @@ class ProductionController extends Controller
 
     public function show($sale_id)
     {
-        $sale = SaleResource::make(Sale::with(['contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress']], 'productions' => ['user', 'operator', 'progress']])->find($sale_id));
-        $sales = SaleResource::collection(Sale::with(['contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress']], 'productions' => ['user', 'operator', 'progress']])->whereHas('productions')->get());
+        $sale = SaleResource::make(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress']], 'productions' => ['user', 'operator', 'progress']])->find($sale_id));
+        $pre_sales = Sale::latest()->get();
+            $sales = $pre_sales->map(function ($sale) {
+            return [
+                'id' => $sale->id,
+                'folio' => 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT),
+                'company_name' => $sale->companyBranch?->name,
+                   ];
+               });
 
-        // return compact('sale', 'sales');
+        // return $sale;
         return inertia('Production/Show', compact('sale', 'sales'));
     }
 
@@ -117,9 +221,10 @@ class ProductionController extends Controller
     {
         $operators = User::where('employee_properties->department', 'Producción')->get();
         $sale = SaleResource::make(Sale::with('companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct', 'productions')->find($sale_id));
+        $production_processes = ProductionCostResource::collection(ProductionCost::all());
 
         // return $sale;
-        return inertia('Production/Edit', compact('operators', 'sale'));
+        return inertia('Production/Edit', compact('operators', 'sale', 'production_processes'));
     }
 
     public function update(Request $request, $sale_id)
@@ -129,7 +234,8 @@ class ProductionController extends Controller
         ]);
 
         $sale = Sale::find($sale_id);
-        $sale->productions()->delete();
+
+        // return $request->editedTaskIndexes;
 
         foreach ($request->productions as $production) {
             $foreigns = [
@@ -137,17 +243,25 @@ class ProductionController extends Controller
                 'catalog_product_company_sale_id' => $production['catalog_product_company_sale_id']
             ];
 
-            foreach ($production['tasks'] as $task) {
+            foreach ($production['tasks'] as $taskIndex => $task) {
                 $data = $task + $foreigns;
 
-                $prod = Production::create($data);
-                event(new RecordEdited($prod));
+                if (is_array($request->editedTaskIndexes) && in_array($taskIndex, $request->editedTaskIndexes)) {
+
+                    $sale->productions[$taskIndex]->update($data);
+                    //Production::create($data);
+
+                } else {
+                    $sale->productions[$taskIndex]->update($data);
+                    //Production::create($data);
+                }
             }
         }
 
 
         return to_route('productions.index');
     }
+
 
     public function destroy(Production $production)
     {

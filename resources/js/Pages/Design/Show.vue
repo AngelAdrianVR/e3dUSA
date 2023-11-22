@@ -11,14 +11,19 @@
         </div>
         <div class="flex justify-between">
           <div class="w-1/3">
-            <el-select v-model="selectedDesign" clearable filterable placeholder="Buscar órden de diseño"
+            <el-select @change="$inertia.get(route('designs.show', selectedDesign))" v-model="selectedDesign" clearable filterable placeholder="Buscar órden de diseño"
               no-data-text="No hay órdenes registradas" no-match-text="No se encontraron coincidencias">
-              <el-option v-for="item in designs.data" :key="item.id" :label="item.name" :value="item.id" />
+              <el-option v-for="item in designs" :key="item.id" :label="item.name" :value="item.id" />
             </el-select>
           </div>
-          <div v-if="currentDesign" class="flex items-center space-x-2">
+          <div v-if="design.data" class="flex items-center space-x-2">
+            <el-tooltip content="Editar" placement="top">
+                  <Link :href="route('designs.edit', selectedDesign)">
+                  <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]"><i class="fa-solid fa-pen text-sm"></i></button>
+                  </Link>
+              </el-tooltip>
             <el-popconfirm
-              v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de diseño') && currentDesign?.authorized_at == 'No autorizado'"
+              v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de diseño') && design.data.authorized_at == 'No autorizado'"
               confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
               @confirm="authorizeOrder">
               <template #reference>
@@ -28,7 +33,7 @@
               </template>
             </el-popconfirm>
 
-            <el-tooltip v-if="currentDesign?.finished_at && currentDesign?.user.id == $page.props.auth.user.id"
+            <el-tooltip v-if="design.data.finished_at && design.data?.user.id == $page.props.auth.user.id"
               content="Solicitar modificaciones de resultados obtenidos" placement="top">
               <button @click="showModificationsModal = true"
                 class="rounded-lg bg-primary text-sm text-white py-[6px] px-2 disabled:cursor-not-allowed disabled:opacity-50">
@@ -37,16 +42,16 @@
             </el-tooltip>
 
             <el-tooltip
-              v-if="currentDesign?.expected_end_at == '--' && this.currentDesign.designer.id == this.$page.props.auth.user.id"
+              v-if="design.data.expected_end_at == '--' && this.design.data.designer.id == this.$page.props.auth.user.id"
               content="Marcar orden como iniciada" placement="top">
-              <button :disabled="currentDesign?.authorized_at == 'No autorizado'" @click="startOrderModal = true"
+              <button :disabled="design.data.authorized_at == 'No autorizado'" @click="startOrderModal = true"
                 class="rounded-lg bg-primary text-sm text-white py-[6px] px-2 disabled:cursor-not-allowed disabled:opacity-50">
                 Iniciar
               </button>
             </el-tooltip>
 
             <el-tooltip
-              v-else-if="this.currentDesign.designer.id == this.$page.props.auth.user.id"
+              v-else-if="this.design.data.designer.id == this.$page.props.auth.user.id"
               content="Marcar como orden terminada y subir resultados" placement="top">
               <button @click="finishOrderModal = true" class="rounded-lg bg-green-600 text-sm text-white p-2">
                 Subir resultados
@@ -78,59 +83,59 @@
       <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
           <span class="text-gray-500">ID</span>
-          <span>{{ currentDesign?.id }}</span>
+          <span>{{ design.data.id }}</span>
           <span class="text-gray-500 my-2">Solicitada por</span>
-          <span>{{ currentDesign?.user.name }}</span>
+          <span>{{ design.data.user.name }}</span>
           <span class="text-gray-500 my-2">Solicitada el</span>
-          <span>{{ currentDesign?.created_at }}</span>
+          <span>{{ design.data.created_at }}</span>
           <span class="text-gray-500 my-2">Autorizado</span>
-          <span>{{ currentDesign?.authorized_user_name }} -
-            {{ currentDesign?.authorized_at }}</span>
+          <span>{{ design.data.authorized_user_name }} -
+            {{ design.data.authorized_at }}</span>
           <span class="text-gray-500 my-2">Diseñador(a)</span>
-          <span>{{ currentDesign?.designer.name }}</span>
+          <span>{{ design.data.designer.name }}</span>
           <span class="text-gray-500 my-2">Estimado de entrega</span>
-          <span>{{ currentDesign?.expected_end_at }}</span>
+          <span>{{ design.data.expected_end_at }}</span>
           <span class="text-gray-500 my-2">Iniciado el</span>
-          <span>{{ currentDesign?.started_at }}</span>
+          <span>{{ design.data.started_at }}</span>
           <span class="text-gray-500 my-2">Estatus</span>
-          <span class="rounded-full border text-center" :class="currentDesign?.status['text-color'] +
+          <span class="rounded-full border text-center" :class="design.data.status['text-color'] +
             ' ' +
-            currentDesign?.status['border-color']
-            ">{{ currentDesign?.status["label"] }}</span>
+            design.data.status['border-color']
+            ">{{ design.data.status["label"] }}</span>
           <span class="text-gray-500 my-2">Archivos de resultados</span>
           <div class="flex flex-col">
-            <a class="hover:underline text-primary hover:text-secondary" v-for="file in currentDesign?.media"
+            <a class="hover:underline text-primary hover:text-secondary" v-for="file in design.data.media"
               :key="file.id" :href="file.original_url" target="_blank">{{ file.file_name }}</a>
           </div>
         </div>
 
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
           <span class="text-gray-500">Cliente</span>
-          <span>{{ currentDesign?.company_branch_name }}</span>
+          <span>{{ design.data.company_branch_name }}</span>
           <span class="text-gray-500 my-2">Contacto</span>
-          <span>{{ currentDesign?.contact_name }}</span>
+          <span>{{ design.data.contact_name }}</span>
           <span class="text-gray-500 my-2">Nombre del diseño</span>
-          <span>{{ currentDesign?.name }}</span>
+          <span>{{ design.data.name }}</span>
           <span class="text-gray-500 my-2">Clasificación</span>
-          <span>{{ currentDesign?.design_type.name }}</span>
+          <span>{{ design.data.design_type.name }}</span>
 
           <p class="text-secondary col-span-2 mt-7">Especificaciones</p>
 
           <span class="text-gray-500 my-2">Requerimientos</span>
-          <span>{{ currentDesign?.specifications }}</span>
+          <span>{{ design.data.specifications }}</span>
 
           <span class="text-gray-500 my-2">Unidad</span>
-          <span>{{ currentDesign?.measure_unit }}</span>
+          <span>{{ design.data.measure_unit }}</span>
           <span class="text-gray-500 my-2">Dimensiones</span>
-          <span>{{ currentDesign?.dimensions }}</span>
+          <span>{{ design.data.dimensions }}</span>
           <span class="text-gray-500 my-2">Pantones</span>
-          <span>{{ currentDesign?.pantones }}</span>
+          <span>{{ design.data.pantones }}</span>
           <span class="text-gray-500 my-2">Plano</span>
           <a class="text-primary hover:text-secondary hover:underline" target="_blank"
-            :href="currentDesign?.media_plano[0]?.original_url">{{ currentDesign?.media_plano[0]?.file_name }}</a>
+            :href="design.data.media_plano[0]?.original_url">{{ design.data.media_plano[0]?.file_name }}</a>
           <span class="text-gray-500 my-2">Logo</span>
           <a class="text-primary hover:text-secondary hover:underline" target="_blank"
-            :href="currentDesign?.media_logo[0]?.original_url">{{ currentDesign?.media_logo[0]?.file_name }}</a>
+            :href="design.data.media_logo[0]?.original_url">{{ design.data.media_logo[0]?.file_name }}</a>
         </div>
       </div>
       <!-- ------------- Informacion general ends 1 ------------- -->
@@ -289,7 +294,7 @@
                 - <a class="hover:underline text-primary hover:text-secondary" :href="file.original_url"
                   target="_blank">{{ file.file_name }}</a>
               </p>
-              <div v-if="currentDesign.designer.id == $page.props.auth.user.id" class="col-span-full">
+              <div v-if="design.data.designer.id == $page.props.auth.user.id" class="col-span-full">
                 <div class="flex items-center">
                   <span
                     class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
@@ -314,7 +319,7 @@
             :disabled="modificationsForm.processing">
             Cerrar
           </CancelButton>
-          <PrimaryButton v-if="showModificationsResultsModal && currentDesign.designer.id == $page.props.auth.user.id"
+          <PrimaryButton v-if="showModificationsResultsModal && design.data.designer.id == $page.props.auth.user.id"
             @click="storeModificationsResults()" :disabled="modificationsForm.processing">
             Subir resultados
           </PrimaryButton>
@@ -357,7 +362,7 @@ export default {
       modificationsForm,
       selectedDesign: "",
       selectedModification: null,
-      currentDesign: null,
+      // currentDesign: null,
       startOrderModal: false,
       finishOrderModal: false,
       showModificationsModal: false,
@@ -376,13 +381,13 @@ export default {
     AppLayoutNoHeader,
     Dropdown,
     DropdownLink,
-    Link,
     CancelButton,
     PrimaryButton,
-    Modal,
     CancelButton,
     InputError,
     DialogModal,
+    Modal,
+    Link,
   },
   methods: {
     async startOrder() {
@@ -398,7 +403,7 @@ export default {
             type: "success",
           });
 
-          this.currentDesign.started_at = response.data.item.started_at;
+          this.design.data.started_at = response.data.item.started_at;
           this.form.reset();
           this.startOrderModal = false;
         }
@@ -425,7 +430,7 @@ export default {
         });
 
         if (response.status === 200) {
-          this.currentDesign.modifications.unshift(response.data.item);
+          this.design.data.modifications.unshift(response.data.item);
           this.showModificationsModal = false;
           this.$notify({
             title: "Éxito",
@@ -492,9 +497,9 @@ export default {
             message: "Orden de diseño autorizada",
             type: "success",
           });
-
-          this.currentDesign.authorized_at = response.data.item.authorized_at;
-          this.currentDesign.status = response.data.item.status;
+          console.log(response);
+          this.design.data.authorized_at = response.data.item.authorized_at;
+          this.design.data.status = response.data.item.status;
         }
       } catch (error) {
         this.$notify({
@@ -517,7 +522,7 @@ export default {
         });
 
         if (response.status === 200) {
-          this.currentDesign.media = response.data.item;
+          this.design.data.media = response.data.item;
           this.$notify({
             title: "Éxito",
             message: "Órden terminada",
@@ -537,15 +542,15 @@ export default {
     },
   },
 
-  watch: {
-    selectedDesign(newVal) {
-      this.currentDesign = this.designs.data.find((item) => item.id == newVal);
-      this.modifications = this.currentDesign?.modifications.reverse();
-    },
-  },
+  // watch: {
+  //   selectedDesign(newVal) {
+  //     this.currentDesign = this.designs.data.find((item) => item.id == newVal);
+  //     this.modifications = this.currentDesign?.modifications.reverse();
+  //   },
+  // },
 
   mounted() {
-    this.selectedDesign = this.design.id;
+    this.selectedDesign = this.design.data.id;
   },
 };
 </script>

@@ -14,7 +14,7 @@
             </template>
 
             <!-- Form -->
-            <form @submit.prevent="edit" class="relative overflow-x-hidden">
+            <form @submit.prevent="update" class="relative overflow-x-hidden">
                   <!-- company branch important notes -->
                   <div class="absolute top-5 -right-1">
                     <div v-if="importantNotes" class="text-xs border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-72">
@@ -315,17 +315,30 @@ export default {
         media: Array,
     },
     methods: {
-        edit() {
-            this.form.put(route('sales.update', this.sale), {
-                onSuccess: () => {
-                    this.$notify({
-                        title: 'Éxito',
-                        message: 'órden de venta actualizada',
-                        type: 'success'
-                    });
-                }
+        update() {
+      if (this.form.media !== null) {
+        this.form.post(route("sales.update-with-media", this.sale), {
+          method: '_put',
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Se actualizó correctamente",
+              type: "success",
             });
-        },
+          },
+        });
+      } else {
+        this.form.put(route("sales.update", this.sale), {
+          onSuccess: () => {
+            this.$notify({
+              title: "Éxito",
+              message: "Se actualizó correctamente",
+              type: "success",
+            });
+          },
+        });
+      }
+    },
         getImportantNotes() {
             this.importantNotes = this.company_branches.find(item => item.id == this.form.company_branch_id)?.important_notes;
         },

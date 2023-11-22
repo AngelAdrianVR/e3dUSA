@@ -19,7 +19,7 @@
                     <!-- pagination -->
                     <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                            :total="suppliers.data.length" />
+                            :total="suppliers.length" />
                     </div>
 
                     <!-- buttons -->
@@ -38,11 +38,11 @@
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="id" label="ID" width="45" />
-                    <el-table-column prop="name" label="Nombre" width="150" />
-                    <el-table-column prop="phone" label="Teléfono" width="130" />
-                    <el-table-column prop="address" label="Dirección" width="170" />
+                    <el-table-column prop="name" label="Nombre" width="190" />
+                    <el-table-column prop="phone" label="Teléfono" width="150" />
+                    <el-table-column prop="address" label="Dirección" width="210" />
                     <el-table-column prop="post_code" label="C.P." width="100" />
-                    <el-table-column prop="created_at" label="Agregado el" width="120" />
+                    <el-table-column prop="created_at" label="Agregado el" width="210" />
                     <el-table-column align="right" fixed="right" width="190">
                         <template #header>
                             <div class="flex space-x-2">
@@ -144,7 +144,7 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.suppliers.data.forEach((supplier, index) => {
+                    this.suppliers.forEach((supplier, index) => {
                         if (this.$refs.multipleTableRef.value.includes(supplier)) {
                             deletedIndexes.push(index);
                         }
@@ -155,7 +155,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.suppliers.data.splice(index, 1);
+                        this.suppliers.splice(index, 1);
                     }
 
                 } else {
@@ -190,7 +190,7 @@ export default {
 
     computed: {
         filteredTableData() {
-            return this.suppliers.data.filter(
+            return this.suppliers.filter(
                 (supplier) =>
                     !this.search ||
                     supplier.name.toLowerCase().includes(this.search.toLowerCase()) ||

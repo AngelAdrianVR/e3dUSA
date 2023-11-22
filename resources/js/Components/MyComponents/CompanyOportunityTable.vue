@@ -2,12 +2,12 @@
 <div class="overflow-x-auto">
   <table class="w-full mx-auto">
         <thead>
-          <tr class="text-center">
+          <tr class="text-left">
             <th class="font-bold pb-5 px-14 lg:px-2">
               Folio <i class="fa-solid fa-arrow-down-long ml-3"></i>
             </th>
             <th class="font-bold pb-5 px-14 lg:px-2">
-              Oportunidades <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Oportunidad <i class="fa-solid fa-arrow-down-long ml-3"></i>
             </th>
             <th class="font-bold pb-5 px-14 lg:px-2">
               Estatus <i class="fa-solid fa-arrow-down-long ml-3"></i>
@@ -28,29 +28,29 @@
             class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]"
             @click="$inertia.get(route('oportunities.show', oportunity.id))"
           >
-            <td class="text-center text-secondary py-2 px-2 rounded-l-full">
+            <td class="text-left text-secondary py-2 px-2 rounded-l-full">
               {{ oportunity.folio }}
             </td>
-            <td class="text-center py-2 px-2 ">
-              {{ oportunity.name }}
+            <td class="text-left py-2 px-2 ">
+              <p :title="oportunity.name" class="w-36 truncate">{{ oportunity.name }}</p>
             </td>
-            <td class="text-center py-2 px-2">
+            <td class="text-left py-2 px-2">
               <span
                 class="py-1 px-4 rounded-full"
                 :class="getStatusStyles(oportunity)"
                 >{{ oportunity.status }}</span
               >
             </td>
-            <td class="text-center py-2 px-2">
+            <td class="text-left py-2 px-2">
               <span
                 class="py-1 px-2"
                 >{{ oportunity.start_date}}</span
               >
             </td>
-            <td class="text-center py-2 px-2">
+            <td class="text-left py-2 px-2">
               {{ oportunity.estimated_finish_date }}
             </td>
-            <td class="text-center py-2 px-2 rounded-r-full">
+            <td class="text-left py-2 px-2 rounded-r-full">
               {{ oportunity.finished_at ?? "--" }}
             </td>
           </tr>

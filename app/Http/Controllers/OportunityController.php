@@ -22,7 +22,7 @@ class OportunityController extends Controller
 
     public function index()
     {
-        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks')->whereHas('users', function ($query) {
+        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks', 'company', 'companyBranch')->whereHas('users', function ($query) {
             $query->where('users.id', auth()->id());
         })->latest()->get());
 
@@ -35,6 +35,8 @@ class OportunityController extends Controller
         $users = User::where('is_active', true)->get();
         $companies = Company::with('companyBranches.contacts')->latest()->get();
         $tags = TagResource::collection(Tag::where('type', 'crm')->get());
+
+        // return $users;
 
         return inertia('Oportunity/Create', compact('users', 'companies', 'tags'));
     }
@@ -49,7 +51,7 @@ class OportunityController extends Controller
             'seller_id' => 'required',
             'tags' => 'nullable|array',
             'probability' => 'nullable|numeric|min:0|max:100',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:0|max:99000000',
             'priority' => 'required|string',
             'start_date' => 'required|date',
             'estimated_finish_date' => 'required|date|after_or_equal:start_date',
@@ -67,10 +69,10 @@ class OportunityController extends Controller
 
             $oportunity = Oportunity::create($validated + ['user_id' => auth()->id(), 'finished_at' => now()]);
             $time = \Carbon\Carbon::createFromFormat('h A', '7 PM')->format('H:i:s'); //tiempo limite de realización de tarea en formato am y pm
-             //Tarea 1. creada con estatus cerrada o pagado
-             OportunityTask::create([
+            //Tarea 1. creada con estatus cerrada o pagado
+            OportunityTask::create([
                 'name' => 'Oportunidad cerrada y/o pagada',
-                'limit_date' =>now()->addDays(2),
+                'limit_date' => now()->addDays(2),
                 'time' =>  $time,
                 'finished_at' => now(),
                 'description' => 'Se creó la oportunidad con estatus cerrada o pagado',
@@ -110,13 +112,13 @@ class OportunityController extends Controller
                 'oportunity_id' => $oportunity->id,
                 'asigned_id' => auth()->id(),
             ]);
-            //Tarea 3. Mandar cotización
+            //Tarea 3. Enviar cotización
             OportunityTask::create([
-                'name' => 'Mandar coización',
+                'name' => 'Enviar cotización',
                 'limit_date' => now()->addDays(6),
                 'time' =>  $time,
                 'finished_at' => null,
-                'description' => 'Mandar cotización a cliente',
+                'description' => 'Enviar cotización a cliente',
                 'priority' => 'Media',
                 'reminder' => null,
                 'user_id' => auth()->id(),
@@ -140,8 +142,12 @@ class OportunityController extends Controller
 
         // permisos
         foreach ($request->selectedUsersToPermissions as $user) {
+            $permissions_array = array_map(function ($item) {
+                // La función boolval() convierte un valor a booleano
+                return boolval($item);
+            }, $user['permissions']);
             $allowedUser = [
-                "permissions" => json_encode($user['permissions']), // Serializa los permisos en formato JSON
+                "permissions" => json_encode($permissions_array), // Serializa los permisos en formato JSON
             ];
             $oportunity->users()->attach($user['id'], $allowedUser);
         }
@@ -163,8 +169,8 @@ class OportunityController extends Controller
 
     public function show(Oportunity $oportunity)
     {
-        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitores.seller', 'clientMonitores.paymentMonitor', 'clientMonitores.mettingMonitor', 'clientMonitores.whatsappMonitor', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller', 'users', 'company', 'companyBranch')->latest()->get());
-        $users = User::where('is_active', true)->get();
+        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller', 'users', 'company', 'companyBranch')->latest()->get());
+        $users = User::where('is_active', true)->whereNot('id', 1)->get();
         $defaultTab = request('defaultTab');
 
         // return $oportunities;
@@ -175,7 +181,7 @@ class OportunityController extends Controller
 
     public function edit(Oportunity $oportunity)
     {
-        $users = User::where('is_active', true)->get();
+        $users = User::where('is_active', true)->whereNot('id', 1)->get();
         $companies = Company::with('companyBranches.contacts')->latest()->get();
         $tags = TagResource::collection(Tag::where('type', 'crm')->get());
         $oportunity = Oportunity::with('users')->find($oportunity->id);
@@ -228,11 +234,10 @@ class OportunityController extends Controller
         $tagIds = $request->input('tags', []);
         // Adjunta las etiquetas al proyecto utilizando la relación polimórfica
         $oportunity->tags()->sync($tagIds);
-        
+
         event(new RecordEdited($oportunity));
 
         return to_route('oportunities.index');
-        
     }
 
     public function updateWithMedia(Request $request, Oportunity $oportunity)
@@ -257,13 +262,21 @@ class OportunityController extends Controller
             'contact_phone' => $request->is_new_company ? 'required' : 'nullable',
         ]);
 
-        $oportunity->update($validated);
+        if ($request->status == 'Cerrada' || $request->status == 'Pagado') {
+            $oportunity->update($validated + ['finished_at' => now()]);
+        } else {
+            $oportunity->update($validated + ['finished_at' => null]);
+        }
 
         // permisos
         $oportunity->users()->detach();
         foreach ($request->selectedUsersToPermissions as $user) {
+            $permissions_array = array_map(function ($item) {
+                // La función boolval() convierte un valor a booleano
+                return boolval($item);
+            }, $user['permissions']);
             $allowedUser = [
-                "permissions" => json_encode($user['permissions']), // Serializa los permisos en formato JSON
+                "permissions" => json_encode($permissions_array), // Serializa los permisos en formato JSON
             ];
             $oportunity->users()->attach($user['id'], $allowedUser);
         }
@@ -275,17 +288,17 @@ class OportunityController extends Controller
         $tagIds = $request->input('tags', []);
         // Adjunta las etiquetas al proyecto utilizando la relación polimórfica
         $oportunity->tags()->sync($tagIds);
-        
+
         // media
         $oportunity->clearMediaCollection();
         $oportunity->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
-        
+
         if ($request->status == 'Cerrada' || $request->status == 'Pagado') {
             $oportunity->update($validated + ['finished_at' => now()]);
         } else {
             $oportunity->update($validated + ['finished_at' => null]);
         }
-        
+
         event(new RecordEdited($oportunity));
 
         return to_route('oportunities.index');
@@ -298,7 +311,7 @@ class OportunityController extends Controller
         event(new RecordDeleted($oportunity));
     }
 
-//-----------Revisa si la oportunidad ya tiene una orden de venta creada, si no la tiene, redirecciona al formulario para crearla
+    //-----------Revisa si la oportunidad ya tiene una orden de venta creada, si no la tiene, redirecciona al formulario para crearla
     public function createSale(Request $request, $oportunity_id)
     {
         $oportunity = Oportunity::find($oportunity_id);
@@ -306,9 +319,8 @@ class OportunityController extends Controller
         $sale = Sale::where('oportunity_id', $oportunity_id)->first(); //Busca una venta de esta oportunidad
 
         if ($sale != null) {
-            return response()->json(['message' => 'Ya existe una venta de esta oportunidad']);
+            return response()->json(['message' => 'Ya existe una venta de esta oportunidad. Estatus actualizado correctamente']);
         }
-
     }
     public function updateStatus(Request $request, $oportunity_id)
     {
@@ -347,5 +359,7 @@ class OportunityController extends Controller
                 'lost_oportunity_razon' => null,
             ]);
         }
+
+        return response()->json(['item' => $oportunity->fresh()]);
     }
 }

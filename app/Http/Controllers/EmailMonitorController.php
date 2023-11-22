@@ -27,11 +27,14 @@ class EmailMonitorController extends Controller
     {
         $companies = Company::with('companyBranches.contacts')->get();
         $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
-        $users = User::where('is_active', true)->get();
+        $users = User::where('is_active', true)->whereNot('id', 1)->get();
+        if (request('opportunityId')) {
+            $opportunity = Oportunity::with(['companyBranch'])->find(request('opportunityId'));
+        } else {
+            $opportunity = null;
+        }
 
-        // return $oportunities;
-
-        return inertia('EmailMonitor/Create', compact('companies', 'oportunities', 'users'));
+        return inertia('EmailMonitor/Create', compact('companies', 'oportunities', 'users', 'opportunity'));
     }
 
 
@@ -52,12 +55,13 @@ class EmailMonitorController extends Controller
         event(new RecordCreated($email_monitor));
 
         $client_monitor = ClientMonitor::create([
-            'type' => 'Correo electrónico',
+            'type' => 'Correo',
             'date' => now(),
             'concept' => $request->subject,
             'seller_id' => auth()->id(),
             'oportunity_id' => $request->oportunity_id,
             'company_id' => $request->company_id,
+            'monitor_id' => $email_monitor->id,
         ]);
 
         $email_monitor->client_monitor_id = $client_monitor->id;
@@ -73,10 +77,10 @@ class EmailMonitorController extends Controller
         return to_route('client-monitors.index');
     }
 
-    
+
     public function show($email_monitor_id)
     {
-        $email_monitor = EmailMonitorResource::make(EmailMonitor::with('seller', 'oportunity', 'company')->find($email_monitor_id));
+        $email_monitor = EmailMonitorResource::make(EmailMonitor::with('seller', 'oportunity', 'company', 'companyBranch')->find($email_monitor_id));
 
         // return $email_monitor;
 
@@ -95,11 +99,11 @@ class EmailMonitorController extends Controller
         //
     }
 
-    
+
     public function destroy($email_monitor_id)
     {
         $email_monitor = EmailMonitor::find($email_monitor_id);
-        $client_monitor = ClientMonitor::where('oportunity_id', $email_monitor->oportunity_id)->first();
+        $client_monitor = ClientMonitor::where('monitor_id', $email_monitor->id)->where('type', 'Correo')->first();
         $client_monitor->delete();
         $email_monitor->delete();
         event(new RecordDeleted($email_monitor));

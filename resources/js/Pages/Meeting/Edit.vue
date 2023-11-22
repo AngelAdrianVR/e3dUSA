@@ -33,6 +33,16 @@
             <InputError :message="form.errors.subject" />
           </div>
 
+          <div class="flex items-center">
+            <el-tooltip content="Tipo de reunión" placement="top">
+              <i class="fa-solid fa-people-arrows text-gray-700 mr-1"></i>
+            </el-tooltip>
+            <el-select v-model="form.type" placeholder="Tipo de reunión" style="width: 240px">
+              <el-option v-for="item in types" :key="item" :label="item" :value="item" />
+            </el-select>
+            <InputError :message="form.errors.type" />
+          </div>
+
           <div class="mb-3 flex items-center">
           <el-tooltip content="Fecha de reunión *" placement="top">
           <span
@@ -103,7 +113,7 @@
               <span class="ml-2 text-sm text-[#9A9A9A]">Repetir</span>
             </label> -->
           </div>
-          <div class="w-3/5">
+          <div v-if="form.type == 'Presencial'" class="w-3/5">
             <IconInput
               v-model="form.location"
               inputPlaceholder="Ubicación *"
@@ -117,7 +127,7 @@
             <InputError :message="form.errors.location" />
           </div>
 
-          <div class="w-full">
+          <div v-if="form.type == 'Videoconferencia'" class="w-full">
             <IconInput
               v-model="form.url"
               inputPlaceholder="URL"
@@ -157,6 +167,7 @@
               >
                 ...
               </span>
+              
             </el-tooltip>
             <textarea
               v-model="form.description"
@@ -239,6 +250,7 @@ export default {
   data() {
     const form = useForm({
       subject: this.meeting.subject,
+      type: this.meeting.type,
       location: this.meeting.location,
       url: this.meeting.url,
       description: this.meeting.description,
@@ -253,6 +265,12 @@ export default {
       form,
       availableModal: false,
       helpDialog: false,
+
+      types:[
+        'Videoconferencia',
+        'Presencial',
+        'Vía telefónica',
+      ],
 
       schedule:[
           '9:00',

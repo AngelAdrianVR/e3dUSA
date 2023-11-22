@@ -109,7 +109,7 @@
               class="fa-solid fa-question text-[9px] text-secondary h-3 w-3 bg-sky-300 rounded-full text-center absolute left-3 top-3 cursor-pointer"></i>
 
             <p class="font-bold text-center mt-4">
-              Solicitar autorización de timepo adicional
+              Solicitar autorización de tiempo adicional
             </p>
 
             <div class="md:w-1/2 ml-3 my-2 flex items-center">

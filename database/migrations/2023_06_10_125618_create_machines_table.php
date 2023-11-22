@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedFloat('width')->nullable();
             $table->unsignedFloat('large')->nullable();
             $table->unsignedFloat('height')->nullable();
-            $table->unsignedFloat('cost')->nullable();
+            $table->unsignedFloat('cost', 10,2)->nullable();
             $table->string('supplier')->nullable();
             $table->date('aquisition_date')->nullable();
             $table->unsignedSmallInteger('days_next_maintenance');

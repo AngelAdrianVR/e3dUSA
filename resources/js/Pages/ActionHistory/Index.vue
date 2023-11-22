@@ -308,6 +308,10 @@ export default {
                 return 'Seguimiento de citas';
             case 'payment_monitors':
                 return 'Seguimiento de pagos';
+            case 'whatsapp_monitors':
+                return 'Seguimiento de whatsapp';
+            case 'email_monitors':
+                return 'Seguimiento de correos';
             case 'client_monitors':
                 return 'Seguimiento integral';
             case 'oportunity_tasks':
@@ -324,6 +328,14 @@ export default {
                 return 'Proyectos';
             case 'project_groups':
                 return 'Grupos de proyectos';
+            case 'comments':
+                return 'Comentarios';
+            case 'tasks':
+                return 'Tareas de proyecto';
+            case 'purchases':
+                return 'Ordenes de compra';
+            case 'suppliers':
+                return 'Proveedores';
         }
     },
     getUserName(user_id){

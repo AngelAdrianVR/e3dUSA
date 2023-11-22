@@ -16,6 +16,7 @@ import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import axios from "axios";
 import { ElNotification } from "element-plus";
+import dayjs from 'dayjs';
 
 defineProps({
   title: String,
@@ -35,6 +36,7 @@ const machineFound = ref(null);
 const productFound = ref(null);
 const catalogProductFound = ref(null);
 const unseenMessages = ref(null);
+const daysSinceNewDate = ref(0);
 
 const form = useForm({
   barCode: null,
@@ -187,6 +189,16 @@ const scanForm = async () => {
 const QRScan = () => {
   qrScan.value = true;
   is_product.value = true;
+};
+
+const timeSinceNewPrice = (company_info) => {
+  const currentDate = dayjs();
+  const newDate = dayjs(company_info.pivot.new_date);
+  
+  const diff = currentDate.diff(newDate, 'day');
+  const formattedDifference = diff < 31 ? `${diff} días` : `${currentDate.diff(newDate, 'month')} mes(es)`;
+  
+  return formattedDifference;
 };
 
 const QRMachineScan = () => {
@@ -884,6 +896,8 @@ onMounted(() => {
   }}</span></p>
                 <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{
                   company_info.pivot.new_date }}</span></p>
+                  <p class="text-secondary font-bold">Último ajuste de precio hace:
+                  <span class="text-gray-600 font-thin">{{timeSinceNewPrice(company_info) }}</span></p>
               </div>
             </div>
 

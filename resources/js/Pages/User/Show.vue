@@ -12,10 +12,10 @@
         </div>
         <div class="flex justify-between">
           <div class="w-1/3">
-            <el-select @change="userSelection" v-model="userSelected" clearable filterable
+            <el-select @change="$inertia.get(route('users.show', userSelected))" v-model="userSelected" clearable filterable
               placeholder="Buscar órden de diseño" no-data-text="No hay órdenes registradas"
               no-match-text="No se encontraron coincidencias">
-              <el-option v-for="item in users.data" :key="item.id" :label="item.id + '. ' + item.name" :value="item.id" />
+              <el-option v-for="item in users" :key="item.id" :label="item.id + '. ' + item.name" :value="item.id" />
             </el-select>
           </div>
           <div class="flex items-center space-x-2">
@@ -40,15 +40,15 @@
                 </button>
               </template>
               <template #content>
-                <DropdownLink :href="route('users.create')">
+                <!-- <DropdownLink :href="route('users.create')">
                   Generar recibo de vacaciones
                 </DropdownLink>
                 <DropdownLink :href="route('users.create')">
                   Reporte de actividades
-                </DropdownLink>
+                </DropdownLink> -->
                 <DropdownLink @click="changeUserStatus" as="button">
                   {{
-                    currentUser?.is_active.bool
+                    user.data.is_active.bool
                     ? "Desactivar usuario"
                     : "Activar usuario"
                   }}
@@ -67,10 +67,11 @@
       </div>
 
       <div class="flex flex-col items-center justify-center mb-4">
-        <img v-if="currentUser" :class="currentUser?.is_active.bool ? 'border-green-600' : 'border-red-600'
-          " class="h-32 w-32 rounded-full object-cover hidden md:block border-2" :src="currentUser?.profile_photo_url"
-          :alt="currentUser?.name" />
-        <p class="font-bold text-lg">{{ currentUser?.name }}</p>
+        <img v-if="user.data" :class="user.data.is_active.bool ? 'border-green-600' : 'border-red-600'
+          " class="h-32 w-32 rounded-full object-cover hidden md:block border-2" :src="user.data.profile_photo_url"
+          :alt="user.data.name" />
+        <p class="font-bold text-lg">{{ user.data.name }}</p>
+        <p v-if="user.data.is_active.bool">Experiencia. {{ user.data.experience }}</p>
       </div>
       <!-- ------------- tabs section starts ------------- -->
       <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2">
@@ -94,53 +95,53 @@
           <p class="text-secondary col-span-2 mt-4 mb-2">Datos personales</p>
 
           <span class="text-gray-500">Nombre</span>
-          <span>{{ currentUser?.name }}</span>
+          <span>{{ user.data.name }}</span>
           <span class="text-gray-500 my-2">Fecha de nacimiento</span>
-          <span>{{ currentUser?.employee_properties?.birthdate.raw }}</span>
-          <span class="text-gray-500 my-2">Dependientes económicos</span>
+          <span>{{ user.data.employee_properties?.birthdate.raw }}</span>
+          <!-- <span class="text-gray-500 my-2">Dependientes económicos</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Dirección</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Teléfono</span>
-          <span>{{ "--" }}</span>
+          <span>{{ "--" }}</span> -->
           <span class="text-gray-500 my-2">Correo personal</span>
-          <span>{{ currentUser?.email }}</span>
+          <span>{{ user.data.email }}</span>
 
           <p class="text-secondary col-span-2 mt-7">Datos laborales</p>
 
           <span class="text-gray-500 my-2">ID</span>
-          <span>{{ currentUser?.id }}</span>
+          <span>{{ user.data.id }}</span>
           <span class="text-gray-500 my-2">Fecha de ingreso</span>
-          <span>{{ currentUser?.created_at }}</span>
+          <span>{{ user.data.created_at }}</span>
           <span class="text-gray-500 my-2">Correo corporativo</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Departamento</span>
-          <span>{{ currentUser?.employee_properties?.department }}</span>
+          <span>{{ user.data.employee_properties?.department }}</span>
         </div>
 
-        <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
+        <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center self-start">
           <span class="text-gray-500 my-2">Puesto</span>
-          <span>{{ currentUser?.employee_properties?.job_position }}</span>
-          <span class="text-gray-500">NSS</span>
+          <span>{{ user.data.employee_properties?.job_position }}</span>
+          <!-- <span class="text-gray-500">NSS</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">RFC</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Curp</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Nivel académico</span>
-          <span>{{ "--" }}</span>
+          <span>{{ "--" }}</span> -->
           <span class="text-gray-500 my-2">Salario semanal</span>
           <span>${{
-            currentUser?.employee_properties?.salary.week
+            user.data.employee_properties?.salary.week
               .toFixed(2)
               .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
           }}</span>
           <span class="text-gray-500 my-2">Horas laborales por semana</span>
-          <span>{{ currentUser?.employee_properties?.hours_per_week }}</span>
+          <span>{{ user.data.employee_properties?.hours_per_week }}</span>
           <span class="text-gray-500 my-2">Vacaciones disponibles</span>
-          <span>{{ currentUser?.employee_properties?.vacations.available_days.toFixed(3) }} dias</span>
+          <span>{{ user.data.employee_properties?.vacations.available_days.toFixed(3) }} dias</span>
 
-          <p class="text-secondary col-span-2 mt-7">Contacto de emergencia</p>
+          <!-- <p class="text-secondary col-span-2 mt-7">Contacto de emergencia</p>
 
           <span class="text-gray-500 my-2">Nombre</span>
           <span>{{ "--" }}</span>
@@ -148,14 +149,14 @@
           <span class="text-gray-500 my-2">Parentezco</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Teléfono</span>
-          <span>{{ "--" }}</span>
+          <span>{{ "--" }}</span> -->
         </div>
       </div>
       <!-- ------------- Informacion general ends 1 ------------- -->
 
       <!-- -------------tab 2 desempeño starts ------------- -->
       <div v-if="tabs == 2" class="border-b-2 border-[#cccccc] text-sm">
-        <div v-if="currentUser?.is_active?.bool" class="px-12 pb-12 pt-6">
+        <div v-if="user.data.is_active?.bool" class="px-12 pb-12 pt-6">
           <!-- --------------------------- performance tab starts --------------------------- -->
           <div class="grid grid-cols-2 gap-4">
             <div>
@@ -189,6 +190,15 @@
                   {{ item.label }}: {{ item.value }}
                 </li>
               </div>
+            </div>
+            <div>
+              <h2 class="text-secondary">Habilidades</h2>
+              <div v-if="user.data.employee_properties?.skills?.length > 0" class="px-6">
+                <li v-for="(item, index) in user.data.employee_properties?.skills" :key="index">
+                  {{ item }}
+                </li>
+              </div>
+              <p v-else class="text-xs text-gray-500">No hay habilidades registradas en este usuario</p>
             </div>
           </div>
 
@@ -241,7 +251,7 @@
         <template #title> Eliminar usuario </template>
         <template #content> Continuar con la eliminación? </template>
         <template #footer>
-          <div class="">
+          <div>
             <CancelButton @click="showConfirmModal = false" class="mr-2">Cancelar</CancelButton>
             <PrimaryButton @click="deleteItem">Eliminar</PrimaryButton>
           </div>
@@ -265,17 +275,13 @@ import { Link, useForm } from "@inertiajs/vue3";
 
 export default {
   data() {
-    // const form = useForm({
-    //   expected_end_at: null,
-    // });
+
 
     return {
-      //   form,
       userSelected: "",
-      currentUser: null,
+      // currentUser: null,
+      employeeExperience: "",
       showConfirmModal: false,
-      //   startOrderModal: false,
-      //   helpDialog: false,
       tabs: 1,
     };
   },
@@ -291,7 +297,6 @@ export default {
     AppLayoutNoHeader,
     Dropdown,
     DropdownLink,
-    Link,
     CancelButton,
     PrimaryButton,
     Modal,
@@ -299,12 +304,13 @@ export default {
     InputError,
     ConfirmationModal,
     PerformanceTable,
+    Link
   },
   methods: {
     async deleteItem() {
       try {
         const response = await axios.delete(
-          route("users.destroy", this.currentUser?.id)
+          route("users.destroy", this.user.data.id)
         );
 
         if (response.status == 200) {
@@ -314,13 +320,13 @@ export default {
             type: "success",
           });
 
-          const index = this.machines.data.findIndex(
-            (item) => item.id === this.currentUser.id
-          );
-          if (index !== -1) {
-            this.machines.data.splice(index, 1);
-            this.userSelected = "";
-          }
+          // const index = this.users.findIndex(
+          //   (item) => item.id === this.user.data.id
+          // );
+          // if (index !== -1) {
+          //   this.users.splice(index, 1);
+          //   this.userSelected = "";
+          // }
         } else {
           this.$notify({
             title: "Algo salió mal",
@@ -337,11 +343,12 @@ export default {
         console.log(err);
       } finally {
         this.showConfirmModal = false;
+        this.$inertia.get(route('users.index'));
       }
     },
 
     resetPassword() {
-      this.$inertia.put(route("users.reset-pass", this.currentUser?.id));
+      this.$inertia.put(route("users.reset-pass", this.user.data.id));
       this.$notify({
         title: "Éxito",
         message: "Contraseña reseteada a 'e3d'",
@@ -350,20 +357,20 @@ export default {
     },
 
     changeUserStatus() {
-      this.$inertia.put(route("users.change-status", this.currentUser?.id));
+      this.$inertia.put(route("users.change-status", this.user.data.id));
       this.$notify({
         title: "Éxito",
-        message: this.currentUser?.is_active.bool
+        message: this.user.data.is_active.bool
           ? "Usuario activado"
           : "Usuario desactivado",
         type: "success",
       });
     },
     userSelection() {
-      this.currentUser = this.users.data.find(
+      this.user.data = this.users.data.find(
         (item) => item.id == this.userSelected
       );
-      this.$inertia.visit("/users/" + this.currentUser.id);
+      this.$inertia.visit("/users/" + this.user.data.id);
     },
   },
 
@@ -374,10 +381,10 @@ export default {
   // },
 
   mounted() {
-    this.userSelected = this.user.id;
-    this.currentUser = this.users.data.find(
-      (item) => item.id == this.userSelected
-    );
+    this.userSelected = this.user.data.id;
+    // this.currentUser = this.users.data.find(
+    //   (item) => item.id == this.userSelected
+    // );
   },
 };
 </script>

@@ -10,6 +10,7 @@ class Meeting extends Model
     use HasFactory;
 
     protected $fillable = [
+        'type',
         'subject',
         'location',
         'url',

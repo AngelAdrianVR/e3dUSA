@@ -32,6 +32,7 @@ use App\Http\Controllers\ProductionProgressController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectGroupController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\QualityController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\SaleController;
@@ -165,6 +166,7 @@ Route::post('sales/massive-delete', [SaleController::class, 'massiveDelete'])->n
 Route::post('sales/clone', [SaleController::class, 'clone'])->name('sales.clone');
 Route::put('sales/authorize/{sale}', [SaleController::class, 'authorizeOrder'])->name('sales.authorize');
 Route::get('sales/print/{sale}', [SaleController::class, 'print'])->name('sales.print');
+Route::post('sales/update-with-media/{sale}', [SaleController::class, 'updateWithMedia'])->name('sales.update-with-media')->middleware('auth');
 
 // ------- CRM(Companybranches sucursales Routes)  ---------
 Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');
@@ -308,6 +310,13 @@ Route::post('productions/massive-delete', [ProductionController::class, 'massive
 Route::get('productions/print/{productions}', [ProductionController::class, 'print'])->name('productions.print');
 Route::put('productions/change-status/{production}', [ProductionController::class, 'changeStatus'])->name('productions.change-status');
 Route::put('productions/continue-production/{production}', [ProductionController::class, 'continueProduction'])->name('productions.continue-production');
+
+// ------- Quality department routes  ---------
+Route::resource('qualities', QualityController::class)->middleware('auth');
+Route::post('qualities/update-with-media/{quality}', [QualityController::class, 'updateWithMedia'])->name('qualities.update-with-media');
+Route::get('qualities/get-production/{production_id}', [QualityController::class, 'getProduction'])->name('qualities.get-production')->middleware('auth');
+Route::get('qualities/get-quality/{quality_id}', [QualityController::class, 'getQuality'])->name('qualities.get-quality')->middleware('auth');
+
 
 // ------- Machines Routes  ---------
 Route::resource('machines', MachineController::class)->middleware('auth');

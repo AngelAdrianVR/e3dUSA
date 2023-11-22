@@ -52,8 +52,8 @@
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
                         </el-tooltip>
-                        <el-select @change="getImportantNotes()" v-model="form.company_branch_id" class="mt-2" clearable filterable
-                            placeholder="Selecciona un cliente">
+                        <el-select @change="getImportantNotes()" v-model="form.company_branch_id" class="mt-2" clearable
+                            filterable placeholder="Selecciona un cliente">
                             <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
                                 :value="item.id" />
                         </el-select>
@@ -71,6 +71,7 @@
                                 {{ contact.name }} ({{ contact.email }})
                             </el-radio-button>
                         </el-radio-group>
+                        <p v-if="!form.contact_id" class="text-xs text-primary ml-2">No olvides seleccionar el contacto.</p>
                         <InputError :message="form.errors.contact_id" />
                     </div>
                     <el-divider content-position="left">Logistica</el-divider>
@@ -245,7 +246,8 @@
             </form>
             <DialogModal :show="showImportantNotesModal" @close="showImportantNotesModal = false">
                 <template #title>
-                    {{ editIMportantNotes ? 'Editar' : 'Agregar' }} notas importantes para {{ company_branches.find(item => item.id == form.company_branch_id).name
+                    {{ editIMportantNotes ? 'Editar' : 'Agregar' }} notas importantes para {{ company_branches.find(item =>
+                        item.id == form.company_branch_id).name
                     }}
                 </template>
                 <template #content>
@@ -263,24 +265,24 @@
                     </div>
                 </template>
                 <template #footer>
+                    <CancelButton @click="showImportantNotesModal = false">Cancelar</CancelButton>
                     <PrimaryButton @click="storeImportantNotes()" :disabled="!importantNotesToStore">Guardar notas
                     </PrimaryButton>
-                    <CancelButton @click="showImportantNotesModal = false">Cancelar</CancelButton>
                 </template>
             </DialogModal>
 
             <Modal :show="showCreateProjectModal" @close="showCreateProjectModal = false">
                 <section class="mx-7 my-4 space-y-4">
                     <div>
-                    <p class="text-secondary text-center mt-10 font-bold">
-                        ¿Quieres crear un proyecto de esta venta para llevar un mejor flujo de trabajo?
-                    </p>
+                        <p class="text-secondary text-center mt-10 font-bold">
+                            ¿Quieres crear un proyecto de esta venta para llevar un mejor flujo de trabajo?
+                        </p>
                     </div>
                     <div class="flex justify-end space-x-3 pt-5 pb-1">
-                    <a :href="route('sales.index')">
-                        <CancelButton>No crear proyecto</CancelButton>
-                    </a>
-                    <PrimaryButton @click="$inertia.get(route('projects.create'))">Crear proyecto</PrimaryButton>
+                        <a :href="route('sales.index')">
+                            <CancelButton>No crear proyecto</CancelButton>
+                        </a>
+                        <PrimaryButton @click="$inertia.get(route('projects.create'))">Crear proyecto</PrimaryButton>
                     </div>
                 </section>
             </Modal>
@@ -345,7 +347,7 @@ export default {
     },
     props: {
         company_branches: Array,
-        data: Array,
+        opportunityId: Number,
     },
     methods: {
         store() {
@@ -382,7 +384,7 @@ export default {
         },
         async storeImportantNotes() {
             try {
-                const response = await axios.put(route('company-branches.store-important-notes', this.form.company_branch_id), {notes: this.importantNotesToStore});
+                const response = await axios.put(route('company-branches.store-important-notes', this.form.company_branch_id), { notes: this.importantNotesToStore });
 
                 if (response.status === 200) {
                     this.importantNotes = this.importantNotesToStore;
@@ -449,10 +451,10 @@ export default {
             this.product.notes = null;
         }
     },
-    mounted(){
-        if(this.data) {
-            this.form.company_branch_id = this.data.company_branch_id;
-            this.form.oportunity_id = this.data.oportunity_id;
+    mounted() {
+        if (this.opportunityId) {
+            this.form.company_branch_id = parseInt(this.opportunityId.company_branch_id);
+            this.form.oportunity_id = parseInt(this.opportunityId);
         }
     }
 };

@@ -17,12 +17,11 @@ return new class extends Migration
             $table->string('contact');
             $table->string('contact_phone')->nullable();
             $table->string('company_name')->nullable();
-            $table->unsignedFloat('amount')->nullable();
+            $table->double('amount', 10, 2)->nullable();
             $table->string('status')->default('Nueva');
             $table->string('priority');
             $table->text('description')->nullable();
             $table->text('lost_oportunity_razon')->nullable();
-            $table->json('tags')->nullable(); //se guardan varias etiquetas
             $table->unsignedTinyInteger('probability')->nullable(); // 1 al 100
             $table->timestamp('finished_at')->nullable();
             $table->timestamp('start_date')->nullable();

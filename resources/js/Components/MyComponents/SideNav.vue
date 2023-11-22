@@ -95,7 +95,10 @@ export default {
                 {
                     label: 'CRM',
                     icon: '<i class="fa-solid fa-chart-line text-sm"></i>',
-                    active: route().current('crm.*') || route().current('quotes.*') || route().current('companies.*') || route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*') || route().current('client-monitors.*') || route().current('meeting-monitors.*') || route().current('payment-monitors.*'),
+                    active: route().current('crm.*') || route().current('quotes.*') || route().current('companies.*') 
+                    || route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*') 
+                    || route().current('client-monitors.*') || route().current('meeting-monitors.*') || route().current('payment-monitors.*')
+                    || route().current('whatsapp-monitors.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
                         return ['quote', 'sale', 'opportunities'].includes(notification.data.module);
                     }),
@@ -324,6 +327,13 @@ export default {
                         return notification.data.module === 'production';
                     }),
                     show: true
+                },
+                {
+                    label: 'Calidad',
+                    icon: '<i class="fa-solid fa-clipboard-check text-sm"></i>',
+                    route: route('qualities.index'),
+                    active: route().current('qualities.*'),
+                    show: this.$page.props.auth.user.permissions.includes('Ver modulo de calidad')
                 },
                 {
                     label: 'Mercadotecnia',

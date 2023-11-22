@@ -8,7 +8,7 @@
           <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
-            <h2 class="font-semibold text-xl leading-tight">Crear Oportunidad</h2>
+            <h2 class="font-semibold text-xl leading-tight">Crear oportunidad</h2>
           </div>
         </div>
       </template>
@@ -17,13 +17,13 @@
       <form @submit.prevent="store">
         <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4 mx-3">
           <div>
-            <label>Nombre de la oportunidad *</label>
+            <label class="text-sm">Nombre de la oportunidad *</label>
             <input v-model="form.name" class="input" type="text" />
             <InputError :message="form.errors.name" />
           </div>
           <div class="relative">
             <i :class="getColorStatus(form.status)" class="fa-solid fa-circle text-xs top-1 left-16 absolute z-30"></i>
-            <label>Estatus</label> <br />
+            <label class="text-sm">Estatus *</label> <br />
             <div class="flex items-center space-x-4">
               <el-select class="lg:w-1/2 mt-2" v-model="form.status" clearable filterable
                 placeholder="Seleccionar estatus" no-data-text="No hay estatus registrados"
@@ -39,7 +39,7 @@
             <InputError :message="form.errors.status" />
           </div>
           <div>
-            <label>Vendedor</label>
+            <label class="text-sm">Vendedor *</label>
             <el-select v-model="form.seller_id" clearable filterable placeholder="Seleccione"
               no-data-text="No hay vendedores registrados" no-match-text="No se encontraron coincidencias">
               <el-option v-for="seller in users.filter(
@@ -47,33 +47,34 @@
               )" :key="seller" :label="seller.name" :value="seller.id" />
             </el-select>
           </div>
-          <label class="inline-flex items-center">
+          <!-- <label class="inline-flex items-center">
             <Checkbox v-model:checked="form.is_new_company" @change="handleChecked"
               class="bg-transparent disabled:border-gray-400" />
             <span class="ml-2 text-xs">Nuevo cliente</span>
-          </label>
+          </label> -->
           <div class="flex justify-between space-x-3 col-span-2" v-if="form.is_new_company">
             <div class="w-full">
-                <InputLabel value="Cliente *" class="ml-2" />
-                <input v-model="form.company_name" class="input" type="text" required />
-                <InputError :message="form.errors.contact_name" />
+              <InputLabel value="Cliente *" class="ml-2" />
+              <input v-model="form.company_name" class="input" type="text" required />
+              <InputError :message="form.errors.contact_name" />
             </div>
             <div class="w-full">
-                <InputLabel value="Contacto *" class="ml-2" />
-                <input v-model="form.contact" class="input" type="text" required />
-                <InputError :message="form.errors.contact_name" />
+              <InputLabel value="Contacto *" class="ml-2" />
+              <input v-model="form.contact" class="input" type="text" required />
+              <InputError :message="form.errors.contact_name" />
             </div>
             <div class="w-full">
-                <InputLabel value="Teléfono *" class="ml-2" />
-                <input v-model="form.contact_phone" class="input" type="text" required />
-                <InputError :message="form.errors.contact_phone" />
+              <InputLabel value="Teléfono *" class="ml-2" />
+              <input v-model="form.contact_phone" class="input" type="text" required />
+              <InputError :message="form.errors.contact_phone" />
             </div>
           </div>
           <div v-if="!form.is_new_company" class="flex space-x-2 justify-between">
             <div class="w-1/2">
               <label class="text-sm">Cliente *</label> <br />
-              <el-select @change="cleanCompanyForm" v-model="form.company_id" clearable filterable placeholder="Seleccione"
-                no-data-text="No hay clientes registrados" no-match-text="No se encontraron coincidencias">
+              <el-select @change="cleanCompanyForm" v-model="form.company_id" clearable filterable
+                placeholder="Seleccione" no-data-text="No hay clientes registrados"
+                no-match-text="No se encontraron coincidencias">
                 <el-option v-for="company in companies" :key="company" :label="company.business_name"
                   :value="company.id" />
               </el-select>
@@ -88,6 +89,8 @@
                   (item) => item.id == form.company_id
                 )?.company_branches" :key="company_branch" :label="company_branch.name" :value="company_branch.id" />
               </el-select>
+              <p v-if="$page.props.errors?.company_branch_id" class="text-xs text-red-600">El campo sucursal es
+                obligatorio</p>
             </div>
             <div class="w-1/2">
               <label class="text-sm">Contacto *</label> <br />
@@ -96,24 +99,25 @@
                 <el-option v-for="contact in company_branch_obj?.contacts" :key="contact" :label="contact.name"
                   :value="contact.name" />
               </el-select>
+              <p v-if="$page.props.errors?.contact" class="text-xs text-red-600">El campo contacto es obligatorio</p>
             </div>
           </div>
           <div class="lg:flex pt-3">
             <div class="lg:w-1/2 mt-2 lg:mt-0">
-              <label class="block">Fecha de inicio *</label>
+              <label class="block text-sm">Fecha de inicio *</label>
               <el-date-picker v-model="form.start_date" type="date" placeholder="Fecha de inicio *" format="YYYY/MM/DD"
                 value-format="YYYY-MM-DD" />
               <InputError :message="form.errors.start_date" />
             </div>
             <div class="lg:w-1/2 mt-2 lg:mt-0">
-              <label class="block">Fecha estimada de cierre *</label>
+              <label class="block text-sm">Fecha estimada de cierre *</label>
               <el-date-picker v-model="form.estimated_finish_date" type="date" placeholder="Fecha estimada de cierre *"
                 format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
               <InputError :message="form.errors.estimated_finish_date" />
             </div>
           </div>
           <div>
-            <label>Descripción</label>
+            <label class="text-sm">Descripción</label>
             <RichText @content="updateDescription($event)" v-model="form.description" />
           </div>
           <div class="ml-2 mt-2 col-span-full flex">
@@ -123,8 +127,9 @@
           <div class="flex justify-between items-center space-x-4">
             <div class="w-full">
               <div class="flex justify-between items-center mx-2">
-                <label>Etiquetas</label>
-                <button v-if="$page.props.auth.user.permissions.includes('Crear etiquetas crm')" @click="showTagFormModal = true" type="button"
+                <label class="text-sm">Etiquetas</label>
+                <button v-if="$page.props.auth.user.permissions.includes('Crear etiquetas crm')"
+                  @click="showTagFormModal = true" type="button"
                   class="rounded-full border border-primary w-4 h-4 flex items-center justify-center">
                   <i class="fa-solid fa-plus text-primary text-[9px]"></i>
                 </button>
@@ -137,7 +142,7 @@
               </el-select>
             </div>
             <div class="w-full">
-              <label>Probabilidad %</label>
+              <label class="text-sm">Probabilidad %</label>
               <input v-model="form.probability" class="input" type="number" min="0" max="100" />
             </div>
           </div>
@@ -145,7 +150,7 @@
             <div class="lg:w-1/2 relative">
               <i :class="getColorPriority(form.priority)"
                 class="fa-solid fa-circle text-xs top-1 left-20 absolute z-30"></i>
-              <label class="block">Prioridad</label>
+              <label class="block text-sm">Prioridad *</label>
               <div class="flex items-center space-x-4">
                 <el-select class="lg:w-1/2" v-model="form.priority" clearable filterable placeholder="Seleccione"
                   no-data-text="No hay opciones registradas" no-match-text="No se encontraron coincidencias">
@@ -161,7 +166,7 @@
             </div>
 
             <div v-if="form.status == 'Perdida'" class="lg:w-1/2">
-              <label>Causa oportunidad perdida
+              <label class="text-sm">Causa oportunidad perdida *
                 <el-tooltip content="Escribe la causa por la cual se PERDIÓ esta oportunidad" placement="right">
                   <i class="fa-regular fa-circle-question ml-2 text-primary text-xs"></i>
                 </el-tooltip>
@@ -172,7 +177,7 @@
           </div>
           <div class="lg:w-1/2">
             <div class="flex items-center space-x-2">
-              <label>Valor de oportunidad *</label>
+              <label class="text-sm">Valor de oportunidad *</label>
               <el-tooltip content="Monto estimado que se espera generar si se cierra esta oportunidad" placement="right">
                 <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
                   <i class="fa-solid fa-info text-primary text-[7px]"></i>
@@ -203,7 +208,7 @@
             </div>
           </div>
 
-          <section class="rounded-[10px] py-12 mx-1 mt-5 max-h-[540px] col-span-full bg-[#CCCCCC]">
+          <section class="rounded-[10px] py-12 mx-1 mt-5 max-h-[580px] col-span-full bg-[#CCCCCC]">
             <div class="flex px-16 mb-8">
               <div v-if="typeAccessProject === 'Private'" class="w-full">
                 <h2 class="font-bold text-sm my-2 ml-2 col-span-full">Asignar participantes </h2>
@@ -225,7 +230,7 @@
                   <h2 class="font-bold border-b border-[#9A9A9A] w-2/3 pl-3">Usuarios</h2>
                   <h2 class="font-bold border-b border-[#9A9A9A] w-1/3">Permisos</h2>
                 </div>
-                <div class="pl-3 overflow-y-auto min-h-[100px] max-h-[340px]">
+                <div class="pl-3 overflow-y-auto min-h-[100px] max-h-[380px]">
                   <template v-for="user in form.selectedUsersToPermissions" :key="user.id">
                     <div v-if="user.id !== 1" class="flex mt-2 border-b border-[#9A9A9A]">
                       <div class="w-2/3 flex space-x-2">
@@ -235,7 +240,8 @@
                         </div>
                         <div class="text-sm w-full">
                           <p>{{ user.name }}</p>
-                          <p v-if="user.employee_properties">{{ 'Depto. ' + user.employee_properties?.department }}</p>
+                          <p v-if="user.employee_properties !== null">{{ 'Depto. ' + user.employee_properties?.department
+                          }}</p>
                           <p v-else>Super admin</p>
                         </div>
                       </div>
@@ -312,12 +318,12 @@
         <template #content>
           <form @submit.prevent="storeTag" ref="tagForm">
             <div>
-              <label>Nombre de la etiqueta *</label>
+              <label class="text-sm">Nombre de la etiqueta *</label>
               <input v-model="tagForm.name" type="text" class="input mt-1" placeholder="Escribe el nombre" required />
               <InputError :message="tagForm.errors.name" />
             </div>
             <div class="mt-3">
-              <label>Seleccione el color *</label>
+              <label class="text-sm">Seleccione el color *</label>
               <el-color-picker v-model="tagForm.color" class="mt-1" />
               <InputError :message="tagForm.errors.color" />
             </div>
@@ -553,11 +559,14 @@ export default {
     },
     selectAdmins() {
       // obtener los usuarios admin para que siempre aparezcan en los proyectos y dar todos los permisos
-      let admins = this.users.filter(item => item.employee_properties == null);
-      admins.forEach(admin => {
-        const defaultPermissions = [true, true, true, true, true];
-        admin.permissions = defaultPermissions;
-      });
+      const defaultPermissions = [true, true, true, true, true];
+      let admins = this.users.filter(item => item.employee_properties == null).map(user => ({
+        id: user.id,
+        name: user.name,
+        employee_properties: null,
+        profile_photo_url: user.profile_photo_url,
+        permissions: [...defaultPermissions],
+      }));
       this.form.selectedUsersToPermissions = admins;
     },
     selectAuthUser() {
@@ -568,6 +577,7 @@ export default {
         let authUser = {
           id: user.id,
           name: user.name,
+          employee_properties: { department: user.employee_properties.department },
           profile_photo_url: user.profile_photo_url,
           permissions: [...defaultPermissions],
         };
@@ -585,14 +595,15 @@ export default {
       let foundUser = {
         id: user.id,
         name: user.name,
+        employee_properties: { department: user.employee_properties.department },
         profile_photo_url: user.profile_photo_url,
         permissions: [...defaultPermissions],
       };
       this.form.selectedUsersToPermissions.push(foundUser);
     },
     cleanCompanyForm() {
-        this.company_branch = null;
-        this.form.contact = null;
+      this.company_branch = null;
+      this.form.contact = null;
     }
   },
   computed: {
@@ -612,16 +623,19 @@ export default {
       this.form.type_access_project = newVal;
       this.selectAdmins();
       if (newVal === 'Public') {
+        this.selectAuthUser();
         let defaultPermissions = [false, true, false, false, true];
-        let usersWithSelectedProperties = this.users.filter(element => element.employee_properties !== null).map(user => ({
+        let usersWithSelectedProperties = this.users.filter(element => element.employee_properties?.department === "Ventas").map(user => ({
           id: user.id,
           name: user.name,
+          employee_properties: { department: user.employee_properties.department },
           profile_photo_url: user.profile_photo_url,
           permissions: [...defaultPermissions],
         }));
         this.form.selectedUsersToPermissions = [...this.form.selectedUsersToPermissions, ...usersWithSelectedProperties];
         this.editAccesFlag = false;
       } else {
+        this.selectAuthUser();
         this.editAccesFlag = true;
       }
     }

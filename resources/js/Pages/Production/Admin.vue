@@ -22,12 +22,12 @@
             <!-- tabla -->
             <div class="relative overflow-hidden">
                 <NotificationCenter module="production" />
-                <div class="lg:w-5/6 mx-auto mt-6">
+                <div class="lg:w-[90%] mx-auto mt-6">
                     <div class="flex justify-between">
                         <!-- pagination -->
                         <div>
                             <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                                :total="productions.data.length" />
+                                :total="productions.length" />
                         </div>
 
                         <!-- buttons -->
@@ -45,12 +45,13 @@
                         @selection-change="handleSelectionChange" ref="multipleTableRef"
                         :row-class-name="tableRowClassName">
                         <el-table-column type="selection" width="55" />
-                        <el-table-column prop="p_folio" label="Folio" />
-                        <el-table-column prop="user.name" label="Creador" />
+                        <el-table-column prop="folio" label="Folio" width="90" />
+                        <el-table-column prop="user.name" label="Vendedor" />
                         <el-table-column prop="company_branch.name" label="Cliente" />
                         <el-table-column prop="created_at" label="Creada el" />
                         <el-table-column prop="status['label']" label="Estatus" />
-                        <el-table-column prop="productions.length" label="N° operadores" width="120" />
+                        <el-table-column prop="operators" label="Operadores" width="210" />
+                        <el-table-column prop="production.percentage" label="% Avance" width="115" />
                         <el-table-column align="right" fixed="right" width="190">
                             <template #header>
                                 <div class="flex space-x-2">
@@ -152,7 +153,7 @@ export default {
 
                     // update list of productions
                     let deletedIndexes = [];
-                    this.productions.data.forEach((production, index) => {
+                    this.productions.forEach((production, index) => {
                         if (this.$refs.multipleTableRef.value.includes(production)) {
                             deletedIndexes.push(index);
                         }
@@ -161,7 +162,7 @@ export default {
                     deletedIndexes.sort((a, b) => b - a);
 
                     for (const index of deletedIndexes) {
-                        this.productions.data.splice(index, 1);
+                        this.productions.splice(index, 1);
                     }
 
                 } else {
@@ -193,7 +194,7 @@ export default {
             return 'cursor-pointer';
         },
         handleRowClick(row) {
-            this.$inertia.get(route('productions.show', row));
+            this.$inertia.get(route('productions.show', row.id));
         },
         handleCommand(command) {
             const commandName = command.split('-')[0];
@@ -211,16 +212,14 @@ export default {
     computed: {
         filteredTableData() {
             if (!this.search) {
-                return this.productions.data.filter((item, index) => index >= this.start && index < this.end);
+                return this.productions.filter((item, index) => index >= this.start && index < this.end);
             } else {
-                return this.productions.data.filter(
+                return this.productions.filter(
                     (production) =>
                         production.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
                         production.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
                         production.company_branch.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                        production.productions.map((prd) => {
-                            return prd.catalog_product_company_sale.catalog_product_company?.catalog_product.name;
-                        }).join(', ').toLowerCase().includes(this.search.toLowerCase())
+                        production.operators.toLowerCase().includes(this.search.toLowerCase()) 
                 )
             }
         }

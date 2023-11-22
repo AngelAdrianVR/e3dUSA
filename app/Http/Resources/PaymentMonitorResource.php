@@ -16,7 +16,7 @@ class PaymentMonitorResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'paid_at' => $this->paid_at?->isoFormat('DD MMMM YYYY, H:mm A'),
+            'paid_at' => $this->paid_at?->isoFormat('DD MMMM YYYY'),
             'paid_at_raw' => $this->paid_at,
             'amount' => $this->amount,
             'payment_method' => $this->payment_method,

@@ -32,7 +32,7 @@
         <tbody>
           <tr v-for="project in filteredTableData" :key="project.id" class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]"
             @click="$inertia.get(route('projects.show', project.id))">
-            <td class="text-left py-2 px-2 rounded-l-full">
+            <td :title="project.project_name" class="text-left py-2 px-2 rounded-l-full max-w-[230px] truncate">
               {{ project.project_name }}
             </td>
             <td class="text-left py-2 px-2">

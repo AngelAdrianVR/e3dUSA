@@ -190,6 +190,9 @@
       <table class="w-full">
         <thead class="text-left">
           <tr>
+            <el-tooltip content="Año-Mes-Día" placement="top">
+            <th>Fecha</th>
+            </el-tooltip>
             <th>Colaborador</th>
             <th>Tarea</th>
             <th>Progreso</th>
@@ -199,6 +202,7 @@
         <tbody>
           <template v-for="(production, index) in catalog_product_company_sale.productions" :key="index">
             <tr v-for="progress in production.progress" :key="progress.id">
+              <td>{{ progress.created_at.split('T')[0] }} a las {{ progress.created_at.split('T')[1].split('.')[0] }}  </td>
               <td>{{ production.operator.name }}</td>
               <td>{{ progress.task }}</td>
               <td>{{ progress.progress }} unidades</td>

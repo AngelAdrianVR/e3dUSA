@@ -28,7 +28,7 @@ class TaskController extends Controller
     public function create(Request $request)
     {
         $projects = Project::with(['users'])->latest()->get();
-        $users = User::where('is_active', true)->get();
+        $users = User::where('is_active', true)->whereNot('id', 1)->get();
         $parent_id = $request->input('projectId') ?? 1;
 
         return inertia('Task/Create', compact('projects', 'users', 'parent_id'));
@@ -39,7 +39,7 @@ class TaskController extends Controller
     {
         $request->validate([
             'project_id' => 'required',
-            'title' => 'required|string',
+            'title' => 'required|string|max:255',
             'description' => 'nullable',
             'department' => 'required|string',
             'participants' => 'required|array|min:1',
@@ -83,11 +83,14 @@ class TaskController extends Controller
     public function update(Request $request, Task $task)
     {
         $validated = $request->validate([
-            'status' => 'required|string',
+            'status' => 'required|string|max:255',
             'description' => 'nullable',
+            'title' => 'required|string|max:255',
             'department' => 'required|string',
             'priority' => 'nullable|string',
             'participants' => 'nullable|array',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
         ]);
 
         $task->update($validated);
@@ -112,6 +115,7 @@ class TaskController extends Controller
 
     public function destroy(Task $task)
     {
+        $task->comments()->delete();
         $task->delete();
         event(new RecordDeleted($task));
     }

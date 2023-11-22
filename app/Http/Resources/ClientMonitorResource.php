@@ -26,7 +26,7 @@ class ClientMonitorResource extends JsonResource
             'id' => $this->id,
             'folio' => $folio,
             'type' => $this->type,
-            'date' => $this->date?->isoFormat('DD MMMM YYYY, h:mm A'),
+            'date' => $this->date?->isoFormat('DD MMMM YYYY'),
             'concept' => $this->concept,
             'seller' => $this->whenLoaded('seller'),
             'oportunity' => $this->whenLoaded('oportunity'),

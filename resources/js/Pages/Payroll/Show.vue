@@ -16,18 +16,18 @@
           </Link>
         </div>
         <div class="w-1/3">
-          <el-select v-model="selectedPayroll" @change="payrollChanged" filterable allow-create default-first-option
+          <el-select @change="$inertia.get(route('payrolls.show', selectedPayroll))" v-model="selectedPayroll" filterable allow-create default-first-option
             :reserve-keyword="false" placeholder="Buscar nómina">
-            <el-option v-for="item in payrolls.data" :key="item.id" :label="'Nómina semana: ' + item.week"
+            <el-option v-for="item in payrolls" :key="item.id" :label="'Nómina semana: ' + item.week"
               :value="item.id" />
           </el-select>
         </div>
 
         <div class="flex justify-center items-center">
           <p class="lg:mr-2">
-            <strong class="mr-4">Nómina semanal {{ currentPayroll?.week }}</strong>
-            {{ currentPayroll?.start_date }} - {{ currentPayroll?.end_date }}
-            <el-tag v-if="currentPayroll?.is_active">Nómina en curso</el-tag>
+            <strong class="mr-4">Nómina semanal {{ payroll.data.week }}</strong>
+            {{ payroll.data.start_date }} - {{ payroll.data.end_date }}
+            <el-tag v-if="payroll.data.is_active">Nómina en curso</el-tag>
           </p>
           <!-- <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
             title="Seguro que deseas eliminar?" @confirm="deleteIncident">
@@ -217,7 +217,7 @@ export default {
       users_payroll_filtered_id: [],
       payrollUsersToShow: [],
       loading: false,
-      currentPayroll: null,
+      // currentPayroll: null,
       totalAmount: 0,
       isCalculatingTotalAmount: true,
       amountLoadingCounter: 0,
@@ -229,16 +229,16 @@ export default {
     CancelButton,
     ThirthButton,
     DropdownNoClose,
-    Modal,
-    Link,
     IconInput,
     Checkbox,
     IncidentTable,
     payrollTemplate,
+    Modal,
+    Link
   },
   props: {
     payroll: Object,
-    payrolls: Object,
+    payrolls: Array,
     users: Object,
     payroll_users: Object,
     justifications: Array,
@@ -292,11 +292,11 @@ export default {
       }
     }
   },
-  watch: {
-    selectedPayroll(newVal) {
-      this.currentPayroll = this.payrolls.data.find(item => item.id == newVal);
-    }
-  },
+  // watch: {
+  //   selectedPayroll(newVal) {
+  //     this.currentPayroll = this.payrolls.data.find(item => item.id == newVal);
+  //   }
+  // },
   mounted() {
     this.selectedPayroll = this.payroll.data.id;
 

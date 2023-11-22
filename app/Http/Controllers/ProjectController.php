@@ -38,7 +38,7 @@ class ProjectController extends Controller
         $companies = Company::with('companyBranches.sales')->latest()->get();
         $tags = TagResource::collection(Tag::where('type', 'projects')->get());
         $project_groups = ProjectGroupResource::collection(ProjectGroup::all());
-        $users = User::where('is_active', true)->get();
+        $users = User::where('is_active', true)->whereNot('id', 1)->get();
 
         return inertia('Project/Create', compact('companies', 'users', 'tags', 'project_groups'));
     }
@@ -47,7 +47,7 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'project_name' => 'required|string',
+            'project_name' => 'required|string|max:255',
             'project_group_id' => 'required|numeric|min:0',
             'shipping_address' => 'nullable|string',
             'currency' => 'nullable|string',
@@ -55,7 +55,7 @@ class ProjectController extends Controller
             'description' => 'nullable',
             'is_strict_project' => 'boolean',
             'is_internal_project' => 'boolean',
-            'budget' => 'nullable|numeric|min:0',
+            'budget' => 'nullable|numeric|min:0|max:999999.99',
             'selectedUsersToPermissions' => 'array|min:1',
             // 'type_access_project' => 'required|string',
             'start_date' => 'required',
@@ -72,14 +72,17 @@ class ProjectController extends Controller
             })],
         ]);
 
-
         $project = Project::create($validated + ['user_id' => auth()->id()]);
         event(new RecordCreated($project));
 
         // permisos
         foreach ($request->selectedUsersToPermissions as $user) {
+            $permissions_array = array_map(function ($item) {
+                // La función boolval() convierte un valor a booleano
+                return boolval($item);
+            }, $user['permissions']);
             $allowedUser = [
-                "permissions" => json_encode($user['permissions']), // Serializa los permisos en formato JSON
+                "permissions" => json_encode($permissions_array), // Serializa los permisos en formato JSON
             ];
             $project->users()->attach($user['id'], $allowedUser);
         }
@@ -114,7 +117,7 @@ class ProjectController extends Controller
         $companies = Company::with('companyBranches.sales')->latest()->get();
         $tags = TagResource::collection(Tag::where('type', 'projects')->get());
         $project_groups = ProjectGroupResource::collection(ProjectGroup::all());
-        $users = User::where('is_active', true)->get();
+        $users = User::where('is_active', true)->whereNot('id', 1)->get();
         $media = $project->getMedia()->all();
 
         // return $project;
@@ -125,7 +128,7 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project)
     {
         $validated = $request->validate([
-            'project_name' => 'required|string',
+            'project_name' => 'required|string|max:255',
             'project_group_id' => 'required|numeric|min:0',
             'shipping_address' => 'nullable|string',
             'currency' => 'nullable|string',
@@ -133,7 +136,7 @@ class ProjectController extends Controller
             'description' => 'nullable',
             'is_strict_project' => 'boolean',
             'is_internal_project' => 'boolean',
-            'budget' => 'nullable|numeric|min:0',
+            'budget' => 'nullable|numeric|min:0|max:999999.99',
             'selectedUsersToPermissions' => 'array|min:1',
             // 'type_access_project' => 'required|string',
             'start_date' => 'required',
@@ -177,7 +180,7 @@ class ProjectController extends Controller
     public function updateWithMedia(Request $request, Project $project)
     {
         $validated = $request->validate([
-            'project_name' => 'required|string',
+            'project_name' => 'required|string|max:255',
             'project_group_id' => 'required|numeric|min:0',
             'shipping_address' => 'nullable|string',
             'currency' => 'nullable|string',
@@ -185,7 +188,7 @@ class ProjectController extends Controller
             'description' => 'nullable',
             'is_strict_project' => 'boolean',
             'is_internal_project' => 'boolean',
-            'budget' => 'nullable|numeric|min:0',
+            'budget' => 'nullable|numeric|min:0|max:999999.99',
             'selectedUsersToPermissions' => 'array|min:1',
             'start_date' => 'required',
             'limit_date' => 'required',
@@ -209,8 +212,12 @@ class ProjectController extends Controller
         // Eliminar todos los permisos actuales para el proyecto
         $project->users()->detach();
         foreach ($request->selectedUsersToPermissions as $user) {
+            $permissions_array = array_map(function ($item) {
+                // La función boolval() convierte un valor a booleano
+                return boolval($item);
+            }, $user['permissions']);
             $allowedUser = [
-                "permissions" => json_encode($user['permissions']), // Serializa los permisos en formato JSON
+                "permissions" => json_encode($permissions_array), // Serializa los permisos en formato JSON
             ];
             $project->users()->attach($user['id'], $allowedUser);
         }

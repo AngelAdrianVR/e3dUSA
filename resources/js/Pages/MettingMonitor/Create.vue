@@ -2,7 +2,7 @@
   <AppLayout title="Agendar cita">
     <template #header>
       <div class="flex justify-between">
-        <Link :href="route('client-monitors.index')"
+        <Link :href="opportunity ? route('oportunities.show', opportunity) : route('client-monitors.index')"
           class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
         <i class="fa-solid fa-chevron-left"></i>
         </Link>
@@ -25,8 +25,8 @@
           <label>Folio de la oportunidad *</label>
           <el-select @change="getCompany" class="w-full" v-model="form.oportunity_id" clearable filterable
             placeholder="Seleccione" no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
-            <el-option v-for="oportunity in oportunities.data" :key="oportunity" :label="oportunity.folio"
-              :value="oportunity.id" />
+            <el-option v-for="oportunity in oportunities.data" :key="oportunity"
+              :label="oportunity.folio + ' - ' + oportunity.name" :value="oportunity.id" />
           </el-select>
           <InputError :message="form.errors.oportunity_id" />
         </div>
@@ -183,6 +183,7 @@ export default {
     oportunities: Object,
     companies: Array,
     users: Array,
+    opportunity: Object,
   },
   methods: {
     store() {
@@ -196,23 +197,23 @@ export default {
         },
       });
     },
-      getCompany() {
-        const oportunity = this.oportunities.data.find(oportunity => oportunity.id === this.form.oportunity_id);
-        this.form.company_branch_id = null;
-        this.form.contact_id = null;
-        this.form.contact_name = null;
-        this.form.phone = null;
-        this.company_branch_obj = null;
-  
-        if (oportunity.company) {
-          this.form.company_id = oportunity.company.id;
-          this.has_contact = false;
-        } else {
-          this.has_contact = true;
-          this.form.company_id = null;
-          this.form.contact_name = oportunity.contact;
-        }
-      },
+    getCompany() {
+      const oportunity = this.oportunities.data.find(oportunity => oportunity.id === this.form.oportunity_id);
+      this.form.company_branch_id = null;
+      this.form.contact_id = null;
+      this.form.contact_name = null;
+      this.form.phone = null;
+      this.company_branch_obj = null;
+
+      if (oportunity.company) {
+        this.form.company_id = oportunity.company.id;
+        this.has_contact = false;
+      } else {
+        this.has_contact = true;
+        this.form.company_id = null;
+        this.form.contact_name = oportunity.contact;
+      }
+    },
     saveCompanyBranchAddress() {
       this.company_branch_obj = this.companies.find((item) => item.id == this.form.company_id)?.company_branches[0];
     },
@@ -243,6 +244,14 @@ export default {
       this.form.description = content;
     },
   },
+  mounted() {
+    if (this.opportunity) {
+      this.form.oportunity_id = this.opportunity.id;
+      this.getCompany();
+      this.form.company_branch_id = this.opportunity.company_branch_id;
+      this.saveCompanyBranchAddress();
+    }
+  }
 };
 </script>
 

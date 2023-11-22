@@ -12,6 +12,7 @@ use App\Models\Design;
 use App\Models\DesignType;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
+use App\Notifications\DesignCompletedNotification;
 use App\Notifications\RequestApprovedNotification;
 use Illuminate\Http\Request;
 
@@ -21,8 +22,45 @@ class DesignController extends Controller
     public function index()
     {
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de diseño todas')) {
-            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->latest()->get());
-            return inertia('Design/Index', compact('designs'));
+            // $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->latest()->get());
+
+        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
+        $designs = Design::with('user', 'designer', 'designType')->latest()->get();
+        $designs = $designs->map(function ($design) {
+            $status = ['label'=>'Esperando Autorización',
+            'text-color' =>'text-amber-500',
+            'border-color' => 'border-amber-500'        
+                    ];
+
+            if($design->authorized_at){
+                $status = ['label'=>'Autorizado. Sin iniciar',
+                'text-color' =>'text-amber-700',
+            ];
+                if($design->started_at){
+                    $status = ['label'=>'En proceso',
+                    'text-color' =>'text-[#0355B5]',
+                ];
+                if ($design->finished_at) {
+                        $status = ['label'=>'Terminado',
+                        'text-color' =>'text-green-600',
+                    ];
+                    }
+                }
+            }
+            return [
+                'id' => $design->id,
+                'user' => ['id' => $design->user->id,
+                            'name' => $design->user->name
+                        ],
+                'designer' => ['id' => $design->designer->id,
+                            'name' => $design->designer->name
+                        ],
+                'design' => $design->name,
+                'status' => $status,
+                'created_at' => $design->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+                   ];
+               });
+            return inertia('Design/Admin', compact('designs'));
         } elseif (auth()->user()->can('Ordenes de diseño personal')) {
             $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->where('user_id', auth()->id())->latest()->get());
             return inertia('Design/Index', compact('designs'));
@@ -84,17 +122,38 @@ class DesignController extends Controller
         return to_route('designs.index');
     }
 
-    public function show(Design $design)
+    public function show($design_id)
     {
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de diseño todas')) {
-            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType', 'modifications.media')->latest()->get());
-            // return $designs;
+            $design = DesignResource::make(Design::with('user', 'designer', 'designType', 'modifications.media')->find($design_id));
+            $pre_designs = Design::latest()->get();
+            $designs = $pre_designs->map(function ($design) {
+            return [
+                'id' => $design->id,
+                'name' => $design->name,
+                   ];
+               });
+            // return $design;
             return inertia('Design/Show', compact('design', 'designs'));
         } elseif (auth()->user()->can('Ordenes de diseño personal')) {
-            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType', 'modifications.media')->where('user_id', auth()->id())->latest()->get());
+            $design = DesignResource::make(Design::with('user', 'designer', 'designType', 'modifications.media')->where('user_id', auth()->id())->find($design_id));
+            $pre_designs = DesignResource::collection(Design::where('designer_id', auth()->id())->latest()->get());
+            $designs = $pre_designs->map(function ($design) {
+                return [
+                    'id' => $design->id,
+                    'name' => $design->name,
+                       ];
+                   });
             return inertia('Design/Show', compact('design', 'designs'));
         } else {
-            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType', 'modifications.media')->where('designer_id', auth()->id())->latest()->get());
+            $design = DesignResource::make(Design::with('user', 'designer', 'designType', 'modifications.media')->where('designer_id', auth()->id())->find($design_id));
+            $pre_designs = DesignResource::collection(Design::where('designer_id', auth()->id())->latest()->get());
+            $designs = $pre_designs->map(function ($design) {
+                return [
+                    'id' => $design->id,
+                    'name' => $design->name,
+                       ];
+                   });
             return inertia('Design/Show', compact('design', 'designs'));
         }
     }
@@ -156,9 +215,7 @@ class DesignController extends Controller
             'specifications' => 'required',
         ]);
 
-        $design->update($request->except('original_design_id') + [
-            'user_id' => auth()->id()
-        ]);
+        $design->update($request->except('original_design_id'));
 
         // update image
         $design->clearMediaCollection('plano');
@@ -216,7 +273,9 @@ class DesignController extends Controller
             'finished_at' => now()
         ]);
 
-        // $design = Design::find($design->id);
+        // notificar a solicitante
+        $design->user->notify(new DesignCompletedNotification(auth()->user()->name, $design->name, 'design'));
+
         $media = $design->getMedia('results')->all();
 
         return response()->json(['item' => $media]);

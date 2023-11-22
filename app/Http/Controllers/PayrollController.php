@@ -39,13 +39,23 @@ class PayrollController extends Controller
 
     public function show($payroll_id)
     {
-        $payroll = PayrollResource::make(Payroll::find($payroll_id));
         $justifications = JustificationEvent::all();
-        $payrolls = PayrollResource::collection(Payroll::with('users')->latest()->get());
         $users = UserResource::collection(User::whereHas('payrolls', function ($query) use ($payroll_id) {
             $query->where('payrolls.id', $payroll_id);
         })->get());
         $payroll_users = PayrollUser::where('payroll_id', $payroll_id)->get(['user_id', 'id'])->groupBy('user_id');
+        $payroll = PayrollResource::make(Payroll::with('users')->find($payroll_id));
+        
+        //recupera todos los payrolls pero solo id y numero de semana para optimizar la carga de la vista.
+        $pre_payrolls = PayrollResource::collection(Payroll::latest()->get());
+        $payrolls = $pre_payrolls->map(function ($payroll) {
+            return [
+                'id' => $payroll->id,
+                'week' => $payroll->week,
+                   ];
+               });
+
+        // return $payrolls;
 
         return inertia('Payroll/Show', compact('payroll', 'users', 'payrolls', 'justifications', 'payroll_users'));
     }

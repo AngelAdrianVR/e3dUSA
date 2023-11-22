@@ -39,9 +39,9 @@
             </Link>
           </el-tooltip>
           <el-tooltip v-if="tabs == 3" content="Enviar un correo a prospecto" placement="top">
-            <!-- <Link :href="route('oportunity-tasks.create', oportunitySelected)"> -->
+            <Link :href="route('email-monitors.create', {opportunityId: currentOportunity?.id})">
             <PrimaryButton class="rounded-md">Enviar correo</PrimaryButton>
-            <!-- </Link> -->
+            </Link>
           </el-tooltip>
           <el-tooltip v-if="tabs == 5 && currentOportunity?.finished_at"
             content="Genera la url para la encuesta de satisfacción" placement="top">
@@ -49,10 +49,10 @@
           </el-tooltip>
 
           <Dropdown align="right" width="48" v-if="$page.props.auth.user.permissions.includes(
-            'Crear ordenes de venta'
+            'Crear oportunidades'
           ) &&
             $page.props.auth.user.permissions.includes(
-              'Eliminar ordenes de venta'
+              'Eliminar oportunidades'
             )
             ">
             <template #trigger>
@@ -61,19 +61,19 @@
               </button>
             </template>
             <template #content>
-              <DropdownLink :href="route('payment-monitors.create')"
+              <DropdownLink :href="route('payment-monitors.create', {opportunityId: currentOportunity?.id})"
                 v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Registrar pagos en seguimiento integral')">
                 Registrar Pago
               </DropdownLink>
-              <DropdownLink :href="route('meeting-monitors.create')"
+              <DropdownLink :href="route('meeting-monitors.create', {opportunityId: currentOportunity?.id})"
                 v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Agendar citas en seguimiento integral')">
                 Agendar Cita
               </DropdownLink>
-              <DropdownLink :href="route('whatsapp-monitors.create')"
+              <DropdownLink :href="route('whatsapp-monitors.create', {opportunityId: currentOportunity?.id})"
                 v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Registrar interaccion whatsapp en seguimiento integral')">
                 Interacción WhatsApp
               </DropdownLink>
-              <DropdownLink v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades') && tabs == 1
+              <DropdownLink v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades') && tabs == 1 && toBool(authUserPermissions[3])
                 " @click="showConfirmModal = true" as="button">
                 Eliminar
               </DropdownLink>
@@ -85,9 +85,9 @@
         <p class="text-center font-bold text-lg">
           {{ currentOportunity?.folio }} - {{ currentOportunity?.name }}
         </p>
-        <!-- <p :class="getColorStatus" class="px-2 py-1 font-bold rounded-sm">
-        {{ currentOportunity?.status }}
-      </p> -->
+        <p :class="getColorStatus()" class="px-2 py-1 font-bold rounded-sm">
+          {{ currentOportunity?.status }}
+        </p>
       </div>
       <!-- ------------- tabs section starts ------------- -->
       <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2 overflow-x-auto">
@@ -139,14 +139,12 @@
         <span>{{ currentOportunity?.user?.name }}</span>
         <span class="text-gray-500 my-2">Responsable</span>
         <span>{{ currentOportunity?.seller?.name }}</span>
-        <!-- <span class="text-gray-500 my-2">Estatus</span>
-          <p :class="getStatusStyles()" class="rounded-full px-2 py-1 w-1/2 text-center">{{ currentOportunity?.status }}</p> -->
         <span class="text-gray-500 my-2">Estatus</span>
-        <div class="flex items-center space-x-4 relative">
-          <!-- <i :class="getColorStatus()" class="fa-solid fa-circle absolute -left-3 top-4"></i> -->
+        <div class="flex items-center relative">
+          <div :class="getColorStatus()" class="absolute -left-10 top-5 rounded-full w-3 h-3"></div>
           <el-select @change="status == 'Perdida' ? showLostOportunityModal = true
             : status == 'Cerrada' || status == 'Pagado' ? showCreateSaleModal = true
-              : updateStatus()" class="lg:w-1/2 mt-2" v-model="status" clearable filterable
+              : updateStatus()" class="lg:w-1/2 mt-2" v-model="status" filterable
             placeholder="Seleccionar estatus" no-data-text="No hay estatus registrados"
             no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
@@ -157,6 +155,8 @@
             </el-option>
           </el-select>
         </div>
+        <span class="text-gray-500 my-2">Prioridad</span>
+        <span class="relative">{{ currentOportunity?.priority.label }} <div :class="getColorPriority()" class="absolute -left-10 top-1 rounded-full w-3 h-3"></div></span>
         <span class="text-gray-500 my-2">Probabilidad</span>
         <span>{{ currentOportunity?.probability }}%</span>
         <span class="text-gray-500 my-2">Valor de oportunidad</span>
@@ -181,14 +181,14 @@
           currentOportunity?.lost_oportunity_razon }}</span>
       </div>
 
-      <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
+      <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center self-start">
         <p class="text-secondary col-span-2 mb-2">Usuarios</p>
 
-        <div v-if="uniqueAsignedNames">
-          <span v-for="asignedName in uniqueAsignedNames" :key="asignedName" class="text-gray-500">{{ asignedName
-          }}</span>
-          <span>{{ currentOportunity?.company_branch }}</span>
-        </div>
+        <ul v-if="currentOportunity?.users.length">
+          <li v-for="item in currentOportunity?.users" :key="item.id" class="text-gray-500">
+            {{ item.name }}
+          </li>
+        </ul>
         <p class="text-sm text-gray-400" v-else><i class="fa-solid fa-user-slash mr-3"></i>No hay tareas asignadas a
           usuarios</p>
 
@@ -209,21 +209,20 @@
         <div class="col-span-full flex space-x-3">
           <Tag v-for="(item, index) in currentOportunity?.tags" :key="index" :name="item.name" :color="item.color" />
         </div>
-
         <div class="flex items-center justify-end space-x-2 col-span-2 mr-4">
           <el-tooltip content="Agendar reunión" placement="top">
-            <i @click="$inertia.get(route('meeting-monitors.create'))"
+            <i @click="$inertia.get(route('meeting-monitors.create'), {opportunityId: currentOportunity?.id})"
               class="fa-regular fa-calendar text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
           </el-tooltip>
           <el-tooltip content="Registrar pago" placement="top">
-            <i @click="$inertia.get(route('payment-monitors.create'))"
+            <i @click="$inertia.get(route('payment-monitors.create'), {opportunityId: currentOportunity?.id})"
               class="fa-solid fa-money-bill text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
           </el-tooltip>
           <el-tooltip content="Enviar correo" placement="top">
-            <i class="fa-regular fa-envelope text-primary cursor-pointer text-lg px-3"></i>
+            <i @click="$inertia.get(route('email-monitors.create'), {opportunityId: currentOportunity?.id})"
+              class="fa-regular fa-envelope text-primary cursor-pointer text-lg px-3"></i>
           </el-tooltip>
         </div>
-
       </div>
     </div>
     <!-- ------------- Informacion general ends 1 ------------- -->
@@ -273,20 +272,6 @@
         </div>
       </div>
 
-      <!-- -- TERMINADAS -- -->
-      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:px-4 seccion mx-2">
-        <h2 class="font-bold mb-10 first-letter ml-2">
-          TERMINADAS <span class="font-normal ml-7">{{ finishedTasksList.length }}</span>
-        </h2>
-        <OportunityTaskCard @updated-oportunityTask="updateOportunityTask" @delete-task="deleteTask"
-          @task-done="markAsDone" class="mb-3" v-for="finishedTask in finishedTasksList" :key="finishedTask"
-          :oportunityTask="finishedTask" :users="currentOportunity?.users" />
-        <div class="text-center" v-if="!finishedTasksList.length">
-          <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
-          <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
-        </div>
-      </div>
-
       <!-- -- ATRASADAS -- -->
       <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:px-4 seccion mx-2">
         <h2 class="font-bold mb-10 first-letter ml-2">
@@ -301,12 +286,26 @@
         </div>
       </div>
 
+      <!-- -- TERMINADAS -- -->
+      <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:px-4 seccion mx-2">
+        <h2 class="font-bold mb-10 first-letter ml-2">
+          TERMINADAS <span class="font-normal ml-7">{{ finishedTasksList.length }}</span>
+        </h2>
+        <OportunityTaskCard @updated-oportunityTask="updateOportunityTask" @delete-task="deleteTask"
+          @task-done="markAsDone" class="mb-3" v-for="finishedTask in finishedTasksList" :key="finishedTask"
+          :oportunityTask="finishedTask" :users="currentOportunity?.users" />
+        <div class="text-center" v-if="!finishedTasksList.length">
+          <p class="text-xs text-gray-500">No hay tareas para mostrar</p>
+          <i class="fa-regular fa-folder-open text-9xl text-gray-300/50 mt-16"></i>
+        </div>
+      </div>
+
     </div>
     <!-- ------------- tab 2 atividades ends ------------ -->
 
     <!-- ------------ tab 3 seguimiento integral starts ------------- -->
     <div v-if="tabs == 3" class="w-11/12 mx-auto my-8">
-      <div v-if="currentOportunity?.clientMonitores?.length" class="overflow-x-auto">
+      <div v-if="currentOportunity?.clientMonitors?.length" class="overflow-x-auto">
         <table class="lg:w-[80%] w-full mx-auto text-sm">
           <thead>
             <tr class="text-center">
@@ -329,29 +328,29 @@
             </tr>
           </thead>
           <tbody>
-            <tr @click="showMonitorType(monitor)" v-for="monitor in currentOportunity?.clientMonitores" :key="monitor"
+            <tr @click="showMonitorType(monitor)" v-for="monitor in currentOportunity?.clientMonitors" :key="monitor"
               class="mb-4 hover:bg-[#dfdbdba8] cursor-pointer">
-              <td class="text-left py-2 px-2 rounded-l-full text-secondary">
+              <td class="text-center py-2 px-2 rounded-l-full text-secondary">
                 {{ monitor.folio }}
               </td>
-              <td class="text-left py-2 px-2">
+              <td class="text-center py-2 px-2">
                 <span class="py-1 px-4 rounded-full">{{ monitor.type }}</span>
               </td>
-              <td class="text-left py-2 px-2">
+              <td class="text-center py-2 px-2">
                 <span class="py-1 px-2 rounded-full">{{ monitor.date }}</span>
               </td>
-              <td class="text-left py-2 px-2">
+              <td class="text-center py-2 px-2">
                 {{ monitor.concept }}
               </td>
-              <td class="text-left py-2 px-2 text-secondary">
+              <td class="text-center py-2 px-2 text-secondary">
                 {{ monitor.seller.name }}
               </td>
               <td v-if="$page.props.auth.user.permissions.includes('Eliminar tareas de oportunidades')"
-                class="text-left py-2 px-2 rounded-r-full">
+                class="text-center py-2 px-2 rounded-r-full">
                 <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#D90537" title="¿Eliminar?"
                   @confirm="deleteClientMonitor(monitor)">
                   <template #reference>
-                    <i class="fa-regular fa-trash-can text-primary cursor-pointer p-2"></i>
+                    <i @click.stop="" class="fa-regular fa-trash-can text-primary cursor-pointer p-2"></i>
                   </template>
                 </el-popconfirm>
               </td>
@@ -453,29 +452,24 @@
               <i class="fa-regular fa-circle-question ml-2 text-primary text-xs"></i>
             </el-tooltip>
           </label>
-          <textarea v-model="lost_oportunity_razon" required class="textarea mt-3"></textarea>
+          <textarea v-model="lost_oportunity_razon" class="textarea mt-3"></textarea>
         </div>
         <div class="flex justify-end space-x-3 pt-5 pb-1">
           <CancelButton @click="showLostOportunityModal = false">Cancelar</CancelButton>
-          <PrimaryButton @click="updateStatus">Actualizar estatus</PrimaryButton>
+          <PrimaryButton :disabled="!lost_oportunity_razon" @click="updateStatus">Actualizar estatus</PrimaryButton>
         </div>
       </section>
 
       <section v-if="showCreateSaleModal" class="mx-7 my-4 space-y-4 relative">
         <div>
-          <div class="flex justify-center items-center my-3">
-            <i class="fa-solid fa-info text-primary"></i>
-            <p class="ml-4 font-bold mt-1 text-primary">ATENCIÓN</p>
-          </div>
-          <p class="px-5 text-secondary">Es necesario crear una orden de venta al haber cerrado la oportunidad para llevar
-            un correcto seguimiento y flujo de trabajo.
-            En caso de ya haberla creado, presiona el botón de "Venta creada"
+          <h2 class="font bold text-center font-bold mb-5">Paso clave - Crear Orden de Venta</h2>
+          <p class="px-5">Es necesario crear una orden de venta al haber marcado como <span class="text-[#FD8827]">”cerrada”</span>  
+          o <span class="text-[#37951F]">”Pagada”</span> la oportunidad para llevar un correcto seguimiento y flujo de trabajo. 
           </p>
         </div>
         <div class="flex justify-end space-x-3 pt-5 pb-1">
-          <CancelButton @click="showCreateSaleModal = false">Cancelar</CancelButton>
-          <SecondaryButton @click="updateStatus">Venta creada</SecondaryButton>
-          <PrimaryButton @click="CreateSale">Crear venta</PrimaryButton>
+          <CancelButton @click="cancelUpdating">Cancelar</CancelButton>  
+          <PrimaryButton @click="CreateSale">Continuar</PrimaryButton>
         </div>
       </section>
     </Modal>
@@ -515,7 +509,7 @@ export default {
       statuses: [
         {
           label: "Nueva",
-          color: "text-[#9A9A9A]",
+          color: "text-[#d9d9d9]",
         },
         {
           label: "Pendiente",
@@ -556,6 +550,9 @@ export default {
     defaultTab: Number,
   },
   methods: {
+    cancelUpdating() {
+      window.location.reload()
+    },
     toBool(value) {
       if (value == 1 || value == true) return true;
       return false;
@@ -570,9 +567,11 @@ export default {
               message: response.data.message,
               type: "error",
             });
+            this.showCreateSaleModal = false;
+            this.updateStatus();
           } else {
             this.updateStatus();
-            this.$inertia.get(route('sales.create'), { data: { company_branch_id: this.currentOportunity.companyBranch?.id, oportunity_id: this.currentOportunity.id } });
+            this.$inertia.get(route('sales.create'), {opportunityId: this.currentOportunity.id});
           }
         }
       } catch (error) {
@@ -599,6 +598,8 @@ export default {
           } else {
             this.currentOportunity.lost_oportunity_razon = null;
           }
+          this.currentOportunity.finished_at = response.data.item.finished_at;
+          this.currentOportunity.status = this.status;
         }
       } catch (error) {
         console.log(error);
@@ -606,7 +607,7 @@ export default {
     },
     showMonitorType(monitor) {
       if (monitor.type == 'Correo') {
-        this.$inertia.get(route('payment-monitors.show', monitor.paymentMonitor?.id));
+        this.$inertia.get(route('email-monitors.show', monitor.emailMonitor?.id));
       } else if (monitor.type == 'Pago') {
         this.$inertia.get(route('payment-monitors.show', monitor.paymentMonitor?.id));
       } else if (monitor.type == 'Reunión') {
@@ -687,6 +688,32 @@ export default {
       }
 
     },
+    getColorStatus() {
+      if (this.currentOportunity?.status == "Nueva") {
+        return "bg-gray-300 text-[#97989A]";
+      } else if (this.currentOportunity?.status == "Pendiente") {
+        return "bg-[#F3FD85] text-[#C88C3C]";
+      } else if (this.currentOportunity?.status == "Cerrada") {
+        return "bg-[#FEDBBD] text-[#FD8827]";
+      } else if (this.currentOportunity?.status == "Pagado") {
+        return "bg-[#AFFDB2] text-[#37951F]";
+      } else if (this.currentOportunity?.status == "Perdida") {
+        return "bg-[#F7B7FC] text-[#9E0FA9]";
+      } else {
+        return "bg-transparent";
+      }
+    },
+    getColorPriority() {
+      if (this.currentOportunity?.priority?.label == "Baja") {
+        return "bg-[#87CEEB]";
+      } else if (this.currentOportunity?.priority?.label == "Media") {
+        return "bg-[#D97705]";
+      } else if (this.currentOportunity?.priority?.label == "Alta") {
+        return "bg-[#D90537]";
+      } else {
+        return "bg-transparent";
+      }
+    },
     updateOportunityTask(task) {
       const index = this.currentOportunity.oportunityTasks.findIndex(item => item.id === task.id);
 
@@ -704,10 +731,10 @@ export default {
             message: "Se ha eliminado correctamente",
             type: "success",
           });
-          const index = this.currentOportunity.clientMonitores.findIndex(item => item.id === monitor.id);
+          const index = this.currentOportunity.clientMonitors.findIndex(item => item.id === monitor.id);
 
           if (index !== -1) {
-            this.currentOportunity.clientMonitores.splice(index, 1);
+            this.currentOportunity.clientMonitors.splice(index, 1);
           }
         }
       } catch (error) {
@@ -737,21 +764,6 @@ export default {
     }
   },
   computed: {
-    getColorStatus() {
-      if (this.currentOportunity?.status == "Nueva") {
-        return "bg-[#F2F2F2] text-[#97989A]";
-      } else if (this.currentOportunity?.status == "Pendiente") {
-        return "bg-[#F3FD85] text-[#C88C3C]";
-      } else if (this.currentOportunity?.status == "Cerrada") {
-        return "bg-[#FEDBBD] text-[#FD8827]";
-      } else if (this.currentOportunity?.status == "Pagado") {
-        return "bg-[#AFFDB2] text-[#37951F]";
-      } else if (this.currentOportunity?.status == "Perdida") {
-        return "bg-[#F7B7FC] text-[#9E0FA9]";
-      } else {
-        return "bg-transparent";
-      }
-    },
     authUserPermissions() {
       const permissions = this.currentOportunity?.users.find(item => item.id == this.$page.props.auth.user.id)?.pivot.permissions;
       if (permissions) {
@@ -803,7 +815,7 @@ export default {
 }
 
 .seccion {
-  flex: 0 0 25%;
+  flex: 0 0 22%;
   /* Establece el ancho de cada sección al 25% */
 }
 

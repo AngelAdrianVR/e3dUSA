@@ -67,7 +67,7 @@ class Oportunity extends Model implements HasMedia
         return $this->hasMany(OportunityTask::class);
     }
 
-    public function clientMonitores() :HasMany
+    public function clientMonitors() :HasMany
     {
         return $this->hasMany(ClientMonitor::class);
     }

@@ -23,7 +23,23 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = UserResource::collection(User::latest()->get());
+        // $users = UserResource::collection(User::latest()->get());
+        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
+        $pre_users = UserResource::collection(User::latest()->get());
+        $users = $pre_users->map(function ($user) {
+ 
+        return [
+            'id' => $user->id,
+            'user_name' => $user->name,
+            'is_active' => [
+                'string' => $user->is_active ? 'Activo' : 'Inactivo',
+                'bool' => boolval($user->is_active),
+            ],
+            'employee_properties' => $user->employee_properties,
+            ];
+        });
+
+        // return $users;
 
         return inertia('User/Index', compact('users'));
     }
@@ -53,6 +69,7 @@ class UserController extends Controller
             'employee_properties.bonuses' => 'nullable',
             'employee_properties.discounts' => 'nullable',
             'employee_properties.vacations' => 'nullable',
+            'employee_properties.skills' => 'nullable',
         ]);
 
         $password = $request['employee_properties']['password'];
@@ -66,11 +83,18 @@ class UserController extends Controller
         return to_route('users.index');
     }
 
-    public function show(User $user)
+    public function show($user_id)
     {
-        $user_id = $user->id;
-        $users = UserResource::collection(User::latest()->get());
+        $user = UserResource::make(User::find($user_id));
         $roles = Role::all();
+
+        $pre_users = User::latest()->get();
+        $users = $pre_users->map(function ($user) {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                   ];
+               });
 
         // PERSONAL
         $payroll_user = PayrollUser::where('user_id', $user_id)->get();
@@ -131,6 +155,8 @@ class UserController extends Controller
             ["label" => "Total de cotizaciones creadas", "value" => $user->quotes->count()],
         ];
 
+        // return $users;
+
         return inertia('User/Show', compact(
             'user',
             'users',
@@ -167,6 +193,7 @@ class UserController extends Controller
             'employee_properties.vacations' => 'array',
             'employee_properties.bonuses' => 'nullable',
             'employee_properties.discounts' => 'nullable',
+            'employee_properties.skills' => 'nullable',
         ]);
 
         $validated = $this->processUserData($validated);

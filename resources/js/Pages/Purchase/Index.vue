@@ -40,13 +40,13 @@
           <el-table-column type="selection" width="45" />
           <el-table-column prop="id" label="ID" width="45" />
           <el-table-column prop="folio" label="Folio" width="90" />
-          <el-table-column prop="user.name" label="Creador" width="150" />
+          <el-table-column prop="user" label="Creador" width="150" />
           <el-table-column prop="created_at" label="Creado el" width="120" />
           <el-table-column prop="authorized_user_name" label="Autorizado por" width="130" />
           <el-table-column prop="status" label="Estatus" width="100" />
           <el-table-column prop="emited_at" label="Pedido el" width="120" />
           <el-table-column prop="recieved_at" label="Recibido el" width="120" />
-          <el-table-column prop="supplier.name" label="Proveedor" width="120" />
+          <el-table-column prop="supplier_name" label="Proveedor" width="150" />
           <el-table-column align="right" fixed="right" width="190">
             <template #header>
               <div class="flex space-x-2">
@@ -153,7 +153,7 @@ export default {
             type: "success",
           });
 
-          this.purchases.data.unshift(response.data.newItem);
+          this.purchases.unshift(response.data.newItem);
         } else {
           this.$notify({
             title: "Algo salió mal",
@@ -187,7 +187,7 @@ export default {
 
           // update list of companies
           let deletedIndexes = [];
-          this.purchases.data.forEach((purchase, index) => {
+          this.purchases.forEach((purchase, index) => {
             if (this.$refs.multipleTableRef.value.includes(purchase)) {
               deletedIndexes.push(index);
             }
@@ -198,7 +198,7 @@ export default {
 
           // Eliminar clientes por índice
           for (const index of deletedIndexes) {
-            this.purchases.data.splice(index, 1);
+            this.purchases.splice(index, 1);
           }
         } else {
           this.$notify({
@@ -233,11 +233,11 @@ export default {
   computed: {
     filteredTableData() {
       if (!this.search) {
-        return this.purchases.data.filter(
+        return this.purchases.filter(
           (item, index) => index >= this.start && index < this.end
         );
       } else {
-        return this.purchases.data.filter(
+        return this.purchases.filter(
           (purchase) =>
             purchase.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
             purchase.status.toLowerCase().includes(this.search.toLowerCase()) ||

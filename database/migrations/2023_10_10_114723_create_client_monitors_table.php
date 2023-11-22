@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('type');
             $table->timestamp('date');
             $table->string('concept');
+            $table->unsignedBigInteger('monitor_id');
             $table->foreignId('seller_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('oportunity_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('company_id')->nullable()->constrained()->cascadeOnDelete();

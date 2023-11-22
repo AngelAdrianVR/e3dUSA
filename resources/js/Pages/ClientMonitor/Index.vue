@@ -69,22 +69,22 @@
       <table v-if="filteredTableData.length" class="w-full mx-auto text-sm">
         <thead>
           <tr class="text-center">
-            <th class="font-bold pb-5 px-5">
+            <th class="font-bold pb-3 pl-2 text-left">
               Folio <i class="fa-solid fa-arrow-down-long ml-3"></i>
             </th>
-            <th class="font-bold pb-5 px-4">
+            <th class="font-bold pb-3 text-left">
               Cliente <i class="fa-solid fa-arrow-down-long ml-3"></i>
             </th>
-            <th class="font-bold pb-5 px-7">
+            <th class="font-bold pb-3 text-left">
               Tipo que interacciones <i class="fa-solid fa-arrow-down-long ml-3"></i>
             </th>
-            <th class="font-bold pb-5 px-10">
+            <th class="font-bold pb-3 text-left">
               Fecha <i class="fa-solid fa-arrow-down-long ml-3"></i>
             </th>
-            <th class="font-bold pb-5 px-7">
+            <th class="font-bold pb-3 text-left">
               Concepto <i class="fa-solid fa-arrow-down-long ml-3"></i>
             </th>
-            <th class="font-bold pb-5">
+            <th class="font-bold pb-3 text-left">
               Vededor <i class="fa-solid fa-arrow-down-long ml-3"></i>
             </th>
             <th></th>
@@ -95,33 +95,33 @@
           @click="showMonitorType(monitor)"
             class="mb-4 hover:bg-[#dfdbdba8] cursor-pointer"
           >
-            <td class="text-center py-2 px-2 rounded-l-full">
+            <td class="py-2 pl-2 rounded-l-full">
               {{ monitor.folio}}
             </td>
-            <td class="text-center py-2 px-2">
-              {{ monitor.company?.business_name ? monitor.company?.business_name : 'Oportunidad: ' + monitor.oportunity?.name }}
+            <td class="py-2">
+              {{ monitor.company_name ?? 'Oportunidad: ' + monitor.oportunity?.name }}
             </td>
-            <td class="text-center py-2 px-2">
+            <td class="py-2">
               <span
-                class="py-1 px-4 rounded-full"
+                class="py-1 rounded-full"
                 >{{ monitor.type }}</span
               >
             </td>
-            <td class="text-center py-2 px-2">
+            <td class="py-2">
               <span
-                class="py-1 px-2 rounded-full"
+                class="py-1 rounded-full"
                 >{{ monitor.date }}</span
               >
             </td>
-            <td class="text-center py-2 px-2 truncate">
-              {{ monitor.concept }}
+            <td class="py-2">
+              <p :title="monitor.concept" class="w-36 truncate">{{ monitor.concept }}</p>
             </td>
-            <td class="text-center py-2 px-2">
-              {{ monitor.seller?.name }}
+            <td class="py-2">
+              {{ monitor.seller }}
             </td>
             <td
               v-if="$page.props.auth.user.permissions.includes('Eliminar seguimiento integral')"
-              class="text-center py-2 px-2 rounded-r-full"
+              class="py-2 pr-2 rounded-r-full"
             >
               <el-popconfirm
                 confirm-button-text="Si"
@@ -175,14 +175,14 @@ props:{
 },
 methods:{
     showMonitorType(monitor) {
-      if (monitor.type == 'Correo electrónico') {
-        this.$inertia.get(route('email-monitors.show', monitor.emailMonitor?.id));
+      if (monitor.type == 'Correo') {
+        this.$inertia.get(route('email-monitors.show', monitor.emailMonitorId));
       } else if (monitor.type == 'Pago') {
-        this.$inertia.get(route('payment-monitors.show', monitor.paymentMonitor?.id));
+        this.$inertia.get(route('payment-monitors.show', monitor.paymentMonitorId));
       } else if (monitor.type == 'Reunión') {
-        this.$inertia.get(route('meeting-monitors.show', monitor.mettingMonitor?.id));
+        this.$inertia.get(route('meeting-monitors.show', monitor.mettingMonitorId));
       } else if (monitor.type == 'WhatsApp') {
-        this.$inertia.get(route('whatsapp-monitors.show', monitor.whatsappMonitor?.id));
+        this.$inertia.get(route('whatsapp-monitors.show', monitor.whatsappMonitorId));
       }
     },
     handleSearch() {
@@ -198,10 +198,10 @@ methods:{
             message: "Se ha eliminado correctamente",
             type: "success",
           });
-        const index = this.client_monitors.data.findIndex(item => item.id === monitor.id);
+        const index = this.client_monitors.findIndex(item => item.id === monitor.id);
 
         if (index !== -1) {
-          this.client_monitors.data.splice(index, 1);
+          this.client_monitors.splice(index, 1);
         }
       }
       } catch (error) {
@@ -212,9 +212,9 @@ methods:{
 computed: {
     filteredTableData() {
       if (!this.search) {
-        return this.client_monitors.data;
+        return this.client_monitors;
       } else {
-        return this.client_monitors.data.filter((monitor) =>
+        return this.client_monitors.filter((monitor) =>
           monitor.folio.toLowerCase().includes(this.search.toLowerCase()) ||
           monitor.type.toLowerCase().includes(this.search.toLowerCase()) ||
           monitor.concept.toLowerCase().includes(this.search.toLowerCase()) ||

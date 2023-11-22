@@ -161,12 +161,12 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import DialogModal from "@/Components/DialogModal.vue";
-import { Link } from "@inertiajs/vue3";
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 import axios from 'axios';
+import moment from 'moment';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import moment from 'moment';
+import { Link } from "@inertiajs/vue3";
 
 export default {
   data() {
