@@ -8,6 +8,7 @@ use App\Events\RecordEdited;
 use App\Http\Resources\ProductionCostResource;
 use App\Http\Resources\SaleResource;
 use App\Models\CatalogProductCompanySale;
+use App\Models\Comment;
 use App\Models\Production;
 use App\Models\ProductionCost;
 use App\Models\Sale;
@@ -15,6 +16,8 @@ use App\Models\Setting;
 use App\Models\StockMovementHistory;
 use App\Models\Storage;
 use App\Models\User;
+use App\Notifications\MentionInProductionNotification;
+use App\Notifications\MentionNotification;
 use App\Notifications\ProductionCompletedNotification;
 use Illuminate\Http\Request;
 
@@ -203,17 +206,17 @@ class ProductionController extends Controller
 
     public function show($sale_id)
     {
-        $sale = SaleResource::make(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress']], 'productions' => ['user', 'operator', 'progress']])->find($sale_id));
+        $sale = SaleResource::make(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress'], 'comments.user'], 'productions' => ['user', 'operator', 'progress']])->find($sale_id));
         $pre_sales = Sale::latest()->get();
-            $sales = $pre_sales->map(function ($sale) {
+        $sales = $pre_sales->map(function ($sale) {
             return [
                 'id' => $sale->id,
                 'folio' => 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT),
                 'company_name' => $sale->companyBranch?->name,
-                   ];
-               });
+            ];
+        });
+        $sales = SaleResource::collection(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress'], 'comments.user'], 'productions' => ['user', 'operator', 'progress']])->whereHas('productions')->get());
 
-        // return $sale;
         return inertia('Production/Show', compact('sale', 'sales'));
     }
 
@@ -237,6 +240,7 @@ class ProductionController extends Controller
 
         // return $request->editedTaskIndexes;
 
+
         foreach ($request->productions as $production) {
             $foreigns = [
                 'user_id' => $production['user_id'],
@@ -254,10 +258,17 @@ class ProductionController extends Controller
                 } else {
                     $sale->productions[$taskIndex]->update($data);
                     //Production::create($data);
+                    // if (in_array($taskIndex, $request->editedIndexes)) {
+                    //     $prod = $sale->productions[$taskIndex]->update($data);
+                    //     // $prod = Production::create($data);
+                    //     // event(new RecordEdited($prod));
+
+                    //     // Puedes usar $productionIndex y $taskIndex aquí
+                    //     // $taskIndex es el índice del segundo foreach
+                    // }
                 }
             }
         }
-
 
         return to_route('productions.index');
     }
@@ -322,6 +333,15 @@ class ProductionController extends Controller
         return response()->json(['message' => $message, 'item' => $production]);
     }
 
+    public function changeStockStatus(Production $production)
+    {
+        $production->update([
+            'has_low_stock' => !$production->has_low_stock,
+        ]);
+
+        return response()->json(['message' => 'Se ha cambiado el status de materia prima']);
+    }
+
     public function continueProduction(Production $production)
     {
         $production->progress->last()->update(['finished_at' => now()->toDateTimeString()]);
@@ -330,6 +350,25 @@ class ProductionController extends Controller
         return response()->json(['message' => 'Producción reanudada']);
     }
 
+    public function comment(Request $request, CatalogProductCompanySale $cpcs)
+    {
+        $comment = new Comment([
+            'body' => $request->comment,
+            'user_id' => auth()->id(),
+        ]);
+
+        $cpcs->comments()->save($comment);
+
+        $mentions = $request->mentions;
+        foreach ($mentions as $mention) {
+            $user = User::find($mention['id']);
+            $user->notify(new MentionInProductionNotification($cpcs));
+        }
+
+        event(new RecordCreated($comment));
+
+        return response()->json(['item' => $comment->fresh('user')]);
+    }
     // private methods
     private function findSuitableEmployees($totalEstimatedTime)
     {

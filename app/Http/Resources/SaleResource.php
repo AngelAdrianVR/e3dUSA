@@ -16,6 +16,7 @@ class SaleResource extends JsonResource
     {
         $hasStarted = $this->productions?->whereNotNull('started_at')->count();
         $hasNotFinished = $this->productions?->whereNull('finished_at')->count();
+        $lowStock = $this->productions?->where('has_low_stock', true)->count();
 
         if ($this->authorized_at == null) {
             $status = [
@@ -24,12 +25,18 @@ class SaleResource extends JsonResource
                 'border-color' => 'border-amber-500',
             ];
         } elseif ($this->productions) {
-            if (!$hasStarted) {
+            if ($lowStock) {
+                $status = [
+                    'label' => 'Falta de materia prima',
+                    'text-color' => 'text-red-500',
+                    'border-color' => 'border-red-500',
+                ];
+            } elseif (!$hasStarted) {
                 $status = [
                     'label' => 'Producción sin iniciar',
                     'text-color' => 'text-gray-500',
                     'border-color' => 'border-gray-500',
-                ];
+                    ];
             } elseif ($hasStarted && $hasNotFinished) {
                 $status = [
                     'label' => 'Producción en proceso',
@@ -62,6 +69,7 @@ class SaleResource extends JsonResource
             'order_via' => $this->order_via,
             'tracking_guide' => $this->tracking_guide,
             'invoice' => $this->invoice,
+            'is_high_priority' => $this->is_high_priority,
             'products' => $this->products,
             'notes' => $this->notes ?? '--',
             'authorized_user_name' => $this->authorized_user_name ?? 'No autorizado',

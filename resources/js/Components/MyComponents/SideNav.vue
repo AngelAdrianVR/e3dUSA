@@ -95,12 +95,12 @@ export default {
                 {
                     label: 'CRM',
                     icon: '<i class="fa-solid fa-chart-line text-sm"></i>',
-                    active: route().current('crm.*') || route().current('quotes.*') || route().current('companies.*') 
-                    || route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*') 
-                    || route().current('client-monitors.*') || route().current('meeting-monitors.*') || route().current('payment-monitors.*')
-                    || route().current('whatsapp-monitors.*'),
+                    active: route().current('crm.*') || route().current('quotes.*') || route().current('companies.*')
+                        || route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*')
+                        || route().current('client-monitors.*') || route().current('meeting-monitors.*') || route().current('payment-monitors.*')
+                        || route().current('whatsapp-monitors.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                        return ['quote', 'sale', 'opportunities'].includes(notification.data.module);
+                        return ['quote', 'sales', 'opportunities', 'companies'].includes(notification.data.module);
                     }),
                     options: [
                         {
@@ -121,13 +121,17 @@ export default {
                             label: 'Clientes',
                             route: 'companies.index',
                             show: this.$page.props.auth.user.permissions.includes('Ver clientes'),
-                            notifications: false,
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'companies';
+                            }),
                         },
                         {
                             label: 'Órdenes de venta',
                             route: 'sales.index',
                             show: this.$page.props.auth.user.permissions.includes('Ver ordenes de venta'),
-                            notifications: false,
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'sales';
+                            }),
                         },
                         {
                             label: 'Oportunidades',
@@ -220,7 +224,7 @@ export default {
                             route: 'storages.finished-products.index',
                             show: this.$page.props.auth.user.permissions.includes('Ver producto terminado'),
                             notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                                return notification.data.module === 'finished-product';
+                                return notification.data.module === 'finished-products';
                             }),
                         },
                         {
@@ -231,7 +235,22 @@ export default {
                                 return notification.data.module === 'scrap';
                             }),
                         },
-
+                        {
+                            label: 'Obsoletos',
+                            route: 'storages.obsolete.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver producto obsoleto'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'obsoletes';
+                            }),
+                        },
+                        {
+                            label: 'Seguimiento',
+                            route: 'storages.tracking.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver producto de seguimiento'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'trackings';
+                            }),
+                        },
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver materia prima') ||

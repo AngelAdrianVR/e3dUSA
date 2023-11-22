@@ -21,13 +21,25 @@ class ReactivateProductSale extends Command
     {
         // get days from settings
         $days = Setting::where('key', 'DAYS_TO_REACTIVATE_PRODUCT_SALE')->first()->value;
-
         $date_to_reactivate = Carbon::now()->subDays($days);
+
+        // $products = DB::table('catalog_product_company')
+        //     ->select('catalog_product_company.*')
+        //     ->join('catalog_product_company_sale', 'catalog_product_company.id', '=', 'catalog_product_company_sale.catalog_product_company_id')
+        //     ->join('sales', 'catalog_product_company_sale.sale_id', '=', 'sales.id')
+        //     ->whereDate('sales.created_at', '<=', $date_to_reactivate)
+        //     ->distinct()
+        //     ->get();
+
+        // productos de catalogo sin OV o DAYS_TO_REACTIVATE_PRODUCT_SALE dias si OV
         $products = DB::table('catalog_product_company')
             ->select('catalog_product_company.*')
-            ->join('catalog_product_company_sale', 'catalog_product_company.id', '=', 'catalog_product_company_sale.catalog_product_company_id')
-            ->join('sales', 'catalog_product_company_sale.sale_id', '=', 'sales.id')
-            ->whereDate('sales.created_at', '<=', $date_to_reactivate)
+            ->leftJoin('catalog_product_company_sale', 'catalog_product_company.id', '=', 'catalog_product_company_sale.catalog_product_company_id')
+            ->leftJoin('sales', 'catalog_product_company_sale.sale_id', '=', 'sales.id')
+            ->where(function ($query) use ($date_to_reactivate) {
+                $query->whereDate('sales.created_at', '<=', $date_to_reactivate)
+                    ->orWhereNull('sales.created_at');
+            })
             ->distinct()
             ->get();
 

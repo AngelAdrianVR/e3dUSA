@@ -16,7 +16,8 @@ class Company extends Model
         'phone',
         'rfc',
         'post_code',
-        'fiscal_address'
+        'fiscal_address',
+        'user_id',
     ];
 
     //relationships

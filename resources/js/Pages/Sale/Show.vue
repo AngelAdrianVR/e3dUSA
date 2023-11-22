@@ -12,8 +12,8 @@
 
         <div class="flex justify-between">
           <div class="md:w-1/3 mr-2">
-            <el-select @change="$inertia.get(route('sales.show', saleSelected))" v-model="saleSelected" clearable filterable
-              placeholder="Buscar órden de venta" no-data-text="No hay órdenes registradas"
+            <el-select @change="$inertia.get(route('sales.show', saleSelected))" v-model="saleSelected" clearable
+              filterable placeholder="Buscar órden de venta" no-data-text="No hay órdenes registradas"
               no-match-text="No se encontraron coincidencias">
               <el-option v-for="item in sales" :key="item.id" :label="item.folio" :value="item.id" />
             </el-select>
@@ -27,7 +27,7 @@
               </Link>
             </el-tooltip>
             <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar ordenes de venta') ||
-                       sale.data.user.id == $page.props.auth.user.id" content="Editar" placement="top">
+              sale.data.user.id == $page.props.auth.user.id" content="Editar" placement="top">
               <Link :href="route('sales.edit', saleSelected)">
               <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
                 <i class="fa-solid fa-pen text-sm"></i>
@@ -133,6 +133,11 @@
           <span>{{ sale.data.created_at }}</span>
           <span class="text-gray-500 my-2">Medio de petición</span>
           <span>{{ sale.data.order_via }}</span>
+          <span class="text-gray-500 my-2">Es prioridad alta</span>
+          <span>
+            <i v-if="currentSale?.is_high_priority" class="fa-solid fa-check text-red-500"></i>
+            <i v-else class="fa-solid fa-minus"></i>
+          </span>
           <span class="text-gray-500 my-2">OCE</span>
           <span>{{ sale.data.oce_name }}</span>
           <span class="text-gray-500 my-2">Factura</span>
@@ -180,13 +185,21 @@
       <div v-if="tabs == 2" class="p-7">
         <p class="text-secondary mb-2">Productos Ordenados</p>
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-7">
-          <ProductSaleCard is_view_for_seller
-            v-for="productSale in sale.data.catalogProductCompanySales" :key="productSale.id"
-            :catalog_product_company_sale="productSale" />
+          <ProductSaleCard is_view_for_seller v-for="productSale in sale.data.catalogProductCompanySales"
+            :key="productSale.id" :catalog_product_company_sale="productSale" />
         </div>
       </div>
 
       <!-- ------------- tab 2 products ends ------------ -->
+
+      <!-- -------------tab 3 history starts ------------- -->
+
+      <div v-if="tabs == 3" class="p-7">
+        <p class="text-secondary mb-2">Historial</p>
+
+      </div>
+
+      <!-- ------------- tab 3 history ends ------------ -->
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar Órden de venta </template>
@@ -308,7 +321,7 @@ export default {
             message: "Orden de venta autorizada",
             type: "success",
           });
-          
+
           this.$inertia.get(route('sales.index'));
           this.sale.data.authorized_at = response.data.item.authorized_at;
           this.sale.data.status = response.data.item.status;

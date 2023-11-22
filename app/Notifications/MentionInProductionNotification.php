@@ -7,16 +7,18 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ReactivateProductSaleNotification extends Notification
+class MentionInProductionNotification extends Notification
 {
     use Queueable;
+
+    public $concept;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(public $products, public $days)
+    public function __construct(public $cpcs)
     {
-        //
+
     }
 
     /**
@@ -29,35 +31,28 @@ class ReactivateProductSaleNotification extends Notification
         if (app()->environment() === 'local') {
             return ['database'];
         } else {
-            return ['mail'];
+            return ['mail', 'database'];
         }
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Productos sin movimiento')
-            ->markdown('emails.reactivate-product-sale', [
+            ->subject('Mención en comentario')
+            ->markdown('emails.mention', [
                 'greeting' => '¡Hola!',
-                'intro' => "Hay {$this->products->count()} producto(s) que no han tenido movimiento en un periodo de $this->days días. Favor de revisar y reactivar ventas:",
-                'products' => $this->products,
-                'url' => route('dashboard'),
+                'intro' => "Te han mencionado en un comentario de la producción OP-<span class='text-primary'>{$this->cpcs->sale->id}</span>. Ingresa a la pestaña de productos para ver los comentarios",
+                'url' => route('productions.show', $this->cpcs->sale->id),
                 'salutation' => 'Saludos',
             ]);
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(object $notifiable): array
     {
         return [
-            //
+            'description' => "Te han mencionado en un comentario de la producción <span class='text-primary'>OP-{$this->cpcs->sale->id}</span>. Ingresa a la pestaña de productos para ver los comentarios",
+            'additional_info' => "",
+            'module' => "production",
         ];
     }
 }

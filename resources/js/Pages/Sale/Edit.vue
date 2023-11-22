@@ -15,8 +15,8 @@
 
             <!-- Form -->
             <form @submit.prevent="update" class="relative overflow-x-hidden">
-                  <!-- company branch important notes -->
-                  <div class="absolute top-5 -right-1">
+                <!-- company branch important notes -->
+                <div class="absolute top-5 -right-1">
                     <div v-if="importantNotes" class="text-xs border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-72">
                         <div class="absolute bg-primary top-1 -left-3 h-2 w-10 transform -rotate-45"></div>
                         <div class="absolute bg-primary top-1 -right-3 h-2 w-10 transform rotate-45"></div>
@@ -52,8 +52,8 @@
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
                         </el-tooltip>
-                        <el-select @change="getImportantNotes()" v-model="form.company_branch_id" class="mt-2" clearable filterable
-                            placeholder="Selecciona un cliente">
+                        <el-select @change="getImportantNotes()" v-model="form.company_branch_id" class="mt-2" clearable
+                            filterable placeholder="Selecciona un cliente">
                             <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
                                 :value="item.id" />
                         </el-select>
@@ -94,6 +94,19 @@
                                 <i class="fa-solid fa-magnifying-glass-location"></i>
                             </IconInput>
                             <InputError :message="form.errors.tracking_guide" />
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <label class="flex items-center">
+                                <Checkbox v-model:checked="form.is_high_priority" class="bg-transparent" />
+                                <span class="ml-2 text-xs">Prioridad alta</span>
+                            </label>
+                            <el-tooltip
+                                content="Al seleccionar esta opción, se recordará diariamente por notificación si no se ha creado una orden de producción"
+                                placement="top">
+                                <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                                    <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                </div>
+                            </el-tooltip>
                         </div>
                     </div>
 
@@ -263,6 +276,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
+import Checkbox from "@/Components/Checkbox.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import DialogModal from "@/Components/DialogModal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
@@ -279,6 +293,7 @@ export default {
             order_via: this.sale.order_via,
             tracking_guide: this.sale.tracking_guide,
             notes: this.sale.notes,
+            is_high_priority: this.sale.is_high_priority,
             products: [],
             media: null,
         });
@@ -307,6 +322,7 @@ export default {
         IconInput,
         DialogModal,
         CancelButton,
+        Checkbox,
     },
     props: {
         company_branches: Array,
@@ -316,29 +332,29 @@ export default {
     },
     methods: {
         update() {
-      if (this.form.media !== null) {
-        this.form.post(route("sales.update-with-media", this.sale), {
-          method: '_put',
-          onSuccess: () => {
-            this.$notify({
-              title: "Éxito",
-              message: "Se actualizó correctamente",
-              type: "success",
-            });
-          },
-        });
-      } else {
-        this.form.put(route("sales.update", this.sale), {
-          onSuccess: () => {
-            this.$notify({
-              title: "Éxito",
-              message: "Se actualizó correctamente",
-              type: "success",
-            });
-          },
-        });
-      }
-    },
+            if (this.form.media !== null) {
+                this.form.post(route("sales.update-with-media", this.sale), {
+                    method: '_put',
+                    onSuccess: () => {
+                        this.$notify({
+                            title: "Éxito",
+                            message: "Se actualizó correctamente",
+                            type: "success",
+                        });
+                    },
+                });
+            } else {
+                this.form.put(route("sales.update", this.sale), {
+                    onSuccess: () => {
+                        this.$notify({
+                            title: "Éxito",
+                            message: "Se actualizó correctamente",
+                            type: "success",
+                        });
+                    },
+                });
+            }
+        },
         getImportantNotes() {
             this.importantNotes = this.company_branches.find(item => item.id == this.form.company_branch_id)?.important_notes;
         },
