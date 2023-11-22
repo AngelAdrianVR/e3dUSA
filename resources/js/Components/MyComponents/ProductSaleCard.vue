@@ -291,7 +291,7 @@
             <p v-html="comment.body"></p>
           </div>
         </figure>
-        <p v-if="!catalog_product_company_sale.comments.length" class="text-gray-500 text-center pt-10 text-xs">No hay
+        <p v-if="!catalog_product_company_sale.comments?.length" class="text-gray-500 text-center pt-10 text-xs">No hay
           comentarios</p>
         <div class="flex space-x-1 mt-32">
           <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm rounded-full w-10">

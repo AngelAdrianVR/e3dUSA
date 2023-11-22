@@ -140,7 +140,7 @@ class SaleController extends Controller
 
     public function show($sale_id)
     {
-        $sale = SaleResource::make(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator'], 'productions' => ['user', 'operator']])->find($sale_id));
+        $sale = SaleResource::make(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator', 'comments.user'], 'productions' => ['user', 'operator']])->find($sale_id));
         $pre_sales = Sale::latest()->get();
         $sales = $pre_sales->map(function ($sale) {
             return [
