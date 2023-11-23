@@ -148,8 +148,29 @@
           <div v-if="tabs == 1" class="text-sm">
             <div class="col-span-2 px-7 py-3">
               <div class="flex space-x-2 mb-6">
+                <p class="w-1/3 text-[#9A9A9A]">Almacén:</p>
+                <p class="flex">
+                  <span>{{ currentStorage?.type }}</span>
+                  <div v-if="currentStorage?.type == 'obsoleto'" class="flex items-center space-x-2">
+                    <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
+                    @confirm="reactivateObsolete">
+                    <template #reference>
+                      <button class="text-xs text-primary hover:underline ml-4">
+                        Reactivar en almacén de origen
+                      </button>
+                    </template>
+                  </el-popconfirm>
+                    <el-tooltip content="El producto se devolverá al almacén de origen. Ya no aparecerá más en la tabla de obsoletos" placement="top">
+                      <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                        <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                      </div>
+                    </el-tooltip>
+                  </div>
+                </p>
+              </div>
+              <div class="flex space-x-2 mb-6">
                 <p class="w-1/3 text-[#9A9A9A]">Tipo:</p>
-                <p>{{ currentStorage?.type }}</p>
+                <p>{{ currentStorage?.storageable_type == 'App\\Models\\RawMaterial' ? 'Materia prima' : 'Producto terminado' }}</p>
               </div>
               <div class="flex space-x-2 mb-6">
                 <p class="w-1/3 text-[#9A9A9A]">Fecha de Alta</p>
@@ -360,6 +381,7 @@ import InputError from "@/Components/InputError.vue";
 import moment from "moment";
 import { Link, useForm } from "@inertiajs/vue3";
 import Modal from "@/Components/Modal.vue";
+import axios from "axios";
 
 export default {
   data() {
@@ -406,6 +428,23 @@ export default {
     totalStorageMoney: Number
   },
   methods: {
+    async reactivateObsolete() {
+      try {
+        const response = await axios.put(route('storage.reactivate-obsolete', this.storage));
+
+        if (response.status === 200) {
+            this.$notify({
+              title: "Éxito",
+              message: "Producto mandado a almacén de origen",
+              type: "success",
+            });
+
+            this.currentStorage.type = this.currentStorage
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
     sentToScrap() {
       this.form.storage_id = this.selectedRawMaterial;
       this.form.post(route("storages.scraps.store"), {
@@ -572,7 +611,7 @@ export default {
   watch: {
     selectedStorage(newVal) {
       this.currentStorage = this.storages.find((item) => item.id == newVal);
-      this.reversedMovements = this.currentStorage.movements.reverse();
+      this.reversedMovements = this.currentStorage?.movements.reverse();
     },
   },
   mounted() {
