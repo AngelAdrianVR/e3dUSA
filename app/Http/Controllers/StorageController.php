@@ -19,7 +19,7 @@ class StorageController extends Controller
     {
         if (Route::currentRouteName() == 'storages.raw-materials.index') {
             $raw_materials = StorageResource::collection(Storage::with('storageable')->where('type', 'materia-prima')->latest()->get());
-            // return $raw_materials;
+
             // Calcular la suma de costo de todo el materia prima
             $totalRawMaterialMoney = collect($raw_materials)->sum(function ($item) {
                 return $item->storageable?->cost * $item->quantity;
@@ -68,13 +68,13 @@ class StorageController extends Controller
     public function create()
     {
         if (Route::currentRouteName() == 'storages.scraps.create') {
-            $storages = Storage::with('storageable.media')->get();
+            $storages = Storage::with('storageable.media')->whereNot('type', 'scrap')->get();
             return inertia('Storage/Create/Scrap', compact('storages'));
         } elseif (Route::currentRouteName() == 'storages.finished-products.create') {
             $catalog_products = CatalogProduct::with('media')->latest()->get();
             return inertia('Storage/Create/FinishedProduct', compact('catalog_products'));
         } elseif (Route::currentRouteName() == 'storages.obsolete.create') {
-            $storages = Storage::with('storageable.media')->where('type', 'obsoleto')->get();
+            $storages = Storage::with('storageable.media')->whereNot('type', 'obsoleto')->get();
             return inertia('Storage/Create/Obsolete', compact('storages'));
         }
 
@@ -110,8 +110,6 @@ class StorageController extends Controller
             'storage_id' => 'required',
             'quantity' => 'required|numeric|min:1|max:' . $stock,
             'location' => 'required|string',
-            'type' => 'required',
-
         ]);
 
         if ($storage->type == 'materia-prima' || $storage->type == 'consumible') {
@@ -120,7 +118,7 @@ class StorageController extends Controller
             $raw_material->storages()->create([
                 'quantity' => $request->quantity,
                 'location' => $request->location,
-                'type' => $request->type,
+                'type' => 'scrap',
             ]);
             event(new RecordCreated($raw_material));
         } else {
@@ -128,7 +126,7 @@ class StorageController extends Controller
             $finished_products->storages()->create([
                 'quantity' => $request->quantity,
                 'location' => $request->location,
-                'type' => $request->type,
+                'type' => 'scrap',
             ]);
             event(new RecordCreated($finished_products));
         }
@@ -160,8 +158,10 @@ class StorageController extends Controller
 
     public function show($storage_id)
     {
-        $storage = Storage::with('storageable.media', 'movements.user')->find($storage_id);
-        $storages = Storage::with('storageable.media', 'movements.user')->get();
+        $storage = StorageResource::make(Storage::with('storageable.media', 'movements.user')->find($storage_id));
+
+        // obtener solo registros de almacen actual ingresado
+        $storages = Storage::with('storageable:id,name')->where('type', $storage->type)->get();
 
         // Calcular la suma de la variable "cost" de todos los objetos
         $totalStorageMoney = collect($storages)->sum(function ($item) {
@@ -370,6 +370,13 @@ class StorageController extends Controller
             $query->where('part_number', $part_number);
         })->first();
 
+
+        return response()->json(['item' => $storage]);
+    }
+
+    public function reactivateObsolete(Request $request, Storage $storage)
+    {
+        $storage->update($request->all());
 
         return response()->json(['item' => $storage]);
     }

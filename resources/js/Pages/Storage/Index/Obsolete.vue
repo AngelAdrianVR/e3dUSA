@@ -8,7 +8,7 @@
                     </div>
                     <Link v-if="$page.props.auth.user.permissions.includes('Crear producto obsoleto')"
                         :href="route('storages.obsolete.create')">
-                    <SecondaryButton>Cambiar producto de almacén</SecondaryButton>
+                    <SecondaryButton>Enviar producto a obsoleto</SecondaryButton>
                     </Link>
                 </div>
             </template>
@@ -23,12 +23,12 @@
             <div class="lg:w-5/6 mx-auto mt-6">
                 <div class="flex justify-between">
                     <!-- pagination -->
-                    <div>
+                    <div class="mb-2">
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
                             :total="obsolete_products.length" />
                     </div>
                     <!-- buttons -->
-                    <div>
+                    <!-- <div>
                         <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar producto obsoleto')"
                             confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
                             @confirm="deleteSelections">
@@ -37,7 +37,7 @@
                                     :disabled="disableMassiveActions">Eliminar</el-button>
                             </template>
                         </el-popconfirm>
-                    </div>
+                    </div> -->
                 </div>
                 <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
                     class="cursor-pointer" @selection-change="handleSelectionChange" ref="multipleTableRef"
@@ -113,52 +113,6 @@ export default {
             this.start = (val - 1) * this.itemsPerPage;
             this.end = val * this.itemsPerPage;
         },
-        // async deleteSelections() {
-        //     try {
-        //         const response = await axios.post(route('storages.obsolete.massive-delete', {
-        //             obsolete: this.$refs.multipleTableRef.value
-        //         }));
-
-        //         if (response.status == 200) {
-        //             this.$notify({
-        //                 title: 'Éxito',
-        //                 message: response.data.message,
-        //                 type: 'success'
-        //             });
-
-        //             // update list of quotes
-        //             let deletedIndexes = [];
-        //             this.obsolete_products.forEach((obsolete, index) => {
-        //                 if (this.$refs.multipleTableRef.value.includes(obsolete)) {
-        //                     deletedIndexes.push(index);
-        //                 }
-        //             });
-
-        //             // Ordenar los índices de forma descendente para evitar problemas de desplazamiento al eliminar elementos
-        //             deletedIndexes.sort((a, b) => b - a);
-
-        //             // Eliminar cotizaciones por índice
-        //             for (const index of deletedIndexes) {
-        //                 this.obsolete_products.splice(index, 1);
-        //             }
-
-        //         } else {
-        //             this.$notify({
-        //                 title: 'Algo salió mal',
-        //                 message: response.data.message,
-        //                 type: 'error'
-        //             });
-        //         }
-
-        //     } catch (err) {
-        //         this.$notify({
-        //             title: 'Algo salió mal',
-        //             message: err.message,
-        //             type: 'error'
-        //         });
-        //         console.log(err);
-        //     }
-        // },
         handleRowClick(row) {
             this.$inertia.get(route('storages.show', row));
         },

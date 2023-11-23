@@ -293,6 +293,7 @@ Route::post('storages/{storage}/add-storage', [StorageController::class, 'addSto
 Route::post('storages/{storage}/sub-storage', [StorageController::class, 'subStorage'])->name('storages.sub');
 Route::post('storages/QR-storage', [StorageController::class, 'QRStorage'])->name('storages.QR');
 Route::post('storages/QR-search-product', [StorageController::class, 'QRSearchProduct'])->name('storages.QR-search-product');
+Route::put('storages/{storage}/reactivate-obsolete', [StorageController::class, 'reactivateObsolete'])->name('storages.reactivate-obsolete');
 
 // ----------------MUESTRAS-----------------------
 Route::resource('samples', SampleController::class)->middleware('auth');
