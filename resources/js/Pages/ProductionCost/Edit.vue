@@ -30,11 +30,11 @@
                   <i class="fa-regular fa-clock"></i>
                 </span>
               </el-tooltip>
-              <el-time-picker format="hh:mm:ss" v-model="form.time" placeholder="Seleccione" />
+              <el-time-picker v-model="form.time" placeholder="Seleccione" />
             </div>
             <InputError :message="form.errors.time" />
           </div>
-          {{form}}
+          <!-- {{form}} -->
           <div>
             <IconInput v-model="form.cost" inputPlaceholder="Costo *" inputType="number" inputStep="0.01">
               <el-tooltip content="Costo *" placement="top">
