@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Route;
 
 class StorageController extends Controller
 {
-
     public function index()
     {
         if (Route::currentRouteName() == 'storages.raw-materials.index') {
@@ -73,7 +72,6 @@ class StorageController extends Controller
         }
     }
 
-
     public function create()
     {
         $_catalog_products = CatalogProduct::with('media')->latest()->get();
@@ -89,15 +87,18 @@ class StorageController extends Controller
         });
         if (Route::currentRouteName() == 'storages.scraps.create') {
             $storages = Storage::with('storageable.media')->whereNot('type', 'scrap')->get();
+            $storages = $this->getOptimizedStorage($storages);
             return inertia('Storage/Create/Scrap', compact('storages'));
         } elseif (Route::currentRouteName() == 'storages.finished-products.create') {
             return inertia('Storage/Create/FinishedProduct', compact('catalog_products'));
         } elseif (Route::currentRouteName() == 'storages.obsolete.create') {
             $storages = Storage::with('storageable.media')->whereNot('type', 'obsoleto')->get();
+            $storages = $this->getOptimizedStorage($storages);
             return inertia('Storage/Create/Obsolete', compact('storages'));
         } elseif (Route::currentRouteName() == 'storages.samples.create') {
             $storages = Storage::with('storageable.media')->whereNot('type', 'seguimiento-muestras')->get();
-            return $storages;
+            $storages = $this->getOptimizedStorage($storages);
+            // return $storages;
             return inertia('Storage/Create/Sample', compact('storages', 'catalog_products'));
         }
     }
@@ -399,5 +400,26 @@ class StorageController extends Controller
         $storage->update($request->all());
 
         return response()->json(['item' => $storage]);
+    }
+
+    // private functions
+    private function getOptimizedStorage($items)
+    {
+        return $items->map(function ($s) {
+            return [
+                'quantity' => $s->quantity,
+                'type' => $s->type,
+                'storageable' => $s->storageable()->get()->map(function ($st) {
+                    return [
+                        'id' => $st->id,
+                        'name' => $st->name,
+                        'part_number' => $st->part_number,
+                        'description' => $st->description,
+                        'cost' => $st->cost,
+                        'media' => $st->media->map(fn ($m) => $m->original_url),
+                    ];
+                })[0]
+            ];
+        });
     }
 }
