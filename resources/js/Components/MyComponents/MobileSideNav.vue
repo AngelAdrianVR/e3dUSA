@@ -169,8 +169,8 @@ export default {
                         },
                         {
                             label: 'Seguimiento',
-                            route: 'storages.tracking.index',
-                            active: route().current('storages.tracking.*'),
+                            route: 'storages.samples.index',
+                            active: route().current('storages.samples.*'),
                             show: this.$page.props.auth.user.permissions.includes('Ver producto de seguimiento'),
                         },
                     ],

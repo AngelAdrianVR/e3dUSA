@@ -5,7 +5,7 @@
       <div class="flex justify-between text-lg mx-14 mt-11">
         <span>Almacén</span>
 
-        <Link :href="route('storages.raw-materials.index')"
+        <Link :href="backRoute"
           class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
         <i class="fa-solid fa-xmark"></i>
         </Link>
@@ -170,7 +170,7 @@
               </div>
               <div class="flex space-x-2 mb-6">
                 <p class="w-1/3 text-[#9A9A9A]">Tipo:</p>
-                <p>{{ storage.data.storageable_type == 'App\\Models\\RawMaterial' ? 'Materia prima' : 'Producto terminado' }}</p>
+                <p>{{ storage.data.storageable_type == 'App\\Models\\RawMaterial' ? 'Materia prima' : 'Producto de catálogo' }}</p>
               </div>
               <div class="flex space-x-2 mb-6">
                 <p class="w-1/3 text-[#9A9A9A]">Fecha de Alta</p>
@@ -417,6 +417,7 @@ export default {
     });
     return {
       form,
+      backRoute: null,
       selectedStorage: "",
       selectedRawMaterial: "",
       imageHovered: false,
@@ -659,6 +660,19 @@ export default {
     this.selectedStorage = this.storage.data.id;
     this.selectedRawMaterial = this.storage.data.storageable.id;
     this.reversedMovements = this.storage.data.movements;
+    
+    // obtener ruta de regreso
+    if (this.storage.data.type == 'materia-prima') {
+      this.backRoute = route('storages.raw-materials.index');
+    } else if (this.storage.data.type == 'obsoleto') {
+      this.backRoute = route('storages.obsolete.index');
+    } else if (this.storage.data.type == 'scrap') {
+      this.backRoute = route('storages.scraps.index');
+    } else if (this.storage.data.type == 'consumible') {
+      this.backRoute = route('storages.consumables.index');
+    } else if (this.storage.data.type == 'producto-terminado') {
+      this.backRoute = route('storages.finished-products.index');
+    }
   },
 };
 </script>
