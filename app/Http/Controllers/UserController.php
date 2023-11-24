@@ -30,7 +30,7 @@ class UserController extends Controller
  
         return [
             'id' => $user->id,
-            'user_name' => $user->name,
+            'name' => $user->name,
             'is_active' => [
                 'string' => $user->is_active ? 'Activo' : 'Inactivo',
                 'bool' => boolval($user->is_active),

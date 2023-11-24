@@ -204,7 +204,8 @@ export default {
                         production.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
                         production.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
                         production.p_folio.toLowerCase().includes(this.search.toLowerCase()) ||
-                        production.company_branch.name.toLowerCase().includes(this.search.toLowerCase())
+                        production.company_branch.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                        production.p_folio.toLowerCase().includes(this.search.toLowerCase())
                 )
             }
         }
