@@ -1,22 +1,22 @@
 <template>
     <div>
-        <AppLayout title="Almacén de producto obsoleto">
+        <AppLayout title="Almacén de seguimiento de muestras">
             <template #header>
                 <div class="flex justify-between">
                     <div class="flex items-center space-x-2">
-                        <h2 class="font-semibold text-xl leading-tight">Almacén de producto obsoleto</h2>
+                        <h2 class="font-semibold text-xl leading-tight">Almacén de seguimiento de muestras</h2>
                     </div>
-                    <Link v-if="$page.props.auth.user.permissions.includes('Crear producto obsoleto')"
-                        :href="route('storages.obsolete.create')">
-                    <SecondaryButton>Enviar producto a obsoleto</SecondaryButton>
+                    <Link v-if="$page.props.auth.user.permissions.includes('Crear seguimiento de muestras')"
+                        :href="route('storages.samples.create')">
+                    <SecondaryButton>Agregar producto a seguimiento de muestras</SecondaryButton>
                     </Link>
                 </div>
             </template>
 
-            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de obsoleto')"
+            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de seguimiento de muestras')"
                 class="text-center mt-3">
-                <el-tag class="mt-3" style="font-size: 20px;" type="danger">Obsoleto total:
-                    ${{ totalObsoleteMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} MXN</el-tag>
+                <el-tag class="mt-3" style="font-size: 20px;" type="danger">Muestras total:
+                    ${{ totalSamplesMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} MXN</el-tag>
             </div>
 
             <!-- tabla -->
@@ -25,11 +25,11 @@
                     <!-- pagination -->
                     <div class="mb-2">
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                            :total="obsolete_products.length" />
+                            :total="sample_products.length" />
                     </div>
                     <!-- buttons -->
                     <!-- <div>
-                        <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar producto obsoleto')"
+                        <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar seguimiento de muestras')"
                             confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
                             @confirm="deleteSelections">
                             <template #reference>
@@ -93,8 +93,8 @@ export default {
         TextInput,
     },
     props: {
-        obsolete_products: Array,
-        totalObsoleteMoney: Number,
+        sample_products: Array,
+        totalSamplesMoney: Number,
     },
     methods: {
         handleSearch() {
@@ -119,11 +119,11 @@ export default {
     },
     computed: {
         filteredTableData() {
-            return this.obsolete_products.filter(
-                (obsolete) =>
+            return this.sample_products.filter(
+                (sample) =>
                     !this.search ||
-                    obsolete.storageable.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                    obsolete.storageable.part_number.toLowerCase().includes(this.search.toLowerCase())
+                    sample.storageable.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                    sample.storageable.part_number.toLowerCase().includes(this.search.toLowerCase())
             )
         }
     },

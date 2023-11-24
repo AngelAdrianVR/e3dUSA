@@ -1,15 +1,15 @@
 <template>
   <div>
-    <AppLayout title="Scrap">
+    <AppLayout title="Agregar producto a seguimiento de muestras">
       <template #header>
         <div class="flex justify-between">
-          <Link :href="route('storages.scraps.index')"
+          <Link :href="route('storages.obsolete.index')"
             class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
           <i class="fa-solid fa-chevron-left"></i>
           </Link>
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">
-              Mandar producto a scrap
+              Mandar producto a seguimiento de muestras
             </h2>
           </div>
         </div>
@@ -18,16 +18,16 @@
       <!-- Form -->
       <form @submit.prevent="store">
         <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-1">
-          <h1 class="font-bold text-lg">Cambiar producto de almacén a scrap</h1>
+          <h1 class="font-bold text-lg">Agregar a almacén seguimiento de muestras</h1>
           <div class="flex items-center bg-secondarylight text-secondary px-3 py-1 rounded-[5px]">
             <div class="rounded-full border border-secondary w-3 h-3 flex items-center justify-center mr-2">
               <i class="fa-solid fa-info text-secondary text-[7px]"></i>
             </div>
-            <p class="text-xs">Este almacén es para aquellos productos que ya son desperdicio o merma.</p>
+            <p class="text-xs">Este almacen es para los productos que sólo hay existencias para dar muestras a clientes.</p>
           </div>
           <div>
-            <label class="text-sm ml-2">Producto scrap *</label>
-            <el-select v-model="form.storage_id" @change="storageableObj" placeholder="Selecciona el producto scrap"
+            <label class="text-sm ml-2">Producto para muestras *</label>
+            <el-select v-model="form.storage_id" @change="storageableObj" placeholder="Selecciona el producto para muestras"
               filterable>
               <el-option v-for="item in storages" :key="item.id" :label="item.storageable?.name" :value="item.id" />
             </el-select>
@@ -35,7 +35,7 @@
           </div>
           <div>
             <label class="text-sm ml-2">Cantidad *</label>
-            <input v-model="form.quantity" placeholder="Ingresa la cantidad del producto" class="input" type="number"
+            <input v-model="form.quantity" placeholder="Ingresa la cantidad del producto" class="input" type="number" min="1"
               required>
             <InputError :message="form.errors.quantity" />
           </div>
@@ -96,7 +96,7 @@
               <li class="flex">
                 <label class="font-bold mr-2 w-1/3">costo: </label> ${{
                   (storage_selected?.storageable?.cost *
-                    form.quantity ?? 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    storage_selected?.quantity).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                 }}
               </li>
             </ul>
@@ -125,7 +125,6 @@ export default {
     const form = useForm({
       storage_id: null,
       location: null,
-      quantity: null,
     });
 
     return {
@@ -143,14 +142,15 @@ export default {
   },
   props: {
     storages: Array,
+    catalog_products: Array,
   },
   methods: {
     store() {
-      this.form.post(route("storages.scraps.store"), {
+      this.form.post(route("storages.obsolete.store"), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: "Producto mandado a scrap",
+            message: "Producto mandado a seguimiento de muestras",
             type: "success",
           });
         },

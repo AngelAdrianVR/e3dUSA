@@ -271,15 +271,15 @@ Route::get('/storage-raw-materials', [StorageController::class, 'index'])->middl
 Route::get('/storage-consumables', [StorageController::class, 'index'])->middleware('auth')->name('storages.consumables.index');
 Route::get('/storage-finished-products', [StorageController::class, 'index'])->middleware('auth')->name('storages.finished-products.index');
 Route::get('/storage-obsolete', [StorageController::class, 'index'])->middleware('auth')->name('storages.obsolete.index');
-Route::get('/storage-tracking', [StorageController::class, 'index'])->middleware('auth')->name('storages.tracking.index');
+Route::get('/storage-sample', [StorageController::class, 'index'])->middleware('auth')->name('storages.samples.index');
 Route::get('/storage-finished-products/create', [StorageController::class, 'create'])->middleware('auth')->name('storages.finished-products.create');
 Route::get('/storage-finished-products/{storage}/edit', [StorageController::class, 'edit'])->middleware('auth')->name('storages.finished-products.edit');
 Route::get('/storage-obsolete/create', [StorageController::class, 'create'])->middleware('auth')->name('storages.obsolete.create');
 Route::get('/storage-obsolete/{storage}/edit', [StorageController::class, 'edit'])->middleware('auth')->name('storages.obsolete.edit');
 Route::post('/storage-obsolete/store', [StorageController::class, 'storeObsolete'])->middleware('auth')->name('storages.obsolete.store');
 Route::get('/storage-obsolete-show/{storage}', [StorageController::class, 'showObsolete'])->middleware('auth')->name('storages.obsolete.show');
-Route::get('/storage-tracking/create', [StorageController::class, 'create'])->middleware('auth')->name('storages.tracking.create');
-Route::get('/storage-tracking/{storage}/edit', [StorageController::class, 'edit'])->middleware('auth')->name('storages.tracking.edit');
+Route::get('/storage-sample/create', [StorageController::class, 'create'])->middleware('auth')->name('storages.samples.create');
+Route::get('/storage-sample/{storage}/edit', [StorageController::class, 'edit'])->middleware('auth')->name('storages.samples.edit');
 Route::post('/storage-store', [StorageController::class, 'store'])->middleware('auth')->name('storages.store');
 Route::get('/storage-scraps', [StorageController::class, 'index'])->middleware('auth')->name('storages.scraps.index');
 Route::get('/storage-scraps/create', [StorageController::class, 'create'])->middleware('auth')->name('storages.scraps.create');
@@ -293,6 +293,7 @@ Route::post('storages/{storage}/add-storage', [StorageController::class, 'addSto
 Route::post('storages/{storage}/sub-storage', [StorageController::class, 'subStorage'])->name('storages.sub');
 Route::post('storages/QR-storage', [StorageController::class, 'QRStorage'])->name('storages.QR');
 Route::post('storages/QR-search-product', [StorageController::class, 'QRSearchProduct'])->name('storages.QR-search-product');
+Route::put('storages/{storage}/reactivate-obsolete', [StorageController::class, 'reactivateObsolete'])->name('storages.reactivate-obsolete');
 
 // ----------------MUESTRAS-----------------------
 Route::resource('samples', SampleController::class)->middleware('auth');

@@ -5,15 +5,16 @@
       <div class="flex justify-between text-lg mx-14 mt-11">
         <span>Almacén</span>
 
-        <Link :href="route('storages.raw-materials.index')"
+        <Link :href="backRoute"
           class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
         <i class="fa-solid fa-xmark"></i>
         </Link>
       </div>
       <div class="flex justify-between mt-5 mx-14">
         <div class="md:w-1/3 mr-2">
-          <el-select v-model="selectedStorage" clearable filterable placeholder="Buscar producto"
-            no-data-text="No hay productos en el almacén" no-match-text="No se encontraron coincidencias">
+          <el-select @change="$inertia.get(route('storages.show', selectedStorage))" v-model="selectedStorage" clearable
+            filterable placeholder="Buscar producto" no-data-text="No hay productos en el almacén"
+            no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in storages" :key="item.id" :label="item.storageable.name" :value="item.id" />
           </el-select>
         </div>
@@ -42,7 +43,7 @@
 
           <div class="flex gap-1">
             <el-tooltip
-              v-if="$page.props.auth.user.permissions.includes('Editar materia prima') && currentStorage?.type != 'producto-terminado'"
+              v-if="$page.props.auth.user.permissions.includes('Editar materia prima') && storage.data.type != 'producto-terminado'"
               content="Editar" placement="top">
               <Link :href="route('raw-materials.edit', selectedRawMaterial)">
               <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
@@ -51,9 +52,9 @@
               </Link>
             </el-tooltip>
             <!-- <el-tooltip
-              v-if="$page.props.auth.user.permissions.includes('Editar materia prima') && currentStorage?.type != 'producto-terminado' && currentStorage"
+              v-if="$page.props.auth.user.permissions.includes('Editar materia prima') && storage.data.type != 'producto-terminado' && storage.data.data"
               content="Editar" placement="top">
-              <Link :href="route('raw-materials.edit', currentStorage?.id)">
+              <Link :href="route('raw-materials.edit', storage.data.id)">
               <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
                 <i class="fa-solid fa-pen text-sm"></i>
               </button>
@@ -71,10 +72,10 @@
                 </button>
               </template>
               <template #content>
-              <DropdownLink :href="route('raw-materials.create')"
-                v-if="$page.props.auth.user.permissions.includes('Crear materia prima')">
-                Agregar nueva materia prima
-              </DropdownLink>
+                <DropdownLink :href="route('raw-materials.create')"
+                  v-if="$page.props.auth.user.permissions.includes('Crear materia prima')">
+                  Agregar nueva materia prima
+                </DropdownLink>
                 <DropdownLink @click="scrapModal = true" as="button"
                   v-if="$page.props.auth.user.permissions.includes('Crear scrap')">
                   Mandar a scrap
@@ -93,40 +94,42 @@
       <div class="lg:grid grid-cols-3 mt-12 border-b-2">
         <div class="px-6">
           <h2 class="text-xl font-bold text-center mb-6">
-            {{ currentStorage?.storageable.name }}
+            {{ storage.data.storageable.name }}
           </h2>
           <div class="flex items-center">
-          <i :class="currentIndexStorage == 0 ? 'hidden' : 'block'" @click="previus" class="fa-solid fa-chevron-left mr-4 text-lg text-gray-600 cursor-pointer p-1 rounded-full"></i>
-          <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
-          :class="currentStorage?.storageable?.media.length ? 'bg-transparent' : 'bg-[#D9D9D9]'"
-            class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center">
-            <el-image style="height: 100%" :src="currentStorage?.storageable?.media[0]?.original_url" fit="fit">
-              <template #error>
-                <div class="flex justify-center items-center text-[#ababab]">
-                  <i class="fa-solid fa-image text-6xl"></i>
-                </div>
-              </template>
-            </el-image>
-            <div v-if="imageHovered" @click="
-              openImage(currentStorage?.storageable?.media[0]?.original_url)
-              "
-              class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
-              <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
-            </div>
-          </figure>
-          <i :class="currentIndexStorage == storages.length - 1 ? 'hidden' : 'block'" @click="next" class="fa-solid fa-chevron-right ml-4 text-lg text-gray-600 cursor-pointer p-1 mb-2 rounded-full"></i>
+            <!-- <i :class="currentIndexStorage == 0 ? 'hidden' : 'block'" @click="previus"
+              class="fa-solid fa-chevron-left mr-4 text-lg text-gray-600 cursor-pointer p-1 rounded-full"></i> -->
+            <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
+              :class="storage.data.storageable?.media.length ? 'bg-transparent' : 'bg-[#D9D9D9]'"
+              class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center">
+              <el-image style="height: 100%" :src="storage.data.storageable?.media[0]?.original_url" fit="fit">
+                <template #error>
+                  <div class="flex justify-center items-center text-[#ababab]">
+                    <i class="fa-solid fa-image text-6xl"></i>
+                  </div>
+                </template>
+              </el-image>
+              <div v-if="imageHovered" @click="
+                openImage(storage.data.storageable?.media[0]?.original_url)
+                "
+                class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
+                <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
+              </div>
+            </figure>
+            <!-- <i :class="currentIndexStorage == storages.length - 1 ? 'hidden' : 'block'" @click="next"
+              class="fa-solid fa-chevron-right ml-4 text-lg text-gray-600 cursor-pointer p-1 mb-2 rounded-full"></i> -->
           </div>
           <div class="mt-8 ml-6 text-sm">
             <div class="flex mb-2">
               <p class="w-1/3 text-primary">Existencias</p>
               <p>
-                {{ currentStorage?.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0" }}
-                {{ currentStorage?.storageable.measure_unit ?? "" }}
+                {{ storage.data.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0" }}
+                {{ storage.data.storageable.measure_unit ?? "" }}
               </p>
             </div>
             <div class="flex mb-3">
               <p class="w-1/3 text-primary">Ubicación</p>
-              <p>{{ currentStorage?.location ?? "--" }}</p>
+              <p>{{ storage.data.location ?? "--" }}</p>
             </div>
           </div>
         </div>
@@ -148,13 +151,31 @@
           <div v-if="tabs == 1" class="text-sm">
             <div class="col-span-2 px-7 py-3">
               <div class="flex space-x-2 mb-6">
+                <p class="w-1/3 text-[#9A9A9A]">Almacén:</p>
+                <p class="flex">
+                  <span>{{ storage.data.type }}</span>
+                <div v-if="storage.data.type == 'obsoleto'" class="flex items-center space-x-2">
+                  <button @click="showTransferModal = true" class="text-xs text-primary hover:underline ml-4">
+                    Reactivar en otro almacén
+                  </button>
+                  <el-tooltip
+                    content="El producto se devolverá al almacén seleccionado. Ya no aparecerá más en la tabla de obsoletos"
+                    placement="top">
+                    <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                      <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                    </div>
+                  </el-tooltip>
+                </div>
+                </p>
+              </div>
+              <div class="flex space-x-2 mb-6">
                 <p class="w-1/3 text-[#9A9A9A]">Tipo:</p>
-                <p>{{ currentStorage?.type }}</p>
+                <p>{{ storage.data.storageable_type == 'App\\Models\\RawMaterial' ? 'Materia prima' : 'Producto de catálogo' }}</p>
               </div>
               <div class="flex space-x-2 mb-6">
                 <p class="w-1/3 text-[#9A9A9A]">Fecha de Alta</p>
                 <el-tooltip content="Año-Mes-Día" placement="top">
-                  <p>{{ currentStorage?.created_at.split("T")[0] }}</p>
+                  <p>{{ storage.data.created_at.split("T")[0] }}</p>
                 </el-tooltip>
               </div>
               <div class="flex mb-2 space-x-2">
@@ -163,42 +184,42 @@
               </div>
               <div class="flex mb-6 space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">Características</p>
-                <p>{{ currentStorage?.storageable?.features?.join(", ") }}</p>
+                <p>{{ storage.data.storageable?.features?.join(", ") }}</p>
               </div>
               <div class="flex mb-2 space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">Número parte</p>
-                <p>{{ currentStorage?.storageable.part_number }}</p>
+                <p>{{ storage.data.storageable.part_number }}</p>
               </div>
               <div class="flex mb-6 space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">Unidad de medida</p>
-                <p>{{ currentStorage?.storageable.measure_unit }}</p>
+                <p>{{ storage.data.storageable.measure_unit }}</p>
               </div>
               <div class="flex mb-3 space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">Costo de aquisición</p>
                 <p class="text-[#4FC03D]">
-                  {{ currentStorage?.storageable.cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '--' }} $MXN
+                  {{ storage.data.storageable.cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '--' }} $MXN
                 </p>
               </div>
               <div class="flex mb-6 space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">Costo total de este producto en almacén</p>
                 <p class="text-[#4FC03D]">
-                  {{ (currentStorage?.storageable.cost *
-                    currentStorage?.quantity).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} $MXN
+                  {{ (storage.data.storageable.cost *
+                    storage.data.quantity).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} $MXN
                 </p>
               </div>
               <div class="flex mb-2 space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">
                   Cantidad miníma permitida en almacén
                 </p>
-                <p>{{ currentStorage?.storageable.min_quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
-                  currentStorage?.storageable.measure_unit }}</p>
+                <p>{{ storage.data.storageable.min_quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
+                  storage.data.storageable.measure_unit }}</p>
               </div>
               <div class="flex space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">
                   Cantidad máxima permitida en almacén
                 </p>
-                <p>{{ currentStorage?.storageable.max_quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
-                  currentStorage?.storageable.measure_unit }}</p>
+                <p>{{ storage.data.storageable.max_quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
+                  storage.data.storageable.measure_unit }}</p>
               </div>
             </div>
           </div>
@@ -218,8 +239,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(movement, index) in reversedMovements" :key="index"
-                  class="text-[#9A9A9A] mb-4 text-xs">
+                <tr v-for="(movement, index) in reversedMovements" :key="index" class="text-[#9A9A9A] mb-4 text-xs">
                   <td class="text-left pb-3">
                     {{ index + 1 }}
                   </td>
@@ -305,44 +325,67 @@
 
       <!-- -------------- scrapModal starts----------------------- -->
       <Modal :show="scrapModal" @close="scrapModal = false">
-      <form @submit.prevent="sentToScrap">
-        <div class="mx-7 my-4 space-y-4 relative">
-          <section v-if="scrapModal">
+        <form @submit.prevent="sentToScrap">
+          <div class="mx-7 my-4 space-y-4 relative">
+            <section v-if="scrapModal">
               <h2 class="font-bold text-center mr-2">
-                Mandar {{ currentStorage?.storageable.name }} a scrap
+                Mandar {{ storage.data.storageable.name }} a scrap
               </h2>
-            <div class="flex flex-col justify-center mt-7">
-              <div @click="scrapModal = false"
-                class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
-                <i class="fa-solid fa-xmark"></i>
+              <div class="flex flex-col justify-center mt-7">
+                <div @click="scrapModal = false"
+                  class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
+                  <i class="fa-solid fa-xmark"></i>
+                </div>
+                <div>
+                  <IconInput v-model="form.quantity" inputPlaceholder="Cantidad" inputType="number" inputStep="0.01">
+                    <el-tooltip content="Cantidad" placement="top">
+                      123
+                    </el-tooltip>
+                  </IconInput>
+                  <InputError :message="form.errors.quantity" />
+                </div>
+                <div>
+                  <IconInput v-model="form.location" inputPlaceholder="Ubicación" inputType="text">
+                    <el-tooltip content="Ubicación" placement="top">
+                      U
+                    </el-tooltip>
+                    <InputError :message="form.errors.location" />
+                  </IconInput>
+                </div>
               </div>
-              <div>
-              <IconInput v-model="form.quantity" inputPlaceholder="Cantidad" inputType="number" inputStep="0.01">
-                <el-tooltip content="Cantidad" placement="top">
-                  123
-                </el-tooltip>
-              </IconInput>
-              <InputError :message="form.errors.quantity" />
-            </div>
-              <div>
-              <IconInput v-model="form.location" inputPlaceholder="Ubicación" inputType="text">
-                <el-tooltip content="Ubicación" placement="top">
-                  U
-                </el-tooltip>
-                <InputError :message="form.errors.location" />
-              </IconInput>
-            </div>
-            </div>
-          </section>
-          <!-- -------------- scrapModal ends----------------------- -->
+            </section>
+            <!-- -------------- scrapModal ends----------------------- -->
 
-          <div class="flex justify-end space-x-3 pt-5 pb-1">
-            <PrimaryButton>Mandar a scrap</PrimaryButton>
+            <div class="flex justify-end space-x-3 pt-5 pb-1">
+              <PrimaryButton>Mandar a scrap</PrimaryButton>
+            </div>
           </div>
-          </div>
-      </form>
+        </form>
       </Modal>
-      
+
+      <!-- modal para seleccionar almacen a transferir -->
+      <DialogModal :show="showTransferModal" @close="showTransferModal = false">
+        <template #title>
+          <p>Almacén a transeferir</p>
+        </template>
+        <template #content>
+          <div>
+            <label class="text-sm ml-2">Almacén a transferir *</label>
+            <el-select v-model="warehouse" placeholder="Selecciona el Almacén a transferir">
+              <el-option v-for="(item, index) in warehouses" :key="index" :label="item.label" :value="item.value" />
+            </el-select>
+          </div>
+          <div>
+            <label class="text-sm ml-2">Ubicación *</label>
+            <input v-model="location" placeholder="Escribe la ubicación del producto" class="input" type="text">
+          </div>
+        </template>
+        <template #footer>
+          <CancelButton @click="showTransferModal = false; warehouse = null;">Cancelar</CancelButton>
+          <PrimaryButton @click="reactivateObsolete" :disabled="!warehouse || !location">Transferir</PrimaryButton>
+        </template>
+      </DialogModal>
+
     </AppLayoutNoHeader>
   </div>
 </template>
@@ -360,6 +403,7 @@ import InputError from "@/Components/InputError.vue";
 import moment from "moment";
 import { Link, useForm } from "@inertiajs/vue3";
 import Modal from "@/Components/Modal.vue";
+import axios from "axios";
 
 export default {
   data() {
@@ -373,18 +417,40 @@ export default {
     });
     return {
       form,
+      backRoute: null,
       selectedStorage: "",
       selectedRawMaterial: "",
-      currentStorage: null,
       imageHovered: false,
       showConfirmModal: false,
       showDialogModal: false,
+      showTransferModal: false,
       scrapModal: false,
       is_add: null,
       errorMessage: null,
       currentIndexStorage: null,
       tabs: 1,
       reversedMovements: null,
+      // reactivate obsolete vars
+      warehouse: null,
+      location: null,
+      warehouses: [
+        {
+          label: "Materia prima",
+          value: "materia-prima",
+        },
+        {
+          label: "Producto terminado",
+          value: "producto-terminado",
+        },
+        {
+          label: "Scrap",
+          value: "scrap",
+        },
+        {
+          label: "Seguimiento",
+          value: "seguimiento",
+        },
+      ],
     };
   },
   components: {
@@ -406,6 +472,27 @@ export default {
     totalStorageMoney: Number
   },
   methods: {
+    async reactivateObsolete() {
+      try {
+        const response = await axios.put(route('storages.reactivate-obsolete', this.storage.data), { type: this.warehouse, location: this.location });
+
+        if (response.status === 200) {
+          this.$notify({
+            title: "Éxito",
+            message: "Producto reactivado en otro almacén",
+            type: "success",
+          });
+
+          this.showTransferModal = false;
+          this.storage.data.type = response.data.item.type;
+          this.storage.data.location = response.data.item.location;
+          this.warehouse = null;
+          this.location = null;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
     sentToScrap() {
       this.form.storage_id = this.selectedRawMaterial;
       this.form.post(route("storages.scraps.store"), {
@@ -434,7 +521,7 @@ export default {
     async deleteItem() {
       try {
         const response = await axios.delete(
-          route("storages.destroy", this.currentStorage?.id)
+          route("storages.destroy", this.storage.id)
         );
 
         if (response.status == 200) {
@@ -445,7 +532,7 @@ export default {
           });
 
           const index = this.storages.findIndex(
-            (item) => item.id === this.currentStorage.id
+            (item) => item.id === this.storage.data.id
           );
           if (index !== -1) {
             this.storages.splice(index, 1);
@@ -490,11 +577,11 @@ export default {
             message: "Entrada exitosa",
             type: "success",
           });
-          this.currentStorage.movements.push(response.data.movement);
+          this.storage.data.movements.push(response.data.movement);
           this.form.reset();
           this.showDialogModal = false;
           this.is_add = null;
-          this.currentStorage.quantity = response.data.item.quantity;
+          this.storage.data.quantity = response.data.item.quantity;
           this.errorMessage = null;
         }
       } catch (error) {
@@ -532,11 +619,11 @@ export default {
             message: "Salida exitosa",
             type: "success",
           });
-          this.currentStorage.movements.push(response.data.movement);
+          this.storage.data.movements.push(response.data.movement);
           this.form.reset();
           this.showDialogModal = false;
           this.is_add = null;
-          this.currentStorage.quantity = response.data.item.quantity;
+          this.storage.data.quantity = response.data.item.quantity;
           this.errorMessage = null;
         }
       } catch (error) {
@@ -557,29 +644,35 @@ export default {
           });
         }
       }
-          },
-    previus(){
-      this.currentIndexStorage -= 1;
-      this.currentStorage = this.storages[this.currentIndexStorage];
-      this.selectedStorage = this.currentStorage.id;
     },
-    next(){
-      this.currentIndexStorage += 1;
-      this.currentStorage = this.storages[this.currentIndexStorage];
-      this.selectedStorage = this.currentStorage.id;
-    },
-  },
-  watch: {
-    selectedStorage(newVal) {
-      this.currentStorage = this.storages.find((item) => item.id == newVal);
-      this.reversedMovements = this.currentStorage.movements.reverse();
-    },
+    // previus() {
+    //   this.currentIndexStorage -= 1;
+    //   this.storage.data = this.storages[this.currentIndexStorage];
+    //   this.selectedStorage = this.storage.data.id;
+    // },
+    // next() {
+    //   this.currentIndexStorage += 1;
+    //   this.storage.data = this.storages[this.currentIndexStorage];
+    //   this.selectedStorage = this.storage.data.id;
+    // },
   },
   mounted() {
-    this.selectedStorage = this.storage.id;
-    this.selectedRawMaterial = this.storage.storageable.id;
-    this.currentIndexStorage = this.storages.findIndex((obj) => obj.id == this.selectedStorage);
-
+    this.selectedStorage = this.storage.data.id;
+    this.selectedRawMaterial = this.storage.data.storageable.id;
+    this.reversedMovements = this.storage.data.movements;
+    
+    // obtener ruta de regreso
+    if (this.storage.data.type == 'materia-prima') {
+      this.backRoute = route('storages.raw-materials.index');
+    } else if (this.storage.data.type == 'obsoleto') {
+      this.backRoute = route('storages.obsolete.index');
+    } else if (this.storage.data.type == 'scrap') {
+      this.backRoute = route('storages.scraps.index');
+    } else if (this.storage.data.type == 'consumible') {
+      this.backRoute = route('storages.consumables.index');
+    } else if (this.storage.data.type == 'producto-terminado') {
+      this.backRoute = route('storages.finished-products.index');
+    }
   },
 };
 </script>

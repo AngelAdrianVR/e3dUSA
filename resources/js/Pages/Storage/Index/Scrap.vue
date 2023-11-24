@@ -8,7 +8,7 @@
                     </div>
                     <Link v-if="$page.props.auth.user.permissions.includes('Crear scrap')"
                         :href="route('storages.scraps.create')">
-                    <SecondaryButton>+ Nuevo</SecondaryButton>
+                    <SecondaryButton>Enviar producto a scrap</SecondaryButton>
                     </Link>
                 </div>
             </template>
@@ -37,7 +37,7 @@
                         </el-popconfirm>
                     </div>
                 </div>
-                <el-table :data="filteredTableData" max-height="670" style="width: 100%"
+                <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%" class="cursor-pointer"
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="storageable.name" label="Nombre" />
@@ -51,22 +51,6 @@
                             <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
                         </div>
                         </template>
-                        <!-- <template #default="scope">
-                            <el-dropdown trigger="click" @command="handleCommand">
-                                <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                </span>
-                                <template #dropdown>
-                                    <el-dropdown-menu>
-                                        <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
-                                            Ver</el-dropdown-item>
-                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar scrap')"
-                                            :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
-                                            Editar</el-dropdown-item>
-                                    </el-dropdown-menu>
-                                </template>
-                            </el-dropdown>
-                        </template> -->
                     </el-table-column>
                 </el-table>
             </div>
@@ -112,7 +96,7 @@ export default {
             this.search = this.inputSearch;
         },
         tableRowClassName({ row, rowIndex }) {
-            return 'text-red-600';
+            return '';
         },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
@@ -173,12 +157,9 @@ export default {
                 console.log(err);
             }
         },
-
-        // handleRowClick(row) {
-        //     console.log(row);
-        //     this.$inertia.get(route('storages.show', row));
-        // },
-
+        handleRowClick(row) {
+            this.$inertia.get(route('storages.show', row));
+        },
         edit(index, scrap) {
             console.log(scrap);
             this.$inertia.get(route('storages.finished-products.edit', scrap.storageable));

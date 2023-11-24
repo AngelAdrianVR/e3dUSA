@@ -22,7 +22,7 @@
                         <!-- pagination -->
                         <div>
                             <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                                :total="companies.data.length" />
+                                :total="companies.length" />
                         </div>
 
                         <!-- buttons -->

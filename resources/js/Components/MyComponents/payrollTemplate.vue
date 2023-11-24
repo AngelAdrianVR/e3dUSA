@@ -103,6 +103,11 @@
           <span class="text-center">{{ getWorkedDays().length }}</span>
           <span>${{ getWorkedDaysSalary().toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
         </p>
+        <p v-if="getIllness().length" class="grid grid-cols-3 gap-x-1">
+          <span>Incapacidades</span>
+          <span class="text-center">{{ getIllness().length }}</span>
+          <span>${{ getIllnessSalary().toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+        </p>
         <p class="grid grid-cols-3 gap-x-1">
           <span>T. adicional autorizado</span>
           <span class="text-center">{{ formattedTotalAdditionalTime() }}</span>
@@ -307,12 +312,24 @@ export default {
     getHolidays() {
       return this.processedAttendances.filter(item => item.incident?.id < 0);
     },
+    getIllness() {
+      return this.processedAttendances.filter(item => item.incident?.id == 8);
+    },
     getWorkedDaysSalary() {
       // total_worked_time ya toma en cuenta si existe solicitud de tiempo adicional
       let totalSalary =
         this.getWorkedDays().reduce(
           (accum, object) => accum + object.total_worked_time?.hours * object.additionals.salary.hour, 0
         );
+
+      return totalSalary;
+    },
+    getIllnessSalary() {
+      let totalSalary = 0;
+      
+      this.getIllness().forEach(element => {
+        totalSalary += this.getUserWorkDayByDate(element.date.estandard).salary * 0.6;
+      });
 
       return totalSalary;
     },
@@ -344,6 +361,11 @@ export default {
         totalWeekHours += this.getUserWorkDayByDate(element.date.estandard).hours;
       });
 
+      // sumar sueldo por incapacidades (60%)
+      this.getIllness().forEach(element => {
+        totalWeekHours += this.getUserWorkDayByDate(element.date.estandard).hours * 0.6;
+      });
+
       const percentage = (totalWeekHours * 100) / this.user.employee_properties.hours_per_week;
 
       return Math.round(percentage) + '%';
@@ -357,6 +379,7 @@ export default {
     getTotal() {
       let holyDays = 0;
       let vacations = 0;
+      let illness = 0;
 
       // sumar sueldo por dias feriados
       this.getHolidays().forEach(element => {
@@ -366,6 +389,11 @@ export default {
       // sumar sueldo por vacaciones
       this.getVacations().forEach(element => {
         vacations += this.getUserWorkDayByDate(element.date.estandard).salary * 1.25;
+      });
+
+      // sumar sueldo por incapacidades
+      this.getIllness().forEach(element => {
+        illness += this.getUserWorkDayByDate(element.date.estandard).salary * 0.6;
       });
 
       const workedDays = this.getWorkedDaysSalary();
@@ -381,6 +409,7 @@ export default {
         + workedDays
         + holyDays
         + bonuses
+        + illness
         - discounts
         + this.extras.amount.raw;
 
