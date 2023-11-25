@@ -46,7 +46,7 @@
                 </div>
 
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg px-9 py-5 shadow-md">
-                    <div class="md:grid gap-6 mb-6 grid-cols-2">
+                    <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
                         <div class="col-span-2">
                             <el-radio-group v-model="form.is_spanish_template" size="small">
                                 <el-radio-button :label="1">Plantilla en español</el-radio-button>

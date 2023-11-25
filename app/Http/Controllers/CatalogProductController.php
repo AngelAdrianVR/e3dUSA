@@ -7,6 +7,7 @@ use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\CatalogProductResource;
 use App\Models\CatalogProduct;
+use App\Models\CatalogProductCompany;
 use App\Models\ProductionCost;
 use App\Models\RawMaterial;
 use Illuminate\Http\Request;
@@ -274,6 +275,13 @@ class CatalogProductController extends Controller
         $catalog_product = CatalogProductResource::make(CatalogProduct::with(['storages', 'companies'])->where('part_number', $part_number)->first());
 
         $companies = $catalog_product->companies;
+
+        return response()->json(['item' => $catalog_product]);
+    }
+
+    public function getCatalogProductData(CatalogProduct $catalog_product)
+    {
+        $catalog_product = $catalog_product->load(['media']);
 
         return response()->json(['item' => $catalog_product]);
     }

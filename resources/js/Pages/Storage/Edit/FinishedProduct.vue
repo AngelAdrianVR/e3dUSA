@@ -45,7 +45,7 @@
               </el-select>
               <!-- <InputError :message="form.errors.storageable_id" /> -->
             </div>
-          <div class="md:grid gap-6 mb-6 grid-cols-2">
+          <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
             <div>
               <IconInput
                 v-model="form.quantity"

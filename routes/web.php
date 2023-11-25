@@ -114,6 +114,7 @@ Route::post('catalog-products/massive-delete', [CatalogProductController::class,
 Route::post('catalog-products/clone', [CatalogProductController::class, 'clone'])->name('catalog-products.clone');
 Route::post('catalog-products/update-with-media/{catalog_product}', [CatalogProductController::class, 'updateWithMedia'])->name('catalog-products.update-with-media');
 Route::post('catalog-products/QR-search-catalog-product', [CatalogProductController::class, 'QRSearchCatalogProduct'])->name('catalog-products.QR-search-catalog-product');
+Route::get('catalog-products/{catalog_product}/get-data', [CatalogProductController::class, 'getCatalogProductData'])->name('catalog-products.get-data');
 
 
 // ------- Ventas(Clients Routes)  ---------
