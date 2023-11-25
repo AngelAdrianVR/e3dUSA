@@ -396,8 +396,8 @@ export default {
     },
     clearVars() {
       this.task.tasks = null;
-      this.task.estimated_time_hours = null;
-      this.task.estimated_time_minutes = null;
+      this.task.estimated_time_hours = 0;
+      this.task.estimated_time_minutes = 0;
     }
   },
   watch: {

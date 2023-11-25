@@ -9,15 +9,22 @@
                     <div>
                         <Link v-if="$page.props.auth.user.permissions.includes('Crear producto terminado')"
                             :href="route('storages.finished-products.create')">
-                        <SecondaryButton>+ Nuevo</SecondaryButton>
+                        <SecondaryButton>Guardar producto terminado</SecondaryButton>
                         </Link>
                     </div>
                 </div>
             </template>
 
-            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de producto terminado')" class="text-center mt-3">
-                    <el-tag class="mt-3" style="font-size: 20px;" type="success">Costo total en almacén de Producto terminado: ${{totalFinishedProductMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
-                </div>
+            <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+                <p class="text-red-600"><i class="fa-solid fa-circle mr-1"></i>Stok debajo de lo permitido</p>
+                <p class="text-amber-600"><i class="fa-solid fa-circle mr-1"></i>Stock sobre lo permitido</p>
+            </div>
+
+            <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de producto terminado')"
+                class="text-center mt-3">
+                <el-tag class="mt-3" style="font-size: 20px;" type="success">Costo total en almacén de Producto terminado:
+                    ${{ totalFinishedProductMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} MXN</el-tag>
+            </div>
 
             <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
@@ -51,9 +58,11 @@
                     <el-table-column align="right" fixed="right" width="190">
                         <template #header>
                             <div class="flex space-x-2">
-                            <TextInput v-model="inputSearch" type="search" @keyup.enter="handleSearch" class="w-full text-gray-600" placeholder="Buscar" />
-                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
-                        </div>
+                                <TextInput v-model="inputSearch" type="search" @keyup.enter="handleSearch"
+                                    class="w-full text-gray-600" placeholder="Buscar" />
+                                <el-button @click="handleSearch" type="primary" plain class="mb-3"><i
+                                        class="fa-solid fa-magnifying-glass"></i></el-button>
+                            </div>
                         </template>
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
@@ -66,8 +75,8 @@
                                             Ver</el-dropdown-item>
                                         <el-dropdown-item
                                             v-if="$page.props.auth.user.permissions.includes('Editar insumos')"
-                                             @click="$inertia.get(route('storages.finished-products.edit', scope.row.id))">
-                                             <i class="fa-solid fa-pen"></i>
+                                            @click="$inertia.get(route('storages.finished-products.edit', scope.row.id))">
+                                            <i class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
@@ -112,7 +121,7 @@ export default {
         totalFinishedProductMoney: Number
     },
     methods: {
-        handleSearch(){
+        handleSearch() {
             this.search = this.inputSearch;
         },
         tableRowClassName({ row, rowIndex }) {

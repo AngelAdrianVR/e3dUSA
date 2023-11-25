@@ -245,10 +245,10 @@ export default {
                         },
                         {
                             label: 'Seguimiento',
-                            route: 'storages.tracking.index',
+                            route: 'storages.samples.index',
                             show: this.$page.props.auth.user.permissions.includes('Ver producto de seguimiento'),
                             notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                                return notification.data.module === 'trackings';
+                                return notification.data.module === 'samples';
                             }),
                         },
                     ],

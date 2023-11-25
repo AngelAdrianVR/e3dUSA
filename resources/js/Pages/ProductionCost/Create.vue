@@ -34,7 +34,7 @@
             </div>
             <InputError :message="form.errors.time" />
           </div>
-          {{form}}
+          <!-- {{form}} -->
           <div>
             <IconInput v-model="form.cost" inputPlaceholder="Costo *" inputType="number" inputStep="0.01">
               <el-tooltip content="Costo *" placement="top">

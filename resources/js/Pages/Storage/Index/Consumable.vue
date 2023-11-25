@@ -13,6 +13,11 @@
                 </div>
             </template>
 
+            <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+                <p class="text-red-600"><i class="fa-solid fa-circle mr-1"></i>Stok debajo de lo permitido</p>
+                <p class="text-amber-600"><i class="fa-solid fa-circle mr-1"></i>Stock sobre lo permitido</p>
+            </div>
+
             <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de insumos')" class="text-center mt-3 hidden md:block">
                 <el-tag class="mt-3" style="font-size: 20px;" type="success">Costo total en almacén de insumos: ${{totalConsumableMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} MXN</el-tag>
             </div>

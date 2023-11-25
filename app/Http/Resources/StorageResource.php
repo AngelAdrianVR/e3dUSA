@@ -21,6 +21,8 @@ class StorageResource extends JsonResource
             'location' => $this->location,
             'type' => $this->type,
             'storageable' => $this->whenLoaded('storageable'),
+            'movements' => $this->whenLoaded('movements'),
+            'created_at' => $this->created_at,
         ];
     }
 }

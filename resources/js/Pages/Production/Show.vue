@@ -14,12 +14,12 @@
                         <el-select  @change="$inertia.get(route('productions.show', selectedSale))" v-model="selectedSale" clearable filterable placeholder="Buscar orden de producción"
                             no-data-text="No hay órdenes registradas" no-match-text="No se encontraron coincidencias">
                             <el-option v-for="item in sales" :key="item.id"
-                                :label="item.folio.replace('OV', 'OP') + ' | ' + item.company_name"
+                                :label="item.folio?.replace('OV', 'OP') + ' | ' + item.company_name"
                                 :value="item.id" />
                         </el-select>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <el-tooltip v-if="$page.props.auth.user.permissions.includes('Ordenes de produccion todas')"
+                        <el-tooltip v-if="$page.props.auth.user?.permissions.includes('Ordenes de produccion todas')"
                             content="Editar" placement="top">
                             <Link :href="route('productions.edit', selectedSale)">
                             <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]"><i class="fa-solid fa-pen text-sm"></i></button>

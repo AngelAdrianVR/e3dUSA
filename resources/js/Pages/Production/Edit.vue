@@ -122,28 +122,28 @@
                                     </el-select>
                                 </div>
                                 <label class="flex items-center w-28">
-                                <Checkbox @change="clearVars" v-model:checked="isFreeTask" class="bg-transparent" />
-                                <span class="ml-2 text-sm">Tarea libre</span>
-                                <el-tooltip
-                                content="Asignas la instrucción y el tiempo manualmente"
-                                placement="top">
-                                <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
-                                    <i class="fa-solid fa-info text-primary text-[7px]"></i>
-                                </div>
-                                </el-tooltip>
+                                    <Checkbox @change="clearVars" v-model:checked="isFreeTask" class="bg-transparent" />
+                                    <span class="ml-2 text-sm">Tarea libre</span>
+                                    <el-tooltip content="Asignas la instrucción y el tiempo manualmente" placement="top">
+                                        <div
+                                            class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
+                                            <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                        </div>
+                                    </el-tooltip>
                                 </label>
                                 <div v-if="!isFreeTask" class="flex items-center mt-3">
                                     <el-tooltip content="Seleccionar proceso de producción" placement="top">
-                                    <span
-                                        class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                                        <i class="fa-solid fa-person-digging text-sm"></i>
-                                    </span>
+                                        <span
+                                            class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                                            <i class="fa-solid fa-person-digging text-sm"></i>
+                                        </span>
                                     </el-tooltip>
                                     <el-select @change="getproductionProcess" v-model="task.tasks" clearable filterable
-                                    placeholder="Selecciona el proceso de producción" no-data-text="No hay opciones registradas"
-                                    no-match-text="No se encontraron coincidencias">
-                                    <el-option v-for="item in production_processes.data" :key="item.id" :label="item.name"
-                                        :value="item.name" />
+                                        placeholder="Selecciona el proceso de producción"
+                                        no-data-text="No hay opciones registradas"
+                                        no-match-text="No se encontraron coincidencias">
+                                        <el-option v-for="item in production_processes.data" :key="item.id"
+                                            :label="item.name" :value="item.name" />
                                     </el-select>
                                 </div>
                                 <div v-if="isFreeTask" class="flex items-center">
@@ -165,12 +165,14 @@
                                         </span>
                                     </el-tooltip>
 
-                                    <el-select :disabled="!isFreeTask" v-model="task.estimated_time_hours" clearable placeholder="Horas"
-                                        no-data-text="No hay información" no-match-text="No se encontraron coincidencias">
+                                    <el-select :disabled="!isFreeTask" v-model="task.estimated_time_hours" clearable
+                                        placeholder="Horas" no-data-text="No hay información"
+                                        no-match-text="No se encontraron coincidencias">
                                         <el-option v-for="hour in 50" :key="hour" :label="(hour - 1)" :value="(hour - 1)" />
                                     </el-select>
-                                    <el-select :disabled="!isFreeTask" v-model="task.estimated_time_minutes" clearable placeholder="Minutos"
-                                        no-data-text="No hay información" no-match-text="No se encontraron coincidencias">
+                                    <el-select :disabled="!isFreeTask" v-model="task.estimated_time_minutes" clearable
+                                        placeholder="Minutos" no-data-text="No hay información"
+                                        no-match-text="No se encontraron coincidencias">
                                         <el-option v-for="minute in 59" :key="minute" :label="minute" :value="minute" />
                                     </el-select>
 
@@ -248,6 +250,7 @@ export default {
                 catalog_product_company_sale_id: null,
             },
             task: {
+                id: null,
                 operator_id: null,
                 tasks: null,
                 estimated_time_hours: 0,
@@ -345,6 +348,7 @@ export default {
 
             this.form.productions[index].tasks.forEach((element) => {
                 const tasks = {
+                    id: element.id,
                     operator_id: element.operator_id,
                     tasks: element.tasks,
                     estimated_time_hours: element.estimated_time_hours,
@@ -360,11 +364,11 @@ export default {
         getproductionProcess() {
             this.task.estimated_time_hours = null;
             this.task.estimated_time_minutes = null;
-            const productionProcess = this.production_processes.data.find(item => item.name == this.task.tasks );
+            const productionProcess = this.production_processes.data.find(item => item.name == this.task.tasks);
             const orderedProduct = this.sale.data.catalogProductCompanySales.find(item => item.id == this.production.catalog_product_company_sale_id);
 
             // Verificamos si productionProcess existe y tiene la propiedad "time"
-                if (productionProcess && productionProcess.time) {
+            if (productionProcess && productionProcess.time) {
                 const [hours, minutes, seconds] = productionProcess.time.split(':');
 
                 // Convertimos las horas y minutos a números
@@ -387,13 +391,13 @@ export default {
                 // Ajustamos los minutos si superan 60
                 this.task.estimated_time_hours += Math.floor(this.task.estimated_time_minutes / 60);
                 this.task.estimated_time_minutes %= 60;
-                }
-            },
-            clearVars() {
-                this.task.tasks = null;
-                this.task.estimated_time_hours = null;
-                this.task.estimated_time_minutes = null;
             }
+        },
+        clearVars() {
+            this.task.tasks = null;
+            this.task.estimated_time_hours = null;
+            this.task.estimated_time_minutes = null;
+        }
     },
     // watch: {
     //     saleId(newVal) {
@@ -419,6 +423,7 @@ export default {
 
             for (const currentTask in groupedByCatalogId[item]) {
                 let task = {
+                    id: groupedByCatalogId[item][currentTask].id,
                     operator_id: groupedByCatalogId[item][currentTask].operator_id,
                     tasks: groupedByCatalogId[item][currentTask].tasks,
                     estimated_time_hours: groupedByCatalogId[item][currentTask].estimated_time_hours,

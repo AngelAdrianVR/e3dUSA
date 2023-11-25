@@ -36,7 +36,10 @@ class ProductionCostController extends Controller
             'description' => 'required|string',
         ]);
 
-        $production_cost = ProductionCost::create($request->all());
+        // Convierte el campo 'time' a un objeto Carbon y resta 6 horas
+        $time = Carbon::parse($request->time)->subHours(6);
+
+        $production_cost = ProductionCost::create($request->except('time') + ['time' => $time]);
 
         event(new RecordCreated($production_cost));
         
@@ -65,7 +68,10 @@ class ProductionCostController extends Controller
             'description' => 'required|string',
         ]);
 
-        $production_cost->update($request->all());
+        // Convierte el campo 'time' a un objeto Carbon y resta 6 horas
+        $time = Carbon::parse($request->time)->subHours(6);
+
+        $production_cost->update($request->except('time') + ['time' => $time]);
 
         event(new RecordEdited($production_cost));
         

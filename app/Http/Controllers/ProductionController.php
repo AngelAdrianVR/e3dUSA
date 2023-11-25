@@ -230,6 +230,42 @@ class ProductionController extends Controller
         return inertia('Production/Edit', compact('operators', 'sale', 'production_processes'));
     }
 
+    // public function update(Request $request, $sale_id)
+    // {
+    //     // dd($request->all());
+    //     $request->validate([
+    //         'productions' => 'array|min:1',
+    //     ]);
+
+    //     $sale = Sale::find($sale_id);
+
+    //     foreach ($request->productions as $production) {
+    //         $foreigns = [
+    //             'user_id' => $production['user_id'],
+    //             'catalog_product_company_sale_id' => $production['catalog_product_company_sale_id']
+    //         ];
+
+    //         foreach ($production['tasks'] as $task) {
+    //             $data = $task + $foreigns;
+
+    //             // Buscar la producción existente por el ID
+    //             $existingProduction = Production::find($data['id'] ?? null);
+
+    //             if ($existingProduction) {
+    //                 // Actualizar los datos de la producción existente
+    //                 $existingProduction->update($data);
+    //                 event(new RecordEdited($existingProduction));
+    //             } else {
+    //                 // Si no existe, crear una nueva producción
+    //                 $prod = Production::create($data);
+    //                 event(new RecordEdited($prod));
+    //             }
+    //         }
+    //     }
+
+    //     return to_route('productions.index');
+    // }
+
     public function update(Request $request, $sale_id)
     {
         $request->validate([
@@ -238,8 +274,8 @@ class ProductionController extends Controller
 
         $sale = Sale::find($sale_id);
 
-        // return $request->editedTaskIndexes;
-
+        // Obtener los IDs de producciones existentes en la orden de venta
+        $existingProductionIds = $sale->productions->pluck('id')->toArray();
 
         foreach ($request->productions as $production) {
             $foreigns = [
@@ -247,31 +283,33 @@ class ProductionController extends Controller
                 'catalog_product_company_sale_id' => $production['catalog_product_company_sale_id']
             ];
 
-            foreach ($production['tasks'] as $taskIndex => $task) {
+            foreach ($production['tasks'] as $task) {
                 $data = $task + $foreigns;
 
-                if (is_array($request->editedTaskIndexes) && in_array($taskIndex, $request->editedTaskIndexes)) {
+                // Buscar la producción existente por el ID
+                $existingProduction = Production::find($data['id'] ?? null);
 
-                    $sale->productions[$taskIndex]->update($data);
-                    //Production::create($data);
+                if ($existingProduction) {
+                    // Actualizar los datos de la producción existente
+                    $existingProduction->update($data);
+                    event(new RecordEdited($existingProduction));
 
+                    // Eliminar el ID de la producción existente de la lista
+                    unset($existingProductionIds[array_search($existingProduction->id, $existingProductionIds)]);
                 } else {
-                    $sale->productions[$taskIndex]->update($data);
-                    //Production::create($data);
-                    // if (in_array($taskIndex, $request->editedIndexes)) {
-                    //     $prod = $sale->productions[$taskIndex]->update($data);
-                    //     // $prod = Production::create($data);
-                    //     // event(new RecordEdited($prod));
-
-                    //     // Puedes usar $productionIndex y $taskIndex aquí
-                    //     // $taskIndex es el índice del segundo foreach
-                    // }
+                    // Si no existe, crear una nueva producción
+                    $prod = Production::create($data);
+                    event(new RecordEdited($prod));
                 }
             }
         }
 
+        // Eliminar las producciones que no se actualizaron o crearon
+        Production::destroy($existingProductionIds);
+
         return to_route('productions.index');
     }
+
 
 
     public function destroy(Production $production)

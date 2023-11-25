@@ -27,8 +27,6 @@ class SampleController extends Controller
         $catalog_products = CatalogProduct::latest()->get();
         $company_branches = CompanyBranch::with('contacts')->latest()->get();
 
-        // return $company_branches;
-
         return inertia('Sample/Create', compact('catalog_products', 'company_branches'));
     }
 

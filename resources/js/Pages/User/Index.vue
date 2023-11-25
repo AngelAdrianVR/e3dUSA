@@ -42,7 +42,7 @@
                 <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%" @selection-change="handleSelectionChange"
                     ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column prop="id" label="ID" width="45" />
-                    <el-table-column prop="user_name" label="Nombre" />
+                    <el-table-column prop="name" label="Nombre" />
                     <el-table-column prop="is_active.string" label="Estatus" />
                     <el-table-column prop="employee_properties.job_position" label="Puesto" />
                     <el-table-column prop="employee_properties.join_date" label="Fecha ingreso" width="160" />
