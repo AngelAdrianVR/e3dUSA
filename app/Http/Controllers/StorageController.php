@@ -177,6 +177,61 @@ class StorageController extends Controller
         return to_route('storages.obsolete.index');
     }
 
+    public function storeSamples(Request $request)
+    {
+        $storage = Storage::find($request->storage_id);
+
+        // guardar como si fuera scrap si el producto es de tipo 'storage'
+        if ($request->product_type == 'storage') {
+            $storage = Storage::find($request->storage_id);
+            $stock = $request->storage_id ? $storage?->quantity : 2;
+            $request->validate([
+                'storage_id' => 'required',
+                'quantity' => 'required|numeric|min:1|max:' . $stock,
+                'location' => 'required|string|max:255',
+            ]);
+
+            if ($storage->type == 'materia-prima' || $storage->type == 'consumible') {
+
+                $raw_material = RawMaterial::find($storage->storageable_id);
+                $raw_material->storages()->create([
+                    'quantity' => $request->quantity,
+                    'location' => $request->location,
+                    'type' => 'seguimiento-muestras',
+                ]);
+                event(new RecordCreated($raw_material));
+            } else {
+                $finished_products = CatalogProduct::find($storage->storageable_id);
+                $finished_products->storages()->create([
+                    'quantity' => $request->quantity,
+                    'location' => $request->location,
+                    'type' => 'seguimiento-muestras',
+                ]);
+                event(new RecordCreated($finished_products));
+            }
+
+            $storage->quantity -= $request->quantity;
+            $storage->save();
+        } else {
+            $request->validate([
+                'storage_id' => 'required|numeric|min:1',
+                'location' => 'required|string|max:255',
+                'quantity' => 'required|numeric|min:1',
+            ]);
+
+            $storage = CatalogProduct::find($request->storage_id);
+            $storage->storages()->create([
+                'quantity' => $request->quantity,
+                'location' => $request->location,
+                'type' => 'seguimiento-muestras',
+            ]);
+        }
+
+        event(new RecordCreated($storage));
+
+        return to_route('storages.samples.index');
+    }
+
     public function show($storage_id)
     {
         $storage = StorageResource::make(Storage::with('storageable.media', 'movements.user')->find($storage_id));
@@ -274,6 +329,31 @@ class StorageController extends Controller
         }
 
         return response()->json(['message' => 'Producto(s) retirado(s) de scrap']);
+    }
+    
+    public function sampleMassiveDelete(Request $request)
+    {
+        foreach ($request->samples as $sample) {
+            $sample = Storage::find($sample['id']);
+            if ($sample->storageable_type == 'App\Models\RawMaterial') {
+                $sample_restored = Storage::where('storageable_id', $sample->storageable_id)
+                    ->where('type', '!=', 'seguimiento-muestaras')
+                    ->where('type', '!=', 'producto-terminado')
+                    ->first();
+            } else {
+                $sample_restored = Storage::where('storageable_id', $sample->storageable_id)
+                    ->where('type', '!=', 'seguimiento-muestaras')
+                    ->where('type', '!=', 'consumible')
+                    ->where('type', '!=', 'materia-prima')
+                    ->first();
+            }
+            $sample_restored->increment('quantity', $sample->quantity);
+            $sample?->delete();
+
+            event(new RecordDeleted($sample));
+        }
+
+        return response()->json(['message' => 'Producto(s) retirado(s) de seguimiento de muestras']);
     }
 
     public function addStorage(Request $request, Storage $storage)
@@ -407,6 +487,7 @@ class StorageController extends Controller
     {
         return $items->map(function ($s) {
             return [
+                'id' => $s->id,
                 'quantity' => $s->quantity,
                 'type' => $s->type,
                 'storageable' => $s->storageable()->get()->map(function ($st) {

@@ -672,6 +672,8 @@ export default {
       this.backRoute = route('storages.consumables.index');
     } else if (this.storage.data.type == 'producto-terminado') {
       this.backRoute = route('storages.finished-products.index');
+    } else if (this.storage.data.type == 'seguimiento-muestras') {
+      this.backRoute = route('storages.samples.index');
     }
   },
 };

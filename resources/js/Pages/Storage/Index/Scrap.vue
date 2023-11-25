@@ -69,8 +69,6 @@ import axios from 'axios';
 
 export default {
     data() {
-
-
         return {
             disableMassiveActions: true,
             inputSearch: '',

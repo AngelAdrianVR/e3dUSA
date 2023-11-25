@@ -85,7 +85,7 @@
               </li>
               <li class="flex">
                 <label class="font-bold mr-2 w-1/3">Stock: </label>
-                {{ storage_selected?.quantity }} {{ storage_selected?.storageable?.measure_unit }}
+                {{ storage_selected?.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ storage_selected?.storageable?.measure_unit }}
               </li>
               <li class="flex">
                 <label class="font-bold mr-2 w-1/3">costo: </label> ${{

@@ -28,7 +28,7 @@
                             :total="sample_products.length" />
                     </div>
                     <!-- buttons -->
-                    <!-- <div>
+                    <div>
                         <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar seguimiento de muestras')"
                             confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
                             @confirm="deleteSelections">
@@ -37,7 +37,7 @@
                                     :disabled="disableMassiveActions">Eliminar</el-button>
                             </template>
                         </el-popconfirm>
-                    </div> -->
+                    </div>
                 </div>
                 <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
                     class="cursor-pointer" @selection-change="handleSelectionChange" ref="multipleTableRef"
@@ -115,6 +115,52 @@ export default {
         },
         handleRowClick(row) {
             this.$inertia.get(route('storages.show', row));
+        },
+        async deleteSelections() {
+            try {
+                const response = await axios.post(route('storages.samples.massive-delete', {
+                    samples: this.$refs.multipleTableRef.value
+                }));
+
+                if (response.status == 200) {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+
+                    // update list of samples
+                    let deletedIndexes = [];
+                    this.sample_products.forEach((sample, index) => {
+                        if (this.$refs.multipleTableRef.value.includes(sample)) {
+                            deletedIndexes.push(index);
+                        }
+                    });
+
+                    // Ordenar los índices de forma descendente para evitar problemas de desplazamiento al eliminar elementos
+                    deletedIndexes.sort((a, b) => b - a);
+
+                    // Eliminar samples por índice
+                    for (const index of deletedIndexes) {
+                        this.sample_products.splice(index, 1);
+                    }
+
+                } else {
+                    this.$notify({
+                        title: 'Algo salió mal',
+                        message: response.data.message,
+                        type: 'error'
+                    });
+                }
+
+            } catch (err) {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
+                console.log(err);
+            }
         },
     },
     computed: {

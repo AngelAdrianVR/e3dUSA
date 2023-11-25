@@ -277,6 +277,7 @@ Route::get('/storage-finished-products/{storage}/edit', [StorageController::clas
 Route::get('/storage-obsolete/create', [StorageController::class, 'create'])->middleware('auth')->name('storages.obsolete.create');
 Route::get('/storage-obsolete/{storage}/edit', [StorageController::class, 'edit'])->middleware('auth')->name('storages.obsolete.edit');
 Route::post('/storage-obsolete/store', [StorageController::class, 'storeObsolete'])->middleware('auth')->name('storages.obsolete.store');
+Route::post('/storage-samples/store', [StorageController::class, 'storeSamples'])->middleware('auth')->name('storages.samples.store');
 Route::get('/storage-obsolete-show/{storage}', [StorageController::class, 'showObsolete'])->middleware('auth')->name('storages.obsolete.show');
 Route::get('/storage-sample/create', [StorageController::class, 'create'])->middleware('auth')->name('storages.samples.create');
 Route::get('/storage-sample/{storage}/edit', [StorageController::class, 'edit'])->middleware('auth')->name('storages.samples.edit');
@@ -285,6 +286,7 @@ Route::get('/storage-scraps', [StorageController::class, 'index'])->middleware('
 Route::get('/storage-scraps/create', [StorageController::class, 'create'])->middleware('auth')->name('storages.scraps.create');
 Route::post('/storage-scraps/store', [StorageController::class, 'scrapStore'])->middleware('auth')->name('storages.scraps.store');
 Route::post('storages/scrap/massive-delete', [StorageController::class, 'scrapMassiveDelete'])->name('storages.scraps.massive-delete');
+Route::post('storages/sample/massive-delete', [StorageController::class, 'sampleMassiveDelete'])->name('storages.samples.massive-delete');
 Route::post('storages/massive-delete', [StorageController::class, 'massiveDelete'])->name('storages.massive-delete');
 Route::get('storages/{storage}/show', [StorageController::class, 'show'])->name('storages.show');
 Route::get('/storage-show-consumables/{storage}', [StorageController::class, 'showConsumable'])->middleware('auth')->name('storages.consumables.show');
