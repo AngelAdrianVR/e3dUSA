@@ -479,7 +479,11 @@ export default {
                 this.form.products.push(product);
             }
 
+            // resetear variables
             this.resetProductForm();
+            this.selectedCatalogProduct = null;
+            this.alertMaxQuantity = 0;
+
         },
         deleteProduct(index) {
             this.form.products.splice(index, 1);
