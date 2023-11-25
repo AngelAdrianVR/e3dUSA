@@ -48,7 +48,7 @@
                     <div class="flex items-center">
                         <el-tooltip content="Cliente: Seleccione para poder habilitar sus productos" placement="top">
                             <span
-                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
                         </el-tooltip>
@@ -61,7 +61,7 @@
                     <div v-if="form.company_branch_id" class="flex items-center mt-3">
                         <el-tooltip content="Contacto" placement="top">
                             <span
-                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
                                 <i class="fa-solid fa-id-badge"></i>
                             </span>
                         </el-tooltip>
@@ -77,7 +77,7 @@
                     <el-divider content-position="left">Logistica</el-divider>
 
 
-                    <div class="md:grid gap-6 mb-6 grid-cols-2">
+                    <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
                         <div>
                             <IconInput v-model="form.shipping_company" inputPlaceholder="Paquetería" inputType="text">
                                 <el-tooltip content="Paquetería" placement="top">
@@ -118,7 +118,7 @@
                     </div>
 
                     <el-divider content-position="left">Datos de la órden</el-divider>
-                    <div class="grid gap-6 mb-6 md:grid-cols-2">
+                    <div class="grid gap-x-6 gap-y-2 mb-6 md:grid-cols-2">
                         <div>
                             <IconInput v-model="form.order_via" inputPlaceholder="Medio de petición">
                                 <el-tooltip content="Medio de petición" placement="top">
@@ -206,24 +206,30 @@
                         </template>
                     </ol>
                     <div v-if="form.company_branch_id"
-                        class="md:grid gap-6 mb-6 grid-cols-3 rounded-lg border-2 border-[#b8b7b7] px-5 py-3 col-span-full space-y-1 my-7">
+                        class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-3 rounded-lg border-2 border-[#b8b7b7] px-5 py-3 col-span-full space-y-1 my-7">
                         <div class="flex items-center col-span-2">
                             <el-tooltip content="Producto: Seleccione entre los productos registrados para este cliente"
                                 placement="top">
                                 <span
-                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
                                     <i class="fa-solid fa-magnifying-glass"></i>
                                 </span>
                             </el-tooltip>
-                            <el-select v-model="product.catalog_product_company_id"
-                                no-data-text="No hay productos registrados a este cliente" clearable
+                            <el-select @change="fetchCatalogProductData" v-model="product.catalog_product_company_id"
+                                class="w-full" no-data-text="No hay productos registrados a este cliente"
                                 placeholder="Selecciona un producto *">
                                 <el-option
                                     v-for="item in company_branches.find(cb => cb.id == form.company_branch_id)?.company.catalog_products"
                                     :key="item.pivot.id" :label="item.name" :value="item.pivot.id" />
                             </el-select>
                         </div>
-                        <div>
+                        <div v-if="loading" class="rounded-md bg-[#CCCCCC] text-xs text-gray-500 text-center p-4">
+                            cargando imagen...
+                        </div>
+                        <figure v-else-if="selectedCatalogProduct" class="rounded-md">
+                            <img :src="selectedCatalogProduct.media[0]?.original_url" class="rounded-md">
+                        </figure>
+                        <div class="col-span-full">
                             <IconInput @change="validateQuantity()" v-model="product.quantity" inputPlaceholder="Cantidad *"
                                 inputType="number" inputStep="0.01">
                                 <el-tooltip content="Cantidad" placement="top">
@@ -335,6 +341,7 @@ export default {
 
         return {
             form,
+            loading: false,
             importantNotes: null,
             showImportantNotesModal: false,
             importantNotesToStore: null,
@@ -347,6 +354,7 @@ export default {
             },
             editIndex: null,
             alertMaxQuantity: 0,
+            selectedCatalogProduct: null,
         };
     },
     components: {
@@ -366,6 +374,26 @@ export default {
         opportunityId: Number,
     },
     methods: {
+        async fetchCatalogProductData() {
+            try {
+                this.loading = true;
+                const catalogProductId =
+                    this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.company.catalog_products.find(cp => cp.pivot.id == this.product.catalog_product_company_id)?.id;
+                const response = await axios.get(route('catalog-products.get-data', catalogProductId));
+
+                if (response.status === 200) {
+                    this.selectedCatalogProduct = response.data.item;
+                    this.loading = false;
+                }
+            } catch (error) {
+                console.log(error);
+                this.$notify({
+                    title: 'Problemas con el servidor',
+                    message: 'No se pudo obtener la imagen del producto seleccionado debido a inconvenientes con el servidor. Inteéntalo más tarde',
+                    type: 'error'
+                });
+            }
+        },
         store() {
             this.form.post(route('sales.store'), {
                 onSuccess: () => {

@@ -31,7 +31,7 @@
             </IconInput>
             <InputError :message="form.errors.name" />
           </div>
-          <div class="md:grid gap-6 md:mb-6 grid-cols-2">
+          <div class="md:grid gap-x-6 gap-y-2 md:mb-6 grid-cols-2">
             <div class="flex items-center">
               <el-tooltip content="Número de parte *" placement="top">
                 <span

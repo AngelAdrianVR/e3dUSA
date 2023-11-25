@@ -76,7 +76,7 @@
                     <el-divider content-position="left">Logistica</el-divider>
 
 
-                    <div class="md:grid gap-6 mb-6 grid-cols-2">
+                    <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
                         <div>
                             <IconInput v-model="form.shipping_company" inputPlaceholder="Paquetería" inputType="text">
                                 <i class="fa-solid fa-truck-fast"></i>
@@ -111,7 +111,7 @@
                     </div>
 
                     <el-divider content-position="left">Datos de la órden</el-divider>
-                    <div class="grid gap-6 mb-6 md:grid-cols-2">
+                    <div class="grid gap-x-6 gap-y-2 mb-6 md:grid-cols-2">
                         <div>
                             <IconInput v-model="form.order_via" inputPlaceholder="Medio de petición">
                                 <i class="fa-solid fa-arrow-right-to-bracket"></i>
@@ -195,7 +195,7 @@
                         </template>
                     </ol>
                     <div v-if="form.company_branch_id"
-                        class="md:grid gap-6 mb-6 grid-cols-3 rounded-lg border-2 border-[#b8b7b7] px-5 py-3 col-span-full space-y-1 my-7">
+                        class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-3 rounded-lg border-2 border-[#b8b7b7] px-5 py-3 col-span-full space-y-1 my-7">
                         <div class="flex items-center col-span-2">
                             <el-tooltip content="Producto: Seleccione entre los productos registrados para este cliente"
                                 placement="top">

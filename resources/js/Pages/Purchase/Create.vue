@@ -155,7 +155,7 @@
             </template>
           </ol>
           <div class="space-y-3 bg-[#b8b7b7] rounded-lg p-5">
-            <div class="md:grid gap-6 mb-6 grid-cols-2">
+            <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
               <div class="flex items-center mb-3">
               <el-tooltip content="Selecciona un contacto" placement="top">
               <span

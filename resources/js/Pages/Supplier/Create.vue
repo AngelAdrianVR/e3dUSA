@@ -34,7 +34,7 @@
             </IconInput>
             <InputError :message="form.errors.name" />
           </div>
-          <div class="md:grid gap-6 mb-6 grid-cols-3">
+          <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-3">
             <div class="col-span-2">
               <IconInput
                 v-model="form.address"
@@ -112,7 +112,7 @@
 
           <div class="p-4">
             <div class="rounded-lg p-5">
-              <div class="md:grid gap-6 mb-6 grid-cols-2">
+              <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
                 <div>
                   <IconInput
                     v-model="bank.beneficiary_name"
@@ -220,7 +220,7 @@
             </ol>
 
             <div class="rounded-lg p-5">
-              <div class="md:grid gap-6 mb-6 grid-cols-2">
+              <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
                 <div class="col-span-2">
                   <IconInput
                     v-model="contact.name"

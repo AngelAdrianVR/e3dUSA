@@ -3,7 +3,7 @@ import SectionTitle from './SectionTitle.vue';
 </script>
 
 <template>
-    <div class="md:grid md:grid-cols-3 md:gap-6">
+    <div class="md:grid md:grid-cols-3 md:gap-x-6 gap-y-2">
         <SectionTitle>
             <template #title>
                 <slot name="title" />

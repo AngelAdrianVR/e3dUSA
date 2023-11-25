@@ -19,7 +19,7 @@
       <form @submit.prevent="update">
         <!-- ---------------- Company starts ----------------- -->
         <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
-          <div class="md:grid gap-6 mb-6 grid-cols-2 pb-4">
+          <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2 pb-4">
             <div>
               <IconInput v-model="form.business_name" inputPlaceholder="Razon social *" inputType="text">
                 <el-tooltip content="Razon social" placement="top">
@@ -230,7 +230,7 @@
                 </IconInput>
                 <!-- <InputError :message="form.errors.name_contact" /> -->
               </div>
-              <div class="md:grid gap-6 md:mb-6 grid-cols-2">
+              <div class="md:grid gap-x-6 gap-y-2 md:mb-6 grid-cols-2">
                 <div>
                   <IconInput v-model="contact.email" inputPlaceholder="Correo electrónico *" inputType="email">
                     <el-tooltip content="Correo electrónico" placement="top">
@@ -338,7 +338,7 @@
                 <el-option v-for="item in catalog_products" :key="item.id" :label="item.name" :value="item.id" />
               </el-select>
             </div>
-            <div class="md:grid gap-6 mb-6 grid-cols-3">
+            <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-3">
               <div>
                 <IconInput v-model="product.old_price" inputPlaceholder="Precio anterior *" inputType="number"
                   inputStep="0.01">
