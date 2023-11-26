@@ -7,6 +7,7 @@ use App\Http\Resources\SaleResource;
 use App\Models\AdditionalTimeRequest;
 use App\Models\Contact;
 use App\Models\Design;
+use App\Models\ExtraTimeRequest;
 use App\Models\Meeting;
 use App\Models\Payroll;
 use App\Models\Production;
@@ -72,6 +73,9 @@ class DashboardController extends Controller
             ->where('birthdate_month', today()->month)
             ->get();
 
+        // solicitud de tiempo extra
+        $extra_time_request = ExtraTimeRequest::whereDate('date', '>=', today())->where('operator_id', auth()->id())->latest()->first();
+
         return inertia('Dashboard/Index', compact(
             'meetings',
             'counts',
@@ -83,6 +87,7 @@ class DashboardController extends Controller
             'collaborators_anniversaires',
             'customers_birthdays',
             'current_user_sales_without_production',
+            'extra_time_request',
         ));
     }
 

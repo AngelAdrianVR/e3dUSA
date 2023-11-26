@@ -394,4 +394,11 @@ class UserController extends Controller
     
         return response()->json(['items' => $users]);
     }
+
+    public function getOperators() 
+    {
+        $operators = User::where('is_active', true)->where('employee_properties->department', 'Producción')->get();
+    
+        return response()->json(['items' => $operators]);
+    }
 }
