@@ -45,7 +45,6 @@ class DashboardController extends Controller
         $collaborators_production_performance = $this->getProductionPerformance();
         $collaborators_design_performance = $this->getDesignPerformance();
         $collaborators_sales_performance = $this->getSalesPerformance();
-        // return $collaborators_production_performance;
 
         // birthdates
         $collaborators_birthdays = $collaborators_birthdays = User::where('is_active', true)->whereMonth('employee_properties->birthdate->raw', '=', now()->month)
@@ -115,6 +114,7 @@ class DashboardController extends Controller
                         "scrap" => 0,
                         "time" => 0,
                         "day_completed" => 0,
+                        "extra_time_requests" => 0,
                     ];
                 }
 
@@ -138,7 +138,14 @@ class DashboardController extends Controller
                         "scrap" => 0,
                         "time" => 0,
                         "day_completed" => 0,
+                        "extra_time_requests" => 0,
                     ];
+                }
+
+                // agregar puntos de tiempo extra aceptado en caso de tener
+                $accepted_extra_time_request = $user->extraTimeRequests()->whereDate('date', $payroll->pivot->date)->where('is_accepted', true)->get();
+                if ($accepted_extra_time_request->count()) {
+                    $weekly_points[$day]["extra_time_requests"] += 100;
                 }
 
                 // Restar el valor de 'late' o sumar 10 puntos si no hay retardo
@@ -155,7 +162,7 @@ class DashboardController extends Controller
             $totalPoints = 0;
             foreach ($weekly_points as $day => $points) {
                 // Suma los puntos de punctuality, scrap y time para cada día
-                $dailyTotal = $points["punctuality"] + $points["scrap"] + $points["time"] + $points["day_completed"];
+                $dailyTotal = $points["punctuality"] + $points["scrap"] + $points["time"] + $points["day_completed"] + $points["extra_time_requests"];
                 $totalPoints += $dailyTotal;
             }
 

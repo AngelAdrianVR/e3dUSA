@@ -30,36 +30,24 @@ class ExtraTimeRequestController extends Controller
         ExtraTimeRequest::create($request->all() + ['user_id' => auth()->id()]);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(ExtraTimeRequest $extraTimeRequest)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(ExtraTimeRequest $extraTimeRequest)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, ExtraTimeRequest $extraTimeRequest)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(ExtraTimeRequest $extraTimeRequest)
     {
-        //
+        $extraTimeRequest->delete();
     }
 
     public function setResponse(Request $request, ExtraTimeRequest $etr)

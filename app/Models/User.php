@@ -48,6 +48,11 @@ class User extends Authenticatable
     ];
 
     //Relationships
+    public function extraTimeRequests()
+    {
+        return $this->hasMany(ExtraTimeRequest::class, 'operator_id', 'id');
+    }
+
     public function payrolls()
     {
         return $this->belongsToMany(Payroll::class)

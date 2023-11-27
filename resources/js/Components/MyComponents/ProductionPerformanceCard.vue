@@ -46,6 +46,7 @@
                         <th class="text-left bg-[#9a9a9a] border">Tiempo</th>
                         <th class="text-left bg-[#9a9a9a] border">Merma</th>
                         <th class="text-left bg-[#9a9a9a] border">Día terminado</th>
+                        <th class="text-left bg-[#9a9a9a] border">T. extra</th>
                         <th class="text-left bg-[#9a9a9a] border"></th>
                     </tr>
                 </thead>
@@ -61,6 +62,7 @@
                             dayPoints.scrap }}</td>
                         <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.day_completed < 0 }">{{
                             dayPoints.day_completed }}</td>
+                        <td class="bg-white py-1 px-2 text-xs">{{ dayPoints.extra_time_requests }}</td>
                     </tr>
                 </tbody>
                 <tfoot>
@@ -70,6 +72,7 @@
                         <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateTotal('time') }}</td>
                         <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateTotal('scrap') }}</td>
                         <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateTotal('day_completed') }}</td>
+                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateTotal('extra_time_requests') }}</td>
                         <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateGrandTotal() }}</td>
                     </tr>
                 </tfoot>
@@ -171,7 +174,7 @@ export default {
             });
         },
         calculateTotalPoints(dayPoints) {
-            return dayPoints.punctuality + dayPoints.time + dayPoints.scrap + dayPoints.day_completed;
+            return dayPoints.punctuality + dayPoints.time + dayPoints.scrap + dayPoints.day_completed + dayPoints.extra_time_requests ;
         },
         calculateTotal(criterion) {
             return Object.values(this.selectedUser.weekly_points).reduce((total, dayPoints) => total + dayPoints[criterion], 0);

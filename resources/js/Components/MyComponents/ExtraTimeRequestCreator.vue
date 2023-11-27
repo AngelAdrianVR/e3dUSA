@@ -16,21 +16,33 @@
             </div>
         </div>
         <div v-else class="mt-5 h-28">
-            <table v-if="extraTimeRequests.length" class="w-full table-fixed">
+            <table v-if="extraTimeRequests.length" class="w-full">
                 <thead>
                     <tr>
                         <th class="text-start px-1">Operador</th>
                         <th class="text-start px-1">Fecha</th>
                         <th class="text-start px-1">Hrs solicitadas</th>
                         <th class="text-start px-1">Estatus</th>
+                        <th class="text-start px-1"></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="item in extraTimeRequests" :key="item.id" class="text-xs">
                         <td class="px-1 truncate">{{ item.operator.name }}</td>
-                        <td class="px-1">{{ item.date }}</td>
+                        <td class="px-1">{{ formatDate(item.date) }}</td>
                         <td class="px-1">{{ item.hours }}</td>
-                        <td class="px-1">{{ getStatus(item.is_accepted) }}</td>
+                        <td class="px-1" :class="{'text-[#31a126]': item.is_accepted == true, 'text-primary': item.is_accepted == false }">{{ getStatus(item.is_accepted) }}</td>
+                        <td class="px-1">
+                            <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                                title="¿Continuar?" @confirm="deleteExtraTimeRequest(item.id)">
+                                <template #reference>
+                                    <button
+                                        class="text-primary text-xs">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                </template>
+                            </el-popconfirm>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -85,6 +97,8 @@ import CancelButton from '@/Components/MyComponents/CancelButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InputError from '@/Components/InputError.vue';
 import { useForm } from '@inertiajs/vue3';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default {
     data() {
@@ -109,6 +123,31 @@ export default {
         InputError,
     },
     methods: {
+        formatDate(date) {
+            const parsedDate = new Date(date);
+            return format(parsedDate, 'dd \'de\' MMMM', { locale: es }); // Formato personalizado
+        },
+        async deleteExtraTimeRequest(extraTimeRequestId) {
+            try {
+                const response = await axios.delete(route('extra-time-requests.destroy', extraTimeRequestId));
+
+                if (response.status === 200) {
+                    this.fetchRequests();
+                    this.$notify({
+                        title: 'Éxito',
+                        message: 'Se eliminó correctamente.',
+                        type: 'success',
+                    });
+                }
+            } catch (error) {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: 'no se pudo eliminar la oportunidad de tiempo extra por inconvenientes en el servidor. Inténtalo más tarde',
+                    type: 'error',
+                });
+                console.log(error);
+            }
+        },
         getStatus(isAccepted) {
             if (isAccepted === null) return 'En espera de respuesta';
             else if (isAccepted) return 'Aceptada';
