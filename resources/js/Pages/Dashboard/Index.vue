@@ -99,38 +99,87 @@
                 this.$page.props.auth.user.permissions.includes('Autorizar solicitudes de tiempo adicional')
                 ">
                 <h2 class="text-primary lg:text-xl text-lg lg:mt-16 mt-6">Operativo</h2>
-                <!-- sellers -->
-                <div v-if="this.$page.props.auth.user.permissions.includes('Crear ordenes de venta')"
-                    class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] py-4 px-6 mt-4 text-sm w-full lg:w-1/2">
-                    <h2 class="text-black font-bold flex items-center">
-                        <p>Órdenes de venta hechas por ti sin
-                            producción</p>
-                        <i class="fa-solid fa-triangle-exclamation ml-3"></i>
-                    </h2>
-                    <div v-if="current_user_sales_without_production.data.length">
-                        <div class="grid grid-cols-3 gap-3 pb-2 border-b-2 border-[#9A9A9A] pt-5">
-                            <span>Folio de orden</span>
-                            <span>Creado el</span>
+
+                <div class="grid lg:grid-cols-4 grid-cols-2 gap-3 mt-4">
+                    <!-- sellers -->
+                    <div v-if="this.$page.props.auth.user.permissions.includes('Crear ordenes de venta')"
+                        class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] py-4 px-6 text-sm col-span-2">
+                        <h2 class="text-black font-bold flex items-center">
+                            <p>Órdenes de venta hechas por ti sin
+                                producción</p>
+                            <i class="fa-solid fa-triangle-exclamation ml-3"></i>
+                        </h2>
+                        <div v-if="current_user_sales_without_production.data.length">
+                            <div class="grid grid-cols-3 gap-3 pb-2 border-b-2 border-[#9A9A9A] pt-5">
+                                <span>Folio de orden</span>
+                                <span>Creado el</span>
+                            </div>
+                            <ul>
+                                <li v-for="sale in current_user_sales_without_production.data" :key="sale.id"
+                                    class="grid grid-cols-3 gap-3 mt-4">
+                                    <span>{{ sale.folio }}</span>
+                                    <span>{{ sale.created_at }}</span>
+                                    <Link :href="route('sales.show', sale.id)" class="text-primary underline ml-auto">Ver
+                                    orden
+                                    </Link>
+                                </li>
+                            </ul>
+                            <p class="text-primary text-center mt-8">¡Es necesario dar seguimiento!</p>
                         </div>
-                        <ul>
-                            <li v-for="sale in current_user_sales_without_production.data" :key="sale.id"
-                                class="grid grid-cols-3 gap-3 mt-4">
-                                <span>{{ sale.folio }}</span>
-                                <span>{{ sale.created_at }}</span>
-                                <Link :href="route('sales.show', sale.id)" class="text-primary underline ml-auto">Ver orden
-                                </Link>
-                            </li>
-                        </ul>
-                        <p class="text-primary text-center mt-8">¡Es necesario dar seguimiento!</p>
+                        <p v-else class="text-xs text-black text-center my-6">
+                            Nos complace informarte que todas las órdenes que has realizado están actualmente en proceso de
+                            producción.
+                            Para que puedas dar seguimiento detallado a tus órdenes, te invitamos a acceder a la sección
+                            "ventas"<br>
+                            <span class="text-2xl">&#128521;</span>
+                        </p>
                     </div>
-                    <p v-else class="text-xs text-black text-center my-6">
-                        Nos complace informarte que todas las órdenes que has realizado están actualmente en proceso de
-                        producción.
-                        Para que puedas dar seguimiento detallado a tus órdenes, te invitamos a acceder a la sección
-                        "ventas"<br>
-                        <span class="text-2xl">&#128521;</span>
-                    </p>
+                    <!-- oportunidad de tiempo extra -->
+                    <div v-if="extra_time_request"
+                        class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] py-4 px-6 text-sm col-span-2">
+                        <h2 class="text-black font-bold text-center">
+                            Oportunidad de tiempo extra
+                        </h2>
+                        <p class="text-center mt-2">
+                            Tu participación es crucial. Necesitamos de tu colaboración para realizar tiempo extra el
+                            <strong class="text-secondary">{{ formatDate(extra_time_request.date) }}</strong> por
+                            <strong class="text-secondary">{{ extra_time_request.hours }} hora(s)</strong>.
+                            Apreciamos tu disposición para ayudar, por lo que se otorgarán
+                            <strong class="text-secondary">{{ '100 puntos' }}</strong> adicionales en tu desempeño semanal.
+                            Gracias por tu flexibilidad!
+                        </p>
+                        <div v-if="extra_time_request.is_accepted === null" class="flex items-center justify-center space-x-1 mt-8">
+                            <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                                title="¿Continuar?" @confirm="setExtraTimeRequestResponse(true)">
+                                <template #reference>
+                                    <button class="rounded-full px-2 py-1 text-white bg-[#43cd37]">Aceptar</button>
+                                </template>
+                            </el-popconfirm>
+                            <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                                title="¿Continuar?" @confirm="setExtraTimeRequestResponse(false)">
+                                <template #reference>
+                                    <button class="rounded-full px-2 py-1 text-white bg-primary">Rechazar</button>
+                                </template>
+                            </el-popconfirm>
+                        </div>
+                        <div v-else class="mt-10 text-center">
+                            <p class="bg-[#61f453] text-green-800" v-if="extra_time_request.is_accepted">
+                                Solicitud aceptada 
+                                <i class="fa-solid fa-check ml-2"></i>
+                            </p>
+                            <p class="bg-primary text-white" v-else>
+                                Solicitud rechazada 
+                                <i class="fa-solid fa-xmark ml-2"></i>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- crear oportunidad de tiempo extra -->
+                    <ExtraTimeRequestCreator
+                        v-if="this.$page.props.auth.user.permissions.includes('Crear oportunidad de tiempo extra')"
+                        class="col-span-2" />
                 </div>
+
                 <div class="grid lg:grid-cols-4 grid-cols-2 gap-3 mt-4">
                     <template v-for="(quickCard, index) in quickCards" :key="index">
                         <DashboardCard v-if="quickCard.show" :title="quickCard.title" :counter="quickCard.counter"
@@ -284,6 +333,7 @@ import RecentlyAddedCard from '@/Components/MyComponents/RecentlyAddedCard.vue';
 import InformationCard from '@/Components/MyComponents/InformationCard.vue';
 import ThirthButton from '@/Components/MyComponents/ThirthButton.vue';
 import CancelButton from '@/Components/MyComponents/CancelButton.vue';
+import ExtraTimeRequestCreator from '@/Components/MyComponents/ExtraTimeRequestCreator.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import AppLayoutNoHeader from '@/Layouts/AppLayoutNoHeader.vue';
@@ -293,6 +343,8 @@ import PayrollTemplate from "@/Components/MyComponents/payrollTemplate.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import axios from 'axios';
 import { useForm, Link } from '@inertiajs/vue3';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default {
     data() {
@@ -396,6 +448,7 @@ export default {
         collaborators_anniversaires: Array,
         customers_birthdays: Array,
         current_user_sales_without_production: Object,
+        extra_time_request: Object,
     },
     components: {
         ThirthButton,
@@ -418,8 +471,34 @@ export default {
         Checkbox,
         Link,
         PayrollTemplate,
+        ExtraTimeRequestCreator,
     },
     methods: {
+        async setExtraTimeRequestResponse(accepted) {
+            try {
+                const response = await axios.put(route('extra-time-requests.set-response', this.extra_time_request), { is_accepted: accepted });
+
+                if (response.status === 200) {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: 'Respuesta enviada correctamente',
+                        type: 'success',
+                    });
+                    this.extra_time_request.is_accepted = accepted;
+                }
+            } catch (error) {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: 'no se pudo enviar la respuesta por inconvenientes en el servidor. Inténtalo más tarde',
+                    type: 'error',
+                });
+                console.log(error);
+            }
+        },
+        formatDate(date) {
+            const parsedDate = new Date(date);
+            return format(parsedDate, 'dd \'de\' MMMM', { locale: es }); // Formato personalizado
+        },
         async getAttendanceTextButton() {
             try {
                 const response = await axios.get(route('users.get-next-attendance'));

@@ -14,6 +14,7 @@ use App\Http\Controllers\DesignController;
 use App\Http\Controllers\DesignModificationController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\EmailMonitorController;
+use App\Http\Controllers\ExtraTimeRequestController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\KioskDeviceController;
@@ -85,6 +86,9 @@ Route::middleware([
 // -------------- project groups routes ------------
 Route::resource('project-groups', ProjectGroupController::class)->middleware('auth')->names('project-groups');
 
+// -------------- extra time requests routes ------------
+Route::resource('extra-time-requests', ExtraTimeRequestController::class)->middleware('auth')->names('extra-time-requests');
+Route::put('extra-time-requests/{etr}/set-response', [ExtraTimeRequestController::class, 'setResponse'])->middleware('auth')->name('extra-time-requests.set-response');
 
 // -------------- tags routes ------------
 Route::resource('tags', TagController::class)->middleware('auth')->names('tags');
@@ -244,6 +248,7 @@ Route::post('users-get-notifications', [UserController::class, 'getNotifications
 Route::post('users-read-notifications', [UserController::class, 'readNotifications'])->middleware('auth')->name('users.read-notifications');
 Route::post('users-delete-notifications', [UserController::class, 'deleteNotifications'])->middleware('auth')->name('users.delete-notifications');
 Route::get('users-get-all', [UserController::class, 'getAllUsers'])->middleware('auth')->name('users.get-all');
+Route::get('users-get-operators', [UserController::class, 'getOperators'])->middleware('auth')->name('users.get-operators');
 
 // ------- Recursos humanos(Roles and permissions Routes)  ---------
 Route::get('role-permission', [RolePermissionController::class, 'index'])->middleware('auth')->name('role-permission.index');

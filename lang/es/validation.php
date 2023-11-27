@@ -208,5 +208,6 @@ return [
         'oportunity_id' => 'oportunidad',
         'seller_id' => 'vendedor',
         'budget' => 'monto',
+        'operator_id' => 'operador',
     ],
 ];
