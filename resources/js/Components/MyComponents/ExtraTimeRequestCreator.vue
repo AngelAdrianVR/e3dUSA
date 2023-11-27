@@ -42,8 +42,8 @@
                 Crear solicitud de tiempo extra
             </template>
             <template #content>
-                <form @submit.prevent="store" ref="createForm">
-                    <div>
+                <form @submit.prevent="store" ref="createForm" class="lg:grid grid-cols-2 gap-2">
+                    <div class="col-span-full">
                         <label class="text-sm ml-2">Operador *</label>
                         <el-select v-model="form.operator_id" placeholder="Selecciona el operador" filterable>
                             <el-option v-for="item in operators" :key="item.id" :label="item.name" :value="item.id">
@@ -58,7 +58,7 @@
                         <InputError :message="form.errors.operator_id" />
                     </div>
                     <div>
-                        <label class="text-sm ml-2 block">fecha *</label>
+                        <label class="text-sm ml-2 block">Fecha *</label>
                         <el-date-picker v-model="form.date" type="date" placeholder="Fecha" format="DD-MM-YYYY"
                             value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
                         <InputError :message="form.errors.date" />

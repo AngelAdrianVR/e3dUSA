@@ -148,26 +148,26 @@
                             <strong class="text-secondary">{{ '100 puntos' }}</strong> adicionales en tu desempeño semanal.
                             Gracias por tu flexibilidad!
                         </p>
-                        <div v-if="extra_time_request.is_accepted === null" class="flex items-center justify-center space-x-3 mt-10">
+                        <div v-if="extra_time_request.is_accepted === null" class="flex items-center justify-center space-x-1 mt-8">
                             <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
                                 title="¿Continuar?" @confirm="setExtraTimeRequestResponse(true)">
                                 <template #reference>
-                                    <button class="rounded-full px-2 py-1 text-white bg-green-500">Aceptar</button>
+                                    <button class="rounded-full px-2 py-1 text-white bg-[#43cd37]">Aceptar</button>
                                 </template>
                             </el-popconfirm>
                             <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
                                 title="¿Continuar?" @confirm="setExtraTimeRequestResponse(false)">
                                 <template #reference>
-                                    <button class="rounded-full px-2 py-1 text-white bg-red-500">Rechazar</button>
+                                    <button class="rounded-full px-2 py-1 text-white bg-primary">Rechazar</button>
                                 </template>
                             </el-popconfirm>
                         </div>
                         <div v-else class="mt-10 text-center">
-                            <p class="text-green-500" v-if="extra_time_request.is_accepted">
+                            <p class="bg-[#61f453] text-green-800" v-if="extra_time_request.is_accepted">
                                 Solicitud aceptada 
                                 <i class="fa-solid fa-check ml-2"></i>
                             </p>
-                            <p class="text-red-500" v-else>
+                            <p class="bg-primary text-white" v-else>
                                 Solicitud rechazada 
                                 <i class="fa-solid fa-xmark ml-2"></i>
                             </p>
