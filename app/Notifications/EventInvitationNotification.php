@@ -37,7 +37,7 @@ class EventInvitationNotification extends Notification
     {
         return (new MailMessage)
             ->subject('Mención en comentario')
-            ->markdown('emails.event-invitation', [
+            ->markdown('emails.default-email-template', [
                 'greeting' => '¡Hola!',
                 'intro' => "Te han invitado a un evento llamado <span class='text-primary'>{$this->event->title}</span>. Se requiere de tu respuesta.",
                 'url' => route('calendars.index'),

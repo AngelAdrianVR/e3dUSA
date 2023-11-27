@@ -37,7 +37,7 @@ class AssignedProjectTaskNotification extends Notification
     {
         return (new MailMessage)
             ->subject('Tarea asignada')
-            ->markdown('emails.assigned-projet-task', [
+            ->markdown('emails.default-email-template', [
                 'greeting' => '¡Hola!',
                 'intro' => "Te han asignado una tarea con el nombre de <span class='text-primary'>{$this->task->title}</span> perteneciente al proyecto <span class='text-primary'>{$this->task->project->project_name}</span>",
                 'url' => route('projects.show', $this->task->project->id),

@@ -46,7 +46,7 @@ class MentionNotification extends Notification
     {
         return (new MailMessage)
             ->subject('Mención en comentario')
-            ->markdown('emails.mention', [
+            ->markdown('emails.default-email-template', [
                 'greeting' => '¡Hola!',
                 'intro' => "Te han mencionado en un comentario de la ". $this->concept ." <span class='text-primary'>{$this->task->title}</span> perteneciente al proyecto <span class='text-primary'>{$this->parent_name}</span>",
                 'url' => route('projects.show', $this->task->project->id),

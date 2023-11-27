@@ -34,10 +34,9 @@ class ApprovalRequiredNotification extends Notification
     {
         return (new MailMessage)
             ->subject('Solicitud de Aprobación')
-            ->markdown('emails.approbal-required', [
+            ->markdown('emails.default-email-template', [
                 'greeting' => '¡Hola!',
-                'intro' => "Hay una nueva $this->concept que requiere de su aprobación.",
-                'outro' => 'Por favor, revisa la solicitud y toma las medidas necesarias.',
+                'intro' => "Hay una nueva $this->concept que requiere de su aprobación. Por favor, revisa la solicitud y toma las medidas necesarias.",
                 'url' => route($this->route_name),
                 'salutation' => 'Saludos,',
             ]);
