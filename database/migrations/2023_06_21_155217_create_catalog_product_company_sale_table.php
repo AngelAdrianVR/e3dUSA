@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('catalog_product_company_sale', function (Blueprint $table) {
             $table->id();
             $table->unsignedFloat('quantity');
+            $table->unsignedFloat('finished_product_used', 10, 2);
             $table->text('notes')->nullable();
             $table->unsignedTinyInteger('status')->nullable();
             $table->json('assigned_jobs')->nullable();

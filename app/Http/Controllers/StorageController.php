@@ -111,14 +111,29 @@ class StorageController extends Controller
             'location' => 'required|string|max:255',
         ]);
 
-        $finished_products = CatalogProduct::find($request->storage_id);
-        $finished_products->storages()->create([
+        $catalog_product = CatalogProduct::find($request->storage_id);
+        $catalog_product->storages()->create([
             'quantity' => $request->quantity,
             'location' => $request->location,
             'type' => 'producto-terminado',
         ]);
 
-        event(new RecordCreated($finished_products));
+        // sub needed quantities from stock
+        $raw_materials = $catalog_product->rawMaterials;
+        foreach ($raw_materials as $raw_material) {
+            $quantity_needed = $raw_material->pivot->quantity * $request->quantity;
+            $storage = Storage::where('storageable_id', $raw_material->id)->where('storageable_type', 'App\Models\RawMaterial')->first();
+            $storage->decrement('quantity', $quantity_needed);
+            StockMovementHistory::Create([
+                'storage_id' => $storage->id,
+                'user_id' => auth()->id(),
+                'type' => 'Salida',
+                'quantity' => $quantity_needed,
+                'notes' => 'Salida de material automática por registro en almacen de producto terminado para stock',
+            ]);
+        }
+
+        event(new RecordCreated($catalog_product));
 
         return to_route('storages.finished-products.index');
     }
@@ -298,12 +313,28 @@ class StorageController extends Controller
     {
         foreach ($request->finished_products as $finished_product) {
             $finished_product = Storage::find($finished_product['id']);
+
+            // add needed quantities to stock again
+            $raw_materials = $finished_product->storageable->rawMaterials;
+            foreach ($raw_materials as $raw_material) {
+                $quantity_needed = $raw_material->pivot->quantity * $finished_product->quantity;
+                $storage = Storage::where('storageable_id', $raw_material->id)->where('storageable_type', 'App\Models\RawMaterial')->first();
+                $storage->increment('quantity', $quantity_needed);
+                StockMovementHistory::Create([
+                    'storage_id' => $storage->id,
+                    'user_id' => auth()->id(),
+                    'type' => 'Entrada',
+                    'quantity' => $quantity_needed,
+                    'notes' => 'Entrada de material automática por eliminación en almacen de producto terminado',
+                ]);
+            }
+
             $finished_product?->delete();
 
             event(new RecordDeleted($finished_product));
         }
 
-        return response()->json(['message' => 'Producto(s) eliminado(s)']);
+        return response()->json(['message' => 'Producto(s) eliminado(s). Los componentes fueron regresados al almacén de materia prima']);
     }
 
     public function scrapMassiveDelete(Request $request)
@@ -330,7 +361,7 @@ class StorageController extends Controller
 
         return response()->json(['message' => 'Producto(s) retirado(s) de scrap']);
     }
-    
+
     public function sampleMassiveDelete(Request $request)
     {
         foreach ($request->samples as $sample) {
