@@ -141,7 +141,7 @@ export default {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: "Producto agregado",
+            message: "Producto agregado correctamente. Se descontaron los conmponentes necesarios de materia prima y se registró el movimiento de salida en c/u",
             type: "success",
           });
         },

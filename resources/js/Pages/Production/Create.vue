@@ -34,13 +34,18 @@
 
           <!-- -----------------Extra info in productions -------------------- -->
 
-          <div class="my-3 flex flex-col text-primary text-sm p-4 rounded-lg border border-[#b8b7b7]" v-if="saleId">
-            <div v-for="product in orderedProducts" :key="product">
-              <p>Cantidad: <span class="text-secondary">{{ product?.quantity }} unidades</span></p>
-              <p>Notas: <span class="text-secondary">{{ product?.notes ?? '--' }}</span></p>
-              <div class="border-b border-gray-500"></div>
+          <template v-if="saleId">
+            <div v-for="product in orderedProducts" :key="product" class="grid grid-cols-2 gap-x-3 self-start pb-1 text-xs border-b border-gray-400">
+              <p>Cantidad disponible en almacén</p>
+              <span>{{ product?.finished_product_used }} unidades</span>
+              <p class="text-primary">Cantidad a producir</p>
+              <span class="text-black">{{ product?.quantity - product?.finished_product_used}} unidades</span>
+              <p>Cantidad ordenada</p>
+              <span>{{ product?.quantity }} unidades</span>
+              <p>Notas</p>
+              <span>{{ product?.notes ?? '--' }}</span>
             </div>
-          </div>
+          </template>
           <!-- products ordered to generate production -->
           <div v-if="saleId">
 

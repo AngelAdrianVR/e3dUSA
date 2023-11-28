@@ -39,7 +39,7 @@ class MentionInProductionNotification extends Notification
     {
         return (new MailMessage)
             ->subject('Mención en comentario')
-            ->markdown('emails.mention', [
+            ->markdown('emails.default-email-template', [
                 'greeting' => '¡Hola!',
                 'intro' => "Te han mencionado en un comentario de la producción OP-<span class='text-primary'>{$this->cpcs->sale->id}</span>. Ingresa a la pestaña de productos para ver los comentarios",
                 'url' => route('productions.show', $this->cpcs->sale->id),

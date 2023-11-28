@@ -4,20 +4,21 @@
         <div class="my-3 col-start-2 col-span-2">
             <h3 class="text-center text-gray-700">Cumpleaños <i class="fa-solid fa-cake-candles ml-2"></i></h3>
         </div>
-        <div v-if="contacts?.length" class="mb-28 px-2 overflow-y-scroll h-full w-full col-start-2 col-span-2">
+        <div v-if="contacts?.length" class="mb-28 overflow-y-scroll h-full w-full col-start-2 col-span-2">
             <p class="font-bold text-center">¡Felíz Cumpleaños te desea la familia Emblems 3D!</p>
-            <ul class="text-xs overflow-y-scroll grid lg:grid-cols-2 grid-cols-1 gap-x-14 gap-y-3 lg:mt-6 mt-2">
-                <li v-for="(contact, index) in contacts" :key="index" class="flex flex-col">
-                    <strong>{{ contact.birthdate_day }} {{ months[contact.birthdate_month + 1] }}</strong>
-                    <div class="flex space-x-2 items-center">
+            <ul class="lg:mt-6 mt-2">
+                <li v-for="(contact, index) in contacts" :key="index"
+                    class="grid grid-cols-3 gap-y-3 gap-x-0 text-[11px] leading-normal">
+                    <strong>({{ contact.birthdate_day }} de {{ months[contact.birthdate_month] }})</strong>
+                    <div class="flex items-center space-x-1">
                         <i class="fa-regular fa-circle-user"></i>
-                        <span>{{ contact.name }}</span>
+                        <p>{{ contact.name }}</p>
                     </div>
-                    <div class="flex space-x-2 items-center">
+                    <!-- <div class="flex items-center space-x-1">
                         <i class="fa-regular fa-building"></i>
                         <span>{{ contact.contactable?.name }}</span>
-                    </div>
-                    <div class="flex space-x-2 items-center">
+                    </div> -->
+                    <div class="flex items-center space-x-1">
                         <i class="fa-regular fa-envelope"></i>
                         <span>{{ contact.email }}</span>
                     </div>
@@ -25,8 +26,9 @@
             </ul>
         </div>
         <img class="lg:h-60 h-44 absolute" src="@/../../public/images/globos.png">
-        <p v-if="!contacts?.length" class="h-full w-full col-start-2 col-span-2 text-center text-primary">No hay cumpleaños
-            hoy</p>
+        <p v-if="!contacts?.length" class="h-full w-full col-start-2 col-span-2 text-center text-primary">
+            No hay cumpleaños este mes
+        </p>
     </div>
 </template>
 <script>

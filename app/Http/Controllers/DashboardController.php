@@ -47,7 +47,7 @@ class DashboardController extends Controller
         $collaborators_sales_performance = $this->getSalesPerformance();
 
         // birthdates
-        $collaborators_birthdays = $collaborators_birthdays = User::where('is_active', true)->whereMonth('employee_properties->birthdate->raw', '=', now()->month)
+        $collaborators_birthdays = User::where('is_active', true)->whereMonth('employee_properties->birthdate->raw', '=', now()->month)
             ->get();
 
         // recently added
@@ -68,8 +68,7 @@ class DashboardController extends Controller
 
         // customers birthdays
         $customers_birthdays = Contact::with('contactable')
-            ->where('birthdate_day', today()->day)
-            ->where('birthdate_month', today()->month)
+            ->where('birthdate_month', (today()->month - 1))
             ->get();
 
         // solicitud de tiempo extra

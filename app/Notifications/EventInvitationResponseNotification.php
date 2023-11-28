@@ -37,7 +37,7 @@ class EventInvitationResponseNotification extends Notification
     {
         return (new MailMessage)
             ->subject('Mención en comentario')
-            ->markdown('emails.event-response-invitation', [
+            ->markdown('emails.default-email-template', [
                 'greeting' => '¡Hola!',
                 'intro' => "El participante <span class='text-primary'>{$this->participant->name}</span> ha respondido tu invitación al evento <span class='text-primary'>{$this->event->title}</span>. Respuesta: <span class='text-primary'>{$this->status}</span>",
                 'url' => route('calendars.index'),

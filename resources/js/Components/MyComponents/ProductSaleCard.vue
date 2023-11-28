@@ -46,7 +46,59 @@
     </div>
 
     <div class="border-b-2 border-[#9a9a9a] pb-1">
-      <p class="text-primary ">Unidades ordenadas: <span class="ml-4 text-black">{{
+      <p class="text-black flex justify-between">
+      <div class="flex items-center space-x-1">
+        <span>Unidades disponibles en almacén</span>
+        <el-tooltip placement="top">
+          <template #content>
+            <p>
+              Cantidad actual de productos listos para su <br>
+              envío en el almacén de producto terminado.
+            </p>
+          </template>
+          <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
+            <i class="fa-solid fa-info text-primary text-[7px]"></i>
+          </div>
+        </el-tooltip>
+      </div>
+      <span class="text-black">{{
+        catalog_product_company_sale.finished_product_used.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      }}</span></p>
+      <p class="text-primary flex items-center justify-between">
+      <div class="flex items-center space-x-1">
+        <span>Unidades a producir</span>
+        <el-tooltip placement="top">
+          <template #content>
+            <p>
+              Cantidad adicional de productos que deben ser fabricados <br>
+              para satisfacer la demanda total.
+            </p>
+          </template>
+          <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
+            <i class="fa-solid fa-info text-primary text-[7px]"></i>
+          </div>
+        </el-tooltip>
+      </div>
+      <strong class="ml-4 text-black">{{
+        (catalog_product_company_sale.quantity -
+          catalog_product_company_sale.finished_product_used).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      }}</strong>
+      </p>
+      <p class="text-black flex justify-between">
+      <div class="flex items-center space-x-1">
+        <span>Unidades ordenadas</span>
+        <el-tooltip placement="top">
+          <template #content>
+            <p>
+              Cantidad total de productos solicitados.
+            </p>
+          </template>
+          <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
+            <i class="fa-solid fa-info text-primary text-[7px]"></i>
+          </div>
+        </el-tooltip>
+      </div>
+      <span class="text-black">{{
         catalog_product_company_sale.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       }}</span></p>
     </div>

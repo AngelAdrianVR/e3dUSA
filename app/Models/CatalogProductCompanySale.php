@@ -17,6 +17,7 @@ class CatalogProductCompanySale extends Model
 
     protected $fillable = [
         'quantity',
+        'finished_product_used',
         'notes',
         'status',
         'sale_id',

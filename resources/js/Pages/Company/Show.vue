@@ -11,8 +11,9 @@
         </div>
         <div class="flex justify-between">
           <div class="md:w-1/3">
-            <el-select @change="$inertia.get(route('companies.show', selectedCompany))" v-model="selectedCompany" clearable filterable placeholder="Buscar cliente"
-              no-data-text="No hay clientes en el catálogo" no-match-text="No se encontraron coincidencias">
+            <el-select @change="$inertia.get(route('companies.show', selectedCompany))" v-model="selectedCompany"
+              clearable filterable placeholder="Buscar cliente" no-data-text="No hay clientes en el catálogo"
+              no-match-text="No se encontraron coincidencias">
               <el-option v-for="item in companies" :key="item.id" :label="item.name" :value="item.id" />
             </el-select>
           </div>
@@ -34,11 +35,13 @@
                 </button>
               </template>
               <template #content>
-                <DropdownLink :href="route('companies.create')" v-if="$page.props.auth.user.permissions.includes('Crear clientes')">
+                <DropdownLink :href="route('companies.create')"
+                  v-if="$page.props.auth.user.permissions.includes('Crear clientes')">
                   Crear nuevo cliente
                 </DropdownLink>
 
-                <DropdownLink @click="showConfirmModal = true" as="button" v-if="$page.props.auth.user.permissions.includes('Eliminar clientes')">
+                <DropdownLink @click="showConfirmModal = true" as="button"
+                  v-if="$page.props.auth.user.permissions.includes('Eliminar clientes')">
                   Eliminar
                 </DropdownLink>
               </template>
@@ -53,7 +56,8 @@
       <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2">
         <div class="flex overflow-x-auto pb-3 lg:pb-0">
           <p @click="tabs = 1" :class="tabs == 1 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="h-10 w-96 lg:w-auto p-2 cursor-pointer ml-5 transition duration-300 ease-in-out text-sm md:text-base">
+            "
+            class="h-10 w-96 lg:w-auto p-2 cursor-pointer ml-5 transition duration-300 ease-in-out text-sm md:text-base">
             Información general
           </p>
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
@@ -128,108 +132,107 @@
         </div>
       </div>
       <!-- ------------- Productos ends 3 ------------- -->
-      
+
       <!-- -------------Oportunidades starts 4 ------------- -->
       <div v-if="tabs == 4" class="p-7 w-full mx-auto my-4">
-      <div v-if="company.data.oportunities.length">
-        <CompanyOportunityTable :oportunities="company.data.oportunities" />
-      </div>
-      <div class="flex flex-col text-center justify-center" v-else>
-        <p class="text-sm text-center">No hay oportunidades para mostrar</p>
-        <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
-      </div>
+        <div v-if="company.data.oportunities.length">
+          <CompanyOportunityTable :oportunities="company.data.oportunities" />
+        </div>
+        <div class="flex flex-col text-center justify-center" v-else>
+          <p class="text-sm text-center">No hay oportunidades para mostrar</p>
+          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+        </div>
       </div>
       <!-- ------------- Oportunidades ends 4 ------------- -->
-      
+
       <!-- -------------Cotizaciones starts 5 ------------- -->
       <div v-if="tabs == 5" class="p-7 w-full mx-auto my-4">
-<div v-if="hasQuotes()" class="overflow-x-auto">
-  <table  class="w-full mx-auto">
-    <thead>
-      <tr class="text-left">
-        <th class="font-bold pb-5">
-          Folio <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
-        </th>
-        <th class="font-bold pb-5">
-          Creado por <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
-        </th>
-        <th class="font-bold pb-5">
-          Receptor <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
-        </th>
-        <th class="font-bold pb-5">
-          Autorizado por <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
-        </th>
-        <th class="font-bold pb-5">
-          Creado el <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <template v-for="branch in company.data.company_branches">
-        <tr v-for="quote in branch.quotes" :key="quote.id" class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]"
-          @click="$inertia.get(route('quotes.show', quote.id))"
-        >
-          <td class="text-left text-secondary py-2 px-2 rounded-l-full">
-            {{ quote.folio }}
-          </td>
-          <td class="text-left py-2 px-2">
-            {{ quote.user ? quote.user.name : '' }}
-          </td>
-          <td class="text-left py-2 px-2">
-            <span class="py-1 px-4 rounded-full">{{ quote.receiver }}</span>
-          </td>
-          <td class="text-left py-2 px-2">
-            <span class="py-1 px-2">{{ quote.authorized_user_name ?? '--' }}</span>
-          </td>
-          <td class="text-left py-2 px-2 rounded-r-full">
-            {{ quote.created_at }}
-          </td>
-        </tr>
-      </template>
-    </tbody>
-  </table>
-</div>
-      <div class="flex flex-col text-center justify-center" v-else>
-        <p class="text-sm text-center">No hay cotizaciones para mostrar</p>
-        <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
-      </div>
-        
+        <div v-if="hasQuotes()" class="overflow-x-auto">
+          <table class="w-full mx-auto">
+            <thead>
+              <tr class="text-left">
+                <th class="font-bold pb-5">
+                  Folio <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
+                </th>
+                <th class="font-bold pb-5">
+                  Creado por <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
+                </th>
+                <th class="font-bold pb-5">
+                  Receptor <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
+                </th>
+                <th class="font-bold pb-5">
+                  Autorizado por <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
+                </th>
+                <th class="font-bold pb-5">
+                  Creado el <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <template v-for="branch in company.data.company_branches">
+                <tr v-for="quote in branch.quotes" :key="quote.id" class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]"
+                  @click="$inertia.get(route('quotes.show', quote.id))">
+                  <td class="text-left text-secondary py-2 px-2 rounded-l-full">
+                    {{ quote.folio }}
+                  </td>
+                  <td class="text-left py-2 px-2">
+                    {{ quote.user ? quote.user.name : '' }}
+                  </td>
+                  <td class="text-left py-2 px-2">
+                    <span class="py-1 px-4 rounded-full">{{ quote.receiver }}</span>
+                  </td>
+                  <td class="text-left py-2 px-2">
+                    <span class="py-1 px-2">{{ quote.authorized_user_name ?? '--' }}</span>
+                  </td>
+                  <td class="text-left py-2 px-2 rounded-r-full">
+                    {{ quote.created_at }}
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+        <div class="flex flex-col text-center justify-center" v-else>
+          <p class="text-sm text-center">No hay cotizaciones para mostrar</p>
+          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+        </div>
+
       </div>
       <!-- ------------- Cotizaciones ends 5 ------------- -->
 
       <!-- -------------Seguimiento integral starts 6 ------------- -->
       <div v-if="tabs == 6" class="p-7 w-full mx-auto my-4">
-      <div v-if=" company.data.clientMonitors?.length">
-        <CompanyClientMonitorTable :client_monitors="company.data.clientMonitors" />
-      </div>
-      <div class="flex flex-col text-center justify-center" v-else>
-        <p class="text-sm text-center">No hay Seguimiento para mostrar</p>
-        <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
-      </div>
+        <div v-if="company.data.clientMonitors?.length">
+          <CompanyClientMonitorTable :client_monitors="company.data.clientMonitors" />
+        </div>
+        <div class="flex flex-col text-center justify-center" v-else>
+          <p class="text-sm text-center">No hay Seguimiento para mostrar</p>
+          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+        </div>
       </div>
       <!-- ------------- Seguimiento integral ends 6 ------------- -->
 
       <!-- -------------Proyectos starts 7 ------------- -->
       <div v-if="tabs == 7" class="p-7 w-full mx-auto my-4">
-      <div v-if=" company.data.projects?.length">
-        <ProjectTable :projects="company.data.projects" />
-      </div>
-      <div class="flex flex-col text-center justify-center" v-else>
-        <p class="text-sm text-center">No hay proyectos para mostrar</p>
-        <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
-      </div>
+        <div v-if="company.data.projects?.length">
+          <ProjectTable :projects="company.data.projects" />
+        </div>
+        <div class="flex flex-col text-center justify-center" v-else>
+          <p class="text-sm text-center">No hay proyectos para mostrar</p>
+          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+        </div>
       </div>
       <!-- ------------- Proyectos ends 7 ------------- -->
-      
+
       <!-- -------------Ordenes de venta starts 8 ------------- -->
       <div v-if="tabs == 8" class="p-7 w-full mx-auto my-4">
-      <div v-if="company.data.company_branches?.some(branch => branch.sales?.length > 0)">
-        <CompanySalesTable :company_sales="allSales" />
-      </div>
-      <div class="flex flex-col text-center justify-center" v-else>
-        <p class="text-sm text-center">No hay ordenes de venta de este cliente</p>
-        <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
-      </div>
+        <div v-if="company.data.company_branches?.some(branch => branch.sales?.length > 0)">
+          <CompanySalesTable :company_sales="allSales" />
+        </div>
+        <div class="flex flex-col text-center justify-center" v-else>
+          <p class="text-sm text-center">No hay ordenes de venta de este cliente</p>
+          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+        </div>
       </div>
       <!-- ------------- Ordenes de venta ends 8 ------------- -->
 
@@ -275,7 +278,7 @@ export default {
   props: {
     company: Object,
     companies: Array,
-    // company_products: Array,
+    defaultTab: Number,
   },
   components: {
     AppLayoutNoHeader,
@@ -333,23 +336,12 @@ export default {
     },
     hasQuotes() {
       const tieneCotizaciones = this.company.data.company_branches
-      .map((branch) => branch.quotes.length > 0)
-      .some((tieneCotizacionesEnBranch) => tieneCotizacionesEnBranch);
+        .map((branch) => branch.quotes.length > 0)
+        .some((tieneCotizacionesEnBranch) => tieneCotizacionesEnBranch);
 
-     return tieneCotizaciones; // Devolverá true si hay cotizaciones en al menos un company_branch
+      return tieneCotizaciones; // Devolverá true si hay cotizaciones en al menos un company_branch
     },
-    
-  },
 
-  // watch: {
-  //   selectedCompany(newVal) {
-  //     this.currentCompany = this.companies.data.find((item) => item.id == newVal);
-  //     // this.currentCompanyProducts = this.company_products.data.find((item) => item.company_id == this.selectedCompany);
-  //   },
-  // },
-
-  mounted() {
-    this.selectedCompany = this.company.data.id;
   },
   computed: {
     allSales() {
@@ -364,6 +356,14 @@ export default {
       }
       return sales;
     },
+  },
+  mounted() {
+    this.selectedCompany = this.company.data.id;
+
+    // tabs
+    if (this.defaultTab != null) {
+      this.tabs = parseInt(this.defaultTab);
+    }
   },
 };
 </script>

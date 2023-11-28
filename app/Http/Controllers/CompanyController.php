@@ -26,25 +26,25 @@ class CompanyController extends Controller
         // $companies = CompanyResource::collection(Company::with('companyBranches')->latest()->get());
 
         /// Optimización para rapidez. No carga todos los datos, solo los necesarios para hacer la búsqueda y mostrar la tabla en index
-    $companies = Company::with('companyBranches')->latest()->get();
+        $companies = Company::with('companyBranches')->latest()->get();
 
-    $pre_companies = CompanyResource::collection($companies);
-    $companies = $pre_companies->map(function ($company) {
-        $companyBranchNames = $company->companyBranches->pluck('name')->toArray();
+        $pre_companies = CompanyResource::collection($companies);
+        $companies = $pre_companies->map(function ($company) {
+            $companyBranchNames = $company->companyBranches->pluck('name')->toArray();
 
-        return [
-            'id' => $company->id,
-            'business_name' => $company->business_name,
-            'phone' => $company->phone,
-            'rfc' => $company->rfc,
-            'post_code' => $company->post_code,
-            'company_branches_names' => implode(', ', $companyBranchNames),
-            'fiscal_address' => $company->fiscal_address,
-        ];
-    });
+            return [
+                'id' => $company->id,
+                'business_name' => $company->business_name,
+                'phone' => $company->phone,
+                'rfc' => $company->rfc,
+                'post_code' => $company->post_code,
+                'company_branches_names' => implode(', ', $companyBranchNames),
+                'fiscal_address' => $company->fiscal_address,
+            ];
+        });
 
-    // return $companies;
-    return inertia('Company/Index', compact('companies'));
+        // return $companies;
+        return inertia('Company/Index', compact('companies'));
     }
 
 
@@ -96,11 +96,12 @@ class CompanyController extends Controller
             return [
                 'id' => $company->id,
                 'name' => $company->business_name,
-                   ];
-               });
-        // return $companies;
+            ];
+        });
 
-        return inertia('Company/Show', compact('company', 'companies'));
+        $defaultTab = request('defaultTab');
+
+        return inertia('Company/Show', compact('company', 'companies', 'defaultTab'));
     }
 
 
@@ -158,11 +159,11 @@ class CompanyController extends Controller
         // Actualizar productos
         // $company->catalogProducts()->sync($request->products);
         $productIdsInRequest = array_column($request->products, 'catalog_product_id');
-        
+
         // Recorre los productos relacionados con la compañía
         foreach ($company->catalogProducts as $product) {
             $catalogProductId = $product->id;
-            
+
             if (in_array($catalogProductId, $productIdsInRequest)) {
                 // El producto existe en la solicitud, actualiza los datos
                 $productData = $request->products[array_search($catalogProductId, $productIdsInRequest)];

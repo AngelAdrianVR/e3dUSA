@@ -37,7 +37,7 @@ class HighPrioritySaleNotification extends Notification
     {
         return (new MailMessage)
             ->subject('OV urgente sin producción')
-            ->markdown('emails.high-priority-sale', [
+            ->markdown('emails.default-email-template', [
                 'greeting' => '¡Hola!',
                 'intro' => "La OV {$this->sale->id} tiene prioridad alta y no se ha generado orden de producción. Comunicalo con dpto. de producción",
                 'url' => route('sales.show', $this->sale->id),
