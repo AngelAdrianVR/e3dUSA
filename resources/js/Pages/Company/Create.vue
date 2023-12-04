@@ -463,7 +463,7 @@ export default {
         sat_type: null,
         sat_way: null,
         important_notes: null,
-        days_to_reactivate: null,
+        days_to_reactivate: 30,
       },
       product: {
         catalog_product_id: null,
