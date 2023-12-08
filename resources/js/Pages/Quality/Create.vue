@@ -67,7 +67,7 @@
                         <input disabled :value="product.quantity" type="number" step="0.1" class="input text-gray-500/80" />
                     </div>
                     <div class="w-full">
-                        <InputLabel value="Piezas planificadas hasta el momento *" class="ml-2" />
+                        <InputLabel value="Piezas producidas hasta el momento *" class="ml-2" />
                         <input v-model="form.product_inspection[index].pieces" type="number" :max="product.quantity" step="0.1" class="input" />
                         <!-- <InputError :message="form.errors.product_inspection[index]?.pieces" /> -->
                     </div>

@@ -137,7 +137,7 @@ class ProductionController extends Controller
     public function create()
     {
         $operators = User::where('employee_properties->department', 'Producción')->where('is_active', 1)->get();
-        $sales = SaleResource::collection(Sale::with('companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct')->whereNotNull('authorized_at')->whereDoesntHave('productions')->get());
+        $sales = SaleResource::collection(Sale::with('companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct.media')->whereNotNull('authorized_at')->whereDoesntHave('productions')->get());
         $is_automatic_assignment = boolval(Setting::where('key', 'AUTOMATIC_PRODUCTION_ASSIGNMENT')->first()->value);
         $production_processes = ProductionCostResource::collection(ProductionCost::all());
 

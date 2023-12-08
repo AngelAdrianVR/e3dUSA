@@ -60,8 +60,10 @@
                             dayPoints.time }}</td>
                         <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.scrap < 0 }">{{
                             dayPoints.scrap }}</td>
-                        <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.day_completed < 0 }">{{
-                            dayPoints.day_completed }}</td>
+                        <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.day_completed < 0, 'text-green-500':dayPoints.day_completed == 0 }">
+                            {{ dayPoints.day_completed < 0 ? dayPoints.day_completed : '' }}
+                            <i v-if="dayPoints.day_completed >= 0" class="fa-solid fa-check"></i>
+                        </td>
                         <td class="bg-white py-1 px-2 text-xs">{{ dayPoints.extra_time_requests }}</td>
                     </tr>
                 </tbody>
@@ -113,7 +115,7 @@
             </ul>
             <div class="text-xs text-secondary px-10 mt-5">
                 <li><strong>Puntualidad: </strong>Este se refiere a llegar a tiempo para trabajar. Si llegas a tiempo, ganas
-                    10 puntos. Si llegas tarde, perderás puntos equivalentes a los minutos de retraso. Así que, ¡llegar a
+                    10 puntos. Si llegas tarde, perderás 10 puntos. Así que, ¡llegar a
                     tiempo es clave para obtener una buena calificación! </li>
                 <li><strong>Tiempo: </strong>El tiempo se trata de cuánto trabajaste de manera efectiva en la producción.
                     Cada minuto que trabajas se convierte en puntos, y estos se suman a tu puntaje total. Así que, cuantos
@@ -125,6 +127,7 @@
                     tu calificación.</li>
                 <li><strong>Día terminado: </strong>Se restarán 50 puntos si no terminaste las horas de tu jornada
                     correspondiente a cada día en la tabla.</li>
+                <li><strong>Tiempo extra: </strong>Se sumarán 100 puntos si aceptas alguna solicitud de tiempo extra. Esto es adicional al bono económico</li>
             </div>
         </template>
         <template #footer>
