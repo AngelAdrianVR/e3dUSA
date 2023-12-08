@@ -22,6 +22,7 @@
                         <th class="text-start px-1">Operador</th>
                         <th class="text-start px-1">Fecha</th>
                         <th class="text-start px-1">Hrs solicitadas</th>
+                        <th class="text-start px-1">Bono</th>
                         <th class="text-start px-1">Estatus</th>
                         <th class="text-start px-1"></th>
                     </tr>
@@ -31,6 +32,7 @@
                         <td class="px-1 truncate">{{ item.operator.name }}</td>
                         <td class="px-1">{{ formatDate(item.date) }}</td>
                         <td class="px-1">{{ item.hours }}</td>
+                        <td class="px-1">${{ item.bonus }}</td>
                         <td class="px-1" :class="{'text-[#31a126]': item.is_accepted == true, 'text-primary': item.is_accepted == false }">{{ getStatus(item.is_accepted) }}</td>
                         <td class="px-1">
                             <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
@@ -70,16 +72,22 @@
                         <InputError :message="form.errors.operator_id" />
                     </div>
                     <div>
-                        <label class="text-sm ml-2 block">Fecha *</label>
-                        <el-date-picker v-model="form.date" type="date" placeholder="Fecha" format="DD-MM-YYYY"
-                            value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
-                        <InputError :message="form.errors.date" />
-                    </div>
-                    <div>
                         <label class="text-sm ml-2">Horas solicitadas *</label>
                         <input v-model="form.hours" placeholder="Ingresa la cantidad del producto" class="input"
                             type="number" min="1" required>
                         <InputError :message="form.errors.hours" />
+                    </div>
+                    <div>
+                        <label class="text-sm ml-2">Bono *</label>
+                        <input v-model="form.bonus" placeholder="Ingresa la cantidad a ofrecer" class="input"
+                            type="number" min="1" required>
+                        <InputError :message="form.errors.bonus" />
+                    </div>
+                    <div>
+                        <label class="text-sm ml-2 block">Fecha *</label>
+                        <el-date-picker v-model="form.date" type="date" placeholder="Fecha" format="DD-MM-YYYY"
+                            value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
+                        <InputError :message="form.errors.date" />
                     </div>
                 </form>
             </template>
@@ -106,6 +114,7 @@ export default {
             operator_id: null,
             date: null,
             hours: 1,
+            bonus: null,
         });
 
         return {

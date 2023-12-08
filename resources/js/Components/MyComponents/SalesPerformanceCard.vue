@@ -43,7 +43,7 @@
                         <th class="text-left bg-[#9a9a9a] border"></th>
                         <th class="text-left bg-[#9a9a9a] border">Ventas</th>
                         <th class="text-left bg-[#9a9a9a] border">Nuevos clientes</th>
-                        <th class="text-left bg-[#9a9a9a] border">Nuevos productos</th>
+                        <th class="text-left bg-[#9a9a9a] border">Nuevos productos (ventas verticales)</th>
                         <th class="text-left bg-[#9a9a9a] border"></th>
                     </tr>
                 </thead>
