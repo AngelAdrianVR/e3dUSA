@@ -148,7 +148,7 @@ class DashboardController extends Controller
                 }
 
                 // Restar el valor de 'late' o sumar 10 puntos si no hay retardo
-                $weekly_points[$day]["punctuality"] += $payroll->pivot->late > 0 ? -$payroll->pivot->late : 10;
+                $weekly_points[$day]["punctuality"] += $payroll->pivot->late > 0 ? -10 : 10;
                 // Restar 50 pts si no se terminó la jornada del día si es que ya ha registrado salida
                 if ($payroll->pivot->check_out) {
                     $hours_to_work = $user->employee_properties['work_days'][$payroll->pivot->date->dayOfWeek]['hours'];
