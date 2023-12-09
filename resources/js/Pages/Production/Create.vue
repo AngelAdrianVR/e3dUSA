@@ -49,7 +49,7 @@
                 <span>{{ product?.notes ?? '--' }}</span>
               </div>
               <figure>
-                <img :src="product.catalog_product_company.catalog_product.media[0].original_url">
+                <!-- <img :src="product?.catalog_product_company.catalog_product.media[0].original_url"> -->
               </figure>
             </div>
           </template>
