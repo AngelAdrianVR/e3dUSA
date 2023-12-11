@@ -56,7 +56,7 @@ class DesignResource extends JsonResource
             'measure_unit' => $this->measure_unit,
             'authorized_user_name' => $this->authorized_user_name ?? '--',
             'authorized_at' => $this->authorized_at?->isoFormat('YYYY MMM DD') ?? 'No autorizado',
-            'expected_end_at' => $this->expected_end_at?->isoFormat('YYYY MMM DD, h:mmA') ?? '--',
+            'expected_end_at' => $this->expected_end_at?->isoFormat('DD MMM, YYYY') ?? '--',
             'original_design_id' => $this->original_design_id,
             'is_complex' => $this->is_complex,
             'reuse_percentage' => $this->reuse_percentage,

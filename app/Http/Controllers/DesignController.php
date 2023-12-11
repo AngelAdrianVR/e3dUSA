@@ -24,42 +24,50 @@ class DesignController extends Controller
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de diseño todas')) {
             // $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->latest()->get());
 
-        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
-        $designs = Design::with('user', 'designer', 'designType')->latest()->get();
-        $designs = $designs->map(function ($design) {
-            $status = ['label'=>'Esperando Autorización',
-            'text-color' =>'text-amber-500',
-            'border-color' => 'border-amber-500'        
-                    ];
-
-            if($design->authorized_at){
-                $status = ['label'=>'Autorizado. Sin iniciar',
-                'text-color' =>'text-amber-700',
-            ];
-                if($design->started_at){
-                    $status = ['label'=>'En proceso',
-                    'text-color' =>'text-[#0355B5]',
+            //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
+            $designs = Design::with('user', 'designer', 'designType')->latest()->get();
+            $designs = $designs->map(function ($design) {
+                $status = [
+                    'label' => 'Esperando Autorización',
+                    'text-color' => 'text-amber-500',
+                    'border-color' => 'border-amber-500'
                 ];
-                if ($design->finished_at) {
-                        $status = ['label'=>'Terminado',
-                        'text-color' =>'text-green-600',
+
+                if ($design->authorized_at) {
+                    $status = [
+                        'label' => 'Autorizado. Sin iniciar',
+                        'text-color' => 'text-amber-700',
                     ];
+                    if ($design->started_at) {
+                        $status = [
+                            'label' => 'En proceso',
+                            'text-color' => 'text-[#0355B5]',
+                        ];
+                        if ($design->finished_at) {
+                            $status = [
+                                'label' => 'Terminado',
+                                'text-color' => 'text-green-600',
+                            ];
+                        }
                     }
                 }
-            }
-            return [
-                'id' => $design->id,
-                'user' => ['id' => $design->user->id,
-                            'name' => $design->user->name
-                        ],
-                'designer' => ['id' => $design->designer->id,
-                            'name' => $design->designer->name
-                        ],
-                'design' => $design->name,
-                'status' => $status,
-                'created_at' => $design->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
-                   ];
-               });
+                return [
+                    'id' => $design->id,
+                    'user' => [
+                        'id' => $design->user->id,
+                        'name' => $design->user->name
+                    ],
+                    'designer' => [
+                        'id' => $design->designer->id,
+                        'name' => $design->designer->name
+                    ],
+                    'design' => $design->name,
+                    'design_type' => $design->designType,
+                    'status' => $status,
+                    'created_at' => $design->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+                ];
+            });
+
             return inertia('Design/Admin', compact('designs'));
         } elseif (auth()->user()->can('Ordenes de diseño personal')) {
             $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->where('user_id', auth()->id())->latest()->get());
@@ -101,7 +109,7 @@ class DesignController extends Controller
 
         if ($can_authorize) {
             $design->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
-        }else {
+        } else {
             // notify to Maribel
             $maribel = User::find(3);
             $maribel->notify(new ApprovalRequiredNotification('orden de diseño', 'designs.index'));
@@ -128,11 +136,11 @@ class DesignController extends Controller
             $design = DesignResource::make(Design::with('user', 'designer', 'designType', 'modifications.media')->find($design_id));
             $pre_designs = Design::latest()->get();
             $designs = $pre_designs->map(function ($design) {
-            return [
-                'id' => $design->id,
-                'name' => $design->name,
-                   ];
-               });
+                return [
+                    'id' => $design->id,
+                    'name' => $design->name,
+                ];
+            });
             // return $design;
             return inertia('Design/Show', compact('design', 'designs'));
         } elseif (auth()->user()->can('Ordenes de diseño personal')) {
@@ -142,8 +150,8 @@ class DesignController extends Controller
                 return [
                     'id' => $design->id,
                     'name' => $design->name,
-                       ];
-                   });
+                ];
+            });
             return inertia('Design/Show', compact('design', 'designs'));
         } else {
             $design = DesignResource::make(Design::with('user', 'designer', 'designType', 'modifications.media')->where('designer_id', auth()->id())->find($design_id));
@@ -152,8 +160,8 @@ class DesignController extends Controller
                 return [
                     'id' => $design->id,
                     'name' => $design->name,
-                       ];
-                   });
+                ];
+            });
             return inertia('Design/Show', compact('design', 'designs'));
         }
     }
@@ -192,9 +200,7 @@ class DesignController extends Controller
             $design->addMediaFromRequest('media_logo')->toMediaCollection('logo');
         }
 
-        $design->update($request->except('original_design_id') + [
-            'user_id' => auth()->id()
-        ]);
+        $design->update($request->except('original_design_id'));
 
         event(new RecordEdited($design));
 

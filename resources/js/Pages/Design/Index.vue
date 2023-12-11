@@ -48,6 +48,7 @@
                         <el-table-column type="selection" width="45" />
                         <el-table-column prop="user.name" label="Solicitante" />
                         <el-table-column prop="name" label="Diseño" />
+                        <el-table-column prop="design_type.name" label="Clasificación" />
                         <el-table-column prop="designer.name" label="Diseñador(a)" />
                         <el-table-column prop="created_at" label="Solicitado el" />
                         <el-table-column prop="status[label]" label="Estatus" />
