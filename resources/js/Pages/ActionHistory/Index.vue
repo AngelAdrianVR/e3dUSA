@@ -87,10 +87,10 @@
                 </tr>
               </tbody>
             </table>
-            <!-- --- pagination --- -->
+            <!-- --- pagination ---
             <div class="mt-4">
               <Pagination :pagination="audits_created" />
-            </div>
+            </div> -->
           </div>
           <!-- --------------------- Tab 1 Creaciones ends------------------ -->
 
