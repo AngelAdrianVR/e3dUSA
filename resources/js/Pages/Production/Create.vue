@@ -35,8 +35,8 @@
           <!-- -----------------Extra info in productions -------------------- -->
 
           <template v-if="saleId">
-            <div class="grid grid-cols-3 gap-x-3 self-start text-xs border-b border-gray-400">
-              <div v-for="product in orderedProducts" :key="product" class="col-span-2 grid grid-cols-2 gap-x-3 self-start pb-5">
+            <div v-for="product in orderedProducts" :key="product" class="grid grid-cols-3 gap-x-3 self-start text-xs border-b border-gray-400">
+              <div  class="col-span-2 grid grid-cols-2 gap-x-3 self-start pb-5">
                 <p>Producto</p>
                 <span>{{ product?.catalog_product_company.catalog_product.name }}</span>
                 <p>Cantidad disponible en almacén</p>
@@ -48,8 +48,8 @@
                 <p>Notas</p>
                 <span>{{ product?.notes ?? '--' }}</span>
               </div>
-              <figure>
-                <!-- <img :src="product?.catalog_product_company.catalog_product.media[0].original_url"> -->
+              <figure class="pb-1">
+                <img :src="product?.catalog_product_company.catalog_product.media[0].original_url">
               </figure>
             </div>
           </template>
