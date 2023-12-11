@@ -24,6 +24,7 @@ class ExtraTimeRequestController extends Controller
         $request->validate([
             'operator_id' => 'required|numeric|min:4',
             'hours' => 'required|numeric|min:1',
+            'bonus' => 'required|numeric|min:1',
             'date' => 'required|date',
         ]);
 

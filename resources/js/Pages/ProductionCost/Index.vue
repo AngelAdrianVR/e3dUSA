@@ -4,7 +4,7 @@
             <template #header>
                 <div class="flex justify-between">
                     <div class="flex items-center space-x-2">
-                        <h2 class="font-semibold text-xl leading-tight">Costos de prosucción</h2>
+                        <h2 class="font-semibold text-xl leading-tight">Costos de producción</h2>
                     </div>
                     <Link v-if="$page.props.auth.user.permissions.includes('Crear costos de produccion')" :href="route('production-costs.create')">
                     <SecondaryButton>+ Nuevo</SecondaryButton>

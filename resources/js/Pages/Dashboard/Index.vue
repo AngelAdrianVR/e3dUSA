@@ -145,7 +145,8 @@
                             <strong class="text-secondary">{{ formatDate(extra_time_request.date) }}</strong> por
                             <strong class="text-secondary">{{ extra_time_request.hours }} hora(s)</strong>.
                             Apreciamos tu disposición para ayudar, por lo que se otorgarán
-                            <strong class="text-secondary">{{ '100 puntos' }}</strong> adicionales en tu desempeño semanal.
+                            <strong class="text-secondary">{{ '100 puntos' }}</strong> adicionales en tu desempeño semanal y 
+                            <strong class="text-secondary">${{ extra_time_request.bonus }} de bono</strong>.
                             Gracias por tu flexibilidad!
                         </p>
                         <div v-if="extra_time_request.is_accepted === null" class="flex items-center justify-center space-x-1 mt-8">

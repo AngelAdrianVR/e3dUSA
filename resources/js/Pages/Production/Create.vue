@@ -35,15 +35,22 @@
           <!-- -----------------Extra info in productions -------------------- -->
 
           <template v-if="saleId">
-            <div v-for="product in orderedProducts" :key="product" class="grid grid-cols-2 gap-x-3 self-start pb-1 text-xs border-b border-gray-400">
-              <p>Cantidad disponible en almacén</p>
-              <span>{{ product?.finished_product_used }} unidades</span>
-              <p class="text-primary">Cantidad a producir</p>
-              <span class="text-black">{{ product?.quantity - product?.finished_product_used}} unidades</span>
-              <p>Cantidad ordenada</p>
-              <span>{{ product?.quantity }} unidades</span>
-              <p>Notas</p>
-              <span>{{ product?.notes ?? '--' }}</span>
+            <div class="grid grid-cols-3 gap-x-3 self-start text-xs border-b border-gray-400">
+              <div v-for="product in orderedProducts" :key="product" class="col-span-2 grid grid-cols-2 gap-x-3 self-start pb-5">
+                <p>Producto</p>
+                <span>{{ product?.catalog_product_company.catalog_product.name }}</span>
+                <p>Cantidad disponible en almacén</p>
+                <span>{{ product?.finished_product_used }} unidades</span>
+                <p class="text-primary">Cantidad a producir</p>
+                <span class="text-black">{{ product?.quantity - product?.finished_product_used}} unidades</span>
+                <p>Cantidad ordenada</p>
+                <span>{{ product?.quantity }} unidades</span>
+                <p>Notas</p>
+                <span>{{ product?.notes ?? '--' }}</span>
+              </div>
+              <figure>
+                <!-- <img :src="product?.catalog_product_company.catalog_product.media[0].original_url"> -->
+              </figure>
             </div>
           </template>
           <!-- products ordered to generate production -->
