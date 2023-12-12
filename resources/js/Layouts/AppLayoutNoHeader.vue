@@ -12,6 +12,8 @@ import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import MobileSideNav from "@/Components/MyComponents/MobileSideNav.vue";
 import SideNav from "@/Components/MyComponents/SideNav.vue";
 import Modal from "@/Components/Modal.vue";
+import DialogModal from "@/Components/DialogModal.vue";
+import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import axios from "axios";
@@ -22,7 +24,6 @@ defineProps({
   title: String,
 });
 
-// const scanType = ref("Entrada");
 const barCodeRef = ref("");
 const showingNavigationDropdown = ref(false);
 const nextAttendance = ref("");
@@ -36,7 +37,9 @@ const machineFound = ref(null);
 const productFound = ref(null);
 const catalogProductFound = ref(null);
 const unseenMessages = ref(null);
+const openPasswordModal = ref(false);
 const daysSinceNewDate = ref(0);
+const superPassword = ref(null);
 
 const form = useForm({
   barCode: null,
@@ -482,22 +485,34 @@ onMounted(() => {
                 </el-popconfirm>
 
                 <!-- attendances -->
-                <el-popconfirm v-if="$page.props.isKiosk &&
+                <div v-if="$page.props.isKiosk &&
                   nextAttendance &&
                   $page.props.auth.user.permissions.includes(
                     'Registrar asistencia'
-                  ) && !isPaused
-                  " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
-                  @confirm="setAttendance">
-                  <template #reference>
-                    <SecondaryButton v-if="nextAttendance != 'Dia terminado'" class="mr-14">
+                  ) && !isPaused">
+                  <div v-if="nextAttendance == 'Registrar salida' && $page.props.auth.user.employee_properties.department == 'Producción'">
+                    <SecondaryButton @click="openPasswordModal = true" v-if="nextAttendance != 'Dia terminado'"
+                      class="mr-14">
                       {{ nextAttendance }}
                     </SecondaryButton>
                     <span v-else class="bg-[#75b3f9] text-[#0355B5] mr-14 rounded-md px-3 py-1">
                       {{ nextAttendance }}
                     </span>
-                  </template>
-                </el-popconfirm>
+                  </div>
+                  <el-popconfirm
+                    v-else
+                    confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
+                    @confirm="setAttendance">
+                    <template #reference>
+                      <SecondaryButton v-if="nextAttendance != 'Dia terminado'" class="mr-14">
+                        {{ nextAttendance }}
+                      </SecondaryButton>
+                      <span v-else class="bg-[#75b3f9] text-[#0355B5] mr-14 rounded-md px-3 py-1">
+                        {{ nextAttendance }}
+                      </span>
+                    </template>
+                  </el-popconfirm>
+                </div>
 
                 <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear kiosco')
                   " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
@@ -1029,4 +1044,24 @@ onMounted(() => {
       <!-- ---------------------- Machine form ends ---------------------- -->
     </div>
   </Modal>
+
+  <!-- Password modal -->
+  <DialogModal :show="openPasswordModal" @close="openPasswordModal = false">
+    <template #title>
+      Contraseña de supervisor
+    </template>
+    <template #content>
+      <p class="text-center text-sm my-4">Para garantizar la precisión en nuestros registros de producción, se solicita
+        que obtengan la autorización del
+        supervisor antes de registrar su salida. Asegúrense de proporcionar el estatus de cualquier trabajo pendiente. La
+        contraseña del supervisor es necesaria para completar este proceso.
+        Gracias por su colaboración.</p>
+      <InputLabel value="Contraseña de supervisor" />
+      <input type="password" class="input" v-model="superPassword" placeholder="Ingresar contraseña">
+    </template>
+    <template #footer>
+      <PrimaryButton @click="setAttendance(); openPasswordModal = false;" :disabled="superPassword != 'Supervisor'">
+        Registrar salida</PrimaryButton>
+    </template>
+  </DialogModal>
 </template>
