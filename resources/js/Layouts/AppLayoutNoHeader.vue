@@ -490,7 +490,7 @@ onMounted(() => {
                   $page.props.auth.user.permissions.includes(
                     'Registrar asistencia'
                   ) && !isPaused">
-                  <div v-if="nextAttendance == 'Registrar salida' && $page.props.auth.user.employee_properties.department == 'Producción'">
+                  <div v-if="nextAttendance == 'Registrar salida' && $page.props.auth.user.has_pendent_production">
                     <SecondaryButton @click="openPasswordModal = true" v-if="nextAttendance != 'Dia terminado'"
                       class="mr-14">
                       {{ nextAttendance }}
