@@ -12,7 +12,6 @@
       <div class="flex space-x-6 items-center justify-center text-xs mt-2">
           <p class="text-blue-600"><i class="fa-solid fa-circle mr-1"></i>Nómina en curso</p>
       </div>
-
       <!-- tabla -->
       <div class="lg:w-5/6 mx-auto mt-6">
         <div class="flex justify-between">
