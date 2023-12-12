@@ -52,6 +52,13 @@ class HandleInertiaRequests extends Middleware
                 }
                 return [];
             },
+            'auth.user.has_pendent_production' => function () use ($request) {
+                if ($request->user()) {
+                    return boolval($request->user()->getPendentProductions());
+                }
+
+                return null;
+            },
             'auth.user.nextAttendance' => function () use ($request) {
                 if ($request->user()) {
                     return $request->user()->getNextAttendance();

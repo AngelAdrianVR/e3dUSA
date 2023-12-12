@@ -151,6 +151,17 @@ class User extends Authenticatable
 
         return false;
     }
+    
+    public function getPendentProductions()
+    {
+        $pendent_productions = $this->productions()
+        ->where('is_paused', true)
+        ->whereNotNull('started_at')
+        ->whereNull('finished_at')
+        ->get()->count();
+
+        return $pendent_productions;
+    }
 
     public function setAttendance()
     {
