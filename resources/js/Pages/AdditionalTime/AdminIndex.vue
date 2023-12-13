@@ -427,7 +427,7 @@ export default {
 
           // Eliminar clientes por índice
           for (const index of deletedIndexes) {
-            this.more_additional_times.data.splice(index, 1);
+            this.admin_additional_times.data.splice(index, 1);
           }
         } else {
           this.$notify({
