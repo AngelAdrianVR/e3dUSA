@@ -69,6 +69,7 @@ class SaleController extends Controller
                 ],
                 'authorized_user_name' => $sale->authorized_user_name ?? 'No autorizado',
                 'status' => $status,
+                'promise_date' => $sale->promise_date?->isoFormat('DD MMMM YYYY') ?? '--',
                 'created_at' => $sale->created_at->isoFormat('DD MMM, YYYY h:mm A'),
             ];
         });

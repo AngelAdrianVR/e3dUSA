@@ -84,7 +84,7 @@
                     TIME RUNS ONCE PAYING 100% OF THE TOOLING AND THE 50% OF THE
                     PRODUCTS.</li>
                 <li>FREIGHTS AND CARRIAGES ARE PAID BY CUSTOMER: <span class="font-bold text-blue-500">{{
-                    quote.data.freight_cost }} {{ quote.data.currency }}</span></li>
+                    quote.data.freight_cost }} {{ !isNaN(quote.data.freight_cost) ? quote.data.currency : '' }}</span></li>
                 <li>PRICES IN <span class="font-bold text-blue-500">{{ quote.data.currency }}</span></li>
                 <li>QUOTE VALID FOR 21 DAYS. PRODUCT IS SUBJECT TO FINAL DESIGN REVIEW, TESTING AND SUBSEQUENT APPROVAL</li>
             </ol>

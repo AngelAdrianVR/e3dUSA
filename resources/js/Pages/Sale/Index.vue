@@ -53,6 +53,7 @@
                         <el-table-column prop="company_branch.name" label="Cliente" />
                         <el-table-column prop="authorized_user_name" label="Autorizado por" />
                         <el-table-column prop="status['label']" label="Estatus" />
+                        <el-table-column prop="promise_date" label="Fecha de entrega" />
                         <el-table-column align="right" fixed="right" width="190">
                             <template #header>
                                 <div class="flex space-x-2">
