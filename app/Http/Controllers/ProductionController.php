@@ -120,11 +120,6 @@ class ProductionController extends Controller
                     $delivery_status = 'Entregado';
                 }
                  
-
-
-
-
-
                 return [
                     'id' => $production->id,
                     'folio' => 'OP-' . str_pad($production->id, 4, "0", STR_PAD_LEFT),
@@ -144,7 +139,7 @@ class ProductionController extends Controller
                         'productions_quantity' => count($production->productions)
                     ],
                     'promise_date' => $production->promise_date?->isoFormat('DD MMMM YYYY') ?? '--',
-                    'delivery_status' => $delivery_status,
+                    // 'delivery_status' => $delivery_status,
                     'created_at' => $production->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
                 ];
             });
