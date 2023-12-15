@@ -80,10 +80,55 @@ class SaleController extends Controller
 
     public function create()
     {
-        $company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
-
         $opportunityId = Oportunity::find(request('opportunityId'));
 
+        //optimizacion de datos en vista para reducir el tiempo de carga
+        $pre_company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
+        $company_branches = $pre_company_branches->map(function ($company_branch) {
+            
+            $catalog_products = $company_branch->company->catalogProducts->map(function ($product) {
+                
+                $raw_materials = $product->rawMaterials->map(function ($raw_material) {
+
+                    $storages = $raw_material->storages->map(function ($storage) {
+                        return [
+                            'quantity' =>$storage->quantity,
+                        ];
+                    });
+
+                    return [
+                        'pivot' => ['quantity' => $raw_material->pivot->quantity],
+                        'storages' =>$storages,
+                    ];
+                });
+    
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'pivot' => ['id' => $product->pivot->id],
+                    'raw_materials' => $raw_materials,
+                ];
+            });
+            
+
+            $contacts = $company_branch->contacts->map(function ($contact) {
+                return [
+                    'id' => $contact->id,
+                    'name' => $contact->name,
+                    'email' => $contact->email,
+                ];
+            });
+        
+            return [
+                'id' => $company_branch->id,
+                'name' => $company_branch->name,
+                'important_notes' => $company_branch->important_notes,
+                'contacts' => $contacts,
+                'catalog_products' => $catalog_products,
+            ];
+        });
+
+        // return $company_branches;
         return inertia('Sale/Create', compact('company_branches', 'opportunityId'));
     }
 

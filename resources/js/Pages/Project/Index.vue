@@ -17,7 +17,7 @@
 
     <NotificationCenter module="projects" />
     <div class="lg:px-14 pb-7 pt-14 text-sm overflow-x-scroll">
-      <table class="w-full mx-auto">
+      <table v-if="projects.data.length > 0" class="w-full mx-auto">
         <thead>
           <tr class="text-left">
             <th class="font-bold pb-5">Nombre del proyecto <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
@@ -75,6 +75,7 @@
           </tr>
         </tbody>
       </table>
+      <p v-else class="text-xs text-center text-gray-600">No hay proyectos para mostrar</p>
       <!-- --- pagination --- -->
       <div class="mt-4">
         <Pagination :pagination="projects" />
