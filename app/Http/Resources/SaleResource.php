@@ -68,6 +68,7 @@ class SaleResource extends JsonResource
             'oce_name' => $this->oce_name,
             'order_via' => $this->order_via,
             'tracking_guide' => $this->tracking_guide,
+            'promise_date' => $this->promise_date?->isoFormat('DD MMMM YYYY'),
             'invoice' => $this->invoice,
             'is_high_priority' => $this->is_high_priority,
             'products' => $this->products,

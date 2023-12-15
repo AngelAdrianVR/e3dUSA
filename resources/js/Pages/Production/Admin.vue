@@ -53,6 +53,8 @@
                         <el-table-column prop="status['label']" label="Estatus" />
                         <el-table-column prop="operators" label="Operadores" width="210" />
                         <el-table-column prop="production.percentage" label="% Avance" width="115" />
+                        <el-table-column prop="promise_date" label="Fecha entrega" />
+                        <el-table-column prop="delivery_status" label="Estatus de entrega" />
                         <el-table-column align="right" fixed="right" width="190">
                             <template #header>
                                 <div class="flex space-x-2">

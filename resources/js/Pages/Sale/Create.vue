@@ -162,6 +162,18 @@
                             <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">SVG, PNG, JPG o
                                 GIF (MAX. 4 MB).</p>
                         </div>
+                        <div class="ml-4 col-span-2">
+                            <label class="text-sm ml-2 my-1 flex items-center">Fecha de entrega esperada
+                                <el-tooltip content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega" placement="right">
+                                <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
+                                <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                </div>
+                            </el-tooltip>
+                            </label>
+                            <el-date-picker v-model="form.promise_date" type="date" placeholder="Fecha de entrega esperada" format="YYYY/MM/DD"
+                                value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
+                            <InputError :message="form.errors.promise_date" />
+                        </div>
                     </div>
                     <div class="flex">
                         <el-tooltip content="Notas de la órden" placement="top">
@@ -333,6 +345,7 @@ export default {
             oce_name: null,
             order_via: null,
             tracking_guide: null,
+            promise_date: null,
             notes: null,
             is_high_priority: false,
             products: [],
@@ -497,7 +510,12 @@ export default {
             this.product.catalog_product_company_id = null;
             this.product.quantity = null;
             this.product.notes = null;
-        }
+        },
+        disabledDate(time) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Establece la hora a las 00:00:00.000
+            return time < today;
+        },
     },
     mounted() {
         if (this.opportunityId) {

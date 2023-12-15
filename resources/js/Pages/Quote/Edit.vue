@@ -143,7 +143,7 @@
                             </label>
                         </div>
                         <div>
-                            <IconInput v-model="form.freight_cost" inputPlaceholder="Costo de flete *" inputType="number"
+                            <IconInput v-model="form.freight_cost" inputPlaceholder="Costo de flete *" inputType="text"
                                 inputStep="0.01">
                                 <el-tooltip content="Costo de flete" placement="top">
                                     <i class="fa-solid fa-truck-fast"></i>

@@ -22,6 +22,7 @@ class Sale extends Model implements HasMedia
         'oce_name',
         'order_via',
         'tracking_guide',
+        'promise_date',
         'invoice',
         'notes',
         'is_high_priority',
@@ -37,7 +38,7 @@ class Sale extends Model implements HasMedia
     protected $casts = [
         'authorized_at' => 'datetime',
         'recieved_at' => 'datetime',
-
+        'promise_date' => 'date',
     ];
 
     //relationships
