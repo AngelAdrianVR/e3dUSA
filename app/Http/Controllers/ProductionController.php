@@ -374,15 +374,15 @@ class ProductionController extends Controller
                 'scrap' => $request->scrap,
             ]);
 
-            // rebajar o eliminar cantidad en almacen de producto terminado en caso de que hubiera disponible
-            if ($production->catalogProductCompanySale->finished_product_used > 0) {
-                $finished_product = $production->catalogProductCompanySale->catalogProductCompany->catalogProduct->storages[0];
-                if ($finished_product->quantity > $production->catalogProductCompanySale->quantity) {
-                    $finished_product->decrement('quantity', $production->catalogProductCompanySale->quantity);
-                } else {
-                    $finished_product->delete();
-                }
-            }
+            // // rebajar o eliminar cantidad en almacen de producto terminado en caso de que hubiera disponible
+            // if ($production->catalogProductCompanySale->finished_product_used > 0) {
+            //     $finished_product = $production->catalogProductCompanySale->catalogProductCompany->catalogProduct->storages[0];
+            //     if ($finished_product->quantity > $production->catalogProductCompanySale->quantity) {
+            //         $finished_product->decrement('quantity', $production->catalogProductCompanySale->quantity);
+            //     } else {
+            //         $finished_product->delete();
+            //     }
+            // }
 
             $user = User::where('employee_properties->job_position', 'Jefe de producción')->first();
             $user->notify(

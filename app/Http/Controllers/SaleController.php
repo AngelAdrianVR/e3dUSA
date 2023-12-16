@@ -85,23 +85,23 @@ class SaleController extends Controller
         //optimizacion de datos en vista para reducir el tiempo de carga
         $pre_company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
         $company_branches = $pre_company_branches->map(function ($company_branch) {
-            
+
             $catalog_products = $company_branch->company->catalogProducts->map(function ($product) {
-                
+
                 $raw_materials = $product->rawMaterials->map(function ($raw_material) {
 
                     $storages = $raw_material->storages->map(function ($storage) {
                         return [
-                            'quantity' =>$storage->quantity,
+                            'quantity' => $storage->quantity,
                         ];
                     });
 
                     return [
                         'pivot' => ['quantity' => $raw_material->pivot->quantity],
-                        'storages' =>$storages,
+                        'storages' => $storages,
                     ];
                 });
-    
+
                 return [
                     'id' => $product->id,
                     'name' => $product->name,
@@ -109,7 +109,7 @@ class SaleController extends Controller
                     'raw_materials' => $raw_materials,
                 ];
             });
-            
+
 
             $contacts = $company_branch->contacts->map(function ($contact) {
                 return [
@@ -118,7 +118,7 @@ class SaleController extends Controller
                     'email' => $contact->email,
                 ];
             });
-        
+
             return [
                 'id' => $company_branch->id,
                 'name' => $company_branch->name,
@@ -176,7 +176,16 @@ class SaleController extends Controller
             // guardar cantidad que se usó de producto terminado
             if ($finished_product_used > 0) {
                 $cpcs->update(['finished_product_used' => $finished_product_used]);
+
+                // rebajar o eliminar cantidad en almacen de producto terminado en caso de que hubiera disponible
+                $finished_product = $cpcs->catalogProductCompany->catalogProduct->storages[0];
+                if ($finished_product->quantity > $cpcs->quantity) {
+                    $finished_product->decrement('quantity', $cpcs->quantity);
+                } else {
+                    $finished_product->delete();
+                }
             }
+
 
             // sub needed quantities from stock
             if ($quntity_to_produce > 0) {
