@@ -96,10 +96,30 @@ class ProductionController extends Controller
                     }
                 }
 
-                // Calcular el porcentaje
+                // Calcular el porcentaje --------------------------------------------------------
+                //-------------------------------------------------------------------------------
                 $percentage = $finishedCount > 0 ? (100 / count($production->productions)) * $finishedCount : 0;
 
 
+                // Estatus de fecha de entrega --------------------------------------------------------
+                //-------------------------------------------------------------------------------------
+                $delivery_status = '--'; //inicializo el estatus en caso de no haber fecha
+                $threeDaysBefore = now()->addDays(3); // Verificar si la fecha está a 3 días o más de distancia 
+                
+
+                if ($status['label'] !== 'Producción terminada') {
+
+                    if ($production->promise_date?->greaterThanOrEqualTo($threeDaysBefore)) {
+                        $delivery_status = 'Fecha cercana';
+                    } else if ($production->promise_date > now()) {
+                        $delivery_status = 'A tiempo';
+                    } else if ($production->promise_date < now()) {
+                        $delivery_status = 'Fuera de tiempo';
+                    }
+                } else {
+                    $delivery_status = 'Entregado';
+                }
+                 
                 return [
                     'id' => $production->id,
                     'folio' => 'OP-' . str_pad($production->id, 4, "0", STR_PAD_LEFT),
@@ -118,10 +138,12 @@ class ProductionController extends Controller
                         'percentage' => $percentage . '%',
                         'productions_quantity' => count($production->productions)
                     ],
+                    'promise_date' => $production->promise_date?->isoFormat('DD MMMM YYYY') ?? '--',
+                    // 'delivery_status' => $delivery_status,
                     'created_at' => $production->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
                 ];
             });
-            // return $pre_productions;
+            // return $productions;
             return inertia('Production/Admin', compact('productions'));
         } elseif (auth()->user()->can('Ordenes de produccion personal')) {
             $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch')->whereHas('productions')->where('user_id', auth()->id())->latest()->get());
@@ -352,15 +374,15 @@ class ProductionController extends Controller
                 'scrap' => $request->scrap,
             ]);
 
-            // rebajar o eliminar cantidad en almacen de producto terminado en caso de que hubiera disponible
-            if ($production->catalogProductCompanySale->finished_product_used > 0) {
-                $finished_product = $production->catalogProductCompanySale->catalogProductCompany->catalogProduct->storages[0];
-                if ($finished_product->quantity > $production->catalogProductCompanySale->quantity) {
-                    $finished_product->decrement('quantity', $production->catalogProductCompanySale->quantity);
-                } else {
-                    $finished_product->delete();
-                }
-            }
+            // // rebajar o eliminar cantidad en almacen de producto terminado en caso de que hubiera disponible
+            // if ($production->catalogProductCompanySale->finished_product_used > 0) {
+            //     $finished_product = $production->catalogProductCompanySale->catalogProductCompany->catalogProduct->storages[0];
+            //     if ($finished_product->quantity > $production->catalogProductCompanySale->quantity) {
+            //         $finished_product->decrement('quantity', $production->catalogProductCompanySale->quantity);
+            //     } else {
+            //         $finished_product->delete();
+            //     }
+            // }
 
             $user = User::where('employee_properties->job_position', 'Jefe de producción')->first();
             $user->notify(
