@@ -20,17 +20,14 @@ class RawMaterialController extends Controller
     {
     }
 
-
     public function create()
     {
         $last = RawMaterial::latest()->first();
         $next_id = $last ? $last->id + 1 : 1;
 
         if (Route::currentRouteName() == 'raw-materials.create') {
-
             return inertia('Storage/Create/RawMaterial');
         } elseif (Route::currentRouteName() == 'consumables.create') {
-
             return inertia('Storage/Create/Consumable');
         }
     }
@@ -216,10 +213,10 @@ class RawMaterialController extends Controller
                 'quantity' => 1,
                 'production_costs' => [15],
             ]);
-            return response()->json(['message' => 'Producto agregado al catálogo con éxito.']);
+            return response()->json(['message' => 'Producto agregado al catálogo con éxito.', 'type' => 'success', 'title' => 'Éxito']);
         }
         
-        return response()->json(['message' => 'Este producto ya existe en el catalogo']);
+        return response()->json(['message' => 'Este producto ya existe en el catalogo','type' => 'info', 'title' => '']);
     }
     
 }

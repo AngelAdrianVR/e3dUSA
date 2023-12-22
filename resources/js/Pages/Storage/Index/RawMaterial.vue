@@ -185,9 +185,9 @@ export default {
 
                 if (response.status == 200) {
                     this.$notify({
-                        title: 'Éxito',
+                        title: response.data.title,
                         message: response.data.message,
-                        type: 'success'
+                        type: response.data.type
                     });
 
                 } else {
