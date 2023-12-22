@@ -123,12 +123,12 @@
         <p v-if="getVacations().length" class="grid grid-cols-3 gap-x-1">
           <span>Vacaciones</span>
           <span class="text-center">{{ getVacations().length }}</span>
-          <span>${{ getVacations().length * user.employee_properties.salary.day }}</span>
+          <span>${{ getVacationsAmount() }}</span>
         </p>
         <p v-if="getVacations().length" class="grid grid-cols-3 gap-x-1">
           <span>Prima vacacional</span>
           <span class="text-center"></span>
-          <span>${{ getVacations().length * user.employee_properties.salary.day * 0.25 }}</span>
+          <span>${{ getVacationsAmount() * 0.25 }}</span>
         </p>
         <p v-for="(bonus, index) in bonuses" :key="index" class="grid grid-cols-3 gap-x-1">
           <span>{{ bonus.name }}</span>
@@ -326,7 +326,7 @@ export default {
     },
     getIllnessSalary() {
       let totalSalary = 0;
-      
+
       this.getIllness().forEach(element => {
         totalSalary += this.getUserWorkDayByDate(element.date.estandard).salary * 0.6;
       });
@@ -369,6 +369,15 @@ export default {
       const percentage = (totalWeekHours * 100) / this.user.employee_properties.hours_per_week;
 
       return Math.round(percentage) + '%';
+    },
+    getVacationsAmount() {
+      let totalPay = 0;
+      // sumar sueldo por vacaciones
+      this.getVacations().forEach(element => {
+        totalPay += this.getUserWorkDayByDate(element.date.estandard).salary;
+      });
+
+      return totalPay;
     },
     getUserWorkDayByDate(date) {
       const dateMoment = moment(date, 'DD-MM-YYYY');
