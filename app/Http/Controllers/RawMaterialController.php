@@ -172,7 +172,7 @@ class RawMaterialController extends Controller
     public function turnIntoCatalogProduct(Request $request)
     {
         $rawMaterial = RawMaterial::findOrFail($request->raw_material_id);
-    
+
         // Verificar si ya está en el catálogo
         if (!$rawMaterial->isInCatalogProduct()) {
             // part number
@@ -181,7 +181,7 @@ class RawMaterialController extends Controller
             $consecutive = str_pad($next_id, 4, "0", STR_PAD_LEFT);
             $family = explode('-', $rawMaterial->part_number)[0];
             $part_number = "C-$family-GEN-$consecutive";
-    
+
             // Crear un nuevo producto de catálogo
             $catalogProduct = CatalogProduct::create([
                 'name' => $rawMaterial->name,
@@ -193,21 +193,21 @@ class RawMaterialController extends Controller
                 'max_quantity' => $rawMaterial->max_quantity,
                 'features' => $rawMaterial->features,
             ]);
-    
+
             // Clonar la imagen si existe
             $rawMaterialImage = $rawMaterial->getFirstMedia();
-    
+            
             if ($rawMaterialImage) {
                 // Crear una nueva instancia de Media
                 $clonedImage = $catalogProduct
-                    ->addMedia($rawMaterialImage->getPath())
-                    ->preservingOriginal()
-                    ->toMediaCollection();
-    
+                ->addMedia($rawMaterialImage->getPath())
+                ->preservingOriginal()
+                ->toMediaCollection();
+                
                 // Agregar la imagen clonada al producto de catálogo
                 $catalogProduct->media()->save($clonedImage);
             }
-    
+
             // Agregar el material al producto de catálogo
             $catalogProduct->rawMaterials()->attach($rawMaterial, [
                 'quantity' => 1,
@@ -215,8 +215,7 @@ class RawMaterialController extends Controller
             ]);
             return response()->json(['message' => 'Producto agregado al catálogo con éxito.', 'type' => 'success', 'title' => 'Éxito']);
         }
-        
-        return response()->json(['message' => 'Este producto ya existe en el catalogo','type' => 'info', 'title' => '']);
+
+        return response()->json(['message' => 'Este producto ya existe en el catalogo', 'type' => 'info', 'title' => '']);
     }
-    
 }

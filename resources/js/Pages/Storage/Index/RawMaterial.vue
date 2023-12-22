@@ -169,7 +169,7 @@ export default {
 
         handleCommand(command) {
             const commandName = command.split('-')[0];
-            const rowId = parseInt(command.split('-')[1]) - 1;
+            const rowId = parseInt(command.split('-')[1]);
 
             if (commandName == 'turn') {
                 this.turnIntoCatalogProduct(rowId);
