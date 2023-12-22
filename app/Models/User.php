@@ -315,21 +315,21 @@ class User extends Authenticatable
             $daysToAdd = 0;
 
             if ($yearsOfWorking >= 0 && $yearsOfWorking < 1) {
-                $daysToAdd = 10 / 52;
-            } elseif ($yearsOfWorking >= 1 && $yearsOfWorking < 2) {
                 $daysToAdd = 12 / 52;
-            } elseif ($yearsOfWorking >= 2 && $yearsOfWorking < 3) {
+            } elseif ($yearsOfWorking >= 1 && $yearsOfWorking < 2) {
                 $daysToAdd = 14 / 52;
-            } elseif ($yearsOfWorking >= 3 && $yearsOfWorking < 4) {
+            } elseif ($yearsOfWorking >= 2 && $yearsOfWorking < 3) {
                 $daysToAdd = 16 / 52;
-            } elseif ($yearsOfWorking >= 4 && $yearsOfWorking < 5) {
+            } elseif ($yearsOfWorking >= 3 && $yearsOfWorking < 4) {
                 $daysToAdd = 18 / 52;
-            } elseif ($yearsOfWorking >= 5 && $yearsOfWorking < 10) {
+            } elseif ($yearsOfWorking >= 4 && $yearsOfWorking < 5) {
                 $daysToAdd = 20 / 52;
-            } elseif ($yearsOfWorking >= 10 && $yearsOfWorking < 15) {
+            } elseif ($yearsOfWorking >= 5 && $yearsOfWorking < 10) {
                 $daysToAdd = 22 / 52;
-            } elseif ($yearsOfWorking >= 15 && $yearsOfWorking < 20) {
+            } elseif ($yearsOfWorking >= 10 && $yearsOfWorking < 15) {
                 $daysToAdd = 24 / 52;
+            } elseif ($yearsOfWorking >= 15 && $yearsOfWorking < 20) {
+                $daysToAdd = 26 / 52;
             }
 
             // Acumular el proporcional de días a 'vacations'
