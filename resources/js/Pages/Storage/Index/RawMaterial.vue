@@ -169,7 +169,7 @@ export default {
 
         handleCommand(command) {
             const commandName = command.split('-')[0];
-            const rowId = parseInt(command.split('-')[1]) - 1;
+            const rowId = parseInt(command.split('-')[1]);
 
             if (commandName == 'turn') {
                 this.turnIntoCatalogProduct(rowId);
@@ -185,9 +185,9 @@ export default {
 
                 if (response.status == 200) {
                     this.$notify({
-                        title: 'Éxito',
+                        title: response.data.title,
                         message: response.data.message,
-                        type: 'success'
+                        type: response.data.type
                     });
 
                 } else {

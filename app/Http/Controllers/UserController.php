@@ -27,15 +27,15 @@ class UserController extends Controller
         //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
         $pre_users = UserResource::collection(User::latest()->get());
         $users = $pre_users->map(function ($user) {
- 
-        return [
-            'id' => $user->id,
-            'name' => $user->name,
-            'is_active' => [
-                'string' => $user->is_active ? 'Activo' : 'Inactivo',
-                'bool' => boolval($user->is_active),
-            ],
-            'employee_properties' => $user->employee_properties,
+
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'is_active' => [
+                    'string' => $user->is_active ? 'Activo' : 'Inactivo',
+                    'bool' => boolval($user->is_active),
+                ],
+                'employee_properties' => $user->employee_properties,
             ];
         });
 
@@ -93,8 +93,8 @@ class UserController extends Controller
             return [
                 'id' => $user->id,
                 'name' => $user->name,
-                   ];
-               });
+            ];
+        });
 
         // PERSONAL
         $payroll_user = PayrollUser::where('user_id', $user_id)->get();
@@ -329,6 +329,21 @@ class UserController extends Controller
         return response()->json([]);
     }
 
+    public function updateVacations(User $user, Request $request)
+    {
+        $employee_properties = $user->employee_properties;
+
+        // sub or add days
+        if ($request->operation == '-')
+            $employee_properties['vacations']['available_days'] -= $request->days;
+        else
+            $employee_properties['vacations']['available_days'] += $request->days;
+
+        $user->update(['employee_properties' => $employee_properties]);
+
+        return response()->json(['available_days' => $employee_properties['vacations']['available_days']]);
+    }
+
     private function formatTime($minutes)
     {
         $hours = floor($minutes / 60);
@@ -381,24 +396,24 @@ class UserController extends Controller
         return $data;
     }
 
-    public function getPendentTasks() 
+    public function getPendentTasks()
     {
         $pendent_tasks = auth()->user()->tasks()->where('status', '!=', 'Terminada')->get();
-    
+
         return response()->json(['items' => $pendent_tasks]);
     }
 
-    public function getAllUsers() 
+    public function getAllUsers()
     {
         $users = User::whereNotIn('id', [1])->get();
-    
+
         return response()->json(['items' => $users]);
     }
 
-    public function getOperators() 
+    public function getOperators()
     {
         $operators = User::where('is_active', true)->where('employee_properties->department', 'Producción')->get();
-    
+
         return response()->json(['items' => $operators]);
     }
 }

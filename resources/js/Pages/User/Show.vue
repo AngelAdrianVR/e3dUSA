@@ -6,14 +6,14 @@
           <label class="text-lg">Usuarios</label>
 
           <Link :href="route('users.index')"
-            class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+            class="cursor-pointer size-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
           <i class="fa-solid fa-xmark"></i>
           </Link>
         </div>
         <div class="flex justify-between">
           <div class="w-1/3">
-            <el-select @change="$inertia.get(route('users.show', userSelected))" v-model="userSelected" clearable filterable
-              placeholder="Buscar órden de diseño" no-data-text="No hay órdenes registradas"
+            <el-select @change="$inertia.get(route('users.show', userSelected))" v-model="userSelected" clearable
+              filterable placeholder="Buscar órden de diseño" no-data-text="No hay órdenes registradas"
               no-match-text="No se encontraron coincidencias">
               <el-option v-for="item in users" :key="item.id" :label="item.id + '. ' + item.name" :value="item.id" />
             </el-select>
@@ -56,6 +56,9 @@
 
                 <DropdownLink @click="resetPassword" as="button">
                   Resetear contraseña
+                </DropdownLink>
+                <DropdownLink @click="showVacationsModal = true" as="button">
+                  Pagar vacaciones
                 </DropdownLink>
                 <DropdownLink @click="showConfirmModal = true" as="button">
                   Eliminar
@@ -203,7 +206,7 @@
           </div>
 
           <!-- --------------------------- performance tab ends --------------------------- -->
-          
+
           <!-- ------------------------------ Performance table ------------------------ -->
           <!-- <p class="text-secondary col-span-2 mt-4 mb-4 text-center">
             Tabla de desempeño
@@ -257,6 +260,48 @@
           </div>
         </template>
       </ConfirmationModal>
+
+      <DialogModal :show="showVacationsModal" @close="showVacationsModal = false">
+        <template #title> Pagar vacaciones </template>
+        <template #content>
+          <div class="grid grid-cols-3 gap-y-1 gap-x-6">
+            <span class="col-span-2 text-right">Días de vacaciones disponibles hasta el momento</span>
+            <b>{{ user.data.employee_properties.vacations.available_days.toFixed(2) }}</b>
+            <span class="col-span-2 text-right">Días a pagar</span>
+            <input v-model="vacationsToPay" type="number" min="1"
+              :max="user.data.employee_properties.vacations.available_days.toFixed(2)" step="0.01" class="input">
+            <span class="col-span-2 text-right">Promedio de horas trabajadas por día</span>
+            <b>{{ user.data.employee_properties.hours_per_week /
+              user.data.employee_properties.work_days.filter(day => day.check_in !== null).length }}</b>
+            <span class="col-span-2 text-right">Promedio de sueldo por día</span>
+            <b>${{ (user.data.employee_properties.hours_per_week /
+              user.data.employee_properties.work_days.filter(day => day.check_in !== null).length) *
+              user.data.employee_properties.salary.hour }}</b>
+            <span class="col-span-2 text-right">Monto por días de vacaciones</span>
+            <b>
+              ${{ getVacationsAmount().toLocaleString('en-US', { minimumFractionDigits: 2 }) }}
+            </b>
+            <span class="col-span-2 text-right">Monto por prima vacacional</span>
+            <b>
+              ${{ (getVacationsAmount() * 0.25).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}
+            </b>
+            <span class="col-span-2 text-right">Total a pagar</span>
+            <b>
+              ${{ (getVacationsAmount() * 1.25).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}
+            </b>
+          </div>
+          <p class="text-center text-sm mt-6 text-secondary">
+            Al dar click en el botón "Pagar", se rebajarán los días especificados en el campo númerico de arriba.
+          </p>
+        </template>
+        <template #footer>
+          <div>
+            <CancelButton @click="showVacationsModal = false" class="mr-2">Cancelar</CancelButton>
+            <PrimaryButton @click="clearVacations" :disabled="!vacationsToPay || vacationsToPay <= 0">Pagar
+            </PrimaryButton>
+          </div>
+        </template>
+      </DialogModal>
     </AppLayoutNoHeader>
   </div>
 </template>
@@ -271,18 +316,19 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import InputError from "@/Components/InputError.vue";
 import Modal from "@/Components/Modal.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
-import { Link, useForm } from "@inertiajs/vue3";
+import DialogModal from "@/Components/DialogModal.vue";
+import { Link } from "@inertiajs/vue3";
 
 export default {
   data() {
-
-
     return {
       userSelected: "",
       // currentUser: null,
       employeeExperience: "",
       showConfirmModal: false,
+      showVacationsModal: false,
       tabs: 1,
+      vacationsToPay: this.user.data.employee_properties.vacations.available_days.toFixed(2),
     };
   },
   props: {
@@ -304,9 +350,39 @@ export default {
     InputError,
     ConfirmationModal,
     PerformanceTable,
-    Link
+    Link,
+    DialogModal,
   },
   methods: {
+    async clearVacations() {
+      try {
+        const response = await axios.put(route('users.update-vacations', this.user.data), { operation: '-', days: this.vacationsToPay });
+
+        if (response.status === 200) {
+          this.user.data.employee_properties.vacations.available_days = response.data.available_days;
+          this.showVacationsModal = false;
+          this.$notify({
+            title: "Éxito",
+            message: "Se ha actualizado la cantidad de vacaciones disponibles para este empleado",
+            type: "success",
+          });
+        }
+
+      } catch (error) {
+        console.log(error);
+        this.$notify({
+          title: "Algo inesperado ha sucedio en el servidor",
+          message: "El servidor no pudo procesar la solicitud. Favor de intentarlo más tarde",
+          type: "error",
+        });
+      }
+    },
+    getVacationsAmount() {
+      return ((this.user.data.employee_properties.hours_per_week /
+        this.user.data.employee_properties.work_days.filter(day => day.check_in !== null).length) *
+        this.user.data.employee_properties.salary.hour *
+        this.vacationsToPay);
+    },
     async deleteItem() {
       try {
         const response = await axios.delete(
