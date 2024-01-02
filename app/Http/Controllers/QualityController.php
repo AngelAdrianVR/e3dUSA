@@ -42,9 +42,21 @@ class QualityController extends Controller
         $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct')->whereHas('productions')->latest()->get();
         $productions = $pre_productions->map(function ($production) {
 
+            $finishedCount = 0;
+                foreach ($production->productions as $productionItem) {
+                    if ($productionItem->finished_at != null) {
+                        $finishedCount++;
+                    }
+                }
+
+                // Calcular el porcentaje --------------------------------------------------------
+                //-------------------------------------------------------------------------------
+                $percentage = $finishedCount > 0 ? (100 / count($production->productions)) * $finishedCount : 0;
+
             return [
                 'id' => $production->id,
                 'folio' => 'OP-' . str_pad($production->id, 4, "0", STR_PAD_LEFT),
+                'percentage' => $percentage
             ];
         });
 
@@ -102,9 +114,21 @@ class QualityController extends Controller
         $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct')->whereHas('productions')->latest()->get();
         $productions = $pre_productions->map(function ($production) {
 
+            $finishedCount = 0;
+                foreach ($production->productions as $productionItem) {
+                    if ($productionItem->finished_at != null) {
+                        $finishedCount++;
+                    }
+                }
+
+                // Calcular el porcentaje --------------------------------------------------------
+                //-------------------------------------------------------------------------------
+                $percentage = $finishedCount > 0 ? (100 / count($production->productions)) * $finishedCount : 0;
+
             return [
                 'id' => $production->id,
                 'folio' => 'OP-' . str_pad($production->id, 4, "0", STR_PAD_LEFT),
+                'percentage' => $percentage
             ];
         });
 
