@@ -52,11 +52,10 @@ class PayrollController extends Controller
             return [
                 'id' => $payroll->id,
                 'week' => $payroll->week,
-                   ];
-               });
-
+            ];
+        });
+        
         // return $payrolls;
-
         return inertia('Payroll/Show', compact('payroll', 'users', 'payrolls', 'justifications', 'payroll_users'));
     }
 
