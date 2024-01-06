@@ -142,9 +142,9 @@ class DashboardController extends Controller
                 }
 
                 // agregar puntos de tiempo extra aceptado en caso de tener
-                $accepted_extra_time_request = $user->extraTimeRequests()->whereDate('date', $payroll->pivot->date)->where('is_accepted', true)->get();
-                if ($accepted_extra_time_request->count()) {
-                    $weekly_points[$day]["extra_time_requests"] += 100;
+                $accepted_extra_time_request = $user->extraTimeRequests()->whereDate('date', $payroll->pivot->date)->where('is_accepted', true)->first();
+                if ($accepted_extra_time_request) {
+                    $weekly_points[$day]["extra_time_requests"] += $accepted_extra_time_request->points;
                 }
 
                 // Restar el valor de 'late' o sumar 10 puntos si no hay retardo

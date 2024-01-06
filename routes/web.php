@@ -225,6 +225,7 @@ Route::post('payrolls/get-payroll', [PayrollController::class, 'getPayroll'])->m
 Route::post('payrolls/get-bonuses', [PayrollController::class, 'getBonuses'])->middleware('auth')->name('payrolls.get-bonuses');
 Route::post('payrolls/get-discounts', [PayrollController::class, 'getDiscounts'])->middleware('auth')->name('payrolls.get-discounts');
 Route::post('payrolls/get-extras', [PayrollController::class, 'getExtras'])->middleware('auth')->name('payrolls.get-extras');
+Route::post('payrolls/get-extras-requests', [PayrollController::class, 'getExtrasRequests'])->middleware('auth')->name('payrolls.get-extras-requests');
 Route::post('payrolls/get-payroll-users', [PayrollController::class, 'getPayrollUsers'])->middleware('auth')->name('payrolls.get-payroll-users');
 Route::post('payrolls/get-additional-time', [PayrollController::class, 'getAdditionalTime'])->middleware('auth')->name('payrolls.get-additional-time');
 Route::post('payrolls/close-current', [PayrollController::class, 'closeCurrent'])->middleware('auth')->name('payrolls.close-current');

@@ -145,6 +145,11 @@
           <span class="text-center">{{ extras.formatted }}</span>
           <span>${{ extras.amount.number_format }}</span>
         </p>
+        <p v-if="bonusForExtras" class="grid grid-cols-3 gap-x-1">
+          <span>Bono por extras solicitados</span>
+          <span class="text-center"></span>
+          <span>${{ bonusForExtras }}</span>
+        </p>
         <p v-if="extras" class="grid grid-cols-3 gap-x-1">
           <span>Total</span>
           <span class="text-center"></span>
@@ -178,6 +183,7 @@ export default {
       bonuses: null,
       discounts: null,
       extras: null,
+      bonusForExtras: null,
       additionalTimes: null,
       totalAdditionalTime: 0,
     }
@@ -203,6 +209,7 @@ export default {
       this.getBonuses();
       this.getDiscounts();
       this.getExtras();
+      this.getExtrasRequested();
       this.getAuthorizedAdditionalTimes();
     },
     getDayOfWeek(date) {
@@ -280,6 +287,22 @@ export default {
 
         if (response.status === 200) {
           this.extras = response.data.item;
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    async getExtrasRequested() {
+      try {
+        const response = await axios.post(route('payrolls.get-extras-requests'), {
+          payroll_id: this.payrollId,
+          user_id: this.user.id
+        });
+
+        if (response.status === 200) {
+          this.bonusForExtras = response.data.item;
         }
       } catch (error) {
         console.log(error);
@@ -420,7 +443,8 @@ export default {
         + bonuses
         + illness
         - discounts
-        + this.extras.amount.raw;
+        + this.extras.amount.raw
+        + this.bonusForExtras;
 
       return total;
     },

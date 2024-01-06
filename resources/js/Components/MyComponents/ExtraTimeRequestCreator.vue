@@ -84,6 +84,12 @@
                         <InputError :message="form.errors.bonus" />
                     </div>
                     <div>
+                        <label class="text-sm ml-2">Puntos *</label>
+                        <input v-model="form.points" placeholder="Ingresa los puntos a sumar en desempeño" class="input"
+                            type="number" min="1" required>
+                        <InputError :message="form.errors.points" />
+                    </div>
+                    <div>
                         <label class="text-sm ml-2 block">Fecha *</label>
                         <el-date-picker v-model="form.date" type="date" placeholder="Fecha" format="DD-MM-YYYY"
                             value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
@@ -115,6 +121,7 @@ export default {
             date: null,
             hours: 1,
             bonus: null,
+            points: null,
         });
 
         return {
