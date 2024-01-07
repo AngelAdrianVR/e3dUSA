@@ -550,17 +550,23 @@ export default {
       try {
         let task = this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id);
         const response = await axios.put(route('productions.change-status', task.id), { scrap: this.scrap });
-
+        let type = 'success';
+        let title = 'Éxito';
         if (response.status === 200) {
-          this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id).started_at = response.data.item.started_at;
-          this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id).finished_at = response.data.item.finished_at;
-          this.showScrapModal = false;
-          this.scrap = null;
+          if (response.data.item === null) {
+            type = 'warning';
+            title = 'Atención';
+          } else {
+            this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id).started_at = response.data.item.started_at;
+            this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id).finished_at = response.data.item.finished_at;
+            this.showScrapModal = false;
+            this.scrap = null;
+          }
 
           this.$notify({
-            title: 'Éxito',
+            title: title,
             message: response.data.message,
-            type: 'success'
+            type: type
           });
         }
       } catch (error) {
