@@ -325,6 +325,7 @@ class PayrollController extends Controller
         $payroll = Payroll::find($request->payroll_id);
         $extra_requested = ExtraTimeRequest::whereBetween('date', [$payroll->start_date, $payroll->start_date->addDays(7)])
             ->where('operator_id', $request->user_id)
+            ->where('is_accepted', true)
             ->get();
 
         $totalBonus = $extra_requested->sum('bonus');
