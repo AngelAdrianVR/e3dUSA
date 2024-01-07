@@ -8,6 +8,7 @@ use App\Http\Resources\UserResource;
 use App\Models\AdditionalTimeRequest;
 use App\Models\Bonus;
 use App\Models\Discount;
+use App\Models\ExtraTimeRequest;
 use App\Models\JustificationEvent;
 use App\Models\Payroll;
 use App\Models\PayrollUser;
@@ -45,7 +46,7 @@ class PayrollController extends Controller
         })->get());
         $payroll_users = PayrollUser::where('payroll_id', $payroll_id)->get(['user_id', 'id'])->groupBy('user_id');
         $payroll = PayrollResource::make(Payroll::with('users')->find($payroll_id));
-        
+
         //recupera todos los payrolls pero solo id y numero de semana para optimizar la carga de la vista.
         $pre_payrolls = PayrollResource::collection(Payroll::latest()->get());
         $payrolls = $pre_payrolls->map(function ($payroll) {
@@ -54,7 +55,7 @@ class PayrollController extends Controller
                 'week' => $payroll->week,
             ];
         });
-        
+
         // return $payrolls;
         return inertia('Payroll/Show', compact('payroll', 'users', 'payrolls', 'justifications', 'payroll_users'));
     }
@@ -319,6 +320,18 @@ class PayrollController extends Controller
         return response()->json(['item' => ['formatted' => "{$hours}h {$minutes}m", 'minutes' => $extras, 'amount' => ['number_format' => number_format($amount, 2), 'raw' => $amount]]]);
     }
 
+    public function getExtrasRequests(Request $request)
+    {
+        $payroll = Payroll::find($request->payroll_id);
+        $extra_requested = ExtraTimeRequest::whereBetween('date', [$payroll->start_date, $payroll->start_date->addDays(7)])
+            ->where('operator_id', $request->user_id)
+            ->get();
+
+        $totalBonus = $extra_requested->sum('bonus');
+
+        return response()->json(['item' => $totalBonus]);
+    }
+
     public function getProcessedAttendances(Request $request)
     {
         $payroll = Payroll::findOrFail($request->payroll_id);
@@ -364,7 +377,7 @@ class PayrollController extends Controller
     {
         $payroll = Payroll::find($payroll_id);
         $users = $payroll->users->unique('name');
-        
+
         return response()->json(['items' => $users]);
     }
 }
