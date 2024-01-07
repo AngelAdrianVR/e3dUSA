@@ -37,11 +37,24 @@
           </template>
         </el-image>
       </figure>
-      <div>
-        <p class="text-primary text-left">Caracteristicas</p>
-        <li
-          v-for="( feature, index ) in  catalog_product_company_sale.catalog_product_company?.catalog_product?.features "
-          :key="index" class="text-gray-800 list-disc">{{ feature }}</li>
+    
+      <div class="flex flex-col space-y-3">
+        <div>
+          <p class="text-primary text-left">Caracteristicas</p>
+          <li
+            v-for="( feature, index ) in  catalog_product_company_sale.catalog_product_company?.catalog_product?.features "
+            :key="index" class="text-gray-800 list-disc">{{ feature }}</li>
+        </div>
+
+        <!-- Partes que componen el producto  -->
+        <div>
+          <p class="text-primary text-left">Componentes</p>
+          <li
+            v-for="( raw_material, index ) in  catalog_product_company_sale.catalog_product_company?.catalog_product?.raw_materials "
+            :key="index" class="text-secondary text-xs underline cursor-pointer list-disc uppercase">
+           <p @click.stop="$inertia.get(route('storages.show', comp_storage.id))" v-for="comp_storage in raw_material.storages" :key="comp_storage">{{ comp_storage.storageable.name }}</p>
+            </li>
+        </div>
       </div>
     </div>
 

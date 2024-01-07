@@ -163,7 +163,7 @@ class ProductionController extends Controller
         $is_automatic_assignment = boolval(Setting::where('key', 'AUTOMATIC_PRODUCTION_ASSIGNMENT')->first()->value);
         $production_processes = ProductionCostResource::collection(ProductionCost::all());
 
-        // return $production_processes;
+        // return $sales;
 
         return inertia('Production/Create', compact('operators', 'sales', 'is_automatic_assignment', 'production_processes'));
     }
@@ -228,7 +228,7 @@ class ProductionController extends Controller
 
     public function show($sale_id)
     {
-        $sale = SaleResource::make(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'progress'], 'comments.user'], 'productions' => ['user', 'operator', 'progress']])->find($sale_id));
+        $sale = SaleResource::make(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'catalogProductCompany.catalogProduct.rawMaterials.storages.storageable', 'productions' => ['operator', 'progress'], 'comments.user'], 'productions' => ['user', 'operator', 'progress']])->find($sale_id));
         $pre_sales = Sale::whereHas('productions')->latest()->get();
         $sales = $pre_sales->map(function ($sale) {
             return [
@@ -237,6 +237,8 @@ class ProductionController extends Controller
                 'company_name' => $sale->companyBranch?->name,
             ];
         });
+
+        // return $sale;
 
         return inertia('Production/Show', compact('sale', 'sales'));
     }
