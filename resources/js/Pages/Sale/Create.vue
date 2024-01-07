@@ -164,14 +164,17 @@
                         </div>
                         <div class="ml-4 col-span-2">
                             <label class="text-sm ml-2 my-1 flex items-center">Fecha de entrega esperada
-                                <el-tooltip content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega" placement="right">
-                                <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
-                                <i class="fa-solid fa-info text-primary text-[7px]"></i>
-                                </div>
-                            </el-tooltip>
+                                <el-tooltip
+                                    content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega"
+                                    placement="right">
+                                    <div
+                                        class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
+                                        <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                    </div>
+                                </el-tooltip>
                             </label>
-                            <el-date-picker v-model="form.promise_date" type="date" placeholder="Fecha de entrega esperada" format="YYYY/MM/DD"
-                                value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
+                            <el-date-picker v-model="form.promise_date" type="date" placeholder="Fecha de entrega esperada"
+                                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
                             <InputError :message="form.errors.promise_date" />
                         </div>
                     </div>
@@ -241,6 +244,18 @@
                         <figure v-else-if="selectedCatalogProduct" class="rounded-md">
                             <img :src="selectedCatalogProduct.media[0]?.original_url" class="rounded-md">
                         </figure>
+                        <p class="col-span-full text-sm flex items-center space-x-2">
+                            Stock disponible en almacén para despachar la orden:
+                            <b>{{ availableStock ? availableStock.quantity : 0 }} unidades.</b>
+                            <el-tooltip placement="top">
+                                <template #content>
+                                    hola
+                                </template>
+                                <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                                    <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                </div>
+                            </el-tooltip>
+                        </p>
                         <div class="col-span-full">
                             <IconInput @change="validateQuantity()" v-model="product.quantity" inputPlaceholder="Cantidad *"
                                 inputType="number" inputStep="0.01">
@@ -301,7 +316,6 @@
                     </PrimaryButton>
                 </template>
             </DialogModal>
-
             <Modal :show="showCreateProjectModal" @close="showCreateProjectModal = false">
                 <section class="mx-7 my-4 space-y-4">
                     <div>
@@ -360,6 +374,7 @@ export default {
             importantNotesToStore: null,
             isEditImportantNotes: false,
             showCreateProjectModal: false,
+            availableStock: null,
             product: {
                 catalog_product_company_id: null,
                 quantity: null,
@@ -396,6 +411,7 @@ export default {
 
                 if (response.status === 200) {
                     this.selectedCatalogProduct = response.data.item;
+                    this.availableStock = response.data.stock;
                     this.loading = false;
                 }
             } catch (error) {
