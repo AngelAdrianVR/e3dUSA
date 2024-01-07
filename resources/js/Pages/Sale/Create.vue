@@ -244,12 +244,12 @@
                         <figure v-else-if="selectedCatalogProduct" class="rounded-md">
                             <img :src="selectedCatalogProduct.media[0]?.original_url" class="rounded-md">
                         </figure>
-                        <p class="col-span-full text-sm flex items-center space-x-2">
-                            Stock disponible en almacén para despachar la orden:
+                        <p v-if="selectedCatalogProduct" class="col-span-full text-sm flex items-center space-x-2">
+                            Stock disponible en almacén:
                             <b>{{ availableStock ? availableStock.quantity : 0 }} unidades.</b>
                             <el-tooltip placement="top">
                                 <template #content>
-                                    hola
+                                    Se descontarán de estas existencias para despachar la orden
                                 </template>
                                 <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
                                     <i class="fa-solid fa-info text-primary text-[7px]"></i>
