@@ -47,6 +47,7 @@
                         <th class="text-left bg-[#9a9a9a] border">Merma</th>
                         <th class="text-left bg-[#9a9a9a] border">Día terminado</th>
                         <th class="text-left bg-[#9a9a9a] border">T. extra</th>
+                        <th class="text-left bg-[#9a9a9a] border">Sup. calidad</th>
                         <th class="text-left bg-[#9a9a9a] border"></th>
                     </tr>
                 </thead>
@@ -65,6 +66,9 @@
                             <i v-if="dayPoints.day_completed >= 0" class="fa-solid fa-check"></i>
                         </td>
                         <td class="bg-white py-1 px-2 text-xs">{{ dayPoints.extra_time_requests }}</td>
+                        <td class="bg-white py-1 px-2 text-xs">
+                            {{ dayPoints.quality_supervision }}
+                        </td>
                     </tr>
                 </tbody>
                 <tfoot>
@@ -75,6 +79,7 @@
                         <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateTotal('scrap') }}</td>
                         <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateTotal('day_completed') }}</td>
                         <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateTotal('extra_time_requests') }}</td>
+                        <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateTotal('quality_supervision') }}</td>
                         <td class="bg-[#9a9a9a] py-1 px-2 text-xs">{{ calculateGrandTotal() }}</td>
                     </tr>
                 </tfoot>
@@ -128,6 +133,7 @@
                 <li><strong>Día terminado: </strong>Se restarán 50 puntos si no terminaste las horas de tu jornada
                     correspondiente a cada día en la tabla.</li>
                 <li><strong>Tiempo extra: </strong>Se sumarán 100 puntos si aceptas alguna solicitud de tiempo extra. Esto es adicional al bono económico</li>
+                <li><strong>Supervisión de calidad: </strong>Se sumarán 10 puntos por cada supervisión de calidad registrada</li>
             </div>
         </template>
         <template #footer>
@@ -177,7 +183,7 @@ export default {
             });
         },
         calculateTotalPoints(dayPoints) {
-            return dayPoints.punctuality + dayPoints.time + dayPoints.scrap + dayPoints.day_completed + dayPoints.extra_time_requests ;
+            return dayPoints.punctuality + dayPoints.time + dayPoints.scrap + dayPoints.day_completed + dayPoints.extra_time_requests + dayPoints.quality_supervision ;
         },
         calculateTotal(criterion) {
             return Object.values(this.selectedUser.weekly_points).reduce((total, dayPoints) => total + dayPoints[criterion], 0);

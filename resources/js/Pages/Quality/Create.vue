@@ -22,7 +22,7 @@
                 <el-select @change="getProduction" class="lg:w-1/2" v-model="form.production_id" filterable
                 placeholder="Orden de producción" no-data-text="No hay opciones registradas"
                 no-match-text="No se encontraron coincidencias">
-                    <el-option v-for="item in productions " :key="item" :label="item.folio" :value="item.id" />
+                    <el-option v-for="item in productions.filter(production => production.percentage != 100)" :key="item" :label="item.folio" :value="item.id" />
                 </el-select>
             </div>
             <InputError :message="form.errors.production_id" />

@@ -458,3 +458,25 @@ Route::get('/llaveros', function () {
 
     return $agrupados;
 });
+
+// Emblemas más vendidos de mayor a menor
+Route::get('/Emblemas', function () {
+    $emblemas = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')
+        ->whereHas('catalogProductCompany.catalogProduct', function ($query) {
+            $query->where('part_number', 'like', 'C-EM%');
+        })
+        ->get();
+
+    $agrupados = $emblemas->groupBy('catalogProductCompany.catalogProduct.part_number')
+        ->map(function ($group) {
+            return [
+                'Nombre' => $group->first()->catalogProductCompany->catalogProduct->name,
+                'Número de parte' => $group->first()->catalogProductCompany->catalogProduct->part_number,
+                'Stock mínimo' => $group->first()->catalogProductCompany->catalogProduct->min_quantity,
+                'Venta total' => $group->sum('quantity'),
+            ];
+        })
+        ->sortByDesc('Venta total');
+
+    return $agrupados;
+});
