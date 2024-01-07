@@ -22,6 +22,7 @@ export default {
                 primarylight: '#FEBFCE',
                 secondary: '#0355B5',
                 secondarylight: '#B9D9FE',
+                gray1: '#9A9A9A',
             },
         },
     },
