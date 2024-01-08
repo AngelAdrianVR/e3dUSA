@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordEdited;
 use App\Models\Manual;
 use Illuminate\Http\Request;
 
@@ -24,7 +25,7 @@ class ManualController extends Controller
         $validated = $request->validate([
             'type' => 'required|string|max:255',
             'title' => 'required|string|max:255',
-            'description' => 'required|string|max:355',
+            'description' => 'required|string|max:460',
             'cover' => 'nullable|mimetypes:image/*',
             'media' => $request->type == 'Manual'
                 ? 'required|mimetypes:application/pdf'
@@ -36,9 +37,9 @@ class ManualController extends Controller
         // Adjunta la imagen de portada
         if ($request->file('cover')) {
             $manual->addMedia($request->file('cover'))
-            ->toMediaCollection('cover');
+                ->toMediaCollection('cover');
         }
-        
+
         // Adjunta el archivo de manual
         $manual->addMedia($request->file('media'))
             ->toMediaCollection();
@@ -53,12 +54,53 @@ class ManualController extends Controller
 
     public function edit(Manual $manual)
     {
-        //
+        $manual = $manual->load('media');
+
+        return inertia('Manuals/Edit', compact('manual'));
     }
 
     public function update(Request $request, Manual $manual)
     {
-        //
+        $validated = $request->validate([
+            'type' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string|max:355',
+        ]);
+
+        $manual->update($validated);
+
+        return to_route('manuals.index');
+    }
+
+    public function updateWithMedia(Request $request, Manual $manual)
+    {
+        $validated = $request->validate([
+            'type' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string|max:460',
+            'cover' => 'nullable|mimetypes:image/*',
+            'media' => $request->type == 'Manual'
+                ? 'required|mimetypes:application/pdf'
+                : 'required',
+        ]);
+
+        $manual->update($validated);
+
+        // limpiar media
+        $manual->clearMediaCollection();
+
+        // Adjunta la imagen de portada
+        if ($request->file('cover')) {
+            $manual->addMedia($request->file('cover'))
+                ->toMediaCollection('cover');
+        }
+        // Adjunta el archivo de manual
+        $manual->addMedia($request->file('media'))
+            ->toMediaCollection();
+
+        event(new RecordEdited($manual));
+
+        return to_route('manuals.index');
     }
 
     public function destroy(Manual $manual)

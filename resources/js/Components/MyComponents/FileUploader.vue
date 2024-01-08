@@ -56,7 +56,11 @@ export default {
         handleFileInputChange(event) {
             // Agrega los archivos seleccionados a la lista existente
             const newSelectedFiles = Array.from(event.target.files);
-            this.selectedFiles = [...this.selectedFiles, ...newSelectedFiles];
+            if (this.multiple) {
+                this.selectedFiles = [...this.selectedFiles, ...newSelectedFiles];
+            } else {
+                this.selectedFiles = [...newSelectedFiles];
+            }
             this.$emit('files-selected', this.selectedFiles);
         },
         removeFile(index) {
@@ -65,7 +69,7 @@ export default {
         },
         getFileTypeIcon(fileName) {
             // Asocia extensiones de archivo a iconos
-            const fileExtension = fileName.split('.').pop().toLowerCase();
+            const fileExtension = fileName?.split('.').pop().toLowerCase();
             switch (fileExtension) {
                 case 'pdf':
                     return 'fa-regular fa-file-pdf text-red-700';

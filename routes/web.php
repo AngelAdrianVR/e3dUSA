@@ -371,6 +371,7 @@ Route::post('maintenances/update-with-media/{maintenance}', [MaintenanceControll
 
 // ------- tutorials & manuals routes  -------------
 Route::resource('manuals', ManualController::class)->middleware('auth');
+Route::post('manuals/update-with-media/{manual}', [ManualController::class, 'updateWithMedia'])->name('manuals.update-with-media')->middleware('auth');
 
 
 // ---------- spare parts routes  ---------------

@@ -105,7 +105,6 @@ class MaintenanceController extends Controller
         event(new RecordEdited($maintenance));
 
         return redirect()->route('machines.show', ['machine'=> $request->machine_id]);
-
     }
 
     

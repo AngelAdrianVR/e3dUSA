@@ -13,17 +13,13 @@ use App\Models\Production;
 use App\Models\ProductionCost;
 use App\Models\Sale;
 use App\Models\Setting;
-use App\Models\StockMovementHistory;
-use App\Models\Storage;
 use App\Models\User;
 use App\Notifications\MentionInProductionNotification;
-use App\Notifications\MentionNotification;
 use App\Notifications\ProductionCompletedNotification;
 use Illuminate\Http\Request;
 
 class ProductionController extends Controller
 {
-
     public function index()
     {
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de produccion todas')) {
