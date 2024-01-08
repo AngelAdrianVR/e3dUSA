@@ -66,26 +66,26 @@ export default {
         handleSearch() {
             this.search = this.inputSearch;
         },
-        async deleteManual(manual) {
-            try {
-                const response = await axios.delete(route('manuals.destroy', manual.id));
+        // async deleteManual(manual) {
+        //     try {
+        //         const response = await axios.delete(route('manuals.destroy', manual.id));
 
-                if (response.status === 200) {
-                    this.$notify({
-                        title: "Éxito",
-                        message: "Se ha eliminado correctamente",
-                        type: "success",
-                    });
-                    const index = this.manuals.findIndex(item => item.id === manual.id);
+        //         if (response.status === 200) {
+        //             this.$notify({
+        //                 title: "Éxito",
+        //                 message: "Se ha eliminado correctamente",
+        //                 type: "success",
+        //             });
+        //             const index = this.manuals.findIndex(item => item.id === manual.id);
 
-                    if (index !== -1) {
-                        this.manuals.splice(index, 1);
-                    }
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        },
+        //             if (index !== -1) {
+        //                 this.manuals.splice(index, 1);
+        //             }
+        //         }
+        //     } catch (error) {
+        //         console.log(error);
+        //     }
+        // },
     },
     computed: {
         filteredTableData() {

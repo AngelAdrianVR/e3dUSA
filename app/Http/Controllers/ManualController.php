@@ -88,9 +88,10 @@ class ManualController extends Controller
 
         // limpiar media
         $manual->clearMediaCollection();
-
+        
         // Adjunta la imagen de portada
         if ($request->file('cover')) {
+            $manual->clearMediaCollection('cover');
             $manual->addMedia($request->file('cover'))
                 ->toMediaCollection('cover');
         }

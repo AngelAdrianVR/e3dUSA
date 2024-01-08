@@ -33,14 +33,13 @@
                 </div>
                 <div class="mt-2">
                     <InputLabel value="Título*" class="ml-2" />
-                    <input v-model="form.title" type="text" class="input"
-                    placeholder="Escribe aquí el título" />
+                    <input v-model="form.title" type="text" class="input" placeholder="Escribe aquí el título" />
                     <InputError :message="form.errors.title" />
                 </div>
                 <div class="mt-2">
                     <InputLabel value="Objetivo o descripción*" class="ml-2" />
-                    <textarea v-model="form.description" class="textarea"
-                    placeholder="Escribe el objetivo o una descripción breve para el tutorial"></textarea>
+                    <textarea v-model="form.description" class="textarea" rows="5"
+                        placeholder="Escribe el objetivo o una descripción breve para el tutorial"></textarea>
                     <InputError :message="form.errors.description" />
                 </div>
                 <div v-if="form.type == 'Tutorial'" class="mt-2">
@@ -49,7 +48,8 @@
                 </div>
                 <div class="mt-2">
                     <InputLabel :value="form.type == 'Manual' ? 'Manual*' : 'Video*'" class="ml-2" />
-                    <FileUploader @files-selected="this.form.media = $event[0]" :multiple="false" :acceptedFormat="form.type == 'Manual' ? 'pdf' : 'Video'" />
+                    <FileUploader @files-selected="this.form.media = $event[0]" :multiple="false"
+                        :acceptedFormat="form.type == 'Manual' ? 'pdf' : 'Video'" />
                     <InputError :message="form.errors.media" />
                 </div>
                 <div class="mt-9 mx-3 md:text-right">

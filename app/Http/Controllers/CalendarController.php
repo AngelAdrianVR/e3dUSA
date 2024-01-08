@@ -58,6 +58,7 @@ class CalendarController extends Controller
             'start_date' => 'required',
         ]);
 
+        $participants = [];
         // procesar arreglo de participantes
         foreach ($request->participants as $key => $participantId) {
             $participants[] = [

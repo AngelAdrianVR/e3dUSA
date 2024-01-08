@@ -38,24 +38,29 @@
                 </div>
                 <div class="mt-2">
                     <InputLabel value="Objetivo o descripción*" class="ml-2" />
-                    <textarea v-model="form.description" class="textarea"
+                    <textarea v-model="form.description" class="textarea" rows="5"
                         placeholder="Escribe el objetivo o una descripción breve para el tutorial"></textarea>
                     <InputError :message="form.errors.description" />
                 </div>
-                <div v-if="form.type == 'Tutorial'" class="mt-2">
-                    <InputLabel value="Imagen de portada*" class="ml-2" />
-                    <FileUploader ref="cover" @files-selected="form.cover = $event[0]; updateMedia = true;" :multiple="false"
-                        acceptedFormat="imagen" />
+                <div v-if="loading">
+                    <i class="fa-solid fa-spinner fa-spin text-primary mr-2"></i> cargando archivo(s)...
                 </div>
-                <div class="mt-2">
-                    <InputLabel :value="form.type == 'Manual' ? 'Manual*' : 'Video*'" class="ml-2" />
-                    <FileUploader ref="media" @files-selected="form.media = $event[0]; updateMedia = true;" :multiple="false"
-                        :acceptedFormat="form.type == 'Manual' ? 'pdf' : 'Video'" />
-                    <InputError :message="form.errors.media" />
+                <div v-show="!loading">
+                    <div v-if="form.type == 'Tutorial'" class="mt-2">
+                        <InputLabel value="Imagen de portada*" class="ml-2" />
+                        <FileUploader ref="cover" @files-selected="form.cover = $event[0]; updateMedia = true;"
+                            :multiple="false" acceptedFormat="imagen" />
+                    </div>
+                    <div class="mt-2">
+                        <InputLabel :value="form.type == 'Manual' ? 'Manual*' : 'Video*'" class="ml-2" />
+                        <FileUploader ref="media" @files-selected="form.media = $event[0]; updateMedia = true;"
+                            :multiple="false" :acceptedFormat="form.type == 'Manual' ? 'pdf' : 'Video'" />
+                        <InputError :message="form.errors.media" />
+                    </div>
                 </div>
                 <div class="mt-9 mx-3 md:text-right">
                     <PrimaryButton :disabled="form.processing">
-                        Guardar {{ updateMedia }}
+                        Guardar
                     </PrimaryButton>
                 </div>
             </div>
@@ -85,6 +90,7 @@ export default {
         return {
             form,
             updateMedia: false,
+            loading: false,
         }
     },
     props: {
@@ -129,22 +135,27 @@ export default {
         async createFileFromUrl(url, fileName, mimeType) {
             return await fetch(url)
                 .then(response => response.blob())
-                .then(blob => new File([blob], fileName, { type: mimeType }));
+                .then(blob => new File([blob], fileName, { type: mimeType }))
         },
-    },
-    async mounted() {
-        // agregar media al formulario
-        const media = this.manual.media.find(item => item.collection_name == 'default');
-        const fileMedia = await this.createFileFromUrl(media.original_url, media.file_name, media.mime_type);
-        this.form.media = fileMedia;
-        this.$refs.media.selectedFiles.push(fileMedia);
-        //  agregar la portada
-        if (this.manual.type !== 'Manual') {
-            const cover = this.manual.media.find(item => item.collection_name == 'cover');
-            const fileCover = await this.createFileFromUrl(cover.original_url, cover.file_name, cover.mime_type);
-            this.form.cover = fileCover;
-            this.$refs.cover.selectedFiles.push(fileCover);
+        async addMedia() {
+            this.loading = true;
+            // agregar media al formulario
+            const media = this.manual.media.find(item => item.collection_name == 'default');
+            const fileMedia = await this.createFileFromUrl(media.original_url, media.file_name, media.mime_type);
+            this.form.media = fileMedia;
+            this.$refs.media.selectedFiles.push(fileMedia);
+            //  agregar la portada
+            if (this.manual.type !== 'Manual') {
+                const cover = this.manual.media.find(item => item.collection_name == 'cover');
+                const fileCover = await this.createFileFromUrl(cover.original_url, cover.file_name, cover.mime_type);
+                this.form.cover = fileCover;
+                this.$refs.cover.selectedFiles.push(fileCover);
+            }
+            this.loading = false;
         }
+    },
+    mounted() {
+       this.addMedia();
     },
 };
 </script>
