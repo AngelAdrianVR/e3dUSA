@@ -108,7 +108,7 @@
                         <div class="flex mb-4 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Materia(s) prima(s)</p>
                             <div class="flex flex-col">
-                                <div class="text-secondary underline cursor-pointer" v-for="raw_material in catalog_product.data.rawMaterials" :key="raw_material">
+                                <div class="text-secondary underline cursor-pointer uppercase" v-for="raw_material in catalog_product.data.rawMaterials" :key="raw_material">
                                     <p @click="$inertia.get(route('storages.show', comp_storage.id))" v-for="comp_storage in raw_material.storages" :key="comp_storage" >{{ comp_storage.storageable.name }}</p>
                                 </div>
                             </div>

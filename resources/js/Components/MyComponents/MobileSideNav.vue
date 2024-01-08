@@ -52,13 +52,15 @@ export default {
                 {
                     label: 'CRM',
                     icon: '<i class="fa-solid fa-chart-line text-xs"></i>',
-                    active:  route().current('crm.*') || route().current('quotes.*') || route().current('companies.*') || route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*') || route().current('client-monitors.*'),
+                    active:  route().current('crm.*') || route().current('quotes.*') || route().current('companies.*') ||
+                     route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*') ||
+                     route().current('client-monitors.*') || route().current('sale-analitics.*'),
                     options: [
                         {
-                            label: 'Inicio',
-                            route: route('crm.dashboard'),
-                            active: route().current('crm.*'),
-                            show: this.$page.props.auth.user.permissions.includes('Inicio crm')
+                            label: 'Análisis de ventas',
+                            route: 'sale-analitics.index',
+                            show: this.$page.props.auth.user.permissions.includes('Analisis de ventas'),
+                            notifications: false,
                         },
                         {
                             label: 'Cotizaciones',

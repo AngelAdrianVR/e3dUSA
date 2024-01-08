@@ -36,6 +36,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\QualityController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RolePermissionController;
+use App\Http\Controllers\SaleAnaliticController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SampleController;
 use App\Http\Controllers\SettingController;
@@ -397,6 +398,9 @@ Route::resource('production-progress', ProductionProgressController::class)->mid
 //------------------ Customer dates routes ----------------
 Route::resource('customer-meetings', CustomerMeetingController::class)->middleware('auth');
 Route::post('customer-meetings/get-soon-dates', [CustomerMeetingController::class, 'getSoonDates'])->name('customer-meetings.get-soon-dates')->middleware('auth');
+
+//------------------ sale analisis routes ----------------
+Route::resource('sale-analitics', SaleAnaliticController::class)->middleware('auth');
 
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
