@@ -1,10 +1,10 @@
 <template>
     <div class="w-full">
-        <input type="file" ref="fileInput" style="display: none" @change="handleFileInputChange" multiple />
+        <input type="file" ref="fileInput" style="display: none" @change="handleFileInputChange" :multiple="multiple" :accept="getAcceptedFormat()" />
         <button type="button" @click="openFileBrowser">
             <p class="flex items-center space-x-2 text-sm text-primary cursor-pointer flex-shrink-0 flex-grow-0">
                 <i class="fa-solid fa-plus"></i>
-                <span>Adjuntar archivos</span>
+                <span>Adjuntar {{ multiple ? 'archivos' : 'archivo' }}</span>
                 <i class="fa-solid fa-paperclip"></i>
             </p>
         </button>
@@ -30,8 +30,25 @@ export default {
             selectedFiles: [],
         };
     },
+    props: {
+        multiple: {
+            type: Boolean,
+            default: true
+        },
+        acceptedFormat: {
+            type: String,
+            default: 'Todo'
+        },
+    },
     emits: ['files-selected'],
     methods: {
+        getAcceptedFormat() {
+            const format = this.acceptedFormat.toLowerCase();
+            if (format === 'video') return 'video/*';
+            else if (format === 'pdf') return 'application/pdf';
+            else if (format === 'imagen') return 'image/*';
+            else '*/*';
+        },
         openFileBrowser() {
             // Simula el clic en el input file al hacer clic en el botón personalizado
             this.$refs.fileInput.click();
@@ -57,6 +74,11 @@ export default {
                 case 'png':
                 case 'gif':
                     return 'fa-regular fa-image text-blue-300';
+                case 'mp4':
+                case 'avi':
+                case 'mkv':
+                case 'mov':
+                    return 'fa-regular fa-file-video text-sky-400';
                 default:
                     return 'fa-regular fa-file-lines';
             }

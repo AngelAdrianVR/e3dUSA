@@ -20,6 +20,7 @@ use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\KioskDeviceController;
 use App\Http\Controllers\MachineController;
 use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\ManualController;
 use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MettingMonitorController;
 use App\Http\Controllers\OportunityController;
@@ -367,6 +368,9 @@ Route::resource('maintenances', MaintenanceController::class)->except('create')-
 Route::get('maintenances/create/{selectedMachine}', [MaintenanceController::class, 'create'])->name('maintenances.create')->middleware('auth');
 Route::post('maintenances/update-with-media/{maintenance}', [MaintenanceController::class, 'updateWithMedia'])->name('maintenances.update-with-media')->middleware('auth');
 
+
+// ------- tutorials & manuals routes  -------------
+Route::resource('manuals', ManualController::class)->middleware('auth');
 
 
 // ---------- spare parts routes  ---------------

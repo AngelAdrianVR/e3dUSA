@@ -374,6 +374,14 @@ export default {
                     }),
                     options: [
                         {
+                            label: 'Tutoriales y manuales',
+                            route: 'manuals.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver manuales'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'manual';
+                            }),
+                        },
+                        {
                             label: 'Máquinas',
                             route: 'machines.index',
                             show: this.$page.props.auth.user.permissions.includes('Ver maquinas'),
