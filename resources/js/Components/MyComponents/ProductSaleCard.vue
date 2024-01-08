@@ -367,6 +367,23 @@
       <!-- <PrimaryButton @click="changeTaskStatus" :disabled="!scrap">Finalizar producción</PrimaryButton> -->
     </template>
   </DialogModal>
+
+  <!-- info modal -->
+  <DialogModal :show="showInfoModal" @close="showInfoModal = false">
+    <template #title>
+      <h1>Proceso de producción: ¡Pasos importantes!</h1>
+    </template>
+    <template #content>
+      <p>
+        <b class="text-primary">No se puede iniciar y finalizar la tarea de inmediato.</b> Por favor, asegúrate de completar la actividad
+        correspondiente antes de finalizar para garantizar la precisión
+        del tiempo real de trabajo registrado. Esto nos permite obtener datos exactos sobre la duración de la producción.
+      </p>
+    </template>
+    <template #footer>
+      <PrimaryButton @click="showInfoModal = false">Entendido</PrimaryButton>
+    </template>
+  </DialogModal>
 </template>
 
 <script>
@@ -394,6 +411,7 @@ export default {
       form,
       selected: false,
       showProgressModal: false,
+      showInfoModal: false,
       showProgressDetailsModal: false,
       showScrapModal: false,
       showCommentsModal: false,
@@ -565,20 +583,19 @@ export default {
         let title = 'Éxito';
         if (response.status === 200) {
           if (response.data.item === null) {
-            type = 'warning';
-            title = 'Atención';
+            this.showInfoModal = true;
           } else {
             this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id).started_at = response.data.item.started_at;
             this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id).finished_at = response.data.item.finished_at;
             this.showScrapModal = false;
             this.scrap = null;
+            this.$notify({
+              title: title,
+              message: response.data.message,
+              type: type
+            });
           }
 
-          this.$notify({
-            title: title,
-            message: response.data.message,
-            type: type
-          });
         }
       } catch (error) {
         this.$notify({
