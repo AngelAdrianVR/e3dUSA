@@ -42,17 +42,17 @@
 	width: 3px;
 	height: 6px;
 	background: transparent;
+    height: 4px; /* Ajusta según tus preferencias */
 }
 
 *::-webkit-scrollbar-thumb {
-	background: #9a9a9a;
+	background: #cccccc;
 	border-radius: 2px;
 }
 
 *::-webkit-scrollbar-thumb:horizontal {
-	background: #9a9a9a;
-	border-radius: 7px;
-    width: 3px;
+	background: #cccccc;
+	border-radius: 2px;
 }
 
 @layer components{

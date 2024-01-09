@@ -6,6 +6,7 @@ use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\SupplierResource;
+use App\Models\Contact;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 
@@ -80,8 +81,10 @@ class SupplierController extends Controller
     }
 
     
-    public function edit(Supplier $supplier)
+    public function edit($supplier_id)
     {
+        $supplier = Supplier::with('contacts')->find($supplier_id);
+
         // return $supplier;
         return inertia('Supplier/Edit', compact('supplier'));
     }
@@ -98,6 +101,42 @@ class SupplierController extends Controller
         ]);
 
        $supplier->update($request->all());
+
+       //Para actualizar los contactos editados del supplier----------
+
+       //Obtén los IDs de los contactos proporcionadoe en el formulario
+       $existingContactIds = collect($request->input('contacts'))->pluck('id')->toArray();
+       //Recorre los contactos proporcionados en el formulario
+       foreach ($request->input('contacts') as $contactData) {
+            $contact = null;
+
+            //Comprueba si el co ntacto ya existe por ID
+            if (isset($contactData['id'])) {
+                $contact = Contact::find($contactData['id']);
+            }
+
+            //Si el contacto no existe se crea uno nuevo
+            if (!$contact) {
+                $contact = new Contact([
+                    'user_id' => auth()->id(),
+                ]);
+            }
+
+            //Actualiza los datos del contacto
+            $contact->fill([
+                'name' => $contactData['name'],
+                'email' => $contactData['email'],
+                'phone' => $contactData['phone'],
+                'birthdate_day' => $contactData['birthdate_day'],
+                'birthdate_month' => $contactData['birthdate_month'],
+            ]);
+
+            //Guarda el contacto en la relación
+            $supplier->contacts()->save($contact);
+       }
+
+       //Elimina los contactos que no están en el formulario
+       $supplier->contacts()->whereNotIn('id', $existingContactIds)->delete();
 
        event(new RecordEdited($supplier));
 

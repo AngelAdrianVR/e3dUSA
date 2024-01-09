@@ -167,7 +167,7 @@
               <SecondaryButton
                 @click="addBank"
                 :disabled="
-                  contacts.length == 0 ||
+                  contacts?.length == 0 ||
                   !bank.beneficiary_name ||
                   !bank.accountNumber ||
                   !bank.clabe ||
@@ -189,7 +189,7 @@
             <!-- <InputError :message="form.errors.contacts" /> -->
 
             <ol
-              v-if="contacts.length"
+              v-if="contacts?.length"
               class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1"
             >
               <template v-for="(item, index) in contacts" :key="index">
@@ -303,7 +303,8 @@
                 :disabled="
                   !this.contact.name ||
                   !this.contact.email ||
-                  !this.contact.phone
+                  !this.contact.phone ||
+                  this.editIndex !== null
                 "
               >
                 {{
@@ -316,7 +317,7 @@
           </div>
           <!-- ---------------- contacts ends ----------------- -->
           <div class="mt-2 mx-3 md:text-right">
-            <PrimaryButton :disabled="form.processing">
+            <PrimaryButton :disabled="form.processing || this.editIndex !== null">
               Actualizar proveedor
             </PrimaryButton>
           </div>
@@ -343,6 +344,7 @@ export default {
       post_code: this.supplier.post_code,
       phone: this.supplier.phone,
       banks: this.supplier.banks,
+      contacts: this.supplier.contacts,
     });
 
     return {
@@ -357,6 +359,7 @@ export default {
         bank_name: null,
       },
       contact: {
+        id: null,
         name: null,
         email: null,
         phone: null,
@@ -399,8 +402,6 @@ export default {
             message: "Proveedor Actualizado",
             type: "success",
           });
-
-          this.form.reset();
         },
       });
     },
@@ -425,7 +426,7 @@ export default {
     editBank(index) {
       const bank_info = { ...this.form.banks[index] };
       this.bank = bank_info;
-      this.contacts = bank_info.contacts;
+      this.contacts = this.supplier.contacts;
       this.editIndex = index;
     },
     resetBankForm() {
@@ -444,7 +445,7 @@ export default {
         this.contacts[this.editContactIndex] = contact;
         this.editContactIndex = null;
       } else {
-        this.contacts.push(contact);
+        this.form.contacts.push(contact);
       }
 
       this.contact.name = null;
@@ -462,5 +463,17 @@ export default {
       this.editContactIndex = index;
     },
   },
+  mounted() {
+    this.form.contacts = this.supplier.contacts.map(contact => {
+      return {
+        id: contact.id,
+        name: contact.name,
+        email: contact.email,
+        phone: contact.phone,
+        birthdate_day: contact.birthdate_day,
+        birthdate_month: contact.birthdate_month,
+      }
+    })
+  }
 };
 </script>

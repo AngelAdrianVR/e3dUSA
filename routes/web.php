@@ -37,6 +37,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\QualityController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RolePermissionController;
+use App\Http\Controllers\SaleAnaliticController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SampleController;
 use App\Http\Controllers\SettingController;
@@ -404,6 +405,11 @@ Route::resource('production-progress', ProductionProgressController::class)->mid
 Route::resource('customer-meetings', CustomerMeetingController::class)->middleware('auth');
 Route::post('customer-meetings/get-soon-dates', [CustomerMeetingController::class, 'getSoonDates'])->name('customer-meetings.get-soon-dates')->middleware('auth');
 
+//------------------ sale analisis routes ----------------
+Route::resource('sale-analitics', SaleAnaliticController::class)->middleware('auth');
+Route::get('sale-analitics-fetch-top-products/{family}/{range}', [SaleAnaliticController::class, 'fetchTopProducts'])->name('sale-analitics.fetch-top-products')->middleware('auth');
+Route::get('sale-analitics-fetch-product-info/{part_number}', [SaleAnaliticController::class, 'fetchProductInfo'])->name('sale-analitics.fetch-product-info')->middleware('auth');
+
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
 
@@ -441,26 +447,4 @@ Route::get('mail-test', function () {
     });
 
     return "Correo de prueba enviado a $destinatario.";
-});
-
-// Llaveros más vendidos de mayor a menor
-Route::get('/llaveros', function () {
-    $llaveros = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')
-        ->whereHas('catalogProductCompany.catalogProduct', function ($query) {
-            $query->where('part_number', 'like', 'C-LL%');
-        })
-        ->get();
-
-    $agrupados = $llaveros->groupBy('catalogProductCompany.catalogProduct.part_number')
-        ->map(function ($group) {
-            return [
-                'Nombre' => $group->first()->catalogProductCompany->catalogProduct->name,
-                'Número de parte' => $group->first()->catalogProductCompany->catalogProduct->part_number,
-                'Stock mínimo' => $group->first()->catalogProductCompany->catalogProduct->min_quantity,
-                'Venta total' => $group->sum('quantity'),
-            ];
-        })
-        ->sortByDesc('Venta total');
-
-    return $agrupados;
 });

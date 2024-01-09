@@ -40,7 +40,22 @@
                 <p>Producto</p>
                 <span>{{ product?.catalog_product_company.catalog_product.name }}</span>
                 <p>Cantidad disponible en almacén</p>
-                <span>{{ product?.finished_product_used }} unidades</span>
+                <div class="flex items-center">
+                  {{ product?.finished_product_used }} unidades 
+                  <div v-if="(product?.finished_product_used - (product?.quantity - product?.finished_product_used)) < product?.catalog_product_company.catalog_product.min_quantity" class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3 ml-2 mr-1">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                    </svg>
+                    <strong class="text-primary mr-1">Stock mínimo</strong>
+                    <el-tooltip 
+                    content="Al realizar la orden de producción, el stock quedará por debajo del mínimo permitido, por lo que es necesario considerar la reposición para mantener el stock mínimo " 
+                    placement="top">
+                      <div class="rounded-full border border-primary w-2 h-2 flex items-center justify-center">
+                        <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                      </div>
+                    </el-tooltip>
+                  </div>
+                </div>
                 <p class="text-primary">Cantidad a producir</p>
                 <span class="text-black">{{ product?.quantity - product?.finished_product_used}} unidades</span>
                 <p>Cantidad ordenada</p>

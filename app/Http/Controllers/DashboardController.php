@@ -12,6 +12,7 @@ use App\Models\Meeting;
 use App\Models\Payroll;
 use App\Models\Production;
 use App\Models\Purchase;
+use App\Models\Quality;
 use App\Models\Quote;
 use App\Models\Sale;
 use App\Models\Storage;
@@ -74,6 +75,8 @@ class DashboardController extends Controller
         // solicitud de tiempo extra
         $extra_time_request = ExtraTimeRequest::whereDate('date', '>=', today())->where('operator_id', auth()->id())->latest()->first();
 
+        // return $collaborators_production_performance;
+
         return inertia('Dashboard/Index', compact(
             'meetings',
             'counts',
@@ -114,6 +117,8 @@ class DashboardController extends Controller
                         "time" => 0,
                         "day_completed" => 0,
                         "extra_time_requests" => 0,
+                        "extra_time_requests" => 0,
+                        "quality_supervision" => 0,
                     ];
                 }
 
@@ -138,6 +143,7 @@ class DashboardController extends Controller
                         "time" => 0,
                         "day_completed" => 0,
                         "extra_time_requests" => 0,
+                        "quality_supervision" => 0,
                     ];
                 }
 
@@ -155,13 +161,21 @@ class DashboardController extends Controller
                     $hours_worked = $payroll->pivot->totalWorkedTime()['hours'];
                     $weekly_points[$day]["day_completed"] += $hours_worked < $hours_to_work ? -50 : 0;
                 }
+
+                
+            }
+
+            // Agregar puntos por registro de supervision de calidad creada
+            $quality_supervision = Quality::where('supervisor_id', $user->id)->whereBetween('created_at', [$weekStart, $weekEnd])->get();
+            if ($quality_supervision->count()) {
+                $weekly_points[$day]["quality_supervision"] = $quality_supervision->count() * 10;
             }
 
             // Calcular el total de puntos
             $totalPoints = 0;
             foreach ($weekly_points as $day => $points) {
                 // Suma los puntos de punctuality, scrap y time para cada día
-                $dailyTotal = $points["punctuality"] + $points["scrap"] + $points["time"] + $points["day_completed"] + $points["extra_time_requests"];
+                $dailyTotal = $points["punctuality"] + $points["scrap"] + $points["time"] + $points["day_completed"] + $points["extra_time_requests"] + $points["quality_supervision"];
                 $totalPoints += $dailyTotal;
             }
 

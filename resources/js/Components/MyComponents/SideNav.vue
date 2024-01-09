@@ -98,15 +98,15 @@ export default {
                     active: route().current('crm.*') || route().current('quotes.*') || route().current('companies.*')
                         || route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*')
                         || route().current('client-monitors.*') || route().current('meeting-monitors.*') || route().current('payment-monitors.*')
-                        || route().current('whatsapp-monitors.*'),
+                        || route().current('sale-analitics.*') || route().current('sale-analitics.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
                         return ['quote', 'sales', 'opportunities', 'companies'].includes(notification.data.module);
                     }),
                     options: [
                         {
-                            label: 'Inicio',
-                            route: 'crm.dashboard',
-                            show: this.$page.props.auth.user.permissions.includes('Inicio crm'),
+                            label: 'Análisis de ventas',
+                            route: 'sale-analitics.index',
+                            show: this.$page.props.auth.user.permissions.includes('Analisis de ventas'),
                             notifications: false,
                         },
                         {
