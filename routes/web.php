@@ -401,6 +401,7 @@ Route::post('customer-meetings/get-soon-dates', [CustomerMeetingController::clas
 
 //------------------ sale analisis routes ----------------
 Route::resource('sale-analitics', SaleAnaliticController::class)->middleware('auth');
+Route::get('sale-analitics-fetch-top-products/{family}/{range}', [SaleAnaliticController::class, 'fetchTopProducts'])->name('sale-analitics.fetch-top-products')->middleware('auth');
 
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
@@ -439,48 +440,4 @@ Route::get('mail-test', function () {
     });
 
     return "Correo de prueba enviado a $destinatario.";
-});
-
-// Llaveros más vendidos de mayor a menor
-Route::get('/llaveros', function () {
-    $llaveros = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')
-        ->whereHas('catalogProductCompany.catalogProduct', function ($query) {
-            $query->where('part_number', 'like', 'C-LL%');
-        })
-        ->get();
-
-    $agrupados = $llaveros->groupBy('catalogProductCompany.catalogProduct.part_number')
-        ->map(function ($group) {
-            return [
-                'Nombre' => $group->first()->catalogProductCompany->catalogProduct->name,
-                'Número de parte' => $group->first()->catalogProductCompany->catalogProduct->part_number,
-                'Stock mínimo' => $group->first()->catalogProductCompany->catalogProduct->min_quantity,
-                'Venta total' => $group->sum('quantity'),
-            ];
-        })
-        ->sortByDesc('Venta total');
-
-    return $agrupados;
-});
-
-// Emblemas más vendidos de mayor a menor
-Route::get('/Emblemas', function () {
-    $emblemas = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')
-        ->whereHas('catalogProductCompany.catalogProduct', function ($query) {
-            $query->where('part_number', 'like', 'C-EM%');
-        })
-        ->get();
-
-    $agrupados = $emblemas->groupBy('catalogProductCompany.catalogProduct.part_number')
-        ->map(function ($group) {
-            return [
-                'Nombre' => $group->first()->catalogProductCompany->catalogProduct->name,
-                'Número de parte' => $group->first()->catalogProductCompany->catalogProduct->part_number,
-                'Stock mínimo' => $group->first()->catalogProductCompany->catalogProduct->min_quantity,
-                'Venta total' => $group->sum('quantity'),
-            ];
-        })
-        ->sortByDesc('Venta total');
-
-    return $agrupados;
 });

@@ -3,38 +3,51 @@
 namespace App\Http\Controllers;
 
 use App\Models\CatalogProductCompanySale;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class SaleAnaliticController extends Controller
 {
     
     public function index()
     {
-        $top_key_rings = $this->getKeyRingsSalesTop();
-        $top_emblems = $this->getEmblemsSalesTop();
-        $top_plates = $this->getPlatesSalesTop();
-        $top_pdocuments = $this->getPdocumentsSalesTop();
-        $top_develation = $this->getDevelationSalesTop();
-        $top_pasarol = $this->getParasolSalesTop();
-        $top_key_ring_case = $this->getKeyRingCaseSalesTop();
-        $top_key_ring_case_aluminum = $this->getKeyRingCaseAluminumSalesTop();
-        $top_mats = $this->getMatsSalesTop();
-        $top_estiren = $this->getEstirenSalesTop();
+        // la familia la recupera como parámetro enviado desde la peticion axios en la vista index
+        $product = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')
+            ->whereHas('catalogProductCompany.catalogProduct', function ($query) {
+                $query->where('part_number', 'C-LL-CLE-0247');
+            })
+            ->get();
 
-        // return $top_estiren;
 
+            
+            return $product;
         return inertia('SaleAnalitic/Index');
     }
 
 
-    public function getTopSalesByType($productType)
+    public function fetchTopProducts($family, $range)
     {
-        $product = CatalogProductCompanySale::with(['catalogProductCompany' => ['catalogProduct', 'company']])
-            ->whereHas('catalogProductCompany.catalogProduct', function ($query) use ($productType) {
-                $query->where('part_number', 'like', $productType . '%');
+        $startDate = 0;
+
+        // Determina la fecha de inicio según la opción seleccionada
+        switch ($range) {
+            case 'Mensual':
+                $startDate = now()->subDays(30);
+                break;
+            case 'Bimestral':
+                $startDate = now()->subDays(60);
+                break;
+        }
+
+        // la familia la recupera como parámetro enviado desde la peticion axios en la vista index
+        $products = CatalogProductCompanySale::with(['catalogProductCompany' => ['catalogProduct.media', 'company']])
+            ->whereHas('catalogProductCompany.catalogProduct', function ($query) use ($family) {
+                $query->where('part_number', 'like', $family . '%');
             })
+            ->where('created_at', '>=', $startDate)
             ->get();
 
-        $agrouped = $product->groupBy('catalogProductCompany.catalogProduct.part_number')
+            $agrouped = $products->groupBy('catalogProductCompany.catalogProduct.part_number')
             ->map(function ($group) {
                 return [
                     'name' => $group->first()->catalogProductCompany->catalogProduct->name,
@@ -45,65 +58,14 @@ class SaleAnaliticController extends Controller
                     'quantity_sales' => $group->sum('quantity'),
                     'total_money' => $group->sum('quantity') * $group->first()->catalogProductCompany->new_price,
                     'client' => $group->first()->catalogProductCompany->company->business_name,
+                    'media' => $group->first()->catalogProductCompany->catalogProduct->media[0],
                 ];
             })
             ->sortByDesc('quantity_sales')
             ->take(20); // Limitar a 20 elementos
 
-        return $agrouped;
+        return response()->json(['items' => $agrouped]);
     }
 
-    public function getKeyRingsSalesTop()
-    {
-        return $this->getTopSalesByType('C-LL');
-    }
-
-    public function getEmblemsSalesTop()
-    {
-        return $this->getTopSalesByType('C-EM');
-    }
-
-    public function getPlatesSalesTop()
-    {
-        return $this->getTopSalesByType('C-PP');
-    }
-
-    public function getPdocumentsSalesTop()
-    {
-        return $this->getTopSalesByType('C-PP');
-    }
-
-    public function getDevelationSalesTop()
-    {
-        return $this->getTopSalesByType('C-MT');
-    }
-
-    public function getParasolSalesTop()
-    {
-        return $this->getTopSalesByType('C-PS');
-    }
-
-    public function getKeyRingCaseSalesTop()
-    {
-        return $this->getTopSalesByType('C-FLL');
-    }
-
-    public function getKeyRingCaseAluminumSalesTop()
-    {
-        return $this->getTopSalesByType('C-FA');
-    }
-
-    public function getMatsSalesTop()
-    {
-        return $this->getTopSalesByType('C-TP');
-    }
-
-    public function getEstirenSalesTop()
-    {
-        return $this->getTopSalesByType('C-PE');
-    }
-
-
-    
 
 }
