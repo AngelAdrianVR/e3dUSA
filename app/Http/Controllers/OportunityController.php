@@ -80,7 +80,7 @@ class OportunityController extends Controller
                 'reminder' => null,
                 'user_id' => auth()->id(),
                 'oportunity_id' => $oportunity->id,
-                'asigned_id' => auth()->id(),
+                'asigned_id' => $request->seller_id,
             ]);
         } else {
 
@@ -97,7 +97,7 @@ class OportunityController extends Controller
                 'reminder' => null,
                 'user_id' => auth()->id(),
                 'oportunity_id' => $oportunity->id,
-                'asigned_id' => auth()->id(),
+                'asigned_id' => $request->seller_id,
             ]);
             //Tarea 2. Mandar diseño
             OportunityTask::create([
@@ -110,7 +110,7 @@ class OportunityController extends Controller
                 'reminder' => null,
                 'user_id' => auth()->id(),
                 'oportunity_id' => $oportunity->id,
-                'asigned_id' => auth()->id(),
+                'asigned_id' => $request->seller_id,
             ]);
             //Tarea 3. Enviar cotización
             OportunityTask::create([
@@ -123,7 +123,7 @@ class OportunityController extends Controller
                 'reminder' => null,
                 'user_id' => auth()->id(),
                 'oportunity_id' => $oportunity->id,
-                'asigned_id' => auth()->id(),
+                'asigned_id' => $request->seller_id,
             ]);
             //Tarea 4. Mandar muestra      
             OportunityTask::create([
@@ -136,7 +136,7 @@ class OportunityController extends Controller
                 'reminder' => null,
                 'user_id' => auth()->id(),
                 'oportunity_id' => $oportunity->id,
-                'asigned_id' => auth()->id(),
+                'asigned_id' => $request->seller_id,
             ]);
         }
 

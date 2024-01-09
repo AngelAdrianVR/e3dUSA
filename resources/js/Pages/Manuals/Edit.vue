@@ -1,5 +1,5 @@
 <template>
-    <AppLayout title="Crear tutorial / manual">
+    <AppLayout title="Editar tutorial / manual">
         <template #header>
             <div class="flex justify-between">
                 <Link :href="route('manuals.index')"
@@ -7,7 +7,7 @@
                 <i class="fa-solid fa-chevron-left"></i>
                 </Link>
                 <div class="flex items-center space-x-2">
-                    <h2 class="font-semibold text-xl leading-tight">Crear tutorial / manual</h2>
+                    <h2 class="font-semibold text-xl leading-tight">Editar tutorial / manual</h2>
                 </div>
             </div>
         </template>
@@ -15,7 +15,7 @@
         <!-- Form -->
         <form @submit.prevent="update">
             <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9  p-4 shadow-md space-y-4 mx-3">
-                <h1 class="font-bold text-lg text-center">Creación de tutoriales y manuales</h1>
+                <h1 class="font-bold text-lg text-center">Edición de tutoriales y manuales</h1>
                 <div class="flex justify-center items-center space-x-12">
                     <div class="flex items-center">
                         <input v-model="form.type" value="Tutorial"
@@ -60,7 +60,7 @@
                 </div>
                 <div class="mt-9 mx-3 md:text-right">
                     <PrimaryButton :disabled="form.processing">
-                        Guardar
+                        Guardar cambios
                     </PrimaryButton>
                 </div>
             </div>

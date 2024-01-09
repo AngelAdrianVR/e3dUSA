@@ -123,23 +123,22 @@
               </el-select>
             </div>
             <div class="col-span-full">
-                <div class="flex space-x-2 mb-1">
-                    <IconInput v-model="newSkill" inputPlaceholder="Ingresa una habilidad (opcional)" inputType="text"
-                        class="w-full">
-                        <el-tooltip content="Habilidades" placement="top">
-                            <i class="fa-solid fa-pen"></i>
-                        </el-tooltip>
-                    </IconInput>
-                    <SecondaryButton @click="addSkill" type="button">
-                        Agregar
-                        <i class="fa-solid fa-arrow-down ml-2"></i>
-                    </SecondaryButton>
-                </div>
-                <el-select v-model="form.employee_properties.skills" multiple clearable placeholder="Habilidades"
-                    no-data-text="Agrega primero una caracteristica">
-                    <el-option v-for="habiliy in skills" :key="habiliy" :label="habiliy"
-                        :value="habiliy"></el-option>
-                </el-select>
+              <div class="flex space-x-2 mb-1">
+                <IconInput v-model="newSkill" inputPlaceholder="Ingresa una habilidad (opcional)" inputType="text"
+                  class="w-full">
+                  <el-tooltip content="Habilidades" placement="top">
+                    <i class="fa-solid fa-pen"></i>
+                  </el-tooltip>
+                </IconInput>
+                <SecondaryButton @click="addSkill" type="button">
+                  Agregar
+                  <i class="fa-solid fa-arrow-down ml-2"></i>
+                </SecondaryButton>
+              </div>
+              <el-select v-model="form.employee_properties.skills" multiple clearable placeholder="Habilidades"
+                no-data-text="Agrega primero una caracteristica">
+                <el-option v-for="habiliy in skills" :key="habiliy" :label="habiliy" :value="habiliy"></el-option>
+              </el-select>
             </div>
           </div>
 
@@ -159,6 +158,7 @@
               <tr>
                 <th>Dia</th>
                 <th>Entrada</th>
+                <th>T. de comida</th>
                 <th>Salida</th>
               </tr>
             </thead>
@@ -169,6 +169,13 @@
                   <IconInput v-model="form.employee_properties.work_days[index].check_in"
                     inputPlaceholder="Hora de entrada *" inputType="time" class="w-28 md:w-full">
                   </IconInput>
+                </td>
+                <td>
+                  <el-select v-model="form.employee_properties.work_days[index].break"
+                    placeholder="Selecciona el tiempo de comida" no-data-text="No hay elementos"
+                    class="w-28 md:w-full mb-1">
+                    <el-option v-for="(item, index) in breakTimes" :key="index" :label="item.label" :value="item.value" />
+                  </el-select>
                 </td>
                 <td>
                   <IconInput v-model="form.employee_properties.work_days[index].check_out"
@@ -237,36 +244,43 @@ export default {
             day: 0,
             check_in: this.user.employee_properties?.work_days[0].check_in,
             check_out: this.user.employee_properties?.work_days[0].check_out,
+            break: this.user.employee_properties?.work_days[0].break,
           },
           {
             day: 1,
             check_in: this.user.employee_properties?.work_days[1].check_in,
             check_out: this.user.employee_properties?.work_days[1].check_out,
+            break: this.user.employee_properties?.work_days[1].break,
           },
           {
             day: 2,
             check_in: this.user.employee_properties?.work_days[2].check_in,
             check_out: this.user.employee_properties?.work_days[2].check_out,
+            break: this.user.employee_properties?.work_days[2].break,
           },
           {
             day: 3,
             check_in: this.user.employee_properties?.work_days[3].check_in,
             check_out: this.user.employee_properties?.work_days[3].check_out,
+            break: this.user.employee_properties?.work_days[3].break,
           },
           {
             day: 4,
             check_in: this.user.employee_properties?.work_days[4].check_in,
             check_out: this.user.employee_properties?.work_days[4].check_out,
+            break: this.user.employee_properties?.work_days[4].break,
           },
           {
             day: 5,
             check_in: this.user.employee_properties?.work_days[5].check_in,
             check_out: this.user.employee_properties?.work_days[5].check_out,
+            break: this.user.employee_properties?.work_days[5].break,
           },
           {
             day: 6,
             check_in: this.user.employee_properties?.work_days[6].check_in,
             check_out: this.user.employee_properties?.work_days[6].check_out,
+            break: this.user.employee_properties?.work_days[6].break,
           },
         ],
         join_date: this.user.employee_properties?.join_date,
@@ -294,6 +308,29 @@ export default {
         'Producción',
         'Recursos humanos',
         'Ventas',
+      ],
+      breakTimes: [
+        {
+          label: '15 minutos', value: 15,
+        },
+        {
+          label: '30 minutos', value: 30,
+        },
+        {
+          label: '45 minutos', value: 45,
+        },
+        {
+          label: '1 hora', value: 60,
+        },
+        {
+          label: '1 hora 15 minutos', value: 75,
+        },
+        {
+          label: '1 hora 30 minutos', value: 90,
+        },
+        {
+          label: '2 horas', value: 120,
+        },
       ],
       weekDays: [
         'Domingo',
@@ -342,9 +379,9 @@ export default {
     },
     addSkill() {
       if (this.newSkill.trim() !== '') {
-          this.form.employee_properties.skills.push(this.newSkill);
-          this.skills.push(this.newSkill);
-          this.newSkill = '';
+        this.form.employee_properties.skills.push(this.newSkill);
+        this.skills.push(this.newSkill);
+        this.newSkill = '';
       }
     },
   },

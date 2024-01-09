@@ -185,9 +185,11 @@
         <p class="text-secondary col-span-2 mb-2">Usuarios</p>
 
         <ul v-if="currentOportunity?.users.length">
-          <li v-for="item in currentOportunity?.users" :key="item.id" class="text-gray-500">
-            {{ item.name }}
-          </li>
+          <template v-for="item in currentOportunity?.users" :key="item.id">
+            <li v-if="item.id != 1" class="text-gray-500">
+              {{ item.name }}
+            </li>
+          </template>
         </ul>
         <p class="text-sm text-gray-400" v-else><i class="fa-solid fa-user-slash mr-3"></i>No hay tareas asignadas a
           usuarios</p>
