@@ -306,7 +306,6 @@
                     : "Agregar Contacto a lista"
                 }}
               </SecondaryButton>
-
             </div>
           </div>
           <!-- ---------------- contacts ends ----------------- -->
