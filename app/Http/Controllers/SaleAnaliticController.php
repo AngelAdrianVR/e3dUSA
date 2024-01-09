@@ -11,16 +11,49 @@ class SaleAnaliticController extends Controller
     
     public function index()
     {
-        // la familia la recupera como parámetro enviado desde la peticion axios en la vista index
+        // la familia la recupera como parámetro enviado desde la peticion axios en la vista index Borrar porque no sirve para nada, es solo par 
+        //ver que retorna
+        // $product = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')
+        //     ->whereHas('catalogProductCompany.catalogProduct', function ($query) {
+        //         $query->where('part_number', 'C-LL-CLE-0247');
+        //     })
+        //     ->get();
+
+        //     $agrouped = $product->map(function ($prod) {
+        //         return [
+        //             'new_price' => $prod->catalogProductCompany->new_price,
+        //             'quantity_sales' => $prod->quantity,
+        //             'created_at' => $prod->created_at,
+        //         ];
+        //     })
+        //     ->sortByDesc('created_at');
+
+
+        // Obtener las ventas del producto
         $product = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')
-            ->whereHas('catalogProductCompany.catalogProduct', function ($query) {
-                $query->where('part_number', 'C-LL-CLE-0247');
-            })
-            ->get();
+        ->whereHas('catalogProductCompany.catalogProduct', function ($query) {
+            $query->where('part_number', 'C-LL-CLE-0247');
+        })
+        ->get();
+
+        // Mapear y agrupar por mes
+        $grouped = $product->groupBy(function ($item) {
+        return \Carbon\Carbon::parse($item->created_at)->format('Y-m');
+        });
+
+        // Calcular la suma de las cantidades de ventas por mes
+        $monthlySales = $grouped->map(function ($sales, $month) {
+        return [
+            'month' => $month,
+            'total_sales' => $sales->sum('quantity'),
+        ];
+        })->values()->sortBy('month');
 
 
             
-            return $product;
+            // return $monthlySales;
+
+
         return inertia('SaleAnalitic/Index');
     }
 
@@ -65,6 +98,32 @@ class SaleAnaliticController extends Controller
             ->take(20); // Limitar a 20 elementos
 
         return response()->json(['items' => $agrouped]);
+    }
+
+
+    public function fetchProductInfo($part_number)
+    {
+        // Obtener las ventas del producto
+        $product = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')
+        ->whereHas('catalogProductCompany.catalogProduct', function ($query) use ($part_number) {
+            $query->where('part_number', $part_number);
+        })
+        ->get();
+
+        // Mapear y agrupar por mes
+        $grouped = $product->groupBy(function ($item) {
+        return \Carbon\Carbon::parse($item->created_at)->format('Y-m');
+        });
+
+        // Calcular la suma de las cantidades de ventas por mes
+        $monthlySales = $grouped->map(function ($sales, $month) {
+        return [
+            'month' => $month,
+            'total_sales' => $sales->sum('quantity'),
+        ];
+        })->values()->sortBy('month');
+
+        return response()->json(['items' => $monthlySales]);
     }
 
 

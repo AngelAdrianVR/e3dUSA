@@ -1,6 +1,6 @@
 <template>
   <AppLayout title="Análisis de ventas">
-    <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
+    <div class="flex flex-col md:mx-9 md:my-1 space-y-3 m-1">
       <div class="flex justify-between mb-2">
         <label class="text-lg">Análisis de ventas</label>
       </div>
@@ -25,7 +25,7 @@
     </div>
 
     <!-- Tabla de productos vendidos -->
-    <div v-if="!loading" class="w-11/12 h-72 overflow-auto mx-8 mt-9 mb-2 rounded-md">
+    <div v-if="!loading" class="w-10/12 h-[301px] overflow-auto mx-auto mt-9 mb-2 rounded-md">
       <table v-if="topProducts" class="w-full h-full mx-auto text-sm">
         <thead>
           <tr class="text-center">
@@ -57,7 +57,7 @@
           <tr
             v-for="product in topProducts"
             :key="product"
-            @click="productSelected = product"
+            @click="fetchProductInfo(product)"
             class="mb-4 hover:bg-[#dfdbdba8] cursor-pointer"
           >
             <td class="py-2 pl-2 rounded-l-full">
@@ -95,16 +95,22 @@
     </div>
 
     <!-- Analisis de producto -->
-      <div v-if="productSelected" class="rounded-lg bg-[#D9D9D9] px-4 py-3 mx-9 mt-16 text-sm">
-        <div class="flex items-center space-x-9 font-bold">
-          <p>{{ productSelected.part_number }}</p>
-          <p>{{ productSelected.name }}</p>
+      <div v-if="productSelected" class="rounded-lg px-4 py-3 mx-9 mt-10 text-sm">
+        <div v-if="!loadingCharts">
+          <div class="flex items-center space-x-9 font-bold">
+            <p>{{ productSelected.part_number }}</p>
+            <p>{{ productSelected.name }}</p>
+          </div>
+          <div class="flex space-x-4 mt-5">
+            <figure class="rounded-md">
+                <img :src="productSelected.media?.original_url" class="rounded-md">
+            </figure>
+            <LinealChart :options="productAmountSalesMonth" title="Ventas acumuladas por mes" />
+          </div>
         </div>
-        <div class="flex space-x-4 mt-5">
-          <figure class="rounded-md">
-              <img :src="productSelected.media?.original_url" class="rounded-md">
-          </figure>
-          <BarChart :options="yearSalesComparisonChartOptions" title="Ventas año en curso vs anterior" />
+         <!-- Estado de carga  -->
+        <div v-else class="flex justify-center items-center pt-10">
+          <i class="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
         </div>
       </div>
   </AppLayout>
@@ -113,16 +119,18 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import BarChart from "@/Components/MyComponents/BarChart.vue";
+import LinealChart from "@/Components/MyComponents/LinealChart.vue";
 import axios from 'axios';
 
 export default {
 data() {
     return {
         loading: false,
+        loadingCharts: false,
         topProducts: null,
-        productSelected: null,
         familySelected: null,
+        productSelected: null,
+        productAmountSalesMonth: {},
         range: 'Total',
         ranges: [
           'Mensual',
@@ -170,25 +178,12 @@ data() {
               label:'Placas estireno',
               code:'C-PE',
             },
-        ],
-         // chart options
-      yearSalesComparisonChartOptions: {
-        colors: ['#BEBFC1', '#F07209'],
-        categories: this.salesLastYear?.map(item => item.month),
-        series: [{
-          name: 'Año pasado',
-          data: this.salesLastYear?.map(item => item.amount.toFixed(2))
-        },
-        {
-          name: 'Año en curso',
-          data: this.salesCurrentYear?.map(item => item.amount.toFixed(2))
-        }],
-      },
+        ],   
     }
 },
 components:{
 AppLayout,
-BarChart,
+LinealChart,
 InputLabel
 
 },
@@ -208,6 +203,30 @@ methods:{
           console.log(error);
         } finally {
           this.loading = false;
+        }
+    },
+    async fetchProductInfo(product) {
+      this.productSelected = product
+      this.loadingCharts = true;
+        try {
+          const response = await axios.get(route('sale-analitics.fetch-product-info', this.productSelected.part_number));
+
+          if (response.status === 200) {
+
+          this.productAmountSalesMonth = {
+            colors: ['#f3f3f3', 'transparent'],
+            categories: response.data.items.map(sale => sale.month),
+            series: [{
+              name: 'Unidades vendidas',
+              data: response.data.items.map(sale => sale.total_sales)
+            }],
+          };
+
+        }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          this.loadingCharts = false;
         }
     }
 }

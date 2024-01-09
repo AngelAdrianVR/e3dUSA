@@ -402,6 +402,7 @@ Route::post('customer-meetings/get-soon-dates', [CustomerMeetingController::clas
 //------------------ sale analisis routes ----------------
 Route::resource('sale-analitics', SaleAnaliticController::class)->middleware('auth');
 Route::get('sale-analitics-fetch-top-products/{family}/{range}', [SaleAnaliticController::class, 'fetchTopProducts'])->name('sale-analitics.fetch-top-products')->middleware('auth');
+Route::get('sale-analitics-fetch-product-info/{part_number}', [SaleAnaliticController::class, 'fetchProductInfo'])->name('sale-analitics.fetch-product-info')->middleware('auth');
 
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
