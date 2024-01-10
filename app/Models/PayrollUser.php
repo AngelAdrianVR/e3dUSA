@@ -63,7 +63,7 @@ class PayrollUser extends Pivot
     {
         if (!empty($this->pausas)) {
             $totalBreakTime = $this->calculateTotalBreakTime();
-            $totalBreakTime = $this->getTotalBreakWithoutFixedBreakMinutes($totalBreakTime);
+            $totalBreakTime = $this->getTotalBreakWithoutFixedBreakMinutes($totalBreakTime);;
 
             $hours = intval($totalBreakTime / 60);
             $minutes = $totalBreakTime % 60;
@@ -138,12 +138,13 @@ class PayrollUser extends Pivot
             $fixed_break_minutes = $this->user->employee_properties['work_days'][$this->date->dayOfWeek]['break'];
         }
 
-        // si se marcó como pausa el break, se descuenta del total para que se tome en cuenta a su tiempo trabajado
-        if ($total_break >= $fixed_break_minutes) {
-            return $total_break - $fixed_break_minutes;
-        }
+        // restar minutos de comida a pausas totales
+        $total = $total_break - $fixed_break_minutes;
 
-        return $total_break;
+        // si pausó menos minutos que el total de su comida, simplemente queda en 0 las pausas totales a cuenta de comida
+        if ($total < 0) $total = 0;
+
+        return $total;
     }
 
     public function getLateTime()

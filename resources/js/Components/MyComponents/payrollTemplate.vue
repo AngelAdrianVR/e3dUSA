@@ -52,13 +52,23 @@
                 <td v-if="attendance.total_break_time" class="px-6 text-xs py-px lg:py-2 w-32">
                   <el-tooltip placement="right">
                     <template #content>
+                      <p class="text-yellow-500">Resumen de pausas</p>
                       <ol>
-                        <li v-for="(pausa, index) in attendance.pausas" :key="index">
-                          <span class="text-yellow-500">{{ index + 1 }}.</span> De {{ formatTimeTo12Hour(pausa.start) }} a
+                        <li v-for="(pausa, index2) in attendance.pausas" :key="index2">
+                          <span class="text-yellow-500">{{ index2 + 1 }}.</span> De {{ formatTimeTo12Hour(pausa.start) }}
+                          a
                           {{ formatTimeTo12Hour(pausa.finish) ??
                             'Sin reanudar' }}
                         </li>
                       </ol>
+                      <p class="leading-3 text-[10px]">
+                        <span class="text-yellow-400">{{ attendance.total_break_time }}</span> es el tiempo que tienes
+                        que reponer<br>
+                        después de tu hora de salida. El tiempo <br>
+                        de comida no lo tienes que reponer, <span class="text-yellow-400">
+                          ({{ user.employee_properties.work_days[index]?.break }} minutos)</span><br>
+                        ya está restado del tiempo total que pausaste. <br>
+                      </p>
                     </template>
                     <p>{{ attendance.total_break_time }} <i class="fa-solid fa-circle-info"></i></p>
                   </el-tooltip>
