@@ -67,7 +67,7 @@
                         </el-tooltip>
                         <el-radio-group v-model="form.contact_id" size="small">
                             <el-radio-button v-for="contact in company_branches.find(cb => cb.id ==
-                                form.company_branch_id)?.contacts" :key="index" :label="contact.id">
+                                form.company_branch_id)?.contacts" :key="contact" :label="contact.id">
                                 {{ contact.name }} ({{ contact.email }})
                             </el-radio-button>
                         </el-radio-group>
@@ -196,7 +196,7 @@
                                 <p class="text-sm">
                                     <span class="text-primary">{{ index + 1 }}.</span>
                                     {{ company_branches.find(cb => cb.id ==
-                                        form.company_branch_id)?.catalog_products.find(prd => prd.pivot.id ===
+                                        form.company_branch_id)?.catalog_products?.find(prd => prd.pivot.id ===
                                             item.catalog_product_company_id)?.name
                                     }}
                                     (x{{ item.quantity }} unidades)
@@ -391,7 +391,7 @@ export default {
             try {
                 this.loading = true;
                 const catalogProductId =
-                    this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.catalog_products.find(cp => cp.pivot.id == this.product.catalog_product_company_id)?.id;
+                    this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.catalog_products?.find(cp => cp.pivot.id == this.product.catalog_product_company_id)?.id;
                 const response = await axios.get(route('catalog-products.get-data', catalogProductId));
 
                 if (response.status === 200) {
