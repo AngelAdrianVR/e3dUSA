@@ -66,7 +66,7 @@
                         que reponer<br>
                         después de tu hora de salida. El tiempo <br>
                         de comida no lo tienes que reponer, <span class="text-yellow-400">
-                          ({{ user.employee_properties.work_days[index]?.break }} minutos)</span><br>
+                          ({{ user.employee_properties.work_days[getValueByIndex(index)]?.break }} minutos)</span><br>
                         ya está restado del tiempo total que pausaste. <br>
                       </p>
                     </template>
@@ -221,6 +221,14 @@ export default {
       this.getExtras();
       this.getExtrasRequested();
       this.getAuthorizedAdditionalTimes();
+    },
+    getValueByIndex(index) {
+      const mapping = [5, 6, 0, 1, 2, 3, 4];
+      
+      // Asegúrar que el índice esté dentro del rango del arreglo
+      if (index >= 0 && index < mapping.length) {
+        return mapping[index];
+      }
     },
     getDayOfWeek(date) {
       const fechaMoment = moment(date);
