@@ -276,6 +276,12 @@ export default {
                     || route().current('samples.*') || route().current('production-costs.*'),
                     options: [
                         {
+                            label: 'Tutoriales y manuales',
+                            route: route('manuals.index'),
+                            active: route().current('manuals.*'),
+                            show: this.$page.props.auth.user.permissions.includes('Ver manuales')
+                        },
+                        {
                             label: 'Máquinas',
                             route: route('machines.index'),
                             active: route().current('machines.*'),

@@ -13,17 +13,13 @@ use App\Models\Production;
 use App\Models\ProductionCost;
 use App\Models\Sale;
 use App\Models\Setting;
-use App\Models\StockMovementHistory;
-use App\Models\Storage;
 use App\Models\User;
 use App\Notifications\MentionInProductionNotification;
-use App\Notifications\MentionNotification;
 use App\Notifications\ProductionCompletedNotification;
 use Illuminate\Http\Request;
 
 class ProductionController extends Controller
 {
-
     public function index()
     {
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de produccion todas')) {
@@ -105,7 +101,7 @@ class ProductionController extends Controller
                 //-------------------------------------------------------------------------------------
                 $delivery_status = '--'; //inicializo el estatus en caso de no haber fecha
                 $threeDaysBefore = now()->addDays(3); // Verificar si la fecha está a 3 días o más de distancia 
-                
+
 
                 if ($status['label'] !== 'Producción terminada') {
 
@@ -119,7 +115,7 @@ class ProductionController extends Controller
                 } else {
                     $delivery_status = 'Entregado';
                 }
-                 
+
                 return [
                     'id' => $production->id,
                     'folio' => 'OP-' . str_pad($production->id, 4, "0", STR_PAD_LEFT),
@@ -367,7 +363,7 @@ class ProductionController extends Controller
         if (!$production->started_at) {
             $production->update(['started_at' => now()]);
             $message = 'Se ha registrado el inicio';
-        } else {
+        } else if ($production->started_at->diffInMinutes(now()) > 9) {
             $request->validate([
                 'scrap' => 'required|numeric|min:0'
             ]);
@@ -397,9 +393,11 @@ class ProductionController extends Controller
             );
 
             $message = 'Se ha registrado el final';
+            $production = Production::with(['operator', 'user'])->find($production->id);
+        } else {
+            $production = null;
+            $message = "No se puede iniciar y finalizar la tarea de inmediato. Al iniciar, empiezas la tarea y marcas el final cuando la completas realmente. Esto permite monitorear la producción en tiempo real.";
         }
-
-        $production = Production::with(['operator', 'user'])->find($production->id);
 
         return response()->json(['message' => $message, 'item' => $production]);
     }
@@ -440,6 +438,7 @@ class ProductionController extends Controller
 
         return response()->json(['item' => $comment->fresh('user')]);
     }
+    
     // private methods
     private function findSuitableEmployees($totalEstimatedTime)
     {

@@ -52,13 +52,23 @@
                 <td v-if="attendance.total_break_time" class="px-6 text-xs py-px lg:py-2 w-32">
                   <el-tooltip placement="right">
                     <template #content>
+                      <p class="text-yellow-500">Resumen de pausas</p>
                       <ol>
-                        <li v-for="(pausa, index) in attendance.pausas" :key="index">
-                          <span class="text-yellow-500">{{ index + 1 }}.</span> De {{ formatTimeTo12Hour(pausa.start) }} a
+                        <li v-for="(pausa, index2) in attendance.pausas" :key="index2">
+                          <span class="text-yellow-500">{{ index2 + 1 }}.</span> De {{ formatTimeTo12Hour(pausa.start) }}
+                          a
                           {{ formatTimeTo12Hour(pausa.finish) ??
                             'Sin reanudar' }}
                         </li>
                       </ol>
+                      <p class="leading-3 text-[10px]">
+                        <span class="text-yellow-400">{{ attendance.total_break_time }}</span> es el tiempo que tienes
+                        que reponer<br>
+                        después de tu hora de salida. El tiempo <br>
+                        de comida no lo tienes que reponer, <span class="text-yellow-400">
+                          ({{ user.employee_properties.work_days[getValueByIndex(index)]?.break }} minutos)</span><br>
+                        ya está restado del tiempo total que pausaste. <br>
+                      </p>
                     </template>
                     <p>{{ attendance.total_break_time }} <i class="fa-solid fa-circle-info"></i></p>
                   </el-tooltip>
@@ -145,6 +155,11 @@
           <span class="text-center">{{ extras.formatted }}</span>
           <span>${{ extras.amount.number_format }}</span>
         </p>
+        <p v-if="bonusForExtras" class="grid grid-cols-3 gap-x-1">
+          <span>Bono por extras solicitados</span>
+          <span class="text-center"></span>
+          <span>${{ bonusForExtras }}</span>
+        </p>
         <p v-if="extras" class="grid grid-cols-3 gap-x-1">
           <span>Total</span>
           <span class="text-center"></span>
@@ -178,6 +193,7 @@ export default {
       bonuses: null,
       discounts: null,
       extras: null,
+      bonusForExtras: null,
       additionalTimes: null,
       totalAdditionalTime: 0,
     }
@@ -203,7 +219,16 @@ export default {
       this.getBonuses();
       this.getDiscounts();
       this.getExtras();
+      this.getExtrasRequested();
       this.getAuthorizedAdditionalTimes();
+    },
+    getValueByIndex(index) {
+      const mapping = [5, 6, 0, 1, 2, 3, 4];
+      
+      // Asegúrar que el índice esté dentro del rango del arreglo
+      if (index >= 0 && index < mapping.length) {
+        return mapping[index];
+      }
     },
     getDayOfWeek(date) {
       const fechaMoment = moment(date);
@@ -280,6 +305,22 @@ export default {
 
         if (response.status === 200) {
           this.extras = response.data.item;
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    async getExtrasRequested() {
+      try {
+        const response = await axios.post(route('payrolls.get-extras-requests'), {
+          payroll_id: this.payrollId,
+          user_id: this.user.id
+        });
+
+        if (response.status === 200) {
+          this.bonusForExtras = response.data.item;
         }
       } catch (error) {
         console.log(error);
@@ -420,7 +461,8 @@ export default {
         + bonuses
         + illness
         - discounts
-        + this.extras.amount.raw;
+        + this.extras.amount.raw
+        + this.bonusForExtras;
 
       return total;
     },

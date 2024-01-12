@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('extra_time_requests', function (Blueprint $table) {
+        Schema::create('manuals', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
-            $table->unsignedTinyInteger('hours');
-            $table->unsignedSmallInteger('bonus');
-            $table->unsignedSmallInteger('points');
-            $table->boolean('is_accepted')->nullable();
+            $table->string('title');
+            $table->string('type');
+            $table->text('description');
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('operator_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('extra_time_requests');
+        Schema::dropIfExists('manuals');
     }
 };

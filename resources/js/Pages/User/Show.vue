@@ -100,7 +100,7 @@
           <span class="text-gray-500">Nombre</span>
           <span>{{ user.data.name }}</span>
           <span class="text-gray-500 my-2">Fecha de nacimiento</span>
-          <span>{{ user.data.employee_properties?.birthdate.raw }}</span>
+          <span>{{ formatDate(user.data.employee_properties?.birthdate.raw) }}</span>
           <!-- <span class="text-gray-500 my-2">Dependientes económicos</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Dirección</span>
@@ -115,7 +115,7 @@
           <span class="text-gray-500 my-2">ID</span>
           <span>{{ user.data.id }}</span>
           <span class="text-gray-500 my-2">Fecha de ingreso</span>
-          <span>{{ user.data.created_at }}</span>
+          <span>{{ formatDate(user.data.employee_properties.join_date) }}</span>
           <span class="text-gray-500 my-2">Correo corporativo</span>
           <span>{{ "--" }}</span>
           <span class="text-gray-500 my-2">Departamento</span>
@@ -318,6 +318,8 @@ import Modal from "@/Components/Modal.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import DialogModal from "@/Components/DialogModal.vue";
 import { Link } from "@inertiajs/vue3";
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default {
   data() {
@@ -354,6 +356,10 @@ export default {
     DialogModal,
   },
   methods: {
+    formatDate(date) {
+      const parsedDate = new Date(date);
+      return format(parsedDate, 'dd \'de\' MMMM, Y', { locale: es }); // Formato personalizado
+    },
     async clearVacations() {
       try {
         const response = await axios.put(route('users.update-vacations', this.user.data), { operation: '-', days: this.vacationsToPay });

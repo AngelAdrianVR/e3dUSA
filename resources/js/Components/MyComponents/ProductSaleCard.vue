@@ -1,10 +1,17 @@
 <template>
-  <div class="rounded-xl px-7 py-3 relative text-xs shadow-lg bg-[#cccccc]">
+  <div class="rounded-xl px-7 py-3 relative text-xs shadow-lg bg-[#cccccc]"
+    :class="isHighPriority ? 'border-[3px] border-primary' : null">
     <!-- low stock message -->
     <div v-if="catalog_product_company_sale.productions.some(item => item.has_low_stock)"
       class="z-20 rounded-md absolute border-2 border-gray-100 bg-[#FDB9C9] py-2 text-primary px-2 -top-3 -right-5 flex items-center justify-center">
       <i class="fa-solid fa-triangle-exclamation mr-2"></i>
       No hay suficiente materia prima para continuar
+    </div>
+    <!-- high priority message -->
+    <div v-if="isHighPriority"
+      class="z-20 rounded-[3px] absolute font-bold text-sm border border-gray1 py-1 px-2 -top-10 right-24 flex items-center justify-center">
+      <i class="fa-solid fa-exclamation mr-2 text-primary"></i>
+      Prioridad alta
     </div>
     <!-- selection circle -->
     <div @click="handleSelection" v-if="!is_view_for_seller"
@@ -373,6 +380,23 @@
       <!-- <PrimaryButton @click="changeTaskStatus" :disabled="!scrap">Finalizar producción</PrimaryButton> -->
     </template>
   </DialogModal>
+
+  <!-- info modal -->
+  <DialogModal :show="showInfoModal" @close="showInfoModal = false">
+    <template #title>
+      <h1>Proceso de producción: ¡Pasos importantes!</h1>
+    </template>
+    <template #content>
+      <p>
+        <b class="text-primary">No se puede iniciar y finalizar la tarea de inmediato.</b> Por favor, asegúrate de completar la actividad
+        correspondiente antes de finalizar para garantizar la precisión
+        del tiempo real de trabajo registrado. Esto nos permite obtener datos exactos sobre la duración de la producción.
+      </p>
+    </template>
+    <template #footer>
+      <PrimaryButton @click="showInfoModal = false">Entendido</PrimaryButton>
+    </template>
+  </DialogModal>
 </template>
 
 <script>
@@ -400,6 +424,7 @@ export default {
       form,
       selected: false,
       showProgressModal: false,
+      showInfoModal: false,
       showProgressDetailsModal: false,
       showScrapModal: false,
       showCommentsModal: false,
@@ -413,6 +438,10 @@ export default {
   props: {
     catalog_product_company_sale: Object,
     is_view_for_seller: {
+      type: Boolean,
+      default: false
+    },
+    isHighPriority: {
       type: Boolean,
       default: false
     },
@@ -563,18 +592,23 @@ export default {
       try {
         let task = this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id);
         const response = await axios.put(route('productions.change-status', task.id), { scrap: this.scrap });
-
+        let type = 'success';
+        let title = 'Éxito';
         if (response.status === 200) {
-          this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id).started_at = response.data.item.started_at;
-          this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id).finished_at = response.data.item.finished_at;
-          this.showScrapModal = false;
-          this.scrap = null;
+          if (response.data.item === null) {
+            this.showInfoModal = true;
+          } else {
+            this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id).started_at = response.data.item.started_at;
+            this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id).finished_at = response.data.item.finished_at;
+            this.showScrapModal = false;
+            this.scrap = null;
+            this.$notify({
+              title: title,
+              message: response.data.message,
+              type: type
+            });
+          }
 
-          this.$notify({
-            title: 'Éxito',
-            message: response.data.message,
-            type: 'success'
-          });
         }
       } catch (error) {
         this.$notify({

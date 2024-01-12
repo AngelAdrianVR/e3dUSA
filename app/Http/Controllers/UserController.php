@@ -371,9 +371,10 @@ class UserController extends Controller
             if ($workDay['check_in'] != 0 && $workDay['check_in'] != null) {
                 $checkIn = Carbon::parse($workDay['check_in']);
                 $checkOut = Carbon::parse($workDay['check_out']);
-
+                $diff = $checkOut->diffInMinutes($checkIn);
+                $withFixedBreak = $diff - $workDay['break'];
                 // Calcula las horas trabajadas y redondea a 2 decimales
-                $hoursWorked = round($checkOut->diffInMinutes($checkIn) / 60, 2);
+                $hoursWorked = round($withFixedBreak / 60, 2);
 
                 // Agrega las horas trabajadas al arreglo
             }

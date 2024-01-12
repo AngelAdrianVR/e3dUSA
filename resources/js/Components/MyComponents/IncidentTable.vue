@@ -52,12 +52,21 @@
                   class="px-6 text-xs py-2 w-32 cursor-pointer">
                   <el-tooltip placement="right">
                     <template #content>
+                      <p class="text-yellow-500">Resumen de pausas</p>
                       <ol>
                         <li v-for="(pausa, index) in attendance.pausas" :key="index">
                           <span class="text-yellow-500">{{ index + 1 }}.</span> De {{ formatTimeTo12Hour(pausa.start) }} a
                           {{ formatTimeTo12Hour(pausa.finish) ??
                             'Sin reanudar' }}
                         </li>
+                        <p class="leading-3 text-[10px]">
+                          <span class="text-yellow-400">{{ attendance.total_break_time }}</span> es el tiempo que el colaborador
+                          debe reponer<br>
+                          después de su hora de salida. El tiempo <br>
+                          de comida no lo tendrá que reponer, <span class="text-yellow-400">
+                            ({{ user.employee_properties.work_days[getValueByIndex(index)]?.break }} minutos)</span><br>
+                          ya está restado del tiempo total que pausó. <br>
+                        </p>
                       </ol>
                     </template>
                     <p>{{ attendance.total_break_time }} <i class="fa-solid fa-circle-info"></i></p>
@@ -231,6 +240,14 @@ export default {
     }
   },
   methods: {
+    getValueByIndex(index) {
+      const mapping = [5, 6, 0, 1, 2, 3, 4];
+      
+      // Asegúrar que el índice esté dentro del rango del arreglo
+      if (index >= 0 && index < mapping.length) {
+        return mapping[index];
+      }
+    },
     async updatePausas() {
       try {
         let pausas = this.currentPayrollUser.pausas;

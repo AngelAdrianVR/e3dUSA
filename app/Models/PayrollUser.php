@@ -63,6 +63,7 @@ class PayrollUser extends Pivot
     {
         if (!empty($this->pausas)) {
             $totalBreakTime = $this->calculateTotalBreakTime();
+            $totalBreakTime = $this->getTotalBreakWithoutFixedBreakMinutes($totalBreakTime);;
 
             $hours = intval($totalBreakTime / 60);
             $minutes = $totalBreakTime % 60;
@@ -83,10 +84,10 @@ class PayrollUser extends Pivot
                 ];
             } else {
                 $workedTime = $this->calculateWorkedTime();
-    
+
                 $breakTime = $this->calculateTotalBreakTime();
-                $workedTime -= $breakTime;
-    
+                $workedTime -= $this->getTotalBreakWithoutFixedBreakMinutes($breakTime);
+
                 // Dia marcado como descanso lo esta trabajando
                 if ($this->user->employee_properties['work_days'][$this->date->dayOfWeek]['hours'] == 0) {
                     $maxWorkedTime = 480; //8 horas limite
@@ -97,17 +98,17 @@ class PayrollUser extends Pivot
                 // aumentar el maximo permitido por dia si existe una solicitud de tiempo adicional autorizada
                 $additional_time = $this->additionalTimeRequest;
                 $requested_in_minutes = 0;
-                if ($additional_time && $additional_time?->authorized_at ) {
+                if ($additional_time && $additional_time?->authorized_at) {
                     $requested = explode(':', $additional_time->time_requested);
                     $requested_in_minutes = intval($requested[0]) * 60 + intval($requested[1]);
                 }
-                
+
                 $maxWorkedTime += $requested_in_minutes;
                 $workedTime = min($workedTime, $maxWorkedTime);
-    
+
                 $hours = intval($workedTime / 60);
                 $minutes = $workedTime % 60;
-    
+
                 return [
                     'formatted' => "{$hours}h {$minutes}m",
                     'hours' => round($workedTime / 60, 2),
@@ -128,6 +129,24 @@ class PayrollUser extends Pivot
         return null;
     }
 
+    public function getTotalBreakWithoutFixedBreakMinutes($total_break) 
+    {
+        $fixed_break_minutes = 0;
+
+        // minutos de comida fijos que se toman en cuenta siempre para el calculo del tiempo trabajado
+        if (array_key_exists('break', $this->user->employee_properties['work_days'][$this->date->dayOfWeek])) {
+            $fixed_break_minutes = $this->user->employee_properties['work_days'][$this->date->dayOfWeek]['break'];
+        }
+
+        // restar minutos de comida a pausas totales
+        $total = $total_break - $fixed_break_minutes;
+
+        // si pausó menos minutos que el total de su comida, simplemente queda en 0 las pausas totales a cuenta de comida
+        if ($total < 0) $total = 0;
+
+        return $total;
+    }
+
     public function getLateTime()
     {
         if ($this->check_in && $this->user->employee_properties['work_days'][$this->date->dayOfWeek]['check_in'] != 0) {
@@ -146,7 +165,7 @@ class PayrollUser extends Pivot
             $breakTime = $this->calculateTotalBreakTime();
 
             // subtract break and 8 hrs
-            $time -= ($breakTime + 60 * 8);
+            $time -= ($this->getTotalBreakWithoutFixedBreakMinutes($breakTime) + 60 * 8);
             if ($time < 0) {
                 $time = 0;
             }
@@ -215,6 +234,9 @@ class PayrollUser extends Pivot
             }
         }
 
-        return $totalBreakTime;
+        if ($totalBreakTime)
+
+
+            return $totalBreakTime;
     }
 }
