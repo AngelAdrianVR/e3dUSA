@@ -60,7 +60,7 @@
             Datos bancarios
           </p>
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
-          <p @click="tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+          <p @click="fetchSupplierItems(); tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
             " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Productos
           </p>
@@ -104,14 +104,10 @@
 
       <!-- -------------Matriz starts 3 ------------- -->
       <div v-if="tabs == 3" class="p-7">
-        <div class="lg:grid grid-cols-2 mt-7 gap-5">
-          <div class="rounded-lg border border-gray1 p-4">
-            <figure class="rounded-md p-4 bg-gray2 w-1/2 mx-auto">
-              <img src="" alt="">
-            </figure>
-            {{rawMaterials}}
-          </div>
+        <div v-if="rawMaterials?.length > 0" class="lg:grid grid-cols-2 mt-7 gap-5">
+          <SupplierProductCard v-for="product in rawMaterials" :key="product" :product="product" />
         </div>
+          <p v-else class="text-gray-500 text-center text-sm">No hay productos registrados a este proveedor</p>
       </div>
 
       <!-- ------------- Matriz ends 3 ------------- -->
@@ -137,8 +133,10 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import SupplierBankCard from "@/Components/MyComponents/SupplierBankCard.vue";
+import SupplierProductCard from "@/Components/MyComponents/SupplierProductCard.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link } from "@inertiajs/vue3";
+import axios from 'axios';
 
 export default {
   data() {
@@ -163,6 +161,7 @@ export default {
     CancelButton,
     PrimaryButton,
     SupplierBankCard,
+    SupplierProductCard,
     Link
   },
   methods: {
@@ -206,22 +205,24 @@ export default {
       }
     },
     async fetchSupplierItems() {
-      try {
-          const response = await axios.get(route('raw-materials.fetch-supplier-items', {
-              raw_materials_ids: this.supplier.raw_materials_id.join(',')
-          }));
-          
-          if (response.status === 200) {
-              this.rawMaterials = response.data.items;
+      if ( this.rawMaterials.length <= 0) { //solo hace la peticion si no se han cargado
+            try {
+              const response = await axios.get(route('raw-materials.fetch-supplier-items', {
+                raw_materials_ids: this.supplier.data.raw_materials_id.join(',')
+              }));
+              
+              if (response.status === 200) {
+                console.log(response.data.items);
+                  this.rawMaterials = response.data.items;
+              }
+          } catch (error) {
+            console.log(error);
           }
-      } catch (error) {
-          console.log(error);
-      }
+        }
     }
   },
   mounted() {
     this.selectedSupplier = this.supplier.data.id;
-    this.fetchSupplierItems();
   },
 };
 </script>

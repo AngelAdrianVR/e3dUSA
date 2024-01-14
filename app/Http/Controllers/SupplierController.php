@@ -65,7 +65,9 @@ class SupplierController extends Controller
         //para despues guardarla en el json de la bd
         foreach ($request->rawMaterials as $raw_material ) {
             $raw_material_db = RawMaterial::find($raw_material['id']);
-            $raw_material_db->cost = $raw_material['cost'];
+            $raw_material_db->cost = $raw_material['cost']; //actualiza el costo de la materia prima
+            $raw_material_db->min_quantity_purchase = $raw_material['min_quantity_purchase']; //agrega el atributo al registro de raw_material
+            $raw_material_db->notes = $raw_material['notes']; //agrega el atributo al registro de raw_material
             $raw_material_db->save();
             $raw_materials_id[] = $raw_material['id'];
        }
@@ -126,7 +128,9 @@ class SupplierController extends Controller
         //para despues guardarla en el json de la bd
         foreach ($request->rawMaterials as $raw_material ) {
             $raw_material_db = RawMaterial::find($raw_material['id']);
-            $raw_material_db->cost = $raw_material['cost'];
+            $raw_material_db->cost = $raw_material['cost']; //actualiza el costo de la materia prima
+            $raw_material_db->min_quantity_purchase = $raw_material['min_quantity_purchase']; //agrega el atributo al registro de raw_material
+            $raw_material_db->notes = $raw_material['notes']; //agrega el atributo al registro de raw_material
             $raw_material_db->save();
             $raw_materials_id[] = $raw_material['id'];
        }

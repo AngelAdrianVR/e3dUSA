@@ -377,14 +377,35 @@
             </figure>
             <div></div>
 
-            <div class="col-span-2 col-start-1">
-                <IconInput v-model="selectedRawaterialCost" inputPlaceholder="Precio *" inputType="number"
-                  inputStep="0.01">
-                  <el-tooltip content="Precio unitario de la materia prima" placement="top">
-                    <i class="fa-solid fa-money-bill"></i>
-                  </el-tooltip>
-                </IconInput>
+            <div class="col-span-full flex space-x-3" v-if="selectedRawaterial">
+              <div class="w-1/2">
+                  <IconInput v-model="selectedRawaterialCost" inputPlaceholder="Precio *" inputType="number"
+                    inputStep="0.01">
+                    <el-tooltip content="Precio unitario de la materia prima" placement="top">
+                      <i class="fa-solid fa-money-bill"></i>
+                    </el-tooltip>
+                  </IconInput>
+              </div>
+              <div class="w-1/2">
+                  <IconInput v-model="selectedRawaterialMinQuantity" inputPlaceholder="Cantidad mínima de pedido *" inputType="number"
+                    inputStep="0.1">
+                    <el-tooltip content="Cantidad mínima de pedido" placement="top">
+                      #
+                    </el-tooltip>
+                  </IconInput>
+              </div>
             </div>
+              <div class="w-full flex items-center col-span-full">
+                <el-tooltip content="Notas" placement="top">
+                    <span
+                        class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                        ...
+                    </span>
+                </el-tooltip>
+                <textarea v-model="selectedRawaterialNotes" class="textarea" autocomplete="off"
+                    placeholder="Notas">
+                </textarea>
+              </div>
 
             <div class="col-start-1 pt-2">
               <SecondaryButton @click="addProduct" :disabled="!rawMaterialId">
@@ -453,6 +474,8 @@ export default {
       },
       rawMaterialId: null,
       selectedRawaterialCost: null,
+      selectedRawaterialMinQuantity: null,
+      selectedRawaterialNotes: null,
       selectedRawaterial: null,
       months: [
         "Enero",
@@ -572,16 +595,23 @@ export default {
     },
     addProduct() {
       if (this.editRawMaterialIndex === null) {
+        //agrega varias propiedades al objeto de raw_material recuperado del metodo fetchRawMaterial
         this.selectedRawaterial.cost = this.selectedRawaterialCost;
+        this.selectedRawaterial.min_quantity_purchase = this.selectedRawaterialMinQuantity;
+        this.selectedRawaterial.notes = this.selectedRawaterialNotes;
         this.form.rawMaterials.push(this.selectedRawaterial);
       } else {
         this.form.rawMaterials[this.editRawMaterialIndex].cost = this.selectedRawaterialCost;
+        this.form.rawMaterials[this.editRawMaterialIndex].min_quantity_purchase = this.selectedRawaterialMinQuantity;
+        this.form.rawMaterials[this.editRawMaterialIndex].notes = this.selectedRawaterialNotes;
         this.editRawMaterialIndex = null;
       }
 
       // reset rawMaterialId and selectedrawmaterial price form
       this.rawMaterialId = null;
       this.selectedRawaterialCost = null;
+      this.selectedRawaterialMinQuantity = null;
+      this.selectedRawaterialNotes = null;
     },
     deleteProduct(index) {
       this.form.rawMaterials.splice(index, 1);
@@ -589,6 +619,8 @@ export default {
     editProduct(index) {
       this.rawMaterialId = this.form.rawMaterials[index].id;
       this.selectedRawaterialCost = this.form.rawMaterials[index].cost;
+      this.selectedRawaterialMinQuantity = this.form.rawMaterials[index].min_quantity_purchase;
+      this.selectedRawaterialNotes = this.form.rawMaterials[index].notes;
       this.editRawMaterialIndex = index;
       this.fetchRawMaterial();
     },

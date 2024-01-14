@@ -22,6 +22,8 @@ class RawMaterial extends Model implements HasMedia
         'min_quantity',
         'max_quantity',
         'cost',
+        'min_quantity_purchase', //para mostrar en proveedores
+        'notes', //para mostrar en proveedores
         'features',
     ];
 
