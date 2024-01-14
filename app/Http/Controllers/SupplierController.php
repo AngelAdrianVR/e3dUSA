@@ -7,6 +7,7 @@ use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\SupplierResource;
 use App\Models\Contact;
+use App\Models\RawMaterial;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 
@@ -22,6 +23,7 @@ class SupplierController extends Controller
              return [
                  'id' => $supplier->id,
                  'name' => $supplier->name,
+                 'nickname' => $supplier->nickname,
                  'phone' => $supplier->phone,
                  'address' => $supplier->address,
                  'post_code' => $supplier->post_code,
@@ -37,7 +39,11 @@ class SupplierController extends Controller
     
     public function create()
     {
-        return inertia('Supplier/Create');
+        $raw_materials = RawMaterial::get(['id', 'name', 'cost']);
+
+        // return $raw_materials;
+
+        return inertia('Supplier/Create', compact('raw_materials'));
     }
 
     
@@ -50,9 +56,23 @@ class SupplierController extends Controller
             'phone' => 'required|string|min:10|max:13',
             'banks' => 'array|min:1',
             'contacts' => 'array|min:1',
+            'rawMaterials' => 'array|min:0'
         ]);
 
-       $supplier = Supplier::create($request->except('contacts'));
+        $raw_materials_id = [];
+
+        //Guarda el costo de cada materia prima en la base de datos y guarda en un array los puros id de las materias primas
+        //para despues guardarla en el json de la bd
+        foreach ($request->rawMaterials as $raw_material ) {
+            $raw_material_db = RawMaterial::find($raw_material['id']);
+            $raw_material_db->cost = $raw_material['cost']; //actualiza el costo de la materia prima
+            $raw_material_db->min_quantity_purchase = $raw_material['min_quantity_purchase']; //agrega el atributo al registro de raw_material
+            $raw_material_db->notes = $raw_material['notes']; //agrega el atributo al registro de raw_material
+            $raw_material_db->save();
+            $raw_materials_id[] = $raw_material['id'];
+       }
+
+       $supplier = Supplier::create($request->except(['contacts', 'rawMaterials']) + ['raw_materials_id' => $raw_materials_id]);
 
        foreach ($request->contacts as $contact ) {
             $supplier->contacts()->create($contact);
@@ -75,7 +95,7 @@ class SupplierController extends Controller
                    ];
                });
 
-        // return $suppliers;
+        // return $supplier;
 
         return inertia('Supplier/Show', compact('supplier', 'suppliers'));
     }
@@ -84,9 +104,10 @@ class SupplierController extends Controller
     public function edit($supplier_id)
     {
         $supplier = Supplier::with('contacts')->find($supplier_id);
+        $raw_materials = RawMaterial::get(['id', 'name', 'cost']);
 
         // return $supplier;
-        return inertia('Supplier/Edit', compact('supplier'));
+        return inertia('Supplier/Edit', compact('supplier','raw_materials'));
     }
 
     
@@ -98,9 +119,23 @@ class SupplierController extends Controller
             'post_code' => 'nullable|string|min:4|max:9',
             'phone' => 'required|string|min:10|max:13',
             'banks' => 'array|min:1',
+            'rawMaterials' => 'array|min:0'
         ]);
 
-       $supplier->update($request->all());
+        $raw_materials_id = [];
+
+        //Guarda el costo de cada materia prima en la base de datos y guarda en un array los puros id de las materias primas
+        //para despues guardarla en el json de la bd
+        foreach ($request->rawMaterials as $raw_material ) {
+            $raw_material_db = RawMaterial::find($raw_material['id']);
+            $raw_material_db->cost = $raw_material['cost']; //actualiza el costo de la materia prima
+            $raw_material_db->min_quantity_purchase = $raw_material['min_quantity_purchase']; //agrega el atributo al registro de raw_material
+            $raw_material_db->notes = $raw_material['notes']; //agrega el atributo al registro de raw_material
+            $raw_material_db->save();
+            $raw_materials_id[] = $raw_material['id'];
+       }
+
+       $supplier->update($request->except(['contacts', 'rawMaterials']) + ['raw_materials_id' => $raw_materials_id]);
 
        //Para actualizar los contactos editados del supplier----------
 
@@ -166,4 +201,5 @@ class SupplierController extends Controller
 
         return response()->json(['message' => 'proveedor(es) eliminado(s)']);
     }
+
 }

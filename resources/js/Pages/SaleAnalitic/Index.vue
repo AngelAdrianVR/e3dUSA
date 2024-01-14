@@ -5,7 +5,7 @@
         <label class="text-lg">Análisis de ventas</label>
       </div>
 
-        <div class="flex justify-between space-x-7">
+        <div class="flex justify-between space-x-7 lg:w-1/2">
           <div class="flex items-center space-x-4 w-2/3 lg:w-1/2">
               <el-select @change="fetchProductSalesTop" class="lg:w-1/2" v-model="familySelected" filterable
               placeholder="Seleccione la familia" no-data-text="No hay opciones registradas"
@@ -28,7 +28,7 @@
     <div v-if="!loading" class="w-10/12 h-[301px] overflow-auto mx-auto mt-9 mb-2 rounded-md">
       <table v-if="topProducts" class="w-full h-full mx-auto text-sm">
         <thead>
-          <tr class="text-center">
+          <tr class="text-center border-b border-primary">
             <th class="font-bold pb-3 pl-2 text-left">
               N° parte
             </th>

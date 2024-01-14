@@ -20,6 +20,8 @@ return new class extends Migration
             $table->unsignedMediumInteger('min_quantity');
             $table->unsignedMediumInteger('max_quantity');
             $table->unsignedFloat('cost');
+            $table->unsignedFloat('min_quantity_purchase')->nullable();
+            $table->text('notes')->nullable();
             $table->json('features')->nullable();
             $table->timestamps();
         });
