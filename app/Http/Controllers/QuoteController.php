@@ -41,6 +41,7 @@ class QuoteController extends Controller
                                     'name' => $quote->companyBranch->name
                                      ],
                  'authorized_user_name' => $quote->authorized_user_name ?? '--',
+                 'authorized_at' => $quote->authorized_at,
                  'created_at' => $quote->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
                     ];
                 });
@@ -101,6 +102,8 @@ class QuoteController extends Controller
     public function show(Quote $quote)
     {
         $quote = QuoteResource::make(Quote::with('catalogProducts')->findOrFail($quote->id));
+
+        // return $quote;
 
         if ($quote->is_spanish_template)
             return inertia('Quote/SpanishTemplate', compact('quote'));
@@ -252,6 +255,7 @@ class QuoteController extends Controller
         $quote_folio = 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT);
         $quote->user->notify(new RequestApprovedNotification('Cotización', $quote_folio, "Cliente {$quote->companyBranch->name}", 'quote'));
 
-        return response()->json(['message' => 'Cotizacion autorizadda', 'item' => $quote]);
+        return response()->json(['message' => 'Cotizacion autorizadda', 'item' => $quote]); //en caso de actualizar en la misma vista descomentar
+        // return to_route('quotes.index'); // en caso de mandar al index, descomentar.
     }
 }
