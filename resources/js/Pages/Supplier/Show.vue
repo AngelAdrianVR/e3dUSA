@@ -59,6 +59,11 @@
             " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Datos bancarios
           </p>
+          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p @click="tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Productos
+          </p>
           <!-- <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
           <p @click="tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
             " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
@@ -77,6 +82,8 @@
 
         <span class="text-gray-500 my-2">Nombre</span>
         <span>{{ supplier.data.name }}</span>
+        <span class="text-gray-500 my-2">Nick name</span>
+        <span>{{ supplier.data.nickname }}</span>
         <span class="text-gray-500 my-2">Dirección</span>
         <span>{{ supplier.data.address }}</span>
         <span class="text-gray-500 my-2">Código postal</span>
@@ -96,12 +103,16 @@
       <!-- ------------- Sucursales ends 2 ------------- -->
 
       <!-- -------------Matriz starts 3 ------------- -->
-      <!-- <div v-if="tabs == 3" class="p-7">
-        <p class="text-secondary">Productos registrados</p>
-        <div class="grid lg:grid-cols-3 md:grid-cols-2 mt-7 gap-10">
-          
+      <div v-if="tabs == 3" class="p-7">
+        <div class="lg:grid grid-cols-2 mt-7 gap-5">
+          <div class="rounded-lg border border-gray1 p-4">
+            <figure class="rounded-md p-4 bg-gray2 w-1/2 mx-auto">
+              <img src="" alt="">
+            </figure>
+            {{rawMaterials}}
+          </div>
         </div>
-      </div> -->
+      </div>
 
       <!-- ------------- Matriz ends 3 ------------- -->
 
@@ -136,6 +147,7 @@ export default {
       // currentSupplier: null,
       tabs: 1,
       showConfirmModal: false,
+      rawMaterials: [],
     };
   },
   props: {
@@ -193,16 +205,23 @@ export default {
         this.$inertia.get(route('suppliers.index'));
       }
     },
+    async fetchSupplierItems() {
+      try {
+          const response = await axios.get(route('raw-materials.fetch-supplier-items', {
+              raw_materials_ids: this.supplier.raw_materials_id.join(',')
+          }));
+          
+          if (response.status === 200) {
+              this.rawMaterials = response.data.items;
+          }
+      } catch (error) {
+          console.log(error);
+      }
+    }
   },
-
-  // watch: {
-  //   selectedSupplier(newVal) {
-  //     this.currentSupplier = this.suppliers.data.find((item) => item.id == newVal);
-  //   },
-  // },
-
   mounted() {
     this.selectedSupplier = this.supplier.data.id;
+    this.fetchSupplierItems();
   },
 };
 </script>

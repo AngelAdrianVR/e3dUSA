@@ -212,6 +212,8 @@ Route::resource('raw-materials', RawMaterialController::class)->middleware('auth
 Route::post('raw-materials/massive-delete', [RawMaterialController::class, 'massiveDelete'])->name('raw-materials.massive-delete')->middleware('auth');
 Route::post('raw-materials/turn-into-catalog-product', [RawMaterialController::class, 'turnIntoCatalogProduct'])->name('raw-materials.turn-into-catalog-product')->middleware('auth');
 Route::post('raw-materials/update-with-media/{raw_material}', [RawMaterialController::class, 'updateWithMedia'])->name('raw-materials.update-with-media')->middleware('auth');
+Route::get('raw-materials/fetch/{raw_material_id}', [RawMaterialController::class, 'fetchItem'])->name('raw-materials.fetch')->middleware('auth');
+Route::get('raw-materials-fetch-supplier-items/{raw_materials_ids}', [RawMaterialController::class, 'fetchSupplierItems'])->name('raw-materials.fetch-supplier-items')->middleware('auth');
 Route::get('consumables/create', [RawMaterialController::class, 'create'])->name('consumables.create')->middleware('auth');
 Route::get('consumables-edit/{raw_material}', [RawMaterialController::class, 'editConsumable'])->name('consumables.edit')->middleware('auth');
 

@@ -34,6 +34,17 @@
             </IconInput>
             <InputError :message="form.errors.name" />
           </div>
+          <div>
+           <IconInput
+              v-model="form.nickname"
+              inputPlaceholder="Nick name *"
+              inputType="text"
+            >
+              <el-tooltip content="Nombre con el que conoces a este proveedor" placement="top">
+                N
+              </el-tooltip>
+            </IconInput>
+          </div>
           <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-3">
             <div class="col-span-2">
               <IconInput
@@ -316,6 +327,76 @@
             </div>
           </div>
           <!-- ---------------- contacts ends ----------------- -->
+
+          <!-- ---------------- supplier rawMaterials starts ----------------- -->
+          <el-divider content-position="left">Productos del proveedor</el-divider>
+          
+          <ol v-if="form.rawMaterials.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
+            <template v-for="(item, index) in form.rawMaterials" :key="index">
+              <li class="flex justify-between items-center">
+                <p class="text-sm">
+                  <span class="text-primary">{{ index + 1 }}.</span>
+                  {{
+                    item.name
+                  }}
+                  (${{ item.cost?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} / unidad) 
+                </p>
+                <div class="flex space-x-2 items-center">
+                  <el-tag v-if="editRawMaterialIndex == index">En edición</el-tag>
+                  <el-button @click="editProduct(index)" type="primary" circle>
+                    <i class="fa-sharp fa-solid fa-pen-to-square"></i>
+                  </el-button>
+                  <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
+                    @confirm="deleteProduct(index)">
+                    <template #reference>
+                      <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>
+                    </template>
+                  </el-popconfirm>
+                </div>
+              </li>
+            </template>
+          </ol>
+
+          <div class="lg:grid grid-cols-3 gap-x-5 space-y-3 rounded-lg p-5">
+            <div class="flex items-center col-span-2">
+              <el-tooltip content="Producto de catálogo" placement="top">
+                <span
+                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md ">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+              </el-tooltip>
+              <el-select @change="fetchRawMaterial" v-model="rawMaterialId" clearable filterable placeholder="Buscar producto">
+                <el-option v-for="item in raw_materials" :key="item.id" :label="item.name" :value="item.id" />
+              </el-select>
+            </div>
+            <div v-if="loading" class="rounded-md bg-[#CCCCCC] text-xs text-gray-500 text-center p-4">
+                cargando imagen...
+            </div>
+            <figure v-else-if="selectedRawaterial" class="rounded-md">
+                <img :src="selectedRawaterial.media[0]?.original_url" class="rounded-md">
+            </figure>
+            <div></div>
+
+            <div class="col-span-2 col-start-1">
+                <IconInput v-model="selectedRawaterialCost" inputPlaceholder="Precio *" inputType="number"
+                  inputStep="0.01">
+                  <el-tooltip content="Precio unitario de la materia prima" placement="top">
+                    <i class="fa-solid fa-money-bill"></i>
+                  </el-tooltip>
+                </IconInput>
+            </div>
+
+            <div class="col-start-1 pt-2">
+              <SecondaryButton @click="addProduct" :disabled="!rawMaterialId">
+                {{
+                  editRawMaterialIndex !== null
+                  ? "Actualizar producto"
+                  : "Agregar producto a lista"
+                }}
+              </SecondaryButton>
+            </div>
+          </div>
+          <!-- ---------------- supplier Products ends ----------------- -->
           <div class="mt-2 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing || this.editIndex !== null">
               Actualizar proveedor
@@ -334,17 +415,19 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
-import { ref } from "vue";
+import axios from 'axios';
 
 export default {
   data() {
     const form = useForm({
       name: this.supplier.name,
+      nickname: this.supplier.nickname,
       address: this.supplier.address,
       post_code: this.supplier.post_code,
       phone: this.supplier.phone,
       banks: this.supplier.banks,
       contacts: this.supplier.contacts,
+      rawMaterials: this.supplier.raw_materials_id,
     });
 
     return {
@@ -352,6 +435,8 @@ export default {
       editIndex: null,
       editContactIndex: null,
       contacts: [],
+      loading: false,
+      editRawMaterialIndex: null,
       bank: {
         beneficiary_name: null,
         accountNumber: null,
@@ -366,6 +451,9 @@ export default {
         birthdate_day: null,
         birthdate_month: null,
       },
+      rawMaterialId: null,
+      selectedRawaterialCost: null,
+      selectedRawaterial: null,
       months: [
         "Enero",
         "Febrero",
@@ -386,12 +474,13 @@ export default {
     AppLayout,
     SecondaryButton,
     PrimaryButton,
-    Link,
     InputError,
     IconInput,
+    Link
   },
   props: {
-    supplier: Object
+    supplier: Object,
+    raw_materials: Array
   },
   methods: {
     update() {
@@ -462,6 +551,60 @@ export default {
       this.contact = contact;
       this.editContactIndex = index;
     },
+
+    //products
+    async fetchRawMaterial() {
+      this.loading = true;
+      try {
+        const response = await axios.get(route('raw-materials.fetch', this.rawMaterialId)); 
+
+        if (response.status === 200) {
+          this.selectedRawaterial = response.data.item;
+        }
+
+      } catch (error) {
+        console.log(error);
+
+      } finally {
+        this.loading = false;
+      }
+
+    },
+    addProduct() {
+      if (this.editRawMaterialIndex === null) {
+        this.selectedRawaterial.cost = this.selectedRawaterialCost;
+        this.form.rawMaterials.push(this.selectedRawaterial);
+      } else {
+        this.form.rawMaterials[this.editRawMaterialIndex].cost = this.selectedRawaterialCost;
+        this.editRawMaterialIndex = null;
+      }
+
+      // reset rawMaterialId and selectedrawmaterial price form
+      this.rawMaterialId = null;
+      this.selectedRawaterialCost = null;
+    },
+    deleteProduct(index) {
+      this.form.rawMaterials.splice(index, 1);
+    },
+    editProduct(index) {
+      this.rawMaterialId = this.form.rawMaterials[index].id;
+      this.selectedRawaterialCost = this.form.rawMaterials[index].cost;
+      this.editRawMaterialIndex = index;
+      this.fetchRawMaterial();
+    },
+    async fetchSupplierItems() {
+      try {
+          const response = await axios.get(route('raw-materials.fetch-supplier-items', {
+              raw_materials_ids: this.supplier.raw_materials_id.join(',')
+          }));
+          
+          if (response.status === 200) {
+              this.form.rawMaterials = response.data.items;
+          }
+      } catch (error) {
+          console.log(error);
+      }
+    }
   },
   mounted() {
     this.form.contacts = this.supplier.contacts.map(contact => {
@@ -473,7 +616,10 @@ export default {
         birthdate_day: contact.birthdate_day,
         birthdate_month: contact.birthdate_month,
       }
-    })
+    });
+
+    this.fetchSupplierItems();
+
   }
 };
 </script>

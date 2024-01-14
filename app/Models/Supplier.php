@@ -12,15 +12,18 @@ class Supplier extends Model
 
     protected $fillable = [
         'name',
+        'nickname',
         'address',
         'post_code',
         'phone',
         'banks',
+        'raw_materials_id',
         'contact_id'
     ];
 
     protected $casts = [
-        'banks' => 'array'
+        'banks' => 'array',
+        'raw_materials_id' => 'array',
     ];  
 
     //relationships
