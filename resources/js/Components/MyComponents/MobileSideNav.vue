@@ -297,7 +297,8 @@ export default {
                             label: 'Reuniones',
                             route: route('meetings.index'),
                             active: route().current('meetings.*'),
-                            show: this.$page.props.auth.user.permissions.includes('Reuniones personal')
+                            // show: this.$page.props.auth.user.permissions.includes('Reuniones personal')
+                            show: false,
                         },
                         {
                             label: 'Biblioteca de medios',

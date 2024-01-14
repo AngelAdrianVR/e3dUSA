@@ -398,7 +398,8 @@ export default {
                         {
                             label: 'Reuniones',
                             route: 'meetings.index',
-                            show: this.$page.props.auth.user.permissions.includes('Reuniones personal'),
+                            // show: this.$page.props.auth.user.permissions.includes('Reuniones personal'),
+                            show: false,
                             notifications: this.$page.props.auth.user?.notifications?.some(notification => {
                                 return notification.data.module === 'meeting';
                             }),
