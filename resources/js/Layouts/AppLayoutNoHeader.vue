@@ -197,10 +197,10 @@ const QRScan = () => {
 const timeSinceNewPrice = (company_info) => {
   const currentDate = dayjs();
   const newDate = dayjs(company_info.pivot.new_date);
-  
+
   const diff = currentDate.diff(newDate, 'day');
   const formattedDifference = diff < 31 ? `${diff} días` : `${currentDate.diff(newDate, 'month')} mes(es)`;
-  
+
   return formattedDifference;
 };
 
@@ -499,10 +499,8 @@ onMounted(() => {
                       {{ nextAttendance }}
                     </span>
                   </div>
-                  <el-popconfirm
-                    v-else
-                    confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
-                    @confirm="setAttendance">
+                  <el-popconfirm v-else confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                    title="¿Continuar?" @confirm="setAttendance">
                     <template #reference>
                       <SecondaryButton v-if="nextAttendance != 'Dia terminado'" class="mr-14">
                         {{ nextAttendance }}
@@ -587,19 +585,23 @@ onMounted(() => {
                     </template>
 
                     <template #content>
+                      <div class="block px-4 py-1 text-xs rounded-md" :class="{
+                        'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
+                        'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
+                        'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
+                      }">
+                        Nivel {{ $page.props.auth.user.experience }}
+                      </div>
                       <!-- Account Management -->
                       <div class="block px-4 py-2 text-xs text-gray-400">
                         Administrador de cuenta
                       </div>
-
                       <DropdownLink :href="route('profile.show')">
                         Perfil
                       </DropdownLink>
-
                       <DropdownLink v-if="$page.props.jetstream.hasApiFeatures" :href="route('api-tokens.index')">
                         API Tokens
                       </DropdownLink>
-
                       <div class="border-t border-gray-200" />
 
                       <!-- Authentication -->
@@ -654,12 +656,18 @@ onMounted(() => {
 
             <!-- Responsive Settings Options -->
             <div class="pt-4 pb-1 border-t border-gray-200">
+              <div class="block px-4 py-1 text-xs" :class="{
+                'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
+                'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
+                'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
+              }">
+                Nivel {{ $page.props.auth.user.experience }}
+              </div>
               <div class="flex items-center px-4">
                 <div v-if="$page.props.jetstream.managesProfilePhotos" class="shrink-0 mr-3">
                   <img class="h-10 w-10 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url"
                     :alt="$page.props.auth.user.name" />
                 </div>
-
                 <div>
                   <div class="font-medium text-base text-gray-800">
                     {{ $page.props.auth.user.name }}
@@ -911,8 +919,9 @@ onMounted(() => {
   }}</span></p>
                 <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{
                   company_info.pivot.new_date }}</span></p>
-                  <p class="text-secondary font-bold">Último ajuste de precio hace:
-                  <span class="text-gray-600 font-thin">{{timeSinceNewPrice(company_info) }}</span></p>
+                <p class="text-secondary font-bold">Último ajuste de precio hace:
+                  <span class="text-gray-600 font-thin">{{ timeSinceNewPrice(company_info) }}</span>
+                </p>
               </div>
             </div>
 

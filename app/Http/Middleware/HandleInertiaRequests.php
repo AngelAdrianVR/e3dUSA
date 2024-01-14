@@ -59,6 +59,13 @@ class HandleInertiaRequests extends Middleware
 
                 return null;
             },
+            'auth.user.experience' => function () use ($request) {
+                if ($request->user()) {
+                    return $request->user()->calculateExperience();
+                }
+
+                return null;
+            },
             'auth.user.nextAttendance' => function () use ($request) {
                 if ($request->user()) {
                     return $request->user()->getNextAttendance();
