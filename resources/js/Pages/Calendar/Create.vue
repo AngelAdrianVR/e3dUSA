@@ -2,10 +2,7 @@
   <AppLayout title="Agendar tarea">
     <template #header>
       <div class="flex justify-between">
-        <Link :href="route('calendars.index')"
-          class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
-        <i class="fa-solid fa-chevron-left"></i>
-        </Link>
+        <Back />
         <div class="flex items-center space-x-2">
           <h2 class="font-semibold text-xl leading-tight">Agendar nueva tarea/evento</h2>
         </div>
@@ -196,9 +193,10 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import Checkbox from "@/Components/Checkbox.vue";
+import Back from "@/Components/MyComponents/Back.vue";
+import { Link, useForm } from "@inertiajs/vue3";
 
 export default {
   data() {
@@ -237,9 +235,10 @@ export default {
   components: {
     AppLayout,
     PrimaryButton,
-    Link,
     InputError,
     Checkbox,
+    Back,
+    Link
   },
   props: {
     users: Array,
