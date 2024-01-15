@@ -4,6 +4,7 @@ use App\Http\Controllers\AdditionalTimeRequestController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\CallMonitorController;
 use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\ClientMonitorController;
 use App\Http\Controllers\CompanyBranchController;
@@ -163,6 +164,9 @@ Route::resource('meeting-monitors', MettingMonitorController::class)->middleware
 
 // ------- CRM (email monior Routes)  ---------
 Route::resource('email-monitors', EmailMonitorController::class)->middleware('auth');
+
+// ------- CRM (Call monior Routes)  ---------
+Route::resource('call-monitors', CallMonitorController::class)->middleware('auth');
 
 // ------- CRM (whatsapp monior Routes)  ---------
 Route::resource('whatsapp-monitors', WhatsappMonitorController::class)->middleware('auth');
@@ -390,7 +394,7 @@ Route::put('meetings/set-attendance-confirmation/{meeting_id}', [MeetingControll
 Route::post('meetings/get-by-date-and-user', [MeetingController::class, 'getMeetingsByDateAndUser'])->name('meetings.get-by-date-and-user');
 
 
-//------------------ Meetings routes ----------------
+//------------------ production-cost routes ----------------
 Route::resource('production-costs', ProductionCostController::class)->middleware('auth');
 Route::post('production-costs/massive-delete', [ProductionCostController::class, 'massiveDelete'])->name('production-costs.massive-delete');
 

@@ -100,7 +100,7 @@ class WhatsappMonitorController extends Controller
 
         // return $whatsapp_monitor;
 
-        return inertia('WhatsappMonitor/Edit', compact('whatsapp_monitor', 'companies', 'oportunities', 'users', 'whatsapp_monitor'));
+        return inertia('WhatsappMonitor/Edit', compact('whatsapp_monitor', 'companies', 'oportunities', 'users'));
     }
 
     
