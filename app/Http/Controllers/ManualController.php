@@ -106,6 +106,8 @@ class ManualController extends Controller
 
     public function destroy(Manual $manual)
     {
-        //
+        $manual->delete();
+
+        return to_route('manuals.index');
     }
 }

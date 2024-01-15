@@ -168,7 +168,7 @@ class DesignController extends Controller
 
     public function edit(Design $design)
     {
-        $designers = User::all();
+        $designers = User::where('is_active', 1)->where('employee_properties->department', 'Diseño')->get();
         $design_types = DesignType::all();
         $companies = Company::all();
 

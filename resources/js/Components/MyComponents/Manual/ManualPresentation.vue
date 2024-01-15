@@ -6,7 +6,8 @@
                 class="absolute inset-0 rounded-[10px] bg-gray-700 opacity-80 flex items-center justify-center text-white">
                 <i class="fa-solid fa-spinner animate-spin text-xl"></i>
             </div>
-            <div v-else class="absolute inset-0 rounded-[10px] bg-gray-700 opacity-80 flex items-center justify-center text-white">
+            <div v-else
+                class="absolute inset-0 rounded-[10px] bg-gray-700 opacity-80 flex items-center justify-center text-white">
                 <svg v-if="manual.type == 'Manual'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                     stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -37,21 +38,40 @@
                     <i class="fa-solid fa-circle text-[4px]"></i>
                     <small class="font-bold">{{ manual.type }}</small>
                 </p>
-                <ThirthButton v-if="$page.props.auth.user.permissions.includes('Editar manuales')" @click.stop="edit"
-                    class="!rounded-[5px] !px-2 !py-1">Editar</ThirthButton>
+                <div class="flex items-center space-x-6">
+                    <button v-if="$page.props.auth.user.permissions.includes('Eliminar manuales')" @click.stop="showConfirmationModal = true" class="text-primary"><i class="fa-regular fa-trash-can"></i></button>
+                    <ThirthButton v-if="$page.props.auth.user.permissions.includes('Editar manuales')" @click.stop="edit"
+                        class="!rounded-[5px] !px-2 !py-1">Editar</ThirthButton>
+                </div>
             </footer>
         </div>
     </article>
+    <ConfirmationModal :show="showConfirmationModal" @close="showConfirmationModal = false">
+        <template #title>
+            Eliminar elemento
+        </template>
+        <template #content>
+                Esta acción es permanente y no se podrá revertir. ¿Continuar con la eliminación?
+        </template>
+        <template #footer>
+            <CancelButton @click="showConfirmationModal = false" class="mr-2">Cancelar</CancelButton>
+            <PrimaryButton @click="deleteItem">Si, eliminar</PrimaryButton>
+        </template>
+    </ConfirmationModal>
 </template>
 <script>
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import ThirthButton from "@/Components/MyComponents/ThirthButton.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 
 export default {
     data() {
         return {
             loading: true,
+            showConfirmationModal: false,
         };
     },
     methods: {
@@ -69,9 +89,15 @@ export default {
         edit() {
             this.$inertia.get(route('manuals.edit', this.manual));
         },
+        deleteItem() {
+            this.$inertia.delete(route('manuals.destroy', this.manual));
+        },
     },
     components: {
         ThirthButton,
+        ConfirmationModal,
+        PrimaryButton,
+        CancelButton,
     },
     props: {
         manual: Object,
