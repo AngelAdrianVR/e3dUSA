@@ -2,10 +2,7 @@
   <AppLayout title="Crear actividad de oportunidad">
     <template #header>
       <div class="flex justify-between">
-        <Link :href="route('oportunities.show', oportunity_id)"
-          class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
-        <i class="fa-solid fa-chevron-left"></i>
-        </Link>
+        <Back />
         <div class="flex items-center space-x-2">
           <h2 class="font-semibold text-xl leading-tight">Nueva actividad de oportunidad</h2>
         </div>
@@ -103,10 +100,11 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import RichText from "@/Components/MyComponents/RichText.vue";
 import FileUploader from "@/Components/MyComponents/FileUploader.vue";
+import Back from "@/Components/MyComponents/Back.vue";
+import { Link, useForm } from "@inertiajs/vue3";
 
 export default {
   data() {
@@ -145,6 +143,7 @@ export default {
     InputError,
     FileUploader,
     RichText,
+    Back,
     Link,
   },
   props: {
