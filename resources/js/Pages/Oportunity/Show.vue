@@ -73,6 +73,10 @@
                 v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Registrar interaccion whatsapp en seguimiento integral')">
                 Interacción WhatsApp
               </DropdownLink>
+              <DropdownLink :href="route('call-monitors.create', {opportunityId: currentOportunity?.id})"
+                v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Registrar llamada en seguimiento integral')">
+                Registrar llamada
+              </DropdownLink>
               <DropdownLink v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades') && tabs == 1 && toBool(authUserPermissions[3])
                 " @click="showConfirmModal = true" as="button">
                 Eliminar
@@ -222,7 +226,15 @@
           </el-tooltip>
           <el-tooltip content="Enviar correo" placement="top">
             <i @click="$inertia.get(route('email-monitors.create'), {opportunityId: currentOportunity?.id})"
-              class="fa-regular fa-envelope text-primary cursor-pointer text-lg px-3"></i>
+              class="fa-regular fa-envelope text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
+          </el-tooltip>
+          <el-tooltip content="Interacción WhatsApp" placement="top">
+            <i @click="$inertia.get(route('whatsapp-monitors.create'), {opportunityId: currentOportunity?.id})"
+              class="fa-brands fa-whatsapp text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
+          </el-tooltip>
+          <el-tooltip content="Registrar llamada" placement="top">
+            <i @click="$inertia.get(route('call-monitors.create'), {opportunityId: currentOportunity?.id})"
+              class="fa-solid fa-phone text-primary cursor-pointer text-lg px-3"></i>
           </el-tooltip>
         </div>
       </div>
