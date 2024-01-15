@@ -67,7 +67,7 @@
     .label{
         @apply block mb-2 text-sm font-medium text-gray-600;
     }
-    
-    
-    
+    .hover-3dbuttom{
+        @apply hover:shadow-md hover:shadow-gray-500 transition ease-in-out duration-300;
+    }
 }

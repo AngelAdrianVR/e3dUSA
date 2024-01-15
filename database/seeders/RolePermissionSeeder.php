@@ -60,6 +60,7 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Registrar pagos en seguimiento integral', 'category' => 'Ventas']); //seguimiento integral (CRM)
         Permission::create(['name' => 'Agendar citas en seguimiento integral', 'category' => 'Ventas']); //seguimiento integral (CRM)
         Permission::create(['name' => 'Registrar interaccion whatsapp en seguimiento integral', 'category' => 'Ventas']); //seguimiento integral (CRM)
+        Permission::create(['name' => 'Registrar llamada en seguimiento integral', 'category' => 'Ventas']); //seguimiento integral (CRM)
 
         Permission::create(['name' => 'Ver muestra', 'category' => 'Ventas']);
         Permission::create(['name' => 'Crear muestra', 'category' => 'Ventas']);
