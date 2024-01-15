@@ -103,9 +103,10 @@
           </div>
           <div class="flex space-x-4 mt-5">
             <figure class="rounded-md">
-                <img :src="productSelected.media?.original_url" class="rounded-md">
+                <img :src="productSelected.media?.original_url" class="rounded-md object-contain w-full h-36">
             </figure>
             <LinealChart :options="productAmountSalesMonth" title="Ventas acumuladas por mes" />
+            <LinealChart :options="productMoneySalesMonth" title="Ventas en pesos mexicanos $MXN por mes" />
           </div>
         </div>
          <!-- Estado de carga  -->
@@ -219,6 +220,15 @@ methods:{
             series: [{
               name: 'Unidades vendidas',
               data: response.data.items.map(sale => sale.total_sales)
+            }],
+          };
+
+          this.productMoneySalesMonth = {
+            colors: ['#f3f3f3', 'transparent'],
+            categories: response.data.items.map(sale => sale.month),
+            series: [{
+              name: 'Cantidad en pesos $MXN',
+              data: response.data.items.map(sale => sale.money_sales)
             }],
           };
 

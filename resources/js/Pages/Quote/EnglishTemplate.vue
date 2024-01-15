@@ -190,33 +190,35 @@ export default {
         quote: Object
     },
      methods:{
-        async authorize() {
-            try {
-                const response = await axios.put(route('quotes.authorize', this.quote.data.id));
+         async authorize() {
+            if (!this.quote.data.authorized_at)  {
+                    try {
+                        const response = await axios.put(route('quotes.authorize', this.quote.data.id));
 
-                if (response.status == 200) {
-                    this.$notify({
-                        title: 'Éxito',
-                        message: response.data.message,
-                        type: 'success'
-                    });
-                } else {
-                    this.$notify({
-                        title: 'Algo salió mal',
-                        message: response.data.message,
-                        type: 'error'
-                    });
+                    if (response.status == 200) {
+                        this.$notify({
+                            title: 'Éxito',
+                            message: response.data.message,
+                            type: 'success'
+                        });
+                    } else {
+                        this.$notify({
+                            title: 'Algo salió mal',
+                            message: response.data.message,
+                            type: 'error'
+                        });
+                    }
+                    } catch (err) {
+                        this.$notify({
+                            title: 'Algo salió mal',
+                            message: err.message,
+                            type: 'error'
+                        });
+                        console.log(err);
+                    } finally {
+                        this.$inertia.get(route('quotes.index'));
+                    }
                 }
-            } catch (err) {
-                this.$notify({
-                    title: 'Algo salió mal',
-                    message: err.message,
-                    type: 'error'
-                });
-                console.log(err);
-            } finally {
-                this.$inertia.get(route('quotes.index'));
-            }
         },
      }
 }
