@@ -29,25 +29,36 @@ class SaleAnaliticController extends Controller
         //     ->sortByDesc('created_at');
 
 
-        // Obtener las ventas del producto
+       // Obtener las ventas del producto
         $product = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')
         ->whereHas('catalogProductCompany.catalogProduct', function ($query) {
             $query->where('part_number', 'C-LL-CLE-0247');
         })
         ->get();
 
-        // Mapear y agrupar por mes
+        // Verificar si hay al menos un elemento en el array
+        if ($product->isNotEmpty()) {
+        // Obtener el valor de new_price de la primera entrada del array
+        $product_price = $product[0]->catalogProductCompany->new_price;
+        } else {
+        // Manejar el caso donde el array $product está vacío
+        $product_price = 0;
+        }
+
+        // Resto del código...
         $grouped = $product->groupBy(function ($item) {
-        return \Carbon\Carbon::parse($item->created_at)->format('Y-m');
+            return \Carbon\Carbon::parse($item->created_at)->format('Y-m');
         });
 
-        // Calcular la suma de las cantidades de ventas por mes
-        $monthlySales = $grouped->map(function ($sales, $month) {
-        return [
-            'month' => $month,
-            'total_sales' => $sales->sum('quantity'),
-        ];
+        // Resto del código...
+        $monthlySales = $grouped->map(function ($sales, $month) use ($product_price) {
+            return [
+                'month' => $month,
+                'total_sales' => $sales->sum('quantity'),
+                'money_sales' => $sales->sum('quantity') * $product_price,
+            ];
         })->values()->sortBy('month');
+        
 
 
             
@@ -105,22 +116,32 @@ class SaleAnaliticController extends Controller
     {
         // Obtener las ventas del producto
         $product = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')
-        ->whereHas('catalogProductCompany.catalogProduct', function ($query) use ($part_number) {
-            $query->where('part_number', $part_number);
+        ->whereHas('catalogProductCompany.catalogProduct', function ($query) {
+            $query->where('part_number', 'C-LL-CLE-0247');
         })
         ->get();
 
-        // Mapear y agrupar por mes
+        // Verificar si hay al menos un elemento en el array
+        if ($product->isNotEmpty()) {
+        // Obtener el valor de new_price de la primera entrada del array
+        $product_price = $product[0]->catalogProductCompany->new_price;
+        } else {
+        // Manejar el caso donde el array $product está vacío
+        $product_price = 0;
+        }
+
+        // Resto del código...
         $grouped = $product->groupBy(function ($item) {
-        return \Carbon\Carbon::parse($item->created_at)->format('Y-m');
+            return \Carbon\Carbon::parse($item->created_at)->format('Y-m');
         });
 
-        // Calcular la suma de las cantidades de ventas por mes
-        $monthlySales = $grouped->map(function ($sales, $month) {
-        return [
-            'month' => $month,
-            'total_sales' => $sales->sum('quantity'),
-        ];
+        // Resto del código...
+        $monthlySales = $grouped->map(function ($sales, $month) use ($product_price) {
+            return [
+                'month' => $month,
+                'total_sales' => $sales->sum('quantity'),
+                'money_sales' => $sales->sum('quantity') * $product_price,
+            ];
         })->values()->sortBy('month');
 
         return response()->json(['items' => $monthlySales]);
