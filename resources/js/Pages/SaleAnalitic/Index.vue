@@ -96,17 +96,20 @@
 
     <!-- Analisis de producto -->
       <div v-if="productSelected" class="rounded-lg px-4 py-3 mx-9 mt-10 text-sm">
-        <div v-if="!loadingCharts">
+        <div class="w-full" v-if="!loadingCharts">
           <div class="flex items-center space-x-9 font-bold">
             <p>{{ productSelected.part_number }}</p>
             <p>{{ productSelected.name }}</p>
           </div>
-          <div class="flex space-x-4 mt-5">
+          <div class="lg:flex space-x-4 mt-5">
             <figure class="rounded-md">
-                <img :src="productSelected.media?.original_url" class="rounded-md object-contain w-full h-36">
+                <img :src="productSelected.media?.original_url" class="rounded-md object-contain w-full h-20">
             </figure>
-            <LinealChart :options="productAmountSalesMonth" title="Ventas acumuladas por mes" />
-            <LinealChart :options="productMoneySalesMonth" title="Ventas en pesos mexicanos $MXN por mes" />
+            <div class="lg:grid grid-cols-2 gap-4 text-center">
+              <LinealChart :options="productAmountSalesMonth" title="Ventas acumuladas por mes" />
+              <LinealChart :options="productMoneySalesMonth" title="Ventas en pesos mexicanos $MXN por mes" />
+              <!-- <ColumWithMakersChart :options="productMoneySalesMonth" title="Ventas vs Espectativas" /> --> 
+            </div>
           </div>
         </div>
          <!-- Estado de carga  -->
@@ -121,6 +124,7 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import LinealChart from "@/Components/MyComponents/LinealChart.vue";
+import ColumWithMakersChart from "@/Components/MyComponents/ColumWithMakersChart.vue";
 import axios from 'axios';
 
 export default {
@@ -180,11 +184,13 @@ data() {
               code:'C-PE',
             },
         ],   
+
     }
 },
 components:{
 AppLayout,
 LinealChart,
+ColumWithMakersChart,
 InputLabel
 
 },

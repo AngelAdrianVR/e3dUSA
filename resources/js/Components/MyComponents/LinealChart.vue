@@ -1,6 +1,6 @@
 <template>
     <div
-        class="min-h-[220px] border border-gray3 rounded-[10px] lg:rounded-xl lg:p-5 py-2 px-4 text-xs lg:text-sm relative">
+        class="min-h-[150px] border border-gray3 rounded-[10px] lg:rounded-xl lg:p-5 py-2 px-4 text-xs lg:text-sm relative">
         <h1 class="font-bold text-center">{{ title }} <span v-html="icon"></span></h1>
 
         <div id="chart">
@@ -17,7 +17,7 @@ data(){
         series: this.options.series,
           chartOptions: {
             chart: {
-              height: 250,
+              height: 200,
               type: 'line',
               zoom: {
                 enabled: false
