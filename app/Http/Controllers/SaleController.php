@@ -186,7 +186,6 @@ class SaleController extends Controller
                 }
             }
 
-
             // sub needed quantities from stock
             if ($quntity_to_produce > 0) {
                 $raw_materials = $cpcs->catalogProductCompany->catalogProduct->rawMaterials;
@@ -406,5 +405,13 @@ class SaleController extends Controller
 
         // return $sale;
         return inertia('Sale/Print', compact('sale'));
+    }
+
+    public function getUnauthorized()
+    {
+        $sales = SaleResource::collection(Sale::with('catalogProductCompanySales.catalogProductCompany.catalogProduct.storages')
+            ->whereNull('authorized_at')->get());
+
+        return response()->json(['items' => $sales]);
     }
 }
