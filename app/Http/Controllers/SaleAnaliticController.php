@@ -116,8 +116,8 @@ class SaleAnaliticController extends Controller
     {
         // Obtener las ventas del producto
         $product = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')
-        ->whereHas('catalogProductCompany.catalogProduct', function ($query) {
-            $query->where('part_number', 'C-LL-CLE-0247');
+        ->whereHas('catalogProductCompany.catalogProduct', function ($query) use($part_number) {
+            $query->where('part_number', $part_number);
         })
         ->get();
 
