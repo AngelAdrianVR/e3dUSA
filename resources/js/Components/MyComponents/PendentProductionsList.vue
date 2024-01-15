@@ -28,7 +28,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="item in unauthorizedSales" :key="item.id" class="text-xs w-full">
+                        <tr v-for="item in unauthorizedSales" :key="item.id" class="text-xs w-full border-b border-[#9A9A9A]">
                             <td class="px-1">{{ item.folio }}</td>
                             <td class="px-1">
                                 <p class="truncate" v-for="op in item.catalogProductCompanySales" :key="op.id" :title="op.catalog_product_company?.catalog_product.name">

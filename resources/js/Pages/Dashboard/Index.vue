@@ -175,7 +175,7 @@
                         </div>
                     </div>
                     <!-- lista de OV sin autorizar -->
-                    <PendentProductionsList class="col-span-2" />
+                    <PendentProductionsList v-if="$page.props.auth.user.employee_properties === null || $page.props.auth.user.employee_properties?.department == 'Producción'" class="col-span-2" />
                     <!-- crear oportunidad de tiempo extra -->
                     <ExtraTimeRequestCreator
                         v-if="$page.props.auth.user.permissions.includes('Crear oportunidad de tiempo extra')"
