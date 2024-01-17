@@ -77,7 +77,7 @@
             </div> -->
         <div class="flex justify-end items-center">
           <PrimaryButton :disabled="form.processing">
-            Enviar
+            Guardar
           </PrimaryButton>
 
         </div>
