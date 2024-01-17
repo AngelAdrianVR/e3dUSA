@@ -80,18 +80,18 @@ class Sale extends Model implements HasMedia
         if ($this->authorized_at) { // solo si la orden esta autorizada
             // Obtén todas las relaciones de CatalogProductCompanySale asociadas a esta venta
             $catalogProductCompanySales = CatalogProductCompanySale::where('sale_id', $this->id)->get();
-    
+
             foreach ($catalogProductCompanySales as $catalogProductCompanySale) {
                 // Accede al modelo CatalogProductCompany a través de la relación
                 $catalogProductCompany = $catalogProductCompanySale->catalogProductCompany;
-    
+
                 if ($catalogProductCompany) {
                     // Calcula el monto total para este producto
                     $quantity = $catalogProductCompanySale->quantity;
                     $price = $catalogProductCompany->new_price;
-    
+
                     $totalProductAmount = $quantity * $price;
-    
+
                     // Agrega el monto total de este producto al total general
                     $totalAmount += $totalProductAmount;
                 }
@@ -99,5 +99,54 @@ class Sale extends Model implements HasMedia
         }
 
         return $totalAmount;
+    }
+
+    public function getStatus()
+    {
+        $hasStarted = $this->productions?->whereNotNull('started_at')->count();
+        $hasNotFinished = $this->productions?->whereNull('finished_at')->count();
+        $lowStock = $this->productions?->where('has_low_stock', true)->count();
+
+        if ($this->authorized_at == null) {
+            $status = [
+                'label' => 'Esperando autorización',
+                'text-color' => 'text-amber-500',
+                'border-color' => 'border-amber-500',
+            ];
+        } elseif ($this->productions) {
+            if ($lowStock) {
+                $status = [
+                    'label' => 'Falta de materia prima',
+                    'text-color' => 'text-red-500',
+                    'border-color' => 'border-red-500',
+                ];
+            } elseif (!$hasStarted) {
+                $status = [
+                    'label' => 'Producción sin iniciar',
+                    'text-color' => 'text-gray-500',
+                    'border-color' => 'border-gray-500',
+                ];
+            } elseif ($hasStarted && $hasNotFinished) {
+                $status = [
+                    'label' => 'Producción en proceso',
+                    'text-color' => 'text-blue-500',
+                    'border-color' => 'border-blue-500',
+                ];
+            } else {
+                $status = [
+                    'label' => 'Producción terminada',
+                    'text-color' => 'text-green-500',
+                    'border-color' => 'border-green-500',
+                ];
+            }
+        } else {
+            $status = [
+                'label' => 'Autorizado sin orden de producción',
+                'text-color' => 'text-amber-500',
+                'border-color' => 'border-amber-500',
+            ];
+        }
+
+        return $status;
     }
 }

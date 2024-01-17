@@ -115,8 +115,9 @@
           <InputError :message="form.errors.participants" />
         </div>
         <div class="mt-5 col-span-full">
-          <label>Descripción</label>
-          <RichText @content="updateDescription($event)" />
+          <label>Descripción *</label>
+          <textarea v-model="form.description" class="textarea w-full" placeholder="Coloca tema a tratar o motivo de la reunión"></textarea>
+          <InputError :message="form.errors.description" />
         </div>
 
         <div class="flex justify-end items-center">

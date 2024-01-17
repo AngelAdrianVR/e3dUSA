@@ -13,6 +13,8 @@ use App\Models\Production;
 use App\Models\ProductionCost;
 use App\Models\Sale;
 use App\Models\Setting;
+use App\Models\StockMovementHistory;
+use App\Models\Storage;
 use App\Models\User;
 use App\Notifications\MentionInProductionNotification;
 use App\Notifications\ProductionCompletedNotification;
@@ -169,7 +171,6 @@ class ProductionController extends Controller
         $request->validate([
             'productions' => 'array|min:1',
         ]);
-
 
         $is_automatic_assignment = Setting::where('key', 'AUTOMATIC_PRODUCTION_ASSIGNMENT')->first()->value;
 
@@ -372,6 +373,22 @@ class ProductionController extends Controller
                 'scrap' => $request->scrap,
             ]);
 
+            // sub needed quantities from stock -------------------------------------------------------
+            $cpcs = CatalogProductCompanySale::find($production['catalog_product_company_sale_id']);
+            $raw_materials = $cpcs->catalogProductCompany->catalogProduct->rawMaterials;
+            foreach ($raw_materials as $raw_material) {
+                $quantity_needed = $raw_material->pivot->quantity * $cpcs->quantity;
+                $storage = Storage::where('storageable_id', $raw_material->id)->where('storageable_type', 'App\Models\RawMaterial')->first();
+                $storage->decrement('quantity', $quantity_needed);
+                StockMovementHistory::Create([
+                    'storage_id' => $storage->id,
+                    'user_id' => auth()->id(),
+                    'type' => 'Salida',
+                    'quantity' => $quantity_needed,
+                    'notes' => 'Salida de material automática por orden de producción terminada',
+                ]);
+            }
+
             // // rebajar o eliminar cantidad en almacen de producto terminado en caso de que hubiera disponible
             // if ($production->catalogProductCompanySale->finished_product_used > 0) {
             //     $finished_product = $production->catalogProductCompanySale->catalogProductCompany->catalogProduct->storages[0];
@@ -438,7 +455,7 @@ class ProductionController extends Controller
 
         return response()->json(['item' => $comment->fresh('user')]);
     }
-    
+
     // private methods
     private function findSuitableEmployees($totalEstimatedTime)
     {
