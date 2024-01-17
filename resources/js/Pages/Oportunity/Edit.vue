@@ -86,7 +86,8 @@
                   (item) => item.id == form.company_id
                 )?.company_branches" :key="company_branch" :label="company_branch.name" :value="company_branch.id" />
               </el-select>
-              <p v-if="$page.props.errors?.company_branch_id" class="text-xs text-red-600">El campo sucursal es obligatorio</p>
+              <p v-if="$page.props.errors?.company_branch_id" class="text-xs text-red-600">El campo sucursal es
+                obligatorio</p>
             </div>
             <div class="w-1/2">
               <label class="text-sm">Contacto *</label> <br />
@@ -366,7 +367,7 @@ export default {
       start_date: this.oportunity.start_date,
       estimated_finish_date: this.oportunity.estimated_finish_date,
       description: this.oportunity.description,
-      tags: this.oportunity.tags,
+      tags: [],
       probability: this.oportunity.probability,
       amount: this.oportunity.amount,
       priority: this.oportunity.priority,
@@ -645,6 +646,12 @@ export default {
     }
   },
   mounted() {
+    // inicializar tags
+    this.form.tags = this.oportunity.tags.map(tag => tag.id);
+    
+    // inicializar tags
+    this.company_branch = this.oportunity.company_branch_id;
+
     // inicializar permisos
     this.oportunity.users.forEach(user => {
       const participant = {

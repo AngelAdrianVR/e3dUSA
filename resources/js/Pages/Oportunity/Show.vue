@@ -40,7 +40,7 @@
           </el-tooltip>
           <el-tooltip v-if="tabs == 3" content="Enviar un correo a prospecto" placement="top">
             <Link :href="route('email-monitors.create', {opportunityId: currentOportunity?.id})">
-            <PrimaryButton class="rounded-md">Enviar correo</PrimaryButton>
+            <PrimaryButton class="rounded-md">Interacción por correo</PrimaryButton>
             </Link>
           </el-tooltip>
           <el-tooltip v-if="tabs == 5 && currentOportunity?.finished_at"
@@ -224,7 +224,7 @@
             <i @click="$inertia.get(route('payment-monitors.create'), {opportunityId: currentOportunity?.id})"
               class="fa-solid fa-money-bill text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
           </el-tooltip>
-          <el-tooltip content="Enviar correo" placement="top">
+          <el-tooltip content="Interacción por correo" placement="top">
             <i @click="$inertia.get(route('email-monitors.create'), {opportunityId: currentOportunity?.id})"
               class="fa-regular fa-envelope text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
           </el-tooltip>

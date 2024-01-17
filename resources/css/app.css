@@ -42,7 +42,7 @@
 	width: 3px;
 	height: 6px;
 	background: transparent;
-    height: 4px; /* Ajusta según tus preferencias */
+    height: 5px; /* Ajusta según tus preferencias */
 }
 
 *::-webkit-scrollbar-thumb {
@@ -50,10 +50,14 @@
 	border-radius: 2px;
 }
 
-*::-webkit-scrollbar-thumb:horizontal {
+*::-webkit-scrollbar-thumb:hover {
+    background: #a4a4a4;
+}
+
+/* *::-webkit-scrollbar-thumb:horizontal {
 	background: #cccccc;
 	border-radius: 2px;
-}
+} */
 
 @layer components{
     .input{
