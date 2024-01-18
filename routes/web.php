@@ -86,7 +86,6 @@ Route::middleware([
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
-
 // -------------- project groups routes ------------
 Route::resource('project-groups', ProjectGroupController::class)->middleware('auth')->names('project-groups');
 
@@ -189,6 +188,7 @@ Route::put('company-branches/store-important-notes/{company_branch}', [CompanyBr
 // ------- Compras(Suppliers Routes)  ---------
 Route::resource('suppliers', SupplierController::class)->middleware('auth');
 Route::post('suppliers/massive-delete', [SupplierController::class, 'massiveDelete'])->name('suppliers.massive-delete');
+Route::get('fetch-supplier/{supplier_id}', [SupplierController::class, 'fetchSupplier'])->name('suppliers.fetch-supplier');
 
 // ------- Compras(purchases Routes)  ---------
 Route::resource('purchases', PurchaseController::class)->middleware('auth');
@@ -455,3 +455,7 @@ Route::get('mail-test', function () {
 
     return "Correo de prueba enviado a $destinatario.";
 });
+
+// Route::get('/sorry-miss-u', function () {
+//     return inertia('Cin/so');
+// });

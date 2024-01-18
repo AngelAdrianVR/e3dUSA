@@ -102,7 +102,7 @@
 
       <!-- ------------- Sucursales ends 2 ------------- -->
 
-      <!-- -------------Matriz starts 3 ------------- -->
+      <!-- -------------products starts 3 ------------- -->
       <div v-if="tabs == 3" class="p-7">
         <div v-if="!loading">
           <div v-if="rawMaterials?.length > 0" class="lg:grid grid-cols-2 mt-7 gap-5">
@@ -115,7 +115,7 @@
         </div>
       </div>
 
-      <!-- ------------- Matriz ends 3 ------------- -->
+      <!-- ------------- products ends 3 ------------- -->
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar proveedor </template>
