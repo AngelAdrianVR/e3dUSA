@@ -45,7 +45,7 @@
                   @click="$inertia.put(route('purchases.done', purchase.data.id))">
                   Marcar como órden pedida
                 </DropdownLink>
-                <DropdownLink v-else @click="$inertia.put(route('purchases.recieved', purchase.data.id))">
+                <DropdownLink v-else-if="purchase.data.status == 'Pendiente'" @click="$inertia.put(route('purchases.recieved', purchase.data.id))">
                   Marcar como órden recibida
                 </DropdownLink>
                 <DropdownLink @click="showConfirmModal = true" as="button"
@@ -57,9 +57,11 @@
           </div>
         </div>
       </div>
-      <!-- <p class="text-center font-bold text-lg mb-4">
-        {{ supplier.name }}
-      </p> -->
+      <p class="text-center font-bold text-lg mb-4">
+        {{ purchase.data.supplier.name }} - 
+        <span class="py-1 p-2" :class="purchase.data.status == 'Pendiente' ? 'text-amber-600 bg-amber-200' : 'text-green-600 bg-green-200'">{{
+            purchase.data.status }}</span>
+      </p>
 
       <!-- ------------- tabs section starts ------------- -->
       <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2 ">
@@ -69,7 +71,7 @@
             Datos de la órden
           </p>
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
-          <p @click="tabs = 2" :class="tabs == 2 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+          <p @click="fetchSupplierItems(); tabs = 2" :class="tabs == 2 ? 'bg-secondary-gray rounded-xl text-primary' : ''
             " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Productos
           </p>
@@ -89,7 +91,7 @@
           <span class="text-gray-500 my-2">Creado el</span>
           <span>{{ purchase.data.created_at }}</span>
           <span class="text-gray-500 my-2">Estatus</span>
-          <span :class="purchase.data.status == 'Pendiente' ? 'text-amber-600' : 'text-green-600'">{{
+          <span class="py-1 p-2" :class="purchase.data.status == 'Pendiente' ? 'text-amber-600 bg-amber-200' : 'text-green-600 bg-green-200'">{{
             purchase.data.status }}</span>
           <span class="text-gray-500 my-2">Autorizado el</span>
           <span>{{ purchase.data.authorized_at }}</span>
@@ -136,9 +138,14 @@
       <!-- -------------tab 2 products starts ------------- -->
 
       <div v-if="tabs == 2" class="p-7">
-        <p class="text-secondary">Productos Ordenados</p>
-        <div class="grid lg:grid-cols-3 md:grid-cols-2 mt-7 gap-10">
-          <RawMaterialCard v-for="product in purchase.data.products" :key="product.id" :raw_material="product" />
+        <div v-if="!loading">
+          <div v-if="rawMaterials?.length > 0" class="lg:grid grid-cols-2 mt-7 gap-5">
+            <SupplierProductCard v-for="product in rawMaterials" :key="product" :product="product" />
+          </div>
+            <p v-else class="text-gray-500 text-center text-sm">No hay productos registrados a este proveedor</p>
+        </div>
+        <div v-else class="flex justify-center items-center pt-10">
+          <i class="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
         </div>
       </div>
 
@@ -165,6 +172,7 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import RawMaterialCard from "@/Components/MyComponents/RawMaterialCard.vue";
+import SupplierProductCard from "@/Components/MyComponents/SupplierProductCard.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link } from "@inertiajs/vue3";
 
@@ -172,9 +180,11 @@ export default {
   data() {
     return {
       selectedPurchase: "",
-      // currentPurchase: null,
+      currentPurchase: null,
       tabs: 1,
       showConfirmModal: false,
+      loading: false,
+      rawMaterials: [],
     };
   },
   props: {
@@ -189,6 +199,7 @@ export default {
     CancelButton,
     PrimaryButton,
     RawMaterialCard,
+    SupplierProductCard,
     Link,
   },
   methods: {
@@ -231,13 +242,33 @@ export default {
         this.showConfirmModal = false;
       }
     },
+    async fetchSupplierItems() {
+      if ( this.rawMaterials.length <= 0) { //solo hace la peticion si no se han cargado
+          this.loading = true;
+            try {
+              const response = await axios.get(route('raw-materials.fetch-supplier-items', {
+                raw_materials_ids: this.purchase.data.products.map(item => item.id).join(',')
+              }));
+              
+              if (response.status === 200) {
+                console.log(response.data.items);
+                  this.rawMaterials = response.data.items;
+                  //Agrega a los productos la cantidad comprada
+                  this.rawMaterials = this.rawMaterials.map((item, index) => {
+                    return {
+                      ...item,
+                      quantity: this.purchase.data.products[index].quantity,
+                    };
+                  });
+              }
+          } catch (error) {
+            console.log(error);
+          } finally {
+            this.loading = false;
+          }
+        }
+    }
   },
-
-  // watch: {
-  //   selectedPurchase(newVal) {
-  //     this.currentPurchase = this.purchases.data.find((item) => item.id == newVal);
-  //   },
-  // },
 
   mounted() {
     this.selectedPurchase = this.purchase.data.id;

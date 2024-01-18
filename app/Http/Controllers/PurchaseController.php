@@ -54,12 +54,11 @@ class PurchaseController extends Controller
     
     public function create()
     {
-        $suppliers = Supplier::with('contacts')->get();
-        $raw_materials = RawMaterialResource::collection(RawMaterial::all());
+        $suppliers = Supplier::get(['id', 'name', 'nickname']);
 
-        // return $suppliers;
+        // return $suppliers;  
 
-        return inertia('Purchase/Create', compact('suppliers', 'raw_materials'));
+        return inertia('Purchase/Create', compact('suppliers'));
     }
 
     
@@ -68,7 +67,6 @@ class PurchaseController extends Controller
         $validation = $request->validate([
         'notes' => 'nullable',
         'expected_delivery_date' => 'nullable|date|after:yesterday',
-        // 'is_iva_included' => 'nullable|boolean',
         'supplier_id' => 'required',
         'contact_id' => 'required',
         'products' => 'nullable|min:1',
@@ -94,7 +92,7 @@ class PurchaseController extends Controller
     
     public function show($purchase_id)
     {
-        $purchase = PurchaseResource::make(Purchase::with('user','supplier')->find($purchase_id));
+        $purchase = PurchaseResource::make(Purchase::with('user','supplier', 'contact')->find($purchase_id));
         $pre_purchases = Purchase::latest()->get();
         $purchases = $pre_purchases->map(function ($purchase) {
             return [
@@ -103,7 +101,7 @@ class PurchaseController extends Controller
                    ];
                });
 
-        // return $purchases;
+        // return $purchase;
 
         return inertia('Purchase/Show', compact('purchase', 'purchases'));
     }
@@ -111,9 +109,9 @@ class PurchaseController extends Controller
     
     public function edit(Purchase $purchase)
     {
-        $suppliers = Supplier::with('contacts')->get();
-        $raw_materials = RawMaterial::all();
-        return inertia('Purchase/Edit', compact('purchase', 'suppliers', 'raw_materials'));
+        $suppliers = Supplier::get(['id', 'name', 'nickname']);
+
+        return inertia('Purchase/Edit', compact('purchase', 'suppliers'));
     }
 
     
@@ -122,7 +120,6 @@ class PurchaseController extends Controller
         $validation = $request->validate([
             'notes' => 'nullable',
             'expected_delivery_date' => 'nullable|date|after:yesterday',
-            // 'is_iva_included' => 'nullable|boolean',
             'supplier_id' => 'required',
             'contact_id' => 'required',
             'products' => 'nullable|min:1',
@@ -139,7 +136,7 @@ class PurchaseController extends Controller
     
     public function destroy(Purchase $purchase)
     {
-        //
+        $purchase->delete();
     }
 
     public function markOrderDone(Purchase $currentPurchase)

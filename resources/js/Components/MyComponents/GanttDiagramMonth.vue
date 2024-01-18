@@ -27,12 +27,12 @@
       </th>
       <th class="border border-[#9A9A9A] text-center font-thin">
         <strong class="text-base uppercase font-bold tex">{{ monthName }}</strong><br />
-        <div class="flex space-x-8 justify-center w-[95%] mx-4">
+        <!-- <div class="flex space-x-8 justify-center w-[95%] mx-4">
           <p v-for="day in daysInMonth" :key="day" class="text-secondary relative">
             {{ daysOfWeek[(day + startDayOfWeek - 2) % 7] }}
             <span class="absolute -bottom-3 -left-0 text-[9px] text-black">{{ day }}</span>
           </p>
-        </div>
+        </div> -->
       </th>
     </tr>
 
@@ -147,7 +147,7 @@ export default {
   mounted() {
 
     // Verificar si hay tareas en el proyecto y si la primera tarea tiene una fecha de inicio
-    if (this.currentProject && this.currentProject.tasks.length > 0) {
+    if (this.currentProject && this.currentProject.tasks?.length > 0) {
       const firstTask = this.currentProject.tasks[0];
       if (firstTask && firstTask.start_date) {
         this.currentDate = new Date(firstTask.start_date);

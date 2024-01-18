@@ -202,4 +202,13 @@ class SupplierController extends Controller
         return response()->json(['message' => 'proveedor(es) eliminado(s)']);
     }
 
+
+    public function fetchSupplier($supplier_id)
+    {
+
+        $supplier = Supplier::with('contacts')->find($supplier_id);
+
+        return response()->json(['item' => $supplier]);
+    }
+
 }
