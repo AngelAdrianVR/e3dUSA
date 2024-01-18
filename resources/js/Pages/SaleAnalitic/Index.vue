@@ -172,7 +172,7 @@ data() {
               code:'C-FLL',
             },
             {
-              label:'FUnda llavero aluminio',
+              label:'Funda llavero aluminio',
               code:'C-FA',
             },
             {
@@ -189,8 +189,8 @@ data() {
 },
 components:{
 AppLayout,
-LinealChart,
 ColumWithMakersChart,
+LinealChart,
 InputLabel
 
 },
