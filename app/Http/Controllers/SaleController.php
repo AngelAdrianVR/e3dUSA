@@ -243,12 +243,13 @@ class SaleController extends Controller
             'tracking_guide' => 'nullable',
             'invoice' => 'nullable',
             'notes' => 'nullable',
-            'is_high_priority' => 'boolean',
+            'is_high_priority' => 'nullable',
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
             'products' => 'array|min:1'
         ]);
 
+        // dd($request->all());
         $updatedProductIds = [];
         $sale->update($request->except('products'));
 

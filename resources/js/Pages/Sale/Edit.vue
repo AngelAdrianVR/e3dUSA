@@ -303,7 +303,7 @@ export default {
             order_via: this.sale.order_via,
             tracking_guide: this.sale.tracking_guide,
             notes: this.sale.notes,
-            is_high_priority: this.sale.is_high_priority,
+            is_high_priority: Boolean(this.sale.is_high_priority),
             products: [],
             media: null,
         });
