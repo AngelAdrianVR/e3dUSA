@@ -351,6 +351,11 @@ export default {
           }
     },
     async fetchSupplier() {
+      //resetea el formulario cuando se cambia de proveedor
+          this.form.products = [];
+          this.form.bank_information = null;
+          this.form.contact_id = null;
+          this.bank_index = null;
             try {
               const response = await axios.get(route('suppliers.fetch-supplier', this.form.supplier_id));
               
