@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->date('date');
             $table->unsignedTinyInteger('hours');
+            $table->unsignedSmallInteger('bonus');
+            $table->unsignedSmallInteger('points');
             $table->boolean('is_accepted')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('operator_id')->constrained('users')->cascadeOnDelete();

@@ -19,7 +19,7 @@
         </div>
         <div class="flex items-center space-x-2">
             <Link v-if="$page.props.auth.user.permissions.includes('Enviar correos en seguimiento integral')" :href="route('email-monitors.create')">
-              <PrimaryButton class="rounded-xl">Enviar correo</PrimaryButton>
+              <PrimaryButton class="rounded-xl">Interacción por correo</PrimaryButton>
             </Link>
           <Dropdown
             align="right"
@@ -57,6 +57,14 @@
                 "
               >
                 Interacción WhatsApp
+              </DropdownLink>
+              <DropdownLink
+              :href="route('call-monitors.create')"
+                v-if="
+                  $page.props.auth.user.permissions.includes('Registrar llamada en seguimiento integral')
+                "
+              >
+               Registrar llamada
               </DropdownLink>
             </template>
           </Dropdown>
@@ -183,6 +191,8 @@ methods:{
         this.$inertia.get(route('meeting-monitors.show', monitor.mettingMonitorId));
       } else if (monitor.type == 'WhatsApp') {
         this.$inertia.get(route('whatsapp-monitors.show', monitor.whatsappMonitorId));
+      } else if (monitor.type == 'Llamada') {
+        this.$inertia.get(route('call-monitors.show', monitor.callMonitorId));
       }
     },
     handleSearch() {

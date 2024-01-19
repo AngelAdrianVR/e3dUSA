@@ -40,19 +40,24 @@
 
 *::-webkit-scrollbar {
 	width: 3px;
+	height: 6px;
 	background: transparent;
+    height: 5px; /* Ajusta según tus preferencias */
 }
 
 *::-webkit-scrollbar-thumb {
-	background: #9a9a9a;
+	background: #cccccc;
 	border-radius: 2px;
 }
 
-*::-webkit-scrollbar-thumb:horizontal {
-	background: #9a9a9a;
-	border-radius: 7px;
-    width: 3px;
+*::-webkit-scrollbar-thumb:hover {
+    background: #a4a4a4;
 }
+
+/* *::-webkit-scrollbar-thumb:horizontal {
+	background: #cccccc;
+	border-radius: 2px;
+} */
 
 @layer components{
     .input{
@@ -66,7 +71,7 @@
     .label{
         @apply block mb-2 text-sm font-medium text-gray-600;
     }
-    
-    
-    
+    .hover-3dbuttom{
+        @apply hover:shadow-sm hover:shadow-gray-400 hover:bg-gray-700 transition ease-in-out duration-300 hover:-translate-y-1;
+    }
 }

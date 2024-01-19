@@ -16,11 +16,12 @@ class StorageResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'storageable' => $this->storageable,
             'quantity' => $this->quantity,
             'location' => $this->location,
             'type' => $this->type,
             'storageable' => $this->whenLoaded('storageable'),
+            'quantityCommited' => $this->storageable->getCommitedUnits(),
+            'salesInProcess' => $this->storageable->getSalesCommited(),
             'movements' => $this->whenLoaded('movements'),
             'created_at' => $this->created_at,
         ];

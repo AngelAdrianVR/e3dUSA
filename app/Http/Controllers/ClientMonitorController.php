@@ -17,7 +17,7 @@ class ClientMonitorController extends Controller
     public function index()
     {
         // $client_monitors = ClientMonitorResource::collection(ClientMonitor::with('company', 'seller', 'oportunity', 'emailMonitor', 'paymentMonitor', 'mettingMonitor', 'whatsappMonitor')->latest()->get());
-        $pre_client_monitors = ClientMonitorResource::collection(ClientMonitor::with('company', 'seller', 'oportunity', 'emailMonitor', 'paymentMonitor', 'mettingMonitor', 'whatsappMonitor')->latest()->get());
+        $pre_client_monitors = ClientMonitorResource::collection(ClientMonitor::with('company', 'seller', 'oportunity', 'emailMonitor', 'paymentMonitor', 'mettingMonitor', 'whatsappMonitor', 'callMonitor')->latest()->get());
         $client_monitors = $pre_client_monitors->map(function ($client_monitor) {
             if ($client_monitor->oportunity) {
                 $folio = 'S-' . strtoupper(substr($client_monitor->oportunity?->name, 0, 3)) . '-' . strtoupper(substr($client_monitor->type, 0, 1)) . str_pad($client_monitor->id, 4, '0', STR_PAD_LEFT);
@@ -31,6 +31,7 @@ class ClientMonitorController extends Controller
                 'paymentMonitorId' => $client_monitor->paymentMonitor?->id,
                 'mettingMonitorId' => $client_monitor->mettingMonitor?->id,
                 'whatsappMonitorId' => $client_monitor->whatsappMonitor?->id,
+                'callMonitorId' => $client_monitor->callMonitor?->id,
                 'company_name' => $client_monitor->company?->business_name,
                 'type' => $client_monitor->type,
                 'concept' => $client_monitor->concept,

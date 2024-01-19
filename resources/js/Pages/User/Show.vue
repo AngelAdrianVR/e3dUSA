@@ -74,7 +74,14 @@
           " class="h-32 w-32 rounded-full object-cover hidden md:block border-2" :src="user.data.profile_photo_url"
           :alt="user.data.name" />
         <p class="font-bold text-lg">{{ user.data.name }}</p>
-        <p v-if="user.data.is_active.bool">Experiencia. {{ user.data.experience }}</p>
+        <p v-if="user.data.is_active.bool">
+          Experiencia.
+          <span class="px-1 py-px rounded-[3px]" :class="{
+            'bg-secondarylight text-secondary': user.data.experience == 'Novato',
+            'text-[#FD8827] bg-[#FEDBBD]': user.data.experience == 'Intermedio',
+            'text-[#9E0FA9] bg-[#F7B7FC]': user.data.experience == 'Experto',
+          }">{{ user.data.experience }}</span>
+        </p>
       </div>
       <!-- ------------- tabs section starts ------------- -->
       <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2">
@@ -87,6 +94,11 @@
           <p @click="tabs = 2" :class="tabs == 2 ? 'bg-secondary-gray rounded-xl text-primary' : ''
             " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Desempeño
+          </p>
+          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p v-if="user.data.employee_properties?.department == 'Producción'" @click="tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Métricas
           </p>
         </div>
       </div>
@@ -206,49 +218,23 @@
           </div>
 
           <!-- --------------------------- performance tab ends --------------------------- -->
-
-          <!-- ------------------------------ Performance table ------------------------ -->
-          <!-- <p class="text-secondary col-span-2 mt-4 mb-4 text-center">
-            Tabla de desempeño
-          </p>
-          <div class="lg:grid grid-cols-3 px-5 overflow-auto pb-12">
-            <div class="col-span-2">
-              <PerformanceTable />
-            </div>
-
-            <div class="text-center">
-              <p class="mb-5">Tabla de puntuaciones</p>
-
-              <div
-                class="grid grid-cols-2 rounded-xl lg:mx-10 border-2 border-[#cccccc]"
-              >
-                <div class="py-1 rounded-xl">70 - 100</div>
-                <div
-                  class="py-1 bg-green-500 rounded-xl border-2 border-[#cccccc]"
-                >
-                  Sobresaliente
-                </div>
-                <div class="py-1 rounded-xl">40 - 69</div>
-                <div
-                  class="py-1 bg-orange-500 rounded-xl border-2 border-[#cccccc]"
-                >
-                  Falta mejorar
-                </div>
-                <div class="py-1 rounded-xl">0 - 39</div>
-                <div
-                  class="py-1 bg-red-500 rounded-xl border-2 border-[#cccccc]"
-                >
-                  Deficiente
-                </div>
-              </div>
-            </div>
-          </div> -->
         </div>
         <div v-else>
           <p class="text-primary text-center text-xl">El usuario se encuentra inactivo actualmente</p>
         </div>
       </div>
       <!-- ------------- tab 2 desempeño ends ------------ -->
+
+      <!-- -------------tab 3 metricas starts ------------- -->
+      <div v-if="tabs == 3" class="border-b-2 border-[#cccccc] text-sm">
+        <div v-if="user.data.is_active?.bool" class="px-12 pb-12 pt-6">
+          <UserMetricsTable :experience="user.data.experience" />
+        </div>
+        <div v-else>
+          <p class="text-primary text-center text-xl">El usuario se encuentra inactivo actualmente</p>
+        </div>
+      </div>
+      <!-- ------------- tab 3 metricas ends ------------ -->
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar usuario </template>
@@ -317,6 +303,7 @@ import InputError from "@/Components/InputError.vue";
 import Modal from "@/Components/Modal.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import DialogModal from "@/Components/DialogModal.vue";
+import UserMetricsTable from "@/Components/MyComponents/UserMetricsTable.vue";
 import { Link } from "@inertiajs/vue3";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -354,6 +341,7 @@ export default {
     PerformanceTable,
     Link,
     DialogModal,
+    UserMetricsTable,
   },
   methods: {
     formatDate(date) {

@@ -3,10 +3,7 @@
         <AppLayout title="Crear órden de venta">
             <template #header>
                 <div class="flex justify-between">
-                    <Link :href="route('sales.index')"
-                        class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
-                    <i class="fa-solid fa-chevron-left"></i>
-                    </Link>
+                    <Back />
                     <div class="flex items-center space-x-2">
                         <h2 class="font-semibold text-xl leading-tight">Crear órden de venta</h2>
                     </div>
@@ -164,14 +161,17 @@
                         </div>
                         <div class="ml-4 col-span-2">
                             <label class="text-sm ml-2 my-1 flex items-center">Fecha de entrega esperada
-                                <el-tooltip content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega" placement="right">
-                                <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
-                                <i class="fa-solid fa-info text-primary text-[7px]"></i>
-                                </div>
-                            </el-tooltip>
+                                <el-tooltip
+                                    content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega"
+                                    placement="right">
+                                    <div
+                                        class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
+                                        <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                    </div>
+                                </el-tooltip>
                             </label>
-                            <el-date-picker v-model="form.promise_date" type="date" placeholder="Fecha de entrega esperada" format="YYYY/MM/DD"
-                                value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
+                            <el-date-picker v-model="form.promise_date" type="date" placeholder="Fecha de entrega esperada"
+                                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
                             <InputError :message="form.errors.promise_date" />
                         </div>
                     </div>
@@ -241,6 +241,18 @@
                         <figure v-else-if="selectedCatalogProduct" class="rounded-md">
                             <img :src="selectedCatalogProduct.media[0]?.original_url" class="rounded-md">
                         </figure>
+                        <p v-if="selectedCatalogProduct" class="col-span-full text-sm flex items-center space-x-2">
+                            Stock disponible en almacén:
+                            <b>{{ availableStock ? availableStock.quantity : 0 }} unidades.</b>
+                            <el-tooltip placement="top">
+                                <template #content>
+                                    Se descontarán de estas existencias para despachar la orden
+                                </template>
+                                <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                                    <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                </div>
+                            </el-tooltip>
+                        </p>
                         <div class="col-span-full">
                             <IconInput @change="validateQuantity()" v-model="product.quantity" inputPlaceholder="Cantidad *"
                                 inputType="number" inputStep="0.01">
@@ -301,7 +313,6 @@
                     </PrimaryButton>
                 </template>
             </DialogModal>
-
             <Modal :show="showCreateProjectModal" @close="showCreateProjectModal = false">
                 <section class="mx-7 my-4 space-y-4">
                     <div>
@@ -325,13 +336,14 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
-import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import DialogModal from "@/Components/DialogModal.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import Modal from "@/Components/Modal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+import Back from "@/Components/MyComponents/Back.vue";
+import { Link, useForm } from "@inertiajs/vue3";
 
 export default {
     data() {
@@ -360,6 +372,7 @@ export default {
             importantNotesToStore: null,
             isEditImportantNotes: false,
             showCreateProjectModal: false,
+            availableStock: null,
             product: {
                 catalog_product_company_id: null,
                 quantity: null,
@@ -374,13 +387,14 @@ export default {
         AppLayout,
         SecondaryButton,
         PrimaryButton,
-        Link,
         InputError,
         IconInput,
         CancelButton,
         DialogModal,
-        Modal,
         Checkbox,
+        Modal,
+        Back,
+        Link
     },
     props: {
         company_branches: Array,
@@ -396,6 +410,7 @@ export default {
 
                 if (response.status === 200) {
                     this.selectedCatalogProduct = response.data.item;
+                    this.availableStock = response.data.stock;
                     this.loading = false;
                 }
             } catch (error) {

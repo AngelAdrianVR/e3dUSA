@@ -17,10 +17,12 @@ class SupplierResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'nickname' => $this->nickname,
             'address' => $this->address,
             'post_code' => $this->post_code,
             'phone' => $this->phone,
             'banks' => $this->banks,
+            'raw_materials_id' => $this->raw_materials_id,
             'contacts' => $this->whenLoaded('contacts'),
             'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'updated_at' => $this->updated_at?->isoFormat('DD MMM, YYYY h:mm A'),

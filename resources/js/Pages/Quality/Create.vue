@@ -2,10 +2,7 @@
   <AppLayout title="Registro de calidad">
       <template #header>
         <div class="flex justify-between">
-          <Link :href="route('qualities.index')"
-            class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
-          <i class="fa-solid fa-chevron-left"></i>
-          </Link>
+          <Back />
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">Crear registro de calidad</h2>
           </div>
@@ -125,10 +122,11 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import ThirthButton from "@/Components/MyComponents/ThirthButton.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
-import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import FileUploader from "@/Components/MyComponents/FileUploader.vue";
+import Back from "@/Components/MyComponents/Back.vue";
+import { Link, useForm } from "@inertiajs/vue3";
 import axios from 'axios';
 
 export default {
@@ -162,7 +160,8 @@ CancelButton,
 FileUploader,
 InputError,
 InputLabel,
-Link,
+Back,
+Link
 },
 props:{
 productions: Array,

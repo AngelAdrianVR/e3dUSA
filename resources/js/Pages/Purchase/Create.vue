@@ -3,12 +3,7 @@
     <AppLayout title="Órdenes de compra - Crear">
       <template #header>
         <div class="flex justify-between">
-          <Link
-            :href="route('purchases.index')"
-            class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center"
-          >
-            <i class="fa-solid fa-chevron-left"></i>
-          </Link>
+          <Back />
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">
               Crear órden de compra
@@ -30,7 +25,7 @@
               </span>
             </el-tooltip>
             <el-select
-              @change="selectedSupplier"
+              @change="fetchSupplier"
               v-model="form.supplier_id"
               class="mt-2"
               clearable filterable
@@ -44,6 +39,7 @@
               />
             </el-select>
           </div>
+            <InputError :message="form.errors.supplier_id" />
 
           <div class="flex items-center">
             <el-tooltip
@@ -71,6 +67,7 @@
               />
             </el-select>
           </div>
+            <InputError :message="form.errors.bank_information" />
 
           <div class="flex items-center pb-2">
             <el-tooltip content="Selecciona un contacto" placement="top">
@@ -94,6 +91,7 @@
               />
             </el-select>
           </div>
+            <InputError :message="form.errors.contact_id" />
 
           <!-- --------------- Order info ----------------------------- -->
           <el-divider content-position="left">Datos de la órden</el-divider>
@@ -128,7 +126,7 @@
                   <span class="text-primary"
                     >{{ index + 1 }}.
                     <span class="text-gray-700">
-                      {{ item.product }} - {{ item.quantity }}</span
+                      {{ item.name }} - {{ item.quantity + ' unidades' }}</span
                     ></span
                   >
                 </p>
@@ -155,48 +153,54 @@
             </template>
           </ol>
           <div class="space-y-3 bg-[#b8b7b7] rounded-lg p-5">
-            <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
-              <div class="flex items-center mb-3">
-              <el-tooltip content="Selecciona un contacto" placement="top">
-              <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"
-              >
-                <i class="fa-brands fa-product-hunt"></i>
-              </span>
-            </el-tooltip>
-                <el-select
-                  v-model="productSelected"
-                  class="mt-2"
-                  clearable filterable
-                  placeholder="Selecciona un producto"
-                >
-                  <el-option
-                    v-for="item in raw_materials.data"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item"
-                  />
-                </el-select>
-              </div>
+            <div class="md:grid gap-x-6 mb-6 grid-cols-2">
               <div>
-                <IconInput
-                  v-model="form.quantity"
-                  inputPlaceholder="Cantidad *"
-                  inputType="number"
-                  inputStep="0.01"
-                >
-                  <el-tooltip
-                    content="Cantidad requerida del producto seleccionado"
-                    placement="top"
-                  >
-                    #
-                  </el-tooltip>
-                </IconInput>
-                <InputError :message="form.errors.quantity" />
+                  <div class="flex items-center mb-3">
+                    <el-tooltip content="Selecciona un producto" placement="top">
+                    <span
+                      class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"
+                    >
+                      <i class="fa-brands fa-product-hunt"></i>
+                    </span>
+                    </el-tooltip>
+                      <el-select
+                        v-model="productSelectedId"
+                        @change="getProductSelected"
+                        clearable filterable
+                        placeholder="Selecciona un producto"
+                      >
+                        <el-option
+                          v-for="item in rawMaterials"
+                          :key="item.id"
+                          :label="item.name"
+                          :value="item.id"
+                        />
+                      </el-select>
+                  </div>
+
+                  <div class="mt-2">
+                    <IconInput
+                      v-model="form.quantity"
+                      inputPlaceholder="Cantidad *"
+                      inputType="number"
+                      inputStep="0.01"
+                    >
+                      <el-tooltip
+                        content="Cantidad requerida del producto seleccionado"
+                        placement="top"
+                      >
+                        #
+                      </el-tooltip>
+                    </IconInput>
+                    <InputError :message="form.errors.quantity" />
+                  </div>
               </div>
+              <figure v-if="productSelectedObj?.media[0] != null && productSelectedId" class="rounded-md">
+                <img :src="productSelectedObj?.media[0]?.original_url" class="rounded-md object-cover h-32">
+            </figure>
             </div>
             <SecondaryButton
-              :disabled="!productSelected || !form.quantity"
+              :disabled="!form.quantity"
               @click="addProduct"
               type="button"
             >
@@ -240,9 +244,11 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
-import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
+import Back from "@/Components/MyComponents/Back.vue";
+import { Link, useForm } from "@inertiajs/vue3";
+import axios from 'axios';
 
 export default {
   data() {
@@ -253,7 +259,6 @@ export default {
       supplier_id: null,
       contact_id: null,
       bank_information: null,
-      // currentSupplier: null,
       products: [],
     });
 
@@ -261,23 +266,24 @@ export default {
       form,
       currentSupplier: null,
       bank_index: null,
-      productSelected: null,
+      productSelectedId: null,
+      productSelectedObj: null,
       editProductIndex: null,
       productValidation: false,
+      rawMaterials: [],
     };
   },
   components: {
     AppLayout,
     SecondaryButton,
     PrimaryButton,
-    Link,
     InputError,
     IconInput,
+    Back,
+    Link
   },
   props: {
     suppliers: Array,
-    raw_materials: Array,
-    contacts: Array,
   },
   methods: {
     saveBankObj(){
@@ -303,51 +309,68 @@ export default {
     },
     addProduct() {
       let product = {
-        id: this.productSelected.id,
-        product: this.productSelected.name,
-        part_number: this.productSelected.part_number,
-        description: this.productSelected.description,
-        measure_unit: this.productSelected.measure_unit,
-        min_quantity: this.productSelected.min_quantity,
-        max_quantity: this.productSelected.max_quantity,
-        cost: this.productSelected.cost,
-        features: this.productSelected.features,
+        id: this.productSelectedObj.id,
+        name: this.productSelectedObj.name,
         quantity: this.form.quantity,
-        media: this.productSelected.media,
       };
 
-      // this.productValidation = this.form.products.some(function (item) {
-      //   return item.product === this.productSelected;
-      // });
-
-      // if(!this.productValidation){
       if (this.editProductIndex !== null) {
         this.form.products[this.editProductIndex] = product;
         this.editProductIndex = null;
       } else {
         this.form.products.push(product);
       }
-      this.productSelected = null;
+      this.productSelectedId = null;
       this.form.quantity = null;
-      // }
     },
-
     deleteProduct(index) {
       this.form.products.splice(index, 1);
     },
-
     editProduct(index) {
       const product = { ...this.form.products[index] };
-      this.productSelected = product.product;
+      this.productSelectedId = product.id;
       this.form.quantity = product.quantity;
       this.editProductIndex = index;
+      this.getProductSelected();
     },
-
-    selectedSupplier() {
-      this.currentSupplier = this.suppliers.find(
-        (item) => (item.id = this.form.supplier_id)
-      );
+    async fetchSupplierItems() {
+          this.productSelectedObj = null;
+          this.productSelectedId = null;
+          this.rawMaterials = [];
+            try {
+              const response = await axios.get(route('raw-materials.fetch-supplier-items', {
+                raw_materials_ids: this.currentSupplier.raw_materials_id.join(',')
+              }));
+              
+              if (response.status === 200) {
+                  this.rawMaterials = response.data.items;
+              }
+          } catch (error) {
+            console.log(error);
+          } finally {
+          }
     },
+    async fetchSupplier() {
+      //resetea el formulario cuando se cambia de proveedor
+          this.form.products = [];
+          this.form.bank_information = null;
+          this.form.contact_id = null;
+          this.bank_index = null;
+            try {
+              const response = await axios.get(route('suppliers.fetch-supplier', this.form.supplier_id));
+              
+              if (response.status === 200) {
+                  this.currentSupplier = response.data.item;
+                  this.fetchSupplierItems();
+              }
+          } catch (error) {
+            console.log(error);
+          } finally {
+          }
+    },
+    getProductSelected() {
+      this.productSelectedObj = this.rawMaterials.find(item => item.id === this.productSelectedId);
+    }
   },
 };
 </script>

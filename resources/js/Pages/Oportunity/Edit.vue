@@ -3,10 +3,7 @@
     <AppLayout title="Editar Oportunidad">
       <template #header>
         <div class="flex justify-between">
-          <Link :href="route('oportunities.index')"
-            class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
-          <i class="fa-solid fa-chevron-left"></i>
-          </Link>
+          <Back />
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">Editar Oportunidad</h2>
           </div>
@@ -89,7 +86,8 @@
                   (item) => item.id == form.company_id
                 )?.company_branches" :key="company_branch" :label="company_branch.name" :value="company_branch.id" />
               </el-select>
-              <p v-if="$page.props.errors?.company_branch_id" class="text-xs text-red-600">El campo sucursal es obligatorio</p>
+              <p v-if="$page.props.errors?.company_branch_id" class="text-xs text-red-600">El campo sucursal es
+                obligatorio</p>
             </div>
             <div class="w-1/2">
               <label class="text-sm">Contacto *</label> <br />
@@ -344,14 +342,15 @@ import ThirthButton from "@/Components/MyComponents/ThirthButton.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import RichText from "@/Components/MyComponents/RichText.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
-import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import FileUploader from "@/Components/MyComponents/FileUploader.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import Tag from "@/Components/MyComponents/Tag.vue";
 import DialogModal from "@/Components/DialogModal.vue";
+import Back from "@/Components/MyComponents/Back.vue";
+import Tag from "@/Components/MyComponents/Tag.vue";
+import { Link, useForm } from "@inertiajs/vue3";
 
 export default {
   data() {
@@ -368,7 +367,7 @@ export default {
       start_date: this.oportunity.start_date,
       estimated_finish_date: this.oportunity.estimated_finish_date,
       description: this.oportunity.description,
-      tags: this.oportunity.tags,
+      tags: [],
       probability: this.oportunity.probability,
       amount: this.oportunity.amount,
       priority: this.oportunity.priority,
@@ -435,7 +434,6 @@ export default {
     AppLayout,
     SecondaryButton,
     PrimaryButton,
-    Link,
     InputError,
     IconInput,
     Checkbox,
@@ -445,7 +443,9 @@ export default {
     DialogModal,
     CancelButton,
     InputLabel,
-    Tag,
+    Link,
+    Back,
+    Tag
   },
   props: {
     companies: Array,
@@ -646,6 +646,12 @@ export default {
     }
   },
   mounted() {
+    // inicializar tags
+    this.form.tags = this.oportunity.tags.map(tag => tag.id);
+    
+    // inicializar tags
+    this.company_branch = this.oportunity.company_branch_id;
+
     // inicializar permisos
     this.oportunity.users.forEach(user => {
       const participant = {

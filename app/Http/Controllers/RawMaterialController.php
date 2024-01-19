@@ -218,4 +218,29 @@ class RawMaterialController extends Controller
 
         return response()->json(['message' => 'Este producto ya existe en el catalogo', 'type' => 'info', 'title' => '']);
     }
+
+
+    public function fetchItem($raw_material_id)
+    {
+        $raw_material = RawMaterial::with('media')->find($raw_material_id);
+
+        return response()->json(['item' => $raw_material]);
+    }
+
+
+    public function fetchSupplierItems($raw_materials_ids)
+{
+    $raw_materials = [];
+    $ids_array = explode(',', $raw_materials_ids);
+
+    foreach ($ids_array as $raw_material_id) {
+        $raw_material = RawMaterial::with('media')->find($raw_material_id);
+
+        if ($raw_material) {
+            $raw_materials[] = $raw_material;
+        }
+    }
+
+    return response()->json(['items' => $raw_materials]);
+}
 }

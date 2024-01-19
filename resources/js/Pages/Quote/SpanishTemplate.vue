@@ -10,8 +10,15 @@
 
         <!-- header -->
         <div>
-            <p class="flex justify-end ml-auto font-bold mr-6 text-xs text-gray-700">
+            <p class="flex items-center justify-end ml-auto font-bold mr-6 text-xs text-gray-700">
                 Guadalajara, Jalisco {{ quote.data.created_at }}
+                <i
+                  @click="authorize"
+                  :title="quote.data.authorized_at ? 'Cotización autorizada' : 'Autorizar cotización'" 
+                  v-if="$page.props.auth.user.permissions.includes('Autorizar cotizaciones')" 
+                  class="fa-solid fa-check ml-3" 
+                  :class="quote.data.authorized_at ? 'text-green-500' : 'hover:text-green-500 cursor-pointer'">
+                </i>
             </p>
             <p class="w-11/12 text-lg mx-auto font-bold text-gray-700">
                 {{ quote.data.companyBranch.name }}
@@ -171,6 +178,7 @@
 <script>
 
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import axios from 'axios';
 import { Head } from '@inertiajs/vue3';
 
 export default {
@@ -185,6 +193,38 @@ export default {
     },
     props: {
         quote: Object
+    },
+    methods:{
+        async authorize() {
+            if (!this.quote.data.authorized_at)  {
+                    try {
+                        const response = await axios.put(route('quotes.authorize', this.quote.data.id));
+
+                    if (response.status == 200) {
+                        this.$notify({
+                            title: 'Éxito',
+                            message: response.data.message,
+                            type: 'success'
+                        });
+                    } else {
+                        this.$notify({
+                            title: 'Algo salió mal',
+                            message: response.data.message,
+                            type: 'error'
+                        });
+                    }
+                    } catch (err) {
+                        this.$notify({
+                            title: 'Algo salió mal',
+                            message: err.message,
+                            type: 'error'
+                        });
+                        console.log(err);
+                    } finally {
+                        this.$inertia.get(route('quotes.index'));
+                    }
+                }
+        },
     }
 }
 </script>

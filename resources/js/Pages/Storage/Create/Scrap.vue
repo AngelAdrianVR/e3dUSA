@@ -3,10 +3,7 @@
     <AppLayout title="Scrap">
       <template #header>
         <div class="flex justify-between">
-          <Link :href="route('storages.scraps.index')"
-            class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
-          <i class="fa-solid fa-chevron-left"></i>
-          </Link>
+          <Back />
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">
               Mandar producto a scrap
@@ -116,9 +113,10 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
-import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
+import Back from "@/Components/MyComponents/Back.vue";
+import { Link, useForm } from "@inertiajs/vue3";
 
 export default {
   data() {
@@ -137,9 +135,10 @@ export default {
     AppLayout,
     SecondaryButton,
     PrimaryButton,
-    Link,
     InputError,
     IconInput,
+    Back,
+    Link
   },
   props: {
     storages: Array,

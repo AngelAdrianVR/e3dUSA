@@ -186,7 +186,6 @@ class SaleController extends Controller
                 }
             }
 
-
             // sub needed quantities from stock
             if ($quntity_to_produce > 0) {
                 $raw_materials = $cpcs->catalogProductCompany->catalogProduct->rawMaterials;
@@ -244,12 +243,13 @@ class SaleController extends Controller
             'tracking_guide' => 'nullable',
             'invoice' => 'nullable',
             'notes' => 'nullable',
-            'is_high_priority' => 'boolean',
+            'is_high_priority' => 'nullable',
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
             'products' => 'array|min:1'
         ]);
 
+        // dd($request->all());
         $updatedProductIds = [];
         $sale->update($request->except('products'));
 
@@ -406,5 +406,13 @@ class SaleController extends Controller
 
         // return $sale;
         return inertia('Sale/Print', compact('sale'));
+    }
+
+    public function getUnauthorized()
+    {
+        $sales = SaleResource::collection(Sale::with('catalogProductCompanySales.catalogProductCompany.catalogProduct.storages')
+            ->whereNull('authorized_at')->get());
+
+        return response()->json(['items' => $sales]);
     }
 }

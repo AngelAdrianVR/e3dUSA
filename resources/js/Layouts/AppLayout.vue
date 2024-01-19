@@ -513,7 +513,7 @@ onMounted(() => {
                     </span>
                   </div>
                 </div>
-                
+
                 <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear kiosco')
                   " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
                   @confirm="createKiosk">
@@ -589,18 +589,22 @@ onMounted(() => {
 
                     <template #content>
                       <!-- Account Management -->
+                      <div class="block px-4 py-2 text-xs rounded-md" :class="{
+                        'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
+                        'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
+                        'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
+                      }">
+                        Nivel {{ $page.props.auth.user.experience }}
+                      </div>
                       <div class="block px-4 py-2 text-xs text-gray-400">
                         Administrador de cuenta
                       </div>
-
                       <DropdownLink :href="route('profile.show')">
                         Perfil
                       </DropdownLink>
-
                       <DropdownLink v-if="$page.props.jetstream.hasApiFeatures" :href="route('api-tokens.index')">
                         API Tokens
                       </DropdownLink>
-
                       <div class="border-t border-gray-200" />
 
                       <!-- Authentication -->
@@ -655,6 +659,13 @@ onMounted(() => {
 
             <!-- Responsive Settings Options -->
             <div class="pt-4 pb-1 border-t border-gray-200">
+              <div class="block px-4 py-2 text-xs" :class="{
+                'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
+                'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
+                'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
+              }">
+                Nivel {{ $page.props.auth.user.experience }}
+              </div>
               <div class="flex items-center px-4">
                 <div v-if="$page.props.jetstream.managesProfilePhotos" class="shrink-0 mr-3">
                   <img class="h-10 w-10 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url"
@@ -1064,4 +1075,5 @@ onMounted(() => {
       </form>
       <!-- ---------------------- Machine form ends ---------------------- -->
     </div>
-  </Modal></template>
+  </Modal>
+</template>

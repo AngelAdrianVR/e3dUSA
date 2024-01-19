@@ -12,6 +12,8 @@ class ExtraTimeRequest extends Model
     protected $fillable = [
         'date',
         'hours',
+        'bonus',
+        'points',
         'is_accepted',
         'user_id',
         'operator_id',

@@ -3,10 +3,7 @@
         <AppLayout title="Editar órden de venta">
             <template #header>
                 <div class="flex justify-between">
-                    <Link :href="route('sales.index')"
-                        class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
-                    <i class="fa-solid fa-chevron-left"></i>
-                    </Link>
+                    <Back />
                     <div class="flex items-center space-x-2 text-white">
                         <h2 class="font-semibold text-xl leading-tight">Editar órden de venta {{ sale.id }}</h2>
                     </div>
@@ -286,12 +283,13 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
-import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import DialogModal from "@/Components/DialogModal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+import Back from "@/Components/MyComponents/Back.vue";
+import { Link, useForm } from "@inertiajs/vue3";
 
 export default {
     data() {
@@ -305,7 +303,7 @@ export default {
             order_via: this.sale.order_via,
             tracking_guide: this.sale.tracking_guide,
             notes: this.sale.notes,
-            is_high_priority: this.sale.is_high_priority,
+            is_high_priority: Boolean(this.sale.is_high_priority),
             products: [],
             media: null,
         });
@@ -329,12 +327,13 @@ export default {
         AppLayout,
         PrimaryButton,
         SecondaryButton,
-        Link,
         InputError,
         IconInput,
         DialogModal,
         CancelButton,
         Checkbox,
+        Back,
+        Link
     },
     props: {
         company_branches: Array,

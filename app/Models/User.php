@@ -339,4 +339,24 @@ class User extends Authenticatable
             $this->update(['employee_properties' => $employee_properties]);
         }
     }
+
+    public function calculateExperience()
+    {
+        if (isset($this->employee_properties['join_date'])) {
+            $joinDate = new Carbon($this->employee_properties['join_date']);
+            $currentDate = Carbon::now();
+            $monthsDifference = $currentDate->diffInMonths($joinDate);
+
+            if ($monthsDifference < 6) {
+                return 'Novato';
+            } elseif ($monthsDifference >= 6 && $monthsDifference <= 12) {
+                return 'Intermedio';
+            } else {
+                return 'Experto';
+            }
+        } else {
+            // Si no se encuentra la fecha de ingreso, puedes manejarlo de la manera que desees, como establecer un valor predeterminado.
+            return 'Super admin';
+        }
+    }
 }

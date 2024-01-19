@@ -40,7 +40,7 @@
           </el-tooltip>
           <el-tooltip v-if="tabs == 3" content="Enviar un correo a prospecto" placement="top">
             <Link :href="route('email-monitors.create', {opportunityId: currentOportunity?.id})">
-            <PrimaryButton class="rounded-md">Enviar correo</PrimaryButton>
+            <PrimaryButton class="rounded-md">Interacción por correo</PrimaryButton>
             </Link>
           </el-tooltip>
           <el-tooltip v-if="tabs == 5 && currentOportunity?.finished_at"
@@ -72,6 +72,10 @@
               <DropdownLink :href="route('whatsapp-monitors.create', {opportunityId: currentOportunity?.id})"
                 v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Registrar interaccion whatsapp en seguimiento integral')">
                 Interacción WhatsApp
+              </DropdownLink>
+              <DropdownLink :href="route('call-monitors.create', {opportunityId: currentOportunity?.id})"
+                v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Registrar llamada en seguimiento integral')">
+                Registrar llamada
               </DropdownLink>
               <DropdownLink v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades') && tabs == 1 && toBool(authUserPermissions[3])
                 " @click="showConfirmModal = true" as="button">
@@ -185,9 +189,11 @@
         <p class="text-secondary col-span-2 mb-2">Usuarios</p>
 
         <ul v-if="currentOportunity?.users.length">
-          <li v-for="item in currentOportunity?.users" :key="item.id" class="text-gray-500">
-            {{ item.name }}
-          </li>
+          <template v-for="item in currentOportunity?.users" :key="item.id">
+            <li v-if="item.id != 1" class="text-gray-500">
+              {{ item.name }}
+            </li>
+          </template>
         </ul>
         <p class="text-sm text-gray-400" v-else><i class="fa-solid fa-user-slash mr-3"></i>No hay tareas asignadas a
           usuarios</p>
@@ -218,9 +224,17 @@
             <i @click="$inertia.get(route('payment-monitors.create'), {opportunityId: currentOportunity?.id})"
               class="fa-solid fa-money-bill text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
           </el-tooltip>
-          <el-tooltip content="Enviar correo" placement="top">
+          <el-tooltip content="Interacción por correo" placement="top">
             <i @click="$inertia.get(route('email-monitors.create'), {opportunityId: currentOportunity?.id})"
-              class="fa-regular fa-envelope text-primary cursor-pointer text-lg px-3"></i>
+              class="fa-regular fa-envelope text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
+          </el-tooltip>
+          <el-tooltip content="Interacción WhatsApp" placement="top">
+            <i @click="$inertia.get(route('whatsapp-monitors.create'), {opportunityId: currentOportunity?.id})"
+              class="fa-brands fa-whatsapp text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
+          </el-tooltip>
+          <el-tooltip content="Registrar llamada" placement="top">
+            <i @click="$inertia.get(route('call-monitors.create'), {opportunityId: currentOportunity?.id})"
+              class="fa-solid fa-phone text-primary cursor-pointer text-lg px-3"></i>
           </el-tooltip>
         </div>
       </div>

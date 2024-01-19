@@ -121,11 +121,29 @@
           </div>
           <div class="mt-8 ml-6 text-sm">
             <div class="flex mb-2">
-              <p class="w-1/3 text-primary">Existencias</p>
+              <p class="w-1/3 text-primary">Unidades disponibles</p>
               <p>
-                {{ storage.data.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0" }}
+                {{ (storage.data.quantity - storage.data.quantityCommited).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,
+                  ",") ?? "0" }}
                 {{ storage.data.storageable.measure_unit ?? "" }}
               </p>
+            </div>
+            <div class="flex mb-2">
+              <p class="w-1/3 text-primary">Unidades comprometidas</p>
+              <el-tooltip content="Dar entrada a almacén" placement="top">
+                <template #content>
+                  <ul>
+                    <li v-for="item in storage.data.salesInProcess" :key="item.id">
+                      • {{ `OV-${String(item.id).padStart(4, '0')}` }}
+                    </li>
+                  </ul>
+                  <p v-if="!storage.data.salesInProcess.length">No hay ordenes de venta en proceso</p>
+                </template>
+                <p>
+                  {{ storage.data.quantityCommited.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0" }}
+                  {{ storage.data.storageable.measure_unit ?? "" }}
+                </p>
+              </el-tooltip>
             </div>
             <div class="flex mb-3">
               <p class="w-1/3 text-primary">Ubicación</p>
@@ -385,7 +403,6 @@
           <PrimaryButton @click="reactivateObsolete" :disabled="!warehouse || !location">Transferir</PrimaryButton>
         </template>
       </DialogModal>
-
     </AppLayoutNoHeader>
   </div>
 </template>
@@ -660,7 +677,7 @@ export default {
     this.selectedStorage = this.storage.data.id;
     this.selectedRawMaterial = this.storage.data.storageable.id;
     this.reversedMovements = this.storage.data.movements;
-    
+
     // obtener ruta de regreso
     if (this.storage.data.type == 'materia-prima') {
       this.backRoute = route('storages.raw-materials.index');

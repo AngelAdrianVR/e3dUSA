@@ -4,6 +4,7 @@ use App\Http\Controllers\AdditionalTimeRequestController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\CallMonitorController;
 use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\ClientMonitorController;
 use App\Http\Controllers\CompanyBranchController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\KioskDeviceController;
 use App\Http\Controllers\MachineController;
 use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\ManualController;
 use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MettingMonitorController;
 use App\Http\Controllers\OportunityController;
@@ -36,6 +38,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\QualityController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RolePermissionController;
+use App\Http\Controllers\SaleAnaliticController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SampleController;
 use App\Http\Controllers\SettingController;
@@ -82,7 +85,6 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
-
 
 // -------------- project groups routes ------------
 Route::resource('project-groups', ProjectGroupController::class)->middleware('auth')->names('project-groups');
@@ -162,6 +164,9 @@ Route::resource('meeting-monitors', MettingMonitorController::class)->middleware
 // ------- CRM (email monior Routes)  ---------
 Route::resource('email-monitors', EmailMonitorController::class)->middleware('auth');
 
+// ------- CRM (Call monior Routes)  ---------
+Route::resource('call-monitors', CallMonitorController::class)->middleware('auth');
+
 // ------- CRM (whatsapp monior Routes)  ---------
 Route::resource('whatsapp-monitors', WhatsappMonitorController::class)->middleware('auth');
 Route::post('whatsapp-monitors/update-with-media/{whatsapp_monitor}', [WhatsappMonitorController::class, 'updateWithMedia'])->name('whatsapp-monitors.update-with-media')->middleware('auth');
@@ -173,6 +178,7 @@ Route::post('sales/clone', [SaleController::class, 'clone'])->name('sales.clone'
 Route::put('sales/authorize/{sale}', [SaleController::class, 'authorizeOrder'])->name('sales.authorize');
 Route::get('sales/print/{sale}', [SaleController::class, 'print'])->name('sales.print');
 Route::post('sales/update-with-media/{sale}', [SaleController::class, 'updateWithMedia'])->name('sales.update-with-media')->middleware('auth');
+Route::get('sales-get-unauthorized', [SaleController::class, 'getUnauthorized'])->name('sales.get-unauthorized');
 
 // ------- CRM(Companybranches sucursales Routes)  ---------
 Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');
@@ -182,6 +188,7 @@ Route::put('company-branches/store-important-notes/{company_branch}', [CompanyBr
 // ------- Compras(Suppliers Routes)  ---------
 Route::resource('suppliers', SupplierController::class)->middleware('auth');
 Route::post('suppliers/massive-delete', [SupplierController::class, 'massiveDelete'])->name('suppliers.massive-delete');
+Route::get('fetch-supplier/{supplier_id}', [SupplierController::class, 'fetchSupplier'])->name('suppliers.fetch-supplier');
 
 // ------- Compras(purchases Routes)  ---------
 Route::resource('purchases', PurchaseController::class)->middleware('auth');
@@ -210,6 +217,8 @@ Route::resource('raw-materials', RawMaterialController::class)->middleware('auth
 Route::post('raw-materials/massive-delete', [RawMaterialController::class, 'massiveDelete'])->name('raw-materials.massive-delete')->middleware('auth');
 Route::post('raw-materials/turn-into-catalog-product', [RawMaterialController::class, 'turnIntoCatalogProduct'])->name('raw-materials.turn-into-catalog-product')->middleware('auth');
 Route::post('raw-materials/update-with-media/{raw_material}', [RawMaterialController::class, 'updateWithMedia'])->name('raw-materials.update-with-media')->middleware('auth');
+Route::get('raw-materials/fetch/{raw_material_id}', [RawMaterialController::class, 'fetchItem'])->name('raw-materials.fetch')->middleware('auth');
+Route::get('raw-materials-fetch-supplier-items/{raw_materials_ids}', [RawMaterialController::class, 'fetchSupplierItems'])->name('raw-materials.fetch-supplier-items')->middleware('auth');
 Route::get('consumables/create', [RawMaterialController::class, 'create'])->name('consumables.create')->middleware('auth');
 Route::get('consumables-edit/{raw_material}', [RawMaterialController::class, 'editConsumable'])->name('consumables.edit')->middleware('auth');
 
@@ -225,6 +234,7 @@ Route::post('payrolls/get-payroll', [PayrollController::class, 'getPayroll'])->m
 Route::post('payrolls/get-bonuses', [PayrollController::class, 'getBonuses'])->middleware('auth')->name('payrolls.get-bonuses');
 Route::post('payrolls/get-discounts', [PayrollController::class, 'getDiscounts'])->middleware('auth')->name('payrolls.get-discounts');
 Route::post('payrolls/get-extras', [PayrollController::class, 'getExtras'])->middleware('auth')->name('payrolls.get-extras');
+Route::post('payrolls/get-extras-requests', [PayrollController::class, 'getExtrasRequests'])->middleware('auth')->name('payrolls.get-extras-requests');
 Route::post('payrolls/get-payroll-users', [PayrollController::class, 'getPayrollUsers'])->middleware('auth')->name('payrolls.get-payroll-users');
 Route::post('payrolls/get-additional-time', [PayrollController::class, 'getAdditionalTime'])->middleware('auth')->name('payrolls.get-additional-time');
 Route::post('payrolls/close-current', [PayrollController::class, 'closeCurrent'])->middleware('auth')->name('payrolls.close-current');
@@ -367,6 +377,10 @@ Route::get('maintenances/create/{selectedMachine}', [MaintenanceController::clas
 Route::post('maintenances/update-with-media/{maintenance}', [MaintenanceController::class, 'updateWithMedia'])->name('maintenances.update-with-media')->middleware('auth');
 
 
+// ------- tutorials & manuals routes  -------------
+Route::resource('manuals', ManualController::class)->middleware('auth');
+Route::post('manuals/update-with-media/{manual}', [ManualController::class, 'updateWithMedia'])->name('manuals.update-with-media')->middleware('auth');
+
 
 // ---------- spare parts routes  ---------------
 Route::resource('spare-parts', SparePartController::class)->except('create')->middleware('auth');
@@ -380,7 +394,7 @@ Route::put('meetings/set-attendance-confirmation/{meeting_id}', [MeetingControll
 Route::post('meetings/get-by-date-and-user', [MeetingController::class, 'getMeetingsByDateAndUser'])->name('meetings.get-by-date-and-user');
 
 
-//------------------ Meetings routes ----------------
+//------------------ production-cost routes ----------------
 Route::resource('production-costs', ProductionCostController::class)->middleware('auth');
 Route::post('production-costs/massive-delete', [ProductionCostController::class, 'massiveDelete'])->name('production-costs.massive-delete');
 
@@ -397,6 +411,11 @@ Route::resource('production-progress', ProductionProgressController::class)->mid
 //------------------ Customer dates routes ----------------
 Route::resource('customer-meetings', CustomerMeetingController::class)->middleware('auth');
 Route::post('customer-meetings/get-soon-dates', [CustomerMeetingController::class, 'getSoonDates'])->name('customer-meetings.get-soon-dates')->middleware('auth');
+
+//------------------ sale analisis routes ----------------
+Route::resource('sale-analitics', SaleAnaliticController::class)->middleware('auth');
+Route::get('sale-analitics-fetch-top-products/{family}/{range}', [SaleAnaliticController::class, 'fetchTopProducts'])->name('sale-analitics.fetch-top-products')->middleware('auth');
+Route::get('sale-analitics-fetch-product-info/{part_number}', [SaleAnaliticController::class, 'fetchProductInfo'])->name('sale-analitics.fetch-product-info')->middleware('auth');
 
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
@@ -437,46 +456,6 @@ Route::get('mail-test', function () {
     return "Correo de prueba enviado a $destinatario.";
 });
 
-// Llaveros más vendidos de mayor a menor
-Route::get('/llaveros', function () {
-    $llaveros = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')
-        ->whereHas('catalogProductCompany.catalogProduct', function ($query) {
-            $query->where('part_number', 'like', 'C-LL%');
-        })
-        ->get();
-
-    $agrupados = $llaveros->groupBy('catalogProductCompany.catalogProduct.part_number')
-        ->map(function ($group) {
-            return [
-                'Nombre' => $group->first()->catalogProductCompany->catalogProduct->name,
-                'Número de parte' => $group->first()->catalogProductCompany->catalogProduct->part_number,
-                'Stock mínimo' => $group->first()->catalogProductCompany->catalogProduct->min_quantity,
-                'Venta total' => $group->sum('quantity'),
-            ];
-        })
-        ->sortByDesc('Venta total');
-
-    return $agrupados;
-});
-
-// Emblemas más vendidos de mayor a menor
-Route::get('/Emblemas', function () {
-    $emblemas = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')
-        ->whereHas('catalogProductCompany.catalogProduct', function ($query) {
-            $query->where('part_number', 'like', 'C-EM%');
-        })
-        ->get();
-
-    $agrupados = $emblemas->groupBy('catalogProductCompany.catalogProduct.part_number')
-        ->map(function ($group) {
-            return [
-                'Nombre' => $group->first()->catalogProductCompany->catalogProduct->name,
-                'Número de parte' => $group->first()->catalogProductCompany->catalogProduct->part_number,
-                'Stock mínimo' => $group->first()->catalogProductCompany->catalogProduct->min_quantity,
-                'Venta total' => $group->sum('quantity'),
-            ];
-        })
-        ->sortByDesc('Venta total');
-
-    return $agrupados;
-});
+// Route::get('/sorry-miss-u', function () {
+//     return inertia('Cin/so');
+// });

@@ -52,13 +52,15 @@ export default {
                 {
                     label: 'CRM',
                     icon: '<i class="fa-solid fa-chart-line text-xs"></i>',
-                    active:  route().current('crm.*') || route().current('quotes.*') || route().current('companies.*') || route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*') || route().current('client-monitors.*'),
+                    active:  route().current('crm.*') || route().current('quotes.*') || route().current('companies.*') ||
+                     route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*') ||
+                     route().current('client-monitors.*') || route().current('sale-analitics.*'),
                     options: [
                         {
-                            label: 'Inicio',
-                            route: route('crm.dashboard'),
-                            active: route().current('crm.*'),
-                            show: this.$page.props.auth.user.permissions.includes('Inicio crm')
+                            label: 'Análisis de ventas',
+                            route: 'sale-analitics.index',
+                            show: this.$page.props.auth.user.permissions.includes('Analisis de ventas'),
+                            notifications: false,
                         },
                         {
                             label: 'Cotizaciones',
@@ -274,6 +276,12 @@ export default {
                     || route().current('samples.*') || route().current('production-costs.*'),
                     options: [
                         {
+                            label: 'Tutoriales y manuales',
+                            route: route('manuals.index'),
+                            active: route().current('manuals.*'),
+                            show: this.$page.props.auth.user.permissions.includes('Ver manuales')
+                        },
+                        {
                             label: 'Máquinas',
                             route: route('machines.index'),
                             active: route().current('machines.*'),
@@ -289,7 +297,8 @@ export default {
                             label: 'Reuniones',
                             route: route('meetings.index'),
                             active: route().current('meetings.*'),
-                            show: this.$page.props.auth.user.permissions.includes('Reuniones personal')
+                            // show: this.$page.props.auth.user.permissions.includes('Reuniones personal')
+                            show: false,
                         },
                         {
                             label: 'Biblioteca de medios',

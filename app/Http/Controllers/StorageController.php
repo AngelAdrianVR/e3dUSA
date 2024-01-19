@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Http\Resources\StorageResource;
+use App\Http\Resources\StorageResource2;
 use App\Models\CatalogProduct;
 use App\Models\RawMaterial;
 use App\Models\StockMovementHistory;
@@ -17,7 +18,7 @@ class StorageController extends Controller
     public function index()
     {
         if (Route::currentRouteName() == 'storages.raw-materials.index') {
-            $raw_materials = StorageResource::collection(Storage::with('storageable')->where('type', 'materia-prima')->latest()->get());
+            $raw_materials = StorageResource2::collection(Storage::with('storageable')->where('type', 'materia-prima')->latest()->get());
 
             // Calcular la suma de costo de todo el materia prima
             $totalRawMaterialMoney = collect($raw_materials)->sum(function ($item) {

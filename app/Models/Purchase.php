@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Purchase extends Model
 {
@@ -38,9 +39,9 @@ class Purchase extends Model
 
     //relationships
     
-    public function contact(): MorphMany
+    public function contact(): MorphOne
     {
-        return $this->morphMany(Contact::class, 'contactable');
+        return $this->morphOne(Contact::class, 'contactable');
     }
 
     public function supplier(): BelongsTo

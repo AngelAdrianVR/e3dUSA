@@ -102,7 +102,7 @@
 
                 <div class="grid lg:grid-cols-4 grid-cols-2 gap-3 mt-4">
                     <!-- sellers -->
-                    <div v-if="this.$page.props.auth.user.permissions.includes('Crear ordenes de venta')"
+                    <div v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')"
                         class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] py-4 px-6 text-sm col-span-2">
                         <h2 class="text-black font-bold flex items-center">
                             <p>Órdenes de venta hechas por ti sin
@@ -145,7 +145,7 @@
                             <strong class="text-secondary">{{ formatDate(extra_time_request.date) }}</strong> por
                             <strong class="text-secondary">{{ extra_time_request.hours }} hora(s)</strong>.
                             Apreciamos tu disposición para ayudar, por lo que se otorgarán
-                            <strong class="text-secondary">{{ '100 puntos' }}</strong> adicionales en tu desempeño semanal y 
+                            <strong class="text-secondary">{{ extra_time_request.points }} puntos</strong> adicionales en tu desempeño semanal y 
                             <strong class="text-secondary">${{ extra_time_request.bonus }} de bono</strong>.
                             Gracias por tu flexibilidad!
                         </p>
@@ -174,10 +174,11 @@
                             </p>
                         </div>
                     </div>
-
+                    <!-- lista de OV sin autorizar -->
+                    <PendentProductionsList v-if="$page.props.auth.user.employee_properties === null || $page.props.auth.user.employee_properties?.department == 'Producción'" class="col-span-2" />
                     <!-- crear oportunidad de tiempo extra -->
                     <ExtraTimeRequestCreator
-                        v-if="this.$page.props.auth.user.permissions.includes('Crear oportunidad de tiempo extra')"
+                        v-if="$page.props.auth.user.permissions.includes('Crear oportunidad de tiempo extra')"
                         class="col-span-2" />
                 </div>
 
@@ -335,6 +336,7 @@ import InformationCard from '@/Components/MyComponents/InformationCard.vue';
 import ThirthButton from '@/Components/MyComponents/ThirthButton.vue';
 import CancelButton from '@/Components/MyComponents/CancelButton.vue';
 import ExtraTimeRequestCreator from '@/Components/MyComponents/ExtraTimeRequestCreator.vue';
+import PendentProductionsList from '@/Components/MyComponents/PendentProductionsList.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import AppLayoutNoHeader from '@/Layouts/AppLayoutNoHeader.vue';
@@ -473,6 +475,7 @@ export default {
         Link,
         PayrollTemplate,
         ExtraTimeRequestCreator,
+        PendentProductionsList,
     },
     methods: {
         async setExtraTimeRequestResponse(accepted) {

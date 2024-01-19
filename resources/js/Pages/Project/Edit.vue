@@ -3,10 +3,7 @@
     <AppLayout title="Editar proyecto">
       <template #header>
         <div class="flex justify-between">
-          <Link :href="route('projects.index')"
-            class="hover:bg-gray-200/50 rounded-full w-10 h-10 flex justify-center items-center">
-          <i class="fa-solid fa-chevron-left"></i>
-          </Link>
+          <Back />
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">Editar proyecto</h2>
           </div>
@@ -376,14 +373,15 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import ThirthButton from "@/Components/MyComponents/ThirthButton.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
-import { Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import DialogModal from "@/Components/DialogModal.vue";
 import RichText from "@/Components/MyComponents/RichText.vue";
 import FileUploader from "@/Components/MyComponents/FileUploader.vue";
+import Back from "@/Components/MyComponents/Back.vue";
 import Tag from "@/Components/MyComponents/Tag.vue";
+import { Link, useForm } from "@inertiajs/vue3";
 import { isSameDay, parseISO } from "date-fns";
 
 export default {
@@ -443,16 +441,17 @@ export default {
     AppLayout,
     SecondaryButton,
     PrimaryButton,
-    Link,
     InputError,
     IconInput,
     Checkbox,
     ThirthButton,
     RichText,
     FileUploader,
-    Tag,
     DialogModal,
     CancelButton,
+    Link,
+    Back,
+    Tag
   },
   props: {
     companies: Array,
@@ -676,16 +675,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-/* Estilo para el hover de las opciones */
-.el-select-dropdown .el-select-dropdown__item:hover {
-  background-color: #D90537;
-  /* Color de fondo al hacer hover */
-  color: white;
-  /* Color del texto al hacer hover */
-  border-radius: 20px;
-  /* Redondeo */
-}
-</style>
-

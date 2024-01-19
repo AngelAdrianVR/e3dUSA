@@ -108,7 +108,7 @@
       <!-- ------------- Interaccion whatsapp ends 1 ------------- -->
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
-        <template #title> Eliminar Registro de pago </template>
+        <template #title> Eliminar Registro de whatsapp </template>
         <template #content> ¿Continuar con la eliminación? </template>
         <template #footer>
           <div>
