@@ -111,6 +111,8 @@ class PurchaseController extends Controller
     {
         $suppliers = Supplier::get(['id', 'name', 'nickname']);
 
+        // return $purchase;
+
         return inertia('Purchase/Edit', compact('purchase', 'suppliers'));
     }
 
