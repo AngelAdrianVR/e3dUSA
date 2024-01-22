@@ -32,28 +32,6 @@
               :href="route('oportunities.create')">
             <PrimaryButton class="rounded-lg">Nueva oportunidad</PrimaryButton>
             </Link>
-            <!-- <Dropdown
-            align="right"
-            width="48"
-            v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades')"
-          >
-            <template #trigger>
-              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
-                Más <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
-              </button>
-            </template>
-            <template #content>
-              <DropdownLink
-                @click="showConfirmModal = true"
-                as="button"
-                v-if="
-                  $page.props.auth.user.permissions.includes('Eliminar oportunidades')
-                "
-              >
-                Eliminar
-              </DropdownLink>
-            </template>
-          </Dropdown> -->
           </div>
         </div>
       </div>
@@ -187,8 +165,8 @@
       <!-- ------------ Kanban view ends ----------------- -->
 
       <!-- ------------ Lista view starts ----------------- -->
-      <div v-if="type_view === 'Lista'" class="w-11/12 mx-auto my-16">
-        <table v-if="oportunities.data.length > 0" class="lg:w-[90%] w-full mx-auto">
+      <div v-if="type_view === 'Lista'" class="w-11/12 mx-auto my-16 text-sm">
+        <table v-if="oportunities.length > 0" class="lg:w-[90%] w-full mx-auto">
           <thead>
             <tr class="text-left">
               <th class="font-bold pb-5">
@@ -471,7 +449,7 @@ export default {
 
   },
   mounted() {
-    this.oportunitiesLocal = this.oportunities.data;
+    this.oportunitiesLocal = this.oportunities;
     this.updateLists();
     // Calcula el dinero total de cada sección
     this.calculateTotals();
@@ -479,9 +457,9 @@ export default {
   computed: {
     filteredTableData() {
       if (!this.search) {
-        return this.oportunities.data;
+        return this.oportunities;
       } else {
-        return this.oportunities.data.filter((oportunity) =>
+        return this.oportunities.filter((oportunity) =>
           oportunity.name.toLowerCase().includes(this.search.toLowerCase()) ||
           oportunity.status.toLowerCase().includes(this.search.toLowerCase())
         );

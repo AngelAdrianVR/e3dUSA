@@ -11,9 +11,9 @@
 
       <div class="flex justify-between">
         <div class="md:w-1/3 mr-2">
-          <el-select v-model="oportunitySelected" clearable filterable placeholder="Buscar oportunidades"
+          <el-select @change="$inertia.get(route('oportunities.show', oportunitySelected))" v-model="oportunitySelected" clearable filterable placeholder="Buscar oportunidades"
             no-data-text="No hay oportuindades registradas" no-match-text="No se encontraron coincidencias">
-            <el-option v-for="item in oportunities.data" :key="item.id" :label="item.name" :value="item.id" />
+            <el-option v-for="item in oportunities" :key="item.id" :label="item.name" :value="item.id" />
           </el-select>
         </div>
 
@@ -760,19 +760,17 @@ export default {
       // console.log('http://127.0.0.1:8000/surveys/create/' + this.currentOportunity.id);
     },
   },
-  watch: {
-    oportunitySelected(newVal) {
-      this.currentOportunity = this.oportunities.data.find((item) => item.id == newVal);
-      this.oportunitySelected = this.currentOportunity?.id;
-      this.status = this.currentOportunity?.status;
-    },
-  },
+  // watch: {
+  //   oportunitySelected(newVal) {
+  //     this.currentOportunity = this.oportunity.data;
+  //     this.oportunitySelected = this.currentOportunity?.id;
+  //     this.status = this.currentOportunity?.status;
+  //   },
+  // },
   mounted() {
-    this.oportunitySelected = this.oportunity.id;
-    this.currentOportunity = this.oportunities.data.find(
-      (item) => item.id == this.oportunitySelected
-    );
-    this.status = this.currentOportunity?.status;
+    this.oportunitySelected = this.oportunity.data.id;
+    this.currentOportunity = this.oportunity.data;
+    this.status = this.oportunity?.data.status;
     if (this.defaultTab != null) {
       this.tabs = parseInt(this.defaultTab);
     }

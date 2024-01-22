@@ -31,7 +31,7 @@
               no-match-text="No se encontraron coincidencias"
             >
               <el-option
-                v-for="oportunity in oportunities.data"
+                v-for="oportunity in oportunities"
                 :key="oportunity"
                 :label="oportunity.folio"
                 :value="oportunity.id"
@@ -195,7 +195,7 @@ export default {
       document.getElementById("fileInput").click();
     },
     getCompany() {
-    const oportunity = this.oportunities.data.find(oportunity => oportunity.id === this.payment_monitor.data.oportunity?.id );
+    const oportunity = this.oportunities.find(oportunity => oportunity.id === this.payment_monitor.data.oportunity?.id );
 
     // if (oportunity.company) {
       this.form.company_id = oportunity.company.id;
@@ -221,7 +221,7 @@ export default {
       this.form.mediaNames = fileNames;
     },
     mounted() {
-     const oportunity = this.oportunities.data.find(oportunity => oportunity.id === this.form.oportunity_id);
+     const oportunity = this.oportunities.find(oportunity => oportunity.id === this.form.oportunity_id);
 
     if (oportunity.company) {
       this.form.company_id = oportunity.company.id;

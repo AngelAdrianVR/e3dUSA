@@ -23,9 +23,10 @@
           </div>
         </div>
     </div>
+    <h2 class="text-center text-primary mt-7">Top 20 en ventas</h2>
 
     <!-- Tabla de productos vendidos -->
-    <div v-if="!loading" class="w-10/12 h-[301px] overflow-auto mx-auto mt-9 mb-2 rounded-md">
+    <div v-if="!loading" class="w-10/12 h-[301px] overflow-auto mx-auto mt-3 mb-2 rounded-md">
       <table v-if="topProducts" class="w-full h-full mx-auto text-sm">
         <thead>
           <tr class="text-center border-b border-primary">
@@ -103,12 +104,12 @@
           </div>
           <div class="lg:flex space-x-4 mt-5">
             <figure class="rounded-md">
-                <img :src="productSelected.media?.original_url" class="rounded-md object-contain w-full h-20">
+                <img :src="productSelected.media?.original_url" class="rounded-md object-contain w-full h-28">
             </figure>
-            <div class="lg:grid grid-cols-2 gap-4 text-center">
+            <div class="lg:grid grid-cols-2 gap-4 text-center border w-[90%]">
               <LinealChart :options="productAmountSalesMonth" title="Ventas acumuladas por mes" />
+              <!-- <ColumWithMakersChart :options="productMoneySalesMonth" title="Ventas vs Espectativas" />  -->
               <LinealChart :options="productMoneySalesMonth" title="Ventas en pesos mexicanos $MXN por mes" />
-              <!-- <ColumWithMakersChart :options="productMoneySalesMonth" title="Ventas vs Espectativas" /> --> 
             </div>
           </div>
         </div>

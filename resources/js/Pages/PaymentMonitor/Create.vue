@@ -19,7 +19,7 @@
             <label>Folio de la oportunidad *</label>
             <el-select @change="getCompany" class="w-full" v-model="form.oportunity_id" clearable filterable
               placeholder="Seleccione" no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
-              <el-option v-for="oportunity in oportunities.data" :key="oportunity"
+              <el-option v-for="oportunity in oportunities" :key="oportunity"
                 :label="oportunity.folio + ' - ' + oportunity.name" :value="oportunity.id" />
             </el-select>
             <InputError :message="form.errors.oportunity_id" />
@@ -164,7 +164,7 @@ export default {
       this.form.mediaNames = fileNames;
     },
     getCompany() {
-      const oportunity = this.oportunities.data.find(oportunity => oportunity.id === this.form.oportunity_id);
+      const oportunity = this.oportunities.find(oportunity => oportunity.id === this.form.oportunity_id);
       // console.log(oportunity);
 
       if (oportunity.company) {

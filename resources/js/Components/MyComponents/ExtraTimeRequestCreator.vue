@@ -3,7 +3,7 @@
         <h2 class="text-black font-bold flex justify-between items-center">
             <p>Oportunidades de tiempo extra</p>
             <button @click="showCreateModal = true"
-                class="w-6 h-6 border border-transparent hover:border-primary rounded-full text-primary">
+                class="w-6 h-6 border border-transparent hover:border-primary rounded-full text-primary flex items-center justify-center">
                 <i class="fa-solid fa-plus"></i>
             </button>
         </h2>
