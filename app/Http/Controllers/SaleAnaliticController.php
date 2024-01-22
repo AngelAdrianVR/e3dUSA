@@ -80,7 +80,7 @@ class SaleAnaliticController extends Controller
                     'name' => $group->first()->catalogProductCompany?->catalogProduct?->name,
                     'part_number' => $group->first()->catalogProductCompany?->catalogProduct?->part_number,
                     'min_stock' => $group->first()->catalogProductCompany?->catalogProduct?->min_quantity,
-                    'old_price' => $group->first()->catalogProductCompany?->old_price,
+                    'old_price' => $group->first()->catalogProductCompany?->old_price ?? 0,
                     'new_price' => $group->first()->catalogProductCompany?->new_price,
                     'quantity_sales' => $group->sum('quantity'),
                     'total_money' => $group->sum('quantity') * $group->first()->catalogProductCompany?->new_price,
@@ -88,7 +88,7 @@ class SaleAnaliticController extends Controller
                     'media' => $group->first()->catalogProductCompany?->catalogProduct?->media[0] ?? null,
                 ];
             })
-            ->sortByDesc('quantity_sales')
+            ->sortByDesc('total_money')
             ->take(20); // Limitar a 20 elementos
 
         return response()->json(['items' => $agrouped]);

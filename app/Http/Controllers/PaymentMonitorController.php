@@ -24,7 +24,17 @@ class PaymentMonitorController extends Controller
     
     public function create()
     {
-        $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
+        // $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
+        $oportunities = Oportunity::with('company:id,business_name')->latest()->get()
+        ->map(function ($oportunity) {
+            return [
+                'id' => $oportunity->id,
+                'folio' => 'OP-' . strtoupper(substr($oportunity->name, 0, 3)) . '-' . str_pad($oportunity->id, 3, '0', STR_PAD_LEFT),
+                'name' => $oportunity->name,
+                'company' => $oportunity->company,
+            ];
+        });
+
         if (request('opportunityId')) {
             $opportunity = Oportunity::with(['companyBranch'])->find(request('opportunityId'));
         } else {
@@ -84,7 +94,17 @@ class PaymentMonitorController extends Controller
     public function edit($payment_monitor_id)
     {
         $payment_monitor = PaymentMonitorResource::make(PaymentMonitor::with('oportunity')->find($payment_monitor_id));
-        $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
+
+        // $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
+        $oportunities = Oportunity::with('company')->latest()->get()
+        ->map(function ($oportunity) {
+            return [
+                'id' => $oportunity->id,
+                'folio' => 'OP-' . strtoupper(substr($oportunity->name, 0, 3)) . '-' . str_pad($oportunity->id, 3, '0', STR_PAD_LEFT),
+                'name' => $oportunity->name,
+                'company' => $oportunity->company,
+            ];
+        });
 
         // return $payment_monitor;
 
