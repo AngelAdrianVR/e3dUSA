@@ -23,7 +23,7 @@ class SaleController extends Controller
     public function index()
     {
         //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
-        $pre_sales = Sale::with('companyBranch', 'user')->latest()->get();
+        $pre_sales = Sale::with(['companyBranch:id,name', 'user:id,name'])->latest()->get();
         $sales = $pre_sales->map(function ($sale) {
             $hasStarted = $sale->productions?->whereNotNull('started_at')->count();
             $hasNotFinished = $sale->productions?->whereNull('finished_at')->count();
@@ -74,6 +74,7 @@ class SaleController extends Controller
             ];
         });
 
+        // return $sales;
         return inertia('Sale/Index', compact('sales'));
     }
 

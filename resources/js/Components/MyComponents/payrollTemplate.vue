@@ -17,7 +17,7 @@
               <th>T. autorizado</th>
               <th>Entrada</th>
               <th>Salida</th>
-              <th>Pausas</th>
+              <th>T. a reponer</th>
               <th class="rounded-tr-lg py-px lg:py-2">Hrs x dia</th>
             </tr>
           </thead>
