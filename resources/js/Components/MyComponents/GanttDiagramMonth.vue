@@ -27,12 +27,12 @@
       </th>
       <th class="border border-[#9A9A9A] text-center font-thin">
         <strong class="text-base uppercase font-bold tex">{{ monthName }}</strong><br />
-        <!-- <div class="flex space-x-8 justify-center w-[95%] mx-4">
+        <div class="flex space-x-8 justify-center w-[95%] mx-4">
           <p v-for="day in daysInMonth" :key="day" class="text-secondary relative">
             {{ daysOfWeek[(day + startDayOfWeek - 2) % 7] }}
             <span class="absolute -bottom-3 -left-0 text-[9px] text-black">{{ day }}</span>
           </p>
-        </div> -->
+        </div>
       </th>
     </tr>
 
@@ -95,15 +95,15 @@ export default {
       }
     },
     taskStartDay(task) {
-      const startDate = new Date(task.start_date);
+      const startDate = new Date(task.start_date_raw);
       const startDay = startDate.getDate();
-      const currentMonthFirstDay = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1);
+    const currentMonthFirstDay = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1);
       const dayDifference = Math.abs(startDate - currentMonthFirstDay) / (1000 * 60 * 60 * 24);
       return dayDifference; // Sumar 1 para que el primer día sea 1 en lugar de 0
     },
     taskDuration(task) {
-      const startDate = new Date(task.start_date);
-      const endDate = new Date(task.end_date);
+      const startDate = new Date(task.start_date_raw);
+      const endDate = new Date(task.end_date_raw);
       const duration = (endDate - startDate) / (24 * 60 * 60 * 1000); // Convertir a días
       return duration + 1; // Sumar 1 para incluir el día de inicio
     },
@@ -131,26 +131,26 @@ export default {
         'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
         'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
       ];
-      return months[this.currentDate.getMonth()];
+      return months[this.currentDate?.getMonth()];
     },
     daysInMonth() {
-      const year = this.currentDate.getFullYear();
-      const month = this.currentDate.getMonth() + 1;
+      const year = this.currentDate?.getFullYear();
+      const month = this.currentDate?.getMonth() + 1;
       return new Date(year, month, 0).getDate();
     },
     startDayOfWeek() {
-      const year = this.currentDate.getFullYear();
-      const month = this.currentDate.getMonth();
+      const year = this.currentDate?.getFullYear();
+      const month = this.currentDate?.getMonth();
       return new Date(year, month, 1).getDay(); // 0 para domingo, 1 para lunes, etc.
     },
   },
   mounted() {
 
     // Verificar si hay tareas en el proyecto y si la primera tarea tiene una fecha de inicio
-    if (this.currentProject && this.currentProject.tasks?.length > 0) {
+    if (this.currentProject && this.currentProject?.tasks?.length > 0) {
       const firstTask = this.currentProject.tasks[0];
-      if (firstTask && firstTask.start_date) {
-        this.currentDate = new Date(firstTask.start_date);
+      if (firstTask && firstTask.start_date_raw) {
+        this.currentDate = new Date(firstTask.start_date_raw);
       }
     }
   },

@@ -361,7 +361,8 @@ export default {
               
               if (response.status === 200) {
                   this.currentSupplier = response.data.item;
-                  this.fetchSupplierItems();
+                  this.getBank(); //recupera el el banco de la compra
+                  this.fetchSupplierItems(); //recupera los productos registrados del proveedor
               }
           } catch (error) {
             console.log(error);
@@ -370,6 +371,17 @@ export default {
     },
     getProductSelected() {
       this.productSelectedObj = this.rawMaterials.find(item => item.id === this.productSelectedId);
+    },
+    getBank() {
+      // Encontrar el índice del elemento en "banks" que coincide con la "clabe" de "bank_information"
+      const index = this.currentSupplier.banks.findIndex(item => item.clabe === this.purchase.bank_information?.clabe);
+
+      // El resultado será el índice del elemento o -1 si no se encuentra
+      if (index != -1) {
+        this.bank_index = index;
+      } else {
+        this.bank_index = null;
+      }
     }
   },
   mounted() {

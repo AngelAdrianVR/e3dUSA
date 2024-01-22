@@ -84,7 +84,7 @@
           <InputError :message="form.errors.banks" />
 
           <ol
-            v-if="form.banks.length"
+            v-if="form.banks?.length"
             class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1"
           >
             <template v-for="(item, index) in form.banks" :key="index">
@@ -326,7 +326,7 @@
           <!-- ---------------- supplier rawMaterials starts ----------------- -->
           <el-divider content-position="left">Productos del proveedor</el-divider>
           
-          <ol v-if="form.rawMaterials.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
+          <ol v-if="form.rawMaterials?.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
             <template v-for="(item, index) in form.rawMaterials" :key="index">
               <li class="flex justify-between items-center">
                 <p class="text-sm">
@@ -444,7 +444,7 @@ export default {
       phone: this.supplier.phone,
       banks: this.supplier.banks,
       contacts: this.supplier.contacts,
-      rawMaterials: this.supplier.raw_materials_id,
+      rawMaterials: this.supplier.raw_materials_id ?? [],
     });
 
     return {
@@ -624,7 +624,7 @@ export default {
     async fetchSupplierItems() {
       try {
           const response = await axios.get(route('raw-materials.fetch-supplier-items', {
-              raw_materials_ids: this.supplier.raw_materials_id.join(',')
+              raw_materials_ids: this.supplier.raw_materials_id?.join(',')
           }));
           
           if (response.status === 200) {

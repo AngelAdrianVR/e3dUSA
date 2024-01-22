@@ -239,6 +239,9 @@
 
       <GanttDiagramBimester v-if="period === 'Bimestre'" :currentProject="currentProject" :currentDate="currentDate" />
 
+        <!-- <p class="text-center text-gray-500 mt-5" v-if="currentProject.tasks?.length == 0">No hay tareas para mostrar. 
+          <span v-if="(tabs == 2 || tabs == 3) && toBool(authUserPermissions[0])" @click="$inertia.get(route('tasks.create', { projectId: currentProject?.id ?? 1 }))" class="text-secondary cursor-pointer">Crea una</span></p> -->
+
       <div class="text-right mr-9">
         <div class="border border-[#9A9A9A] rounded-md inline-flex justify-end mt-4">
           <p :class="period == 'Mes' ? 'bg-primary text-white rounded-sm' : 'border-[#9A9A9A]'
@@ -425,7 +428,7 @@ export default {
       if (this.currentProject && this.currentProject.tasks.length > 0) {
         const firstTask = this.currentProject.tasks[0];
         if (firstTask && firstTask.start_date) {
-          this.currentDate = new Date(firstTask.start_date);
+          this.currentDate = new Date(firstTask.start_date_raw);
         }
       }
     },

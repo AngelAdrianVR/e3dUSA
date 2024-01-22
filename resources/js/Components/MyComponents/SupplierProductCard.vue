@@ -20,7 +20,7 @@
                 <p>${{ product.cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</p>
                 <p v-if="product.quantity">{{ product.quantity }}</p>
                 <p v-if="product.quantity">${{ (product.quantity * product.cost).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</p>
-                <p>{{ product.notes }}</p>
+                <p>{{ product.notes ?? '--' }}</p>
             </div>
         </div>
     </div>
