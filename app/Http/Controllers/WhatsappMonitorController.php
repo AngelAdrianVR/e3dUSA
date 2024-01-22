@@ -25,9 +25,41 @@ class WhatsappMonitorController extends Controller
     
     public function create()
     {
-        $companies = Company::with('companyBranches.contacts')->get();
-        $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
-        $users = User::where('is_active', true)->whereNot('id', 1)->get();
+        // $companies = Company::with('companyBranches.contacts')->get();
+        $companies = Company::with(['companyBranches.contacts'])
+        ->get(['id', 'business_name'])
+        ->map(function ($company) {
+            $company['company_branches'] = $company['companyBranches']->map(function ($branch) {
+                $branch['contacts'] = $branch['contacts']->map(function ($contact) {
+                    return [
+                        'id' => $contact['id'],
+                        'name' => $contact['name'],
+                        'phone' => $contact['phone'],
+                    ];
+                });
+                return [
+                    'id' => $branch['id'],
+                    'name' => $branch['name'],
+                    'contacts' => $branch['contacts'],
+                ];
+            });
+            unset($company['companyBranches']); // Eliminar la relación original después de la transformación
+            return $company;
+        });
+
+        // $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
+        $oportunities = Oportunity::with('company')->latest()->get()
+        ->map(function ($oportunity) {
+            return [
+                'id' => $oportunity->id,
+                'folio' => 'OP-' . strtoupper(substr($oportunity->name, 0, 3)) . '-' . str_pad($oportunity->id, 3, '0', STR_PAD_LEFT),
+                'name' => $oportunity->name,
+                'company' => $oportunity->company,
+            ];
+        });
+
+        $users = User::where('is_active', true)->whereNot('id', 1)->where('employee_properties->department', 'Ventas')->get();
+
         $opportunity = null;
         if (request('opportunityId')) {
             $opportunity = Oportunity::with(['companyBranch'])->find(request('opportunityId'));
@@ -94,9 +126,41 @@ class WhatsappMonitorController extends Controller
     public function edit($whatsapp_monitor_id)
     {
         $whatsapp_monitor = WhatsappMonitorResource::make(WhatsappMonitor::with('oportunity', 'company', 'companyBranch', 'contact', 'seller')->find($whatsapp_monitor_id));
-        $companies = Company::with('companyBranches.contacts')->get();
-        $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
-        $users = User::where('is_active', true)->whereNot('id', 1)->get();
+
+        // $companies = Company::with('companyBranches.contacts')->get();
+        $companies = Company::with(['companyBranches.contacts'])
+        ->get(['id', 'business_name'])
+        ->map(function ($company) {
+            $company['company_branches'] = $company['companyBranches']->map(function ($branch) {
+                $branch['contacts'] = $branch['contacts']->map(function ($contact) {
+                    return [
+                        'id' => $contact['id'],
+                        'name' => $contact['name'],
+                        'phone' => $contact['phone'],
+                    ];
+                });
+                return [
+                    'id' => $branch['id'],
+                    'name' => $branch['name'],
+                    'contacts' => $branch['contacts'],
+                ];
+            });
+            unset($company['companyBranches']); // Eliminar la relación original después de la transformación
+            return $company;
+        });
+
+        // $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
+        $oportunities = Oportunity::with('company')->latest()->get()
+        ->map(function ($oportunity) {
+            return [
+                'id' => $oportunity->id,
+                'folio' => 'OP-' . strtoupper(substr($oportunity->name, 0, 3)) . '-' . str_pad($oportunity->id, 3, '0', STR_PAD_LEFT),
+                'name' => $oportunity->name,
+                'company' => $oportunity->company,
+            ];
+        });
+
+        $users = User::where('is_active', true)->whereNot('id', 1)->where('employee_properties->department', 'Ventas')->get();
 
         // return $whatsapp_monitor;
 
