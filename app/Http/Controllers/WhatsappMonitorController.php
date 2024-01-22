@@ -48,7 +48,7 @@ class WhatsappMonitorController extends Controller
         });
 
         // $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
-        $oportunities = Oportunity::with('company')->latest()->get()
+        $oportunities = Oportunity::with('company:id,business_name')->latest()->get()
         ->map(function ($oportunity) {
             return [
                 'id' => $oportunity->id,

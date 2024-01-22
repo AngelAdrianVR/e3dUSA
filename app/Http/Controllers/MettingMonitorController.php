@@ -23,15 +23,50 @@ class MettingMonitorController extends Controller
 
     public function create()
     {
-        $companies = Company::with('companyBranches.contacts')->get();
-        $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
-        $users = User::where('is_active', true)->whereNot('id', 1)->get();
+        // $companies = Company::with('companyBranches.contacts')->get();
+        $companies = Company::with(['companyBranches.contacts'])
+        ->get(['id', 'business_name'])
+        ->map(function ($company) {
+            $company['company_branches'] = $company['companyBranches']->map(function ($branch) {
+                $branch['contacts'] = $branch['contacts']->map(function ($contact) {
+                    return [
+                        'id' => $contact['id'],
+                        'name' => $contact['name'],
+                        'phone' => $contact['phone'],
+                    ];
+                });
+                return [
+                    'id' => $branch['id'],
+                    'name' => $branch['name'],
+                    'contacts' => $branch['contacts'],
+                ];
+            });
+            // unset($company['companyBranches']); // Eliminar la relación original después de la transformación
+            return $company;
+        });
+
+        // $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
+        $oportunities = Oportunity::with('company')->latest()->get()
+        ->map(function ($oportunity) {
+            return [
+                'id' => $oportunity->id,
+                'folio' => 'OP-' . strtoupper(substr($oportunity->name, 0, 3)) . '-' . str_pad($oportunity->id, 3, '0', STR_PAD_LEFT),
+                'name' => $oportunity->name,
+                'company' => $oportunity->company,
+            ];
+        });
+
+        $users = User::where('is_active', true)->whereNot('id', 1)->where('employee_properties->department', 'Ventas')->get();
+
         $opportunity = null;
         if (request('opportunityId')) {
             $opportunity = Oportunity::with(['companyBranch'])->find(request('opportunityId'));
         } else {
             $opportunity = null;
         }
+
+        // return $companies;
+
         return inertia('MettingMonitor/Create', compact('companies', 'oportunities', 'users', 'opportunity'));
     }
 
@@ -87,9 +122,40 @@ class MettingMonitorController extends Controller
     public function edit($metting_monitor_id)
     {
         $metting_monitor = MeetingMonitorResource::make(MettingMonitor::with('oportunity', 'company', 'companyBranch', 'contact')->find($metting_monitor_id));
-        $companies = Company::with('companyBranches.contacts')->get();
-        $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
-        $users = User::where('is_active', true)->whereNot('id', 1)->get();
+        // $companies = Company::with('companyBranches.contacts')->get();
+        $companies = Company::with(['companyBranches.contacts'])
+        ->get(['id', 'business_name'])
+        ->map(function ($company) {
+            $company['company_branches'] = $company['companyBranches']->map(function ($branch) {
+                $branch['contacts'] = $branch['contacts']->map(function ($contact) {
+                    return [
+                        'id' => $contact['id'],
+                        'name' => $contact['name'],
+                        'phone' => $contact['phone'],
+                    ];
+                });
+                return [
+                    'id' => $branch['id'],
+                    'name' => $branch['name'],
+                    'contacts' => $branch['contacts'],
+                ];
+            });
+            // unset($company['companyBranches']); // Eliminar la relación original después de la transformación
+            return $company;
+        });
+
+        // $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
+        $oportunities = Oportunity::with('company')->latest()->get()
+        ->map(function ($oportunity) {
+            return [
+                'id' => $oportunity->id,
+                'folio' => 'OP-' . strtoupper(substr($oportunity->name, 0, 3)) . '-' . str_pad($oportunity->id, 3, '0', STR_PAD_LEFT),
+                'name' => $oportunity->name,
+                'company' => $oportunity->company,
+            ];
+        });
+
+        $users = User::where('is_active', true)->whereNot('id', 1)->where('employee_properties->department', 'Ventas')->get();
 
         return inertia('MettingMonitor/Edit', compact('metting_monitor', 'oportunities', 'companies', 'users'));
     }
