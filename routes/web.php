@@ -179,6 +179,7 @@ Route::put('sales/authorize/{sale}', [SaleController::class, 'authorizeOrder'])-
 Route::get('sales/print/{sale}', [SaleController::class, 'print'])->name('sales.print');
 Route::post('sales/update-with-media/{sale}', [SaleController::class, 'updateWithMedia'])->name('sales.update-with-media')->middleware('auth');
 Route::get('sales-get-unauthorized', [SaleController::class, 'getUnauthorized'])->name('sales.get-unauthorized');
+Route::get('sales-get-matches/{query}', [SaleController::class, 'getMatches'])->name('sales.get-matches');
 
 // ------- CRM(Companybranches sucursales Routes)  ---------
 Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');
