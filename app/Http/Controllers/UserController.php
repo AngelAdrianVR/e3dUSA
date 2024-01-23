@@ -385,7 +385,8 @@ class UserController extends Controller
         foreach ($workDaysData as &$workDay) {
             $workDay['salary'] = round($workDay['hours'] * $salaryPerHour, 2);
         }
-        $data['employee_properties']['hours_per_week'] =  $hoursPerWeek;
+        $data['employee_properties']['hours_per_week'] = $hoursPerWeek;
+        $data['employee_properties']['hours_per_week_formatted'] = intval($hoursPerWeek) . "h " . intval(($hoursPerWeek - intval($hoursPerWeek)) * 60) . "m";
         $data['employee_properties']['work_days'] = $workDaysData;
         $data['employee_properties']['birthdate'] = [
             'formatted' => Carbon::parse($data['employee_properties']['birthdate'])->isoFormat('DD MMMM'),
