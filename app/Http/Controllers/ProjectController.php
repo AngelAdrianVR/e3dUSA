@@ -23,7 +23,7 @@ class ProjectController extends Controller
     {
         $projects = ProjectResource::collection(Project::with('tasks')->whereHas('users', function ($query) {
             $query->where('users.id', auth()->id());
-        })->latest()->paginate(30));
+        })->latest()->paginate(20));
 
         return inertia('Project/Index', compact('projects'));
     }
@@ -239,5 +239,27 @@ class ProjectController extends Controller
     {
         $project->delete();
         event(new RecordDeleted($project));
+    }
+
+    public function getMatches($query)
+    {
+        if ($query != 'nullable') {
+            $projects = ProjectResource::collection(Project::with('tasks')->whereHas('users', function ($query) {
+                $query->where('users.id', auth()->id());
+            })
+                ->where('id', 'LIKE', "%$query%")
+                ->orWhere('created_at', 'LIKE', "%$query%")
+                ->orWhere('project_name', 'LIKE', "%$query%")
+                ->orWhere('start_date', 'LIKE', "%$query%")
+                ->orWhere('limit_date', 'LIKE', "%$query%")
+                ->latest()
+                ->get());
+        } else {
+            $projects = ProjectResource::collection(Project::with('tasks')->whereHas('users', function ($query) {
+                $query->where('users.id', auth()->id());
+            })->latest()->paginate(20));
+        }
+
+        return response()->json(['items' => $projects]);
     }
 }

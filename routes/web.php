@@ -203,6 +203,7 @@ Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseControlle
 Route::resource('projects', ProjectController::class)->middleware('auth');
 Route::get('projects-dashboard', [ProjectController::class, 'dashboard'])->middleware('auth')->name('projects.dashboard');
 Route::post('projects/update-with-media/{project}', [ProjectController::class, 'updateWithMedia'])->name('projects.update-with-media')->middleware('auth');
+Route::get('projects-get-matches/{query}', [ProjectController::class, 'getMatches'])->name('projects.get-matches');
 
 
 //-------------------------- Tasks routes -------------------------

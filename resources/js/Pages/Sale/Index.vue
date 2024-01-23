@@ -162,7 +162,6 @@ export default {
                         this.sales.data = response.data.items;
                     }
                 }
-
             } catch (error) {
                 console.log(error);
             } finally {

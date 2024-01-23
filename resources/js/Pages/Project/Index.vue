@@ -1,4 +1,10 @@
 <template>
+  <div v-if="loading" class="absolute z-30 left-0 top-0 inset-0 bg-black opacity-50 flex items-center justify-center">
+  </div>
+  <div v-if="loading"
+    class="absolute z-40 top-1/2 left-[35%] lg:left-1/2 w-32 h-32 rounded-lg bg-white flex items-center justify-center">
+    <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
+  </div>
   <AppLayoutNoHeader title="Gestor de proyectos">
     <div class="flex justify-between text-lg mx-14 mt-11">
       <span>Proyectos</span>
@@ -6,7 +12,7 @@
 
     <div class="flex justify-between mt-5 mx-1 lg:mx-14">
       <div class="w-1/3 relative ">
-        <input @keyup.enter="handleSearch" v-model="inputSearch" class="input outline-none pr-8"
+        <input @keyup.enter="fetchMatches" v-model="search" class="input outline-none pr-8"
           placeholder="Buscar proyecto" />
         <i class="fa-solid fa-magnifying-glass absolute top-2 right-4 text-xs text-[#9A9A9A]"></i>
       </div>
@@ -16,7 +22,10 @@
     </div>
 
     <NotificationCenter module="projects" />
-    <div class="lg:px-14 pb-7 pt-14 text-sm overflow-x-scroll">
+    <div v-if="!search" class="overflow-auto mx-1 lg:mx-14">
+      <Pagination :pagination="projects" class="mt-6 py-2" />
+    </div>
+    <div class="lg:px-14 pb-7 pt-10 text-sm overflow-x-scroll">
       <table v-if="projects.data.length > 0" class="w-full mx-auto">
         <thead>
           <tr class="text-left">
@@ -30,7 +39,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="project in filteredTableData" :key="project.id" class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]"
+          <tr v-for="project in projects.data" :key="project.id" class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]"
             @click="$inertia.get(route('projects.show', project.id))">
             <td :title="project.project_name" class="text-left py-2 px-2 rounded-l-full max-w-[230px] truncate">
               {{ project.project_name }}
@@ -76,10 +85,6 @@
         </tbody>
       </table>
       <p v-else class="text-xs text-center text-gray-600">No hay proyectos para mostrar</p>
-      <!-- --- pagination --- -->
-      <div class="mt-4">
-        <Pagination :pagination="projects" />
-      </div>
     </div>
 
   </AppLayoutNoHeader>
@@ -96,7 +101,8 @@ export default {
   data() {
     return {
       search: '',
-      inputSearch: '',
+      loading: false,
+      // inputSearch: '',
     }
   },
   components: {
@@ -110,6 +116,25 @@ export default {
     projects: Object
   },
   methods: {
+    async fetchMatches() {
+      this.loading = true;
+      try {
+        if (!this.search) {
+          this.$inertia.get(route('projects.index'));
+        } else {
+          const response = await axios.get(route('projects.get-matches', { query: this.search }));
+
+          if (response.status === 200) {
+            this.projects.data = response.data.items;
+          }
+        }
+
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.loading = false;
+      }
+    },
     deleteProject(project) {
       this.$inertia.delete(route('projects.destroy', project));
       this.$notify({
