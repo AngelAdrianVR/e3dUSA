@@ -211,5 +211,7 @@ return [
         'operator_id' => 'operador',
         'supplier_id' => 'proveedor',
         'bank_information' => 'información bancaria',
+        'sent_at' => 'fecha de enviado',
+        'devolution_date' => 'fecha de devolución',
     ],
 ];

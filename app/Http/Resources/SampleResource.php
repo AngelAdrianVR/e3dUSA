@@ -42,6 +42,8 @@ class SampleResource extends JsonResource
             'id' => $this->id,
             'folio' => 'MUE-' . str_pad($this->id, 4, "0", STR_PAD_LEFT),
             'name' => $this->name,
+            'will_back' => $this->will_back,
+            'devolution_date' => $this->devolution_date?->isoFormat('DD MMM, YYYY'),
             'quantity' => $this->quantity,
             'sent_at' => $this->sent_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'returned_at' => $this->returned_at?->isoFormat('DD MMM, YYYY h:mm A'),

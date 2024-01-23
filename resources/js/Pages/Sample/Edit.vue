@@ -57,16 +57,36 @@
             <InputError :message="form.errors.contact_id" />
             </div>
             <div class="flex items-center">
-            <el-tooltip content="Fecha de envío de muestra *" placement="top">
-              <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                <i class="fa-solid fa-calendar"></i>
-              </span>
-            </el-tooltip>
-            <el-date-picker v-model="form.sent_at" type="date" placeholder="Fecha de envío de muestra * "
-              format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
-            <InputError :message="form.errors.sent_at" />
-          </div>
+              <div class="flex items-center">
+                <el-tooltip content="Fecha de envío de muestra *" placement="top">
+                  <span
+                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                    <i class="fa-solid fa-calendar"></i>
+                  </span>
+                </el-tooltip>
+                <el-date-picker v-model="form.sent_at" type="date" placeholder="Fecha de envío de muestra * "
+                  format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDateAfter" />
+                <InputError :message="form.errors.sent_at" />
+              </div>
+              <label v-if="form.catalog_product_id" class="flex items-center ml-3">
+                <Checkbox class="bg-transparent" v-model:checked="form.will_back" />
+                <span
+                  class="ml-2 text-xs">
+                  La muestra volverá
+                </span>
+              </label>
+            </div>
+            <div v-if="form.will_back" class="flex items-center">
+                <el-tooltip content="Fecha tentativa de devolución *" placement="top">
+                  <span
+                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                    <i class="fa-solid fa-calendar"></i>
+                  </span>
+                </el-tooltip>
+                <el-date-picker v-model="form.devolution_date" type="date" placeholder="Fecha tentativa de devolución * "
+                  format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDateBefore" />
+                <InputError :message="form.errors.devolution_date" />
+              </div>
           <div class="md:grid md:grid-cols-2 gap-2">
           <div>
             <IconInput v-model="form.name" inputPlaceholder="Nombre de la muestra *" inputType="text">
@@ -151,6 +171,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
+import Checkbox from "@/Components/Checkbox.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 
@@ -166,6 +187,8 @@ export default {
       comments: this.sample.comments,
       products: this.sample.products,
       media: null,
+      will_back: !! this.sample.will_back,
+      devolution_date: this.sample.devolution_date,
     });
 
     return {
@@ -180,6 +203,7 @@ export default {
     PrimaryButton,
     InputError,
     IconInput,
+    Checkbox,
     Back,
     Link
   },
@@ -213,10 +237,15 @@ export default {
         });
       }
     },
-    disabledDate(time) {
+    disabledDateAfter(time) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       return time.getTime() > today.getTime();
+    },
+    disabledDateBefore(time) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return time.getTime() < today.getTime();
     },
     selectCurrentCompanyBranch(){
       this.currentCompanyBranch = this.company_branches.find(item => item.id == this.form.company_branch_id);
