@@ -43,13 +43,15 @@ class CatalogProductController extends Controller
 
     public function create()
     {
-        $raw_materials = RawMaterial::all();
+        $raw_materials = RawMaterial::all(['id', 'name']);
         $production_costs = ProductionCost::all();
 
         // consecutive
         $last = CatalogProduct::latest()->first();
         $next_id = $last ? $last->id + 1 : 1;
         $consecutive = str_pad($next_id, 4, "0", STR_PAD_LEFT);
+
+        // return $raw_materials;
 
         return inertia('CatalogProduct/Create', compact('raw_materials', 'production_costs', 'consecutive'));
     }
