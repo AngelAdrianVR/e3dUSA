@@ -10,9 +10,9 @@
 
     <div class="flex justify-between mt-5 mx-2 lg:mx-14">
       <div class="md:w-1/3 mr-2">
-        <el-select v-model="selectedProject" clearable filterable placeholder="Buscar proyecto"
+        <el-select @change="$inertia.get(route('projects.show', selectedProject))" v-model="selectedProject" clearable filterable placeholder="Buscar proyecto"
           no-data-text="No hay proyectos registrados" no-match-text="No se encontraron coincidencias">
-          <el-option v-for="item in projects.data" :key="item.id" :label="item.project_name" :value="item.id" />
+          <el-option v-for="item in projects" :key="item.id" :label="item.project_name" :value="item.id" />
         </el-select>
       </div>
       <div v-if="tabs == 1" class="flex space-x-2 w-full justify-end">
@@ -295,14 +295,14 @@ export default {
     AppLayoutNoHeader,
     PrimaryButton,
     ProjectTaskCard,
-    Link,
     Dropdown,
     DropdownLink,
-    Modal,
     Checkbox,
     draggable,
     GanttDiagramMonth,
     GanttDiagramBimester,
+    Modal,
+    Link,
     Tag,
   },
   props: {
@@ -418,24 +418,32 @@ export default {
 
     },
   },
-  watch: {
-    selectedProject(newVal) {
-      this.currentProject = this.projects.data.find((item) => item.id == newVal);
-      this.uniqueUsers = [];
-      this.updateTasksLists();
+  // watch: {
+  //   selectedProject(newVal) {
+  //     this.currentProject = this.projects.find((item) => item.id == newVal);
+  //     this.uniqueUsers = [];
+  //     this.updateTasksLists();
 
-      // Verificar si hay tareas en el proyecto y si la primera tarea tiene una fecha de inicio
-      if (this.currentProject && this.currentProject.tasks.length > 0) {
+  //     // Verificar si hay tareas en el proyecto y si la primera tarea tiene una fecha de inicio
+    //   if (this.currentProject && this.currentProject.tasks.length > 0) {
+    //     const firstTask = this.currentProject.tasks[0];
+    //     if (firstTask && firstTask.start_date) {
+    //       this.currentDate = new Date(firstTask.start_date_raw);
+    //     }
+    //   }
+    // },
+  // },
+  mounted() {
+    this.selectedProject = this.project.data.id;
+    this.currentProject = this.project.data;
+    this.uniqueUsers = [];
+    this.updateTasksLists();
+    if (this.currentProject && this.currentProject.tasks.length > 0) {
         const firstTask = this.currentProject.tasks[0];
         if (firstTask && firstTask.start_date) {
           this.currentDate = new Date(firstTask.start_date_raw);
         }
       }
-    },
-  },
-  mounted() {
-    this.selectedProject = this.project.data.id;
-    this.currentProject = this.projects.data.find((item) => item.id == this.selectedProject);
     if (this.defaultTab != null) {
       this.tabs = parseInt(this.defaultTab);
     }

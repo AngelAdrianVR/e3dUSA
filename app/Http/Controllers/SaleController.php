@@ -10,6 +10,7 @@ use App\Models\CatalogProductCompanySale;
 use App\Models\CompanyBranch;
 use App\Models\Oportunity;
 use App\Models\Sale;
+use App\Models\Sample;
 use App\Models\StockMovementHistory;
 use App\Models\Storage;
 use App\Models\User;
@@ -31,6 +32,7 @@ class SaleController extends Controller
     public function create()
     {
         $opportunityId = Oportunity::find(request('opportunityId'));
+        $sample = Sample::find(request('sampleId'));
 
         //optimizacion de datos en vista para reducir el tiempo de carga
         $pre_company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
@@ -79,7 +81,7 @@ class SaleController extends Controller
         });
 
         // return $company_branches;
-        return inertia('Sale/Create', compact('company_branches', 'opportunityId'));
+        return inertia('Sale/Create', compact('company_branches', 'opportunityId', 'sample'));
     }
 
     public function store(Request $request)

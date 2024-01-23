@@ -399,6 +399,7 @@ export default {
     props: {
         company_branches: Array,
         opportunityId: Number,
+        sample: Object,
     },
     methods: {
         async fetchCatalogProductData() {
@@ -536,6 +537,9 @@ export default {
         if (this.opportunityId) {
             this.form.company_branch_id = parseInt(this.opportunityId.company_branch_id);
             this.form.oportunity_id = parseInt(this.opportunityId);
+        }
+        if (this.sample) {
+            this.form.company_branch_id = parseInt(this.sample.company_branch_id);
         }
     }
 };

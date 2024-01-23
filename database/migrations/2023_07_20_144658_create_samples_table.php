@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->unsignedFloat('quantity');
+            $table->boolean('will_back')->default(false);
+            $table->date('devolution_date')->nullable();
             $table->timestamp('sent_at')->nullable();
             $table->timestamp('returned_at')->nullable();
             $table->timestamp('sale_order_at')->nullable();

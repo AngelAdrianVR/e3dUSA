@@ -11,7 +11,7 @@
                 <p>Precio unitario:</p>
                 <p v-if="product.quantity">Cantidad comprada:</p>
                 <p v-if="product.quantity">Costo total de compra</p>
-                <p>Notas adicionales:</p>
+                <p>Notas del producto:</p>
             </div>
             <div class="text-sm space-y-2">
                 <p>{{ product.name }}</p>

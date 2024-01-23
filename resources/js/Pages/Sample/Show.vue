@@ -13,6 +13,7 @@
       <div class="flex justify-between mt-5 mx-14">
         <div class="md:w-1/3 mr-2">
           <el-select
+            @change="this.$inertia.get(route('samples.show', selectedSample));"
             v-model="selectedSample"
             clearable
             filterable
@@ -21,7 +22,7 @@
             no-match-text="No se encontraron coincidencias"
           >
             <el-option
-              v-for="item in samples.data"
+              v-for="item in samples"
               :key="item.id"
               :label="item.name"
               :value="item.id"
@@ -51,10 +52,11 @@
             placement="top"
           >
             <button
+              v-if="currentSample?.will_back"
               @click="returnedSampleModal = true"
               class="rounded-lg bg-primary text-white p-2 text-sm"
             >
-              Muestra devuelta
+              Marcar como devuelta
             </button>
           </el-tooltip>
 
@@ -63,7 +65,7 @@
               $page.props.auth.user.permissions.includes(
                 'Generar orden de venta en muestra'
               ) &&
-              currentSample?.returned_at &&
+              (currentSample?.returned_at || !currentSample?.will_back) &&
               !currentSample?.sale_order_at
             "
             content="Generar orden de venta para marcar como venta cerrada"
@@ -181,31 +183,42 @@
           >
             <div class="mt-8 ml-6 text-sm">
               <p
+                class="text-secondary text-center text-xs mb-2"
+              >
+                {{ !currentSample?.will_back && !currentSample?.sale_order_at ? 'Esperando rebibir retroalimentación del cliente' 
+                   : currentSample?.will_back && !currentSample?.returned_at ? 'Esperando devolución de muestra'
+                   : currentSample?.will_back && currentSample?.returned_at && !currentSample?.sale_order_at ? 'Muestra devuelta. Sí cerraste la venta crea la orden para finalizar el seguimiento'
+                   : ''
+                }}
+              </p>
+              <p
                 v-if="
                   currentSample?.status['label'] ==
                   'Orden generada. Venta exitosa'
+                  || currentSample?.sale_order_at
                 "
-                class="text-secondary text-center text-xs mb-1"
+                class="text-secondary text-center text-xs mb-2"
               >
                 ¡Venta cerrada!
               </p>
-              <div class="mb-5 border-2 border-[#b3b3b3] rounded-full">
+              <div class="mb-5 border border-gray1 rounded-full">
                 <div
                   v-if="
                     currentSample?.status['label'] ==
-                    'Enviado. Esperando respuesta'
+                    'Enviado. Esperando respuesta' && currentSample?.will_back
                   "
-                  class="h-[10px] bg-primary rounded-full w-1/3"
+                  class="h-[12px] bg-primary rounded-full w-1/3"
                 ></div>
                 <div
                   v-else-if="
-                    currentSample?.status['label'] == 'Muestra devuelta'
+                    (currentSample?.status['label'] == 'Muestra devuelta'
+                    || !currentSample?.will_back) && !currentSample?.sale_order_at
                   "
-                  class="h-[10px] bg-primary rounded-full w-2/3"
+                  class="h-[12px] bg-secondary rounded-full w-2/3"
                 ></div>
                 <div
-                  v-else
-                  class="h-[10px] bg-green-600 rounded-full w-full"
+                   v-else
+                  class="h-[12px] bg-green-500 rounded-full w-full"
                 ></div>
               </div>
             </div>
@@ -265,12 +278,16 @@
               <p class="w-1/3 text-[#9A9A9A]">Cantidad de muestras enviada</p>
               <p>
                 {{ currentSample?.quantity }}
-                {{ currentSample?.catalog_product?.measure_unit }}
+                {{ currentSample?.catalog_product?.measure_unit ?? 'Unidades' }}
               </p>
+            </div>
+            <div v-if="currentSample?.devolution_date" class="flex mb-2 space-x-2">
+              <p class="w-1/3 text-[#9A9A9A]">Fecha esperada de devolución</p>
+              <p class="bg-red-200 px-3">{{ currentSample?.devolution_date }}</p>
             </div>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Devuelta el</p>
-              <p>{{ currentSample?.returned_at ?? "--" }}</p>
+              <p :class="currentSample?.returned_at ? 'bg-green-200 px-3' : ''">{{ currentSample?.returned_at ?? "--" }}</p>
             </div>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Orden generada el</p>
@@ -287,8 +304,8 @@
               </p>
             </div>
             <div class="flex mb-2 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">Comentarios/notas</p>
-              <p>
+              <p class="w-1/3 text-[#9A9A9A]">Comentarios/notas de seguimiento</p>
+              <p class="bg-green-200 px-2">
                 {{ currentSample?.comments ?? "--" }}
               </p>
             </div>
@@ -309,51 +326,54 @@
 
           <!-- -------------------------- INFORMACION DE PRODUCTO (2)---------------------------- -->
           <div v-if="tabs == 2" class="px-7 py-7 text-sm">
-            <div class="flex mb-2 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">ID del producto</p>
-              <p>{{ currentSample?.catalog_product?.id }}</p>
+            <div v-if="currentSample?.catalog_product?.id">
+              <div class="flex mb-2 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">ID del producto</p>
+                <p>{{ currentSample?.catalog_product?.id }}</p>
+              </div>
+              <div class="flex mb-6 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">Características</p>
+                <p>
+                  {{
+                    currentSample?.catalog_product?.features?.raw ??
+                    "--"
+                  }}
+                </p>
+              </div>
+              <div class="flex mb-2 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">Número parte</p>
+                <p>{{ currentSample?.catalog_product?.part_number }}</p>
+              </div>
+              <div class="flex mb-6 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">Unidad de medida</p>
+                <p>{{ currentSample?.catalog_product?.measure_unit }}</p>
+              </div>
+              <div class="flex mb-6 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">Costo de producción</p>
+                <p class="text-[#4FC03D]">
+                  {{ currentSample?.catalog_product?.cost.number_format }}
+                </p>
+              </div>
+              <div class="flex mb-2 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">
+                  Cantidad miníma permitida en almacén
+                </p>
+                <p>
+                  {{ currentSample?.catalog_product?.min_quantity }}
+                  {{ currentSample?.catalog_product?.measure_unit }}
+                </p>
+              </div>
+              <div class="flex space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">
+                  Cantidad máxima permitida en almacén
+                </p>
+                <p>
+                  {{ currentSample?.catalog_product?.max_quantity }}
+                  {{ currentSample?.catalog_product?.measure_unit }}
+                </p>
+              </div>
             </div>
-            <div class="flex mb-6 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">Características</p>
-              <p>
-                {{
-                  currentSample?.catalog_product?.features?.raw?.join(", ") ??
-                  "--"
-                }}
-              </p>
-            </div>
-            <div class="flex mb-2 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">Número parte</p>
-              <p>{{ currentSample?.catalog_product?.part_number }}</p>
-            </div>
-            <div class="flex mb-6 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">Unidad de medida</p>
-              <p>{{ currentSample?.catalog_product?.measure_unit }}</p>
-            </div>
-            <div class="flex mb-6 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">Costo de producción</p>
-              <p class="text-[#4FC03D]">
-                {{ currentSample?.catalog_product?.cost.number_format }}
-              </p>
-            </div>
-            <div class="flex mb-2 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">
-                Cantidad miníma permitida en almacén
-              </p>
-              <p>
-                {{ currentSample?.catalog_product?.min_quantity }}
-                {{ currentSample?.catalog_product?.measure_unit }}
-              </p>
-            </div>
-            <div class="flex space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">
-                Cantidad máxima permitida en almacén
-              </p>
-              <p>
-                {{ currentSample?.catalog_product?.max_quantity }}
-                {{ currentSample?.catalog_product?.measure_unit }}
-              </p>
-            </div>
+            <p class="text-center text-sm text-gray-500" v-else> El producto de muestra no está registrado en catálogo de productos</p>
           </div>
 
           <!-- ------------------------CLIENTE (3)-------------------------->
@@ -514,7 +534,7 @@ export default {
       imageHovered: false,
       showConfirmModal: false,
       returnedSampleModal: false,
-      helpDialog: false,
+      helpDialog: true,
       tabs: 1,
     };
   },
@@ -522,12 +542,12 @@ export default {
     AppLayoutNoHeader,
     PrimaryButton,
     CancelButton,
-    Link,
     DropdownLink,
     Dropdown,
     ConfirmationModal,
-    Modal,
     InputError,
+    Modal,
+    Link,
   },
   props: {
     catalog_product: Object,
@@ -560,8 +580,9 @@ export default {
       });
     },
     saleOrder() {
-      this.$inertia.put(route('samples.sale-order', this.selectedSample));
-      this.$inertia.visit('/sales/create', { method: 'get' });
+      this.$inertia.put(route('samples.sale-order', this.sample.data.id));
+      this.$inertia.get(route('sales.create'), { sampleId: this.sample.data.id }); // manda el id al metodo de crear orden de venta
+      // this.$inertia.visit('/sales/create', { method: 'get' });
     },
 
     async deleteItem() {
@@ -603,13 +624,14 @@ export default {
       }
     },
   },
-  watch: {
-    selectedSample(newVal) {
-      this.currentSample = this.samples.data.find((item) => item.id == newVal);
-    },
-  },
+  // watch: {
+  //   selectedSample() {
+  //     this.$inertia.get(route('samples.show', this.selectedSample));
+  //   },
+  // },
   mounted() {
-    this.selectedSample = this.sample.id;
+    this.selectedSample = this.sample.data.id;
+    this.currentSample = this.sample.data;
   },
 };
 </script>

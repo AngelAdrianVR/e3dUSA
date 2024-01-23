@@ -27,7 +27,7 @@
                     <!-- pagination -->
                     <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                            :total="samples.data.length" />
+                            :total="samples.length" />
                     </div>
                     <!-- buttons -->
                     <div>
@@ -123,11 +123,11 @@ export default {
         },
         tableRowClassName({ row, rowIndex }) {
 
-            if (row.status['label'] == 'Enviado. Esperando respuesta') {
+            if (row.status['label'] == 'Enviado. Esperando respuesta' && row.will_back) {
                  return 'cursor-pointer text-amber-500';
-            }else if(row.status['label'] == 'Muestra devuelta'){
+            }else if(row.status['label'] == 'Muestra devuelta' || !row.will_back && !row.sale_order_at){
                 return 'cursor-pointer text-blue-500';
-            }else{
+            }else if (row.sale_order_at) {
                 return 'cursor-pointer text-green-500';
             }
 
@@ -174,7 +174,7 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.samples.data.forEach((sample, index) => {
+                    this.samples.forEach((sample, index) => {
                         if (this.$refs.multipleTableRef.value.includes(sample)) {
                             deletedIndexes.push(index);
                         }
@@ -185,7 +185,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.samples.data.splice(index, 1);
+                        this.samples.splice(index, 1);
                     }
 
                 } else {
@@ -214,7 +214,7 @@ export default {
     },
     computed: {
         filteredTableData() {
-            return this.samples.data.filter(
+            return this.samples.filter(
                 (sample) =>
                     !this.search ||
                     sample.name.toLowerCase().includes(this.search.toLowerCase()) ||
