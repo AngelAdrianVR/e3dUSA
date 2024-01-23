@@ -102,7 +102,10 @@ class ProjectController extends Controller
     public function show($project_id)
     {
         $project = ProjectResource::make(Project::with(['tasks' => ['participants', 'project', 'user'], 'owner', 'user', 'tags'])->find($project_id));
-        $projects = ProjectResource::collection(Project::with(['tasks' => ['participants', 'project', 'user', 'comments.user', 'media'], 'user', 'users', 'company', 'owner', 'tags'])->latest()->get());
+        $projects = ProjectResource::collection(Project::with(['tasks' => ['participants', 'project', 'user', 'comments.user', 'media'], 'user', 'users', 'company', 'owner', 'tags'])
+            ->whereHas('users', function ($query) {
+                $query->where('users.id', auth()->id());
+            })->latest()->get());
         $users = User::all();
 
         $defaultTab = request('defaultTab');
