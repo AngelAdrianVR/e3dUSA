@@ -179,6 +179,7 @@ Route::put('sales/authorize/{sale}', [SaleController::class, 'authorizeOrder'])-
 Route::get('sales/print/{sale}', [SaleController::class, 'print'])->name('sales.print');
 Route::post('sales/update-with-media/{sale}', [SaleController::class, 'updateWithMedia'])->name('sales.update-with-media')->middleware('auth');
 Route::get('sales-get-unauthorized', [SaleController::class, 'getUnauthorized'])->name('sales.get-unauthorized');
+Route::get('sales-get-matches/{query}', [SaleController::class, 'getMatches'])->name('sales.get-matches');
 
 // ------- CRM(Companybranches sucursales Routes)  ---------
 Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');
@@ -202,6 +203,7 @@ Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseControlle
 Route::resource('projects', ProjectController::class)->middleware('auth');
 Route::get('projects-dashboard', [ProjectController::class, 'dashboard'])->middleware('auth')->name('projects.dashboard');
 Route::post('projects/update-with-media/{project}', [ProjectController::class, 'updateWithMedia'])->name('projects.update-with-media')->middleware('auth');
+Route::get('projects-get-matches/{query}', [ProjectController::class, 'getMatches'])->name('projects.get-matches');
 
 
 //-------------------------- Tasks routes -------------------------

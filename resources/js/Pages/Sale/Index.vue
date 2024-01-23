@@ -1,5 +1,11 @@
 <template>
     <div>
+        <div v-if="loading" class="absolute z-30 left-0 top-0 inset-0 bg-black opacity-50 flex items-center justify-center">
+        </div>
+        <div v-if="loading"
+            class="absolute z-40 top-1/2 left-[35%] lg:left-1/2 w-32 h-32 rounded-lg bg-white flex items-center justify-center">
+            <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
+        </div>
         <AppLayout title="Órdenes de venta">
             <template #header>
                 <div class="flex justify-between">
@@ -23,14 +29,14 @@
             <div class="relative overflow-hidden">
                 <NotificationCenter module="sales" />
                 <!-- tabla -->
-                <div class="lg:w-5/6 mx-auto mt-6">
-                    <div class="flex justify-between">
+                <div class="w-11/12 lg:w-5/6 mx-auto mt-6">
+                    <div class="lg:flex justify-between items-center">
                         <!-- pagination -->
-                        <div>
-                            <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                                :total="sales.length" />
+                        <div v-if="!search" class="overflow-auto mb-2">
+                            <!-- <el-pagination @current-change="handlePagination" layout="prev, pager, next"
+                                :total="sales_count" /> -->
+                            <Pagination :pagination="sales" class="py-2" />
                         </div>
-
                         <!-- buttons -->
                         <div>
                             <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar ordenes de venta')"
@@ -42,8 +48,15 @@
                                 </template>
                             </el-popconfirm>
                         </div>
+                        <div class="flex space-x-2 items-center mb-3">
+                            <TextInput v-model="search" type="search" @keyup.enter="fetchMatches"
+                                class="w-full text-gray-600 h-8" placeholder="Buscar" />
+                            <PrimaryButton @click="fetchMatches" type="primary">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </PrimaryButton>
+                        </div>
                     </div>
-                    <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
+                    <el-table :data="sales.data" @row-click="handleRowClick" max-height="670" style="width: 100%"
                         @selection-change="handleSelectionChange" ref="multipleTableRef"
                         :row-class-name="tableRowClassName">
                         <el-table-column type="selection" width="45" />
@@ -54,15 +67,15 @@
                         <el-table-column prop="authorized_user_name" label="Autorizado por" />
                         <el-table-column prop="status['label']" label="Estatus" />
                         <el-table-column prop="promise_date" label="Fecha de entrega" />
-                        <el-table-column align="right" fixed="right" width="190">
-                            <template #header>
+                        <el-table-column align="right" fixed="right" width="40">
+                            <!-- <template #header>
                                 <div class="flex space-x-2">
-                                    <TextInput v-model="inputSearch" type="search" @keyup.enter="handleSearch"
+                                    <TextInput v-model="search" type="search" @keyup.enter="fetchMatches"
                                         class="w-full text-gray-600" placeholder="Buscar" />
-                                    <el-button @click="handleSearch" type="primary" plain class="mb-3"><i
+                                    <el-button @click="fetchMatches" type="primary" plain class="mb-3"><i
                                             class="fa-solid fa-magnifying-glass"></i></el-button>
                                 </div>
-                            </template>
+                            </template> -->
                             <template #default="scope">
                                 <el-dropdown trigger="click" @command="handleCommand">
                                     <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
@@ -93,7 +106,6 @@
                 </div>
             </div>
             <!-- tabla -->
-
         </AppLayout>
     </div>
 </template>
@@ -101,9 +113,11 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import TextInput from '@/Components/TextInput.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { Link } from "@inertiajs/vue3";
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
+import Pagination from "@/Components/MyComponents/Pagination.vue";
 import axios from 'axios';
 
 
@@ -111,21 +125,24 @@ export default {
     data() {
         return {
             disableMassiveActions: true,
-            inputSearch: '',
+            // inputSearch: '',
             search: '',
+            loading: false,
             // pagination
-            itemsPerPage: 10,
-            start: 0,
-            end: 10,
+            // itemsPerPage: 10,
+            // start: 0,
+            // end: 10,
         };
 
     },
     components: {
         AppLayout,
         SecondaryButton,
+        PrimaryButton,
         Link,
         TextInput,
         NotificationCenter,
+        Pagination,
     },
     props: {
         sales: Object,
@@ -133,8 +150,23 @@ export default {
     },
 
     methods: {
-        handleSearch() {
-            this.search = this.inputSearch;
+        async fetchMatches() {
+            this.loading = true;
+            try {
+                if (!this.search) {
+                    this.$inertia.get(route('sales.index'));
+                } else {
+                    const response = await axios.get(route('sales.get-matches', { query: this.search }));
+
+                    if (response.status === 200) {
+                        this.sales.data = response.data.items;
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                this.loading = false;
+            }
         },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
@@ -146,19 +178,13 @@ export default {
             }
         },
         async deleteSelections() {
-
             if (!this.$refs.multipleTableRef.value.length) {
                 this.disableMassiveActions = true;
             } else {
                 this.disableMassiveActions = false;
             }
         },
-        handlePagination(val) {
-            this.start = (val - 1) * this.itemsPerPage;
-            this.end = val * this.itemsPerPage;
-        },
         async deleteSelections() {
-
             try {
                 const response = await axios.post(route('sales.massive-delete', {
                     sales: this.$refs.multipleTableRef.value
@@ -173,7 +199,7 @@ export default {
 
                     // update list of sales
                     let deletedIndexes = [];
-                    this.sales.forEach((sale, index) => {
+                    this.sales.data.forEach((sale, index) => {
                         if (this.$refs.multipleTableRef.value.includes(sale)) {
                             deletedIndexes.push(index);
                         }
@@ -184,7 +210,7 @@ export default {
 
                     // Eliminar OV por índice
                     for (const index of deletedIndexes) {
-                        this.sales.splice(index, 1);
+                        this.sales.data.splice(index, 1);
                     }
 
                 } else {
@@ -233,7 +259,7 @@ export default {
                         type: 'success'
                     });
 
-                    this.sales.unshift(response.data.newItem);
+                    this.sales.data.unshift(response.data.newItem);
 
                 } else {
                     this.$notify({
@@ -268,9 +294,9 @@ export default {
     computed: {
         filteredTableData() {
             if (!this.search) {
-                return this.sales.filter((item, index) => index >= this.start && index < this.end);
+                return this.sales.data.filter((item, index) => index >= this.start && index < this.end);
             } else {
-                return this.sales.filter(
+                return this.sales.data.filter(
                     (sale) =>
                         sale.folio.toLowerCase().includes(this.search.toLowerCase()) ||
                         sale.user.name.toLowerCase().includes(this.search.toLowerCase()) ||

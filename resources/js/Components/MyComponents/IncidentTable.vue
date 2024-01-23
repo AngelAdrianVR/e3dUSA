@@ -24,7 +24,7 @@
               <th>Día</th>
               <th>Entrada</th>
               <th>Salida</th>
-              <th>Hrs pausadas</th>
+              <th>Tiempo a reponer</th>
               <th>Total</th>
               <th></th>
             </tr>

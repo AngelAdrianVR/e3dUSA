@@ -86,7 +86,8 @@ class PayrollUser extends Pivot
                 $workedTime = $this->calculateWorkedTime();
 
                 $breakTime = $this->calculateTotalBreakTime();
-                $workedTime -= $this->getTotalBreakWithoutFixedBreakMinutes($breakTime);
+                $workedTime -= $breakTime;
+                // $workedTime -= $this->getTotalBreakWithoutFixedBreakMinutes($breakTime);
 
                 // Dia marcado como descanso lo esta trabajando
                 if ($this->user->employee_properties['work_days'][$this->date->dayOfWeek]['hours'] == 0) {
@@ -165,7 +166,7 @@ class PayrollUser extends Pivot
             $breakTime = $this->calculateTotalBreakTime();
 
             // subtract break and 8 hrs
-            $time -= ($this->getTotalBreakWithoutFixedBreakMinutes($breakTime) + 60 * 8);
+            $time -= ($this->$breakTime + 60 * 8);
             if ($time < 0) {
                 $time = 0;
             }
