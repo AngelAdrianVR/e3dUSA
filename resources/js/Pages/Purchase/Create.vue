@@ -34,7 +34,7 @@
               <el-option
                 v-for="item in suppliers"
                 :key="item.id"
-                :label="item.name"
+                :label="item.nickname ? item.nickname + ' - ' + item.name : item.name"
                 :value="item.id"
               />
             </el-select>

@@ -23,7 +23,9 @@ class ProjectController extends Controller
     {
         $projects = ProjectResource::collection(Project::with('tasks')->whereHas('users', function ($query) {
             $query->where('users.id', auth()->id());
-        })->latest()->paginate(20));
+        })->latest()->paginate(20, ['id', 'project_name', 'start_date', 'limit_date', 'finished_at']));
+
+        // return $projects;
 
         return inertia('Project/Index', compact('projects'));
     }
@@ -35,10 +37,12 @@ class ProjectController extends Controller
 
     public function create()
     {
-        $companies = Company::with('companyBranches.sales')->latest()->get();
+        $companies = Company::with(['companyBranches.sales'])->latest()->get(['id', 'business_name']);
         $tags = TagResource::collection(Tag::where('type', 'projects')->get());
         $project_groups = ProjectGroupResource::collection(ProjectGroup::all());
-        $users = User::where('is_active', true)->whereNot('id', 1)->get();
+        $users = User::where('is_active', true)->whereNot('id', 1)->get(['id', 'name']);
+
+        // return $companies;
 
         return inertia('Project/Create', compact('companies', 'users', 'tags', 'project_groups'));
     }
@@ -101,9 +105,9 @@ class ProjectController extends Controller
 
     public function show($project_id)
     {
-        $project = ProjectResource::make(Project::with(['tasks' => ['participants', 'project', 'user'], 'owner', 'user', 'tags'])->find($project_id));
-        $projects = ProjectResource::collection(Project::with(['tasks' => ['participants', 'project', 'user', 'comments.user', 'media'], 'user', 'users', 'company', 'owner', 'tags'])->latest()->get());
-        $users = User::all();
+        $project = ProjectResource::make(Project::with(['tasks' => ['participants', 'project', 'user', 'comments.user', 'media'], 'user', 'users', 'company', 'owner', 'tags'])->find($project_id));
+        $projects = Project::latest()->get(['id', 'project_name']);
+        $users = User::where('is_active', true)->whereNot('id', 1)->get(['id', 'name']);
 
         $defaultTab = request('defaultTab');
 
@@ -114,10 +118,10 @@ class ProjectController extends Controller
     public function edit($project_id)
     {
         $project = ProjectResource::make(Project::with(['tags', 'company', 'owner', 'users'])->find($project_id));
-        $companies = Company::with('companyBranches.sales')->latest()->get();
+        $companies = Company::with(['companyBranches.sales'])->latest()->get(['id', 'business_name']);
         $tags = TagResource::collection(Tag::where('type', 'projects')->get());
         $project_groups = ProjectGroupResource::collection(ProjectGroup::all());
-        $users = User::where('is_active', true)->whereNot('id', 1)->get();
+        $users = User::where('is_active', true)->whereNot('id', 1)->get(['id', 'name']);
         $media = $project->getMedia()->all();
 
         // return $project;
