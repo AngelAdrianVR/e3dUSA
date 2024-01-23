@@ -378,6 +378,9 @@ class SaleController extends Controller
             ->orWhereHas('user', function ($user) use ($query){
                 $user->where('name', 'LIKE', "%$query%");
             })
+            ->orWhereHas('companyBranch', function ($user) use ($query){
+                $user->where('name', 'LIKE', "%$query%");
+            })
             ->get());
         } else {
             $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->latest()->paginate(20));
