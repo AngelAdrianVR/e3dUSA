@@ -19,6 +19,40 @@
           </div>
           <div class="flex items-center space-x-2">
 
+            <button
+              v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de compra') && purchase.data.status === 'Pendiente'"
+              @click="authorize"
+              class="rounded-lg bg-primary text-white p-2 text-sm"
+            >
+              Autorizar
+            </button>
+
+            <el-tooltip
+              content="Una vez realizada la compra marcar como compra realizada para cambiar estatus y dar seguimiento"
+              placement="top"
+            >
+            <button
+              v-if="purchase.data.status === 'Autorizado'"
+              @click="$inertia.put(route('purchases.done', purchase.data.id))"
+              class="rounded-lg bg-primary text-white p-2 text-sm"
+            >
+              Compra realizada
+            </button>
+            </el-tooltip>
+
+            <el-tooltip
+              content="Una vez realizada la compra marcar como compra realizada para cambiar estatus y dar seguimiento"
+              placement="top"
+            >
+            <button
+              v-if="purchase.data.status === 'Emitido'"
+              @click="$inertia.put(route('purchases.recieved', purchase.data.id))"
+              class="rounded-lg bg-green-500 text-white p-2 text-sm"
+            >
+              Marcar como recibido
+            </button>
+            </el-tooltip>
+
             <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar ordenes de compra') &&
                        purchase.data.user.id == $page.props.auth.user.id" content="Editar"
               placement="top">
@@ -41,13 +75,6 @@
                   v-if="$page.props.auth.user.permissions.includes('Crear ordenes de compra')">
                   Crear nueva órden
                 </DropdownLink>
-                <DropdownLink v-if="!purchase.data.emited_at"
-                  @click="$inertia.put(route('purchases.done', purchase.data.id))">
-                  Marcar como órden pedida
-                </DropdownLink>
-                <DropdownLink v-else-if="purchase.data.status == 'Pendiente'" @click="$inertia.put(route('purchases.recieved', purchase.data.id))">
-                  Marcar como órden recibida
-                </DropdownLink>
                 <DropdownLink @click="showConfirmModal = true" as="button"
                   v-if="$page.props.auth.user.permissions.includes('Eliminar ordenes de compra')">
                   Eliminar
@@ -59,7 +86,9 @@
       </div>
       <p class="text-center font-bold text-lg mb-4">
         {{ purchase.data.supplier.name }} - 
-        <span class="py-1 p-2" :class="purchase.data.status == 'Pendiente' ? 'text-amber-600 bg-amber-200' : 'text-green-600 bg-green-200'">{{
+        <span class="py-1 p-2" :class="purchase.data.status == 'Pendiente' ? 'text-red-600 bg-red-200' 
+        : purchase.data.status == 'Autorizado' ? 'text-yellow-600 bg-yellow-200' 
+        : purchase.data.status == 'Emitido' ? 'text-blue-600 bg-blue-200' : 'text-green-600 bg-green-200' ">{{
             purchase.data.status }}</span>
       </p>
 
@@ -90,9 +119,9 @@
           <span>{{ purchase.data.supplier.name }}</span>
           <span class="text-gray-500 my-2">Creado el</span>
           <span>{{ purchase.data.created_at }}</span>
-          <span class="text-gray-500 my-2">Estatus</span>
+          <!-- <span class="text-gray-500 my-2">Estatus</span>
           <span class="py-1 p-2" :class="purchase.data.status == 'Pendiente' ? 'text-amber-600 bg-amber-200' : 'text-green-600 bg-green-200'">{{
-            purchase.data.status }}</span>
+            purchase.data.status }}</span> -->
           <span class="text-gray-500 my-2">Autorizado el</span>
           <span>{{ purchase.data.authorized_at }}</span>
           <span class="text-gray-500 my-2">Autorizado por</span>
@@ -267,7 +296,38 @@ export default {
             this.loading = false;
           }
         }
-    }
+    },
+    async authorize() {
+        try {
+            const response = await axios.put(route('purchases.authorize', this.purchase.data.id));
+
+            if (response.status === 200) {
+
+              this.$notify({
+                title: 'Éxito',
+                    message: response.data.message,
+                    type: 'success'
+                });
+
+                // window.location.reload();
+                this.$inertia.get(route('purchases.index'));
+
+            } else {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: response.data.message,
+                    type: 'error'
+                });
+            }
+        } catch (err) {
+            this.$notify({
+                title: 'Algo salió mal',
+                message: err.message,
+                type: 'error'
+            });
+            console.log(err);
+        }
+    },
   },
 
   mounted() {

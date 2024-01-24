@@ -16,6 +16,13 @@
         </div>
       </template>
 
+      <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+          <p class="text-red-500"><i class="fa-solid fa-circle mr-1"></i>Sin autorización</p>
+          <p class="text-yellow-500"><i class="fa-solid fa-circle mr-1"></i>Autorizado.Compra no realizada</p>
+          <p class="text-blue-600"><i class="fa-solid fa-circle mr-1"></i>Compra realizada</p>
+          <p class="text-green-600"><i class="fa-solid fa-circle mr-1"></i>Producto recibido</p>
+      </div>
+
       <!-- tabla -->
       <div class="lg:w-5/6 mx-auto mt-6">
         <div class="flex justify-between">
@@ -68,6 +75,10 @@
                       Editar</el-dropdown-item>
                     <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear ordenes de compra')" :command="'clone-' + scope.row.id"><i class="fa-solid fa-clone"></i>
                       Clonar</el-dropdown-item>
+                      <el-dropdown-item
+                        v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de compra') && scope.row.status == 'Pendiente'"
+                        :command="'authorize-' + scope.row.id"><i
+                            class="fa-solid fa-check"></i>Autorizar</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -128,14 +139,19 @@ export default {
     tableRowClassName({ row, rowIndex }) {
       if (row.status === 'Recibido') {
         return "text-green-600 cursor-pointer";
+      } else if (row.status === 'Autorizado') {
+        return "text-yellow-500 cursor-pointer";
+      } else if (row.status === 'Emitido') {
+        return "text-blue-600 cursor-pointer";
       } else {
-        return "text-amber-600 cursor-pointer";
+        return "text-red-500 cursor-pointer";
       }
 
     },
 
     handleRowClick(row) {
       this.$inertia.get(route('purchases.show', row));
+      console.log(row)
     },
 
     async clone(purchase_id) {
@@ -216,7 +232,37 @@ export default {
         console.log(err);
       }
     },
+    async authorize(purchase_id) {
+        try {
+            const response = await axios.put(route('purchases.authorize', purchase_id));
 
+            if (response.status === 200) {
+                const index = this.purchases.findIndex(item => item.id == purchase_id);
+                this.purchases[index].authorized_at = response.data.item.authorized_at;
+                this.purchases[index].authorized_user_name = response.data.item.authorized_user_name;
+                this.purchases[index].status = response.data.item.status;
+                // window.location.reload();
+                this.$notify({
+                    title: 'Éxito',
+                    message: response.data.message,
+                    type: 'success'
+                });
+            } else {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: response.data.message,
+                    type: 'error'
+                });
+            }
+        } catch (err) {
+            this.$notify({
+                title: 'Algo salió mal',
+                message: err.message,
+                type: 'error'
+            });
+            console.log(err);
+        }
+    },
     handleCommand(command) {
       const commandName = command.split("-")[0];
       const rowId = command.split("-")[1];
@@ -225,7 +271,9 @@ export default {
         this.clone(rowId);
       } else if (commandName == "make_so") {
         console.log("SO");
-      } else {
+      } else if (commandName == 'authorize') {
+          this.authorize(rowId);
+      }else {
         this.$inertia.get(route("purchases." + commandName, rowId));
       }
     },

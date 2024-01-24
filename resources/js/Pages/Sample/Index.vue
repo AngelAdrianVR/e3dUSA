@@ -17,7 +17,7 @@
 
             <div class="flex space-x-6 items-center justify-center text-xs mt-2">
                 <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Enviado. Esperando respuesta </p>
-                <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Muestra devuelta</p>
+                <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Muestra devuelta/ esperando retroalimentación</p>
                 <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Venta cerrada</p>
             </div>
 

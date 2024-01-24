@@ -260,6 +260,8 @@ class StorageController extends Controller
             return $item->storageable?->cost * $item->quantity;
         });
 
+        // return $storage;
+
         return inertia('Storage/Show', compact('storage', 'storages', 'totalStorageMoney'));
     }
 
@@ -304,7 +306,9 @@ class StorageController extends Controller
 
     public function destroy(Storage $storage)
     {
-        $storage->storageable->delete();
+        $raw_material = RawMaterial::find($storage->storageable->id);
+        $raw_material->delete();
+        // $storage->storageable->delete();
         $storage->delete();
 
         event(new RecordDeleted($storage));
