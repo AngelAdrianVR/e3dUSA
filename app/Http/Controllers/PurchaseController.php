@@ -185,4 +185,16 @@ class PurchaseController extends Controller
 
         return response()->json(['message' => "Órden de compra clonada: {$clone->creator}", 'newItem' => PurchaseResource::make($clone)]);
     }
+
+    public function authorizePurchase(Purchase $purchase)
+    {
+        $purchase->update([
+            'authorized_at' => now(),
+            'authorized_user_name' => auth()->user()->name,
+            'status' => 1,
+        ]);
+
+        return response()->json(['message' => 'Compra autorizadda', 'item' => $purchase]); //en caso de actualizar en la misma vista descomentar
+        // return to_route('quotes.index'); // en caso de mandar al index, descomentar.
+    }
 }

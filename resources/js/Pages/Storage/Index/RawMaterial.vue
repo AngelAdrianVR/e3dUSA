@@ -271,8 +271,8 @@ export default {
                 return this.raw_materials.data.filter(
                     (raw_material) =>
                         !this.search ||
-                        raw_material.storageable.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                        raw_material.storageable.part_number.toLowerCase().includes(this.search.toLowerCase())
+                        raw_material.storageable?.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                        raw_material.storageable?.part_number.toLowerCase().includes(this.search.toLowerCase())
                 );
             }
         }

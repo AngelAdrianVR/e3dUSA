@@ -15,7 +15,7 @@
           <el-select @change="$inertia.get(route('storages.show', selectedStorage))" v-model="selectedStorage" clearable
             filterable placeholder="Buscar producto" no-data-text="No hay productos en el almacén"
             no-match-text="No se encontraron coincidencias">
-            <el-option v-for="item in storages" :key="item.id" :label="item.storageable.name" :value="item.id" />
+            <el-option v-for="item in storages" :key="item.id" :label="item.storageable?.name" :value="item.id" />
           </el-select>
         </div>
         <div class="flex flex-col md:flex-row items-center space-x-2">
@@ -94,7 +94,7 @@
       <div class="lg:grid grid-cols-3 mt-12 border-b-2">
         <div class="px-6">
           <h2 class="text-xl font-bold text-center mb-6">
-            {{ storage.data.storageable.name }}
+            {{ storage.data.storageable?.name }}
           </h2>
           <div class="flex items-center">
             <!-- <i :class="currentIndexStorage == 0 ? 'hidden' : 'block'" @click="previus"
@@ -245,7 +245,7 @@
 
           <!-- --------------------- Tab 2 historial de movimientos starts------------------ -->
           <div v-if="tabs == 2" class="px-7 py-7 text-sm h-96 overflow-y-auto">
-            <table class="border-separate border-spacing-x-8">
+            <table v-if="reversedMovements.length > 0" class="border-separate border-spacing-x-8">
               <thead>
                 <tr>
                   <th class="pr-4">#</th>
@@ -279,6 +279,7 @@
                 </tr>
               </tbody>
             </table>
+            <p v-else class="text-center text-sm text-gray-500">No hay movimientos registrados</p>
           </div>
           <!-- --------------------- Tab 2 historial de movimientos ends------------------ -->
         </div>
@@ -347,7 +348,7 @@
           <div class="mx-7 my-4 space-y-4 relative">
             <section v-if="scrapModal">
               <h2 class="font-bold text-center mr-2">
-                Mandar {{ storage.data.storageable.name }} a scrap
+                Mandar {{ storage.data.storageable?.name }} a scrap
               </h2>
               <div class="flex flex-col justify-center mt-7">
                 <div @click="scrapModal = false"
@@ -511,7 +512,7 @@ export default {
       }
     },
     sentToScrap() {
-      this.form.storage_id = this.selectedRawMaterial;
+      this.form.storage_id = this.storage.data.id;
       this.form.post(route("storages.scraps.store"), {
         onSuccess: () => {
           this.$notify({
@@ -538,13 +539,13 @@ export default {
     async deleteItem() {
       try {
         const response = await axios.delete(
-          route("storages.destroy", this.storage.id)
+          route("storages.destroy", this.storage.data.storageable.id)
         );
 
         if (response.status == 200) {
           this.$notify({
             title: "Éxito",
-            message: response.data.message,
+            message: "Se ha eliminado la materia prima",
             type: "success",
           });
 

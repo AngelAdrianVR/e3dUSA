@@ -17,13 +17,13 @@
             </thead>
             <tbody>
                 <tr v-for="(item, index) in data" :key="index">
-                    <td>{{ item.storageable.part_number }}</td>
-                    <td>{{ item.storageable.name }}</td>
+                    <td>{{ item.storageable?.part_number }}</td>
+                    <td>{{ item.storageable?.name }}</td>
                     <td :class="{ 'text-red': isQuantityLow(item) }">
                         {{ formatQuantity(item.quantity) }}
                     </td>
                     <td>{{ calculateSupplyQuantity(item) }}</td>
-                    <td>${{ item.storageable.cost }}</td>
+                    <td>${{ item.storageable?.cost }}</td>
                     <td>${{ calculateCost(item) }}</td>
                 </tr>
             </tbody>
@@ -59,16 +59,16 @@ export default {
             return new Date().toLocaleDateString('es-ES');
         },
         isQuantityLow(item) {
-            return item.quantity <= item.storageable.min_quantity;
+            return item.quantity <= item.storageable?.min_quantity;
         },
         formatQuantity(quantity) {
             return quantity.toFixed(2);
         },
         calculateSupplyQuantity(item) {
-            return this.isQuantityLow(item) ? item.storageable.max_quantity - item.quantity : 0;
+            return this.isQuantityLow(item) ? item.storageable?.max_quantity - item.quantity : 0;
         },
         calculateCost(item) {
-            return (this.calculateSupplyQuantity(item) * item.storageable.cost).toFixed(2);
+            return (this.calculateSupplyQuantity(item) * item.storageable?.cost).toFixed(2);
         },
         formatTotalCost(totalCost) {
             return totalCost.toFixed(2);
