@@ -172,6 +172,7 @@ export default {
       features: [],
       mesureUnits: [
         'Pieza(s)',
+        'Paquete(s)',
         'Litro(s)',
         'Par(es)',
         'kilogramo(s)',

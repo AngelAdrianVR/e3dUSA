@@ -103,15 +103,9 @@ class CatalogProductController extends Controller
     public function show($catalog_product_id)
     {
         $catalog_product = CatalogProductResource::make(CatalogProduct::with('rawMaterials.storages.storageable', 'storages')->find($catalog_product_id));
-        $pre_catalog_products = CatalogProductResource::collection(CatalogProduct::latest()->get());
-        $catalog_products = $pre_catalog_products->map(function ($catalog_product) {
-            return [
-                'id' => $catalog_product->id,
-                'name' => $catalog_product->name,
-                   ];
-               });
-
-        // return $catalog_product;
+        $catalog_products = CatalogProduct::latest()->get(['id', 'name']);
+        
+        // return $catalog_products;
         return inertia('CatalogProduct/Show', compact('catalog_products', 'catalog_product'));
     }
 
