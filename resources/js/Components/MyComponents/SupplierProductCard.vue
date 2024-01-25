@@ -16,7 +16,7 @@
             <div class="text-sm space-y-2">
                 <p>{{ product.name }}</p>
                 <p>{{ product.description }}</p>
-                <p>{{ product.min_quantity_purchase }}</p>
+                <p>{{ product.min_quantity_purchase ?? '--' }}</p>
                 <p>${{ product.cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</p>
                 <p v-if="product.quantity">{{ product.quantity }}</p>
                 <p v-if="product.quantity">${{ (product.quantity * product.cost).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</p>

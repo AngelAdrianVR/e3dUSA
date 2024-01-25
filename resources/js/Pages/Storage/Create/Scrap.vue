@@ -60,7 +60,7 @@
           <div v-show="storage_selected" class="bg-secondary-gray grid grid-cols-3 gap-x-2 rounded-lg p-4 text-sm">
             <figure class="h-full rounded-[10px] mr-5">
               <el-image style="height: 100%; border-radius: 10px;"
-                :src="storage_selected?.storageable?.media[0]?.original_url" fit="contain">
+                :src="storage_selected?.storageable?.media" fit="contain">
                 <template #error>
                   <div class="flex justify-center items-center text-[#ababab]">
                     <i class="fa-solid fa-image text-6xl"></i>
@@ -91,7 +91,7 @@
                 {{ storage_selected?.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ storage_selected?.storageable?.measure_unit }}
               </li>
               <li class="flex">
-                <label class="font-bold mr-2 w-1/3">costo: </label> ${{
+                <label class="font-bold mr-2 w-1/3">Costo de scrap: </label> ${{
                   (storage_selected?.storageable?.cost *
                     form.quantity ?? 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                 }}
