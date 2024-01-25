@@ -89,6 +89,8 @@ class StorageController extends Controller
         if (Route::currentRouteName() == 'storages.scraps.create') {
             $storages = Storage::with('storageable.media')->whereNot('type', 'scrap')->get();
             $storages = $this->getOptimizedStorage($storages);
+            
+            // return $storages;
             return inertia('Storage/Create/Scrap', compact('storages'));
         } elseif (Route::currentRouteName() == 'storages.finished-products.create') {
             return inertia('Storage/Create/FinishedProduct', compact('catalog_products'));
@@ -526,16 +528,14 @@ class StorageController extends Controller
                 'id' => $s->id,
                 'quantity' => $s->quantity,
                 'type' => $s->type,
-                'storageable' => $s->storageable()->get()->map(function ($st) {
-                    return [
-                        'id' => $st->id,
-                        'name' => $st->name,
-                        'part_number' => $st->part_number,
-                        'description' => $st->description,
-                        'cost' => $st->cost,
-                        'media' => $st->media->map(fn ($m) => $m->original_url),
-                    ];
-                })[0]
+                'storageable' => [
+                    'id' => $s->storageable?->id,
+                    'name' => $s->storageable?->name,
+                    'part_number' => $s->storageable?->part_number,
+                    'description' => $s->storageable?->description,
+                    'cost' => $s->storageable?->cost,
+                    'media' => $s->storageable?->media[0]?->original_url ?? null,
+                ],
             ];
         });
     }
