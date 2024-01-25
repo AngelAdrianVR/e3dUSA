@@ -381,6 +381,7 @@ export default {
             editIndex: null,
             alertMaxQuantity: 0,
             selectedCatalogProduct: null,
+            commitedUnits: null,
         };
     },
     components: {
@@ -410,6 +411,7 @@ export default {
                 const response = await axios.get(route('catalog-products.get-data', catalogProductId));
 
                 if (response.status === 200) {
+                    this.commitedUnits = response.data.commited_units;
                     this.selectedCatalogProduct = response.data.item;
                     this.availableStock = response.data.stock;
                     this.loading = false;
@@ -485,11 +487,12 @@ export default {
             const components = catalogProducts.find(item => this.product.catalog_product_company_id == item.pivot.id)?.raw_materials;
 
             let maxQuantity = null;
-            components.forEach(element => {
-                const currentMax = element.storages[0].quantity / element.pivot.quantity;
+            components.forEach((element, index) => {
+                const currentMax = (element.storages[0].quantity - this.commitedUnits[index]) / element.pivot.quantity;
                 if (maxQuantity === null || maxQuantity > currentMax) {
                     maxQuantity = currentMax;
                 }
+                
             });
 
             if (maxQuantity !== null && this.product.quantity > maxQuantity) {

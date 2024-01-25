@@ -285,7 +285,12 @@ class CatalogProductController extends Controller
     {
         $catalog_product = $catalog_product->load(['media']);
         $stock = $catalog_product->storages->count() ? $catalog_product->storages[0] : null;
+        $raw_materials = $catalog_product->rawMaterials;
+        $commited_units = [];
+        foreach ($raw_materials as $item) {
+            $commited_units[] = $item->getCommitedUnits();
+        }
 
-        return response()->json(['item' => $catalog_product, 'stock' => $stock]);
+        return response()->json(['item' => $catalog_product, 'stock' => $stock, 'commited_units' => $commited_units]);
     }
 }
