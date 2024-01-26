@@ -65,7 +65,7 @@
                   </span>
                 </el-tooltip>
                 <el-date-picker v-model="form.sent_at" type="date" placeholder="Fecha de envío de muestra * "
-                  format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDateAfter" />
+                  format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
                 <InputError :message="form.errors.sent_at" />
               </div>
               <label v-if="form.catalog_product_id" class="flex items-center ml-3">
@@ -103,44 +103,29 @@
               <InputError :message="form.errors.quantity" />
             </div>
             <div v-if="!form.catalog_product_id" class="col-span-full">
-                        <div class="flex space-x-2 mb-1">
-                            <IconInput v-model="newProduct" inputPlaceholder="Poducto(s) que lleva la muestra" inputType="text"
-                                class="w-full">
-                                <el-tooltip content="Producto(s) que contiene la muestra (Si es kit agregar todos los productos, si es uno solo, escribirlo)" placement="top">
-                                    <i class="fa-solid fa-box"></i>
-                                </el-tooltip>
-                            </IconInput>
-                            <SecondaryButton @click="addProduct" type="button">
-                                Agregar
-                                <i class="fa-solid fa-arrow-down ml-2"></i>
-                            </SecondaryButton>
-                        </div>
-                        <el-select v-model="form.products" multiple clearable placeholder="Productos"
-                            no-data-text="Agrega primero una caracteristica">
-                            <el-option v-for="product in form.products" :key="product" :label="product"
-                                :value="product"></el-option>
-                        </el-select>
-                        <InputError :message="form.errors.products" />
-                    </div>
-                    <div v-if="!form.catalog_product_id" class="col-span-full mt-2">
-                        <div class="flex items-center">
-                            <span
-                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                                <el-tooltip content="Imagen del producto" placement="top">
-                                    <i class="fa-solid fa-images"></i>
-                                </el-tooltip>
-                            </span>
-                            <input @input="form.media = $event.target.files[0]" class="input h-12 rounded-lg
-                            file:mr-4 file:py-1 file:px-2
-                            file:rounded-full file:border-0
-                            file:text-sm file:font-semibold
-                            file:bg-primary file:text-white
-                            file:cursor-pointer
-                            hover:file:bg-red-600" aria-describedby="file_input_help" id="file_input" type="file">
-                        </div>
-                        <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">SVG, PNG, JPG o
-                            GIF (MAX. 4 MB).</p>
-                    </div>
+              <div class="flex space-x-2 mb-1">
+                  <IconInput v-model="newProduct" inputPlaceholder="Poducto(s) que lleva la muestra" inputType="text"
+                      class="w-full">
+                      <el-tooltip content="Producto(s) que contiene la muestra (Si es kit agregar todos los productos, si es uno solo, escribirlo)" placement="top">
+                          <i class="fa-solid fa-box"></i>
+                      </el-tooltip>
+                  </IconInput>
+                  <SecondaryButton @click="addProduct" type="button">
+                      Agregar
+                      <i class="fa-solid fa-arrow-down ml-2"></i>
+                  </SecondaryButton>
+              </div>
+              <el-select v-model="form.products" multiple clearable placeholder="Productos"
+                  no-data-text="Agrega primero una caracteristica">
+                  <el-option v-for="product in form.products" :key="product" :label="product"
+                      :value="product"></el-option>
+              </el-select>
+              <InputError :message="form.errors.products" />
+          </div>
+          <div v-if="!form.catalog_product_id" class="grid grid-cols-2 lg:grid-cols-3 gap-4 col-span-full">
+              <InputFilePreview v-for="(file,index) in form.media" :key="index" :canDelete="index == (form.media.length - 2)"
+                  @imagen="saveImage" @cleared="handleCleared(index)" :imageUrl="sample?.media[index]?.original_url" class="p-2" />
+          </div>
             <div class="flex col-span-2">
               <el-tooltip content="Comentarios/notas" placement="top">
                 <span
@@ -168,6 +153,7 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import InputFilePreview from "@/Components/MyComponents/InputFilePreview.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
@@ -186,9 +172,10 @@ export default {
       sent_at: this.sample.sent_at,
       comments: this.sample.comments,
       products: this.sample.products,
-      media: null,
+      media: [...this.sample.media, null],
       will_back: !! this.sample.will_back,
       devolution_date: this.sample.devolution_date,
+      media_edited: false,
     });
 
     return {
@@ -200,6 +187,7 @@ export default {
   components: {
     AppLayout,
     SecondaryButton,
+    InputFilePreview,
     PrimaryButton,
     InputError,
     IconInput,
@@ -214,7 +202,7 @@ export default {
   },
   methods: {
     update() {
-      if (this.form.media !== null) {
+      if (this.form.media_edited === true) {
         this.form.post(route("samples.update-with-media", this.sample.id), {
           method: '_put',
           onSuccess: () => {
@@ -237,11 +225,11 @@ export default {
         });
       }
     },
-    disabledDateAfter(time) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return time.getTime() > today.getTime();
-    },
+    // disabledDateAfter(time) {
+    //   const today = new Date();
+    //   today.setHours(0, 0, 0, 0);
+    //   return time.getTime() > today.getTime();
+    // },
     disabledDateBefore(time) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -251,12 +239,23 @@ export default {
       this.currentCompanyBranch = this.company_branches.find(item => item.id == this.form.company_branch_id);
     },
     addProduct() {
-            if (this.newProduct.trim() !== '') {
-                this.form.products.push(this.newProduct);
-                // this.products.push(this.newProduct);
-                this.newProduct = '';
-            }
+        if (this.newProduct.trim() !== '') {
+            this.form.products.push(this.newProduct);
+            // this.products.push(this.newProduct);
+            this.newProduct = '';
         }
+    },
+    saveImage(image) {
+        const currentIndex = this.form.media.length -1;
+        this.form.media[currentIndex] = image;
+        this.form.media.push(null);
+        this.form.media_edited = true;
+    },
+    handleCleared(index) {
+      // Eliminar el componente y su informacion correspondiente cuando se borra la imagen
+      this.form.media.splice(index, 1);
+      this.form.media_edited = true;
+    },
   },
 };
 </script>

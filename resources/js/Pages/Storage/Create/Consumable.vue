@@ -185,6 +185,7 @@ export default {
       mesureUnits: [
         'Pieza(s)',
         'Paquete(s)',
+        'Bolsa(s)',
         'Litro(s)',
         'Par(es)',
         'kilogramo(s)',

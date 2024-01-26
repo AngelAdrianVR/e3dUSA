@@ -95,11 +95,11 @@ class StorageController extends Controller
         } elseif (Route::currentRouteName() == 'storages.finished-products.create') {
             return inertia('Storage/Create/FinishedProduct', compact('catalog_products'));
         } elseif (Route::currentRouteName() == 'storages.obsolete.create') {
-            $storages = Storage::with('storageable.media')->whereNot('type', 'obsoleto')->get();
+            $storages = Storage::with('storageable.media')->where('type', 'materia-prima')->orWhere('type', 'producto-terminado')->get();
             $storages = $this->getOptimizedStorage($storages);
             return inertia('Storage/Create/Obsolete', compact('storages'));
         } elseif (Route::currentRouteName() == 'storages.samples.create') {
-            $storages = Storage::with('storageable.media')->whereNot('type', 'seguimiento-muestras')->get();
+            $storages = Storage::with('storageable.media')->where('type', 'materia-prima')->orWhere('type', 'producto-terminado')->get();
             $storages = $this->getOptimizedStorage($storages);
             // return $storages;
             return inertia('Storage/Create/Sample', compact('storages', 'catalog_products'));
@@ -115,11 +115,30 @@ class StorageController extends Controller
         ]);
 
         $catalog_product = CatalogProduct::find($request->storage_id);
-        $catalog_product->storages()->create([
-            'quantity' => $request->quantity,
-            'location' => $request->location,
-            'type' => 'producto-terminado',
-        ]);
+
+         // Buscar el registro existente de storage para producto-terminado
+            $existingStorage = $catalog_product->storages()
+            ->where('type', 'producto-terminado')
+            ->first();
+
+        if ($existingStorage) {
+            // Si existe, incrementar la cantidad existente
+            $existingStorage->increment('quantity', $request->quantity);
+            StockMovementHistory::Create([
+                'storage_id' => $existingStorage->id,
+                'user_id' => auth()->id(),
+                'type' => 'Entrada',
+                'quantity' => $request->quantity,
+                'notes' => 'Entrada de producto terminado para stock',
+            ]);
+        } else {
+            // Si no existe, crear un nuevo registro de storage
+            $catalog_product->storages()->create([
+                'quantity' => $request->quantity,
+                'location' => $request->location,
+                'type' => 'producto-terminado',
+            ]);
+        }
 
         // sub needed quantities from stock
         $raw_materials = $catalog_product->rawMaterials;
@@ -151,23 +170,64 @@ class StorageController extends Controller
             'location' => 'required|string|max:255',
         ]);
 
+        
         if ($storage->type == 'materia-prima' || $storage->type == 'consumible') {
-
+            
             $raw_material = RawMaterial::find($storage->storageable_id);
-            $raw_material->storages()->create([
-                'quantity' => $request->quantity,
-                'location' => $request->location,
-                'type' => 'scrap',
-            ]);
-            event(new RecordCreated($raw_material));
+            
+            // Buscar el registro existente de storage para materia-prima
+            $existingStorage = $raw_material->storages()
+            ->where('type', 'scrap')
+            ->first();
+            
+            if ($existingStorage) {
+                // Si existe, incrementar la cantidad existente
+                $existingStorage->increment('quantity', $request->quantity);
+                StockMovementHistory::Create([
+                    'storage_id' => $existingStorage->id,
+                    'user_id' => auth()->id(),
+                    'type' => 'Salida',
+                    'quantity' => $request->quantity,
+                    'notes' => 'Salida de producto a almacen de scrap',
+                ]);
+            } else {
+                // Si no existe, crear un nuevo registro de storage
+                $raw_material->storages()->create([
+                    'quantity' => $request->quantity,
+                    'location' => $request->location,
+                    'type' => 'scrap',
+                ]);
+                event(new RecordCreated($raw_material));
+            }
+
+            
         } else {
             $finished_products = CatalogProduct::find($storage->storageable_id);
-            $finished_products->storages()->create([
-                'quantity' => $request->quantity,
-                'location' => $request->location,
-                'type' => 'scrap',
-            ]);
-            event(new RecordCreated($finished_products));
+
+            // Buscar el registro existente de storage para producto de catalogo.
+            $existingStorage = $finished_products->storages()
+            ->where('type', 'scrap')
+            ->first();
+
+            if ($existingStorage) {
+                // Si existe, incrementar la cantidad existente
+                $existingStorage->increment('quantity', $request->quantity);
+                StockMovementHistory::Create([
+                    'storage_id' => $existingStorage->id,
+                    'user_id' => auth()->id(),
+                    'type' => 'Salida',
+                    'quantity' => $request->quantity,
+                    'notes' => 'Salida de producto a almacen de scrap',
+                ]);
+            } else {
+                // Si no existe, crear un nuevo registro de storage
+                $finished_products->storages()->create([
+                    'quantity' => $request->quantity,
+                    'location' => $request->location,
+                    'type' => 'scrap',
+                ]);
+                event(new RecordCreated($finished_products));
+            }
         }
 
         $storage->quantity -= $request->quantity;

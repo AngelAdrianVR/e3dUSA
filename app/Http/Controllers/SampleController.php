@@ -99,8 +99,8 @@ class SampleController extends Controller
             'name' => 'required|string',
             'quantity' => 'required|numeric',
             'will_back' => 'boolean',
-            'devolution_date' => $request->will_back ? 'required|date' : 'nullable|date',
-            'sent_at' => 'required|date|before:tomorrow',
+            'devolution_date' => $request->will_back == false ? 'nullable|date' : 'required|date',
+            'sent_at' => 'required|date',
             'comments' => 'nullable|string',
             'catalog_product_id' => 'nullable',
             'company_branch_id' => 'required',
@@ -112,6 +112,7 @@ class SampleController extends Controller
             'user_id' => auth()->id()
         ]);
 
+        // Subir y asociar las imagenes
         $sample->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
 
         $can_authorize = auth()->user()->can('Autorizar muestra') || auth()->user()->hasRole('Super admin');
@@ -137,8 +138,9 @@ class SampleController extends Controller
     }
 
     
-    public function edit(Sample $sample)
+    public function edit($sample_id)
     {
+        $sample = Sample::latest()->with('media')->find($sample_id);
         $catalog_products = CatalogProduct::latest()->get(['id', 'name']);
         $pre_company_branches = CompanyBranch::with(['contacts'])->latest()->get(['id', 'name']);
         $company_branches = $pre_company_branches->map(function ($company_branch){
@@ -156,6 +158,8 @@ class SampleController extends Controller
                 'contacts' => $contacts,
             ];
         });
+
+        // return $sample;
 
         return inertia('Sample/Edit', compact('sample', 'catalog_products', 'company_branches'));
     }
@@ -197,6 +201,7 @@ class SampleController extends Controller
         ]);
 
         $sample->update($request->all());
+
           // update image
         $sample->clearMediaCollection();
         $sample->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());

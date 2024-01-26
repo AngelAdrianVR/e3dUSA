@@ -223,8 +223,10 @@
                   <td class="text-center pb-3">
                     {{ movement.quantity }}
                   </td>
-                  <td class="text-center pb-3">
-                    {{ movement.type }}
+                  <td :class="movement.type === 'Entrada' ? 'text-green-500' : 'text-red-500' " class="text-center pb-3 flex items-center space-x-2">
+                    <p>{{ movement.type }}</p>
+                    <i v-if="movement.type === 'Entrada'" class="fa-solid fa-arrow-right-to-bracket"></i>
+                    <i v-if="movement.type === 'Salida'" class="fa-solid fa-arrow-right-from-bracket"></i>
                   </td>
                   <td class="text-center pb-3">
                     {{ movement.notes ?? '--' }}

@@ -68,7 +68,7 @@
               (currentSample?.returned_at || !currentSample?.will_back) &&
               !currentSample?.sale_order_at
             "
-            content="Generar orden de venta para marcar como venta cerrada"
+            content="Gener orden de venta si la venta fue cerrada"
             placement="top"
           >
             <div>
@@ -80,7 +80,7 @@
                 @confirm="saleOrder"
               >
                 <template #reference>
-                  <button class="rounded-lg bg-primary text-white p-2 text-sm">
+                  <button class="rounded-lg bg-green-500 text-white p-2 text-sm">
                     Generar orden de venta
                   </button>
                 </template>
@@ -133,12 +133,12 @@
           <figure
             @mouseover="showOverlay"
             @mouseleave="hideOverlay"
-            class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center"
+            class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center relative"
           >
             <el-image
               v-if="currentSample?.catalog_product"
               style="height: 100%"
-              :src="currentSample?.catalog_product?.media[0]?.original_url"
+              :src="currentSample?.catalog_product?.media[currentImage]?.original_url"
               fit="fit"
             >
               <template #error>
@@ -151,7 +151,7 @@
             <el-image
               v-else
               style="height: 100%"
-              :src="currentSample?.media[0]?.original_url"
+              :src="currentSample?.media[currentImage]?.original_url"
               fit="fit"
             >
               <template #error>
@@ -164,7 +164,7 @@
               v-if="imageHovered"
               @click="
                 openImage(
-                  currentSample?.catalog_product?.media[0]?.original_url
+                  currentSample?.catalog_product?.media[currentImage]?.original_url
                 )
               "
               class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in"
@@ -172,6 +172,11 @@
               <i
                 class="fa-solid fa-magnifying-glass-plus text-white text-4xl"
               ></i>
+            </div>
+            <div v-if="sample.data.media?.length > 1" class="absolute -bottom-6 flex items-center justify-center space-x-3">
+              <i @click="currentImage = index" v-for="(image, index) in sample.data.media?.length" :key="index" 
+                :class="index == currentImage ? 'text-black' : 'text-gray-300'" 
+                class="fa-solid fa-circle text-xs cursor-pointer"></i>
             </div>
           </figure>
 
@@ -181,7 +186,7 @@
             content="Progreso para cerrar venta"
             placement="top"
           >
-            <div class="mt-8 ml-6 text-sm">
+            <div class="mt-14 ml-6 text-sm">
               <p
                 class="text-secondary text-center text-xs mb-2"
               >
@@ -530,6 +535,7 @@ export default {
     return {
       form,
       selectedSample: "",
+      currentImage: 0,
       currentSample: null,
       imageHovered: false,
       showConfirmModal: false,

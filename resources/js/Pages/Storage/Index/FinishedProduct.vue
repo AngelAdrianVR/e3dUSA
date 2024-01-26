@@ -125,10 +125,10 @@ export default {
             this.search = this.inputSearch;
         },
         tableRowClassName({ row, rowIndex }) {
-            if (row.quantity <= row.storageable.min_quantity) {
+            if (row.quantity <= row.storageable?.min_quantity) {
                 return 'text-red-600 cursor-pointer';
             }
-            else if (row.quantity >= row.storageable.max_quantity) {
+        else if (row.quantity >= row.storageable?.max_quantity) {
                 return 'text-amber-600 cursor-pointer';
             } else {
                 return 'cursor-pointer';
