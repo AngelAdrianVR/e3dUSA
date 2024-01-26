@@ -72,16 +72,16 @@
                   :key="record_created.id"
                   class="mb-4 hover:bg-gray-200"
                 >
-                  <td @click="showModal = true; current_audit = record_created" class="text-left pb-3 cursor-pointer">
+                  <td @click="showModal = true; current_audit = record_created" class="text-left py-2 px-1 rounded-l-full cursor-pointer">
                     {{ translate(record_created.table_name) }}
                   </td>
-                  <td @click="showModal = true; current_audit = record_created" class="text-left pb-3 cursor-pointer">
+                  <td @click="showModal = true; current_audit = record_created" class="text-left py-2 px-1 cursor-pointer">
                     <span>{{ record_created.record_id }}</span>
                   </td>
-                  <td @click="showModal = true; current_audit = record_created" class="text-left pb-3 cursor-pointer">
+                  <td @click="showModal = true; current_audit = record_created" class="text-left py-2 px-1 cursor-pointer">
                     {{ getUserName(record_created.user_id) }}
                   </td>
-                  <td @click="showModal = true; current_audit = record_created" class="text-left pb-3 cursor-pointer">
+                  <td @click="showModal = true; current_audit = record_created" class="text-left py-2 px-1 rounded-r-full cursor-pointer">
                     {{ record_created.created_at }}
                   </td>
                 </tr>
@@ -137,9 +137,9 @@
               </tbody>
             </table>
             <!-- --- pagination --- -->
-            <div class="mt-4">
+            <!-- <div class="mt-4">
               <Pagination :pagination="audits_edited" />
-            </div>
+            </div> -->
           </div>
           <!-- --------------------- Tab 2 ediciones ends------------------ -->
 
@@ -187,9 +187,9 @@
               </tbody>
             </table>
             <!-- --- pagination --- -->
-            <div class="mt-4">
+            <!-- <div class="mt-4">
               <Pagination :pagination="audits_deleted" />
-            </div>
+            </div> -->
           </div>
           <!-- --------------------- Tab 3 eliminaciones ends------------------ -->
         </div>
@@ -336,6 +336,12 @@ export default {
                 return 'Ordenes de compra';
             case 'suppliers':
                 return 'Proveedores';
+            case 'storages':
+                return 'Almacén';
+            case 'qualities':
+                return 'Calidad';
+            case 'call_monitors':
+                return 'Llamada de seguimiento integral';
         }
     },
     getUserName(user_id){
