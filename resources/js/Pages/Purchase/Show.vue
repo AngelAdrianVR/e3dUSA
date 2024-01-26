@@ -11,51 +11,46 @@
         </div>
         <div class="flex justify-between">
           <div class="md:w-1/3">
-            <el-select @change="$inertia.get(route('purchases.show', selectedPurchase))" v-model="selectedPurchase" clearable filterable placeholder="Buscar órden de compra"
-              no-data-text="No hay órdenes en el catálogo" no-match-text="No se encontraron coincidencias">
-              <el-option v-for="item in purchases" :key="item.id" :label="item.folio"
-                :value="item.id" />
+            <el-select @change="$inertia.get(route('purchases.show', selectedPurchase))" v-model="selectedPurchase"
+              clearable filterable placeholder="Buscar órden de compra" no-data-text="No hay órdenes en el catálogo"
+              no-match-text="No se encontraron coincidencias">
+              <el-option v-for="item in purchases" :key="item.id" :label="item.folio" :value="item.id" />
             </el-select>
           </div>
           <div class="flex items-center space-x-2">
 
+            <button @click="showTemplate()" class="rounded-lg bg-primary text-white p-2 text-sm">
+              Imprimir
+            </button>
+
             <button
               v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de compra') && purchase.data.status === 'Pendiente'"
-              @click="authorize"
-              class="rounded-lg bg-primary text-white p-2 text-sm"
-            >
+              @click="authorize" class="rounded-lg bg-primary text-white p-2 text-sm">
               Autorizar
             </button>
 
             <el-tooltip
               content="Una vez realizada la compra marcar como compra realizada para cambiar estatus y dar seguimiento"
-              placement="top"
-            >
-            <button
-              v-if="purchase.data.status === 'Autorizado'"
-              @click="$inertia.put(route('purchases.done', purchase.data.id))"
-              class="rounded-lg bg-primary text-white p-2 text-sm"
-            >
-              Compra realizada
-            </button>
+              placement="top">
+              <button v-if="purchase.data.status === 'Autorizado'"
+                @click="$inertia.put(route('purchases.done', purchase.data.id))"
+                class="rounded-lg bg-primary text-white p-2 text-sm">
+                Compra realizada
+              </button>
             </el-tooltip>
 
             <el-tooltip
               content="Una vez realizada la compra marcar como compra realizada para cambiar estatus y dar seguimiento"
-              placement="top"
-            >
-            <button
-              v-if="purchase.data.status === 'Emitido'"
-              @click="$inertia.put(route('purchases.recieved', purchase.data.id))"
-              class="rounded-lg bg-green-500 text-white p-2 text-sm"
-            >
-              Marcar como recibido
-            </button>
+              placement="top">
+              <button v-if="purchase.data.status === 'Emitido'"
+                @click="$inertia.put(route('purchases.recieved', purchase.data.id))"
+                class="rounded-lg bg-green-500 text-white p-2 text-sm">
+                Marcar como recibido
+              </button>
             </el-tooltip>
 
             <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar ordenes de compra') &&
-                       purchase.data.user.id == $page.props.auth.user.id" content="Editar"
-              placement="top">
+              purchase.data.user.id == $page.props.auth.user.id" content="Editar" placement="top">
               <Link :href="route('purchases.edit', selectedPurchase)">
               <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
                 <i class="fa-solid fa-pen text-sm"></i>
@@ -85,11 +80,11 @@
         </div>
       </div>
       <p class="text-center font-bold text-lg mb-4">
-        {{ purchase.data.supplier.name }} - 
-        <span class="py-1 p-2" :class="purchase.data.status == 'Pendiente' ? 'text-red-600 bg-red-200' 
-        : purchase.data.status == 'Autorizado' ? 'text-yellow-600 bg-yellow-200' 
-        : purchase.data.status == 'Emitido' ? 'text-blue-600 bg-blue-200' : 'text-green-600 bg-green-200' ">{{
-            purchase.data.status }}</span>
+        {{ purchase.data.supplier.name }} -
+        <span class="py-1 p-2" :class="purchase.data.status == 'Pendiente' ? 'text-red-600 bg-red-200'
+          : purchase.data.status == 'Autorizado' ? 'text-yellow-600 bg-yellow-200'
+            : purchase.data.status == 'Emitido' ? 'text-blue-600 bg-blue-200' : 'text-green-600 bg-green-200'">{{
+      purchase.data.status }}</span>
       </p>
 
       <!-- ------------- tabs section starts ------------- -->
@@ -171,7 +166,7 @@
           <div v-if="rawMaterials?.length > 0" class="lg:grid grid-cols-2 mt-7 gap-5">
             <SupplierProductCard v-for="product in rawMaterials" :key="product" :product="product" />
           </div>
-            <p v-else class="text-gray-500 text-center text-sm">No hay productos registrados a este proveedor</p>
+          <p v-else class="text-gray-500 text-center text-sm">No hay productos registrados a este proveedor</p>
         </div>
         <div v-else class="flex justify-center items-center pt-10">
           <i class="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
@@ -232,6 +227,13 @@ export default {
     Link,
   },
   methods: {
+    showTemplate() {
+      const url = route('purchases.show-template', {
+        purchase_id: this.purchase.data.id,
+      });
+
+      window.open(url, '_blank');
+    },
     async deleteItem() {
       try {
         const response = await axios.delete(
@@ -272,61 +274,61 @@ export default {
       }
     },
     async fetchSupplierItems() {
-      if ( this.rawMaterials.length <= 0) { //solo hace la peticion si no se han cargado
-          this.loading = true;
-            try {
-              const response = await axios.get(route('raw-materials.fetch-supplier-items', {
-                raw_materials_ids: this.purchase.data.products.map(item => item.id).join(',')
-              }));
-              
-              if (response.status === 200) {
-                console.log(response.data.items);
-                  this.rawMaterials = response.data.items;
-                  //Agrega a los productos la cantidad comprada
-                  this.rawMaterials = this.rawMaterials.map((item, index) => {
-                    return {
-                      ...item,
-                      quantity: this.purchase.data.products[index].quantity,
-                    };
-                  });
-              }
-          } catch (error) {
-            console.log(error);
-          } finally {
-            this.loading = false;
+      if (this.rawMaterials.length <= 0) { //solo hace la peticion si no se han cargado
+        this.loading = true;
+        try {
+          const response = await axios.get(route('raw-materials.fetch-supplier-items', {
+            raw_materials_ids: this.purchase.data.products.map(item => item.id).join(',')
+          }));
+
+          if (response.status === 200) {
+            console.log(response.data.items);
+            this.rawMaterials = response.data.items;
+            //Agrega a los productos la cantidad comprada
+            this.rawMaterials = this.rawMaterials.map((item, index) => {
+              return {
+                ...item,
+                quantity: this.purchase.data.products[index].quantity,
+              };
+            });
           }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          this.loading = false;
         }
+      }
     },
     async authorize() {
-        try {
-            const response = await axios.put(route('purchases.authorize', this.purchase.data.id));
+      try {
+        const response = await axios.put(route('purchases.authorize', this.purchase.data.id));
 
-            if (response.status === 200) {
+        if (response.status === 200) {
 
-              this.$notify({
-                title: 'Éxito',
-                    message: response.data.message,
-                    type: 'success'
-                });
+          this.$notify({
+            title: 'Éxito',
+            message: response.data.message,
+            type: 'success'
+          });
 
-                // window.location.reload();
-                this.$inertia.get(route('purchases.index'));
+          // window.location.reload();
+          this.$inertia.get(route('purchases.index'));
 
-            } else {
-                this.$notify({
-                    title: 'Algo salió mal',
-                    message: response.data.message,
-                    type: 'error'
-                });
-            }
-        } catch (err) {
-            this.$notify({
-                title: 'Algo salió mal',
-                message: err.message,
-                type: 'error'
-            });
-            console.log(err);
+        } else {
+          this.$notify({
+            title: 'Algo salió mal',
+            message: response.data.message,
+            type: 'error'
+          });
         }
+      } catch (err) {
+        this.$notify({
+          title: 'Algo salió mal',
+          message: err.message,
+          type: 'error'
+        });
+        console.log(err);
+      }
     },
   },
 
