@@ -105,7 +105,7 @@ class CatalogProductController extends Controller
         $catalog_product = CatalogProductResource::make(CatalogProduct::with('rawMaterials.storages.storageable', 'storages')->find($catalog_product_id));
         $catalog_products = CatalogProduct::latest()->get(['id', 'name']);
         
-        // return $catalog_products;
+        // return $catalog_product;
         return inertia('CatalogProduct/Show', compact('catalog_products', 'catalog_product'));
     }
 

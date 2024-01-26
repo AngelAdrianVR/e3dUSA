@@ -55,13 +55,14 @@
                     <!-- <i :class="currentIndexProduct == 0 ? 'hidden' : 'block'" @click="previus" class="fa-solid fa-chevron-left mr-4 text-lg text-gray-600 cursor-pointer p-1 rounded-full"></i> -->
                     <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
                         class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center">
-                        <el-image style="height: 100%; " :src="catalog_product.data.media[0]?.original_url" fit="fit">
+                        <!-- <el-image style="height: 100%; " :src="catalog_product.data.media[0]?.original_url" fit="fit">
                             <template #error>
                                 <div class="flex justify-center items-center text-[#ababab]">
                                     <i class="fa-solid fa-image text-6xl"></i>
                                 </div>
                             </template>
-                        </el-image>
+                        </el-image> -->
+                        <img :src="catalog_product.data.media[0]?.original_url" alt="">
                         <div v-if="imageHovered" @click="openImage(catalog_product.data.media[0]?.original_url)"
                             class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
                             <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
