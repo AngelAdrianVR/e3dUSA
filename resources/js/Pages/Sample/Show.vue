@@ -66,7 +66,7 @@
                 'Generar orden de venta en muestra'
               ) &&
               (currentSample?.returned_at || !currentSample?.will_back) &&
-              !currentSample?.sale_order_at
+              !currentSample?.sale_order_at && currentSample?.sale_won == null
             "
             content="Gener orden de venta si la venta fue cerrada"
             placement="top"
@@ -82,6 +82,34 @@
                 <template #reference>
                   <button class="rounded-lg bg-green-500 text-white p-2 text-sm">
                     Generar orden de venta
+                  </button>
+                </template>
+              </el-popconfirm>
+            </div>
+          </el-tooltip>
+
+          <el-tooltip
+            v-if="
+              $page.props.auth.user.permissions.includes(
+                'Generar orden de venta en muestra'
+              ) &&
+              (currentSample?.returned_at || !currentSample?.will_back) &&
+              !currentSample?.sale_order_at && currentSample?.sale_won == null
+            "
+            content="Si no cerraste la venta, finaliza seguimiento sin generar una orden"
+            placement="top"
+          >
+            <div>
+              <el-popconfirm
+                confirm-button-text="Si"
+                cancel-button-text="No"
+                icon-color="#0355B5"
+                title="¿Continuar?"
+                @confirm="finishSample"
+              >
+                <template #reference>
+                  <button class="rounded-lg bg-primary text-white p-2 text-sm">
+                    Finalizar seguimiento
                   </button>
                 </template>
               </el-popconfirm>
@@ -133,7 +161,7 @@
           <figure
             @mouseover="showOverlay"
             @mouseleave="hideOverlay"
-            class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center relative"
+            class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center"
           >
             <el-image
               v-if="currentSample?.catalog_product"
@@ -192,7 +220,7 @@
               >
                 {{ !currentSample?.will_back && !currentSample?.sale_order_at ? 'Esperando rebibir retroalimentación del cliente' 
                    : currentSample?.will_back && !currentSample?.returned_at ? 'Esperando devolución de muestra'
-                   : currentSample?.will_back && currentSample?.returned_at && !currentSample?.sale_order_at ? 'Muestra devuelta. Sí cerraste la venta crea la orden para finalizar el seguimiento'
+                   : currentSample?.will_back && currentSample?.returned_at && !currentSample?.sale_order_at ? 'Muestra devuelta. Sí cerraste la venta crea la orden para finalizar el seguimiento. Si no logaste concretar la venta finaliza el seguimiento'
                    : ''
                 }}
               </p>
@@ -206,11 +234,19 @@
               >
                 ¡Venta cerrada!
               </p>
+              <p
+                v-if="
+                  currentSample?.sale_won == false
+                "
+                class="text-secondary text-center text-xs mb-2"
+              >
+                Venta no concretada
+              </p>
               <div class="mb-5 border border-gray1 rounded-full">
                 <div
                   v-if="
-                    currentSample?.status['label'] ==
-                    'Enviado. Esperando respuesta' && currentSample?.will_back
+                    (currentSample?.status['label'] ==
+                    'Enviado. Esperando respuesta' && currentSample?.will_back) 
                   "
                   class="h-[12px] bg-primary rounded-full w-1/3"
                 ></div>
@@ -589,6 +625,9 @@ export default {
       this.$inertia.put(route('samples.sale-order', this.sample.data.id));
       this.$inertia.get(route('sales.create'), { sampleId: this.sample.data.id }); // manda el id al metodo de crear orden de venta
       // this.$inertia.visit('/sales/create', { method: 'get' });
+    },
+    finishSample() {
+      this.$inertia.put(route('samples.finish-sample', this.sample.data.id));
     },
 
     async deleteItem() {

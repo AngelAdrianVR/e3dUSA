@@ -253,6 +253,15 @@ class SampleController extends Controller
         $sample->update([
             'sale_order_at' => now(),
         ]);
+    }
 
+
+    public function finishSample(Sample $sample)
+    {
+        $sample->update([
+            'sale_won' => false,
+        ]);
+
+        return to_route('samples.index');
     }
 }

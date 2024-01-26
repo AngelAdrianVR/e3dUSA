@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->unsignedFloat('quantity');
             $table->boolean('will_back')->default(false);
+            $table->boolean('sale_won')->nullable();
             $table->date('devolution_date')->nullable();
             $table->timestamp('sent_at')->nullable();
             $table->timestamp('returned_at')->nullable();
