@@ -62,7 +62,7 @@
                                 </div>
                             </template>
                         </el-image> -->
-                        <img :src="catalog_product.data.media[0]?.original_url" alt="">
+                        <img class="object-contain h-60" :src="catalog_product.data.media[0]?.original_url" alt="">
                         <div v-if="imageHovered" @click="openImage(catalog_product.data.media[0]?.original_url)"
                             class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
                             <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
