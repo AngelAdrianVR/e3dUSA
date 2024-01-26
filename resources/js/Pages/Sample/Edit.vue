@@ -14,9 +14,9 @@
       <form @submit.prevent="update">
         <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4">
 
-        <p class="text-xs text-secondary">En caso de estar registrado en catalogo de productos Seleccionarlo, si es nuevo producto dejar esa opcion en blanco</p>
+        <p class="text-base rounded-lg p-3 border border-primary text-primary">Si el producto es nuevo y no está registrado en el catálogo, deja en blanco el primer campo</p>
             <div class="w-full flex items-center">
-            <el-tooltip content="Producto de catálogo *" placement="top">
+            <el-tooltip content="Producto de catálogo" placement="top">
             <span
                 class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
                 <i class="fa-solid fa-box"></i>
@@ -123,7 +123,7 @@
               <InputError :message="form.errors.products" />
           </div>
           <div v-if="!form.catalog_product_id" class="grid grid-cols-2 lg:grid-cols-3 gap-4 col-span-full">
-              <InputFilePreview v-for="(file,index) in form.media" :key="index" :canDelete="index == (form.media.length - 2)"
+              <InputFilePreview v-for="(file,index) in form.media" :key="index" :canDelete="index == (form.media?.length - 2)"
                   @imagen="saveImage" @cleared="handleCleared(index)" :imageUrl="sample?.media[index]?.original_url" class="p-2" />
           </div>
             <div class="flex col-span-2">

@@ -16,9 +16,11 @@
             </template>
 
             <div class="flex space-x-6 items-center justify-center text-xs mt-2">
-                <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Enviado. Esperando respuesta </p>
-                <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Muestra devuelta/ esperando retroalimentación</p>
+                <p class="text-amber-600"><i class="fa-solid fa-circle mr-1"></i>Enviado. Esperando respuesta </p>
+                <p class="text-blue-600"><i class="fa-solid fa-circle mr-1"></i>Muestra devuelta/ esperando retroalimentación</p>
+                <p class="text-indigo-500"><i class="fa-solid fa-circle mr-1"></i>Enviada con modificaciones</p>
                 <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Venta cerrada</p>
+                <p class="text-primary"><i class="fa-solid fa-circle mr-1"></i>Venta no concretada</p>
             </div>
 
             <!-- tabla -->
@@ -121,16 +123,8 @@ export default {
         handleSearch(){
             this.search = this.inputSearch;
         },
-        tableRowClassName({ row, rowIndex }) {
-
-            if (row.status['label'] == 'Enviado. Esperando respuesta' && row.will_back) {
-                 return 'cursor-pointer text-amber-500';
-            }else if(row.status['label'] == 'Muestra devuelta' || !row.will_back && !row.sale_order_at){
-                return 'cursor-pointer text-blue-500';
-            }else if (row.sale_order_at) {
-                return 'cursor-pointer text-green-500';
-            }
-
+        tableRowClassName({ row }) {
+            return row.status['text-color'];
         },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
