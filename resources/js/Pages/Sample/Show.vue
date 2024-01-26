@@ -44,15 +44,12 @@
 
           <el-tooltip
             v-if="
-              $page.props.auth.user.permissions.includes('Editar muestra') &&
-              !currentSample?.returned_at &&
-              currentSample
+            !currentSample?.returned_at && currentSample?.will_back
             "
             content="Marcar como muestra devuelta por el cliente"
             placement="top"
           >
             <button
-              v-if="currentSample?.will_back"
               @click="returnedSampleModal = true"
               class="rounded-lg bg-primary text-white p-2 text-sm"
             >
@@ -62,11 +59,37 @@
 
           <el-tooltip
             v-if="
-              $page.props.auth.user.permissions.includes(
-                'Generar orden de venta en muestra'
-              ) &&
-              (currentSample?.returned_at || !currentSample?.will_back) &&
-              !currentSample?.sale_order_at && currentSample?.sale_won == null
+              (currentSample?.status['label'] === 'Muestra devuelta' 
+              || currentSample?.status['label'] === 'Enviado. Esperando respuesta'
+              )
+            "
+            content="Marca la muestra como enviada de nuevo con modificaciones"
+            placement="top"
+          >
+            <div>
+              <el-popconfirm
+                confirm-button-text="Si"
+                cancel-button-text="No"
+                icon-color="#0355B5"
+                title="¿Continuar?"
+                @confirm="resentSample"
+              >
+                <template #reference>
+                  <button class="rounded-lg bg-secondary text-white p-2 text-sm">
+                    Enviar m. modificada
+                  </button>
+                </template>
+              </el-popconfirm>
+            </div>
+          </el-tooltip>
+
+          <el-tooltip
+            v-if="
+              $page.props.auth.user.permissions.includes('Generar orden de venta en muestra')
+              && (currentSample?.status['label'] === 'Muestra devuelta' 
+              || currentSample?.status['label'] === 'Enviado. Esperando respuesta'
+              || currentSample?.status['label'] === 'Muestra enviada de nuevo con modificación'
+              )
             "
             content="Gener orden de venta si la venta fue cerrada"
             placement="top"
@@ -90,11 +113,11 @@
 
           <el-tooltip
             v-if="
-              $page.props.auth.user.permissions.includes(
-                'Generar orden de venta en muestra'
-              ) &&
-              (currentSample?.returned_at || !currentSample?.will_back) &&
-              !currentSample?.sale_order_at && currentSample?.sale_won == null
+              $page.props.auth.user.permissions.includes('Generar orden de venta en muestra')
+              && (currentSample?.status['label'] === 'Muestra devuelta' 
+              || currentSample?.status['label'] === 'Enviado. Esperando respuesta'
+              || currentSample?.status['label'] === 'Muestra enviada de nuevo con modificación'
+              )
             "
             content="Si no cerraste la venta, finaliza seguimiento sin generar una orden"
             placement="top"
@@ -163,31 +186,9 @@
             @mouseleave="hideOverlay"
             class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center"
           >
-            <el-image
-              v-if="currentSample?.catalog_product"
-              style="height: 100%"
-              :src="currentSample?.catalog_product?.media[currentImage]?.original_url"
-              fit="fit"
-            >
-              <template #error>
-                <div class="flex justify-center items-center text-[#ababab]">
-                  <i class="fa-solid fa-image text-6xl"></i>
-                </div>
-              </template>
-            </el-image>
+            <img v-if="currentSample?.catalog_product" class="object-contain h-60" :src="currentSample?.catalog_product?.media[currentImage]?.original_url" alt="">
+            <img v-else class="object-contain h-60" :src="currentSample?.media[currentImage]?.original_url" alt="">
 
-            <el-image
-              v-else
-              style="height: 100%"
-              :src="currentSample?.media[currentImage]?.original_url"
-              fit="fit"
-            >
-              <template #error>
-                <div class="flex justify-center items-center text-[#ababab]">
-                  <i class="fa-solid fa-image text-6xl"></i>
-                </div>
-              </template>
-            </el-image>
             <div
               v-if="imageHovered"
               @click="
@@ -201,66 +202,23 @@
                 class="fa-solid fa-magnifying-glass-plus text-white text-4xl"
               ></i>
             </div>
-            <div v-if="sample.data.media?.length > 1" class="absolute -bottom-6 flex items-center justify-center space-x-3">
+          </figure>
+            <div v-if="sample.data.media?.length > 1" class="mt-3 flex items-center justify-center space-x-3">
               <i @click="currentImage = index" v-for="(image, index) in sample.data.media?.length" :key="index" 
                 :class="index == currentImage ? 'text-black' : 'text-gray-300'" 
                 class="fa-solid fa-circle text-xs cursor-pointer"></i>
             </div>
-          </figure>
 
           <!-- ----------------------progress bar---------------------- -->
           <el-tooltip
-            v-if="currentSample"
-            content="Progreso para cerrar venta"
+            content="Progreso para dar seguimiento a la muestra"
             placement="top"
           >
             <div class="mt-14 ml-6 text-sm">
-              <p
-                class="text-secondary text-center text-xs mb-2"
-              >
-                {{ !currentSample?.will_back && !currentSample?.sale_order_at ? 'Esperando rebibir retroalimentación del cliente' 
-                   : currentSample?.will_back && !currentSample?.returned_at ? 'Esperando devolución de muestra'
-                   : currentSample?.will_back && currentSample?.returned_at && !currentSample?.sale_order_at ? 'Muestra devuelta. Sí cerraste la venta crea la orden para finalizar el seguimiento. Si no logaste concretar la venta finaliza el seguimiento'
-                   : ''
-                }}
-              </p>
-              <p
-                v-if="
-                  currentSample?.status['label'] ==
-                  'Orden generada. Venta exitosa'
-                  || currentSample?.sale_order_at
-                "
-                class="text-secondary text-center text-xs mb-2"
-              >
-                ¡Venta cerrada!
-              </p>
-              <p
-                v-if="
-                  currentSample?.sale_won == false
-                "
-                class="text-secondary text-center text-xs mb-2"
-              >
-                Venta no concretada
-              </p>
+              <p class="text-secondary text-center text-xs mb-2">{{ currentSample?.status['description'] }}</p>
+
               <div class="mb-5 border border-gray1 rounded-full">
-                <div
-                  v-if="
-                    (currentSample?.status['label'] ==
-                    'Enviado. Esperando respuesta' && currentSample?.will_back) 
-                  "
-                  class="h-[12px] bg-primary rounded-full w-1/3"
-                ></div>
-                <div
-                  v-else-if="
-                    (currentSample?.status['label'] == 'Muestra devuelta'
-                    || !currentSample?.will_back) && !currentSample?.sale_order_at
-                  "
-                  class="h-[12px] bg-secondary rounded-full w-2/3"
-                ></div>
-                <div
-                   v-else
-                  class="h-[12px] bg-green-500 rounded-full w-full"
-                ></div>
+                <div :class="currentSample?.status['progress'] + ' ' + currentSample?.status['bg-color']" class="h-[12px] rounded-full"></div>
               </div>
             </div>
           </el-tooltip>
@@ -330,10 +288,16 @@
               <p class="w-1/3 text-[#9A9A9A]">Devuelta el</p>
               <p :class="currentSample?.returned_at ? 'bg-green-200 px-3' : ''">{{ currentSample?.returned_at ?? "--" }}</p>
             </div>
-            <div class="flex mb-6 space-x-2">
+            <div v-if="currentSample?.sale_order_at" class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Orden generada el</p>
               <p class="text-[#4FC03D]">
                 {{ currentSample?.sale_order_at ?? "--" }}
+              </p>
+            </div>
+            <div v-if="currentSample?.denied_at" class="flex mb-2 space-x-2">
+              <p class="w-1/3 text-[#9A9A9A]">Venta rechazada el</p>
+              <p class="text-primary">
+                {{ currentSample?.denied_at ?? "--" }}
               </p>
             </div>
             <div class="flex mb-2 space-x-2">
@@ -346,7 +310,7 @@
             </div>
             <div class="flex mb-2 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Comentarios/notas de seguimiento</p>
-              <p class="bg-green-200 px-2">
+              <p class="bg-yellow-200 px-2">
                 {{ currentSample?.comments ?? "--" }}
               </p>
             </div>
@@ -628,6 +592,9 @@ export default {
     },
     finishSample() {
       this.$inertia.put(route('samples.finish-sample', this.sample.data.id));
+    },
+    resentSample() {
+      this.$inertia.put(route('samples.resent-sample', this.sample.data.id));
     },
 
     async deleteItem() {

@@ -27,6 +27,7 @@ class Sample extends Model implements HasMedia
         'user_id',
         'products',
         'will_back',
+        'requires_modification',
         'denied_at',
         'devolution_date',
         'contact_id'
