@@ -21,7 +21,7 @@ class SampleResource extends JsonResource
                     'progress' => '1/3'        
                     ];
 
-        if($this->returned_at) {
+        if($this->returned_at && !$this->will_back) {
 
             $status = ['label' => 'Muestra devuelta',
                     'text-color' => 'text-blue-500',
@@ -36,13 +36,14 @@ class SampleResource extends JsonResource
                     'progress' => '3/3'        
                     ];
                     }
-        }           
+        }         
 
         return [
             'id' => $this->id,
             'folio' => 'MUE-' . str_pad($this->id, 4, "0", STR_PAD_LEFT),
             'name' => $this->name,
             'will_back' => $this->will_back,
+            'denied_at' => $this->denied_at?->isoFormat('DD MMM, YYYY'),
             'devolution_date' => $this->devolution_date?->isoFormat('DD MMM, YYYY'),
             'quantity' => $this->quantity,
             'sent_at' => $this->sent_at?->isoFormat('DD MMM, YYYY h:mm A'),

@@ -84,7 +84,7 @@
           <div v-show="storage_selected" class="bg-secondary-gray grid grid-cols-3 gap-x-2 rounded-lg p-4 text-sm">
             <figure class="h-full rounded-[10px] mr-5">
               <el-image style="height: 100%; border-radius: 10px;"
-                :src="form.product_type == 'storage' ? storage_selected?.storageable?.media[0] : storage_selected?.media[0]" fit="contain">
+                :src="form.product_type == 'storage' ? storage_selected?.storageable?.media : storage_selected?.media" fit="contain">
                 <template #error>
                   <div class="flex justify-center items-center text-[#ababab]">
                     <i class="fa-solid fa-image text-6xl"></i>

@@ -27,6 +27,7 @@ class Sample extends Model implements HasMedia
         'user_id',
         'products',
         'will_back',
+        'denied_at',
         'devolution_date',
         'contact_id'
     ];
@@ -36,6 +37,7 @@ class Sample extends Model implements HasMedia
         'returned_at' => 'datetime',
         'sale_order_at' => 'datetime',
         'authorized_at' => 'datetime',
+        'denied_at' => 'datetime',
         'devolution_date' => 'date',
         'products' => 'array',
     ];

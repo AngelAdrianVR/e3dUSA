@@ -324,6 +324,7 @@ Route::resource('samples', SampleController::class)->middleware('auth');
 Route::post('samples/massive-delete', [SampleController::class, 'massiveDelete'])->name('samples.massive-delete');
 Route::put('samples/returned-sample/{sample}', [SampleController::class, 'returned'])->name('samples.returned');
 Route::put('samples/sale-order-sample/{sample}', [SampleController::class, 'saleOrder'])->name('samples.sale-order');
+Route::put('samples/finish-sample/{sample}', [SampleController::class, 'finishSample'])->name('samples.finish-sample');
 Route::post('samples/update-with-media/{sample}', [SampleController::class, 'updateWithMedia'])->name('samples.update-with-media')->middleware('auth');
 
 // ------- Design department routes  ---------
