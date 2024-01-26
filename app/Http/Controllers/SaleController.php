@@ -49,6 +49,7 @@ class SaleController extends Controller
                     });
 
                     return [
+                        'name' => $raw_material->name,
                         'pivot' => ['quantity' => $raw_material->pivot->quantity],
                         'storages' => $storages,
                     ];

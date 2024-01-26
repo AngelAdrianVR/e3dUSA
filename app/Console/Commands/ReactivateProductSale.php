@@ -46,10 +46,14 @@ class ReactivateProductSale extends Command
         if ($products->count()) {
             $super_admins = User::whereIn('id', [1, 2, 3])->get();
             $sellers = User::where('employee_properties->department', 'Ventas')->where('is_active', 1)->get();
+            $direction = User::whereIn('employee_properties->puesto', ['Asistente de director'])->where('is_active', 1)->get();
 
             // notify users
             foreach ($sellers as $seller) {
                 $seller->notify(new ReactivateProductSaleNotification($products, $days));
+            }
+            foreach ($direction as $item) {
+                $item->notify(new ReactivateProductSaleNotification($products, $days));
             }
             foreach ($super_admins as $super) {
                 $super->notify(new ReactivateProductSaleNotification($products, $days));
