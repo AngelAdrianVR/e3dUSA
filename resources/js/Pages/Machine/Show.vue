@@ -335,13 +335,8 @@
               <p class="text-primary">Evidencia</p>
               <div v-for="(media, index) in selectedMaintenance.media" :key="index" class="text-secondary hover:underline col-span-2 inline-flex  space-y-1">
                 <a :href="media.original_url" target="_blank" rel="noopener noreferrer">
-                <el-image style="width: 40%;" :src="media.original_url" fit="fit">
-                    <template #error>
-                        <div class="flex justify-center items-center text-[#ababab]">
-                            <i class="fa-solid fa-image text-6xl"></i>
-                        </div>
-                    </template>
-                </el-image>
+                
+                <img :src="media.original_url" alt="">
               </a>
               </div>
             </div>
@@ -408,13 +403,7 @@
               <p class="text-primary">Evidencia</p>
               <div v-for="(media, index) in selectedSparePart.media" :key="index" class="text-secondary hover:underline col-span-2 inline-flex space-y-1">
                 <a :href="media.original_url" target="_blank" rel="noopener noreferrer">
-                <el-image style="width: 70%;" :src="media.original_url" fit="fit">
-                    <template #error>
-                        <div class="flex justify-center items-center text-[#ababab]">
-                            <i class="fa-solid fa-image text-6xl"></i>
-                        </div>
-                    </template>
-                </el-image>
+                <img :src="media.original_url" alt="">
                 </a>
               </div>
             </div>
