@@ -16,9 +16,11 @@
             </template>
 
             <div class="flex space-x-6 items-center justify-center text-xs mt-2">
-                <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Enviado. Esperando respuesta </p>
-                <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Muestra devuelta</p>
+                <p class="text-amber-600"><i class="fa-solid fa-circle mr-1"></i>Enviado. Esperando respuesta </p>
+                <p class="text-blue-600"><i class="fa-solid fa-circle mr-1"></i>Muestra devuelta/ esperando retroalimentación</p>
+                <p class="text-indigo-500"><i class="fa-solid fa-circle mr-1"></i>Enviada con modificaciones</p>
                 <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Venta cerrada</p>
+                <p class="text-primary"><i class="fa-solid fa-circle mr-1"></i>Venta no concretada</p>
             </div>
 
             <!-- tabla -->
@@ -27,7 +29,7 @@
                     <!-- pagination -->
                     <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                            :total="samples.data.length" />
+                            :total="samples.length" />
                     </div>
                     <!-- buttons -->
                     <div>
@@ -121,16 +123,8 @@ export default {
         handleSearch(){
             this.search = this.inputSearch;
         },
-        tableRowClassName({ row, rowIndex }) {
-
-            if (row.status['label'] == 'Enviado. Esperando respuesta') {
-                 return 'cursor-pointer text-amber-500';
-            }else if(row.status['label'] == 'Muestra devuelta'){
-                return 'cursor-pointer text-blue-500';
-            }else{
-                return 'cursor-pointer text-green-500';
-            }
-
+        tableRowClassName({ row }) {
+            return row.status['text-color'];
         },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
@@ -174,7 +168,7 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.samples.data.forEach((sample, index) => {
+                    this.samples.forEach((sample, index) => {
                         if (this.$refs.multipleTableRef.value.includes(sample)) {
                             deletedIndexes.push(index);
                         }
@@ -185,7 +179,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.samples.data.splice(index, 1);
+                        this.samples.splice(index, 1);
                     }
 
                 } else {
@@ -214,7 +208,7 @@ export default {
     },
     computed: {
         filteredTableData() {
-            return this.samples.data.filter(
+            return this.samples.filter(
                 (sample) =>
                     !this.search ||
                     sample.name.toLowerCase().includes(this.search.toLowerCase()) ||

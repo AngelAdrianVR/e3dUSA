@@ -10,6 +10,7 @@ use App\Models\CatalogProductCompanySale;
 use App\Models\CompanyBranch;
 use App\Models\Oportunity;
 use App\Models\Sale;
+use App\Models\Sample;
 use App\Models\StockMovementHistory;
 use App\Models\Storage;
 use App\Models\User;
@@ -22,57 +23,7 @@ class SaleController extends Controller
 
     public function index()
     {
-        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
-        $pre_sales = Sale::with('companyBranch', 'user')->latest()->get();
-        $sales = $pre_sales->map(function ($sale) {
-            $hasStarted = $sale->productions?->whereNotNull('started_at')->count();
-            $hasNotFinished = $sale->productions?->whereNull('finished_at')->count();
-
-            if ($sale->authorized_at == null) {
-                $status = [
-                    'label' => 'Esperando autorización',
-                    'text-color' => 'text-amber-500',
-                ];
-            } elseif ($sale->productions) {
-                if (!$hasStarted) {
-                    $status = [
-                        'label' => 'Producción sin iniciar',
-                        'text-color' => 'text-gray-500',
-                    ];
-                } elseif ($hasStarted && $hasNotFinished) {
-                    $status = [
-                        'label' => 'Producción en proceso',
-                        'text-color' => 'text-blue-500',
-                    ];
-                } else {
-                    $status = [
-                        'label' => 'Producción terminada',
-                        'text-color' => 'text-green-500',
-                    ];
-                }
-            } else {
-                $status = [
-                    'label' => 'Autorizado sin orden de producción',
-                    'text-color' => 'text-amber-500',
-                ];
-            }
-            return [
-                'id' => $sale->id,
-                'folio' => 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT),
-                'user' => [
-                    'id' => $sale->user->id,
-                    'name' => $sale->user->name
-                ],
-                'company_branch' => [
-                    'id' => $sale->companyBranch->id,
-                    'name' => $sale->companyBranch->name
-                ],
-                'authorized_user_name' => $sale->authorized_user_name ?? 'No autorizado',
-                'status' => $status,
-                'promise_date' => $sale->promise_date?->isoFormat('DD MMMM YYYY') ?? '--',
-                'created_at' => $sale->created_at->isoFormat('DD MMM, YYYY h:mm A'),
-            ];
-        });
+        $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->latest()->paginate(20));
 
         return inertia('Sale/Index', compact('sales'));
     }
@@ -81,6 +32,7 @@ class SaleController extends Controller
     public function create()
     {
         $opportunityId = Oportunity::find(request('opportunityId'));
+        $sample = Sample::find(request('sampleId'));
 
         //optimizacion de datos en vista para reducir el tiempo de carga
         $pre_company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
@@ -97,6 +49,7 @@ class SaleController extends Controller
                     });
 
                     return [
+                        'name' => $raw_material->name,
                         'pivot' => ['quantity' => $raw_material->pivot->quantity],
                         'storages' => $storages,
                     ];
@@ -129,7 +82,7 @@ class SaleController extends Controller
         });
 
         // return $company_branches;
-        return inertia('Sale/Create', compact('company_branches', 'opportunityId'));
+        return inertia('Sale/Create', compact('company_branches', 'opportunityId', 'sample'));
     }
 
     public function store(Request $request)
@@ -413,6 +366,29 @@ class SaleController extends Controller
         $sales = SaleResource::collection(Sale::with('catalogProductCompanySales.catalogProductCompany.catalogProduct.storages')
             ->whereNull('authorized_at')->get());
 
+        return response()->json(['items' => $sales]);
+    }
+
+    public function getMatches($query)
+    {
+        if ($query != 'nullable') {
+            $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])
+            ->latest()
+            ->where('id', 'LIKE', "%$query%")
+            ->orWhere('created_at', 'LIKE', "%$query%")
+            ->orWhere('authorized_at', 'LIKE', "%$query%")
+            ->orWhere('promise_date', 'LIKE', "%$query%")
+            ->orWhereHas('user', function ($user) use ($query){
+                $user->where('name', 'LIKE', "%$query%");
+            })
+            ->orWhereHas('companyBranch', function ($user) use ($query){
+                $user->where('name', 'LIKE', "%$query%");
+            })
+            ->get());
+        } else {
+            $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->latest()->paginate(20));
+        }
+        
         return response()->json(['items' => $sales]);
     }
 }

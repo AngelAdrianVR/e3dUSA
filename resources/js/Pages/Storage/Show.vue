@@ -15,7 +15,7 @@
           <el-select @change="$inertia.get(route('storages.show', selectedStorage))" v-model="selectedStorage" clearable
             filterable placeholder="Buscar producto" no-data-text="No hay productos en el almacén"
             no-match-text="No se encontraron coincidencias">
-            <el-option v-for="item in storages" :key="item.id" :label="item.storageable.name" :value="item.id" />
+            <el-option v-for="item in storages" :key="item.id" :label="item.storageable?.name" :value="item.id" />
           </el-select>
         </div>
         <div class="flex flex-col md:flex-row items-center space-x-2">
@@ -94,7 +94,7 @@
       <div class="lg:grid grid-cols-3 mt-12 border-b-2">
         <div class="px-6">
           <h2 class="text-xl font-bold text-center mb-6">
-            {{ storage.data.storageable.name }}
+            {{ storage.data.storageable?.name }}
           </h2>
           <div class="flex items-center">
             <!-- <i :class="currentIndexStorage == 0 ? 'hidden' : 'block'" @click="previus"
@@ -102,13 +102,14 @@
             <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
               :class="storage.data.storageable?.media.length ? 'bg-transparent' : 'bg-[#D9D9D9]'"
               class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center">
-              <el-image style="height: 100%" :src="storage.data.storageable?.media[0]?.original_url" fit="fit">
+              <!-- <el-image style="height: 100%" :src="storage.data.storageable?.media[0]?.original_url" fit="fit">
                 <template #error>
                   <div class="flex justify-center items-center text-[#ababab]">
                     <i class="fa-solid fa-image text-6xl"></i>
                   </div>
                 </template>
-              </el-image>
+              </el-image> -->
+              <img class="object-contain h-60" :src="storage.data.storageable?.media[0]?.original_url" alt="">
               <div v-if="imageHovered" @click="
                 openImage(storage.data.storageable?.media[0]?.original_url)
                 "
@@ -245,7 +246,7 @@
 
           <!-- --------------------- Tab 2 historial de movimientos starts------------------ -->
           <div v-if="tabs == 2" class="px-7 py-7 text-sm h-96 overflow-y-auto">
-            <table class="border-separate border-spacing-x-8">
+            <table v-if="reversedMovements.length > 0" class="border-separate border-spacing-x-8">
               <thead>
                 <tr>
                   <th class="pr-4">#</th>
@@ -270,8 +271,10 @@
                   <td class="text-center pb-3">
                     {{ movement.quantity }}
                   </td>
-                  <td class="text-center pb-3">
-                    {{ movement.type }}
+                  <td :class="movement.type === 'Entrada' ? 'text-green-500' : 'text-red-500' " class="text-center pb-3 flex items-center space-x-2">
+                    <p>{{ movement.type }}</p>
+                    <i v-if="movement.type === 'Entrada'" class="fa-solid fa-arrow-right-to-bracket"></i>
+                    <i v-if="movement.type === 'Salida'" class="fa-solid fa-arrow-right-from-bracket"></i>
                   </td>
                   <td class="text-center pb-3">
                     {{ movement.notes ?? '--' }}
@@ -279,6 +282,7 @@
                 </tr>
               </tbody>
             </table>
+            <p v-else class="text-center text-sm text-gray-500">No hay movimientos registrados</p>
           </div>
           <!-- --------------------- Tab 2 historial de movimientos ends------------------ -->
         </div>
@@ -347,7 +351,7 @@
           <div class="mx-7 my-4 space-y-4 relative">
             <section v-if="scrapModal">
               <h2 class="font-bold text-center mr-2">
-                Mandar {{ storage.data.storageable.name }} a scrap
+                Mandar {{ storage.data.storageable?.name }} a scrap
               </h2>
               <div class="flex flex-col justify-center mt-7">
                 <div @click="scrapModal = false"
@@ -511,7 +515,7 @@ export default {
       }
     },
     sentToScrap() {
-      this.form.storage_id = this.selectedRawMaterial;
+      this.form.storage_id = this.storage.data.id;
       this.form.post(route("storages.scraps.store"), {
         onSuccess: () => {
           this.$notify({
@@ -538,13 +542,13 @@ export default {
     async deleteItem() {
       try {
         const response = await axios.delete(
-          route("storages.destroy", this.storage.id)
+          route("storages.destroy", this.storage.data.storageable.id)
         );
 
         if (response.status == 200) {
           this.$notify({
             title: "Éxito",
-            message: response.data.message,
+            message: "Se ha eliminado la materia prima",
             type: "success",
           });
 

@@ -138,7 +138,7 @@
             <i v-if="currentSale?.is_high_priority" class="fa-solid fa-check text-red-500"></i>
             <i v-else class="fa-solid fa-minus"></i>
           </span>
-          <span class="text-gray-500 my-2">Fecha de entrega</span>
+          <span v-if="sale.data.promise_date" class="text-gray-500 my-2">Fecha de entrega</span>
           <span v-if="sale.data.promise_date" class="text-red-600 bg-red-200 px-2 py-1">{{ sale.data.promise_date }}</span>
           <span class="text-gray-500 my-2">OCE</span> 
           <span>{{ sale.data.oce_name }}</span>

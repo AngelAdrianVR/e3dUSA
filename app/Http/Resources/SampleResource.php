@@ -15,33 +15,94 @@ class SampleResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $status = ['label' => 'Enviado. Esperando respuesta',
-                    'text-color' => 'text-amber-500',
-                    'border-color' => 'border-amber-500',        
-                    'progress' => '1/3'        
+        if ($this->will_back) {
+
+            $status = [
+            'label' => 'Enviado. Esperando regreso de muestra',
+            'bg-color' => 'bg-amber-600',
+            'text-color' => 'text-amber-600',
+            'border-color' => 'border-amber-600', 
+            'description' => 'Esperando a que la muestra sea devuelta y obtengas retroalimentación',        
+            'progress' => 'w-1/4'        
+            ];
+
+            if ($this->returned_at) {
+
+                $status = ['label' => 'Muestra devuelta',
+                    'bg-color' => 'bg-blue-600',
+                    'text-color' => 'text-blue-600',
+                    'border-color' => 'border-blue-600', 
+                    'description' => 'Muestra devuelta. Da seguimiento para concretar venta',
+                    'progress' => 'w-1/2'        
                     ];
 
-        if($this->returned_at) {
+                if ($this->requires_modification) {
 
-            $status = ['label' => 'Muestra devuelta',
-                    'text-color' => 'text-blue-500',
-                    'border-color' => 'border-blue-500',        
-                    'progress' => '2/3'        
+                    $status = ['label' => 'Muestra enviada de nuevo con modificación',
+                    'bg-color' => 'bg-indigo-500',
+                    'text-color' => 'text-indigo-600',
+                    'border-color' => 'border-indigo-600', 
+                    'description' => 'Muestra enviada de nuevo con modificaciones. Espera retroalimentación para finalizar con el seguimiento',
+                    'progress' => 'w-3/4'        
                     ];
 
-                    if($this->sale_order_at){
-                        $status = ['label' => 'Orden generada. Venta exitosa',
-                    'text-color' => 'text-green-600',
-                    'border-color' => 'border-green-600',        
-                    'progress' => '3/3'        
+                }
+            }
+        } else {
+
+            $status = [
+            'label' => 'Enviado. Esperando respuesta',
+            'bg-color' => 'bg-amber-600',
+            'text-color' => 'text-amber-600',
+            'border-color' => 'border-amber-500', 
+            'description' => 'Muestra enviada. Esperando respuesta',
+            'progress' => 'w-1/2'        
+            ];
+
+            if ($this->requires_modification) {
+
+                $status = ['label' => 'Muestra enviada de nuevo con modificación',
+                    'bg-color' => 'bg-indigo-500',
+                    'text-color' => 'text-indigo-600',
+                    'border-color' => 'border-indigo-600', 
+                    'description' => 'Muestra enviada de nuevo con modificaciones. Espera retroalimentación para finalizar con el seguimiento',
+                    'progress' => 'w-3/4'        
                     ];
-                    }
-        }           
+
+            }
+        }
+
+        if ($this->sale_order_at) {
+
+            $status = [
+            'label' => 'Orden generada. Venta exitosa',
+            'bg-color' => 'bg-green-500',
+            'text-color' => 'text-green-500',
+            'border-color' => 'border-green-500', 
+            'description' => '¡Venta cerrada!',
+            'progress' => 'w-full'        
+            ];
+
+        } elseif ($this->denied_at) {
+
+            $status = [
+            'label' => 'Venta no concretada',
+            'bg-color' => 'bg-primary',
+            'text-color' => 'text-primary',
+            'border-color' => 'border-primary', 
+            'description' => 'Venta no concretada',       
+            ];
+
+        }       
 
         return [
             'id' => $this->id,
             'folio' => 'MUE-' . str_pad($this->id, 4, "0", STR_PAD_LEFT),
             'name' => $this->name,
+            'will_back' => $this->will_back,
+            'requires_modification' => $this->requires_modification,
+            'denied_at' => $this->denied_at?->isoFormat('DD MMM, YYYY'),
+            'devolution_date' => $this->devolution_date?->isoFormat('DD MMM, YYYY'),
             'quantity' => $this->quantity,
             'sent_at' => $this->sent_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'returned_at' => $this->returned_at?->isoFormat('DD MMM, YYYY h:mm A'),

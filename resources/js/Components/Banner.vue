@@ -48,5 +48,7 @@ watch(message, async () => {
                 </div>
             </div>
         </div>
+        <p class="bg-amber-600 border-amber-600"></p>
+        <p class="bg-blue-600 border-blue-600"></p>
     </div>
 </template>

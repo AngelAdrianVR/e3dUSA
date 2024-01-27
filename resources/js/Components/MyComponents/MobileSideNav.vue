@@ -58,7 +58,7 @@ export default {
                     options: [
                         {
                             label: 'Análisis de ventas',
-                            route: 'sale-analitics.index',
+                            route: route('sale-analitics.index'),
                             show: this.$page.props.auth.user.permissions.includes('Analisis de ventas'),
                             notifications: false,
                         },

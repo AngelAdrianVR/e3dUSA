@@ -12,11 +12,11 @@ class AuditController extends Controller
     
     public function index()
     {
-        $audits_created = AuditResource::collection(Audit::where('action', 'Creación')->latest()->paginate(50));
-        $audits_edited = AuditResource::collection(Audit::where('action', 'Edición')->latest()->paginate(50));
-        $audits_deleted = AuditResource::collection(Audit::where('action', 'Eliminación')->latest()->paginate(50));
+        $audits_created = AuditResource::collection(Audit::where('action', 'Creación')->latest()->paginate(100));
+        $audits_edited = AuditResource::collection(Audit::where('action', 'Edición')->latest()->paginate(100));
+        $audits_deleted = AuditResource::collection(Audit::where('action', 'Eliminación')->latest()->paginate(100));
 
-        $users = User::all();
+        $users = User::all(['id', 'name']);
 
         // return $audits_created;
         return inertia('ActionHistory/Index', compact('audits_created', 'audits_edited', 'audits_deleted', 'users'));

@@ -10,21 +10,68 @@ use App\Http\Resources\TagResource;
 use App\Models\Company;
 use App\Models\Oportunity;
 use App\Models\OportunityTask;
-use App\Models\Project;
 use App\Models\Sale;
 use App\Models\Tag;
 use App\Models\User;
-use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 
 class OportunityController extends Controller
 {
 
     public function index()
-    {
-        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks', 'company', 'companyBranch')->whereHas('users', function ($query) {
-            $query->where('users.id', auth()->id());
-        })->latest()->get());
+    {  
+         // descomentar y comentar la logica de abajo si hay algun fallo en el index-------------
+        // $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks')->whereHas('users', function ($query) {
+        //     $query->where('users.id', auth()->id());
+        // })->latest()->get());
+
+        // // return $oportunities;
+
+        // return inertia('Oportunity/Index',  compact('oportunities'));
+
+
+        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
+        $pre_oportunities = Oportunity::with('oportunityTasks')->whereHas('users', function ($query) {
+                 $query->where('users.id', auth()->id());
+                })->latest()->get();
+        $oportunities = $pre_oportunities->map(function ($oportunity) {
+
+            if ($oportunity->priority == 'Baja') {
+                $priority = [
+                    'label' => 'Baja',
+                    'color' => 'text-[#87CEEB]'
+                ];
+            } else if ($oportunity->priority == 'Media') {
+                $priority = [
+                    'label' => 'Media',
+                    'color' => 'text-orange-500'
+                ];
+            } else if ($oportunity->priority == 'Alta') {
+                $priority = [
+                    'label' => 'Alta',
+                    'color' => 'text-red-600'
+                ];
+            }
+           
+            return [
+                'id' => $oportunity->id,
+                'name' => $oportunity->name,
+                'contact' => $oportunity->contact,
+                'amount' => $oportunity->amount,
+                'status' => $oportunity->status,
+                'priority' => $priority,
+                'tasks_quantity' => $oportunity->oportunityTasks?->count(),
+                'start_date' => $oportunity->start_date?->isoFormat('DD MMM, YYYY h:mm A'),
+                'estimated_finish_date' => $oportunity->estimated_finish_date?->isoFormat('DD MMM, YYYY h:mm A'),
+                'finished_at' => $oportunity->finished_at?->isoFormat('DD MMM, YYYY h:mm A'),
+                'created_at' => [
+                    'diffForHumans' => $oportunity->created_at?->diffForHumans(),
+                    'isoFormat' => $oportunity->created_at?->isoFormat('DD MMMM YYYY'),
+                ],
+            ];
+        });
+
+        // return $oportunities;
 
         return inertia('Oportunity/Index',  compact('oportunities'));
     }
@@ -167,13 +214,15 @@ class OportunityController extends Controller
     }
 
 
-    public function show(Oportunity $oportunity)
+    public function show($oportunity_id)
     {
-        $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller', 'users', 'company', 'companyBranch')->latest()->get());
-        $users = User::where('is_active', true)->whereNot('id', 1)->get();
+        // $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller', 'users', 'company', 'companyBranch')->latest()->get());
+        $oportunity = OportunityResource::make(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller', 'users', 'company', 'companyBranch')->latest()->find($oportunity_id));
+        $oportunities = Oportunity::latest()->get(['id', 'name']);
+        $users = User::where('is_active', true)->whereNot('id', 1)->get(['id', 'name']);
         $defaultTab = request('defaultTab');
 
-        // return $oportunities;
+        // return $users;
 
         return inertia('Oportunity/Show', compact('oportunity', 'oportunities', 'users', 'defaultTab'));
     }

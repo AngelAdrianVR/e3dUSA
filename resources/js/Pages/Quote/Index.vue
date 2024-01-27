@@ -79,7 +79,7 @@
                                         <el-dropdown-item
                                             v-if="$page.props.auth.user.permissions.includes('Autorizar cotizaciones') && !scope.row.authorized_at"
                                             :command="'authorize-' + scope.row.id"><i
-                                                class="fa-solid fa-check"></i>Autoizar</el-dropdown-item>
+                                                class="fa-solid fa-check"></i>Autorizar</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>

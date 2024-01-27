@@ -13,6 +13,7 @@
       <div class="flex justify-between mt-5 mx-14">
         <div class="md:w-1/3 mr-2">
           <el-select
+            @change="this.$inertia.get(route('samples.show', selectedSample));"
             v-model="selectedSample"
             clearable
             filterable
@@ -21,7 +22,7 @@
             no-match-text="No se encontraron coincidencias"
           >
             <el-option
-              v-for="item in samples.data"
+              v-for="item in samples"
               :key="item.id"
               :label="item.name"
               :value="item.id"
@@ -43,9 +44,7 @@
 
           <el-tooltip
             v-if="
-              $page.props.auth.user.permissions.includes('Editar muestra') &&
-              !currentSample?.returned_at &&
-              currentSample
+            !currentSample?.returned_at && currentSample?.will_back
             "
             content="Marcar como muestra devuelta por el cliente"
             placement="top"
@@ -54,19 +53,45 @@
               @click="returnedSampleModal = true"
               class="rounded-lg bg-primary text-white p-2 text-sm"
             >
-              Muestra devuelta
+              Marcar como devuelta
             </button>
           </el-tooltip>
 
           <el-tooltip
             v-if="
-              $page.props.auth.user.permissions.includes(
-                'Generar orden de venta en muestra'
-              ) &&
-              currentSample?.returned_at &&
-              !currentSample?.sale_order_at
+              (currentSample?.status['label'] === 'Muestra devuelta' 
+              || currentSample?.status['label'] === 'Enviado. Esperando respuesta'
+              )
             "
-            content="Generar orden de venta para marcar como venta cerrada"
+            content="Marca la muestra como enviada de nuevo con modificaciones"
+            placement="top"
+          >
+            <div>
+              <el-popconfirm
+                confirm-button-text="Si"
+                cancel-button-text="No"
+                icon-color="#0355B5"
+                title="¿Continuar?"
+                @confirm="resentSample"
+              >
+                <template #reference>
+                  <button class="rounded-lg bg-secondary text-white p-2 text-sm">
+                    Enviar m. modificada
+                  </button>
+                </template>
+              </el-popconfirm>
+            </div>
+          </el-tooltip>
+
+          <el-tooltip
+            v-if="
+              $page.props.auth.user.permissions.includes('Generar orden de venta en muestra')
+              && (currentSample?.status['label'] === 'Muestra devuelta' 
+              || currentSample?.status['label'] === 'Enviado. Esperando respuesta'
+              || currentSample?.status['label'] === 'Muestra enviada de nuevo con modificación'
+              )
+            "
+            content="Gener orden de venta si la venta fue cerrada"
             placement="top"
           >
             <div>
@@ -78,8 +103,36 @@
                 @confirm="saleOrder"
               >
                 <template #reference>
-                  <button class="rounded-lg bg-primary text-white p-2 text-sm">
+                  <button class="rounded-lg bg-green-500 text-white p-2 text-sm">
                     Generar orden de venta
+                  </button>
+                </template>
+              </el-popconfirm>
+            </div>
+          </el-tooltip>
+
+          <el-tooltip
+            v-if="
+              $page.props.auth.user.permissions.includes('Generar orden de venta en muestra')
+              && (currentSample?.status['label'] === 'Muestra devuelta' 
+              || currentSample?.status['label'] === 'Enviado. Esperando respuesta'
+              || currentSample?.status['label'] === 'Muestra enviada de nuevo con modificación'
+              )
+            "
+            content="Si no cerraste la venta, finaliza seguimiento sin generar una orden"
+            placement="top"
+          >
+            <div>
+              <el-popconfirm
+                confirm-button-text="Si"
+                cancel-button-text="No"
+                icon-color="#0355B5"
+                title="¿Continuar?"
+                @confirm="finishSample"
+              >
+                <template #reference>
+                  <button class="rounded-lg bg-primary text-white p-2 text-sm">
+                    Finalizar seguimiento
                   </button>
                 </template>
               </el-popconfirm>
@@ -133,36 +186,14 @@
             @mouseleave="hideOverlay"
             class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center"
           >
-            <el-image
-              v-if="currentSample?.catalog_product"
-              style="height: 100%"
-              :src="currentSample?.catalog_product?.media[0]?.original_url"
-              fit="fit"
-            >
-              <template #error>
-                <div class="flex justify-center items-center text-[#ababab]">
-                  <i class="fa-solid fa-image text-6xl"></i>
-                </div>
-              </template>
-            </el-image>
+            <img v-if="currentSample?.catalog_product" class="object-contain h-60" :src="currentSample?.catalog_product?.media[currentImage]?.original_url" alt="">
+            <img v-else class="object-contain h-60" :src="currentSample?.media[currentImage]?.original_url" alt="">
 
-            <el-image
-              v-else
-              style="height: 100%"
-              :src="currentSample?.media[0]?.original_url"
-              fit="fit"
-            >
-              <template #error>
-                <div class="flex justify-center items-center text-[#ababab]">
-                  <i class="fa-solid fa-image text-6xl"></i>
-                </div>
-              </template>
-            </el-image>
             <div
               v-if="imageHovered"
               @click="
                 openImage(
-                  currentSample?.catalog_product?.media[0]?.original_url
+                  currentSample?.catalog_product?.media[currentImage]?.original_url
                 )
               "
               class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in"
@@ -172,41 +203,22 @@
               ></i>
             </div>
           </figure>
+            <div v-if="sample.data.media?.length > 1" class="mt-3 flex items-center justify-center space-x-3">
+              <i @click="currentImage = index" v-for="(image, index) in sample.data.media?.length" :key="index" 
+                :class="index == currentImage ? 'text-black' : 'text-gray-300'" 
+                class="fa-solid fa-circle text-xs cursor-pointer"></i>
+            </div>
 
           <!-- ----------------------progress bar---------------------- -->
           <el-tooltip
-            v-if="currentSample"
-            content="Progreso para cerrar venta"
+            content="Progreso para dar seguimiento a la muestra"
             placement="top"
           >
-            <div class="mt-8 ml-6 text-sm">
-              <p
-                v-if="
-                  currentSample?.status['label'] ==
-                  'Orden generada. Venta exitosa'
-                "
-                class="text-secondary text-center text-xs mb-1"
-              >
-                ¡Venta cerrada!
-              </p>
-              <div class="mb-5 border-2 border-[#b3b3b3] rounded-full">
-                <div
-                  v-if="
-                    currentSample?.status['label'] ==
-                    'Enviado. Esperando respuesta'
-                  "
-                  class="h-[10px] bg-primary rounded-full w-1/3"
-                ></div>
-                <div
-                  v-else-if="
-                    currentSample?.status['label'] == 'Muestra devuelta'
-                  "
-                  class="h-[10px] bg-primary rounded-full w-2/3"
-                ></div>
-                <div
-                  v-else
-                  class="h-[10px] bg-green-600 rounded-full w-full"
-                ></div>
+            <div class="mt-14 ml-6 text-sm">
+              <p class="text-secondary text-center text-xs mb-2">{{ currentSample?.status['description'] }}</p>
+
+              <div class="mb-5 border border-gray1 rounded-full">
+                <div :class="currentSample?.status['progress'] + ' ' + currentSample?.status['bg-color']" class="h-[12px] rounded-full"></div>
               </div>
             </div>
           </el-tooltip>
@@ -265,17 +277,27 @@
               <p class="w-1/3 text-[#9A9A9A]">Cantidad de muestras enviada</p>
               <p>
                 {{ currentSample?.quantity }}
-                {{ currentSample?.catalog_product?.measure_unit }}
+                {{ currentSample?.catalog_product?.measure_unit ?? 'Unidades' }}
               </p>
+            </div>
+            <div v-if="currentSample?.devolution_date" class="flex mb-2 space-x-2">
+              <p class="w-1/3 text-[#9A9A9A]">Fecha esperada de devolución</p>
+              <p class="bg-red-200 px-3">{{ currentSample?.devolution_date }}</p>
             </div>
             <div class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Devuelta el</p>
-              <p>{{ currentSample?.returned_at ?? "--" }}</p>
+              <p :class="currentSample?.returned_at ? 'bg-green-200 px-3' : ''">{{ currentSample?.returned_at ?? "--" }}</p>
             </div>
-            <div class="flex mb-6 space-x-2">
+            <div v-if="currentSample?.sale_order_at" class="flex mb-6 space-x-2">
               <p class="w-1/3 text-[#9A9A9A]">Orden generada el</p>
               <p class="text-[#4FC03D]">
                 {{ currentSample?.sale_order_at ?? "--" }}
+              </p>
+            </div>
+            <div v-if="currentSample?.denied_at" class="flex mb-2 space-x-2">
+              <p class="w-1/3 text-[#9A9A9A]">Venta rechazada el</p>
+              <p class="text-primary">
+                {{ currentSample?.denied_at ?? "--" }}
               </p>
             </div>
             <div class="flex mb-2 space-x-2">
@@ -287,8 +309,8 @@
               </p>
             </div>
             <div class="flex mb-2 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">Comentarios/notas</p>
-              <p>
+              <p class="w-1/3 text-[#9A9A9A]">Comentarios/notas de seguimiento</p>
+              <p class="bg-yellow-200 px-2">
                 {{ currentSample?.comments ?? "--" }}
               </p>
             </div>
@@ -309,51 +331,54 @@
 
           <!-- -------------------------- INFORMACION DE PRODUCTO (2)---------------------------- -->
           <div v-if="tabs == 2" class="px-7 py-7 text-sm">
-            <div class="flex mb-2 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">ID del producto</p>
-              <p>{{ currentSample?.catalog_product?.id }}</p>
+            <div v-if="currentSample?.catalog_product?.id">
+              <div class="flex mb-2 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">ID del producto</p>
+                <p>{{ currentSample?.catalog_product?.id }}</p>
+              </div>
+              <div class="flex mb-6 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">Características</p>
+                <p>
+                  {{
+                    currentSample?.catalog_product?.features?.raw ??
+                    "--"
+                  }}
+                </p>
+              </div>
+              <div class="flex mb-2 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">Número parte</p>
+                <p>{{ currentSample?.catalog_product?.part_number }}</p>
+              </div>
+              <div class="flex mb-6 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">Unidad de medida</p>
+                <p>{{ currentSample?.catalog_product?.measure_unit }}</p>
+              </div>
+              <div class="flex mb-6 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">Costo de producción</p>
+                <p class="text-[#4FC03D]">
+                  {{ currentSample?.catalog_product?.cost.number_format }}
+                </p>
+              </div>
+              <div class="flex mb-2 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">
+                  Cantidad miníma permitida en almacén
+                </p>
+                <p>
+                  {{ currentSample?.catalog_product?.min_quantity }}
+                  {{ currentSample?.catalog_product?.measure_unit }}
+                </p>
+              </div>
+              <div class="flex space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">
+                  Cantidad máxima permitida en almacén
+                </p>
+                <p>
+                  {{ currentSample?.catalog_product?.max_quantity }}
+                  {{ currentSample?.catalog_product?.measure_unit }}
+                </p>
+              </div>
             </div>
-            <div class="flex mb-6 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">Características</p>
-              <p>
-                {{
-                  currentSample?.catalog_product?.features?.raw?.join(", ") ??
-                  "--"
-                }}
-              </p>
-            </div>
-            <div class="flex mb-2 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">Número parte</p>
-              <p>{{ currentSample?.catalog_product?.part_number }}</p>
-            </div>
-            <div class="flex mb-6 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">Unidad de medida</p>
-              <p>{{ currentSample?.catalog_product?.measure_unit }}</p>
-            </div>
-            <div class="flex mb-6 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">Costo de producción</p>
-              <p class="text-[#4FC03D]">
-                {{ currentSample?.catalog_product?.cost.number_format }}
-              </p>
-            </div>
-            <div class="flex mb-2 space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">
-                Cantidad miníma permitida en almacén
-              </p>
-              <p>
-                {{ currentSample?.catalog_product?.min_quantity }}
-                {{ currentSample?.catalog_product?.measure_unit }}
-              </p>
-            </div>
-            <div class="flex space-x-2">
-              <p class="w-1/3 text-[#9A9A9A]">
-                Cantidad máxima permitida en almacén
-              </p>
-              <p>
-                {{ currentSample?.catalog_product?.max_quantity }}
-                {{ currentSample?.catalog_product?.measure_unit }}
-              </p>
-            </div>
+            <p class="text-center text-sm text-gray-500" v-else> El producto de muestra no está registrado en catálogo de productos</p>
           </div>
 
           <!-- ------------------------CLIENTE (3)-------------------------->
@@ -510,11 +535,12 @@ export default {
     return {
       form,
       selectedSample: "",
+      currentImage: 0,
       currentSample: null,
       imageHovered: false,
       showConfirmModal: false,
       returnedSampleModal: false,
-      helpDialog: false,
+      helpDialog: true,
       tabs: 1,
     };
   },
@@ -522,12 +548,12 @@ export default {
     AppLayoutNoHeader,
     PrimaryButton,
     CancelButton,
-    Link,
     DropdownLink,
     Dropdown,
     ConfirmationModal,
-    Modal,
     InputError,
+    Modal,
+    Link,
   },
   props: {
     catalog_product: Object,
@@ -560,8 +586,15 @@ export default {
       });
     },
     saleOrder() {
-      this.$inertia.put(route('samples.sale-order', this.selectedSample));
-      this.$inertia.visit('/sales/create', { method: 'get' });
+      this.$inertia.put(route('samples.sale-order', this.sample.data.id));
+      this.$inertia.get(route('sales.create'), { sampleId: this.sample.data.id }); // manda el id al metodo de crear orden de venta
+      // this.$inertia.visit('/sales/create', { method: 'get' });
+    },
+    finishSample() {
+      this.$inertia.put(route('samples.finish-sample', this.sample.data.id));
+    },
+    resentSample() {
+      this.$inertia.put(route('samples.resent-sample', this.sample.data.id));
     },
 
     async deleteItem() {
@@ -603,13 +636,14 @@ export default {
       }
     },
   },
-  watch: {
-    selectedSample(newVal) {
-      this.currentSample = this.samples.data.find((item) => item.id == newVal);
-    },
-  },
+  // watch: {
+  //   selectedSample() {
+  //     this.$inertia.get(route('samples.show', this.selectedSample));
+  //   },
+  // },
   mounted() {
-    this.selectedSample = this.sample.id;
+    this.selectedSample = this.sample.data.id;
+    this.currentSample = this.sample.data;
   },
 };
 </script>

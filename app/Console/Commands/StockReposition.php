@@ -24,10 +24,14 @@ class StockReposition extends Command
         if ($rawMaterials->count()) {
             $super_admins = User::whereNull('employee_properties')->get();
             $others = User::whereIn('employee_properties->department', ['Administración', 'Compras', 'Almacén'])->where('is_active', 1)->get();
+            $direction = User::whereIn('employee_properties->puesto', ['Asistente de director'])->where('is_active', 1)->get();
 
             // notify users
             foreach ($others as $other) {
                 $other->notify(new StockRepositionNotification($rawMaterials));
+            }
+            foreach ($direction as $item) {
+                $item->notify(new StockRepositionNotification($rawMaterials));
             }
             foreach ($super_admins as $super) {
                 $super->notify(new StockRepositionNotification($rawMaterials));

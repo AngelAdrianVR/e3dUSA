@@ -8,7 +8,7 @@
                         class="cursor-pointer hover:underline mb-4 items-center font-semibold text-xs text-[#0355B5] flex flex-col">
                         <span>Horas / semana</span>
                         <span>{{ $page.props.week_time.formatted }} / {{
-                            $page.props.auth.user?.employee_properties?.hours_per_week ?? 0 }}h</span>
+                            $page.props.auth.user?.employee_properties?.hours_per_week_formatted ?? '0 h' }}</span>
                     </div>
                     <template v-for="(menu, index) in menus" :key="index">
                         <SideNavLink v-if="menu.show" :href="menu.route" :active="menu.active" :dropdown="menu.dropdown"

@@ -14,7 +14,7 @@ class QualityController extends Controller
     
     public function index()
     {
-        $pre_qualities = QualityResource::collection(Quality::with('production.productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'supervisor')->latest()->get());
+        $pre_qualities = Quality::with('supervisor:id,name')->latest()->get(['id', 'supervisor_id', 'status', 'created_at', 'production_id']);
         $qualities = $pre_qualities->map(function ($quality) {
 
             return [
@@ -25,7 +25,7 @@ class QualityController extends Controller
                     'id' => $quality->supervisor->id,
                     'name' => $quality->supervisor->name
                 ],
-                'folio' => 'OP-' . str_pad($quality->production->id, 4, "0", STR_PAD_LEFT),
+                'folio' => 'OP-' . str_pad($quality->production_id, 4, "0", STR_PAD_LEFT),
                 'status' => $quality->status,
                 'created_at' => $quality->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
             ];
@@ -39,7 +39,7 @@ class QualityController extends Controller
     
     public function create()
     {
-        $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct')->whereHas('productions')->latest()->get();
+        $pre_productions = Sale::with(['user:id,name', 'productions'])->whereHas('productions')->latest()->get(['id', 'user_id']);
         $productions = $pre_productions->map(function ($production) {
 
             $finishedCount = 0;
@@ -60,7 +60,7 @@ class QualityController extends Controller
             ];
         });
 
-        // return $productions;
+        return $pre_productions;
 
         return inertia('Quality/Create', compact('productions'));
     }
@@ -94,13 +94,13 @@ class QualityController extends Controller
     
     public function show($quality_id)
     {
-        $quality = QualityResource::make(Quality::with('supervisor', 'production.catalogProductCompanySales.catalogProductCompany.catalogProduct')->find($quality_id));
-        $pre_qualities = Quality::with('supervisor')->latest()->get();
+        $quality = QualityResource::make(Quality::with(['supervisor:id,name', 'production.catalogProductCompanySales.catalogProductCompany.catalogProduct'])->find($quality_id));
+        $pre_qualities = Quality::with(['supervisor:id,name'])->latest()->get(['id', 'production_id', 'supervisor_id']);
         $qualities = $pre_qualities->map(function ($quality) {
 
             return [
                 'id' => $quality->id,
-                'folio' => 'OP-' . str_pad($quality->production->id, 4, "0", STR_PAD_LEFT),
+                'folio' => 'OP-' . str_pad($quality->production_id, 4, "0", STR_PAD_LEFT),
             ];
         });
         // return $quality;
@@ -111,7 +111,7 @@ class QualityController extends Controller
     public function edit(Quality $quality)
     {
         $production = Sale::with('catalogProductCompanySales.catalogProductCompany.catalogProduct')->find($quality->production_id);
-        $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct')->whereHas('productions')->latest()->get();
+        $pre_productions = Sale::with(['user:id,name', 'productions'])->whereHas('productions')->latest()->get(['id', 'user_id']);
         $productions = $pre_productions->map(function ($production) {
 
             $finishedCount = 0;

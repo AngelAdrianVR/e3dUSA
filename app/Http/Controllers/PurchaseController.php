@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
 
 class PurchaseController extends Controller
 {
-    
+
     public function index()
     {
         // $purchases = PurchaseResource::collection(Purchase::with('contact', 'supplier', 'user')->latest()->get());
@@ -25,13 +25,13 @@ class PurchaseController extends Controller
         $pre_purchases = PurchaseResource::collection(Purchase::with('supplier', 'user')->latest()->get());
         $purchases = $pre_purchases->map(function ($purchase) {
 
-            if($purchase->status == 0){
+            if ($purchase->status == 0) {
                 $status = 'Pendiente';
-            }elseif($purchase->status == 1){
+            } elseif ($purchase->status == 1) {
                 $status = 'Autorizado';
-            }elseif($purchase->status == 2){
+            } elseif ($purchase->status == 2) {
                 $status = 'Emitido';
-            }else{
+            } else {
                 $status = 'Recibido';
             }
 
@@ -45,13 +45,13 @@ class PurchaseController extends Controller
                 'recieved_at' => $purchase->recieved_at?->isoFormat('YYYY MMM DD') ?? 'No recibido',
                 'supplier_name' => $purchase->supplier?->name,
                 'created_at' => $purchase->created_at?->isoFormat('DD MMMM YYYY, h:mm A'),
-                   ];
-               });
+            ];
+        });
         // return $purchases;        
         return inertia('Purchase/Index', compact('purchases'));
     }
 
-    
+
     public function create()
     {
         $suppliers = Supplier::get(['id', 'name', 'nickname']);
@@ -61,16 +61,16 @@ class PurchaseController extends Controller
         return inertia('Purchase/Create', compact('suppliers'));
     }
 
-    
+
     public function store(Request $request)
     {
         $validation = $request->validate([
-        'notes' => 'nullable',
-        'expected_delivery_date' => 'nullable|date|after:yesterday',
-        'supplier_id' => 'required',
-        'contact_id' => 'required',
-        'products' => 'nullable|min:1',
-        'bank_information' => 'required',
+            'notes' => 'nullable',
+            'expected_delivery_date' => 'nullable|date|after:yesterday',
+            'supplier_id' => 'required',
+            'contact_id' => 'required',
+            'products' => 'nullable|min:1',
+            'bank_information' => 'required',
         ]);
 
         $purchase = Purchase::create($validation + ['user_id' => auth()->user()->id]);
@@ -78,7 +78,7 @@ class PurchaseController extends Controller
 
         if ($can_authorize) {
             $purchase->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
-        }else {
+        } else {
             // notify to Maribel
             $maribel = User::find(3);
             $maribel->notify(new ApprovalRequiredNotification('orden de compra', 'purchases.index'));
@@ -89,24 +89,24 @@ class PurchaseController extends Controller
         return to_route('purchases.index');
     }
 
-    
+
     public function show($purchase_id)
     {
-        $purchase = PurchaseResource::make(Purchase::with('user','supplier', 'contact')->find($purchase_id));
+        $purchase = PurchaseResource::make(Purchase::with('user', 'supplier', 'contact')->find($purchase_id));
         $pre_purchases = Purchase::latest()->get();
         $purchases = $pre_purchases->map(function ($purchase) {
             return [
                 'id' => $purchase->id,
                 'folio' => 'OC-' . str_pad($purchase->id, 4, "0", STR_PAD_LEFT),
-                   ];
-               });
+            ];
+        });
 
         // return $purchase;
 
         return inertia('Purchase/Show', compact('purchase', 'purchases'));
     }
 
-    
+
     public function edit(Purchase $purchase)
     {
         $suppliers = Supplier::get(['id', 'name', 'nickname']);
@@ -116,7 +116,7 @@ class PurchaseController extends Controller
         return inertia('Purchase/Edit', compact('purchase', 'suppliers'));
     }
 
-    
+
     public function update(Request $request, Purchase $purchase)
     {
         $validation = $request->validate([
@@ -126,16 +126,16 @@ class PurchaseController extends Controller
             'contact_id' => 'required',
             'products' => 'nullable|min:1',
             'bank_information' => 'required',
-            ]);
-    
-            $purchase->update($validation + ['user_id' => auth()->user()->id]);
-            
-            event(new RecordEdited($purchase));
-    
-            return to_route('purchases.index');
+        ]);
+
+        $purchase->update($validation + ['user_id' => auth()->user()->id]);
+
+        event(new RecordEdited($purchase));
+
+        return to_route('purchases.index');
     }
 
-    
+
     public function destroy(Purchase $purchase)
     {
         $purchase->delete();
@@ -181,8 +181,41 @@ class PurchaseController extends Controller
 
         $clone->save();
 
-    
+
 
         return response()->json(['message' => "Órden de compra clonada: {$clone->creator}", 'newItem' => PurchaseResource::make($clone)]);
+    }
+
+    public function authorizePurchase(Purchase $purchase)
+    {
+        $purchase->update([
+            'authorized_at' => now(),
+            'authorized_user_name' => auth()->user()->name,
+            'status' => 1,
+        ]);
+
+        return response()->json(['message' => 'Compra autorizadda', 'item' => $purchase]); //en caso de actualizar en la misma vista descomentar
+        // return to_route('quotes.index'); // en caso de mandar al index, descomentar.
+    }
+
+    public function showTemplate($purchase_id)
+    {
+        $purchase = Purchase::with('supplier')->find($purchase_id);
+        $products = $purchase->products;
+        $raw_materials_ids = [];
+        foreach ($products as $product) {
+            $raw_materials_ids[] = $product['id'];
+        }
+
+        $raw_materials = RawMaterial::whereIn('id', $raw_materials_ids)->get([
+            'id',
+            'part_number',
+            'description',
+            'measure_unit',
+            'cost'
+        ]);
+
+        // return $sale;
+        return inertia('Purchase/Template', compact('purchase', 'raw_materials'));
     }
 }

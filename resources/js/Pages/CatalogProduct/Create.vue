@@ -174,17 +174,18 @@
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
                         </el-tooltip>
-                        <el-select v-model="rawMaterial.raw_material_id" clearable filterable
+                        <el-select @change="fetchRawMaterial" v-model="rawMaterial.raw_material_id" clearable filterable
                             placeholder="Busca en materias primas" no-data-text="No hay materias primas registradas"
                             no-match-text="No se encontraron coincidencias">
                             <el-option v-for="item in raw_materials" :key="item.id" :label="item.name" :value="item.id" />
                         </el-select>
-                        <!-- <el-tooltip content="Agregar materia prima" placement="top">
-                            <Link class="ml-3" :href="route('raw-materials.create')">
-                            <PrimaryButton class="!rounded-lg">+</PrimaryButton>
-                            </Link>
-                        </el-tooltip> -->
                     </div>
+                    <div v-if="loading" class="rounded-md bg-[#CCCCCC] text-xs text-gray-500 text-center p-4">
+                        cargando imagen...
+                    </div>
+                    <figure v-else-if="selectedRawMaterial" class="rounded-md">
+                        <img :src="selectedRawMaterial.media[0]?.original_url" class="rounded-md object-cover w-36">
+                    </figure>
                     <div class="flex items-center mb-2">
                         <el-tooltip content="proceso(s) de produccion" placement="top">
                             <span
@@ -254,12 +255,14 @@ export default {
         return {
             form,
             editIndex: null,
+            loading: false,
             rawMaterial: {
                 raw_material_id: null,
                 quantity: null,
                 production_costs: [],
             },
             newFeature: null,
+            selectedRawMaterial: null,
             features: [],
             mesureUnits: [
                 'Pieza(s)',
@@ -414,6 +417,7 @@ export default {
             }
 
             this.resetProductForm();
+            this.selectedRawMaterial = null;
         },
         deleteProduct(index) {
             this.form.raw_materials.splice(index, 1);
@@ -422,6 +426,7 @@ export default {
             const product = { ...this.form.raw_materials[index] };
             this.rawMaterial = product;
             this.editIndex = index;
+            this.fetchRawMaterial();
         },
         resetProductForm() {
             this.rawMaterial.raw_material_id = null;
@@ -434,7 +439,24 @@ export default {
                 this.features.push(this.newFeature);
                 this.newFeature = '';
             }
-        }
+        },
+        async fetchRawMaterial() {
+            this.loading = true;
+            try {
+                const response = await axios.get(route('raw-materials.fetch', this.rawMaterial.raw_material_id)); 
+
+                if (response.status === 200) {
+                this.selectedRawMaterial = response.data.item;
+                }
+
+            } catch (error) {
+                console.log(error);
+
+            } finally {
+                this.loading = false;
+            }
+
+        },
     },
 };
 </script>

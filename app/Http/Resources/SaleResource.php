@@ -7,57 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class SaleResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
-        // $hasStarted = $this->productions?->whereNotNull('started_at')->count();
-        // $hasNotFinished = $this->productions?->whereNull('finished_at')->count();
-        // $lowStock = $this->productions?->where('has_low_stock', true)->count();
-
-        // if ($this->authorized_at == null) {
-        //     $status = [
-        //         'label' => 'Esperando autorización',
-        //         'text-color' => 'text-amber-500',
-        //         'border-color' => 'border-amber-500',
-        //     ];
-        // } elseif ($this->productions) {
-        //     if ($lowStock) {
-        //         $status = [
-        //             'label' => 'Falta de materia prima',
-        //             'text-color' => 'text-red-500',
-        //             'border-color' => 'border-red-500',
-        //         ];
-        //     } elseif (!$hasStarted) {
-        //         $status = [
-        //             'label' => 'Producción sin iniciar',
-        //             'text-color' => 'text-gray-500',
-        //             'border-color' => 'border-gray-500',
-        //             ];
-        //     } elseif ($hasStarted && $hasNotFinished) {
-        //         $status = [
-        //             'label' => 'Producción en proceso',
-        //             'text-color' => 'text-blue-500',
-        //             'border-color' => 'border-blue-500',
-        //         ];
-        //     } else {
-        //         $status = [
-        //             'label' => 'Producción terminada',
-        //             'text-color' => 'text-green-500',
-        //             'border-color' => 'border-green-500',
-        //         ];
-        //     }
-        // } else {
-        //     $status = [
-        //         'label' => 'Autorizado sin orden de producción',
-        //         'text-color' => 'text-amber-500',
-        //         'border-color' => 'border-amber-500',
-        //     ];
-        // }
-
         return [
             'id' => $this->id,
             'folio' => 'OV-' . str_pad($this->id, 4, "0", STR_PAD_LEFT),
@@ -68,10 +19,10 @@ class SaleResource extends JsonResource
             'oce_name' => $this->oce_name,
             'order_via' => $this->order_via,
             'tracking_guide' => $this->tracking_guide,
-            'promise_date' => $this->promise_date?->isoFormat('DD MMMM YYYY'),
+            'promise_date' => $this->promise_date?->isoFormat('DD MMMM YYYY') ?? '--',
             'invoice' => $this->invoice,
             'is_high_priority' => $this->is_high_priority,
-            'products' => $this->products,
+            // 'products' => $this->whenLoaded('products'),
             'notes' => $this->notes ?? '--',
             'authorized_user_name' => $this->authorized_user_name ?? 'No autorizado',
             'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:mm A') ?? 'No autorizado',

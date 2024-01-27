@@ -179,6 +179,7 @@ Route::put('sales/authorize/{sale}', [SaleController::class, 'authorizeOrder'])-
 Route::get('sales/print/{sale}', [SaleController::class, 'print'])->name('sales.print');
 Route::post('sales/update-with-media/{sale}', [SaleController::class, 'updateWithMedia'])->name('sales.update-with-media')->middleware('auth');
 Route::get('sales-get-unauthorized', [SaleController::class, 'getUnauthorized'])->name('sales.get-unauthorized');
+Route::get('sales-get-matches/{query}', [SaleController::class, 'getMatches'])->name('sales.get-matches');
 
 // ------- CRM(Companybranches sucursales Routes)  ---------
 Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');
@@ -196,12 +197,15 @@ Route::post('purchases/massive-delete', [PurchaseController::class, 'massiveDele
 Route::post('purchases/clone', [PurchaseController::class, 'clone'])->name('purchases.clone');
 Route::put('purchases/mark-order-done/{currentPurchase}', [PurchaseController::class, 'markOrderDone'])->name('purchases.done');
 Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseController::class, 'markOrderRecieved'])->name('purchases.recieved');
+Route::put('purchases/authorize/{purchase}', [PurchaseController::class, 'authorizePurchase'])->name('purchases.authorize');
+Route::get('purchases-show-template/{purchase_id}', [PurchaseController::class, 'showTemplate'])->name('purchases.show-template')->middleware('auth');
 
 
 //-------------- Projects routes ------------------
 Route::resource('projects', ProjectController::class)->middleware('auth');
 Route::get('projects-dashboard', [ProjectController::class, 'dashboard'])->middleware('auth')->name('projects.dashboard');
 Route::post('projects/update-with-media/{project}', [ProjectController::class, 'updateWithMedia'])->name('projects.update-with-media')->middleware('auth');
+Route::get('projects-get-matches/{query}', [ProjectController::class, 'getMatches'])->name('projects.get-matches');
 
 
 //-------------------------- Tasks routes -------------------------
@@ -320,6 +324,8 @@ Route::resource('samples', SampleController::class)->middleware('auth');
 Route::post('samples/massive-delete', [SampleController::class, 'massiveDelete'])->name('samples.massive-delete');
 Route::put('samples/returned-sample/{sample}', [SampleController::class, 'returned'])->name('samples.returned');
 Route::put('samples/sale-order-sample/{sample}', [SampleController::class, 'saleOrder'])->name('samples.sale-order');
+Route::put('samples/finish-sample/{sample}', [SampleController::class, 'finishSample'])->name('samples.finish-sample');
+Route::put('samples/resent-sample/{sample}', [SampleController::class, 'resentSample'])->name('samples.resent-sample');
 Route::post('samples/update-with-media/{sample}', [SampleController::class, 'updateWithMedia'])->name('samples.update-with-media')->middleware('auth');
 
 // ------- Design department routes  ---------

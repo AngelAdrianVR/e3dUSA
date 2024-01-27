@@ -34,7 +34,7 @@
 
     <div class="grid grid-cols-2 gap-x-4">
       <figure class="bg-[#D9D9D9] w-full h-28 my-3 rounded-[10px]">
-        <el-image style="height: 100%; border-radius: 10px;"
+        <!-- <el-image style="height: 100%; border-radius: 10px;"
           :src="catalog_product_company_sale.catalog_product_company?.catalog_product?.media[0]?.original_url"
           fit="contain">
           <template #error>
@@ -42,7 +42,8 @@
               <i class="fa-solid fa-image text-6xl"></i>
             </div>
           </template>
-        </el-image>
+        </el-image> -->
+        <img class="object-contain h-28" :src="catalog_product_company_sale.catalog_product_company?.catalog_product?.media[0]?.original_url" alt="">
       </figure>
     
       <div class="flex flex-col space-y-3">

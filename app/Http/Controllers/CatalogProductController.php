@@ -43,13 +43,15 @@ class CatalogProductController extends Controller
 
     public function create()
     {
-        $raw_materials = RawMaterial::all();
+        $raw_materials = RawMaterial::all(['id', 'name']);
         $production_costs = ProductionCost::all();
 
         // consecutive
         $last = CatalogProduct::latest()->first();
         $next_id = $last ? $last->id + 1 : 1;
         $consecutive = str_pad($next_id, 4, "0", STR_PAD_LEFT);
+
+        // return $raw_materials;
 
         return inertia('CatalogProduct/Create', compact('raw_materials', 'production_costs', 'consecutive'));
     }
@@ -101,14 +103,8 @@ class CatalogProductController extends Controller
     public function show($catalog_product_id)
     {
         $catalog_product = CatalogProductResource::make(CatalogProduct::with('rawMaterials.storages.storageable', 'storages')->find($catalog_product_id));
-        $pre_catalog_products = CatalogProductResource::collection(CatalogProduct::latest()->get());
-        $catalog_products = $pre_catalog_products->map(function ($catalog_product) {
-            return [
-                'id' => $catalog_product->id,
-                'name' => $catalog_product->name,
-                   ];
-               });
-
+        $catalog_products = CatalogProduct::latest()->get(['id', 'name']);
+        
         // return $catalog_product;
         return inertia('CatalogProduct/Show', compact('catalog_products', 'catalog_product'));
     }
@@ -283,7 +279,12 @@ class CatalogProductController extends Controller
     {
         $catalog_product = $catalog_product->load(['media']);
         $stock = $catalog_product->storages->count() ? $catalog_product->storages[0] : null;
+        $raw_materials = $catalog_product->rawMaterials;
+        $commited_units = [];
+        foreach ($raw_materials as $item) {
+            $commited_units[] = $item->getCommitedUnits();
+        }
 
-        return response()->json(['item' => $catalog_product, 'stock' => $stock]);
+        return response()->json(['item' => $catalog_product, 'stock' => $stock, 'commited_units' => $commited_units]);
     }
 }

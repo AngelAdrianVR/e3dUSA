@@ -19,7 +19,7 @@
                     <label>Folio de la oportunidad *</label>
                     <el-select @change="getCompany" class="w-full" v-model="form.oportunity_id" clearable filterable placeholder="Seleccione"
                         no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
-                        <el-option v-for="oportunity in oportunities.data" :key="oportunity" :label="oportunity.folio + ' - ' + oportunity.name" :value="oportunity.id" />
+                        <el-option v-for="oportunity in oportunities" :key="oportunity" :label="oportunity.folio + ' - ' + oportunity.name" :value="oportunity.id" />
                     </el-select>
                     <InputError :message="form.errors.oportunity_id" />
                 </div>
@@ -156,7 +156,7 @@ export default {
       this.form.contact_phone = this.company_branch_obj?.contacts?.find(contact => contact.id == this.form.contact_id)?.phone;
     },
     getCompany() {
-        const oportunity = this.oportunities.data.find(oportunity => oportunity.id === this.form.oportunity_id);
+        const oportunity = this.oportunities.find(oportunity => oportunity.id === this.form.oportunity_id);
         // console.log(oportunity);
         
         this.form.company_id = null;
