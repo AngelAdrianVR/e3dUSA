@@ -12,7 +12,7 @@
       ></i>
     </el-tooltip>
     <figure class="w-full my-3 rounded-[10px]">
-        <el-image style="height: 100%; border-radius: 10px;"
+        <!-- <el-image class="border" style="height: 100%; border-radius: 10px;"
           :src="company_product.media[0]?.original_url"
           fit="contain">
           <template #error>
@@ -20,7 +20,8 @@
               <i class="fa-solid fa-image text-6xl"></i>
             </div>
           </template>
-        </el-image>
+        </el-image> -->
+        <img class="object-contain h-40 rounded-md" :src="company_product.media[0]?.original_url" alt="">
       </figure>
 
       <div>
