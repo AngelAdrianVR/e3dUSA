@@ -207,15 +207,16 @@ class PurchaseController extends Controller
             $raw_materials_ids[] = $product['id'];
         }
 
-        $raw_materials = RawMaterial::whereIn('id', $raw_materials_ids)->get([
+        $raw_materials = RawMaterial::with('media')->whereIn('id', $raw_materials_ids)->get([
             'id',
+            'name',
             'part_number',
             'description',
             'measure_unit',
             'cost'
         ]);
 
-        // return $sale;
+        // return $raw_materials;
         return inertia('Purchase/Template', compact('purchase', 'raw_materials'));
     }
 }

@@ -39,9 +39,10 @@
                 <thead>
                     <tr class="*:bg-gray2 *:px-4 *:py-3 *:border *:border-gray1 text-left">
                         <th>Número de parte</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
                         <th>Cantidad</th>
                         <th>Unidad</th>
-                        <th>Descripción</th>
                         <th>Valor unit.</th>
                         <th>Importe</th>
                     </tr>
@@ -50,15 +51,28 @@
                     <tr v-for="item in raw_materials" :key="item.id"
                         class="*:px-4 *:py-3 *:border *:border-gray1 text-left">
                         <td>{{ item.part_number }}</td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.description }}</td>
                         <td>{{ purchase.products.find(prd => prd.id === item.id)?.quantity }}</td>
                         <td>{{ item.measure_unit }}</td>
-                        <td>{{ item.description }}</td>
                         <td>${{ item.cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</td>
                         <td>${{ (item.cost * purchase.products.find(prd => prd.id ===
                             item.id)?.quantity).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</td>
                     </tr>
                 </tbody>
             </table>
+            <!-- imagenes -->
+            <section>
+                <div class="w-11/12 mx-auto my-3 grid grid-cols-3 gap-4 ">
+                    <template v-for="item in raw_materials" :key="item.id">
+                        <div class="bg-gray-200 rounded-t-xl rounded-b-md border"
+                            style="font-size: 8px;">
+                            <img class="rounded-t-xl max-h-52 mx-auto" :src="item.media[0]?.original_url">
+                            <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
+                        </div>
+                    </template>
+                </div>
+            </section>
         </main>
         <footer class="mx-8 mt-8 grid grid-cols-4 gap-x-3 gap-y-1s">
             <section class="flex flex-col col-span-3">
