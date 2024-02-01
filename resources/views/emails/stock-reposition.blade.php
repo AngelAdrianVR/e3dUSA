@@ -4,15 +4,15 @@
 {{ $intro }}
 
 @foreach ($products as $product)
-@php
- $raw_material = App\Models\RawMaterial::find($product->raw_material_id);   
-@endphp
+{{-- @php
+ $raw_material = App\Models\RawMaterial::find($product->id);   
+@endphp --}}
 <li>
     <strong>
-        {{ $raw_material->name }} ({{ $raw_material->storages[0]->quantity }} pzs.)
+        {{ $product->name }} ({{ $product->storages[0]->quantity }} pzs.)
     </strong>.
-    Punto de reposición: {{ $raw_material->min_quantity }} <br>
-    Punto máximo sugerido: {{ $raw_material->max_quantity }}
+    Punto de reposición: {{ $product->min_quantity }} <br>
+    Punto máximo sugerido: {{ $product->max_quantity }}
 </li>
 @endforeach
 
