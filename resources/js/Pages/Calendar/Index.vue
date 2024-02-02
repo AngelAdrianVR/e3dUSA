@@ -249,7 +249,7 @@ export default {
       this.$inertia.delete(route('calendars.destroy', this.selectedTask));
       this.$notify({
         title: "Éxito",
-        message: "Tarea terminada",
+        message: "Tarea eliminada",
         type: "success",
       });
 

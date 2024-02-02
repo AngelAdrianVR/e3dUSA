@@ -2,14 +2,15 @@
     <Head title="Orden de producción" />
     <div v-for="(product, index) in ordered_products" :key="index" class="mx-10 grid grid-cols-4 gap-3 mb-7 border-b-2 ">
         <figure class="rounded-[10px]">
-            <el-image style="height: 100%; border-radius: 10px;"
+            <!-- <el-image style="height: 100%; border-radius: 10px;"
                 :src="product.catalog_product_company.catalog_product.media[0]?.original_url" fit="contain">
                 <template #error>
                     <div class="flex justify-center items-center text-[#ababab]">
                         <i class="fa-solid fa-image text-3xl"></i>
                     </div>
                 </template>
-            </el-image>
+            </el-image> -->
+            <img class="object-contain rounded-md" :src="product.catalog_product_company.catalog_product.media[0]?.original_url" alt="">
         </figure>
         <div class="col-span-3">
             <div class="flex justify-between font-bold uppercase text-sm">
