@@ -36,12 +36,18 @@ class RawMaterialController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string',
+            'brand' => 'required|string',
+            'material' => 'required|string',
+            'width' => 'required|numeric|min:0|max:2000',
+            'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
             'part_number' => 'required',
             'measure_unit' => 'required',
             'min_quantity' => 'required|numeric|min:0',
             'max_quantity' => 'required|numeric|min:0',
             'cost' => 'required|numeric|min:0',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'location' => 'required|string',
         ]);
 
@@ -92,18 +98,25 @@ class RawMaterialController extends Controller
 
     public function update(Request $request, RawMaterial $raw_material)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string',
-            'part_number' => 'required|string',
+            'brand' => 'required|string',
+            'material' => 'required|string',
+            'width' => 'required|numeric|min:0|max:2000',
+            'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
+            // 'part_number' => 'required|string', Se eliminaba el co nsecutivo
             'measure_unit' => 'required',
             'min_quantity' => 'required|numeric|min:0',
             'max_quantity' => 'required|numeric|min:0',
             'cost' => 'required|numeric|min:0',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'location' => 'required|string',
         ]);
 
-        $raw_material->update($request->all());
+
+        $raw_material->update($validated);
         $raw_material->storages()->update([
             'quantity' => $request->initial_stock,
             'location' => $request->location,
@@ -120,18 +133,25 @@ class RawMaterialController extends Controller
 
     public function updateWithMedia(Request $request, RawMaterial $raw_material)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string',
-            'part_number' => 'required|string',
+            'brand' => 'required|string',
+            'material' => 'required|string',
+            'width' => 'required|numeric|min:0|max:2000',
+            'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
+            // 'part_number' => 'required|string', Se eliminaba el consecutivo
             'measure_unit' => 'required',
             'min_quantity' => 'required|numeric|min:0',
             'max_quantity' => 'required|numeric|min:0',
             'cost' => 'required|numeric|min:0',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'location' => 'required|string',
         ]);
 
-        $raw_material->update($request->all());
+
+        $raw_material->update($validated);
         $raw_material->storages()->update([
             'quantity' => $request->initial_stock,
             'location' => $request->location,
