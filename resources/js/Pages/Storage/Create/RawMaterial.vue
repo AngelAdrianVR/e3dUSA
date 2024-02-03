@@ -48,7 +48,7 @@
           </div>
           <div>
             <IconInput
-              v-model="brand"
+              v-model="form.brand"
               @change="generatePartNumber"
               inputPlaceholder="Marca del producto *"
               inputType="text"
@@ -61,17 +61,17 @@
               </el-tooltip>
             </IconInput>
           </div>
-          <div>
-            <IconInput
-              v-model="form.name"
-              inputPlaceholder="Nombre *"
-              inputType="text"
-            >
-              <el-tooltip content="Nombre" placement="top"> A </el-tooltip>
-            </IconInput>
-            <InputError :message="form.errors.name" />
-          </div>
           <div class="md:grid gap-x-6 gap-y-2 md:mb-6 grid-cols-2">
+            <div>
+              <IconInput
+                v-model="form.name"
+                inputPlaceholder="Nombre *"
+                inputType="text"
+              >
+                <el-tooltip content="Nombre" placement="top"> A </el-tooltip>
+              </IconInput>
+              <InputError :message="form.errors.name" />
+            </div>
             <div class="flex items-center">
               <el-tooltip content="Número de parte *" placement="top">
                 <span
@@ -134,8 +134,24 @@
               </IconInput>
               <InputError :message="form.errors.initial_stock" />
             </div>
+            <div>
+              <IconInput
+                v-model="form.cost"
+                inputPlaceholder="Costo *"
+                inputType="number"
+                inputStep="0.01"
+              >
+                <el-tooltip
+                  content="Cuánto le cuesta a e3d adquirir esta materia prima"
+                  placement="top"
+                >
+                  <i class="fa-solid fa-dollar"></i>
+                </el-tooltip>
+              </IconInput>
+              <InputError :message="form.errors.cost" />
+            </div>
             <div class="flex items-center my-2">
-              <el-tooltip content="Materias primas" placement="top">
+              <el-tooltip content="Unidad de medida" placement="top">
                 <span
                   class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"
                 >
@@ -160,21 +176,61 @@
             </div>
             <div>
               <IconInput
-                v-model="form.cost"
-                inputPlaceholder="Costo *"
-                inputType="number"
-                inputStep="0.01"
+                v-model="form.material"
+                inputPlaceholder="Material *"
+                inputType="text"
               >
-                <el-tooltip
-                  content="Cuánto le cuesta a e3d adquirir esta materia prima"
-                  placement="top"
-                >
-                  <i class="fa-solid fa-dollar"></i>
-                </el-tooltip>
+                <el-tooltip content="flex chrome, solid chrome, aluminio, etc..." placement="top"> M </el-tooltip>
               </IconInput>
-              <InputError :message="form.errors.cost" />
+              <InputError :message="form.errors.material" />
             </div>
+            <label class="flex items-center w-1/3">
+              <Checkbox @change="form.large = null; form.height = null" v-model:checked="form.is_circular" name="remember" class="bg-transparent"/>
+              <span class="ml-2 text-sm text-[#9A9A9A]">Es circular</span>
+            </label>
           </div>
+            <div class="flex items-center space-x-3">
+              <div>
+                <IconInput v-model="form.width" inputPlaceholder="Ancho(mm)*" inputType="number" inputStep="0.01">
+                  <el-tooltip content="Ancho(mm)*" placement="top">
+                    <i class="fa-solid fa-text-width"></i>
+                  </el-tooltip>
+                </IconInput>
+                <InputError :message="form.errors.width" />
+              </div>
+              <div v-if="!form.is_circular">
+                <IconInput v-model="form.large" inputPlaceholder="Largo(mm)*" inputType="number" inputStep="0.01">
+                  <el-tooltip content="Largo(mm)*" placement="top">
+                    <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                  </el-tooltip>
+                </IconInput>
+                <InputError :message="form.errors.large" />
+              </div>
+              <div v-if="!form.is_circular">
+                <IconInput v-model="form.height" inputPlaceholder="Alto(mm)*" inputType="number" inputStep="0.01">
+                  <el-tooltip content="Alto(mm)*" placement="top">
+                    <i class="fa-solid fa-arrows-up-down"></i>
+                  </el-tooltip>
+                </IconInput>
+                <InputError :message="form.errors.height" />
+              </div>
+              <div v-if="form.is_circular">
+                <IconInput v-model="form.diameter" inputPlaceholder="Diámetro(mm)*" inputType="number" inputStep="0.01">
+                  <el-tooltip content="Diámetro(mm)*" placement="top">
+                    <i class="fa-regular fa-circle"></i>
+                  </el-tooltip>
+                </IconInput>
+                <InputError :message="form.errors.diameter" />
+              </div>
+            </div>
+            <div class="flex items-center justify-center space-x-4">
+              <figure v-if="!form.is_circular" class="w-48">
+                <img src="@/../../public/images/paralelepipedo.png" alt="">
+              </figure>
+              <figure v-else class="w-32">
+                <img src="@/../../public/images/diameter.png" alt="">
+              </figure>
+            </div>
           <div>
             <IconInput
               v-model="form.location"
@@ -200,12 +256,12 @@
               v-model="form.description"
               class="textarea"
               autocomplete="off"
-              placeholder="Descripción *"
+              placeholder="Descripción"
               required
             ></textarea>
             <InputError :message="form.errors.description" />
           </div>
-          <div class="col-span-full">
+          <!-- <div class="col-span-full">
             <div class="flex space-x-2 mb-1">
               <IconInput
                 v-model="newFeature"
@@ -236,7 +292,7 @@
                 :value="feature"
               ></el-option>
             </el-select>
-          </div>
+          </div> -->
           <div class="col-span-full">
             <div class="flex items-center">
               <span
@@ -278,6 +334,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
+import Checkbox from "@/Components/Checkbox.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 
@@ -285,23 +342,30 @@ export default {
   data() {
     const form = useForm({
       name: null,
+      brand: null,
+      material: null,
       part_number: null,
       measure_unit: null,
       min_quantity: null,
       max_quantity: null,
       cost: null,
+      width: null,
+      large: null,
+      height: null,
+      diameter: null,
       description: null,
       initial_stock: null,
       location: null,
       type: "materia-prima",
-      features: [],
+      // features: [],
       media: null,
+      is_circular: false,
     });
 
     return {
       form,
-      newFeature: null,
-      features: [],
+      // newFeature: null,
+      // features: [],
       mesureUnits: [
         "Pieza(s)",
         'Paquete(s)',
@@ -315,7 +379,6 @@ export default {
         "Bote(s)",
       ],
       productType: "PP",
-      brand: null,
       productTypes: [
         {
           label: "Porta-placa",
@@ -422,6 +485,7 @@ export default {
     PrimaryButton,
     InputError,
     IconInput,
+    Checkbox,
     Back,
     Link
   },
@@ -440,16 +504,16 @@ export default {
     },
     generatePartNumber() {
       const partNumber =
-        this.productType + "-" + this.brand?.toUpperCase().substr(0, 3) + "-";
+        this.productType + "-" + this.form.brand?.toUpperCase().substr(0, 3) + "-";
       this.form.part_number = partNumber;
     },
-    addFeature() {
-      if (this.newFeature.trim() !== "") {
-        this.form.features.push(this.newFeature);
-        this.features.push(this.newFeature);
-        this.newFeature = "";
-      }
-    },
+    // addFeature() {
+    //   if (this.newFeature.trim() !== "") {
+    //     this.form.features.push(this.newFeature);
+    //     this.features.push(this.newFeature);
+    //     this.newFeature = "";
+    //   }
+    // },
   },
 };
 </script>

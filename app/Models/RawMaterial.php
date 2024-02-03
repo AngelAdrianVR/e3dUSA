@@ -16,6 +16,12 @@ class RawMaterial extends Model implements HasMedia
 
     protected $fillable = [
         'name',
+        'brand',
+        'material',
+        'width',
+        'large',
+        'height',
+        'diameter',
         'part_number',
         'description',
         'measure_unit',
