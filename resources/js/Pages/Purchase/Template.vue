@@ -31,7 +31,7 @@
                 <span>Telefono:</span>
                 <span class="col-span-6">{{ purchase.supplier.phone }}</span>
                 <span>Observaciones: </span>
-                <span class="col-span-6">{{ purchase.supplier.notes ?? '-' }}</span>
+                <span class="col-span-6">{{ purchase.notes ?? '-' }}</span>
             </section>
         </header>
         <main class="mx-8 mt-8">
@@ -53,7 +53,26 @@
                         <td>{{ item.part_number }}</td>
                         <td>{{ item.name }}</td>
                         <td>{{ item.description }}</td>
-                        <td>{{ purchase.products.find(prd => prd.id === item.id)?.quantity }}</td>
+                        <td v-if="editQuantity === item.id" class="cursor-pointer" title="Editar cantidad">
+                            <div class="flex space-x-2 items-center">
+                                <input type="number" v-model="quantity"
+                                    class="border border-gray1 rounded-[3px] text-xs w-24" />
+                                <button @click="updateQuantity(item.id)"
+                                    class="size-5 text-xs rounded-full bg-primary text-white"><i
+                                        class="fa-solid fa-check"></i></button>
+                                <button @click="editQuantity = null"
+                                    class="size-5 text-xs rounded-full bg-gray1 text-white"><i
+                                        class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        </td>
+                        <td v-else class="group" title="Editar cantidad">
+                            <span>{{ purchase.products.find(prd => prd.id === item.id)?.quantity }}</span>
+                            <button
+                                @click="editQuantity = item.id; quantity = purchase.products.find(prd => prd.id === item.id)?.quantity"
+                                class="size-5 text-xs ml-4 rounded-full bg-gray1 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-100 ease-in-out"><i
+                                    class="fa-solid fa-pen"></i></button>
+
+                        </td>
                         <td>{{ item.measure_unit }}</td>
                         <td>${{ item.cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</td>
                         <td>${{ (item.cost * purchase.products.find(prd => prd.id ===
@@ -65,8 +84,7 @@
             <section>
                 <div class="w-11/12 mx-auto my-3 grid grid-cols-3 gap-4 ">
                     <template v-for="item in raw_materials" :key="item.id">
-                        <div class="bg-gray-200 rounded-t-xl rounded-b-md border"
-                            style="font-size: 8px;">
+                        <div class="bg-gray-200 rounded-t-xl rounded-b-md border" style="font-size: 8px;">
                             <img class="rounded-t-xl max-h-52 mx-auto" :src="item.media[0]?.original_url">
                             <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
                         </div>
@@ -102,11 +120,13 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { NumerosALetras } from 'numero-a-letras';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import axios from 'axios';
 
 export default {
     data() {
         return {
-
+            quantity: null,
+            editQuantity: false,
         }
     },
     components: {
@@ -128,6 +148,24 @@ export default {
         },
     },
     methods: {
+        async updateQuantity(id) {
+            try {
+                const response = await axios.put(route('purchases.update-quantity', this.purchase.id), { quantity: this.quantity, id: id });
+
+                if (response.status === 200) {
+                    this.editQuantity = null;
+                    this.purchase.products.find(prd => prd.id === id).quantity = this.quantity;
+
+                    this.$notify({
+                        title: "Éxito",
+                        message: "Cantidad actualizada",
+                        type: "success",
+                    });
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
         formatDate(date) {
             const parsedDate = new Date(date);
             return format(parsedDate, 'dd \'de\' MMMM Y', { locale: es }); // Formato personalizado

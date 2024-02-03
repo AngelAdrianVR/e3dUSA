@@ -198,6 +198,7 @@ Route::post('purchases/clone', [PurchaseController::class, 'clone'])->name('purc
 Route::put('purchases/mark-order-done/{currentPurchase}', [PurchaseController::class, 'markOrderDone'])->name('purchases.done');
 Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseController::class, 'markOrderRecieved'])->name('purchases.recieved');
 Route::put('purchases/authorize/{purchase}', [PurchaseController::class, 'authorizePurchase'])->name('purchases.authorize');
+Route::put('purchases/update-quantity/{purchase}', [PurchaseController::class, 'updateQuantity'])->name('purchases.update-quantity');
 Route::get('purchases-show-template/{purchase_id}', [PurchaseController::class, 'showTemplate'])->name('purchases.show-template')->middleware('auth');
 
 

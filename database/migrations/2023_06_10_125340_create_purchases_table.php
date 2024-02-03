@@ -23,9 +23,9 @@ return new class extends Migration
             $table->boolean('is_iva_included')->default(false);
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('supplier_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('contact_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('contact_id')->nullable()->constrained()->cascadeOnDelete();
             $table->json('products')->nullable();
-            $table->json('bank_information');
+            $table->json('bank_information')->nullable();
             $table->timestamps();
         });
     }

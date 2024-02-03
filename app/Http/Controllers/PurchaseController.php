@@ -219,4 +219,19 @@ class PurchaseController extends Controller
         // return $raw_materials;
         return inertia('Purchase/Template', compact('purchase', 'raw_materials'));
     }
+
+    public function updateQuantity(Purchase $purchase, Request $request)
+    {
+        $products = $purchase->products;
+        // Buscar el índice del elemento con el ID deseado
+        $index = array_search($request->id, array_column($products, 'id'));
+        
+        // editar cantidad
+        $products[$index]['quantity'] = $request->quantity;
+
+        // actualizar en BDD
+        $purchase->update(['products' => $products]);
+
+        return response()->json([]);
+    }
 }

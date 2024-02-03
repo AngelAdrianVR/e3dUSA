@@ -147,13 +147,13 @@
           <p class="text-secondary col-span-2 mt-7">Datos Bancarios</p>
 
           <span class="text-gray-500 my-2">Nombre del beneficiario</span>
-          <span>{{ purchase.data.bank_information.beneficiary_name }}</span>
+          <span>{{ purchase.data.bank_information?.beneficiary_name ?? '--' }}</span>
           <span class="text-gray-500 my-2">Número de cuenta</span>
-          <span>{{ purchase.data.bank_information.accountNumber }}</span>
+          <span>{{ purchase.data.bank_information?.accountNumber ?? '--' }}</span>
           <span class="text-gray-500 my-2">Clabe</span>
-          <span>{{ purchase.data.bank_information.clabe }}</span>
+          <span>{{ purchase.data.bank_information?.clabe ?? '--' }}</span>
           <span class="text-gray-500 my-2">Banco</span>
-          <span>{{ purchase.data.bank_information.bank_name }}</span>
+          <span>{{ purchase.data.bank_information?.bank_name ?? '--' }}</span>
 
         </div>
       </div>
