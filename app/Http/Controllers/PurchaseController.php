@@ -7,6 +7,7 @@ use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\PurchaseResource;
 use App\Http\Resources\RawMaterialResource;
+use App\Mail\EmailSupplierTemplateMarkdownMail;
 use App\Models\Contact;
 use App\Models\Purchase;
 use App\Models\RawMaterial;
@@ -14,6 +15,7 @@ use App\Models\Supplier;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class PurchaseController extends Controller
 {
@@ -101,8 +103,6 @@ class PurchaseController extends Controller
             ];
         });
 
-        // return $purchase;
-
         return inertia('Purchase/Show', compact('purchase', 'purchases'));
     }
 
@@ -110,8 +110,6 @@ class PurchaseController extends Controller
     public function edit(Purchase $purchase)
     {
         $suppliers = Supplier::get(['id', 'name', 'nickname']);
-
-        // return $purchase;
 
         return inertia('Purchase/Edit', compact('purchase', 'suppliers'));
     }
@@ -200,7 +198,7 @@ class PurchaseController extends Controller
 
     public function showTemplate($purchase_id)
     {
-        $purchase = Purchase::with('supplier')->find($purchase_id);
+        $purchase = Purchase::with(['supplier.contacts'])->find($purchase_id);
         $products = $purchase->products;
         $raw_materials_ids = [];
         foreach ($products as $product) {
@@ -233,5 +231,15 @@ class PurchaseController extends Controller
         $purchase->update(['products' => $products]);
 
         return response()->json([]);
+    }
+
+    public function sendEmail(Purchase $purchase, Request $request)
+    {
+        // enviar correo
+        $attach = [
+            'path' => 'path',
+            'as' => 'OC-' . str_pad($purchase->id, 4, "0", STR_PAD_LEFT),
+        ];
+        Mail::to($request->contact_email)->send(new EmailSupplierTemplateMarkdownMail($request->subject, $request->content, $attach));
     }
 }
