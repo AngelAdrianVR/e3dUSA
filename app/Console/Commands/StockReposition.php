@@ -40,17 +40,19 @@ class StockReposition extends Command
                 ]);
             }
 
-            // // notify users
-            // foreach ($others as $other) {
-            //     $other->notify(new StockRepositionNotification($rawMaterials));
-            // }
-            // foreach ($direction as $item) {
-            //     $item->notify(new StockRepositionNotification($rawMaterials));
-            // }
-            // foreach ($super_admins as $super) {
-            //     $super->notify(new StockRepositionNotification($rawMaterials));
-            // }
-            // Log::info('app:stock-reposition executed successfully. Low stock products:' . $rawMaterials->count());
+            if (app()->environment() === 'production') {
+                // notify users
+                foreach ($others as $other) {
+                    $other->notify(new StockRepositionNotification($rawMaterials));
+                }
+                foreach ($direction as $item) {
+                    $item->notify(new StockRepositionNotification($rawMaterials));
+                }
+                foreach ($super_admins as $super) {
+                    $super->notify(new StockRepositionNotification($rawMaterials));
+                }
+            }
+            Log::info('app:stock-reposition executed successfully. Low stock products:' . $rawMaterials->count());
         } else {
             Log::info('app:stock-reposition executed successfully. Low stock products: 0');
         }

@@ -241,6 +241,9 @@ class PurchaseController extends Controller
         $purchase->update([
             'bank_information' => $request->input('bank_information'),
             'contact_id' => $request->input('contact_id'),
+            'authorized_user_name' => auth()->user()->name,
+            'authorized_at' => now()->toDateTimeString(),
+            'status' => 2,
         ]);
 
         // crear pdf

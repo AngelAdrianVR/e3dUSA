@@ -11,7 +11,8 @@
                 <p class="w-48">
                     <span class="mr-6 w-1/2">Folio:</span>
                     <span class="w-1/2 mr-2">OC-{{ String(purchase.id).padStart(4, "0") }}</span>
-                    <el-tooltip content="Redactar correo" placement="top">
+                    <el-tooltip v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de compra')"
+                        content="Redactar correo" placement="top">
                         <button @click="showModal = true" class="text-green-500"><i class="fa-solid fa-check"></i></button>
                     </el-tooltip>
                 </p>
