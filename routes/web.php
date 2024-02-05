@@ -195,11 +195,13 @@ Route::get('fetch-supplier/{supplier_id}', [SupplierController::class, 'fetchSup
 Route::resource('purchases', PurchaseController::class)->middleware('auth');
 Route::post('purchases/massive-delete', [PurchaseController::class, 'massiveDelete'])->name('purchases.massive-delete');
 Route::post('purchases/clone', [PurchaseController::class, 'clone'])->name('purchases.clone');
+Route::post('purchases/send-email/{purchase}', [PurchaseController::class, 'sendEmail'])->name('purchases.send-email');
 Route::put('purchases/mark-order-done/{currentPurchase}', [PurchaseController::class, 'markOrderDone'])->name('purchases.done');
 Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseController::class, 'markOrderRecieved'])->name('purchases.recieved');
 Route::put('purchases/authorize/{purchase}', [PurchaseController::class, 'authorizePurchase'])->name('purchases.authorize');
+Route::put('purchases/update-quantity/{purchase}', [PurchaseController::class, 'updateQuantity'])->name('purchases.update-quantity');
 Route::get('purchases-show-template/{purchase_id}', [PurchaseController::class, 'showTemplate'])->name('purchases.show-template')->middleware('auth');
-
+// Route::get('develop-template', [PurchaseController::class, 'developTemplate'])->name('develop.template');
 
 //-------------- Projects routes ------------------
 Route::resource('projects', ProjectController::class)->middleware('auth');
@@ -385,6 +387,7 @@ Route::post('maintenances/update-with-media/{maintenance}', [MaintenanceControll
 
 // ------- tutorials & manuals routes  -------------
 Route::resource('manuals', ManualController::class)->middleware('auth');
+Route::put('manuals/increase-views/{manual}', [ManualController::class, 'increaseViews'])->name('manuals.increase-views')->middleware('auth');
 Route::post('manuals/update-with-media/{manual}', [ManualController::class, 'updateWithMedia'])->name('manuals.update-with-media')->middleware('auth');
 
 

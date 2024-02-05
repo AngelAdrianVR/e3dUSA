@@ -201,13 +201,37 @@
                 <p class="w-1/3 text-[#9A9A9A]">ID del producto</p>
                 <p>{{ selectedRawMaterial }}</p>
               </div>
-              <div class="flex mb-6 space-x-2">
+              <div v-if="storage.data.storageable?.features" class="flex mb-6 space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">Características</p>
                 <p>{{ storage.data.storageable?.features?.join(", ") }}</p>
               </div>
               <div class="flex mb-2 space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">Número parte</p>
                 <p>{{ storage.data.storageable.part_number }}</p>
+              </div>
+              <div class="flex mb-2 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">Marca</p>
+                <p>{{ storage.data.storageable.brand }}</p>
+              </div>
+              <div class="flex mb-6 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">Material</p>
+                <p>{{ storage.data.storageable.material }}</p>
+              </div>
+              <div v-if="!storage.data.storageable.diameter" class="flex mb-2 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">Largo</p>
+                <p>{{ storage.data.storageable.large }} mm</p>
+              </div>
+              <div v-if="!storage.data.storageable.diameter" class="flex mb-2 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">Alto</p>
+                <p>{{ storage.data.storageable.height }} mm</p>
+              </div>
+              <div class="flex mb-2 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">Ancho</p>
+                <p>{{ storage.data.storageable.width }} mm</p>
+              </div>
+              <div v-if="storage.data.storageable.diameter" class="flex mb-6 space-x-2">
+                <p class="w-1/3 text-[#9A9A9A]">Diámetro</p>
+                <p>{{ storage.data.storageable.diameter }} mm</p>
               </div>
               <div class="flex mb-6 space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">Unidad de medida</p>

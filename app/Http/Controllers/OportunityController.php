@@ -353,6 +353,14 @@ class OportunityController extends Controller
 
     public function destroy(Oportunity $oportunity)
     {
+        $activities = $oportunity->oportunityTasks;
+        // eliminar comentarios y actividades
+        $activities->each(function ($activity){
+            $activity->comments->each(fn ($comment) => $comment->delete());
+            $activity->delete();
+        });
+
+        // eliminar la oportunidad 
         $oportunity->delete();
 
         event(new RecordDeleted($oportunity));

@@ -57,7 +57,7 @@
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
           <p @click="tabs = 2" :class="tabs == 2 ? 'bg-secondary-gray rounded-xl text-primary' : ''
             " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-            Datos bancarios
+            Datos Bancarios | Contactos
           </p>
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
           <p @click="fetchSupplierItems(); tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
@@ -96,16 +96,23 @@
       <!-- ------------- Informacion general ends 1 ------------- -->
 
       <!-- -------------Sucursales starts 2 ------------- -->
-      <div v-if="tabs == 2" class="lg:grid grid-cols-2 gap-8 md:mt-12 md:px-14">
-        <SupplierBankCard :banks="supplier.data.banks" :contacts="supplier.data.contacts" />
-      </div>
+      <section v-if="tabs == 2" class="lg:grid grid-cols-3 gap-x-5 md:mt-12 md:px-14 mb-6">
+        <!-- <div class="grid grid-cols-2 gap-x-2 gap-y-1"> -->
+          <h2 class="font-bold col-span-full mb-2">Cuentas bancarias</h2>
+          <SupplierBankCard v-for="(bank, index) in supplier.data.banks" :key="index" :bank="bank" />
+        <!-- </div> -->
+        <!-- <div class="grid grid-cols-2 gap-x-2 gap-y-1"> -->
+          <h2 class="font-bold col-span-full mb-2 mt-6">Contactos</h2>
+          <SupplierContactCard v-for="(contact, index) in supplier.data.contacts" :key="index" :contact="contact" />
+        <!-- </div> -->
+      </section>
 
       <!-- ------------- Sucursales ends 2 ------------- -->
 
       <!-- -------------products starts 3 ------------- -->
       <div v-if="tabs == 3" class="p-7">
         <div v-if="!loading">
-          <div v-if="rawMaterials?.length > 0" class="lg:grid grid-cols-2 mt-7 gap-5">
+          <div v-if="rawMaterials?.length > 0" class="lg:grid grid-cols-4 mt-7 gap-5">
             <SupplierProductCard v-for="product in rawMaterials" :key="product" :product="product" />
           </div>
             <p v-else class="text-gray-500 text-center text-sm">No hay productos registrados a este proveedor</p>
@@ -138,6 +145,7 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import SupplierBankCard from "@/Components/MyComponents/SupplierBankCard.vue";
+import SupplierContactCard from "@/Components/MyComponents/SupplierContactCard.vue";
 import SupplierProductCard from "@/Components/MyComponents/SupplierProductCard.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link } from "@inertiajs/vue3";
@@ -168,6 +176,7 @@ export default {
     PrimaryButton,
     SupplierBankCard,
     SupplierProductCard,
+    SupplierContactCard,
     Link
   },
   methods: {

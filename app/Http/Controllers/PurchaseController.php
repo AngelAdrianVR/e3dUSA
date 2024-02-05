@@ -7,6 +7,7 @@ use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\PurchaseResource;
 use App\Http\Resources\RawMaterialResource;
+use App\Mail\EmailSupplierTemplateMarkdownMail;
 use App\Models\Contact;
 use App\Models\Purchase;
 use App\Models\RawMaterial;
@@ -14,6 +15,10 @@ use App\Models\Supplier;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class PurchaseController extends Controller
 {
@@ -101,8 +106,6 @@ class PurchaseController extends Controller
             ];
         });
 
-        // return $purchase;
-
         return inertia('Purchase/Show', compact('purchase', 'purchases'));
     }
 
@@ -110,8 +113,6 @@ class PurchaseController extends Controller
     public function edit(Purchase $purchase)
     {
         $suppliers = Supplier::get(['id', 'name', 'nickname']);
-
-        // return $purchase;
 
         return inertia('Purchase/Edit', compact('purchase', 'suppliers'));
     }
@@ -200,22 +201,88 @@ class PurchaseController extends Controller
 
     public function showTemplate($purchase_id)
     {
-        $purchase = Purchase::with('supplier')->find($purchase_id);
+        $purchase = Purchase::with(['supplier.contacts'])->find($purchase_id);
         $products = $purchase->products;
         $raw_materials_ids = [];
         foreach ($products as $product) {
             $raw_materials_ids[] = $product['id'];
         }
 
-        $raw_materials = RawMaterial::whereIn('id', $raw_materials_ids)->get([
+        $raw_materials = RawMaterial::with('media')->whereIn('id', $raw_materials_ids)->get([
             'id',
+            'name',
             'part_number',
             'description',
             'measure_unit',
             'cost'
         ]);
 
-        // return $sale;
         return inertia('Purchase/Template', compact('purchase', 'raw_materials'));
+    }
+
+    public function updateQuantity(Purchase $purchase, Request $request)
+    {
+        $products = $purchase->products;
+        // Buscar el índice del elemento con el ID deseado
+        $index = array_search($request->id, array_column($products, 'id'));
+
+        // editar cantidad
+        $products[$index]['quantity'] = $request->quantity;
+
+        // actualizar en BDD
+        $purchase->update(['products' => $products]);
+
+        return response()->json([]);
+    }
+
+    public function sendEmail(Purchase $purchase, Request $request)
+    {
+        // actualizar contacto e info de banco
+        $purchase->update([
+            'bank_information' => $request->input('bank_information'),
+            'contact_id' => $request->input('contact_id'),
+            'authorized_user_name' => auth()->user()->name,
+            'authorized_at' => now()->toDateTimeString(),
+            'status' => 2,
+        ]);
+
+        // crear pdf
+        $purchase = $purchase->load(['supplier.contacts']);
+        $products = $purchase->products;
+        $raw_materials_ids = [];
+        foreach ($products as $product) {
+            $raw_materials_ids[] = $product['id'];
+        }
+
+        $raw_materials = RawMaterial::with('media')->whereIn('id', $raw_materials_ids)->get([
+            'id',
+            'name',
+            'part_number',
+            'description',
+            'measure_unit',
+            'cost'
+        ]);
+
+        $pdf = Pdf::loadView('pdfTemplates.purchase-order', compact('purchase', 'raw_materials'));
+
+        $fileName = 'OC-' . str_pad($purchase->id, 4, "0", STR_PAD_LEFT);
+        // Guardar el PDF en la carpeta storage/app/purchase-orders
+        $content = $pdf->download()->getOriginalContent();
+        $is_file_stored = Storage::put("public/purchase-orders/$fileName.pdf", $content);
+
+        // enviar correo
+        $attach = [
+            'path' => $is_file_stored ? storage_path("app/public/purchase-orders/$fileName.pdf") : '',
+        ];
+
+        // obtener correo de proveedor
+        if (app()->environment() === 'production') {
+            $contact = Contact::find($request->contact_id);
+            Mail::to($contact->email)
+                ->bcc([auth()->user()->emial])
+                ->send(new EmailSupplierTemplateMarkdownMail($request->subject, $request->content, $attach));
+        }
+
+        return response()->json([]);
     }
 }

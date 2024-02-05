@@ -17,6 +17,12 @@ class RawMaterialResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'brand' => $this->brand,
+            'material' => $this->material,
+            'width' => $this->width,
+            'large' => $this->large,
+            'height' => $this->height,
+            'diameter' => $this->diameter,
             'part_number' => $this->part_number,
             'description' => $this->description,
             'measure_unit' => $this->measure_unit,

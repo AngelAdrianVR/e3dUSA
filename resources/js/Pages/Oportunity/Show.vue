@@ -11,8 +11,9 @@
 
       <div class="flex justify-between">
         <div class="md:w-1/3 mr-2">
-          <el-select @change="$inertia.get(route('oportunities.show', oportunitySelected))" v-model="oportunitySelected" clearable filterable placeholder="Buscar oportunidades"
-            no-data-text="No hay oportuindades registradas" no-match-text="No se encontraron coincidencias">
+          <el-select @change="$inertia.get(route('oportunities.show', oportunitySelected))" v-model="oportunitySelected"
+            clearable filterable placeholder="Buscar oportunidades" no-data-text="No hay oportuindades registradas"
+            no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in oportunities" :key="item.id" :label="item.name" :value="item.id" />
           </el-select>
         </div>
@@ -39,7 +40,7 @@
             </Link>
           </el-tooltip>
           <el-tooltip v-if="tabs == 3" content="Enviar un correo a prospecto" placement="top">
-            <Link :href="route('email-monitors.create', {opportunityId: currentOportunity?.id})">
+            <Link :href="route('email-monitors.create', { opportunityId: currentOportunity?.id })">
             <PrimaryButton class="rounded-md">Interacción por correo</PrimaryButton>
             </Link>
           </el-tooltip>
@@ -56,31 +57,31 @@
             )
             ">
             <template #trigger>
-              <button v-if="tabs == 1 || tabs == 3" class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
+              <button v-if="tabs == 3" class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
                 Más <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
               </button>
             </template>
             <template #content>
-              <DropdownLink :href="route('payment-monitors.create', {opportunityId: currentOportunity?.id})"
+              <DropdownLink :href="route('payment-monitors.create', { opportunityId: currentOportunity?.id })"
                 v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Registrar pagos en seguimiento integral')">
                 Registrar Pago
               </DropdownLink>
-              <DropdownLink :href="route('meeting-monitors.create', {opportunityId: currentOportunity?.id})"
+              <DropdownLink :href="route('meeting-monitors.create', { opportunityId: currentOportunity?.id })"
                 v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Agendar citas en seguimiento integral')">
                 Agendar Cita
               </DropdownLink>
-              <DropdownLink :href="route('whatsapp-monitors.create', {opportunityId: currentOportunity?.id})"
+              <DropdownLink :href="route('whatsapp-monitors.create', { opportunityId: currentOportunity?.id })"
                 v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Registrar interaccion whatsapp en seguimiento integral')">
                 Interacción WhatsApp
               </DropdownLink>
-              <DropdownLink :href="route('call-monitors.create', {opportunityId: currentOportunity?.id})"
+              <DropdownLink :href="route('call-monitors.create', { opportunityId: currentOportunity?.id })"
                 v-if="tabs == 3 && $page.props.auth.user.permissions.includes('Registrar llamada en seguimiento integral')">
                 Registrar llamada
               </DropdownLink>
-              <DropdownLink v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades') && tabs == 1 && toBool(authUserPermissions[3])
+              <!-- <DropdownLink v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades') && tabs == 1 && toBool(authUserPermissions[3])
                 " @click="showConfirmModal = true" as="button">
                 Eliminar
-              </DropdownLink>
+              </DropdownLink> -->
             </template>
           </Dropdown>
         </div>
@@ -148,9 +149,8 @@
           <div :class="getColorStatus()" class="absolute -left-10 top-5 rounded-full w-3 h-3"></div>
           <el-select @change="status == 'Perdida' ? showLostOportunityModal = true
             : status == 'Cerrada' || status == 'Pagado' ? showCreateSaleModal = true
-              : updateStatus()" class="lg:w-1/2 mt-2" v-model="status" filterable
-            placeholder="Seleccionar estatus" no-data-text="No hay estatus registrados"
-            no-match-text="No se encontraron coincidencias">
+              : updateStatus()" class="lg:w-1/2 mt-2" v-model="status" filterable placeholder="Seleccionar estatus"
+            no-data-text="No hay estatus registrados" no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
               <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
               <span style="float: center; margin-left: 5px; font-size: 13px">{{
@@ -160,7 +160,8 @@
           </el-select>
         </div>
         <span class="text-gray-500 my-2">Prioridad</span>
-        <span class="relative">{{ currentOportunity?.priority.label }} <div :class="getColorPriority()" class="absolute -left-10 top-1 rounded-full w-3 h-3"></div></span>
+        <span class="relative">{{ currentOportunity?.priority.label }} <div :class="getColorPriority()"
+            class="absolute -left-10 top-1 rounded-full w-3 h-3"></div></span>
         <span class="text-gray-500 my-2">Probabilidad</span>
         <span>{{ currentOportunity?.probability }}%</span>
         <span class="text-gray-500 my-2">Valor de oportunidad</span>
@@ -217,23 +218,23 @@
         </div>
         <div class="flex items-center justify-end space-x-2 col-span-2 mr-4">
           <el-tooltip content="Agendar reunión" placement="top">
-            <i @click="$inertia.get(route('meeting-monitors.create'), {opportunityId: currentOportunity?.id})"
+            <i @click="$inertia.get(route('meeting-monitors.create'), { opportunityId: currentOportunity?.id })"
               class="fa-regular fa-calendar text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
           </el-tooltip>
           <el-tooltip content="Registrar pago" placement="top">
-            <i @click="$inertia.get(route('payment-monitors.create'), {opportunityId: currentOportunity?.id})"
+            <i @click="$inertia.get(route('payment-monitors.create'), { opportunityId: currentOportunity?.id })"
               class="fa-solid fa-money-bill text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
           </el-tooltip>
           <el-tooltip content="Interacción por correo" placement="top">
-            <i @click="$inertia.get(route('email-monitors.create'), {opportunityId: currentOportunity?.id})"
+            <i @click="$inertia.get(route('email-monitors.create'), { opportunityId: currentOportunity?.id })"
               class="fa-regular fa-envelope text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
           </el-tooltip>
           <el-tooltip content="Interacción WhatsApp" placement="top">
-            <i @click="$inertia.get(route('whatsapp-monitors.create'), {opportunityId: currentOportunity?.id})"
+            <i @click="$inertia.get(route('whatsapp-monitors.create'), { opportunityId: currentOportunity?.id })"
               class="fa-brands fa-whatsapp text-primary cursor-pointer text-lg px-3 border-r border-[#9a9a9a]"></i>
           </el-tooltip>
           <el-tooltip content="Registrar llamada" placement="top">
-            <i @click="$inertia.get(route('call-monitors.create'), {opportunityId: currentOportunity?.id})"
+            <i @click="$inertia.get(route('call-monitors.create'), { opportunityId: currentOportunity?.id })"
               class="fa-solid fa-phone text-primary cursor-pointer text-lg px-3"></i>
           </el-tooltip>
         </div>
@@ -477,12 +478,14 @@
       <section v-if="showCreateSaleModal" class="mx-7 my-4 space-y-4 relative">
         <div>
           <h2 class="font bold text-center font-bold mb-5">Paso clave - Crear Orden de Venta</h2>
-          <p class="px-5">Es necesario crear una orden de venta al haber marcado como <span class="text-[#FD8827]">”cerrada”</span>  
-          o <span class="text-[#37951F]">”Pagada”</span> la oportunidad para llevar un correcto seguimiento y flujo de trabajo. 
+          <p class="px-5">Es necesario crear una orden de venta al haber marcado como <span
+              class="text-[#FD8827]">”cerrada”</span>
+            o <span class="text-[#37951F]">”Pagada”</span> la oportunidad para llevar un correcto seguimiento y flujo de
+            trabajo.
           </p>
         </div>
         <div class="flex justify-end space-x-3 pt-5 pb-1">
-          <CancelButton @click="cancelUpdating">Cancelar</CancelButton>  
+          <CancelButton @click="cancelUpdating">Cancelar</CancelButton>
           <PrimaryButton @click="CreateSale">Continuar</PrimaryButton>
         </div>
       </section>
@@ -585,7 +588,7 @@ export default {
             this.updateStatus();
           } else {
             this.updateStatus();
-            this.$inertia.get(route('sales.create'), {opportunityId: this.currentOportunity.id});
+            this.$inertia.get(route('sales.create'), { opportunityId: this.currentOportunity.id });
           }
         }
       } catch (error) {
@@ -841,5 +844,4 @@ export default {
   /* Color de la barra de desplazamiento */
   border-radius: 5px;
   /* Radio de los bordes de la barra de desplazamiento */
-}
-</style>
+}</style>

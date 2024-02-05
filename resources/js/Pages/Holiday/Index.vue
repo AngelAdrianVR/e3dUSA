@@ -55,8 +55,8 @@
             <!-- -------------- Modal starts----------------------- -->
             <DialogModal :show="showModal" @close="showModal = false">
                 <template #title>
-                    <p v-if="editFlag">Editar Bono "{{ itemClicked.name }}"</p>
-                    <p v-else>Crear Bono</p>
+                    <p v-if="editFlag">Editar Día festivo "{{ itemClicked.name }}"</p>
+                    <p v-else>Crear día festivo</p>
                 </template>
                 <template #content>
                     <form ref="myForm" @submit.prevent="editFlag ? update() : store()">
@@ -84,7 +84,8 @@
                                 <el-option v-for="item in 31" :key="item" :label="item" :value="item" />
                             </el-select>
                             <el-select v-model="form.month" clearable placeholder="Mes">
-                                <el-option v-for="(item, index) in months" :key="index" :label="item.label" :value="item.value" />
+                                <el-option v-for="(item, index) in months" :key="index" :label="item.label"
+                                    :value="item.value" />
                             </el-select>
                         </div>
                     </form>
@@ -136,18 +137,18 @@ export default {
             editFlag: false,
             itemClicked: null,
             months: [
-                {label: "Enero", value: "01"},
-                {label: "Febrero", value: "02"},
-                {label: "Marzo", value: "03"},
-                {label: "Abril", value: "04"},
-                {label: "Mayo", value: "05"},
-                {label: "Junio", value: "06"},
-                {label: "Julio", value: "07"},
-                {label: "Agosto", value: "08"},
-                {label: "Septiembre", value: "09"},
-                {label: "Octubre", value: "10"},
-                {label: "Noviembre", value: "11"},
-                {label: "Diciembre", value: "12"},
+                { label: "Enero", value: "01" },
+                { label: "Febrero", value: "02" },
+                { label: "Marzo", value: "03" },
+                { label: "Abril", value: "04" },
+                { label: "Mayo", value: "05" },
+                { label: "Junio", value: "06" },
+                { label: "Julio", value: "07" },
+                { label: "Agosto", value: "08" },
+                { label: "Septiembre", value: "09" },
+                { label: "Octubre", value: "10" },
+                { label: "Noviembre", value: "11" },
+                { label: "Diciembre", value: "12" },
             ],
         };
     },

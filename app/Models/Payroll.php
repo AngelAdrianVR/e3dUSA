@@ -58,7 +58,9 @@ class Payroll extends Model
         $processed = [];
         for ($i = 0; $i < 7; $i++) {
             $current_date = $this->start_date->addDays($i);
-            $holiday = Holiday::whereDate('date', $current_date)->where('is_active', 1)->first();
+            $holiday = Holiday::whereMonth('date', $current_date->month)
+                ->whereDay('date', $current_date->day)
+                ->where('is_active', 1)->first();
             $current = $attendances->firstWhere('date', $current_date);
             $is_day_off = $user->employee_properties['work_days'][$current_date->dayOfWeek]['check_in'] == 0;
             if ($current) {
@@ -85,6 +87,5 @@ class Payroll extends Model
         }
 
         return $processed;
-
     }
 }

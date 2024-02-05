@@ -40,7 +40,7 @@ class ProjectController extends Controller
         $companies = Company::with(['companyBranches.sales'])->latest()->get(['id', 'business_name']);
         $tags = TagResource::collection(Tag::where('type', 'projects')->get());
         $project_groups = ProjectGroupResource::collection(ProjectGroup::all());
-        $users = User::where('is_active', true)->whereNot('id', 1)->get(['id', 'name']);
+        $users = User::where('is_active', true)->whereNot('id', 1)->get(['id', 'name', 'employee_properties']);
 
         // return $companies;
 
@@ -121,10 +121,9 @@ class ProjectController extends Controller
         $companies = Company::with(['companyBranches.sales'])->latest()->get(['id', 'business_name']);
         $tags = TagResource::collection(Tag::where('type', 'projects')->get());
         $project_groups = ProjectGroupResource::collection(ProjectGroup::all());
-        $users = User::where('is_active', true)->whereNot('id', 1)->get(['id', 'name']);
+        $users = User::where('is_active', true)->whereNot('id', 1)->get(['id', 'name','employee_properties']);
         $media = $project->getMedia()->all();
 
-        // return $project;
         return inertia('Project/Edit', compact('companies', 'users', 'tags', 'project_groups', 'project', 'media'));
     }
 
@@ -241,6 +240,14 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
+        $tasks = $project->tasks;
+        // eliminar comentarios y tareas
+        $tasks->each(function ($task) {
+            $task->comments->each(fn ($comment) => $comment->delete());
+            $task->delete();
+        });
+
+        // eliminar la proyecto 
         $project->delete();
         event(new RecordDeleted($project));
     }

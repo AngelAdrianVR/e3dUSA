@@ -19,7 +19,6 @@
                 class="h-full object-cover rounded-[10px]" @load="imageLoaded">
             <img v-else :src="manual.media.find(item => item.collection_name == 'cover')?.original_url"
                 class="h-full object-cover rounded-[10px]" @load="imageLoaded">
-
         </figure>
         <div class="lg:col-span-4 flex flex-col">
             <header class="flex items-center justify-between mb-2">
@@ -37,6 +36,8 @@
                     <small class="">{{ formatDate(manual.created_at) }}</small>
                     <i class="fa-solid fa-circle text-[4px]"></i>
                     <small class="font-bold">{{ manual.type }}</small>
+                    <i class="fa-solid fa-circle text-[4px]"></i>
+                    <small>{{ views }} vistas</small>
                 </p>
                 <div class="flex items-center space-x-6">
                     <button v-if="$page.props.auth.user.permissions.includes('Eliminar manuales')" @click.stop="showConfirmationModal = true" class="text-primary"><i class="fa-regular fa-trash-can"></i></button>
@@ -72,6 +73,7 @@ export default {
         return {
             loading: true,
             showConfirmationModal: false,
+            views: this.manual.views,
         };
     },
     methods: {
@@ -83,6 +85,8 @@ export default {
             return format(parsedDate, 'dd \'de\' MMMM, Y', { locale: es }); // Formato personalizado
         },
         openFile() {
+            this.updateViews();
+
             const url = this.manual.media.find(item => item.collection_name == 'default')?.original_url;
             window.open(url, '_blank');
         },
@@ -92,6 +96,17 @@ export default {
         deleteItem() {
             this.$inertia.delete(route('manuals.destroy', this.manual));
         },
+        async updateViews() {
+            try {
+                const response = await axios.put(route('manuals.increase-views', this.manual.id));
+                
+                if (response.status === 200) {
+                    this.views ++;
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
     },
     components: {
         ThirthButton,

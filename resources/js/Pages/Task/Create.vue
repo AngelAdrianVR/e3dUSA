@@ -37,7 +37,8 @@
         </div>
         <div class="mt-5 col-span-full">
           <label>Descripción</label>
-          <RichText @content="updateDescription($event)" />
+          <!-- <RichText @content="updateDescription($event)" /> -->
+          <textarea v-model="form.description" rows="5" class="textarea" placeholder="..."></textarea>
         </div>
         <FileUploader @files-selected="this.form.media = $event" />
         <div>
