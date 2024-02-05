@@ -271,4 +271,27 @@ class PurchaseController extends Controller
 
         return response()->json([]);
     }
+
+    public function developTemplate() 
+    {
+        // crear pdf
+        $purchase = Purchase::with(['supplier.contacts'])->find(14);
+        $products = $purchase->products;
+        $raw_materials_ids = [];
+        foreach ($products as $product) {
+            $raw_materials_ids[] = $product['id'];
+        }
+
+        $raw_materials = RawMaterial::with('media')->whereIn('id', $raw_materials_ids)->get([
+            'id',
+            'name',
+            'part_number',
+            'description',
+            'measure_unit',
+            'cost'
+        ]);
+
+        $pdf = Pdf::loadView('pdfTemplates.purchase-order', compact('purchase', 'raw_materials'));
+        return $pdf->stream();
+    }
 }

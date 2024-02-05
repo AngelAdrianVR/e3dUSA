@@ -201,7 +201,7 @@ Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseControlle
 Route::put('purchases/authorize/{purchase}', [PurchaseController::class, 'authorizePurchase'])->name('purchases.authorize');
 Route::put('purchases/update-quantity/{purchase}', [PurchaseController::class, 'updateQuantity'])->name('purchases.update-quantity');
 Route::get('purchases-show-template/{purchase_id}', [PurchaseController::class, 'showTemplate'])->name('purchases.show-template')->middleware('auth');
-
+Route::get('develop-template', [PurchaseController::class, 'developTemplate'])->name('develop.template');
 
 //-------------- Projects routes ------------------
 Route::resource('projects', ProjectController::class)->middleware('auth');
