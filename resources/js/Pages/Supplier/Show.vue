@@ -57,7 +57,7 @@
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
           <p @click="tabs = 2" :class="tabs == 2 ? 'bg-secondary-gray rounded-xl text-primary' : ''
             " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-            Datos Bancarios | Contactos
+            Datos Bancarios / Contactos
           </p>
           <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
           <p @click="fetchSupplierItems(); tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
