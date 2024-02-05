@@ -387,6 +387,7 @@ Route::post('maintenances/update-with-media/{maintenance}', [MaintenanceControll
 
 // ------- tutorials & manuals routes  -------------
 Route::resource('manuals', ManualController::class)->middleware('auth');
+Route::put('manuals/increase-views/{manual}', [ManualController::class, 'increaseViews'])->name('manuals.increase-views')->middleware('auth');
 Route::post('manuals/update-with-media/{manual}', [ManualController::class, 'updateWithMedia'])->name('manuals.update-with-media')->middleware('auth');
 
 

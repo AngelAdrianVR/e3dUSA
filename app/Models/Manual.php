@@ -15,6 +15,7 @@ class Manual extends Model implements HasMedia
         'title',
         'description',
         'type',
+        'views',
         'user_id',
     ];
 

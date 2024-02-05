@@ -110,4 +110,11 @@ class ManualController extends Controller
 
         return to_route('manuals.index');
     }
+
+    public function increaseViews(Manual $manual)
+    {
+        $manual->increment('views');
+
+        return response()->json([]);
+    }
 }

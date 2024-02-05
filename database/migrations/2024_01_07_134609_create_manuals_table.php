@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('type');
+            $table->unsignedInteger('views')->default(0);
             $table->text('description');
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
