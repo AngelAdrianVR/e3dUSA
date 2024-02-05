@@ -39,7 +39,7 @@
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="id" label="ID" width="45" />
                     <el-table-column prop="name" label="Nombre" width="190" />
-                    <el-table-column prop="nickname" label="Nickname" width="190" />
+                    <el-table-column prop="nickname" label="Alias" width="190" />
                     <el-table-column prop="phone" label="Teléfono" width="150" />
                     <el-table-column prop="address" label="Dirección" width="210" />
                     <el-table-column prop="post_code" label="C.P." width="100" />
