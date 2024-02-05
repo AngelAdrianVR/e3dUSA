@@ -15,16 +15,15 @@
         <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4 mx-3">
           <div>
             <label class="text-sm">Nombre de la oportunidad *</label>
-            <input v-model="form.name" class="input" type="text" />
+            <input v-model="form.name" class="input" type="text" placeholder="Ingresa el nombre" />
             <InputError :message="form.errors.name" />
           </div>
           <div class="relative">
             <i :class="getColorStatus(form.status)" class="fa-solid fa-circle text-xs top-1 left-16 absolute z-30"></i>
             <label class="text-sm">Estatus *</label> <br />
             <div class="flex items-center space-x-4">
-              <el-select class="lg:w-1/2 mt-2" v-model="form.status" clearable filterable
-                placeholder="Seleccionar estatus" no-data-text="No hay estatus registrados"
-                no-match-text="No se encontraron coincidencias">
+              <el-select class="lg:w-1/2" v-model="form.status" clearable filterable placeholder="Seleccionar estatus"
+                no-data-text="No hay estatus registrados" no-match-text="No se encontraron coincidencias">
                 <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
                   <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
                   <span style="float: center; margin-left: 5px; font-size: 13px">{{
@@ -41,7 +40,14 @@
               no-data-text="No hay vendedores registrados" no-match-text="No se encontraron coincidencias">
               <el-option v-for="seller in users.filter(
                 (user) => user.employee_properties?.department == 'Ventas'
-              )" :key="seller" :label="seller.name" :value="seller.id" />
+              )" :key="seller" :label="seller.name" :value="seller.id">
+                <div v-if="$page.props.jetstream.managesProfilePhotos"
+                  class="flex text-sm rounded-full items-center mt-[3px]">
+                  <img class="h-7 w-7 rounded-full object-cover mr-4" :src="seller.profile_photo_url"
+                    :alt="seller.name" />
+                  <p>{{ seller.name }}</p>
+                </div>
+              </el-option>
             </el-select>
           </div>
           <!-- <label class="inline-flex items-center">
@@ -99,7 +105,12 @@
               <p v-if="$page.props.errors?.contact" class="text-xs text-red-600">El campo contacto es obligatorio</p>
             </div>
           </div>
-          <div class="lg:flex pt-3">
+          <div class="pt-1">
+            <label class="block">Duración *</label>
+            <el-date-picker @change="handleDateRange" v-model="range" type="daterange" range-separator="A"
+              start-placeholder="Fecha de inicio" end-placeholder="Fecha límite" value-format="YYYY-MM-DD" />
+          </div>
+          <!-- <div class="lg:flex pt-3">
             <div class="lg:w-1/2 mt-2 lg:mt-0">
               <label class="block text-sm">Fecha de inicio *</label>
               <el-date-picker v-model="form.start_date" type="date" placeholder="Fecha de inicio *" format="YYYY/MM/DD"
@@ -112,10 +123,11 @@
                 format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
               <InputError :message="form.errors.estimated_finish_date" />
             </div>
-          </div>
+          </div> -->
           <div>
             <label class="text-sm">Descripción</label>
-            <RichText @content="updateDescription($event)" v-model="form.description" />
+            <!-- <RichText @content="updateDescription($event)" v-model="form.description" /> -->
+            <textarea v-model="form.description" rows="4" class="textarea" placeholder="..."></textarea>
           </div>
           <div class="ml-2 mt-2 col-span-full flex">
             <FileUploader @files-selected="this.form.media = $event" />
@@ -123,7 +135,7 @@
 
           <div class="flex justify-between items-center space-x-4">
             <div class="w-full">
-              <div class="flex justify-between items-center mx-2">
+              <div class="flex justify-between items-center">
                 <label class="text-sm">Etiquetas</label>
                 <button v-if="$page.props.auth.user.permissions.includes('Crear etiquetas crm')"
                   @click="showTagFormModal = true" type="button"
@@ -140,7 +152,8 @@
             </div>
             <div class="w-full">
               <label class="text-sm">Probabilidad %</label>
-              <input v-model="form.probability" class="input" type="number" min="0" max="100" />
+              <input v-model="form.probability" class="input" type="number" min="0" max="100"
+                placeholder="% que crees que tenga para cerrar la venta" />
             </div>
           </div>
           <div class="flex items-center space-x-4">
@@ -181,11 +194,11 @@
                 </div>
               </el-tooltip>
             </div>
-            <input v-model="form.amount" class="input" type="number" min="0" step="0.01" />
+            <input v-model="form.amount" class="input" type="number" min="0" step="0.01" placeholder="Ingresa el monto" />
             <InputError :message="form.errors.amount" />
           </div>
 
-          <h2 class="font-bold text-sm my-2 col-span-full">Acceso al proyecto</h2>
+          <h2 class="font-bold text-sm my-2 col-span-full">Acceso a las actividades</h2>
           <div class="col-span-full text-sm">
             <div class="my-1">
               <input v-model="typeAccessProject" value="Public"
@@ -213,7 +226,14 @@
                   class="w-1/2" no-data-text="No hay más usuarios para añadir"
                   no-match-text="No se encontraron coincidencias">
                   <el-option v-for="(item, index) in availableUsersToPermissions" :key="item.id" :label="item.name"
-                    :value="item.id" />
+                    :value="item.id">
+                    <div v-if="$page.props.jetstream.managesProfilePhotos"
+                      class="flex text-sm rounded-full items-center mt-[3px]">
+                      <img class="h-7 w-7 rounded-full object-cover mr-4" :src="item.profile_photo_url"
+                        :alt="item.name" />
+                      <p>{{ item.name }}</p>
+                    </div>
+                  </el-option>
                 </el-select>
               </div>
               <ThirthButton v-if="typeAccessProject === 'Public'" type="button" class="ml-auto self-start"
@@ -388,6 +408,7 @@ export default {
       company_branch: null,
       showTagFormModal: false,
       company_branch_obj: null,
+      range: null,
       typeAccessProject: 'Private',
       // owner: this.$page.props.auth.user.name,
       mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
@@ -453,6 +474,21 @@ export default {
     tags: Object,
   },
   methods: {
+    handleDateRange(range) {
+      this.form.start_date = range[0];
+      this.form.estimated_finish_date = range[1];
+
+      const date1 = parseISO(range[0]);
+      const date2 = parseISO(range[1]);
+
+      // Compara si son del mismo día
+      if (isSameDay(date1, date2)) {
+        this.canSelectTime = true;
+      } else {
+        this.canSelectTime = false;
+        this.enabledTime = false;
+      }
+    },
     store() {
       this.form.post(route("oportunities.store"), {
         onSuccess: () => {

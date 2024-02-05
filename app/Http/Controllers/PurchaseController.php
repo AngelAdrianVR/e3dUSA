@@ -15,7 +15,10 @@ use App\Models\Supplier;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class PurchaseController extends Controller
 {
@@ -223,7 +226,7 @@ class PurchaseController extends Controller
         $products = $purchase->products;
         // Buscar el índice del elemento con el ID deseado
         $index = array_search($request->id, array_column($products, 'id'));
-        
+
         // editar cantidad
         $products[$index]['quantity'] = $request->quantity;
 
@@ -235,11 +238,37 @@ class PurchaseController extends Controller
 
     public function sendEmail(Purchase $purchase, Request $request)
     {
+        // crear pdf
+        $purchase = $purchase->load(['supplier.contacts']);
+        $products = $purchase->products;
+        $raw_materials_ids = [];
+        foreach ($products as $product) {
+            $raw_materials_ids[] = $product['id'];
+        }
+
+        $raw_materials = RawMaterial::with('media')->whereIn('id', $raw_materials_ids)->get([
+            'id',
+            'name',
+            'part_number',
+            'description',
+            'measure_unit',
+            'cost'
+        ]);
+
+        $pdf = Pdf::loadView('pdfTemplates.purchase-order', compact('purchase', 'raw_materials'));
+
+        $fileName = 'OC-' . str_pad($purchase->id, 4, "0", STR_PAD_LEFT);
+        // Guardar el PDF en la carpeta storage/app/purchase-orders
+        $content = $pdf->download()->getOriginalContent();
+        Storage::put("public/purchase-orders/$fileName.pdf", $content);
+
         // enviar correo
-        $attach = [
-            'path' => 'path',
-            'as' => 'OC-' . str_pad($purchase->id, 4, "0", STR_PAD_LEFT),
-        ];
-        Mail::to($request->contact_email)->send(new EmailSupplierTemplateMarkdownMail($request->subject, $request->content, $attach));
+        // $attach = [
+        //     'path' => 'path',
+        //     'as' => 'OC-' . str_pad($purchase->id, 4, "0", STR_PAD_LEFT),
+        // ];
+        // Mail::to($request->contact_email)->send(new EmailSupplierTemplateMarkdownMail($request->subject, $request->content, $attach));
+
+        return response()->json([]);
     }
 }

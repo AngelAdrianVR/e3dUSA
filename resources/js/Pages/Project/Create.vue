@@ -52,7 +52,8 @@
           </div>
           <div class="mt-5 col-span-full">
             <label>Descripción</label>
-            <RichText @content="updateDescription($event)" />
+            <!-- <RichText @content="updateDescription($event)" /> -->
+            <textarea v-model="form.description" rows="5" class="textarea" placeholder="..."></textarea>
           </div>
           <div class="ml-2 mt-2 col-span-full flex">
             <FileUploader @files-selected="this.form.media = $event" />
@@ -559,7 +560,7 @@ export default {
       let authUser = {
         id: user.id,
         name: user.name,
-        employee_properties: {department: user.employee_properties.department},
+        employee_properties: {department: user.employee_properties?.department},
         profile_photo_url: user.profile_photo_url,
         permissions: [...defaultPermissions],
       };
@@ -576,7 +577,7 @@ export default {
       let foundUser = {
         id: user.id,
         name: user.name,
-        employee_properties: {department: user.employee_properties.department},
+        employee_properties: {department: user.employee_properties?.department},
         profile_photo_url: user.profile_photo_url,
         permissions: [...defaultPermissions],
       };
@@ -626,7 +627,7 @@ export default {
         let usersWithSelectedProperties = this.users.filter(element => element.employee_properties !== null).map(user => ({
           id: user.id,
           name: user.name,
-          employee_properties: {department: user.employee_properties.department},
+          employee_properties: {department: user.employee_properties?.department},
           profile_photo_url: user.profile_photo_url,
           permissions: [...defaultPermissions],
         }));
@@ -644,15 +645,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-/* Estilo para el hover de las opciones */
-.el-select-dropdown .el-select-dropdown__item:hover {
-  background-color: #D90537;
-  /* Color de fondo al hacer hover */
-  color: white;
-  /* Color del texto al hacer hover */
-  border-radius: 20px;
-  /* Redondeo */
-}
-</style>

@@ -156,8 +156,8 @@
                 <label>OV *</label> <br>
                 <el-select v-model="form.sale_id" filterable placeholder="Seleccione"
                   no-data-text="No hay órdenes registradas" no-match-text="No se encontraron coincidencias">
-                  <el-option v-for="ov in company_branch_obj?.sales" :key="ov?.id" :label="'OV-0' + ov?.id"
-                    :value="ov?.id" />
+                  <el-option v-for="ov in company_branch_obj.sales" :key="ov.id" :label="'OV-0' + ov.id"
+                    :value="ov.id" />
                 </el-select>
                 <InputError :message="form.errors.sale_id" />
               </div>
@@ -395,14 +395,14 @@ export default {
       tags: [],
       project_group_id: this.project.data.projectGroup.id,
       is_internal_project: Boolean(this.project.data.is_internal_project),
-      company_id: this.project.data.company.id,
-      company_branch_id: this.project.data.companyBranch.id,
+      company_id: this.project.data.company?.id,
+      company_branch_id: this.project.data.companyBranch?.id,
       shipping_address: this.project.data.shipping_address,
-      sale_id: this.project.data.sale.id,
+      sale_id: this.project.data.sale?.id,
       currency: this.project.data.currency,
       budget: this.project.data.budget,
       sat_method: this.project.data.sat_method,
-      owner_id: this.project.data.owner.id,
+      owner_id: this.project.data.owner?.id,
       selectedUsersToPermissions: [],
       media: [],
     });

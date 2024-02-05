@@ -1,6 +1,5 @@
 <template>
     <div class="text-[11px]">
-
         <Head :title="'Orden de compra ' + String(purchase.id).padStart(4, '0')" />
         <header class="mt-10">
             <div class="flex items-center justify-between ml-8">
@@ -158,8 +157,8 @@
                             <InputError :message="form.errors.bank_information" />
                         </div>
                     </div>
-                    <h2 class="font-bold text-sm my-2">Datos del correo</h2>
                     <div v-if="form.contact_id">
+                        <h2 class="font-bold text-sm my-2">Datos del correo</h2>
                         <div>
                             <label class="ml-2 mb-1">Para</label>
                             <p class="rounded-[3px] bg-[#cccccc] text-sm py-1 px-2">
@@ -177,7 +176,6 @@
                             <label class="ml-2 mb-1">Descripción</label>
                             <textarea v-model="form.content" class="textarea" rows="5"
                                 placeholder="Escribe la descripción del correo"></textarea>
-                            <InputError :message="form.errors.subject" />
                         </div>
                         <div class="flex mt-2 text-xs">
                             <span> Adjunto:</span>
@@ -191,7 +189,9 @@
             </template>
             <template #footer>
                 <CancelButton @Click="showModal = false">Cancelar</CancelButton>
-                <PrimaryButton>Enviar</PrimaryButton>
+                <PrimaryButton @click="sendEmail"
+                    :disabled="!form.contact_id || form.bank_information === null || !form.subject || loading">Enviar
+                </PrimaryButton>
             </template>
         </DialogModal>
     </div>
@@ -223,6 +223,7 @@ export default {
             quantity: null,
             editQuantity: false,
             showModal: false,
+            loading: false,
         }
     },
     components: {
@@ -249,12 +250,13 @@ export default {
     },
     methods: {
         async sendEmail() {
+            this.loading = true;
             try {
                 const response = await axios.post(route('purchases.send-email', this.purchase.id), {
-                    contact_id: form.contact_id,
-                    bank_information: form.bank_information,
-                    subject: form.subject,
-                    content: form.content,
+                    contact_id: this.form.contact_id,
+                    bank_information: this.form.bank_information,
+                    subject: this.form.subject,
+                    content: this.form.content,
                 });
 
                 if (response.status === 200) {
@@ -273,6 +275,8 @@ export default {
                     message: "No se logró enviar el correo al proveedor. Inténtalo más tarde",
                     type: "error",
                 });
+            } finally {
+                this.loading = false;
             }
         },
         async updateQuantity(id) {
