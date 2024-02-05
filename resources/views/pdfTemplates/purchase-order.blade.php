@@ -29,7 +29,7 @@
             text-align: left
         }
 
-        footer {
+        .footer {
             margin: 32px 32px 0 32px;
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -39,7 +39,7 @@
     </style>
 </head>
 
-<body style="font-size: 11px">
+<body style="font-size: 11px; font-family: sans-serif">
     <header>
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <img width="30%" src="{{ public_path('images\logo.png') }}">
@@ -70,6 +70,11 @@
             <span>{{ $purchase->supplier->address }}</span> <br>
             <span>Telefono:</span>
             <span>{{ $purchase->supplier->phone }}</span> <br>
+            <span>Cuenta bancaria:</span>
+            <span>
+                {{ $purchase->supplier->banks[$purchase->bank_information]['accountNumber'] }}
+                ({{ $purchase->supplier->banks[$purchase->bank_information]['bank_name'] }})
+            </span> <br>
             <span>Observaciones: </span>
             <span>{{ $purchase->notes ?? '-' }}</span>
         </section>
@@ -109,39 +114,44 @@
                 @endforeach
             </tbody>
         </table>
+        <section class="footer">
+            <section style="width: 40%; margin-right: 8px; margin-left: auto; text-align: right">
+                @php
+                    $subtotal = $raw_materials
+                        ->map(function ($item) use ($purchase) {
+                            $quantity = optional(collect($purchase->products)->firstWhere('id', $item['id']))['quantity'] ?? 0;
+                            return $item['cost'] * $quantity;
+                        })
+                        ->sum();
+                @endphp
+                <span>Subtotal</span>
+                <span>{{ number_format($subtotal, 2) }}</span> <br>
+                <span>IVA</span>
+                <span>{{ number_format($subtotal * 0.16, 2) }}</span> <br>
+                <span>Total</span>
+                <span
+                    style="font-weight: bold; border-top-width: 2px; border-bottom-width: 2px; border-color: rgb(154 154 154 / var(--tw-border-opacity));">
+                    {{ number_format($subtotal * 1.16, 2) }}</span> <br>
+            </section>
+        </section>
         <!-- imagenes -->
         <section>
-            <div class="w-11/12 mx-auto my-3 grid grid-cols-5 gap-4 ">
+            <div style="margin-top: 32px; margin-bottom: 12px">
                 @foreach ($raw_materials as $item)
-                {{-- {{ $item->media[0]->original_url }} --}}
-                <img  src="{{ $item->media[0]->original_url }}">
-                    {{-- <div class="bg-gray-200 rounded-t-xl rounded-b-md border" style="font-size: 8px;">
-                        <p class="py-px px-1 uppercase text-gray-600">{{ $item->name }}</p>
-                    </div> --}}
+                    @php
+                        $path = $item->media[0]['id'] . '\\' . $item->media[0]['file_name'];
+                    @endphp
+                    <div
+                        style="display: inline-block; width: 24%; height: 100px; margin-right: 4px; margin-bottom: 4px; font-size: 10px; background-color: #D9D9D9; border-top-left-radius: 0.75rem; border-top-right-radius: 0.75rem; border-bottom-right-radius: 0.375rem; border-bottom-left-radius: 0.375rem">
+                        <img width="100%" src="{{ public_path("storage\\$path") }}">
+                        <p
+                            style="color: dimgray; background-color: #D9D9D9; padding: 2px; margin: 0; text-transform: uppercase">
+                            {{ $item->part_number }}</p>
+                    </div>
                 @endforeach
             </div>
         </section>
     </main>
-    <footer>
-        <section style="width: 40%; margin-right: 32px; margin-left: auto; text-align: right">
-            @php
-                $subtotal = $raw_materials
-                    ->map(function ($item) use ($purchase) {
-                        $quantity = optional(collect($purchase->products)->firstWhere('id', $item['id']))['quantity'] ?? 0;
-                        return $item['cost'] * $quantity;
-                    })
-                    ->sum();
-            @endphp
-            <span>Subtotal</span>
-            <span>{{ number_format($subtotal, 2) }}</span> <br>
-            <span>IVA</span>
-            <span>{{ number_format($subtotal * 0.16, 2) }}</span> <br>
-            <span>Total</span>
-            <span
-                style="font-weight: bold; border-top-width: 2px; border-bottom-width: 2px; border-color: rgb(154 154 154 / var(--tw-border-opacity));">
-                {{ number_format($subtotal * 1.16, 2) }}</span> <br>
-        </section>
-    </footer>
 </body>
 
 </html>

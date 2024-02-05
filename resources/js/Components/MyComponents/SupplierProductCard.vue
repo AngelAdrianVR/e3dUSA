@@ -1,9 +1,9 @@
 <template>
-    <div class="rounded-lg border border-gray1 py-5 px-16 my-2 lg:my-0">
-        <figure class="rounded-md p-4 bg-gray-200 w-2/3 lg:w-1/2 mx-auto">
-            <img class="rounded-md object-contain w-full h-36" :src="product.media[0]?.original_url">
+    <div class="rounded-lg border border-gray1 py-4 px-4 my-2 lg:my-0">
+        <figure class="rounded-md p-4 bg-gray-200 w-4/5 mx-auto">
+            <img class="rounded-md object-contain w-full h-28" :src="product.media[0]?.original_url">
         </figure>
-        <div class="grid grid-cols-2 gap-2 mt-5 text-sm">
+        <div class="grid grid-cols-2 gap-2 mt-5 text-xs">
             <p class="text-gray1">Nombre del producto:</p>
             <p>{{ product.name }}</p>
             <p class="text-gray1">Descripción:</p>

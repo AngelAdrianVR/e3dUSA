@@ -1,5 +1,6 @@
 <template>
     <div class="text-[11px]">
+
         <Head :title="'Orden de compra ' + String(purchase.id).padStart(4, '0')" />
         <header class="mt-10">
             <div class="flex items-center justify-between ml-8">
@@ -32,6 +33,10 @@
                 <span class="col-span-6">{{ purchase.supplier.address }}</span>
                 <span>Telefono:</span>
                 <span class="col-span-6">{{ purchase.supplier.phone }}</span>
+                <span>Cuenta bancaria:</span>
+                <span class="col-span-6">
+                    {{ getBankInfo }}
+                </span>
                 <span>Observaciones: </span>
                 <span class="col-span-6">{{ purchase.notes ?? '-' }}</span>
             </section>
@@ -212,8 +217,8 @@ import axios from 'axios';
 export default {
     data() {
         const form = useForm({
-            contact_id: null,
-            bank_information: null,
+            contact_id: this.purchase.contact_id,
+            bank_information: this.purchase.bank_information,
             subject: null,
             content: null,
         });
@@ -246,6 +251,16 @@ export default {
             }, 0);
 
             return subtotal;
+        },
+        getBankInfo() {
+            if (this.purchase.bank_information === null) {
+                return 'No se ha seleccionado';
+            }
+
+            return this.purchase.supplier.banks[this.purchase.bank_information].accountNumber
+                + ' ('
+                + this.purchase.supplier.banks[this.purchase.bank_information].bank_name
+                + ')';
         },
     },
     methods: {

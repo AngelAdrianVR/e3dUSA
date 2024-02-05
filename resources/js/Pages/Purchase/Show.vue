@@ -147,13 +147,13 @@
           <p class="text-secondary col-span-2 mt-7">Datos Bancarios</p>
 
           <span class="text-gray-500 my-2">Nombre del beneficiario</span>
-          <span>{{ purchase.data.bank_information?.beneficiary_name ?? '--' }}</span>
+          <span>{{ purchase.data.supplier.banks[purchase.data.bank_information]?.beneficiary_name ?? '--' }}</span>
           <span class="text-gray-500 my-2">Número de cuenta</span>
-          <span>{{ purchase.data.bank_information?.accountNumber ?? '--' }}</span>
+          <span>{{ purchase.data.supplier.banks[purchase.data.bank_information]?.accountNumber ?? '--' }}</span>
           <span class="text-gray-500 my-2">Clabe</span>
-          <span>{{ purchase.data.bank_information?.clabe ?? '--' }}</span>
+          <span>{{ purchase.data.supplier.banks[purchase.data.bank_information]?.clabe ?? '--' }}</span>
           <span class="text-gray-500 my-2">Banco</span>
-          <span>{{ purchase.data.bank_information?.bank_name ?? '--' }}</span>
+          <span>{{ purchase.data.supplier.banks[purchase.data.bank_information]?.bank_name ?? '--' }}</span>
 
         </div>
       </div>
@@ -163,7 +163,7 @@
 
       <div v-if="tabs == 2" class="p-7">
         <div v-if="!loading">
-          <div v-if="rawMaterials?.length > 0" class="lg:grid grid-cols-2 mt-7 gap-5">
+          <div v-if="rawMaterials?.length > 0" class="lg:grid grid-cols-4 mt-7 gap-5">
             <SupplierProductCard v-for="product in rawMaterials" :key="product" :product="product" />
           </div>
           <p v-else class="text-gray-500 text-center text-sm">No hay productos registrados a este proveedor</p>

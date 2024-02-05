@@ -40,10 +40,12 @@ class EmailSupplierTemplateMarkdownMail extends Mailable
      */
     public function attachments(): array
     {
-        return [
-            Attachment::fromStorage($this->attachment['path'])
-            ->as($this->attachment['as'])
-            ->withMime('application/pdf'),
-        ];
+        if ($this->attachment['path']) {
+            return [
+                Attachment::fromPath($this->attachment['path']),
+            ];
+        }
+
+        return [];
     }
 }
