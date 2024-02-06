@@ -43,6 +43,8 @@
     <header>
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <img width="30%" src="{{ public_path('images\logo.png') }}">
+            {{-- en servidor cpanel colocar asset --}}
+            {{-- <img width="30%" src="{{ asset('images/logo.png') }}"> --}}
             <p style="background-color:#D9D9D9; font-weight: bold; padding: 1px 20px; text-align: center;">
                 Orden de compra
             </p>
@@ -140,6 +142,8 @@
                 @foreach ($raw_materials as $item)
                     @php
                         $path = $item->media[0]['id'] . '\\' . $item->media[0]['file_name'];
+                        // En servidor cpanel colocar el siguiente y comentar anterior
+                        // $path = $item->media[0]['id'] . '/' . $item->media[0]['file_name'];
                     @endphp
                     <div
                         style="display: inline-block; width: 24%; height: 100px; margin-right: 4px; margin-bottom: 4px; font-size: 10px; background-color: #D9D9D9; border-top-left-radius: 0.75rem; border-top-right-radius: 0.75rem; border-bottom-right-radius: 0.375rem; border-bottom-left-radius: 0.375rem">
