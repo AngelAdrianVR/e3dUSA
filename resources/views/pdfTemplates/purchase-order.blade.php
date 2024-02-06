@@ -148,6 +148,8 @@
                     <div
                         style="display: inline-block; width: 24%; height: 100px; margin-right: 4px; margin-bottom: 4px; font-size: 10px; background-color: #D9D9D9; border-top-left-radius: 0.75rem; border-top-right-radius: 0.75rem; border-bottom-right-radius: 0.375rem; border-bottom-left-radius: 0.375rem">
                         <img width="100%" src="{{ public_path("storage\\$path") }}">
+                        {{-- en servidor cpanel colocar asset --}}
+                        {{-- <img width="100%" src="{{ asset("storage/$path") }}"> --}}
                         <p
                             style="color: dimgray; background-color: #D9D9D9; padding: 2px; margin: 0; text-transform: uppercase">
                             {{ $item->part_number }}</p>
