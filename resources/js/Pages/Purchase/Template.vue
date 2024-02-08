@@ -105,18 +105,29 @@
                 <header class="bg-gray2 text-center py-1">
                     Importe con letra
                 </header>
-                <p class="text-center mt-3">{{ turnNumberIntoText(getSubtotal * 1.16) }}</p>
+                <p class="text-center mt-3">
+                    {{ purchase.is_iva_included
+                        ? turnNumberIntoText(getSubtotal * 1.16)
+                        : turnNumberIntoText(getSubtotal)
+                    }}
+                </p>
             </section>
             <section class="grid grid-cols-2 gap-x-4 gap-y-2">
                 <span>Subtotal</span>
                 <span>{{ getSubtotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
                 <!-- <span>Descuento</span>
                 <span>0.00</span> -->
-                <span>IVA</span>
-                <span>{{ (getSubtotal * 0.16).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
+                <span v-if="purchase.is_iva_included">IVA</span>
+                <span v-if="purchase.is_iva_included">{{ (getSubtotal * 0.16).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,
+                    ",") }}</span>
                 <span>Total</span>
                 <span class="font-bold border-y-2 border-gray1">
-                    {{ (getSubtotal * 1.16).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
+                    {{
+                        purchase.is_iva_included
+                        ? (getSubtotal * 1.16).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                        : getSubtotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }}
+                </span>
             </section>
         </footer>
         <DialogModal :show="showModal" @close="showModal = false">
