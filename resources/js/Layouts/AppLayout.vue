@@ -485,7 +485,7 @@ onMounted(() => {
                 </el-popconfirm>
 
                 <!-- attendances -->
-                <div v-if="$page.props.isKiosk &&
+                <!-- <div v-if="$page.props.isKiosk &&
                   nextAttendance &&
                   $page.props.auth.user.permissions.includes(
                     'Registrar asistencia'
@@ -512,6 +512,32 @@ onMounted(() => {
                       {{ nextAttendance }}
                     </span>
                   </div>
+                </div> -->
+                <div v-if="$page.props.isKiosk &&
+                  nextAttendance &&
+                  $page.props.auth.user.permissions.includes(
+                    'Registrar asistencia'
+                  ) && !isPaused">
+                  <div v-if="nextAttendance == 'Registrar salida' && $page.props.auth.user.has_pendent_production">
+                    <SecondaryButton @click="openPasswordModal = true" v-if="nextAttendance != 'Dia terminado'"
+                      class="mr-14">
+                      {{ nextAttendance }}
+                    </SecondaryButton>
+                    <span v-else class="bg-[#75b3f9] text-[#0355B5] mr-14 rounded-md px-3 py-1">
+                      {{ nextAttendance }}
+                    </span>
+                  </div>
+                  <el-popconfirm v-else confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                    title="¿Continuar?" @confirm="setAttendance">
+                    <template #reference>
+                      <SecondaryButton v-if="nextAttendance != 'Dia terminado'" class="mr-14">
+                        {{ nextAttendance }}
+                      </SecondaryButton>
+                      <span v-else class="bg-[#75b3f9] text-[#0355B5] mr-14 rounded-md px-3 py-1">
+                        {{ nextAttendance }}
+                      </span>
+                    </template>
+                  </el-popconfirm>
                 </div>
 
                 <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear kiosco')

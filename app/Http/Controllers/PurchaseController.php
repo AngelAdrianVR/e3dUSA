@@ -131,7 +131,7 @@ class PurchaseController extends Controller
             'bank_information' => 'required',
         ]);
 
-        $purchase->update($validation + ['user_id' => auth()->user()->id]);
+        $purchase->update($validation);
 
         event(new RecordEdited($purchase));
 
