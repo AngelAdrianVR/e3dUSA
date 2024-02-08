@@ -183,7 +183,7 @@ export default {
       is_iva_included: Boolean(this.purchase.is_iva_included),
       supplier_id: this.purchase.supplier_id,
       contact_id: this.purchase.contact_id,
-      bank_information: this.purchase.supplier.banks[this.purchase.bank_information],
+      bank_information: this.purchase.bank_information,
       products: this.purchase.products,
     });
 
@@ -229,7 +229,7 @@ export default {
       });
     },
     saveBankObj() {
-      this.form.bank_information = this.currentSupplier.banks[this.bank_index];
+      this.form.bank_information = this.currentSupplier?.banks[this.bank_index];
     },
     disabledDate(time) {
       const today = new Date();

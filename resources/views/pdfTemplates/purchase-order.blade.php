@@ -42,9 +42,12 @@
 <body style="font-size: 11px; font-family: sans-serif">
     <header>
         <div style="display: flex; align-items: center; justify-content: space-between;">
-            <img width="30%" src="{{ public_path('images\logo.png') }}">
-            {{-- en servidor cpanel colocar asset --}}
-            {{-- <img width="30%" src="{{ asset('images/logo.png') }}"> --}}
+            @if (app()->environment() === 'production')
+                {{-- en servidor cpanel colocar asset --}}
+                <img width="30%" src="{{ asset('images/logo.png') }}">
+            @else
+                <img width="30%" src="{{ public_path('images\logo.png') }}">
+            @endif
             <p style="background-color:#D9D9D9; font-weight: bold; padding: 1px 20px; text-align: center;">
                 Orden de compra
             </p>
@@ -126,14 +129,21 @@
                         })
                         ->sum();
                 @endphp
-                <span>Subtotal</span>
-                <span>{{ number_format($subtotal, 2) }}</span> <br>
-                <span>IVA</span>
-                <span>{{ number_format($subtotal * 0.16, 2) }}</span> <br>
+                @if ($purchase->is_iva_included)
+                    <span>Subtotal</span>
+                    <span>{{ number_format($subtotal, 2) }}</span> <br>
+                    <span>IVA</span>
+                    <span>{{ number_format($subtotal * 0.16, 2) }}</span> <br>
+                @endif
                 <span>Total</span>
                 <span
                     style="font-weight: bold; border-top-width: 2px; border-bottom-width: 2px; border-color: rgb(154 154 154 / var(--tw-border-opacity));">
-                    {{ number_format($subtotal * 1.16, 2) }}</span> <br>
+                    @if ($purchase->is_iva_included)
+                        {{ number_format($subtotal * 1.16, 2) }}
+                    @else
+                        {{ number_format($subtotal, 2) }}
+                    @endif
+                </span> <br>
             </section>
         </section>
         <!-- imagenes -->
@@ -141,15 +151,21 @@
             <div style="margin-top: 32px; margin-bottom: 12px">
                 @foreach ($raw_materials as $item)
                     @php
-                        $path = $item->media[0]['id'] . '\\' . $item->media[0]['file_name'];
-                        // En servidor cpanel colocar el siguiente y comentar anterior
-                        // $path = $item->media[0]['id'] . '/' . $item->media[0]['file_name'];
+                        if (app()->environment() === 'production') {
+                            // En servidor cpanel colocar el siguiente y comentar anterior
+                            $path = $item->media[0]['id'] . '/' . $item->media[0]['file_name'];
+                        } else {
+                            $path = $item->media[0]['id'] . '\\' . $item->media[0]['file_name'];
+                        }
                     @endphp
                     <div
                         style="display: inline-block; width: 24%; height: 100px; margin-right: 4px; margin-bottom: 4px; font-size: 10px; background-color: #D9D9D9; border-top-left-radius: 0.75rem; border-top-right-radius: 0.75rem; border-bottom-right-radius: 0.375rem; border-bottom-left-radius: 0.375rem">
-                        <img width="100%" src="{{ public_path("storage\\$path") }}">
-                        {{-- en servidor cpanel colocar asset --}}
-                        {{-- <img width="100%" src="{{ asset("storage/$path") }}"> --}}
+                        @if (app()->environment() === 'production')
+                            {{-- en servidor cpanel colocar asset --}}
+                            <img width="100%" src="{{ asset("storage/$path") }}">
+                        @else
+                            <img width="100%" src="{{ public_path("storage\\$path") }}">
+                        @endif
                         <p
                             style="color: dimgray; background-color: #D9D9D9; padding: 2px; margin: 0; text-transform: uppercase">
                             {{ $item->part_number }}</p>
