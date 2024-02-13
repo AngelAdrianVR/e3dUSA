@@ -75,7 +75,7 @@ class PurchaseController extends Controller
             'supplier_id' => 'required',
             'is_iva_included' => 'boolean',
             'contact_id' => 'required',
-            'products' => 'nullable|min:1',
+            'products' => 'array|min:1',
             'bank_information' => 'required',
         ]);
 

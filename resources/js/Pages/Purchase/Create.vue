@@ -180,7 +180,7 @@ export default {
     const form = useForm({
       notes: null,
       expected_delivery_date: null,
-      is_iva_included: null,
+      is_iva_included: false,
       supplier_id: null,
       contact_id: null,
       bank_information: null,
