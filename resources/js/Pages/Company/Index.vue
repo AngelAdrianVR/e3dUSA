@@ -14,7 +14,7 @@
                 </div>
             </template>
 
-            <div class="relative overflow-hidden">
+            <div class="relative overflow-hidden min-h-[60vh]">
                 <NotificationCenter module="companies" />
                 <!-- tabla -->
                 <div class="lg:w-5/6 mx-auto mt-6">

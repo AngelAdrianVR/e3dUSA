@@ -12,7 +12,13 @@ class PdfController extends Controller
 {
     public function RawMaterialActualStock()
     {
-        $data = Storage::with('storageable')->where('type', 'materia-prima')->latest()->get();       
+        $data = Storage::with('storageable')
+            ->where('type', 'materia-prima')
+            // ->whereHas('storageable', function ($query) {
+            //     $query->where('part_number', 'LIKE', 'LL-%');
+            // })
+            ->latest()
+            ->get();
         // $date = today()->isoFormat('DD-MM-YYYY');
         // $pdf = Pdf::loadView('PDF.raw-materials-actual-stock', compact('data'));
 
