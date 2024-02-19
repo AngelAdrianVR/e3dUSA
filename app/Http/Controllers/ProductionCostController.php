@@ -31,7 +31,7 @@ class ProductionCostController extends Controller
     {
         $request->validate([
             'name' => 'required|string',
-            'time' => 'required|after:00:00:00',
+            'time' => 'required',
             'cost' => 'required|numeric|min:0',
             'description' => 'required|string',
         ]);
@@ -63,7 +63,7 @@ class ProductionCostController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:190',
-            'time' => 'required|after:00:00:00',
+            'time' => 'required',
             'cost' => 'required|numeric|min:0',
             'description' => 'required|string',
         ]);

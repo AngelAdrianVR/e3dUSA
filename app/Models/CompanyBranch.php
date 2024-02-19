@@ -14,6 +14,7 @@ class CompanyBranch extends Model
 
     protected $fillable = [
         'name',
+        'password', // se utiliza para ingresar a la app de clientes
         'address',
         'post_code',
         'sat_method',
@@ -22,6 +23,10 @@ class CompanyBranch extends Model
         'company_id',
         'important_notes',
         'days_to_reactivate',
+    ];
+
+    protected $hidden = [
+        'password'
     ];
 
     //relationships
