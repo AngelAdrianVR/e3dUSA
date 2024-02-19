@@ -853,13 +853,14 @@ onMounted(() => {
         <!-- -------------- Product found in search raw material starts--------------------- -->
         <div v-if="(productFound && !loading) && form.scanType == 'Buscar materia prima'" class="flex space-x-2 mt-4">
           <figure class="w-1/3 h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center border">
-            <el-image style="height: 100%" :src="productFound.storageable?.media[0]?.original_url" fit="contain">
+            <!-- <el-image style="height: 100%" :src="productFound.storageable?.media[0]?.original_url" fit="contain">
               <template #error>
                 <div class="flex justify-center items-center text-[#ababab]">
                   <i class="fa-solid fa-image text-6xl"></i>
                 </div>
               </template>
-            </el-image>
+            </el-image> -->
+            <img class="object-contain h-40" :src="productFound.storageable?.media[0]?.original_url" alt="">
           </figure>
           <div class="w-2/3 border text-sm">
             <h1 class="text-sm font-bold text-center mt-1">
@@ -909,13 +910,14 @@ onMounted(() => {
         <div v-if="(catalogProductFound && !loading) && form.scanType == 'Producto de catalogo'"
           class="flex space-x-2 mt-4">
           <figure class="w-1/3 h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center border">
-            <el-image style="height: 100%" :src="catalogProductFound.media[0]?.original_url" fit="contain">
+            <!-- <el-image style="height: 100%" :src="catalogProductFound.media[0]?.original_url" fit="contain">
               <template #error>
                 <div class="flex justify-center items-center text-[#ababab]">
                   <i class="fa-solid fa-image text-6xl"></i>
                 </div>
               </template>
-            </el-image>
+            </el-image> -->
+            <img class="object-contain h-40" :src="catalogProductFound.media[0]?.original_url" alt="">
           </figure>
           <div class="w-2/3 border text-sm">
             <h1 class="text-sm font-bold text-center mt-1">
@@ -1013,13 +1015,14 @@ onMounted(() => {
 
         <div v-if="machineFound" class="flex space-x-2 mt-4">
           <figure class="w-1/3 h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center border">
-            <el-image style="height: 100%" :src="machineFound.media[0]?.original_url" fit="contain">
+            <!-- <el-image style="height: 100%" :src="machineFound.media[0]?.original_url" fit="contain">
               <template #error>
                 <div class="flex justify-center items-center text-[#ababab]">
                   <i class="fa-solid fa-image text-6xl"></i>
                 </div>
               </template>
-            </el-image>
+            </el-image> -->
+            <img class="object-contain h-60" :src="machineFound.media[0]?.original_url" alt="">
           </figure>
           <div class="w-2/3 border text-sm">
             <h1 class="text-sm font-bold text-center mt-1">
