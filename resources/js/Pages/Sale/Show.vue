@@ -324,7 +324,7 @@ export default {
             type: "success",
           });
 
-          this.$inertia.get(route('sales.index'));
+          //this.$inertia.get(route('sales.index'));
           this.sale.data.authorized_at = response.data.item.authorized_at;
           this.sale.data.status = response.data.item.status;
         }
