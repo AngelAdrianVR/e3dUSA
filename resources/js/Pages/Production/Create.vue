@@ -174,7 +174,7 @@
                       <i class="fa-solid fa-person-digging text-sm"></i>
                     </span>
                   </el-tooltip>
-                  <el-select @change="getProductionProcess" v-model="task.tasks" clearable filterable
+                  <el-select @change="getProductionProcess(); type_revelation = null" v-model="task.tasks" clearable filterable
                     placeholder="Selecciona el proceso de producción" no-data-text="No hay opciones registradas"
                     no-match-text="No se encontraron coincidencias">
                     <el-option v-for="item in production_processes.data" :key="item.id" :label="item.name"
@@ -182,7 +182,7 @@
                   </el-select>
                 </div>
                 <!-- Tipo de revelado de marco -->
-                <div class="flex justify-center items-start space-x-4 text-sm mb-8" v-if="task.tasks && typeof task.tasks === 'string' && task.tasks.startsWith('SERIGRAFÍA')">
+                <div class="flex justify-center items-start space-x-1 text-sm mb-8" v-if="task.tasks && typeof task.tasks === 'string' && task.tasks.startsWith('SERIGRAFÍA')">
                   <el-radio-group @change="addRevelationTime"  v-model="type_revelation" class="ml-4">
                     <el-radio label="usado" size="large">
                       Revelado de marco usado
@@ -191,6 +191,7 @@
                       Revelado de marco virgen
                     </el-radio>
                   </el-radio-group>
+                  <i v-if="type_revelation" @click="getProductionProcess(); type_revelation = null" class="fa-solid fa-xmark TEXT-XS cursor-pointer"></i>
                 </div>
                 <div v-if="isFreeTask" class="flex items-center">
                   <el-tooltip content="Tareas" placement="top">
