@@ -166,20 +166,33 @@
                   </div>
                 </el-tooltip>
                 </label>
+                <!-- Seleccion de proceso -->
                 <div v-if="!isFreeTask" class="flex items-center mt-3">
-                <el-tooltip content="Seleccionar proceso de producción" placement="top">
-                  <span
-                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                    <i class="fa-solid fa-person-digging text-sm"></i>
-                  </span>
-                </el-tooltip>
-                <el-select @change="getProductionProcess" v-model="task.tasks" multiple clearable filterable
-                  placeholder="Selecciona el proceso de producción" no-data-text="No hay opciones registradas"
-                  no-match-text="No se encontraron coincidencias">
-                  <el-option v-for="item in production_processes.data" :key="item.id" :label="item.name"
-                    :value="item.name" />
-                </el-select>
-              </div>
+                  <el-tooltip content="Seleccionar proceso de producción" placement="top">
+                    <span
+                      class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                      <i class="fa-solid fa-person-digging text-sm"></i>
+                    </span>
+                  </el-tooltip>
+                  <el-select @change="getProductionProcess(); type_revelation = null" v-model="task.tasks" clearable filterable
+                    placeholder="Selecciona el proceso de producción" no-data-text="No hay opciones registradas"
+                    no-match-text="No se encontraron coincidencias">
+                    <el-option v-for="item in production_processes.data" :key="item.id" :label="item.name"
+                      :value="item.name" />
+                  </el-select>
+                </div>
+                <!-- Tipo de revelado de marco -->
+                <div class="flex justify-center items-start space-x-1 text-sm mb-8" v-if="task.tasks && typeof task.tasks === 'string' && task.tasks.startsWith('SERIGRAFÍA')">
+                  <el-radio-group @change="addRevelationTime"  v-model="type_revelation" class="ml-4">
+                    <el-radio label="usado" size="large">
+                      Revelado de marco usado
+                    </el-radio>
+                    <el-radio label="virgen" size="large">
+                      Revelado de marco virgen
+                    </el-radio>
+                  </el-radio-group>
+                  <i v-if="type_revelation" @click="getProductionProcess(); type_revelation = null" class="fa-solid fa-xmark TEXT-XS cursor-pointer"></i>
+                </div>
                 <div v-if="isFreeTask" class="flex items-center">
                   <el-tooltip content="Tareas" placement="top">
                     <span
@@ -268,6 +281,7 @@ export default {
     return {
       form,
       tasks: [],
+      type_revelation: null,
       saleId: null,
       editProductionIndex: null,
       editTaskIndex: null,
@@ -388,49 +402,14 @@ export default {
       this.production = production;
       this.editProductionIndex = index;
     },
-    // getproductionProcess() {
-    //   this.task.estimated_time_hours = null;
-    //   this.task.estimated_time_minutes = null;
-
-    //   const productionProcess = this.production_processes.data.find(item => item.name == this.task.tasks );
-    //   const orderedProduct = this.orderedProducts.find(item => item.id == this.production.catalog_product_company_sale_id);
-
-    //   // Verificamos si productionProcess existe y tiene la propiedad "time"
-    //     if (productionProcess && productionProcess.time) {
-    //       const [hours, minutes, seconds] = productionProcess.time.split(':');
-
-    //       // Convertimos las horas y minutos a números
-    //       const hoursNumeric = parseInt(hours, 10);
-    //       const minutesNumeric = parseInt(minutes, 10);
-    //       const secondsNumeric = parseInt(seconds, 10);
-
-    //       // Realizamos la multiplicación
-    //       const totalSeconds = (hoursNumeric * 3600 + minutesNumeric * 60 + secondsNumeric) * orderedProduct.quantity;
-
-    //       // Convertimos el resultado a horas y minutos
-    //       const totalHours = Math.floor(totalSeconds / 3600);
-    //       const remainingSeconds = totalSeconds % 3600;
-    //       const totalMinutes = Math.floor(remainingSeconds / 60);
-
-    //        // Sumamos el tiempo resultante al tiempo actual en task (si existe)
-    //       this.task.estimated_time_hours = (this.task.estimated_time_hours || 0) + totalHours;
-    //       this.task.estimated_time_minutes = (this.task.estimated_time_minutes || 0) + totalMinutes;
-
-    //       // Ajustamos los minutos si superan 60
-    //       this.task.estimated_time_hours += Math.floor(this.task.estimated_time_minutes / 60);
-    //       this.task.estimated_time_minutes %= 60;
-    //     }
-    // },
-    getProductionProcess() {
+    getProductionProcess() { //con selector no multiple
       this.task.estimated_time_hours = null;
       this.task.estimated_time_minutes = null;
 
-      // Recorremos los procesos seleccionados
-      for (const selectedProcessName of this.task.tasks) {
-        const productionProcess = this.production_processes.data.find(item => item.name === selectedProcessName);
-        const orderedProduct = this.orderedProducts.find(item => item.id == this.production.catalog_product_company_sale_id);
+      const productionProcess = this.production_processes.data.find(item => item.name == this.task.tasks );
+      const orderedProduct = this.orderedProducts.find(item => item.id == this.production.catalog_product_company_sale_id);
 
-        // Verificamos si productionProcess existe y tiene la propiedad "time"
+      // Verificamos si productionProcess existe y tiene la propiedad "time"
         if (productionProcess && productionProcess.time) {
           const [hours, minutes, seconds] = productionProcess.time.split(':');
 
@@ -447,13 +426,67 @@ export default {
           const remainingSeconds = totalSeconds % 3600;
           const totalMinutes = Math.floor(remainingSeconds / 60);
 
-          // Sumamos el tiempo resultante al tiempo actual en task (si existe)
+           // Sumamos el tiempo resultante al tiempo actual en task (si existe)
           this.task.estimated_time_hours = (this.task.estimated_time_hours || 0) + totalHours;
           this.task.estimated_time_minutes = (this.task.estimated_time_minutes || 0) + totalMinutes;
 
           // Ajustamos los minutos si superan 60
           this.task.estimated_time_hours += Math.floor(this.task.estimated_time_minutes / 60);
           this.task.estimated_time_minutes %= 60;
+        }
+    },
+    // getProductionProcess() { //con selector multiple
+    //   this.task.estimated_time_hours = null;
+    //   this.task.estimated_time_minutes = null;
+
+    //   // Recorremos los procesos seleccionados
+    //   for (const selectedProcessName of this.task.tasks) {
+    //     const productionProcess = this.production_processes.data.find(item => item.name === selectedProcessName);
+    //     const orderedProduct = this.orderedProducts.find(item => item.id == this.production.catalog_product_company_sale_id);
+
+    //     // Verificamos si productionProcess existe y tiene la propiedad "time"
+    //     if (productionProcess && productionProcess.time) {
+    //       const [hours, minutes, seconds] = productionProcess.time.split(':');
+
+    //       // Convertimos las horas y minutos a números
+    //       const hoursNumeric = parseInt(hours, 10);
+    //       const minutesNumeric = parseInt(minutes, 10);
+    //       const secondsNumeric = parseInt(seconds, 10);
+
+    //       // Realizamos la multiplicación
+    //       const totalSeconds = (hoursNumeric * 3600 + minutesNumeric * 60 + secondsNumeric) * orderedProduct.quantity;
+
+    //       // Convertimos el resultado a horas y minutos
+    //       const totalHours = Math.floor(totalSeconds / 3600);
+    //       const remainingSeconds = totalSeconds % 3600;
+    //       const totalMinutes = Math.floor(remainingSeconds / 60);
+
+    //       // Sumamos el tiempo resultante al tiempo actual en task (si existe)
+    //       this.task.estimated_time_hours = (this.task.estimated_time_hours || 0) + totalHours;
+    //       this.task.estimated_time_minutes = (this.task.estimated_time_minutes || 0) + totalMinutes;
+
+    //       // Ajustamos los minutos si superan 60
+    //       this.task.estimated_time_hours += Math.floor(this.task.estimated_time_minutes / 60);
+    //       this.task.estimated_time_minutes %= 60;
+    //     }
+    //   }
+    // },
+    addRevelationTime() {
+      this.getProductionProcess();
+      if (this.type_revelation === 'usado') {
+        this.task.estimated_time_hours += 1;
+      } else {
+        // Sumar 25 minutos
+        this.task.estimated_time_minutes += 25;
+
+        // Ajustar las horas si los minutos superan los 60
+        if (this.task.estimated_time_minutes >= 60) {
+          const horasExtras = Math.floor(this.task.estimated_time_minutes / 60);
+          const minutosRestantes = this.task.estimated_time_minutes % 60;
+
+          // Añadir las horas extras y establecer los minutos restantes
+          this.task.estimated_time_hours += horasExtras;
+          this.task.estimated_time_minutes = minutosRestantes;
         }
       }
     },
