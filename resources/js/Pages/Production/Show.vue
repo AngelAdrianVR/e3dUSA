@@ -11,11 +11,11 @@
                 </div>
                 <div class="flex justify-between">
                     <div class="w-1/3">
-                        <el-select  @change="$inertia.get(route('productions.show', selectedSale))" v-model="selectedSale" clearable filterable placeholder="Buscar orden de producción"
+                        <el-select @change="$inertia.get(route('productions.show', selectedSale))" v-model="selectedSale"
+                            clearable filterable placeholder="Buscar orden de producción"
                             no-data-text="No hay órdenes registradas" no-match-text="No se encontraron coincidencias">
                             <el-option v-for="item in sales" :key="item.id"
-                                :label="item.folio?.replace('OV', 'OP') + ' | ' + item.company_name"
-                                :value="item.id" />
+                                :label="item.folio?.replace('OV', 'OP') + ' | ' + item.company_name" :value="item.id" />
                         </el-select>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -44,6 +44,12 @@
                         "
                         class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
                         Productos
+                    </p>
+                    <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+                    <p @click="tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+                        "
+                        class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+                        Hojas viajeras
                     </p>
                 </div>
             </div>
@@ -136,9 +142,11 @@
 
             <!-- ------------- tab 2 productos ends ------------ -->
 
-            <!-- -------------- Modal starts----------------------- -->
-
-            <!-- --------------------------- Modal ends ------------------------------------ -->
+            <!-- -------------tab 3 hojas viajeras starts ------------- -->
+            <div v-if="tabs == 3" class="p-7">
+                <Traveler :sale="sale.data" />
+            </div>
+            <!-- ------------- tab 3 hojas viajeras ends ------------ -->
         </AppLayoutNoHeader>
     </div>
 </template>
@@ -151,7 +159,7 @@ import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import ProductSaleCard from "@/Components/MyComponents/ProductSaleCard.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import InputError from "@/Components/InputError.vue";
-// import Modal from "@/Components/Modal.vue";
+import Traveler from "./Tabs/Traveler.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import moment from "moment";
 
@@ -186,6 +194,7 @@ export default {
         PrimaryButton,
         // Modal,
         CancelButton,
+        Traveler,
         InputError,
         Link
     },

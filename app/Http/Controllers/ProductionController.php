@@ -476,4 +476,9 @@ class ProductionController extends Controller
 
         return $sortedEmployees->take($requiredEmployeeCount)->pluck('id')->toArray();
     }
+
+    public function showTravelerTemplate(CatalogProductCompanySale $cpcs)
+    {
+        return inertia('Production/TravelerTemplate', compact('cpcs'));
+    }
 }
