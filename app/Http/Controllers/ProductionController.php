@@ -364,22 +364,25 @@ class ProductionController extends Controller
         if (!$production->started_at) {
             $production->update(['started_at' => now()]);
             $message = 'Se ha registrado el inicio';
-        } else if ($production->started_at->diffInMinutes(now()) > 9) {
+        } else if ($production->started_at->diffInMinutes(now()) > 0) {
             $request->validate([
-                'scrap' => 'required|numeric|min:0'
+                'scrap' => 'required|numeric|min:0',
+                'reason' => 'nullable|string|max:800',
             ]);
             $production->update([
                 'finished_at' => now(), 'is_paused' => 0,
                 'scrap' => $request->scrap,
+                'scrap_reason' => $request->reason,
             ]);
 
-            // sub needed quantities from stock -------------------------------------------------------
+            // descontar materia prima utilizada para la producción
             $cpcs = CatalogProductCompanySale::find($production['catalog_product_company_sale_id']);
             $raw_materials = $cpcs->catalogProductCompany->catalogProduct->rawMaterials;
             foreach ($raw_materials as $raw_material) {
-                $quantity_needed = $raw_material->pivot->quantity * $cpcs->quantity;
+                $quantity_needed = intval($raw_material->pivot->quantity * $cpcs->quantity);
                 $storage = Storage::where('storageable_id', $raw_material->id)->where('storageable_type', 'App\Models\RawMaterial')->first();
-                $storage->decrement('quantity', $quantity_needed);
+                $updated_quantity =  $storage->quantity - $quantity_needed;
+                $storage->update(['quantity' => $updated_quantity]);
                 StockMovementHistory::Create([
                     'storage_id' => $storage->id,
                     'user_id' => auth()->id(),

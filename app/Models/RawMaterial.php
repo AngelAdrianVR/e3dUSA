@@ -76,6 +76,10 @@ class RawMaterial extends Model implements HasMedia
             })
             ->get();
 
+        $sales = $sales->where(function ($sale) {
+            return $sale->getStatus()['label'] != 'Producción terminada';
+        })->values();
+
         return $sales;
     }
 
