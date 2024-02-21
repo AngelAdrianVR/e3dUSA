@@ -39,7 +39,7 @@ class CheckMachinesMaintenanceNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Productos con stock bajo')
+            ->subject('Mantenimiento de máquinas')
             ->markdown('emails.machines-maintenance', [
                 'greeting' => '¡Hola!',
                 'intro' => "Hay {$this->machines->count()} maquina(s) que necesitan mantenimiento preventivo. Favor de revisar y realizarlos cuanto antes:",

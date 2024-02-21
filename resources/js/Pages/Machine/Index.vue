@@ -14,7 +14,7 @@
             </template>
 
             <!-- tabla -->
-            <div class="relative overflow-hidden">
+            <div class="relative overflow-hidden min-h-[60vh]">
                 <NotificationCenter module="machine" />
                 <div class="lg:w-5/6 mx-auto mt-6">
                     <div class="flex justify-between">

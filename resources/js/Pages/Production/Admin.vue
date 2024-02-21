@@ -21,7 +21,7 @@
                 <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Producción terminada</p>
             </div>
             <!-- tabla -->
-            <div class="relative overflow-hidden">
+            <div class="relative overflow-hidden min-h-[60vh]">
                 <NotificationCenter module="production" />
                 <div class="lg:w-[90%] mx-auto mt-6">
                     <div class="flex justify-between">

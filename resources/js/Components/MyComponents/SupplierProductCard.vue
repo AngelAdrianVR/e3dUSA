@@ -16,8 +16,8 @@
             <p v-if="product.quantity">{{ product.quantity ?? '--' }}</p>
             <p class="text-gray1" v-if="product.quantity">Costo total de compra</p>
             <p v-if="product.quantity">${{ (product.quantity * product.cost).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</p>
-            <!-- <p class="text-gray1">Notas del producto:</p>
-            <p>{{ product.notes ?? '--' }}</p> -->
+            <p class="text-gray1">Notas del producto:</p>
+            <p>{{ product.notes ?? '--' }}</p>
         </div>
     </div>
 </template>

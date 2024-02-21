@@ -24,6 +24,7 @@ class Production extends Model
         'is_paused',
         'additionals',
         'scrap',
+        'scrap_reason',
         'has_low_stock',
     ];
 

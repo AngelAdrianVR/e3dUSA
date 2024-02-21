@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('company_branches', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('password'); // se utiliza para ingresar a la app de clientes
             $table->text('address');
             $table->string('post_code');
             $table->string('sat_method');

@@ -26,7 +26,7 @@
                 <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Producción en proceso</p>
                 <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Producción terminada</p>
             </div>
-            <div class="relative overflow-hidden">
+            <div class="relative overflow-hidden min-h-[60vh]">
                 <NotificationCenter module="sales" />
                 <!-- tabla -->
                 <div class="w-11/12 lg:w-5/6 mx-auto mt-6">
@@ -156,7 +156,8 @@ export default {
                 if (!this.search) {
                     this.$inertia.get(route('sales.index'));
                 } else {
-                    const response = await axios.get(route('sales.get-matches', { query: this.search }));
+                    const processed = this.removeLeftZeros();
+                    const response = await axios.get(route('sales.get-matches', { query: processed }));
 
                     if (response.status === 200) {
                         this.sales.data = response.data.items;
@@ -167,6 +168,17 @@ export default {
             } finally {
                 this.loading = false;
             }
+        },
+        removeLeftZeros() {
+            // Verificar si el valor ingresado es un número
+            const isNumber = /^\d+$/.test(this.search);
+
+            if (isNumber) {
+                // Eliminar ceros a la izquierda
+                return parseInt(this.search, 10).toString();
+            }
+
+            return this.search;
         },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;

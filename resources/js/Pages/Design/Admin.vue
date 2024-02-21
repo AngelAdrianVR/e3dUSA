@@ -22,7 +22,7 @@
             </div>
 
             <!-- tabla -->
-            <div class="relative overflow-hidden">
+            <div class="relative overflow-hidden min-h-[60vh]">
                 <NotificationCenter module="design" />
                 <div class="lg:w-5/6 mx-auto mt-6 relative">
                     <div class="flex justify-between">

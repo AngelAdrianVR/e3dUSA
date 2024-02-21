@@ -238,15 +238,17 @@
                         <div v-if="loading" class="rounded-md bg-[#CCCCCC] text-xs text-gray-500 text-center p-4">
                             cargando imagen...
                         </div>
-                        <figure v-else-if="selectedCatalogProduct" class="rounded-md">
-                            <img :src="selectedCatalogProduct.media[0]?.original_url" class="rounded-md">
+                        <figure v-else-if="selectedCatalogProduct" class="rounded-md h-24 border">
+                            <img :src="selectedCatalogProduct.media[0]?.original_url" class="rounded-md h-24 object-contain">
                         </figure>
-                        <p v-if="selectedCatalogProduct" class="col-span-full text-sm flex items-center space-x-2">
-                            Stock disponible en almacén:
-                            <b>{{ availableStock ? availableStock.quantity : 0 }} unidades.</b>
+                        <p v-if="selectedCatalogProduct" class="col-span-full text-xs flex items-center space-x-2">
+                            Stock disponible en almacén de producto terminado (no materia prima):
+                            <b class="ml-1">{{ availableStock ? availableStock.quantity : 0 }} unidades.</b>
                             <el-tooltip placement="top">
                                 <template #content>
-                                    Se descontarán de estas existencias para despachar la orden
+                                    Se descontarán de estas existencias para despachar la orden. <br>
+                                    Se refiere a las piezas ya procesadas para tener el producto final, <br>
+                                    no se refiere a la materia prima. 
                                 </template>
                                 <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
                                     <i class="fa-solid fa-info text-primary text-[7px]"></i>

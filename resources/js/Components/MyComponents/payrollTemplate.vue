@@ -126,9 +126,9 @@
         <p v-if="getHolidays().length" class="grid grid-cols-3 gap-x-1">
           <span>Días Feriados</span>
           <span class="text-center">{{ getHolidays().length }}</span>
-          <span>${{ (getUserWorkDayByDate(getHolidays()[0].date.estandard).salary).toLocaleString('en-US', {
+          <!-- <span>${{ (getUserWorkDayByDate(getHolidays()[0].date.estandard).salary).toLocaleString('en-US', {
             minimumFractionDigits: 2
-          }) }}</span>
+          }) }}</span> -->
         </p>
         <p v-if="getVacations().length" class="grid grid-cols-3 gap-x-1">
           <span>Vacaciones</span>

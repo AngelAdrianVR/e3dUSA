@@ -43,9 +43,10 @@
             </div>
           </template>
         </el-image> -->
-        <img class="object-contain h-28" :src="catalog_product_company_sale.catalog_product_company?.catalog_product?.media[0]?.original_url" alt="">
+        <img class="object-contain h-28"
+          :src="catalog_product_company_sale.catalog_product_company?.catalog_product?.media[0]?.original_url" alt="">
       </figure>
-    
+
       <div class="flex flex-col space-y-3">
         <div>
           <p class="text-primary text-left">Caracteristicas</p>
@@ -57,11 +58,12 @@
         <!-- Partes que componen el producto  -->
         <div>
           <p class="text-primary text-left">Componentes</p>
-          <li
+          <p
             v-for="( raw_material, index ) in  catalog_product_company_sale.catalog_product_company?.catalog_product?.raw_materials "
-            :key="index" class="text-secondary text-xs underline cursor-pointer list-disc uppercase">
-           <p @click.stop="$inertia.get(route('storages.show', comp_storage.id))" v-for="comp_storage in raw_material.storages" :key="comp_storage">{{ comp_storage.storageable.name }}</p>
-            </li>
+            :key="index" class="text-secondary text-xs underline cursor-pointer uppercase">
+            <p @click.stop="$inertia.get(route('storages.show', comp_storage.id))"
+              v-for="comp_storage in raw_material.storages" :key="comp_storage">•{{ comp_storage.storageable.name }}</p>
+          </p>
         </div>
       </div>
     </div>
@@ -166,7 +168,7 @@
       </p>
     </div>
     <div class="flex items-center justify-between mt-2">
-      <div v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id)">
+      <div v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id) && getOrderStatus() != 'Terminado'">
         <el-tooltip v-if="!catalog_product_company_sale.productions.find(item => item.operator_id ==
           $page.props.auth.user.id)?.has_low_stock"
           content="Con este botón se indica si no es posible continuar con la producción por materia prima insuficiente"
@@ -334,16 +336,25 @@
       </div>
       <div>
         <IconInput v-model="scrap" inputPlaceholder="Piezas malas *" inputType="number" class="w-1/2">
-          <el-tooltip content="Ingreasa la cantidad de piezas malas" placement="top">
+          <el-tooltip content="Ingreasa la cantidad de piezas malas *" placement="top">
             <i class="fa-solid fa-prescription-bottle-medical"></i>
           </el-tooltip>
         </IconInput>
-        <p :message="!scrap" class="text-xs text-red-500 ml-6">Este campo es requerido</p>
+        <!-- <p :message="!scrap" class="text-xs text-red-500 ml-6">Este campo es requerido</p> -->
+      </div>
+      <div v-if="scrap > 0" class="flex">
+        <el-tooltip content="Motivo de merma *" placement="top">
+          <span
+            class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+            <i class="fa-solid fa-grip-lines"></i>
+          </span>
+        </el-tooltip>
+        <textarea v-model="reason" class="textarea mb-1" autocomplete="off" placeholder="Motivo. Ejemplo: Al grabar los medallones, moví el escantillón por accidente"></textarea>
       </div>
     </template>
     <template #footer>
       <CancelButton @click="showScrapModal = false">Cerrar</CancelButton>
-      <PrimaryButton @click="changeTaskStatus" :disabled="!scrap">Finalizar producción</PrimaryButton>
+      <PrimaryButton @click="changeTaskStatus" :disabled="!scrap || (scrap > 0 && !reason)">Finalizar producción</PrimaryButton>
     </template>
   </DialogModal>
 
@@ -389,7 +400,8 @@
     </template>
     <template #content>
       <p>
-        <b class="text-primary">No se puede iniciar y finalizar la tarea de inmediato.</b> Por favor, asegúrate de completar la actividad
+        <b class="text-primary">No se puede iniciar y finalizar la tarea de inmediato.</b> Por favor, asegúrate de
+        completar la actividad
         correspondiente antes de finalizar para garantizar la precisión
         del tiempo real de trabajo registrado. Esto nos permite obtener datos exactos sobre la duración de la producción.
       </p>
@@ -431,6 +443,7 @@ export default {
       showCommentsModal: false,
       sendingComments: false,
       scrap: null,
+      reason: null,
       comment: null,
       users: [],
     };
@@ -592,7 +605,7 @@ export default {
     async changeTaskStatus() {
       try {
         let task = this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id);
-        const response = await axios.put(route('productions.change-status', task.id), { scrap: this.scrap });
+        const response = await axios.put(route('productions.change-status', task.id), { scrap: this.scrap, reason: this.reason });
         let type = 'success';
         let title = 'Éxito';
         if (response.status === 200) {

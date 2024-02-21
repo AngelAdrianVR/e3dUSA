@@ -139,6 +139,12 @@
           <p class="text-xs text-red-600" v-if="productValidation">
             No puedes agregar dos veces el mísmo producto
           </p>
+          <div>
+            <label class="flex items-center">
+              <Checkbox v-model:checked="form.is_iva_included" class="bg-transparent" />
+              <span class="ml-2 text-xs">Calcular IVA y mostrarlo</span>
+            </label>
+          </div>
           <div class="flex">
             <span
               class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
@@ -162,6 +168,7 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import Checkbox from "@/Components/Checkbox.vue";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import Back from "@/Components/MyComponents/Back.vue";
@@ -173,7 +180,7 @@ export default {
     const form = useForm({
       notes: this.purchase.notes,
       expected_delivery_date: this.purchase.expected_delivery_date,
-      is_iva_included: this.purchase.is_iva_included,
+      is_iva_included: Boolean(this.purchase.is_iva_included),
       supplier_id: this.purchase.supplier_id,
       contact_id: this.purchase.contact_id,
       bank_information: this.purchase.bank_information,
@@ -198,6 +205,7 @@ export default {
     InputError,
     IconInput,
     Back,
+    Checkbox,
     Link
   },
   props: {
@@ -221,7 +229,7 @@ export default {
       });
     },
     saveBankObj() {
-      this.form.bank_information = this.currentSupplier.banks[this.bank_index];
+      this.form.bank_information = this.currentSupplier?.banks[this.bank_index];
     },
     disabledDate(time) {
       const today = new Date();

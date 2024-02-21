@@ -139,22 +139,22 @@ class SaleController extends Controller
                 }
             }
 
-            // sub needed quantities from stock
-            if ($quntity_to_produce > 0) {
-                $raw_materials = $cpcs->catalogProductCompany->catalogProduct->rawMaterials;
-                foreach ($raw_materials as $raw_material) {
-                    $quantity_needed = $raw_material->pivot->quantity * $quntity_to_produce;
-                    $storage = Storage::where('storageable_id', $raw_material->id)->where('storageable_type', 'App\Models\RawMaterial')->first();
-                    $storage->decrement('quantity', $quantity_needed);
-                    StockMovementHistory::Create([
-                        'storage_id' => $storage->id,
-                        'user_id' => auth()->id(),
-                        'type' => 'Salida',
-                        'quantity' => $quantity_needed,
-                        'notes' => 'Salida de material automática por orden de producción',
-                    ]);
-                }
-            }
+            // descontar materia prima de inventario
+            // if ($quntity_to_produce > 0) {
+            //     $raw_materials = $cpcs->catalogProductCompany->catalogProduct->rawMaterials;
+            //     foreach ($raw_materials as $raw_material) {
+            //         $quantity_needed = $raw_material->pivot->quantity * $quntity_to_produce;
+            //         $storage = Storage::where('storageable_id', $raw_material->id)->where('storageable_type', 'App\Models\RawMaterial')->first();
+            //         $storage->decrement('quantity', $quantity_needed);
+            //         StockMovementHistory::Create([
+            //             'storage_id' => $storage->id,
+            //             'user_id' => auth()->id(),
+            //             'type' => 'Salida',
+            //             'quantity' => $quantity_needed,
+            //             'notes' => 'Salida de material automática por orden de venta creada',
+            //         ]);
+            //     }
+            // }
         }
 
         event(new RecordCreated($sale));

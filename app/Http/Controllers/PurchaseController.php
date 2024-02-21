@@ -73,8 +73,9 @@ class PurchaseController extends Controller
             'notes' => 'nullable',
             'expected_delivery_date' => 'nullable|date|after:yesterday',
             'supplier_id' => 'required',
+            'is_iva_included' => 'boolean',
             'contact_id' => 'required',
-            'products' => 'nullable|min:1',
+            'products' => 'array|min:1',
             'bank_information' => 'required',
         ]);
 
@@ -124,12 +125,13 @@ class PurchaseController extends Controller
             'notes' => 'nullable',
             'expected_delivery_date' => 'nullable|date|after:yesterday',
             'supplier_id' => 'required',
+            'is_iva_included' => 'boolean',
             'contact_id' => 'required',
             'products' => 'nullable|min:1',
             'bank_information' => 'required',
         ]);
 
-        $purchase->update($validation + ['user_id' => auth()->user()->id]);
+        $purchase->update($validation);
 
         event(new RecordEdited($purchase));
 

@@ -102,11 +102,11 @@ class RawMaterialController extends Controller
             'name' => 'required|string',
             'brand' => 'required|string',
             'material' => 'required|string',
-            'width' => 'required|numeric|min:0|max:2000',
-            'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
-            'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
-            'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
-            // 'part_number' => 'required|string', Se eliminaba el co nsecutivo
+            // 'width' => 'required|numeric|min:0|max:2000',
+            // 'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            // 'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            // 'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
+            // 'part_number' => 'required|string', Se eliminaba el co nsecutivo, no descomentar
             'measure_unit' => 'required',
             'min_quantity' => 'required|numeric|min:0',
             'max_quantity' => 'required|numeric|min:0',
@@ -123,7 +123,7 @@ class RawMaterialController extends Controller
         ]);
 
         event(new RecordEdited($raw_material));
-
+// 
 
         if ($request->type == 'materia-prima')
             return to_route('storages.raw-materials.index');
@@ -137,11 +137,11 @@ class RawMaterialController extends Controller
             'name' => 'required|string',
             'brand' => 'required|string',
             'material' => 'required|string',
-            'width' => 'required|numeric|min:0|max:2000',
-            'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
-            'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
-            'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
-            // 'part_number' => 'required|string', Se eliminaba el consecutivo
+            // 'width' => 'required|numeric|min:0|max:2000',
+            // 'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            // 'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            // 'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
+            // 'part_number' => 'required|string', Se eliminaba el consecutivo, no descomentar
             'measure_unit' => 'required',
             'min_quantity' => 'required|numeric|min:0',
             'max_quantity' => 'required|numeric|min:0',
