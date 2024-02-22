@@ -58,11 +58,10 @@
         <!-- Partes que componen el producto  -->
         <div>
           <p class="text-primary text-left">Componentes</p>
-          <p
-            v-for="( raw_material, index ) in  catalog_product_company_sale.catalog_product_company?.catalog_product?.raw_materials "
+          <p v-for="( raw_material, index ) in  catalog_product_company_sale.catalog_product_company?.catalog_product?.raw_materials "
             :key="index" class="text-secondary text-xs underline cursor-pointer uppercase">
-            <p @click.stop="$inertia.get(route('storages.show', comp_storage.id))"
-              v-for="comp_storage in raw_material.storages" :key="comp_storage">•{{ comp_storage.storageable.name }}</p>
+          <p @click.stop="$inertia.get(route('storages.show', comp_storage.id))"
+            v-for="comp_storage in raw_material.storages" :key="comp_storage">•{{ comp_storage.storageable.name }}</p>
           </p>
         </div>
       </div>
@@ -168,7 +167,8 @@
       </p>
     </div>
     <div class="flex items-center justify-between mt-2">
-      <div v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id) && getOrderStatus() != 'Terminado'">
+      <div
+        v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id) && getOrderStatus() != 'Terminado'">
         <el-tooltip v-if="!catalog_product_company_sale.productions.find(item => item.operator_id ==
           $page.props.auth.user.id)?.has_low_stock"
           content="Con este botón se indica si no es posible continuar con la producción por materia prima insuficiente"
@@ -335,12 +335,18 @@
         </p>
       </div>
       <div>
+        <IconInput v-model="goodUnits" inputPlaceholder="Piezas buenas realizadas *" inputType="number" class="w-1/2">
+          <el-tooltip content="Ingreasa la cantidad de piezas buenas que realizaste *" placement="top">
+            <i class="fa-regular fa-square-check"></i>
+          </el-tooltip>
+        </IconInput>
+      </div>
+      <div>
         <IconInput v-model="scrap" inputPlaceholder="Piezas malas *" inputType="number" class="w-1/2">
           <el-tooltip content="Ingreasa la cantidad de piezas malas *" placement="top">
             <i class="fa-solid fa-prescription-bottle-medical"></i>
           </el-tooltip>
         </IconInput>
-        <!-- <p :message="!scrap" class="text-xs text-red-500 ml-6">Este campo es requerido</p> -->
       </div>
       <div v-if="scrap > 0" class="flex">
         <el-tooltip content="Motivo de merma *" placement="top">
@@ -349,12 +355,14 @@
             <i class="fa-solid fa-grip-lines"></i>
           </span>
         </el-tooltip>
-        <textarea v-model="reason" class="textarea mb-1" autocomplete="off" placeholder="Motivo. Ejemplo: Al grabar los medallones, moví el escantillón por accidente"></textarea>
+        <textarea v-model="reason" class="textarea mb-1" autocomplete="off"
+          placeholder="Motivo. Ejemplo: Al grabar los medallones, moví el escantillón por accidente"></textarea>
       </div>
     </template>
     <template #footer>
       <CancelButton @click="showScrapModal = false">Cerrar</CancelButton>
-      <PrimaryButton @click="changeTaskStatus" :disabled="!scrap || (scrap > 0 && !reason)">Finalizar producción</PrimaryButton>
+      <PrimaryButton @click="changeTaskStatus" :disabled="!goodUnits || !scrap || (scrap > 0 && !reason)">Finalizar producción
+      </PrimaryButton>
     </template>
   </DialogModal>
 
@@ -444,6 +452,7 @@ export default {
       sendingComments: false,
       scrap: null,
       reason: null,
+      goodUnits: null,
       comment: null,
       users: [],
     };
@@ -605,7 +614,9 @@ export default {
     async changeTaskStatus() {
       try {
         let task = this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id);
-        const response = await axios.put(route('productions.change-status', task.id), { scrap: this.scrap, reason: this.reason });
+        const response = await axios.put(route('productions.change-status', task.id), {
+          scrap: this.scrap, reason: this.reason, good_units: this.goodUnits
+        });
         let type = 'success';
         let title = 'Éxito';
         if (response.status === 200) {

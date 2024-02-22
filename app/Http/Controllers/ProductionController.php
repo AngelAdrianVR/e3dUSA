@@ -364,8 +364,9 @@ class ProductionController extends Controller
         if (!$production->started_at) {
             $production->update(['started_at' => now()]);
             $message = 'Se ha registrado el inicio';
-        } else if ($production->started_at->diffInMinutes(now()) > 0) {
+        } else if (/*$production->started_at->diffInMinutes(now()) > 8*/1) {
             $request->validate([
+                'good_units' => 'required|numeric|min:0',
                 'scrap' => 'required|numeric|min:0',
                 'reason' => 'nullable|string|max:800',
             ]);
@@ -373,6 +374,7 @@ class ProductionController extends Controller
                 'finished_at' => now(), 'is_paused' => 0,
                 'scrap' => $request->scrap,
                 'scrap_reason' => $request->reason,
+                'good_units' => $request->good_units,
             ]);
 
             // descontar materia prima utilizada para la producción

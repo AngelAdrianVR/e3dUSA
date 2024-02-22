@@ -25,6 +25,7 @@ class Production extends Model
         'additionals',
         'scrap',
         'scrap_reason',
+        'good_units',
         'has_low_stock',
     ];
 
