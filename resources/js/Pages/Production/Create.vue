@@ -292,6 +292,7 @@ export default {
         tasks: [],
         user_id: this.$page.props.auth.user.id,
         catalog_product_company_sale_id: null,
+        production_cost_id: null,
       },
       task: {
         operator_id: null,

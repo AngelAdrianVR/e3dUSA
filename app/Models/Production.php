@@ -26,11 +26,13 @@ class Production extends Model
         'scrap',
         'scrap_reason',
         'good_units',
+        'packages',
         'has_low_stock',
     ];
 
     protected $casts = [
         'additionals' => 'array',
+        'packages' => 'array',
         'started_at' => 'datetime',
         'finished_at' => 'datetime',
     ];
