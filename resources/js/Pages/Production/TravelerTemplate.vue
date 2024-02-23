@@ -44,11 +44,15 @@
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de llaveros</td>
-                            <td></td>
+                            <td>
+                                {{ getFirstStageProductions.keyChains[0].pivot.quantity * (cpcs.quantity + 5) }} unidades
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de mini medallones</td>
-                            <td></td>
+                            <td>
+                                {{ getFirstStageProductions.medallions[0].pivot.quantity * (cpcs.quantity + 5) }} unidades
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Entregó</td>
@@ -73,11 +77,15 @@
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Logo / Diseño de emblema:</td>
-                            <td></td>
+                            <td>
+                                {{ getFirstStageProductions.emblems.length ? getFirstStageProductions.emblems[0].name : '-' }}
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
-                            <td>Número de mini medallones</td>
-                            <td></td>
+                            <td>Número de emblemas</td>
+                            <td>
+                                {{ getFirstStageProductions.emblems.length ? getFirstStageProductions.emblems[0].pivot.quantity * (cpcs.quantity + 5) + ' unidades': '-' }}
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Entregó</td>
@@ -623,7 +631,8 @@
                                         <span v-if="!item.packages" class="text-[10px] w-[80%]">-</span>
                                         <ol class="text-[10px] w-[100%]">
                                             <li v-for="(item2, index2) in item.packages" :key="index2" class="w-full">
-                                                <b class="text-primary">• Paquete {{ (index2 + 1) }}:</b> {{ item2.quantity }} pieza(s).
+                                                <b class="text-primary">• Paquete {{ (index2 + 1) }}:</b> {{ item2.quantity
+                                                }} pieza(s).
                                             </li>
                                         </ol>
                                     </li>
@@ -696,6 +705,7 @@ export default {
             today: new Date(),
             users: [],
             productions: [],
+            rawMaterials: [],
             travelerData: [
                 [
                     {
@@ -775,6 +785,18 @@ export default {
         cpcs: Object,
     },
     computed: {
+        getFirstStageProductions() {
+            const keyChains = this.rawMaterials.filter(item =>
+                item.part_number.includes('LL-') && !item.name.toLowerCase().includes('medall'));
+
+            const medallions = this.rawMaterials.filter(item =>
+                item.part_number.includes('LL-') && item.name.toLowerCase().includes('medall'));
+
+            const emblems = this.rawMaterials.filter(item =>
+                item.part_number.includes('EM-'));
+
+            return { keyChains: keyChains, medallions: medallions, emblems: emblems };
+        },
         getSecondStageProductions() {
             const keyChains = this.productions.filter(item =>
                 item.tasks.toLowerCase().includes('grabado láser llavero'.toLowerCase()));
@@ -857,12 +879,26 @@ export default {
                 this.loading = false;
             }
         },
+        async fetchRawMaterials() {
+            this.loading = true;
+            try {
+                const response = await axios.get(route('catalog-product-company-sale.get-raw-materials', this.cpcs.id));
 
+                if (response.status === 200) {
+                    this.rawMaterials = response.data.items;
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                this.loading = false;
+            }
+        },
     },
     async mounted() {
         await this.fetchUsers();
         await this.fetchTravelerData();
         await this.fetchCpcsProductions();
+        await this.fetchRawMaterials();
     }
 }
 </script>

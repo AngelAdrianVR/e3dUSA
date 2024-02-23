@@ -25,4 +25,11 @@ class CatalogProductCompanySaleController extends Controller
     {
         return response()->json(['items' => $cpcs->productions]);
     }
+
+    public function getRawMaterials(CatalogProductCompanySale $cpcs)
+    {
+        $raw_materials =  $cpcs->catalogProductCompany->catalogProduct->rawMaterials;
+
+        return response()->json(['items' => $raw_materials]);
+    }
 }
