@@ -146,28 +146,126 @@
                     </thead>
                     <tbody>
                         <tr class="*:border *:border-gray-400">
-                            <td class="w-1/2">Fecha</td>
-                            <td></td>
+                            <td class="w-1/2">Responsable</td>
+                            <td>
+                                <h2 class="font-bold mb-1">Llaveros:</h2>
+                                <ul v-for="(item, index) in getSecondStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ users.find(user => user.id == item.operator_id)?.name }}
+                                        </span>
+                                    </li>
+                                </ul>
+                                <h2 class="font-bold py-1">Mini medallones:</h2>
+                                <ul v-for="(item, index) in getSecondStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ users.find(user => user.id == item.operator_id)?.name }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
-                            <td>Responsable</td>
-                            <td></td>
+                            <td>Fecha</td>
+                            <td>
+                                <h2 class="font-bold mb-1">Llaveros:</h2>
+                                <ul v-for="(item, index) in getSecondStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.started_at ? dateFormat(new Date(item.started_at)) : '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                                <h2 class="font-bold py-1">Mini medallones:</h2>
+                                <ul v-for="(item, index) in getSecondStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.started_at ? dateFormat(new Date(item.started_at)) : '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de llaveros grabados</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getSecondStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.good_units ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de merma</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getSecondStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.scrap ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de mini medallones grabados</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getSecondStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.good_units ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de merma</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getSecondStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.scrap ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -179,7 +277,32 @@
                     </thead>
                     <tbody>
                         <tr class="*:border *:border-gray-400">
-                            <td></td>
+                            <td>
+                                <h2 class="font-bold mb-1">Llaveros:</h2>
+                                <ul v-for="(item, index) in getSecondStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[15%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[85%]">
+                                            {{ item.scrap_reason ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                                <h2 class="font-bold py-1">Mini medallones:</h2>
+                                <ul v-for="(item, index) in getSecondStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[15%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[85%]">
+                                            {{ item.scrap_reason ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -235,33 +358,131 @@
                 <table class="self-start">
                     <thead>
                         <tr>
-                            <th colspan="2">Control de aplicación de emblmeas y medallones</th>
+                            <th colspan="2">Control de aplicación de emblemas y medallones</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="*:border *:border-gray-400">
-                            <td class="w-1/2">Fecha</td>
-                            <td></td>
+                            <td>Responsable</td>
+                            <td>
+                                <h2 class="font-bold mb-1">Llaveros:</h2>
+                                <ul v-for="(item, index) in getThirdStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ users.find(user => user.id == item.operator_id)?.name }}
+                                        </span>
+                                    </li>
+                                </ul>
+                                <h2 class="font-bold py-1">Mini medallones:</h2>
+                                <ul v-for="(item, index) in getThirdStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ users.find(user => user.id == item.operator_id)?.name }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
-                            <td>Responsable</td>
-                            <td></td>
+                            <td class="w-1/2">Fecha</td>
+                            <td>
+                                <h2 class="font-bold mb-1">Llaveros:</h2>
+                                <ul v-for="(item, index) in getThirdStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.started_at ? dateFormat(new Date(item.started_at)) : '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                                <h2 class="font-bold py-1">Mini medallones:</h2>
+                                <ul v-for="(item, index) in getThirdStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.started_at ? dateFormat(new Date(item.started_at)) : '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de emblemas</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getThirdStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.good_units ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de merma</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getThirdStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.scrap ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de mini medallones aplicados</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getThirdStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.good_units ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de merma</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getThirdStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.scrap ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -273,7 +494,32 @@
                     </thead>
                     <tbody>
                         <tr class="*:border *:border-gray-400">
-                            <td></td>
+                            <td>
+                                <h2 class="font-bold mb-1">Llaveros:</h2>
+                                <ul v-for="(item, index) in getThirdStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[15%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[85%]">
+                                            {{ item.scrap_reason ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                                <h2 class="font-bold py-1">Mini medallones:</h2>
+                                <ul v-for="(item, index) in getThirdStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[15%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[85%]">
+                                            {{ item.scrap_reason ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -334,20 +580,55 @@
                     </thead>
                     <tbody>
                         <tr class="*:border *:border-gray-400">
-                            <td class="w-1/2">Fecha</td>
-                            <td></td>
+                            <td>Responsable</td>
+                            <td>
+                                <ul v-for="(item, index) in getFourthStageProductions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[15%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[85%]">
+                                            {{ users.find(user => user.id == item.operator_id)?.name }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
-                            <td>Responsable</td>
-                            <td></td>
+                            <td class="w-1/2">Fecha</td>
+                            <td>
+                                <ul v-for="(item, index) in getFourthStageProductions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[15%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[85%]">
+                                            {{ item.started_at ? dateFormat(new Date(item.started_at)) : '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>No. de paquete / Pzs. Por paquete</td>
-                            <td></td>
-                        </tr>
-                        <tr class="*:border *:border-gray-400">
-                            <td>Número de Cajas:</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getFourthStageProductions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[20%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span v-if="!item.packages" class="text-[10px] w-[80%]">-</span>
+                                        <ol class="text-[10px] w-[100%]">
+                                            <li v-for="(item2, index2) in item.packages" :key="index2" class="w-full">
+                                                <b class="text-primary">• Paquete {{ (index2 + 1) }}:</b> {{ item2.quantity }} pieza(s).
+                                            </li>
+                                        </ol>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -398,8 +679,6 @@
                     </tfoot>
                 </table>
             </section>
-            {{ productions.filter(item =>
-                item.tasks.toLowerCase().includes('grabado láser llavero'.toLowerCase())) }}
         </main>
     </div>
 </template>
@@ -494,6 +773,30 @@ export default {
     },
     props: {
         cpcs: Object,
+    },
+    computed: {
+        getSecondStageProductions() {
+            const keyChains = this.productions.filter(item =>
+                item.tasks.toLowerCase().includes('grabado láser llavero'.toLowerCase()));
+
+            const medallions = this.productions.filter(item =>
+                item.tasks.toLowerCase().includes('grabado láser mini medallón'.toLowerCase()));
+
+            return { keyChains: keyChains, medallions: medallions };
+        },
+        getThirdStageProductions() {
+            const keyChains = this.productions.filter(item =>
+                item.tasks.toLowerCase().includes('aplicación de emblema a llavero'.toLowerCase()));
+
+            const medallions = this.productions.filter(item =>
+                item.tasks.toLowerCase().includes('ensamble de mini medallón a llavero'.toLowerCase()));
+
+            return { keyChains: keyChains, medallions: medallions };
+        },
+        getFourthStageProductions() {
+            return this.productions.filter(item =>
+                item.tasks.toLowerCase().includes('empaque'.toLowerCase()));;
+        },
     },
     methods: {
         dateFormat(date) {
