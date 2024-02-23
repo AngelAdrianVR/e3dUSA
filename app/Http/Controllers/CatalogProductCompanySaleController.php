@@ -20,4 +20,9 @@ class CatalogProductCompanySaleController extends Controller
     {
         return response()->json(['item' => $cpcs->traveler_data]);
     }
+
+    public function getProductions(CatalogProductCompanySale $cpcs)
+    {
+        return response()->json(['items' => $cpcs->productions]);
+    }
 }

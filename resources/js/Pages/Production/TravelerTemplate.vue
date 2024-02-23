@@ -29,7 +29,8 @@
             </div>
         </header>
         <main class="m-5">
-            <section class="grid grid-cols-3 gap-x-4 gap-y-3 my-3">
+            <section class="grid grid-cols-3 gap-x-4 gap-y-3 my-3 mx-5 relative">
+                <h1 class="col-span-full text-base -rotate-90 absolute top-14 -left-10">Etapa 1</h1>
                 <table class="self-start">
                     <thead>
                         <tr>
@@ -91,7 +92,7 @@
                 <table class="self-start">
                     <thead>
                         <tr>
-                            <th>Criterio de acepación</th>
+                            <th>Criterio de aceptación</th>
                             <th>A</th>
                             <th>R</th>
                         </tr>
@@ -135,7 +136,8 @@
                     </tfoot>
                 </table>
             </section>
-            <section class="grid grid-cols-3 gap-x-4 gap-y-3 my-3">
+            <section class="grid grid-cols-3 gap-x-4 gap-y-3 my-3 mx-5 relative">
+                <h1 class="col-span-full text-base -rotate-90 absolute top-14 -left-10">Etapa 2</h1>
                 <table class="self-start">
                     <thead>
                         <tr>
@@ -184,7 +186,7 @@
                 <table class="self-start">
                     <thead>
                         <tr>
-                            <th>Criterio de acepación</th>
+                            <th>Criterio de aceptación</th>
                             <th>A</th>
                             <th>R</th>
                         </tr>
@@ -228,7 +230,8 @@
                     </tfoot>
                 </table>
             </section>
-            <section class="grid grid-cols-3 gap-x-4 gap-y-3 my-3">
+            <section class="grid grid-cols-3 gap-x-4 gap-y-3 my-3 mx-5 relative">
+                <h1 class="col-span-full text-base -rotate-90 absolute top-14 -left-10">Etapa 3</h1>
                 <table class="self-start">
                     <thead>
                         <tr>
@@ -277,7 +280,7 @@
                 <table class="self-start">
                     <thead>
                         <tr>
-                            <th>Criterio de acepación</th>
+                            <th>Criterio de aceptación</th>
                             <th>A</th>
                             <th>R</th>
                         </tr>
@@ -321,11 +324,12 @@
                     </tfoot>
                 </table>
             </section>
-            <section class="grid grid-cols-2 gap-x-6 gap-y-3 my-3">
+            <section class="grid grid-cols-2 gap-x-6 gap-y-3 my-3 mx-5 relative">
+                <h1 class="col-span-full text-base -rotate-90 absolute top-14 -left-10">Etapa 4</h1>
                 <table class="self-start">
                     <thead>
                         <tr>
-                            <th colspan="2">Control de aplicación de emblmeas y medallones</th>
+                            <th colspan="2">Control de empaque</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -394,6 +398,8 @@
                     </tfoot>
                 </table>
             </section>
+            {{ productions.filter(item =>
+                item.tasks.toLowerCase().includes('grabado láser llavero'.toLowerCase())) }}
         </main>
     </div>
 </template>
@@ -410,6 +416,7 @@ export default {
             loading: true,
             today: new Date(),
             users: [],
+            productions: [],
             travelerData: [
                 [
                     {
@@ -524,8 +531,22 @@ export default {
             try {
                 const response = await axios.get(route('catalog-product-company-sale.get-traveler-data', this.cpcs.id));
 
-                if (response.status === 200 && response.data.item !== null) {
+                if (response.status === 200 && response.data.item != null) {
                     this.travelerData = response.data.item;
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                this.loading = false;
+            }
+        },
+        async fetchCpcsProductions() {
+            this.loading = true;
+            try {
+                const response = await axios.get(route('catalog-product-company-sale.get-productions', this.cpcs.id));
+
+                if (response.status === 200) {
+                    this.productions = response.data.items;
                 }
             } catch (error) {
                 console.log(error);
@@ -538,6 +559,7 @@ export default {
     async mounted() {
         await this.fetchUsers();
         await this.fetchTravelerData();
+        await this.fetchCpcsProductions();
     }
 }
 </script>
