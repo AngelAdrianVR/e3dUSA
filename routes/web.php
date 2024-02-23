@@ -5,6 +5,7 @@ use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CallMonitorController;
+use App\Http\Controllers\CatalogProductCompanySaleController;
 use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\ClientMonitorController;
 use App\Http\Controllers\CompanyBranchController;
@@ -114,6 +115,11 @@ Route::get('customers-report', function () {
     return inertia('Sale/Report', compact('data'));
 })->name('sales.customers-report');
 
+
+// ------- Catalog Products Routes ---------
+Route::post('catalog-product-company-sale/store-traveler-data/{cpcs}', [CatalogProductCompanySaleController::class, 'storeTravelerData'])->middleware('auth')->name('catalog-product-company-sale.store-traveler-data');
+Route::get('catalog-product-company-sale/get-traveler-data/{cpcs}', [CatalogProductCompanySaleController::class, 'getTravelerData'])->middleware('auth')->name('catalog-product-company-sale.get-traveler-data');
+Route::get('catalog-product-company-sale/get-productions/{cpcs}', [CatalogProductCompanySaleController::class, 'getProductions'])->middleware('auth')->name('catalog-product-company-sale.get-productions');
 
 // ------- Catalog Products Routes ---------
 Route::resource('catalog-products', CatalogProductController::class)->middleware('auth');

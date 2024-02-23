@@ -43,9 +43,10 @@
             </div>
           </template>
         </el-image> -->
-        <img class="object-contain h-28" :src="catalog_product_company_sale.catalog_product_company?.catalog_product?.media[0]?.original_url" alt="">
+        <img class="object-contain h-28"
+          :src="catalog_product_company_sale.catalog_product_company?.catalog_product?.media[0]?.original_url" alt="">
       </figure>
-    
+
       <div class="flex flex-col space-y-3">
         <div>
           <p class="text-primary text-left">Caracteristicas</p>
@@ -57,11 +58,11 @@
         <!-- Partes que componen el producto  -->
         <div>
           <p class="text-primary text-left">Componentes</p>
-          <li
-            v-for="( raw_material, index ) in  catalog_product_company_sale.catalog_product_company?.catalog_product?.raw_materials "
-            :key="index" class="text-secondary text-xs underline cursor-pointer list-disc uppercase">
-           <p @click.stop="$inertia.get(route('storages.show', comp_storage.id))" v-for="comp_storage in raw_material.storages" :key="comp_storage">{{ comp_storage.storageable.name }}</p>
-            </li>
+          <p v-for="( raw_material, index ) in  catalog_product_company_sale.catalog_product_company?.catalog_product?.raw_materials "
+            :key="index" class="text-secondary text-xs underline cursor-pointer uppercase">
+          <p @click.stop="$inertia.get(route('storages.show', comp_storage.id))"
+            v-for="comp_storage in raw_material.storages" :key="comp_storage">•{{ comp_storage.storageable.name }}</p>
+          </p>
         </div>
       </div>
     </div>
@@ -166,7 +167,8 @@
       </p>
     </div>
     <div class="flex items-center justify-between mt-2">
-      <div v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id)">
+      <div
+        v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id) && getOrderStatus() != 'Terminado'">
         <el-tooltip v-if="!catalog_product_company_sale.productions.find(item => item.operator_id ==
           $page.props.auth.user.id)?.has_low_stock"
           content="Con este botón se indica si no es posible continuar con la producción por materia prima insuficiente"
@@ -324,26 +326,90 @@
   <!-- scrap modal -->
   <DialogModal :show="showScrapModal" @close="showScrapModal = false">
     <template #title>
-      <h1>Registro de merma</h1>
+      <h1>Finalización de tarea</h1>
     </template>
     <template #content>
-      <div class="border border-[#0355B5] rounded-lg px-6 py-2 mt-5 mb-3 mx-7 relative">
-        <p class="text-secondary text-sm">
-          Es importante que seas honesto con esta cantidad porque se notifica a jefe de producción y a dirección.
-        </p>
-      </div>
-      <div>
-        <IconInput v-model="scrap" inputPlaceholder="Piezas malas *" inputType="number" class="w-1/2">
-          <el-tooltip content="Ingreasa la cantidad de piezas malas" placement="top">
-            <i class="fa-solid fa-prescription-bottle-medical"></i>
+      <el-radio-group v-model="isProduction" class="ml-4">
+        <el-radio label="1" size="medium">Es producción</el-radio>
+        <el-radio label="2" size="medium">Es empaque</el-radio>
+      </el-radio-group>
+      <section v-if="isProduction == '1'">
+        <div class="border border-[#0355B5] rounded-lg px-6 py-2 mt-5 mb-3 mx-7 relative">
+          <p class="text-secondary text-sm">
+            Es importante que seas honesto con esta cantidad porque se notifica a jefe de producción y a dirección.
+          </p>
+        </div>
+        <div>
+          <IconInput v-model="goodUnits" inputPlaceholder="Piezas buenas realizadas *" inputType="number" class="w-1/2">
+            <el-tooltip content="Ingreasa la cantidad de piezas buenas que realizaste *" placement="top">
+              <i class="fa-regular fa-square-check"></i>
+            </el-tooltip>
+          </IconInput>
+        </div>
+        <div>
+          <IconInput v-model="scrap" inputPlaceholder="Piezas malas *" inputType="number" class="w-1/2">
+            <el-tooltip content="Ingreasa la cantidad de piezas malas *" placement="top">
+              <i class="fa-solid fa-prescription-bottle-medical"></i>
+            </el-tooltip>
+          </IconInput>
+        </div>
+        <div v-if="scrap > 0" class="flex">
+          <el-tooltip content="Motivo de merma *" placement="top">
+            <span
+              class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+              <i class="fa-solid fa-grip-lines"></i>
+            </span>
           </el-tooltip>
-        </IconInput>
-        <p :message="!scrap" class="text-xs text-red-500 ml-6">Este campo es requerido</p>
-      </div>
+          <textarea v-model="reason" class="textarea mb-1" autocomplete="off"
+            placeholder="Motivo. Ejemplo: Al grabar los medallones, moví el escantillón por accidente"></textarea>
+        </div>
+      </section>
+      <section v-else class="lg:grid grid-cols-3 gap-2 mt-3">
+        <div class="border border-[#0355B5] rounded-lg px-6 py-2 mt-5 mb-3 mx-7 relative col-span-full">
+          <p class="text-secondary text-sm">
+            Ingresa los datos de cada paquete que hayas realizado y agregalos a la lista.
+          </p>
+        </div>
+        <div>
+          <label class="block">Largo de empaque (en centímetros) *</label>
+          <el-input-number v-model="package.large" :min="1" />
+        </div>
+        <div>
+          <label class="block">Ancho de empaque (en centímetros) *</label>
+          <el-input-number v-model="package.width" :min="1" />
+        </div>
+        <div>
+          <label class="block">Alto de empaque (en centímetros) *</label>
+          <el-input-number v-model="package.height" :min="1" />
+        </div>
+        <div>
+          <label class="block">Peso de empaque (en kilogramos) *</label>
+          <el-input-number v-model="package.weight" :min="1" />
+        </div>
+        <div>
+          <label class="block">Piezas en empaque *</label>
+          <el-input-number v-model="package.quantity" :min="1" />
+        </div>
+        <div class="col-span-full">
+          <SecondaryButton @click="addPackage()" :disabled="!package.large || !package.width || !package.height || !package.quantity || !package.weight">Agregar paquete a lista</SecondaryButton>
+        </div>
+        <p class="col-span-full border-t border-gray-400 pt-2">Lista de paquetes o empaques</p>
+        <ul class="col-span-full">
+          <li v-for="(item, index) in packages" :key="index" class="flex items-center justify-between">
+            • Paquete {{ (index + 1) }}: {{ item.large + 'cm largo, ' + item.width + 'cm ancho, ' + item.height + 'cm alto. ' + item.weight + ' Kg.' }}
+            <button @click="removePackage(index)" class="size-5 rounded-full hover:text-red-500">x</button>
+          </li>
+        </ul>
+      </section>
     </template>
     <template #footer>
       <CancelButton @click="showScrapModal = false">Cerrar</CancelButton>
-      <PrimaryButton @click="changeTaskStatus" :disabled="!scrap">Finalizar producción</PrimaryButton>
+        <PrimaryButton v-if="isProduction == '1'" @click="changeTaskStatus" :disabled="!goodUnits || !scrap || (scrap > 0 && !reason)">Finalizar
+          producción
+        </PrimaryButton>
+        <PrimaryButton v-else @click="changeTaskStatus" :disabled="!packages.length">Finalizar
+          producción
+        </PrimaryButton>
     </template>
   </DialogModal>
 
@@ -389,7 +455,8 @@
     </template>
     <template #content>
       <p>
-        <b class="text-primary">No se puede iniciar y finalizar la tarea de inmediato.</b> Por favor, asegúrate de completar la actividad
+        <b class="text-primary">No se puede iniciar y finalizar la tarea de inmediato.</b> Por favor, asegúrate de
+        completar la actividad
         correspondiente antes de finalizar para garantizar la precisión
         del tiempo real de trabajo registrado. Esto nos permite obtener datos exactos sobre la duración de la producción.
       </p>
@@ -430,9 +497,21 @@ export default {
       showScrapModal: false,
       showCommentsModal: false,
       sendingComments: false,
+      isProduction: '1',
       scrap: null,
+      reason: null,
+      goodUnits: null,
       comment: null,
       users: [],
+      // paquetes
+      packages: [],
+      package: {
+        large: null,
+        width: null,
+        height: null,
+        weight: null,
+        quantity: null,
+      }
     };
   },
   emits: ['selected'],
@@ -457,6 +536,21 @@ export default {
     RichText,
   },
   methods: {
+    // paquetes
+    addPackage() {
+      const pack = { ...this.package };
+      this.packages.push(pack);
+      this.package = {
+        large: null,
+        width: null,
+        height: null,
+        weight: null,
+        quantity: null,
+      };
+    },
+    removePackage(index) {
+      this.packages.splice(index, 1)
+    },
     async fetchUsers() {
       try {
         const response = await axios.get(route('users.get-all'));
@@ -592,7 +686,9 @@ export default {
     async changeTaskStatus() {
       try {
         let task = this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id);
-        const response = await axios.put(route('productions.change-status', task.id), { scrap: this.scrap });
+        const response = await axios.put(route('productions.change-status', task.id), {
+          scrap: this.scrap, reason: this.reason, good_units: this.goodUnits, packages: this.packages
+        });
         let type = 'success';
         let title = 'Éxito';
         if (response.status === 200) {

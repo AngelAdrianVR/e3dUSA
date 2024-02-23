@@ -20,6 +20,7 @@ return new class extends Migration
             $table->json('assigned_jobs')->nullable();
             $table->unsignedBigInteger('catalog_product_company_id');
             $table->unsignedBigInteger('sale_id');
+            $table->json('traveler_data')->nullable();
             $table->timestamps();
         });
     }
