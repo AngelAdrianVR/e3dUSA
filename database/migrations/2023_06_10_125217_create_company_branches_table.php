@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('password'); // se utiliza para ingresar a la app de clientes
             $table->text('address');
             $table->string('post_code');
+            $table->string('meet_way')->nullable();
             $table->string('sat_method');
             $table->string('sat_type');
             $table->string('sat_way');
