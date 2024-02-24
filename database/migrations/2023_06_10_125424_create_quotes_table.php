@@ -24,6 +24,9 @@ return new class extends Migration
             $table->string('currency');
             $table->string('authorized_user_name')->nullable();
             $table->timestamp('authorized_at')->nullable();
+            $table->boolean('quote_acepted')->nullable();
+            $table->string('rejected_razon')->nullable();
+            $table->timestamp('responded_at')->nullable();
             $table->boolean('is_spanish_template')->default(true);
             $table->foreignId('company_branch_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();

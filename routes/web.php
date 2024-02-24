@@ -12,6 +12,7 @@ use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomerMeetingController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DesignAuthorizationController;
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\DesignModificationController;
 use App\Http\Controllers\DiscountController;
@@ -51,7 +52,6 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WhatsappMonitorController;
-use App\Models\CatalogProductCompanySale;
 use App\Models\CompanyBranch;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Artisan;
@@ -347,6 +347,11 @@ Route::post('designs/update-with-media/{design}', [DesignController::class, 'upd
 // ------- Design modifications routes  ---------
 Route::resource('design-modifications', DesignModificationController::class)->middleware('auth');
 Route::post('design-modifications/upload-results', [DesignModificationController::class, 'uploadResults'])->name('design-modifications.upload-results');
+
+
+// ------- Design autorizations routes  ---------
+Route::resource('design-authorizations', DesignAuthorizationController::class)->middleware('auth');
+
 
 // ------- production department routes  ---------
 Route::resource('productions', ProductionController::class)->middleware('auth');

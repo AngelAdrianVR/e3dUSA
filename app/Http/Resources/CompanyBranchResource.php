@@ -25,6 +25,7 @@ class CompanyBranchResource extends JsonResource
         'company' => $this->whenLoaded('company'),
         'quotes' => QuoteResource::collection($this->whenLoaded('quotes')),
         'sales' => SaleResource::collection($this->whenLoaded('sales')),
+        'designAuthorizations' => DesignAuthorizationResource::collection($this->whenLoaded('designAuthorizations')),
         'contacts' => $this->whenLoaded('contacts'),
         'important_notes' => $this->important_notes,
         'created_at' => $this->created_at?->isoFormat('DD MMMM YYYY'),

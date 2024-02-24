@@ -1,5 +1,5 @@
 <template>
-<div class="w-10/12 overflow-x-auto">
+<div class="w-11/12 overflow-x-auto">
     <table class="w-full mx-auto">
         <thead>
           <tr class="text-center">

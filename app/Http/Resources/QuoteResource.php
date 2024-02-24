@@ -18,6 +18,26 @@ class QuoteResource extends JsonResource
             return $item->pivot->quantity * $item->pivot->price;
         });
 
+        $status = [
+            'label' => 'Pendiente',
+            'color' => 'text-amber-500',
+            'icon' => '<i class="fa-regular fa-clock"></i>',
+        ];
+
+        if ($this->quote_acepted === true) {
+            $status = [
+                'label' => 'Autorizado',
+                'color' => 'text-green-500',
+                'icon' => '<i class="fa-solid fa-check"></i>',
+            ];
+        } else if ($this->quote_acepted === false) {
+            $status = [
+                'label' => 'Rechazado',
+                'color' => 'text-red-500',
+                'icon' => '<i class="fa-solid fa-xmark"></i>',
+            ];
+        }
+
         return [
             'id' => $this->id,
             'folio' => 'COT-' . str_pad($this->id, 4, "0", STR_PAD_LEFT),
@@ -32,9 +52,17 @@ class QuoteResource extends JsonResource
             'currency' => $this->currency,
             'authorized_user_name' => $this->authorized_user_name ?? 'No autorizado',
             'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:mm A'),
+            'status' => $status,
+            'quote_acepted' => $this->quote_acepted,
+            'rejected_razon' => $this->rejected_razon,
+            'responded_at' => $this->responded_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'is_spanish_template' => boolval($this->is_spanish_template),
             'companyBranch' => $this->companyBranch,
-            'user' => $this->user,
+            'user' => [
+                'id' => $this->user->id,
+                'name' => $this->user->name,
+                'email' => $this->user->email,
+            ],
             'sale' => $this->sale,
             'products' => CatalogProductResource::collection($this->whenLoaded('catalogProducts')),
             'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
