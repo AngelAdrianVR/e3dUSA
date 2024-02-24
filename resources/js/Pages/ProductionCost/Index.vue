@@ -37,10 +37,10 @@
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="id" label="ID" width="45" />
-                    <el-table-column prop="name" label="Nombre" width="200" />
-                    <el-table-column prop="time" label="Tiempo/u" width="150" />
-                    <el-table-column prop="cost.format" label="Costo" width="120" />
-                    <el-table-column prop="description" label="Descripción" width="300" />
+                    <el-table-column prop="name" label="Nombre" />
+                    <el-table-column prop="time" label="Tiempo/u" />
+                    <el-table-column prop="cost.format" label="Costo" />
+                    <el-table-column prop="description" label="Descripción" />
                     <el-table-column align="right" fixed="right" width="120">
                         <template #header>
                             <TextInput v-model="search" type="search" class="w-full text-gray-600" placeholder="Buscar" />

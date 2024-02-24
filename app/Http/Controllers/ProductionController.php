@@ -161,8 +161,6 @@ class ProductionController extends Controller
         $is_automatic_assignment = boolval(Setting::where('key', 'AUTOMATIC_PRODUCTION_ASSIGNMENT')->first()->value);
         $production_processes = ProductionCostResource::collection(ProductionCost::all());
 
-        // return $sales;
-
         return inertia('Production/Create', compact('operators', 'sales', 'is_automatic_assignment', 'production_processes'));
     }
 
@@ -242,7 +240,7 @@ class ProductionController extends Controller
 
     public function edit($sale_id)
     {
-        $operators = User::where('employee_properties->department', 'Producción')->get();
+        $operators = User::where('employee_properties->department', 'Producción')->where('is_active', 1)->get();
         $sale = SaleResource::make(Sale::with('companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct', 'productions')->find($sale_id));
         $production_processes = ProductionCostResource::collection(ProductionCost::all());
 
@@ -327,7 +325,7 @@ class ProductionController extends Controller
         // Eliminar las producciones que no se actualizaron o crearon
         Production::destroy($existingProductionIds);
 
-        return to_route('productions.index');
+        return to_route('productions.show', $sale_id);
     }
 
 

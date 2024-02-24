@@ -1,5 +1,5 @@
 <template>
-    <Head :title="cpcs.id" />
+    <Head :title="'HV-' + String(cpcs.id).padStart(5, '0')" />
     <Loading v-if="loading" class="my-36" />
     <div v-else class="text-[11px]">
         <header class="bg-[#373737] h-24 flex justify-between items-center pl-5 pr-20 text-white">
@@ -11,7 +11,7 @@
             <div class="flex flex-col w-1/3">
                 <div class="flex justify-between border-b border-white">
                     <span>Código:</span>
-                    <span class="text-center">Por asignar</span>
+                    <span class="text-center">{{'HV-' + String(cpcs.id).padStart(5, '0')}}</span>
                 </div>
                 <div class="flex justify-between">
                     <span>No. de revisión:</span>
@@ -19,16 +19,16 @@
                 </div>
                 <div class="flex justify-between">
                     <span>Fecha de elaboración:</span>
-                    <span class="text-center">{{ dateFormat(today) }}</span>
+                    <span class="text-center">{{ dateFormat(createdAt) }}</span>
                 </div>
                 <div class="flex justify-between">
                     <span>Vigencia:</span>
-                    <span class="text-center">{{ dateFormat(new Date(today.getFullYear() + 2, today.getMonth(),
-                        today.getDate())) }}</span>
+                    <span class="text-center">{{ dateFormat(new Date(createdAt.getFullYear() + 2, createdAt.getMonth(),
+                        createdAt.getDate())) }}</span>
                 </div>
             </div>
         </header>
-        <main class="m-5">
+        <main class="my-5">
             <section class="grid grid-cols-3 gap-x-4 gap-y-3 my-3 mx-5 relative">
                 <h1 class="col-span-full text-base -rotate-90 absolute top-14 -left-10">Etapa 1</h1>
                 <table class="self-start">
@@ -40,23 +40,51 @@
                     <tbody>
                         <tr class="*:border *:border-gray-400">
                             <td class="w-1/2">Fecha de entrega</td>
-                            <td></td>
+                            <td>
+                                <input @keydown.enter="storeInputValues()" v-model="travelerData[4].date" type="text"
+                                    class="bg-transparent border-none focus:ring-0 h-4 py-2 text-[10px] w-full lg:w-3/4">
+                                <el-tooltip placement="right"
+                                    content="Este campo se puede editar. Escribe y Presionar enter para guardar">
+                                    <i
+                                        class="fa-solid fa-circle-info w-1/4 pr-3 text-gray-500 text-right text-[9px] hidden lg:inline"></i>
+                                </el-tooltip>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de llaveros</td>
-                            <td></td>
+                            <td>
+                                {{ getFirstStageProductions.keyChains[0]?.pivot.quantity * (cpcs.quantity + 5) }} unidades
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de mini medallones</td>
-                            <td></td>
+                            <td>
+                                {{ getFirstStageProductions.medallions[0]?.pivot.quantity * (cpcs.quantity + 5) }} unidades
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Entregó</td>
-                            <td></td>
+                            <td>
+                                <input @keydown.enter="storeInputValues()" v-model="travelerData[4].supplier" type="text"
+                                    class="bg-transparent border-none focus:ring-0 h-4 py-2 text-[10px] w-full lg:w-3/4">
+                                <el-tooltip placement="right"
+                                    content="Este campo se puede editar. Escribe y Presionar enter para guardar">
+                                    <i
+                                        class="fa-solid fa-circle-info w-1/4 pr-3 text-gray-500 text-right text-[9px] hidden lg:inline"></i>
+                                </el-tooltip>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Recibió</td>
-                            <td></td>
+                            <td>
+                                <input @keydown.enter="storeInputValues()" v-model="travelerData[4].receiver" type="text"
+                                    class="bg-transparent border-none focus:ring-0 h-4 py-2 text-[10px] w-full lg:w-3/4">
+                                <el-tooltip placement="right"
+                                    content="Este campo se puede editar. Escribe y Presionar enter para guardar">
+                                    <i
+                                        class="fa-solid fa-circle-info w-1/4 pr-3 text-gray-500 text-right text-[9px] hidden lg:inline"></i>
+                                </el-tooltip>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -69,23 +97,55 @@
                     <tbody>
                         <tr class="*:border *:border-gray-400">
                             <td class="w-1/2">Fecha de entrega</td>
-                            <td></td>
+                            <td>
+                                <input @keydown.enter="storeInputValues()" v-model="travelerData[5].date" type="text"
+                                    class="bg-transparent border-none focus:ring-0 h-4 py-2 text-[10px] w-full lg:w-3/4">
+                                <el-tooltip placement="right"
+                                    content="Este campo se puede editar. Escribe y Presionar enter para guardar">
+                                    <i
+                                        class="fa-solid fa-circle-info w-1/4 pr-3 text-gray-500 text-right text-[9px] hidden lg:inline"></i>
+                                </el-tooltip>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Logo / Diseño de emblema:</td>
-                            <td></td>
+                            <td>
+                                {{ getFirstStageProductions.emblems.length ? getFirstStageProductions.emblems[0].name : '-'
+                                }}
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
-                            <td>Número de mini medallones</td>
-                            <td></td>
+                            <td>Número de emblemas</td>
+                            <td>
+                                {{ getFirstStageProductions.emblems.length ?
+                                    getFirstStageProductions.emblems[0]?.pivot.quantity * (cpcs.quantity + 5) + ' unidades' :
+                                    '-'
+                                }}
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Entregó</td>
-                            <td></td>
+                            <td>
+                                <input @keydown.enter="storeInputValues()" v-model="travelerData[5].supplier" type="text"
+                                    class="bg-transparent border-none focus:ring-0 h-4 py-2 text-[10px] w-full lg:w-3/4">
+                                <el-tooltip placement="right"
+                                    content="Este campo se puede editar. Escribe y Presionar enter para guardar">
+                                    <i
+                                        class="fa-solid fa-circle-info w-1/4 pr-3 text-gray-500 text-right text-[9px] hidden lg:inline"></i>
+                                </el-tooltip>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Recibió</td>
-                            <td></td>
+                            <td>
+                                <input @keydown.enter="storeInputValues()" v-model="travelerData[5].receiver" type="text"
+                                    class="bg-transparent border-none focus:ring-0 h-4 py-2 text-[10px] w-full lg:w-3/4">
+                                <el-tooltip placement="right"
+                                    content="Este campo se puede editar. Escribe y Presionar enter para guardar">
+                                    <i
+                                        class="fa-solid fa-circle-info w-1/4 pr-3 text-gray-500 text-right text-[9px] hidden lg:inline"></i>
+                                </el-tooltip>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -136,7 +196,9 @@
                     </tfoot>
                 </table>
             </section>
-            <section class="grid grid-cols-3 gap-x-4 gap-y-3 my-3 mx-5 relative">
+            <section class="grid grid-cols-3 gap-x-4 gap-y-3 my-3 px-5 relative">
+                <div v-if="!isStageOneCompleted" class="inset-0 absolute bg-gray-200 opacity-60 cursor-not-allowed z-10"></div>
+                <p v-if="!isStageOneCompleted" class="z-20 absolute right-5 bottom-8 text-primary font-bold px-2 py-1 bg-primarylight rounded-lg">Se habilitará esta etapa al completar criterios de aceptación de la etapa anterior</p>
                 <h1 class="col-span-full text-base -rotate-90 absolute top-14 -left-10">Etapa 2</h1>
                 <table class="self-start">
                     <thead>
@@ -146,28 +208,126 @@
                     </thead>
                     <tbody>
                         <tr class="*:border *:border-gray-400">
-                            <td class="w-1/2">Fecha</td>
-                            <td></td>
+                            <td class="w-1/2">Responsable</td>
+                            <td>
+                                <h2 class="font-bold mb-1">Llaveros:</h2>
+                                <ul v-for="(item, index) in getSecondStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ users.find(user => user.id == item.operator_id)?.name }}
+                                        </span>
+                                    </li>
+                                </ul>
+                                <h2 class="font-bold py-1">Mini medallones:</h2>
+                                <ul v-for="(item, index) in getSecondStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ users.find(user => user.id == item.operator_id)?.name }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
-                            <td>Responsable</td>
-                            <td></td>
+                            <td>Fecha</td>
+                            <td>
+                                <h2 class="font-bold mb-1">Llaveros:</h2>
+                                <ul v-for="(item, index) in getSecondStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.started_at ? dateFormat(new Date(item.started_at)) : '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                                <h2 class="font-bold py-1">Mini medallones:</h2>
+                                <ul v-for="(item, index) in getSecondStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.started_at ? dateFormat(new Date(item.started_at)) : '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de llaveros grabados</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getSecondStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.good_units ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de merma</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getSecondStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.scrap ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de mini medallones grabados</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getSecondStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.good_units ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de merma</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getSecondStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.scrap ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -179,7 +339,32 @@
                     </thead>
                     <tbody>
                         <tr class="*:border *:border-gray-400">
-                            <td></td>
+                            <td>
+                                <h2 class="font-bold mb-1">Llaveros:</h2>
+                                <ul v-for="(item, index) in getSecondStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[15%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[85%]">
+                                            {{ item.scrap_reason ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                                <h2 class="font-bold py-1">Mini medallones:</h2>
+                                <ul v-for="(item, index) in getSecondStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[15%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[85%]">
+                                            {{ item.scrap_reason ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -230,38 +415,138 @@
                     </tfoot>
                 </table>
             </section>
-            <section class="grid grid-cols-3 gap-x-4 gap-y-3 my-3 mx-5 relative">
+            <section class="grid grid-cols-3 gap-x-4 gap-y-3 my-3 px-5 relative">
+                <div v-if="!isStageTwoCompleted" class="inset-0 absolute bg-gray-200 opacity-60 cursor-not-allowed z-10"></div>
+                <p v-if="!isStageTwoCompleted" class="z-20 absolute right-5 bottom-8 text-primary font-bold px-2 py-1 bg-primarylight rounded-lg">Se habilitará esta etapa al completar criterios de aceptación de la etapa anterior</p>
                 <h1 class="col-span-full text-base -rotate-90 absolute top-14 -left-10">Etapa 3</h1>
                 <table class="self-start">
                     <thead>
                         <tr>
-                            <th colspan="2">Control de aplicación de emblmeas y medallones</th>
+                            <th colspan="2">Control de aplicación de emblemas y medallones</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="*:border *:border-gray-400">
-                            <td class="w-1/2">Fecha</td>
-                            <td></td>
+                            <td>Responsable</td>
+                            <td>
+                                <h2 class="font-bold mb-1">Llaveros:</h2>
+                                <ul v-for="(item, index) in getThirdStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ users.find(user => user.id == item.operator_id)?.name }}
+                                        </span>
+                                    </li>
+                                </ul>
+                                <h2 class="font-bold py-1">Mini medallones:</h2>
+                                <ul v-for="(item, index) in getThirdStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ users.find(user => user.id == item.operator_id)?.name }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
-                            <td>Responsable</td>
-                            <td></td>
+                            <td class="w-1/2">Fecha</td>
+                            <td>
+                                <h2 class="font-bold mb-1">Llaveros:</h2>
+                                <ul v-for="(item, index) in getThirdStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.started_at ? dateFormat(new Date(item.started_at)) : '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                                <h2 class="font-bold py-1">Mini medallones:</h2>
+                                <ul v-for="(item, index) in getThirdStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.started_at ? dateFormat(new Date(item.started_at)) : '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de emblemas</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getThirdStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.good_units ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de merma</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getThirdStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.scrap ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de mini medallones aplicados</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getThirdStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.good_units ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Número de merma</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getThirdStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[30%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[70%]">
+                                            {{ item.scrap ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -273,7 +558,32 @@
                     </thead>
                     <tbody>
                         <tr class="*:border *:border-gray-400">
-                            <td></td>
+                            <td>
+                                <h2 class="font-bold mb-1">Llaveros:</h2>
+                                <ul v-for="(item, index) in getThirdStageProductions.keyChains" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[15%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[85%]">
+                                            {{ item.scrap_reason ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                                <h2 class="font-bold py-1">Mini medallones:</h2>
+                                <ul v-for="(item, index) in getThirdStageProductions.medallions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[15%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[85%]">
+                                            {{ item.scrap_reason ?? '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -324,7 +634,9 @@
                     </tfoot>
                 </table>
             </section>
-            <section class="grid grid-cols-2 gap-x-6 gap-y-3 my-3 mx-5 relative">
+            <section class="grid grid-cols-2 gap-x-6 gap-y-3 my-3 px-5 relative">
+                <div v-if="!isStageThreeCompleted" class="inset-0 absolute bg-gray-200 opacity-60 cursor-not-allowed z-10"></div>
+                <p v-if="!isStageThreeCompleted" class="z-20 absolute right-5 bottom-8 text-primary font-bold px-2 py-1 bg-primarylight rounded-lg">Se habilitará esta etapa al completar criterios de aceptación de la etapa anterior</p>
                 <h1 class="col-span-full text-base -rotate-90 absolute top-14 -left-10">Etapa 4</h1>
                 <table class="self-start">
                     <thead>
@@ -334,20 +646,56 @@
                     </thead>
                     <tbody>
                         <tr class="*:border *:border-gray-400">
-                            <td class="w-1/2">Fecha</td>
-                            <td></td>
+                            <td>Responsable</td>
+                            <td>
+                                <ul v-for="(item, index) in getFourthStageProductions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[15%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[85%]">
+                                            {{ users.find(user => user.id == item.operator_id)?.name }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
-                            <td>Responsable</td>
-                            <td></td>
+                            <td class="w-1/2">Fecha</td>
+                            <td>
+                                <ul v-for="(item, index) in getFourthStageProductions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[15%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span class="text-[10px] w-[85%]">
+                                            {{ item.started_at ? dateFormat(new Date(item.started_at)) : '-' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>No. de paquete / Pzs. Por paquete</td>
-                            <td></td>
-                        </tr>
-                        <tr class="*:border *:border-gray-400">
-                            <td>Número de Cajas:</td>
-                            <td></td>
+                            <td>
+                                <ul v-for="(item, index) in getFourthStageProductions" :key="index">
+                                    <li class="flex justify-between mb-1">
+                                        <figure class="w-[20%]">
+                                            <img :src="users.find(user => user.id == item.operator_id)?.profile_photo_url"
+                                                class="size-5 rounded-full object-cover border border-gray-400">
+                                        </figure>
+                                        <span v-if="!item.packages" class="text-[10px] w-[80%]">-</span>
+                                        <ol class="text-[10px] w-[100%]">
+                                            <li v-for="(item2, index2) in item.packages" :key="index2" class="w-full">
+                                                <b class="text-primary">• Paquete {{ (index2 + 1) }}:</b> {{ item2.quantity
+                                                }} pieza(s).
+                                            </li>
+                                        </ol>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -398,8 +746,6 @@
                     </tfoot>
                 </table>
             </section>
-            {{ productions.filter(item =>
-                item.tasks.toLowerCase().includes('grabado láser llavero'.toLowerCase())) }}
         </main>
     </div>
 </template>
@@ -414,9 +760,10 @@ export default {
     data() {
         return {
             loading: true,
-            today: new Date(),
+            createdAt: new Date(this.cpcs.created_at),
             users: [],
             productions: [],
+            rawMaterials: [],
             travelerData: [
                 [
                     {
@@ -462,6 +809,12 @@ export default {
                         userId: null, value: null, timestamp: null,
                     },
                 ],
+                {
+                    date: null, supplier: null, receiver: null,
+                },
+                {
+                    date: null, supplier: null, receiver: null,
+                }
             ],
             criterias: [
                 [
@@ -495,6 +848,51 @@ export default {
     props: {
         cpcs: Object,
     },
+    computed: {
+        isStageOneCompleted() {
+            return !this.travelerData[0].some(item => item.value === null);
+        },
+        isStageTwoCompleted() {
+            return !this.travelerData[1].some(item => item.value === null);
+        },
+        isStageThreeCompleted() {
+            return !this.travelerData[2].some(item => item.value === null);
+        },
+        getFirstStageProductions() {
+            const keyChains = this.rawMaterials.filter(item =>
+                item.part_number.includes('LL-') && !item.name.toLowerCase().includes('medall'));
+
+            const medallions = this.rawMaterials.filter(item =>
+                item.part_number.includes('LL-') && item.name.toLowerCase().includes('medall'));
+
+            const emblems = this.rawMaterials.filter(item =>
+                item.part_number.includes('EM-'));
+
+            return { keyChains: keyChains, medallions: medallions, emblems: emblems };
+        },
+        getSecondStageProductions() {
+            const keyChains = this.productions.filter(item =>
+                item.tasks.toLowerCase().includes('grabado láser llavero'.toLowerCase()));
+
+            const medallions = this.productions.filter(item =>
+                item.tasks.toLowerCase().includes('grabado láser mini medallón'.toLowerCase()));
+
+            return { keyChains: keyChains, medallions: medallions };
+        },
+        getThirdStageProductions() {
+            const keyChains = this.productions.filter(item =>
+                item.tasks.toLowerCase().includes('aplicación de emblema a llavero'.toLowerCase()));
+
+            const medallions = this.productions.filter(item =>
+                item.tasks.toLowerCase().includes('ensamble de mini medallón a llavero'.toLowerCase()));
+
+            return { keyChains: keyChains, medallions: medallions };
+        },
+        getFourthStageProductions() {
+            return this.productions.filter(item =>
+                item.tasks.toLowerCase().includes('empaque'.toLowerCase()));;
+        },
+    },
     methods: {
         dateFormat(date) {
             const formattedDate = format(date, 'dd-MMMM-yyyy', { locale: es });
@@ -508,6 +906,20 @@ export default {
             try {
                 const response = await axios.post(route('catalog-product-company-sale.store-traveler-data', this.cpcs.id), { traveler_data: this.travelerData });
 
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async storeInputValues() {
+            try {
+                const response = await axios.post(route('catalog-product-company-sale.store-traveler-data', this.cpcs.id), { traveler_data: this.travelerData });
+                if (response.status === 200) {
+                    this.$notify({
+                        title: 'Correcto',
+                        message: 'Se ha guardado el texto',
+                        type: 'success',
+                    })
+                }
             } catch (error) {
                 console.log(error);
             }
@@ -554,12 +966,26 @@ export default {
                 this.loading = false;
             }
         },
+        async fetchRawMaterials() {
+            this.loading = true;
+            try {
+                const response = await axios.get(route('catalog-product-company-sale.get-raw-materials', this.cpcs.id));
 
+                if (response.status === 200) {
+                    this.rawMaterials = response.data.items;
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                this.loading = false;
+            }
+        },
     },
     async mounted() {
         await this.fetchUsers();
         await this.fetchTravelerData();
         await this.fetchCpcsProductions();
+        await this.fetchRawMaterials();
     }
 }
 </script>
