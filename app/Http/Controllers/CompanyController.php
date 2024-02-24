@@ -43,7 +43,6 @@ class CompanyController extends Controller
             ];
         });
 
-        // return $companies;
         return inertia('Company/Index', compact('companies'));
     }
 
@@ -84,7 +83,7 @@ class CompanyController extends Controller
 
         event(new RecordCreated($company));
 
-        return to_route('companies.index');
+        return to_route('companies.show', $company);
     }
 
 
@@ -186,7 +185,7 @@ class CompanyController extends Controller
 
         event(new RecordEdited($company));
 
-        return to_route('companies.index');
+        return to_route('companies.show', $company);
     }
 
 
