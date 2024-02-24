@@ -17,6 +17,7 @@ class CompanyBranch extends Model
         'password', // se utiliza para ingresar a la app de clientes
         'address',
         'post_code',
+        'meet_way',
         'sat_method',
         'sat_type',
         'sat_way',

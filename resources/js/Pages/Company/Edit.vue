@@ -95,7 +95,6 @@
                   A
                 </el-tooltip>
               </IconInput>
-              <!-- <InputError :message="branch.errors.name" /> -->
             </div>
             <div class="md:col-span-2">
               <IconInput v-model="branch.address" inputPlaceholder="Dirección *" inputType="text">
@@ -103,7 +102,6 @@
                   <i class="fa-solid fa-map-location-dot"></i>
                 </el-tooltip>
               </IconInput>
-              <!-- <InputError :message="branch.errors.address" /> -->
             </div>
             <div>
               <IconInput v-model="branch.post_code" inputPlaceholder="C.P. *" inputType="text">
@@ -111,7 +109,16 @@
                   <i class="fa-solid fa-envelopes-bulk"></i>
                 </el-tooltip>
               </IconInput>
-              <!-- <InputError :message="branch.errors.post_code" /> -->
+            </div>
+            <div class="flex items-center">
+              <el-tooltip content="Cómo nos conoció el cliente *" placement="top">
+                <i
+                  class="fa-solid fa-user-check font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
+              </el-tooltip>
+              <el-select v-model="branch.meet_way" placeholder="Cómo nos conoció el cliente *">
+                <el-option v-for="item in meetWays" :key="item" :value="item" :label="item" />
+              </el-select>
+              <InputError :message="form.errors.meet_way" />
             </div>
             <div class="flex items-center">
               <el-tooltip content="Método de pago" placement="top">
@@ -120,7 +127,7 @@
                   sat
                 </span>
               </el-tooltip>
-              <el-select v-model="branch.sat_method" clearable filterable placeholder="Método de pago">
+              <el-select v-model="branch.sat_method" placeholder="Método de pago">
                 <el-option v-for="item in sat_method" :key="item.value" :label="item.label" :value="item.value">
                   <span style="float: left">{{ item.label }}</span>
                   <span style="
@@ -130,7 +137,6 @@
                                             ">{{ item.value }}</span>
                 </el-option>
               </el-select>
-              <!-- <InputError :message="branch.errors.sat_method" /> -->
             </div>
             <div class="flex items-center">
               <el-tooltip content="Medio de pago" placement="top">
@@ -139,7 +145,7 @@
                   sat
                 </span>
               </el-tooltip>
-              <el-select v-model="branch.sat_way" clearable filterable placeholder="Medio de pago">
+              <el-select v-model="branch.sat_way" placeholder="Medio de pago">
                 <el-option v-for="item in sat_ways" :key="item.value" :label="item.label" :value="item.value">
                   <span style="float: left">{{ item.label }}</span>
                   <span style="
@@ -158,7 +164,7 @@
                   sat
                 </span>
               </el-tooltip>
-              <el-select v-model="branch.sat_type" clearable filterable placeholder="Uso de factura">
+              <el-select v-model="branch.sat_type" placeholder="Uso de factura">
                 <el-option v-for="item in sat_types" :key="item.value" :label="item.label" :value="item.value">
                   <span style="float: left">{{ item.label }}</span>
                   <span style="
@@ -293,10 +299,10 @@
                     </span>
                   </el-tooltip>
                   <div class="grid grid-cols-2 gap-2 w-full">
-                    <el-select v-model="contact.birthdate_day" clearable filterable placeholder="Dia">
+                    <el-select v-model="contact.birthdate_day" placeholder="Dia">
                       <el-option v-for="day in 31" :key="day" :label="day" :value="day" />
                     </el-select>
-                    <el-select v-model="contact.birthdate_month" clearable filterable placeholder="Mes">
+                    <el-select v-model="contact.birthdate_month" placeholder="Mes">
                       <el-option v-for="(month, index) in months" :key="index" :label="month" :value="index" />
                     </el-select>
                   </div>
@@ -368,7 +374,7 @@
                   <i class="fa-solid fa-magnifying-glass"></i>
                 </span>
               </el-tooltip>
-              <el-select v-model="product.catalog_product_id" clearable filterable placeholder="Buscar producto">
+              <el-select v-model="product.catalog_product_id" placeholder="Buscar producto">
                 <el-option v-for="item in catalog_products" :key="item.id" :label="item.name" :value="item.id" />
               </el-select>
             </div>
@@ -507,12 +513,23 @@ export default {
         name: null,
         address: null,
         post_code: null,
+        meet_way: null,
         sat_method: null,
         sat_type: null,
         sat_way: null,
         important_notes: null,
         days_to_reactivate: null,
       },
+      meetWays: [
+        'Recomendación',
+        'Búsqueda en línea',
+        'Publicidad ',
+        'Evento o feria comercial',
+        'Correo electrónico',
+        'Llamada telefónica ',
+        'Sitio web de la empresa',
+        'Otro',
+      ],
       product: {
         catalog_product_id: null,
         old_date: null,
@@ -708,6 +725,7 @@ export default {
       this.branch.name = null;
       this.branch.address = null;
       this.branch.post_code = null;
+      this.branch.meet_way = null;
       this.branch.sat_method = null;
       this.branch.sat_type = null;
       this.branch.sat_way = null;
@@ -777,6 +795,7 @@ export default {
         name: element.name,
         address: element.address,
         post_code: element.post_code,
+        meet_way: element.meet_way,
         sat_method: element.sat_method,
         sat_type: element.sat_type,
         sat_way: element.sat_way,
