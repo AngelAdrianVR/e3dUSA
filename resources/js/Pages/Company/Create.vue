@@ -62,7 +62,10 @@
 
           <!-- ---------------- Company Branch starts ----------------- -->
           <el-divider content-position="left">Sucursales</el-divider>
-          <ol v-if="form.company_branches.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1 mb-2">
+          <button @click="prefillBranchForm" type="button"
+            class="text-sm text-primary underline w-full text-right pr-7">Llenar sucursal con la información
+            anterior</button>
+          <ol v-if="form.company_branches.length" class="rounded-lg bg-[#CCCCCC] px-5 pb-3 col-span-full space-y-1 mb-2">
             <template v-for="(item, index) in form.company_branches" :key="index">
               <li class="flex justify-between items-center">
                 <p class="text-sm">
@@ -92,7 +95,6 @@
                   A
                 </el-tooltip>
               </IconInput>
-              <!-- <InputError :message="branch.errors.name" /> -->
             </div>
             <div class="md:col-span-2">
               <IconInput v-model="branch.address" inputPlaceholder="Dirección *" inputType="text">
@@ -100,7 +102,6 @@
                   <i class="fa-solid fa-map-location-dot"></i>
                 </el-tooltip>
               </IconInput>
-              <!-- <InputError :message="branch.errors.address" /> -->
             </div>
             <div>
               <IconInput v-model="branch.post_code" inputPlaceholder="C.P. *" inputType="text">
@@ -108,7 +109,6 @@
                   <i class="fa-solid fa-envelopes-bulk"></i>
                 </el-tooltip>
               </IconInput>
-              <!-- <InputError :message="branch.errors.post_code" /> -->
             </div>
             <div class="flex items-center">
               <el-tooltip content="Método de pago" placement="top">
@@ -127,7 +127,6 @@
                                             ">{{ item.value }}</span>
                 </el-option>
               </el-select>
-              <!-- <InputError :message="branch.errors.sat_method" /> -->
             </div>
             <div class="flex items-center">
               <el-tooltip content="Medio de pago" placement="top">
@@ -225,24 +224,59 @@
                     A
                   </el-tooltip>
                 </IconInput>
-                <!-- <InputError :message="form.errors.name_contact" /> -->
               </div>
               <div class="md:grid gap-x-6 gap-y-2 md:mb-6 grid-cols-2">
-                <div>
-                  <IconInput v-model="contact.email" inputPlaceholder="Correo electrónico *" inputType="email">
-                    <el-tooltip content="Correo electrónico" placement="top">
+                <div class="col-span-full flex items-center">
+                  <el-tooltip content="Puesto *" placement="top">
+                    <i
+                      class="fa-solid fa-briefcase font-bold text-[16px] items-center inline-flex text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                    </i>
+                  </el-tooltip>
+                  <el-select v-model="contact.charge" placeholder="Puesto *">
+                    <el-option v-for="item in charges" :key="item" :value="item" :label="item" />
+                  </el-select>
+                </div>
+                <div class="cols-pan-full">
+                  <IconInput v-model="contact.email" inputPlaceholder="Correo electrónico principal *" inputType="email">
+                    <el-tooltip content="Correo electrónico principal *" placement="top">
                       <i class="fa-solid fa-envelope"></i>
                     </el-tooltip>
                   </IconInput>
-                  <!-- <InputError :message="form.errors.email" /> -->
+                  <!-- correos adicionales -->
+                  <div v-for="(additionalEmail, index) in contact.additional_emails" :key="index"
+                    class="flex items-center">
+                    <IconInput v-model="contact.additional_emails[index]" inputPlaceholder="Correo electrónico adicional"
+                      inputType="email">
+                      <el-tooltip content="Correo electrónico adicional" placement="top">
+                        <i class="fa-solid fa-envelope"></i>
+                      </el-tooltip>
+                    </IconInput>
+                    <button @click="removeAdditionalEmail(index)" type="button"
+                      class="text-sm ml-1 hover:text-primary">x</button>
+                  </div>
+                  <button @click="createAdditionalEmail" type="button" class="text-xs text-primary ml-6">+ Agregar otro
+                    correo</button>
                 </div>
                 <div>
-                  <IconInput v-model="contact.phone" inputPlaceholder="Teléfono *" inputType="text">
-                    <el-tooltip content="Teléfono" placement="top">
+                  <IconInput v-model="contact.phone" inputPlaceholder="Teléfono principal *" inputType="text">
+                    <el-tooltip content="Teléfono principal *" placement="top">
                       <i class="fa-solid fa-phone"></i>
                     </el-tooltip>
                   </IconInput>
-                  <!-- <InputError :message="form.errors.phone" /> -->
+                  <!-- telefonos adicionales -->
+                  <div v-for="(additionalPhone, index) in contact.additional_phones" :key="index"
+                    class="flex items-center">
+                    <IconInput v-model="contact.additional_phones[index]" inputPlaceholder="Teléfono adicional"
+                      inputType="text">
+                      <el-tooltip content="Teléfono adicional" placement="top">
+                        <i class="fa-solid fa-phone"></i>
+                      </el-tooltip>
+                    </IconInput>
+                    <button @click="removeAdditionalPhone(index)" type="button"
+                      class="text-sm ml-1 hover:text-primary">x</button>
+                  </div>
+                  <button @click="createAdditionalPhone" type="button" class="text-xs text-primary ml-6">+ Agregar otro
+                    teléfono</button>
                 </div>
               </div>
               <div>
@@ -253,7 +287,7 @@
                       <i class="fa-solid fa-cake"></i>
                     </span>
                   </el-tooltip>
-                  <div class="grid grid-cols-2 gap-2">
+                  <div class="grid grid-cols-2 gap-2 w-full">
                     <el-select v-model="contact.birthdate_day" clearable filterable placeholder="Dia">
                       <el-option v-for="day in 31" :key="day" :label="day" :value="day" />
                     </el-select>
@@ -261,11 +295,9 @@
                       <el-option v-for="(month, index) in months" :key="index" :label="month" :value="index" />
                     </el-select>
                   </div>
-                  <!-- <InputError :message="form.errors.sat_way" /> -->
                 </div>
-                <!-- <InputError :message="form.errors.birthdate" /> -->
               </div>
-              <SecondaryButton @click="addContact" :disabled="!this.contact.name || !this.contact.email || !this.contact.phone
+              <SecondaryButton @click="addContact" :disabled="!this.contact.name || !this.contact.email || !this.contact.phone || !this.contact.charge
                 ">
                 {{
                   editContactIndex !== null
@@ -343,7 +375,6 @@
                     <i class="fa-solid fa-money-bill"></i>
                   </el-tooltip>
                 </IconInput>
-                <!-- <InputError :message="form.errors.old_price" /> -->
               </div>
               <div class="flex items-center">
                 <el-tooltip content="Moneda" placement="top">
@@ -362,7 +393,6 @@
               <div class="flex items-center">
                 <el-date-picker v-model="product.old_date" type="date" placeholder="Fecha" format="YYYY/MM/DD"
                   value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
-                <!-- <InputError :message="form.errors.branches.old_date" /> -->
               </div>
               <div>
                 <IconInput v-model="product.new_price" inputPlaceholder="Precio nuevo *" inputType="number"
@@ -371,7 +401,6 @@
                     <i class="fa-solid fa-money-bill"></i>
                   </el-tooltip>
                 </IconInput>
-                <!-- <InputError :message="form.errors.new_price" /> -->
               </div>
               <div class="flex items-center">
                 <el-tooltip content="Moneda" placement="top">
@@ -390,7 +419,6 @@
               <div class="flex items-center">
                 <el-date-picker v-model="product.new_date" type="date" placeholder="Fecha" format="YYYY/MM/DD"
                   value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
-                <!-- <InputError :message="form.errors.branches.old_date" /> -->
               </div>
             </div>
 
@@ -450,8 +478,11 @@ export default {
         name: null,
         email: null,
         phone: null,
+        charge: null,
         birthdate_day: null,
         birthdate_month: null,
+        additional_emails: [],
+        additional_phones: [],
       },
       branch: {
         name: null,
@@ -472,6 +503,15 @@ export default {
         old_price: null,
         new_price: null,
       },
+      charges: [
+        'Compras',
+        'Dirección',
+        'Facturación',
+        'Gerencia',
+        'Marketing',
+        'Pagos',
+        'Otro',
+      ],
       currencies: [
         { value: "$MXN", label: "MXN" },
         { value: "$USD", label: "USD" },
@@ -576,6 +616,23 @@ export default {
     raw_materials: Array,
   },
   methods: {
+    removeAdditionalEmail(index) {
+      this.contact.additional_emails.splice(index, 1);
+    },
+    removeAdditionalPhone(index) {
+      this.contact.additional_phones.splice(index, 1);
+    },
+    createAdditionalEmail() {
+      this.contact.additional_emails.push(null);
+    },
+    createAdditionalPhone() {
+      this.contact.additional_phones.push(null);
+    },
+    prefillBranchForm() {
+      this.branch.name = this.form.business_name;
+      this.branch.address = this.form.fiscal_address;
+      this.branch.post_code = this.form.post_code;
+    },
     store() {
       this.form.post(route("companies.store"), {
         onSuccess: () => {
@@ -610,6 +667,9 @@ export default {
       this.contact.phone = null;
       this.contact.birthdate_day = null;
       this.contact.birthdate_month = null;
+      this.contact.charge = null;
+      this.contact.additional_emails = [];
+      this.contact.additional_phones = [];
     },
     deleteContact(index) {
       this.contacts.splice(index, 1);
@@ -654,8 +714,11 @@ export default {
           name: element.name,
           email: element.email,
           phone: element.phone,
+          charge: element.charge,
           birthdate_day: element.birthdate_day,
           birthdate_month: element.birthdate_month,
+          additional_emails: element.additional_emails ?? [],
+          additional_phones: element.additional_phones ?? [],
         };
 
         this.contacts.push(contact);

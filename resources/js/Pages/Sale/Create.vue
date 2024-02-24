@@ -65,7 +65,7 @@
                         <el-radio-group v-model="form.contact_id" size="small">
                             <el-radio-button v-for="contact in company_branches.find(cb => cb.id ==
                                 form.company_branch_id)?.contacts" :key="contact" :label="contact.id">
-                                {{ contact.name }} ({{ contact.email }})
+                                {{contact.charge}}: {{ contact.name }} ({{ contact.email }}, {{ contact.additional_emails?.join(', ') }})
                             </el-radio-button>
                         </el-radio-group>
                         <p v-if="!form.contact_id" class="text-xs text-primary ml-2">No olvides seleccionar el contacto.</p>

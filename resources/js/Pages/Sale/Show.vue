@@ -172,10 +172,10 @@
 
           <span class="text-gray-500 my-2">Nombre</span>
           <span>{{ sale.data.contact?.name }}</span>
-          <span class="text-gray-500 my-2">Correo electrónico</span>
-          <span>{{ sale.data.contact?.email }}</span>
-          <span class="text-gray-500 my-2">telefono</span>
-          <span>{{ sale.data.contact?.phone }}</span>
+          <span class="text-gray-500 my-2">Correo(s) electrónico(s)</span>
+          <span>{{ sale.data.contact?.email }}, {{ sale.data.contact?.additional_emails?.join(', ') }}</span>
+          <span class="text-gray-500 my-2">telefono(s)</span>
+          <span>{{ sale.data.contact?.phone }}, {{ sale.data.contact?.additional_phones?.join(', ') }}</span>
           <span class="text-gray-500 my-2">Cargo</span>
           <span>{{ sale.data.contact?.charge }}</span>
         </div>

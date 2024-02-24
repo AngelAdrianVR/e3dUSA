@@ -69,6 +69,9 @@ class SaleController extends Controller
                     'id' => $contact->id,
                     'name' => $contact->name,
                     'email' => $contact->email,
+                    'charge' => $contact->charge,
+                    'additional_emails' => $contact->additional_emails,
+                    'additional_phones' => $contact->additional_phones,
                 ];
             });
 
