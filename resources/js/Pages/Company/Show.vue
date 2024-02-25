@@ -95,6 +95,11 @@
             " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Ordenes de venta
           </p>
+          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p @click="tabs = 9" :class="tabs == 9 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            F. autorización de diseño
+          </p>
         </div>
       </div>
       <!-- ------------- tabs section ends ------------- -->
@@ -155,49 +160,7 @@
       <!-- -------------Cotizaciones starts 5 ------------- -->
       <div v-if="tabs == 5" class="p-7 w-full mx-auto my-4">
         <div v-if="hasQuotes()" class="overflow-x-auto">
-          <table class="w-full mx-auto">
-            <thead>
-              <tr class="text-left">
-                <th class="font-bold pb-5">
-                  Folio <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
-                </th>
-                <th class="font-bold pb-5">
-                  Creado por <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
-                </th>
-                <th class="font-bold pb-5">
-                  Receptor <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
-                </th>
-                <th class="font-bold pb-5">
-                  Autorizado por <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
-                </th>
-                <th class="font-bold pb-5">
-                  Creado el <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <template v-for="branch in company.data.company_branches">
-                <tr v-for="quote in branch.quotes" :key="quote.id" class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]"
-                  @click="$inertia.get(route('quotes.show', quote.id))">
-                  <td class="text-left text-secondary py-2 px-2 rounded-l-full">
-                    {{ quote.folio }}
-                  </td>
-                  <td class="text-left py-2 px-2">
-                    {{ quote.user ? quote.user.name : '' }}
-                  </td>
-                  <td class="text-left py-2 px-2">
-                    <span class="py-1 px-4 rounded-full">{{ quote.receiver }}</span>
-                  </td>
-                  <td class="text-left py-2 px-2">
-                    <span class="py-1 px-2">{{ quote.authorized_user_name ?? '--' }}</span>
-                  </td>
-                  <td class="text-left py-2 px-2 rounded-r-full">
-                    {{ quote.created_at }}
-                  </td>
-                </tr>
-              </template>
-            </tbody>
-          </table>
+          <CompanyQuoteTable :quotes="allQuotes" />
         </div>
         <div class="flex flex-col text-center justify-center" v-else>
           <p class="text-sm text-center">No hay cotizaciones para mostrar</p>
@@ -232,7 +195,7 @@
       <!-- ------------- Proyectos ends 7 ------------- -->
 
       <!-- -------------Ordenes de venta starts 8 ------------- -->
-      <div v-if="tabs == 8" class="p-7 w-full mx-auto my-4">
+      <div v-if="tabs == 8" class="lg:p-7 w-full mx-auto my-4">
         <div v-if="company.data.company_branches?.some(branch => branch.sales?.length > 0)">
           <CompanySalesTable :company_sales="allSales" />
         </div>
@@ -242,6 +205,23 @@
         </div>
       </div>
       <!-- ------------- Ordenes de venta ends 8 ------------- -->
+
+
+      <!-- ------------- Formatos de autorización de diseño starts 9 ------------- -->
+      <div v-if="tabs === 9" class="px-7 w-full my-4">
+        <div class="flex justify-between items-center">
+          <p class="text-secondary">Formatos de autorización de diseño</p>
+          <PrimaryButton @click="$inertia.get(route('design-authorizations.create'))" class="self-start">Agregar formato</PrimaryButton>
+        </div>
+        <div class="mt-5 mx-auto" v-if="company.data.company_branches?.some(branch => branch.designAuthorizations?.length > 0)">
+          <DesignAuthorizationTable :designAuthorizations="allDesignAuthorizations" />
+        </div>
+        <div class="flex flex-col text-center justify-center" v-else>
+          <p class="text-sm text-center">No hay Formatos de autorización de diseño de este cliente</p>
+          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+        </div>
+      </div>
+      <!-- ------------- Formatos de autorización de diseño ends 9 ------------- -->
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar cliente </template>
@@ -261,6 +241,8 @@
 import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import CompanyBranchCard from "@/Components/MyComponents/CompanyBranchCard.vue";
 import CompanyProductCard from "@/Components/MyComponents/CompanyProductCard.vue";
+import DesignAuthorizationTable from "@/Components/MyComponents/DesignAuthorizationTable.vue";
+import CompanyQuoteTable from "@/Components/MyComponents/CompanyQuoteTable.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
@@ -271,6 +253,7 @@ import CompanySalesTable from "@/Components/MyComponents/CompanySalesTable.vue";
 import ProjectTable from "@/Components/MyComponents/ProjectTable.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link } from "@inertiajs/vue3";
+import axios from 'axios';
 
 export default {
   data() {
@@ -280,6 +263,7 @@ export default {
       // currentCompanyProducts: null,
       tabs: 1,
       showConfirmModal: false,
+      loading: false,
     };
   },
   props: {
@@ -293,14 +277,16 @@ export default {
     CompanyProductCard,
     Dropdown,
     DropdownLink,
-    Link,
     ConfirmationModal,
     CancelButton,
     PrimaryButton,
     CompanySalesTable,
     CompanyOportunityTable,
     CompanyClientMonitorTable,
+    DesignAuthorizationTable,
+    CompanyQuoteTable,
     ProjectTable,
+    Link,
   },
   methods: {
     getColorHex(number) {
@@ -369,13 +355,6 @@ export default {
             message: response.data.message,
             type: "success",
           });
-          // const index = this.companies.data.findIndex(
-          //   (item) => item.id === this.company.data.id
-          // );
-          // if (index !== -1) {
-          //   this.company.data.splice(index, 1);
-          //   this.selectedCompany = "";
-          // }
         } else {
           this.$notify({
             title: "Algo salió mal",
@@ -402,7 +381,6 @@ export default {
 
       return tieneCotizaciones; // Devolverá true si hay cotizaciones en al menos un company_branch
     },
-
   },
   computed: {
     allSales() {
@@ -417,10 +395,33 @@ export default {
       }
       return sales;
     },
+    allDesignAuthorizations() {
+      // Recopila todas las ventas de todos los company_branches
+      const designAuthorizations = [];
+      if (this.company.data && this.company.data.company_branches) {
+        this.company.data.company_branches.forEach(branch => {
+          if (branch.designAuthorizations) {
+            designAuthorizations.push(...branch.designAuthorizations);
+          }
+        });
+      }
+      return designAuthorizations;
+    },
+    allQuotes() {
+      // Recopila todas las ventas de todos los company_branches
+      const quotes = [];
+      if (this.company.data && this.company.data.company_branches) {
+        this.company.data.company_branches.forEach(branch => {
+          if (branch.quotes) {
+            quotes.push(...branch.quotes);
+          }
+        });
+      }
+      return quotes;
+    },
   },
   mounted() {
     this.selectedCompany = this.company.data.id;
-
     // tabs
     if (this.defaultTab != null) {
       this.tabs = parseInt(this.defaultTab);

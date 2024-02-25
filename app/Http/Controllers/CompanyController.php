@@ -91,7 +91,8 @@ class CompanyController extends Controller
 
     public function show($company_id)
     {
-        $company = CompanyResource::make(Company::with(['user', 'seller', 'companyBranches.contacts', 'companyBranches.sales', 'companyBranches.sales.user', 'companyBranches.quotes', 'catalogProducts.media', 'oportunities', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'projects.tasks'])->find($company_id));
+        $company = CompanyResource::make(Company::with('user', 'seller', 'companyBranches.contacts', 'companyBranches.designAuthorizations', 'companyBranches.sales', 'companyBranches.sales.user', 'companyBranches.quotes', 'catalogProducts.media', 'oportunities', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'projects.tasks')->find($company_id));
+        // $company = CompanyResource::make(Company::with(['user', 'seller', 'companyBranches.contacts', 'companyBranches.sales', 'companyBranches.sales.user', 'companyBranches.quotes', 'catalogProducts.media', 'oportunities', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'projects.tasks'])->find($company_id));
         $pre_companies = CompanyResource::make(Company::latest()->get());
         $companies = $pre_companies->map(function ($company) {
             return [
@@ -101,6 +102,8 @@ class CompanyController extends Controller
         });
 
         $defaultTab = request('defaultTab');
+
+        // return $company;
 
         return inertia('Company/Show', compact('company', 'companies', 'defaultTab'));
     }

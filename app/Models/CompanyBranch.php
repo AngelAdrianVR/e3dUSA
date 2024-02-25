@@ -55,4 +55,9 @@ class CompanyBranch extends Model
     {
         return $this->hasMany(Quote::class);
     }
+
+    public function designAuthorizations():HasMany
+    {
+        return $this->hasMany(DesignAuthorization::class);
+    }
 }
