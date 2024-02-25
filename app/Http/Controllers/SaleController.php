@@ -84,7 +84,7 @@ class SaleController extends Controller
             ];
         });
 
-        // return $company_branches;
+
         return inertia('Sale/Create', compact('company_branches', 'opportunityId', 'sample'));
     }
 
@@ -184,8 +184,57 @@ class SaleController extends Controller
     {
         $sale = Sale::find($sale->id);
         $catalog_products_company_sale = CatalogProductCompanySale::with('catalogProductCompany')->where('sale_id', $sale->id)->get();
-        $company_branches = CompanyBranch::with('company.catalogProducts', 'contacts')->get();
         $media = $sale->getMedia('oce')->all();
+
+        //optimizacion de datos en vista para reducir el tiempo de carga
+        $pre_company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
+        $company_branches = $pre_company_branches->map(function ($company_branch) {
+
+            $catalog_products = $company_branch->company->catalogProducts->map(function ($product) {
+
+                $raw_materials = $product->rawMaterials->map(function ($raw_material) {
+
+                    $storages = $raw_material->storages->map(function ($storage) {
+                        return [
+                            'quantity' => $storage->quantity,
+                        ];
+                    });
+
+                    return [
+                        'name' => $raw_material->name,
+                        'pivot' => ['quantity' => $raw_material->pivot->quantity],
+                        'storages' => $storages,
+                    ];
+                });
+
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'pivot' => ['id' => $product->pivot->id],
+                    'raw_materials' => $raw_materials,
+                ];
+            });
+
+
+            $contacts = $company_branch->contacts->map(function ($contact) {
+                return [
+                    'id' => $contact->id,
+                    'name' => $contact->name,
+                    'email' => $contact->email,
+                    'charge' => $contact->charge,
+                    'additional_emails' => $contact->additional_emails,
+                    'additional_phones' => $contact->additional_phones,
+                ];
+            });
+
+            return [
+                'id' => $company_branch->id,
+                'name' => $company_branch->name,
+                'important_notes' => $company_branch->important_notes,
+                'contacts' => $contacts,
+                'catalog_products' => $catalog_products,
+            ];
+        });
 
         return inertia('Sale/Edit', compact('company_branches', 'sale', 'catalog_products_company_sale', 'media'));
     }
@@ -376,22 +425,22 @@ class SaleController extends Controller
     {
         if ($query != 'nullable') {
             $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])
-            ->latest()
-            ->where('id', 'LIKE', "%$query%")
-            ->orWhere('created_at', 'LIKE', "%$query%")
-            ->orWhere('authorized_at', 'LIKE', "%$query%")
-            ->orWhere('promise_date', 'LIKE', "%$query%")
-            ->orWhereHas('user', function ($user) use ($query){
-                $user->where('name', 'LIKE', "%$query%");
-            })
-            ->orWhereHas('companyBranch', function ($user) use ($query){
-                $user->where('name', 'LIKE', "%$query%");
-            })
-            ->get());
+                ->latest()
+                ->where('id', 'LIKE', "%$query%")
+                ->orWhere('created_at', 'LIKE', "%$query%")
+                ->orWhere('authorized_at', 'LIKE', "%$query%")
+                ->orWhere('promise_date', 'LIKE', "%$query%")
+                ->orWhereHas('user', function ($user) use ($query) {
+                    $user->where('name', 'LIKE', "%$query%");
+                })
+                ->orWhereHas('companyBranch', function ($user) use ($query) {
+                    $user->where('name', 'LIKE', "%$query%");
+                })
+                ->get());
         } else {
             $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->latest()->paginate(20));
         }
-        
+
         return response()->json(['items' => $sales]);
     }
 }

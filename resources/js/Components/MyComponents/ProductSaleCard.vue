@@ -13,6 +13,11 @@
       <i class="fa-solid fa-exclamation mr-2 text-primary"></i>
       Prioridad alta
     </div>
+    <!-- is new design message -->
+    <div v-if="catalog_product_company_sale.is_new_design"
+      class="z-20 rounded-[3px] absolute font-bold text-sm bg-primarylight text-primary py-1 px-2 -top-10 -right-4 flex items-center justify-center">
+      Diseño nuevo
+    </div>
     <!-- selection circle -->
     <div @click="handleSelection" v-if="!is_view_for_seller"
       class="w-5 h-5 border-2 rounded-full absolute top-3 left-3 cursor-pointer flex items-center justify-center"

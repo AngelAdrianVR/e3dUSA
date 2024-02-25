@@ -4,8 +4,8 @@
             <template #header>
                 <div class="flex justify-between">
                     <Back />
-                    <div class="flex items-center space-x-2 text-white">
-                        <h2 class="font-semibold text-xl leading-tight">Editar órden de venta {{ sale.id }}</h2>
+                    <div class="flex items-center space-x-2">
+                        <h2 class="font-semibold text-xl leading-tight">Editar órden de venta</h2>
                     </div>
                 </div>
             </template>
@@ -41,11 +41,11 @@
                         </button>
                     </div>
                 </div>
-                <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg px-9 py-5 shadow-md">
+                <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
                     <div class="flex items-center">
                         <el-tooltip content="Cliente: Seleccione para poder habilitar sus productos" placement="top">
                             <span
-                                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
                         </el-tooltip>
@@ -58,16 +58,18 @@
                     <div v-if="form.company_branch_id" class="flex items-center mt-3">
                         <el-tooltip content="Contacto" placement="top">
                             <span
-                                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
                                 <i class="fa-solid fa-id-badge"></i>
                             </span>
                         </el-tooltip>
                         <el-radio-group v-model="form.contact_id" size="small">
                             <el-radio-button v-for="contact in company_branches.find(cb => cb.id ==
-                                form.company_branch_id)?.contacts" :key="index" :label="contact.id">
-                                {{contact.charge}}: {{ contact.name }} ({{ contact.email }}, {{ contact.additional_emails?.join(', ') }})
+                                form.company_branch_id)?.contacts" :key="contact" :label="contact.id">
+                                {{ contact.charge }}: {{ contact.name }} ({{ contact.email }}, {{
+                                    contact.additional_emails?.join(', ') }})
                             </el-radio-button>
                         </el-radio-group>
+                        <p v-if="!form.contact_id" class="text-xs text-primary ml-2">No olvides seleccionar el contacto.</p>
                         <InputError :message="form.errors.contact_id" />
                     </div>
                     <el-divider content-position="left">Logistica</el-divider>
@@ -87,13 +89,17 @@
                         </div>
                         <div>
                             <IconInput v-model="form.freight_cost" inputPlaceholder="Costo logística" inputType="text">
-                                <i class="fa-solid fa-file-invoice-dollar"></i>
+                                <el-tooltip content="Costo logística" placement="top">
+                                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                                </el-tooltip>
                             </IconInput>
                             <InputError :message="form.errors.freight_cost" />
                         </div>
                         <div>
                             <IconInput v-model="form.tracking_guide" inputPlaceholder="Guía" inputType="text">
-                                <i class="fa-solid fa-magnifying-glass-location"></i>
+                                <el-tooltip content="Guía" placement="top">
+                                    <i class="fa-solid fa-magnifying-glass-location"></i>
+                                </el-tooltip>
                             </IconInput>
                             <InputError :message="form.errors.tracking_guide" />
                         </div>
@@ -120,29 +126,27 @@
                                     class="fa-solid fa-arrow-right-to-bracket font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
                             </el-tooltip>
                             <el-select v-model="form.order_via" placeholder="Medio de petición *">
-                                <el-option v-for="(item, index) in orderVias" :key="item" :label="item"
-                                    :value="item" />
+                                <el-option v-for="(item, index) in orderVias" :key="item" :label="item" :value="item" />
                             </el-select>
                             <InputError :message="form.errors.order_via" />
                         </div>
                         <div>
                             <IconInput v-model="form.invoice" inputPlaceholder="Factura">
-                                <i class="fa-solid fa-money-check-dollar"></i>
+                                <el-tooltip content="Factura" placement="top">
+                                    <i class="fa-solid fa-money-check-dollar"></i>
+                                </el-tooltip>
                             </IconInput>
                             <InputError :message="form.errors.invoice" />
                         </div>
                         <div class="md:col-span-3">
-                            <IconInput v-model="form.oce_name" inputPlaceholder="Nombre/folio OCE">
-                                <i class="fa-solid fa-file-invoice"></i>
+                            <IconInput v-model="form.oce_name" inputPlaceholder="Nombre / folio OCE">
+                                <el-tooltip content="Nombre / folio OCE" placement="top">
+                                    <i class="fa-solid fa-file-invoice"></i>
+                                </el-tooltip>
                             </IconInput>
                             <InputError :message="form.errors.oce_name" />
                         </div>
                         <div class="col-span-full">
-                            <div class="mb-2">
-                                <a class="text-primary cursor-pointer hover:underline text-sm" target="_blank"
-                                    v-for="(file, index) in media" :key="index" :href="file.original_url">{{ file.file_name
-                                    }}</a>
-                            </div>
                             <div class="flex items-center">
                                 <span
                                     class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
@@ -161,25 +165,31 @@
                             <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">SVG, PNG, JPG o
                                 GIF (MAX. 4 MB).</p>
                         </div>
-                        <div class="ml-4 col-span-2">
+                        <div class="ml-4 col-span-full">
                             <label class="text-sm ml-2 my-1 flex items-center">Fecha de entrega esperada
-                                <el-tooltip content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega" placement="right">
-                                <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
-                                <i class="fa-solid fa-info text-primary text-[7px]"></i>
-                                </div>
-                            </el-tooltip>
+                                <el-tooltip
+                                    content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega"
+                                    placement="right">
+                                    <div
+                                        class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
+                                        <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                    </div>
+                                </el-tooltip>
                             </label>
-                            <el-date-picker v-model="form.promise_date" type="date" placeholder="Fecha de entrega esperada" format="YYYY/MM/DD"
-                                value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
+                            <el-date-picker v-model="form.promise_date" type="date" placeholder="Fecha de entrega esperada"
+                                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
                             <InputError :message="form.errors.promise_date" />
                         </div>
                     </div>
                     <div class="flex">
-                        <span
-                            class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                            ...
-                        </span>
-                        <textarea v-model="form.notes" class="textarea" autocomplete="off" placeholder="Notas"></textarea>
+                        <el-tooltip content="Notas de la órden" placement="top">
+                            <span
+                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                ...
+                            </span>
+                        </el-tooltip>
+                        <textarea v-model="form.notes" class="textarea" autocomplete="off"
+                            placeholder="Notas de la órden"></textarea>
                         <InputError :message="form.errors.notes" />
                     </div>
                     <!-- products -->
@@ -192,7 +202,7 @@
                                 <p class="text-sm">
                                     <span class="text-primary">{{ index + 1 }}.</span>
                                     {{ company_branches.find(cb => cb.id ==
-                                        form.company_branch_id)?.company.catalog_products.find(prd => prd.pivot.id ==
+                                        form.company_branch_id)?.catalog_products?.find(prd => prd.pivot.id ===
                                             item.catalog_product_company_id)?.name
                                     }}
                                     (x{{ item.quantity }} unidades)
@@ -219,36 +229,95 @@
                             <el-tooltip content="Producto: Seleccione entre los productos registrados para este cliente"
                                 placement="top">
                                 <span
-                                    class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC] border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
                                     <i class="fa-solid fa-magnifying-glass"></i>
                                 </span>
                             </el-tooltip>
-                            <el-select v-model="product.catalog_product_company_id"
-                                no-data-text="No hay productos registrados a este cliente" clearable
+                            <el-select @change="fetchCatalogProductData" v-model="product.catalog_product_company_id"
+                                class="w-full" no-data-text="No hay productos registrados a este cliente"
                                 placeholder="Selecciona un producto *">
                                 <el-option
-                                    v-for="item in company_branches.find(cb => cb.id == form.company_branch_id)?.company.catalog_products"
-                                    :key="item.id" :label="item.name" :value="item.pivot.id" />
+                                    v-for="item in company_branches.find(cb => cb.id == form.company_branch_id)?.catalog_products"
+                                    :key="item.pivot.id" :label="item.name" :value="item.pivot.id" />
                             </el-select>
                         </div>
-                        <div>
-                            <IconInput v-model="product.quantity" inputPlaceholder="Cantidad *" inputType="number"
-                                inputStep="0.01">
-                                #
-                            </IconInput>
-                            <!-- <InputError :message="form.errors.fiscal_address" /> -->
+                        <div v-if="loading" class="rounded-md bg-[#CCCCCC] text-xs text-gray-500 text-center p-4">
+                            cargando imagen...
+                        </div>
+                        <figure v-else-if="selectedCatalogProduct" class="rounded-md h-24 border">
+                            <img :src="selectedCatalogProduct.media[0]?.original_url"
+                                class="rounded-md h-24 object-contain">
+                            <div
+                                class="w-full text-[#656262] border border-[#9A9A9A] px-1 py-px rounded-[5px] text-[10px] mt-1">
+                                Stock mínimo: <span class="text-black">{{
+                                    selectedCatalogProduct.min_quantity.toLocaleString('en-US', {
+                                        minimumFractionDigits: 2
+                                    }) }} unidades</span>
+                            </div>
+                        </figure>
+                        <p v-if="selectedCatalogProduct" class="col-span-full text-xs flex items-center space-x-2 pt-5">
+                            Stock disponible en almacén de producto terminado (no materia prima):
+                            <b class="ml-1">{{ availableStock ? availableStock.quantity.toLocaleString('en-US', {
+                                minimumFractionDigits: 2
+                            }) : 0 }} unidades.</b>
+                            <el-tooltip placement="top">
+                                <template #content>
+                                    Se descontarán de estas existencias para despachar la orden. <br>
+                                    Se refiere a las piezas ya procesadas para tener el producto final, <br>
+                                    no se refiere a la materia prima.
+                                </template>
+                                <div class="rounded-full border border-primary size-3 flex items-center justify-center">
+                                    <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                </div>
+                            </el-tooltip>
+                        </p>
+                        <div class="col-span-full">
+                            <!-- <IconInput @change="validateQuantity()" v-model="product.quantity" inputPlaceholder="Cantidad *"
+                                inputType="number" inputStep="0.01">
+                                <el-tooltip content="Cantidad" placement="top">
+                                    #
+                                </el-tooltip>
+                            </IconInput> -->
+                            <div class="flex items-center space-x-6 ml-5">
+                                <div>
+                                    <label class="block text-xs">Cantidad *</label>
+                                    <el-input-number @change="validateQuantity()" v-model="product.quantity" :min="0.01" />
+                                </div>
+                                <div class="flex items-center space-x-2 mt-3">
+                                    <label class="flex items-center">
+                                        <Checkbox v-model:checked="product.is_new_design" class="bg-transparent" />
+                                        <span class="ml-2 text-xs">Diseño nuevo</span>
+                                    </label>
+                                    <el-tooltip placement="top">
+                                        <template #content>
+                                            <p>
+                                                Selecciona esta opción cuando el diseño <br>
+                                                del producto sea nuevo o distinto de <br>
+                                                los existentes.
+                                            </p>
+                                        </template>
+                                        <div
+                                            class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                                            <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                        </div>
+                                    </el-tooltip>
+                                </div>
+                            </div>
+                            <p v-if="alertMaxQuantity" class="text-red-600 text-xs"> Sólo hay material para producir {{
+                                alertMaxQuantity }} unidades. No olvides reportar la adquisición de más mercancía </p>
                         </div>
                         <div class="flex col-span-full">
-                            <span
-                                class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                                ...
-                            </span>
+                            <el-tooltip content="Notas de producto" placement="top">
+                                <span
+                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+                                    ...
+                                </span>
+                            </el-tooltip>
                             <textarea v-model="product.notes" class="textarea" autocomplete="off"
-                                placeholder="Notas"></textarea>
-                            <!-- <InputError :message="form.errors.notes" /> -->
+                                placeholder="Notas de producto"></textarea>
                         </div>
-                        <div class="col-span-full" @click="addProduct">
-                            <SecondaryButton
+                        <div class="col-span-full">
+                            <SecondaryButton @click="addProduct"
                                 :disabled="form.processing || !product.catalog_product_company_id || !product.quantity">
                                 {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
                             </SecondaryButton>
@@ -280,9 +349,9 @@
                     </div>
                 </template>
                 <template #footer>
+                    <CancelButton @click="showImportantNotesModal = false">Cancelar</CancelButton>
                     <PrimaryButton @click="storeImportantNotes()" :disabled="!importantNotesToStore">Guardar notas
                     </PrimaryButton>
-                    <CancelButton @click="showImportantNotesModal = false">Cancelar</CancelButton>
                 </template>
             </DialogModal>
         </AppLayout>
@@ -320,16 +389,23 @@ export default {
 
         return {
             form,
+            loading: false,
             importantNotes: null,
             showImportantNotesModal: false,
             importantNotesToStore: null,
             isEditImportantNotes: false,
+            showCreateProjectModal: false,
+            availableStock: null,
             product: {
-                id: null,
                 catalog_product_company_id: null,
                 quantity: null,
                 notes: null,
+                is_new_design: false,
             },
+            editIndex: null,
+            alertMaxQuantity: 0,
+            selectedCatalogProduct: null,
+            commitedUnits: null,
             shippingCompanies: [
                 'PAQUETEXPRESS',
                 'LOCAL',
@@ -344,7 +420,6 @@ export default {
                 'Resurtido programado',
                 'Otro',
             ],
-            editIndex: null,
         };
     },
     components: {
@@ -366,6 +441,47 @@ export default {
         media: Array,
     },
     methods: {
+        async fetchCatalogProductData() {
+            try {
+                this.loading = true;
+                const catalogProductId =
+                    this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.catalog_products?.find(cp => cp.pivot.id == this.product.catalog_product_company_id)?.id;
+                const response = await axios.get(route('catalog-products.get-data', catalogProductId));
+
+                if (response.status === 200) {
+                    this.commitedUnits = response.data.commited_units;
+                    this.selectedCatalogProduct = response.data.item;
+                    this.availableStock = response.data.stock;
+                    this.loading = false;
+                }
+            } catch (error) {
+                console.log(error);
+                this.$notify({
+                    title: 'Problemas con el servidor',
+                    message: 'No se pudo obtener la imagen del producto seleccionado debido a inconvenientes con el servidor. Inteéntalo más tarde',
+                    type: 'error'
+                });
+            }
+        },
+        validateQuantity() {
+            const catalogProducts = this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.catalog_products;
+            const components = catalogProducts.find(item => this.product.catalog_product_company_id == item.pivot.id)?.raw_materials;
+
+            let maxQuantity = null;
+            components.forEach((element, index) => {
+                const currentMax = (element.storages[0].quantity - this.commitedUnits[index]) / element.pivot.quantity;
+                if (maxQuantity === null || maxQuantity > currentMax) {
+                    maxQuantity = currentMax;
+                }
+
+            });
+
+            if (maxQuantity !== null && this.product.quantity > maxQuantity) {
+                this.alertMaxQuantity = maxQuantity;
+            } else {
+                this.alertMaxQuantity = null;
+            }
+        },
         update() {
             if (this.form.media !== null) {
                 this.form.post(route("sales.update-with-media", this.sale), {
@@ -459,6 +575,7 @@ export default {
             this.product.catalog_product_company_id = null;
             this.product.quantity = null;
             this.product.notes = null;
+            this.product.is_new_design = false;
         },
         disabledDate(time) {
             const today = new Date();
@@ -473,6 +590,7 @@ export default {
                 catalog_product_company_id: element.catalog_product_company_id,
                 quantity: element.quantity,
                 notes: element.notes,
+                is_new_design: Boolean(element.is_new_design),
             }
 
             this.form.products.push(product);

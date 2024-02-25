@@ -26,6 +26,7 @@ class Sale extends Model implements HasMedia
         'invoice',
         'notes',
         'is_high_priority',
+        'is_new_design',
         'authorized_user_name',
         'authorized_at',
         'recieved_at',
