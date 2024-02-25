@@ -23,6 +23,7 @@ return new class extends Migration
             $table->timestamp('authorized_at')->nullable();
             $table->timestamp('responded_at')->nullable();
             $table->boolean('design_accepted')->nullable();
+            $table->string('rejected_razon')->nullable();
             $table->foreignId('seller_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('company_branch_id')->constrained()->cascadeOnDelete();
             $table->foreignId('contact_id')->constrained()->cascadeOnDelete();

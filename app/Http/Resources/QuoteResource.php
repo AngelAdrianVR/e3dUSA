@@ -25,13 +25,13 @@ class QuoteResource extends JsonResource
                 'icon' => '<i class="fa-regular fa-clock"></i>',
             ];
 
-            if ($this->quote_acepted === true) {
+            if ($this->quote_acepted === 1) {
                 $status = [
                     'label' => 'Autorizado',
                     'color' => 'text-green-500',
                     'icon' => '<i class="fa-solid fa-check"></i>',
                 ];
-            } else if ($this->quote_acepted === false) {
+            } else if ($this->quote_acepted === 0) {
                 $status = [
                     'label' => 'Rechazado',
                     'color' => 'text-red-500',
