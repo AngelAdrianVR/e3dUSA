@@ -76,7 +76,7 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Eliminar proveedores', 'category' => 'Compras']);
 
         Permission::create(['name' => 'Ver ordenes de compra', 'category' => 'Compras']);
-        Permission::create(['name' => 'Cear ordenes de compra', 'category' => 'Compras']);
+        Permission::create(['name' => 'Crear ordenes de compra', 'category' => 'Compras']);
         Permission::create(['name' => 'Editar ordenes de compra', 'category' => 'Compras']);
         Permission::create(['name' => 'Eliminar ordenes de compra', 'category' => 'Compras']);
         Permission::create(['name' => 'Autorizar ordenes de compra', 'category' => 'Compras']);

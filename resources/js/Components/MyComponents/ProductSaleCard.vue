@@ -169,14 +169,23 @@
     <div class="flex items-center justify-between mt-2">
       <div
         v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id) && getOrderStatus() != 'Terminado'">
-        <el-tooltip v-if="!catalog_product_company_sale.productions.find(item => item.operator_id ==
+        <!-- <el-tooltip v-if="!catalog_product_company_sale.productions.find(item => item.operator_id ==
           $page.props.auth.user.id)?.has_low_stock"
           content="Con este botón se indica si no es posible continuar con la producción por materia prima insuficiente"
           placement="top">
           <button @click="toggleStockStatus" class="bg-primary rounded-full px-1 py-px text-white text-[10px]">
             No hay materia prima suficiente
           </button>
-        </el-tooltip>
+        </el-tooltip> -->
+        <el-popconfirm v-if="!catalog_product_company_sale.productions.find(item => item.operator_id ==
+          $page.props.auth.user.id)?.has_low_stock" confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="Se notificará a compras. ¿Continuar?"
+          @confirm="toggleStockStatus">
+          <template #reference>
+            <button class="bg-primary rounded-full px-1 py-px text-white text-[10px]">
+              No hay materia prima suficiente
+            </button>
+          </template>
+        </el-popconfirm>
         <el-tooltip v-else
           content="Con este botón se indica que ya hay suficiente materia prima para continuar con la producción"
           placement="top">
@@ -391,7 +400,9 @@
           <el-input-number v-model="package.quantity" :min="1" />
         </div>
         <div class="col-span-full">
-          <SecondaryButton @click="addPackage()" :disabled="!package.large || !package.width || !package.height || !package.quantity || !package.weight">Agregar paquete a lista</SecondaryButton>
+          <SecondaryButton @click="addPackage()"
+            :disabled="!package.large || !package.width || !package.height || !package.quantity || !package.weight">
+            Agregar paquete a lista</SecondaryButton>
         </div>
         <p class="col-span-full border-t border-gray-400 pt-2">Lista de paquetes o empaques</p>
         <ul class="col-span-full">
@@ -404,12 +415,13 @@
     </template>
     <template #footer>
       <CancelButton @click="showScrapModal = false">Cerrar</CancelButton>
-        <PrimaryButton v-if="isProduction == '1'" @click="changeTaskStatus" :disabled="!goodUnits || !scrap || (scrap > 0 && !reason)">Finalizar
-          producción
-        </PrimaryButton>
-        <PrimaryButton v-else @click="changeTaskStatus" :disabled="!packages.length">Finalizar
-          producción
-        </PrimaryButton>
+      <PrimaryButton v-if="isProduction == '1'" @click="changeTaskStatus"
+        :disabled="!goodUnits || !scrap || (scrap > 0 && !reason)">Finalizar
+        producción
+      </PrimaryButton>
+      <PrimaryButton v-else @click="changeTaskStatus" :disabled="!packages.length">Finalizar
+        producción
+      </PrimaryButton>
     </template>
   </DialogModal>
 
