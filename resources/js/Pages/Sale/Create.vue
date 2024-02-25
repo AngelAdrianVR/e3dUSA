@@ -65,7 +65,8 @@
                         <el-radio-group v-model="form.contact_id" size="small">
                             <el-radio-button v-for="contact in company_branches.find(cb => cb.id ==
                                 form.company_branch_id)?.contacts" :key="contact" :label="contact.id">
-                                {{contact.charge}}: {{ contact.name }} ({{ contact.email }}, {{ contact.additional_emails?.join(', ') }})
+                                {{ contact.charge }}: {{ contact.name }} ({{ contact.email }}, {{
+                                    contact.additional_emails?.join(', ') }})
                             </el-radio-button>
                         </el-radio-group>
                         <p v-if="!form.contact_id" class="text-xs text-primary ml-2">No olvides seleccionar el contacto.</p>
@@ -75,12 +76,15 @@
 
 
                     <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
-                        <div>
-                            <IconInput v-model="form.shipping_company" inputPlaceholder="Paquetería" inputType="text">
-                                <el-tooltip content="Paquetería" placement="top">
-                                    <i class="fa-solid fa-truck-fast"></i>
-                                </el-tooltip>
-                            </IconInput>
+                        <div class="flex items-center">
+                            <el-tooltip content="Paquetería" placement="top">
+                                <i
+                                    class="fa-solid fa-truck-fast font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
+                            </el-tooltip>
+                            <el-select v-model="form.shipping_company" placeholder="Paquetería">
+                                <el-option v-for="(item, index) in shippingCompanies" :key="item" :label="item"
+                                    :value="item" />
+                            </el-select>
                             <InputError :message="form.errors.shipping_company" />
                         </div>
                         <div>
@@ -116,12 +120,15 @@
 
                     <el-divider content-position="left">Datos de la órden</el-divider>
                     <div class="grid gap-x-6 gap-y-2 mb-6 md:grid-cols-2">
-                        <div>
-                            <IconInput v-model="form.order_via" inputPlaceholder="Medio de petición">
-                                <el-tooltip content="Medio de petición" placement="top">
-                                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                                </el-tooltip>
-                            </IconInput>
+                        <div class="flex items-center">
+                            <el-tooltip content="Medio de petición *" placement="top">
+                                <i
+                                    class="fa-solid fa-arrow-right-to-bracket font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
+                            </el-tooltip>
+                            <el-select v-model="form.order_via" placeholder="Medio de petición *">
+                                <el-option v-for="(item, index) in orderVias" :key="item" :label="item"
+                                    :value="item" />
+                            </el-select>
                             <InputError :message="form.errors.order_via" />
                         </div>
                         <div>
@@ -239,7 +246,8 @@
                             cargando imagen...
                         </div>
                         <figure v-else-if="selectedCatalogProduct" class="rounded-md h-24 border">
-                            <img :src="selectedCatalogProduct.media[0]?.original_url" class="rounded-md h-24 object-contain">
+                            <img :src="selectedCatalogProduct.media[0]?.original_url"
+                                class="rounded-md h-24 object-contain">
                         </figure>
                         <p v-if="selectedCatalogProduct" class="col-span-full text-xs flex items-center space-x-2">
                             Stock disponible en almacén de producto terminado (no materia prima):
@@ -248,7 +256,7 @@
                                 <template #content>
                                     Se descontarán de estas existencias para despachar la orden. <br>
                                     Se refiere a las piezas ya procesadas para tener el producto final, <br>
-                                    no se refiere a la materia prima. 
+                                    no se refiere a la materia prima.
                                 </template>
                                 <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
                                     <i class="fa-solid fa-info text-primary text-[7px]"></i>
@@ -384,6 +392,20 @@ export default {
             alertMaxQuantity: 0,
             selectedCatalogProduct: null,
             commitedUnits: null,
+            shippingCompanies: [
+                'PAQUETEXPRESS',
+                'LOCAL',
+                'DHL',
+                'FEDEX',
+                'TRES GUERRAS',
+            ],
+            orderVias: [
+                'Correo electrónico',
+                'WhatsApp',
+                'Llamada telefónica',
+                'Resurtido programado',
+                'Otro',
+            ],
         };
     },
     components: {
@@ -494,7 +516,7 @@ export default {
                 if (maxQuantity === null || maxQuantity > currentMax) {
                     maxQuantity = currentMax;
                 }
-                
+
             });
 
             if (maxQuantity !== null && this.product.quantity > maxQuantity) {

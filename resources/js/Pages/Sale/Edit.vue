@@ -74,10 +74,15 @@
 
 
                     <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
-                        <div>
-                            <IconInput v-model="form.shipping_company" inputPlaceholder="Paquetería" inputType="text">
-                                <i class="fa-solid fa-truck-fast"></i>
-                            </IconInput>
+                        <div class="flex items-center">
+                            <el-tooltip content="Paquetería" placement="top">
+                                <i
+                                    class="fa-solid fa-truck-fast font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
+                            </el-tooltip>
+                            <el-select v-model="form.shipping_company" placeholder="Paquetería">
+                                <el-option v-for="(item, index) in shippingCompanies" :key="item" :label="item"
+                                    :value="item" />
+                            </el-select>
                             <InputError :message="form.errors.shipping_company" />
                         </div>
                         <div>
@@ -109,10 +114,15 @@
 
                     <el-divider content-position="left">Datos de la órden</el-divider>
                     <div class="grid gap-x-6 gap-y-2 mb-6 md:grid-cols-2">
-                        <div>
-                            <IconInput v-model="form.order_via" inputPlaceholder="Medio de petición">
-                                <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                            </IconInput>
+                        <div class="flex items-center">
+                            <el-tooltip content="Medio de petición *" placement="top">
+                                <i
+                                    class="fa-solid fa-arrow-right-to-bracket font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
+                            </el-tooltip>
+                            <el-select v-model="form.order_via" placeholder="Medio de petición *">
+                                <el-option v-for="(item, index) in orderVias" :key="item" :label="item"
+                                    :value="item" />
+                            </el-select>
                             <InputError :message="form.errors.order_via" />
                         </div>
                         <div>
@@ -320,6 +330,20 @@ export default {
                 quantity: null,
                 notes: null,
             },
+            shippingCompanies: [
+                'PAQUETEXPRESS',
+                'LOCAL',
+                'DHL',
+                'FEDEX',
+                'TRES GUERRAS',
+            ],
+            orderVias: [
+                'Correo electrónico',
+                'WhatsApp',
+                'Llamada telefónica',
+                'Resurtido programado',
+                'Otro',
+            ],
             editIndex: null,
         };
     },
