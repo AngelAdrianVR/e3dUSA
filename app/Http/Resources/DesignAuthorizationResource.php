@@ -54,6 +54,7 @@ class DesignAuthorizationResource extends JsonResource
             'authorized_at' => $this->authorized_at?->isoFormat('DD MMM YYYY'),
             'responded_at' => $this->responded_at?->isoFormat('DD MMM YYYY'),
             'design_accepted' => $this->design_accepted,
+            'rejected_razon' => $this->rejected_razon,
             'media' => $this->getMedia('image')->all(),
             'status' => $status,
             'seller' => $this->whenLoaded('seller'),

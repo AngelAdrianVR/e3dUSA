@@ -23,6 +23,7 @@ class DesignAuthorization extends Model implements HasMedia
         'authorized_at',
         'responded_at',
         'design_accepted',
+        'rejected_razon',
         'seller_id',
         'company_branch_id',
         'contact_id',
