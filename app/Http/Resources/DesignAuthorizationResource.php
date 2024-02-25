@@ -58,6 +58,7 @@ class DesignAuthorizationResource extends JsonResource
             'status' => $status,
             'seller' => $this->whenLoaded('seller'),
             'company_branch' => $this->whenLoaded('companyBranch'),
+            'company_branch_id' => $this->company_branch_id,
             'contact_id' => $this->contact_id,
             'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'updated_at' => $this->updated_at?->isoFormat('DD MMM, YYYY h:mm A'),

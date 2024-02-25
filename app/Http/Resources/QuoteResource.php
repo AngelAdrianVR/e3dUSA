@@ -18,26 +18,34 @@ class QuoteResource extends JsonResource
             return $item->pivot->quantity * $item->pivot->price;
         });
 
-        $status = [
-            'label' => 'Pendiente',
-            'color' => 'text-amber-500',
-            'icon' => '<i class="fa-regular fa-clock"></i>',
-        ];
-
-        if ($this->quote_acepted === true) {
+        if ($this->authorized_at) {
             $status = [
-                'label' => 'Autorizado',
-                'color' => 'text-green-500',
-                'icon' => '<i class="fa-solid fa-check"></i>',
+                'label' => 'Esperando respuesta de cliente',
+                'color' => 'text-amber-500',
+                'icon' => '<i class="fa-regular fa-clock"></i>',
             ];
-        } else if ($this->quote_acepted === false) {
-            $status = [
-                'label' => 'Rechazado',
-                'color' => 'text-red-500',
-                'icon' => '<i class="fa-solid fa-xmark"></i>',
-            ];
-        }
 
+            if ($this->quote_acepted === true) {
+                $status = [
+                    'label' => 'Autorizado',
+                    'color' => 'text-green-500',
+                    'icon' => '<i class="fa-solid fa-check"></i>',
+                ];
+            } else if ($this->quote_acepted === false) {
+                $status = [
+                    'label' => 'Rechazado',
+                    'color' => 'text-red-500',
+                    'icon' => '<i class="fa-solid fa-xmark"></i>',
+                ];
+            }
+        } else {
+            $status = [
+                'label' => 'Esperando autorización de cotización',
+                'color' => 'text-amber-500',
+                'icon' => '<i class="fa-regular fa-clock"></i>',
+            ];
+        } 
+            
         return [
             'id' => $this->id,
             'folio' => 'COT-' . str_pad($this->id, 4, "0", STR_PAD_LEFT),

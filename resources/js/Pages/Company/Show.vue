@@ -153,49 +153,7 @@
       <!-- -------------Cotizaciones starts 5 ------------- -->
       <div v-if="tabs == 5" class="p-7 w-full mx-auto my-4">
         <div v-if="hasQuotes()" class="overflow-x-auto">
-          <table class="w-full mx-auto">
-            <thead>
-              <tr class="text-left">
-                <th class="font-bold pb-5">
-                  Folio <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
-                </th>
-                <th class="font-bold pb-5">
-                  Creado por <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
-                </th>
-                <th class="font-bold pb-5">
-                  Receptor <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
-                </th>
-                <th class="font-bold pb-5">
-                  Autorizado por <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
-                </th>
-                <th class="font-bold pb-5">
-                  Creado el <i class="fa-solid fa-arrow-down-long ml-3 px-14 lg:px-2"></i>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <template v-for="branch in company.data.company_branches">
-                <tr v-for="quote in branch.quotes" :key="quote.id" class="mb-4 cursor-pointer hover:bg-[#dfdbdba8]"
-                  @click="$inertia.get(route('quotes.show', quote.id))">
-                  <td class="text-left text-secondary py-2 px-2 rounded-l-full">
-                    {{ quote.folio }}
-                  </td>
-                  <td class="text-left py-2 px-2">
-                    {{ quote.user ? quote.user.name : '' }}
-                  </td>
-                  <td class="text-left py-2 px-2">
-                    <span class="py-1 px-4 rounded-full">{{ quote.receiver }}</span>
-                  </td>
-                  <td class="text-left py-2 px-2">
-                    <span class="py-1 px-2">{{ quote.authorized_user_name ?? '--' }}</span>
-                  </td>
-                  <td class="text-left py-2 px-2 rounded-r-full">
-                    {{ quote.created_at }}
-                  </td>
-                </tr>
-              </template>
-            </tbody>
-          </table>
+          <CompanyQuoteTable :quotes="allQuotes" />
         </div>
         <div class="flex flex-col text-center justify-center" v-else>
           <p class="text-sm text-center">No hay cotizaciones para mostrar</p>
@@ -277,6 +235,7 @@ import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import CompanyBranchCard from "@/Components/MyComponents/CompanyBranchCard.vue";
 import CompanyProductCard from "@/Components/MyComponents/CompanyProductCard.vue";
 import DesignAuthorizationTable from "@/Components/MyComponents/DesignAuthorizationTable.vue";
+import CompanyQuoteTable from "@/Components/MyComponents/CompanyQuoteTable.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
@@ -318,6 +277,7 @@ export default {
     CompanyOportunityTable,
     CompanyClientMonitorTable,
     DesignAuthorizationTable,
+    CompanyQuoteTable,
     ProjectTable,
     Link,
   },
@@ -334,13 +294,6 @@ export default {
             message: response.data.message,
             type: "success",
           });
-          // const index = this.companies.data.findIndex(
-          //   (item) => item.id === this.company.data.id
-          // );
-          // if (index !== -1) {
-          //   this.company.data.splice(index, 1);
-          //   this.selectedCompany = "";
-          // }
         } else {
           this.$notify({
             title: "Algo salió mal",
@@ -367,7 +320,6 @@ export default {
 
       return tieneCotizaciones; // Devolverá true si hay cotizaciones en al menos un company_branch
     },
-
   },
   computed: {
     allSales() {
@@ -393,6 +345,18 @@ export default {
         });
       }
       return designAuthorizations;
+    },
+    allQuotes() {
+      // Recopila todas las ventas de todos los company_branches
+      const quotes = [];
+      if (this.company.data && this.company.data.company_branches) {
+        this.company.data.company_branches.forEach(branch => {
+          if (branch.quotes) {
+            quotes.push(...branch.quotes);
+          }
+        });
+      }
+      return quotes;
     },
   },
   mounted() {

@@ -38,9 +38,13 @@
             </td>
             <td class="text-center py-2 px-2 rounded-r-full">
               <div class="flex items-center space-x-2">
-                <i v-if="!design.responded_at" @click.stop="" class="fa-solid fa-pencil text-xs py-2 px-[10px] rounded-full hover:bg-gray-200"></i>
-                <i v-if="!design.responded_at" @click.stop="" class="fa-regular fa-trash-can text-xs py-2 px-[10px] rounded-full hover:bg-gray-200"></i>
-                <i @click.stop="authorizeDesign(design.id)" title="Autorizar formato" v-if="!design.authorized_at" class="fa-solid fa-check text-xs py-2 px-[10px] rounded-full hover:bg-gray-200"></i>
+                <i v-if="!design.responded_at && !design.authorized_at" @click.stop="$inertia.get(route('design-authorizations.edit', design.id))" class="fa-solid fa-pencil text-xs py-2 px-[10px] rounded-full hover:bg-gray-200"></i>
+                <el-popconfirm v-if="!design.responded_at" confirm-button-text="Si" cancel-button-text="No" icon-color="#C30303" title="¿Continuar?" @confirm="deleteItem(design.id)">
+                        <template #reference>
+                          <i @click.stop="" class="fa-regular fa-trash-can text-xs py-2 px-[10px] rounded-full hover:bg-gray-200"></i>
+                        </template>
+                    </el-popconfirm>
+                <i @click.stop="authorizeDesign(design.id)" title="Autorizar formato" v-if="!design.authorized_at && $page.props.auth.user.permissions.includes('Autorizar ordenes de diseño')" class="fa-solid fa-check text-xs py-2 px-[10px] rounded-full hover:bg-gray-200"></i>
               </div>
             </td>
           </tr>
@@ -62,6 +66,7 @@ components:{
 props:{
 designAuthorizations: Array,
 },
+emits:['design-deleted'],
 methods:{ 
   async authorizeDesign(designId) {
         try {
@@ -77,6 +82,27 @@ methods:{
             }
         } catch (error) {
             console.log(error);
+        }
+    },
+    async deleteItem(designId) {
+        try {
+            const response = await axios.delete(route('design-authorizations.destroy', designId));
+            if (response.status === 200) {
+                // this.$emit('design-deleted', designId);              
+                this.$notify({
+                    title: "Éxito",
+                    message: "Se ha eliminado el formato de autorización de diseño",
+                    type: "success",
+                });
+                location.reload();
+            }
+        } catch (error) {
+            console.log(error);
+            this.$notify({
+                title: "Algo salió mal",
+                message: "No se pudo eliminar el formato de autorización de diseño. Inténta más tarde",
+                type: "error",
+            });
         }
     }
 }

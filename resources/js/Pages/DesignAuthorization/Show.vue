@@ -16,7 +16,8 @@
                     <div class="flex items-center space-x-3">
                         <p class="font-bold">Versión</p>
                         <p>{{ design_authorization.data.version }}</p>
-                        <i @click="authorizeDesign" :title="design_authorization.data.authorized_at ? 'Diseño autorizado' : 'Autorizar diseño'" :class="design_authorization.data.authorized_at ? 'text-green-500' : 'hover:text-green-500 cursor-pointer'" class="fa-solid fa-check text-sm pl-4"></i>
+                        <i v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de diseño')" @click="authorizeDesign" :title="design_authorization.data.authorized_at ? 'Diseño autorizado' : 'Autorizar diseño'" :class="design_authorization.data.authorized_at ? 'text-green-500' : 'hover:text-green-500 cursor-pointer'" class="fa-solid fa-check text-sm pl-4"></i>
+                        <i v-if="!design_authorization.data.responded_at && !design_authorization.data.authorized_at" @click.stop="$inertia.get(route('design-authorizations.edit', design_authorization.data.id))" class="fa-solid fa-pencil text-xs py-2 px-[10px] rounded-full hover:bg-gray-200 cursor-pointer"></i>
                     </div>
                 </div>
 
