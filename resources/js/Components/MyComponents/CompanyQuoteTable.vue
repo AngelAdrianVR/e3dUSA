@@ -57,11 +57,11 @@
             <td class="text-center py-2 px-2 rounded-r-full">
               <div class="flex items-center space-x-2">
                 <i v-if="!quote.responded_at && !quote.authorized_at" @click.stop="$inertia.get(route('quote.edit', quote.id))" class="fa-solid fa-pencil text-xs py-2 px-[10px] rounded-full hover:bg-gray-200"></i>
-                <el-popconfirm v-if="!quote.responded_at" confirm-button-text="Si" cancel-button-text="No" icon-color="#C30303" title="¿Continuar?" @confirm="deleteItem(quote.id)">
+                <!-- <el-popconfirm v-if="!quote.responded_at" confirm-button-text="Si" cancel-button-text="No" icon-color="#C30303" title="¿Continuar?" @confirm="deleteItem(quote.id)">
                         <template #reference>
                           <i @click.stop="" class="fa-regular fa-trash-can text-xs py-2 px-[10px] rounded-full hover:bg-gray-200"></i>
                         </template>
-                    </el-popconfirm>
+                    </el-popconfirm> -->
                 <i @click.stop="authorizeQuote(quote.id)" title="Autorizar cotización" v-if="!quote.authorized_at && $page.props.auth.user.permissions.includes('Autorizar cotizaciones')" class="fa-solid fa-check text-xs py-2 px-[10px] rounded-full hover:bg-gray-200"></i>
               </div>
             </td>
