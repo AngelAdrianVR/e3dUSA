@@ -75,6 +75,10 @@
                     <span>{{ sale.data?.productions[0].user?.name }}</span>
                     <span class="text-gray-500 my-2">Solicitada el</span>
                     <span>{{ getDateFormtted(sale.data?.productions[0].created_at) }}</span>
+                    <span v-if="sale.data?.promise_date" class="text-gray-500 my-2">Fecha de entrega</span>
+                    <span v-if="sale.data?.promise_date" class="text-red-600 bg-red-200 px-2 py-1">
+                        {{ sale.data.promise_date }}
+                    </span>
                     <span class="text-gray-500 my-2">Medio de petición</span>
                     <span>{{ sale.data?.order_via }}</span>
                     <span class="text-gray-500 my-2">Factura</span>
