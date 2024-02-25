@@ -15,6 +15,7 @@ use App\Models\CompanyProduct;
 use App\Models\Contact;
 use App\Models\Production;
 use App\Models\RawMaterial;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -23,15 +24,12 @@ class CompanyController extends Controller
 
     public function index()
     {
-        // $companies = CompanyResource::collection(Company::with('companyBranches')->latest()->get());
-
         /// Optimización para rapidez. No carga todos los datos, solo los necesarios para hacer la búsqueda y mostrar la tabla en index
-        $companies = Company::with('companyBranches')->latest()->get();
+        $companies = Company::with(['companyBranches', 'seller'])->latest()->get();
 
         $pre_companies = CompanyResource::collection($companies);
         $companies = $pre_companies->map(function ($company) {
             $companyBranchNames = $company->companyBranches->pluck('name')->toArray();
-
             return [
                 'id' => $company->id,
                 'business_name' => $company->business_name,
@@ -40,10 +38,11 @@ class CompanyController extends Controller
                 'post_code' => $company->post_code,
                 'company_branches_names' => implode(', ', $companyBranchNames),
                 'fiscal_address' => $company->fiscal_address,
+                'seller_name' => User::find($company->seller_id)?->name,
+                'seller_id' => $company->seller_id,
             ];
         });
 
-        // return $companies;
         return inertia('Company/Index', compact('companies'));
     }
 
@@ -52,8 +51,9 @@ class CompanyController extends Controller
     {
         $catalog_products = CatalogProduct::all();
         $raw_materials = RawMaterial::all();
+        $sellers = User::where('employee_properties->department', 'Ventas')->get(['id', 'name', 'profile_photo_path']);
 
-        return inertia('Company/Create', compact('catalog_products', 'raw_materials'));
+        return inertia('Company/Create', compact('catalog_products', 'raw_materials', 'sellers'));
     }
 
 
@@ -65,6 +65,7 @@ class CompanyController extends Controller
             'rfc' => 'required|string|unique:companies,rfc',
             'post_code' => 'required',
             'fiscal_address' => 'required',
+            'seller_id' => 'required|numeric|min:0',
             'company_branches' => 'array|min:1',
             'products' => 'array|min:0',
         ]);
@@ -84,13 +85,14 @@ class CompanyController extends Controller
 
         event(new RecordCreated($company));
 
-        return to_route('companies.index');
+        return to_route('companies.show', $company);
     }
 
 
     public function show($company_id)
     {
-        $company = CompanyResource::make(Company::with('companyBranches.contacts', 'companyBranches.designAuthorizations', 'companyBranches.sales', 'companyBranches.sales.user', 'companyBranches.quotes', 'catalogProducts.media', 'oportunities', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'projects.tasks')->find($company_id));
+        $company = CompanyResource::make(Company::with('user', 'seller', 'companyBranches.contacts', 'companyBranches.designAuthorizations', 'companyBranches.sales', 'companyBranches.sales.user', 'companyBranches.quotes', 'catalogProducts.media', 'oportunities', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'projects.tasks')->find($company_id));
+        // $company = CompanyResource::make(Company::with(['user', 'seller', 'companyBranches.contacts', 'companyBranches.sales', 'companyBranches.sales.user', 'companyBranches.quotes', 'catalogProducts.media', 'oportunities', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'projects.tasks'])->find($company_id));
         $pre_companies = CompanyResource::make(Company::latest()->get());
         $companies = $pre_companies->map(function ($company) {
             return [
@@ -112,8 +114,9 @@ class CompanyController extends Controller
         $company = Company::with('catalogProducts', 'companyBranches.contacts')->find($company->id);
         $catalog_products = CatalogProduct::all();
         $raw_materials = RawMaterial::all();
+        $sellers = User::where('employee_properties->department', 'Ventas')->get(['id', 'name', 'profile_photo_path']);
 
-        return inertia('Company/Edit', compact('company', 'catalog_products', 'raw_materials'));
+        return inertia('Company/Edit', compact('company', 'catalog_products', 'raw_materials', 'sellers'));
     }
 
 
@@ -125,6 +128,7 @@ class CompanyController extends Controller
             'rfc' => ['required', 'string', Rule::unique('companies')->ignore($company->id)],
             'post_code' => 'required',
             'fiscal_address' => 'required',
+            'seller_id' => 'required|numeric|min:0',
             'company_branches' => 'array|min:1',
             'products' => 'array|min:0',
         ]);
@@ -188,7 +192,7 @@ class CompanyController extends Controller
 
         event(new RecordEdited($company));
 
-        return to_route('companies.index');
+        return to_route('companies.show', $company);
     }
 
 

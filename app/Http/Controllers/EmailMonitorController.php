@@ -25,7 +25,6 @@ class EmailMonitorController extends Controller
 
     public function create()
     {
-        // $companies = Company::with('companyBranches.contacts')->get();
         $companies = Company::with(['companyBranches.contacts'])
         ->get(['id', 'business_name'])
         ->map(function ($company) {
@@ -35,6 +34,8 @@ class EmailMonitorController extends Controller
                         'id' => $contact['id'],
                         'name' => $contact['name'],
                         'phone' => $contact['phone'],
+                        'email' => $contact['email'],
+                        'additional_emails' => $contact['additional_emails'],
                     ];
                 });
                 return [

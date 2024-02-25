@@ -65,7 +65,8 @@
                         <el-radio-group v-model="form.contact_id" size="small">
                             <el-radio-button v-for="contact in company_branches.find(cb => cb.id ==
                                 form.company_branch_id)?.contacts" :key="contact" :label="contact.id">
-                                {{ contact.name }} ({{ contact.email }})
+                                {{ contact.charge }}: {{ contact.name }} ({{ contact.email }}, {{
+                                    contact.additional_emails?.join(', ') }})
                             </el-radio-button>
                         </el-radio-group>
                         <p v-if="!form.contact_id" class="text-xs text-primary ml-2">No olvides seleccionar el contacto.</p>
@@ -75,12 +76,15 @@
 
 
                     <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
-                        <div>
-                            <IconInput v-model="form.shipping_company" inputPlaceholder="Paquetería" inputType="text">
-                                <el-tooltip content="Paquetería" placement="top">
-                                    <i class="fa-solid fa-truck-fast"></i>
-                                </el-tooltip>
-                            </IconInput>
+                        <div class="flex items-center">
+                            <el-tooltip content="Paquetería" placement="top">
+                                <i
+                                    class="fa-solid fa-truck-fast font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
+                            </el-tooltip>
+                            <el-select v-model="form.shipping_company" placeholder="Paquetería">
+                                <el-option v-for="(item, index) in shippingCompanies" :key="item" :label="item"
+                                    :value="item" />
+                            </el-select>
                             <InputError :message="form.errors.shipping_company" />
                         </div>
                         <div>
@@ -116,12 +120,14 @@
 
                     <el-divider content-position="left">Datos de la órden</el-divider>
                     <div class="grid gap-x-6 gap-y-2 mb-6 md:grid-cols-2">
-                        <div>
-                            <IconInput v-model="form.order_via" inputPlaceholder="Medio de petición">
-                                <el-tooltip content="Medio de petición" placement="top">
-                                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                                </el-tooltip>
-                            </IconInput>
+                        <div class="flex items-center">
+                            <el-tooltip content="Medio de petición *" placement="top">
+                                <i
+                                    class="fa-solid fa-arrow-right-to-bracket font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
+                            </el-tooltip>
+                            <el-select v-model="form.order_via" placeholder="Medio de petición *">
+                                <el-option v-for="(item, index) in orderVias" :key="item" :label="item" :value="item" />
+                            </el-select>
                             <InputError :message="form.errors.order_via" />
                         </div>
                         <div>
@@ -159,7 +165,7 @@
                             <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">SVG, PNG, JPG o
                                 GIF (MAX. 4 MB).</p>
                         </div>
-                        <div class="ml-4 col-span-2">
+                        <div class="ml-4 col-span-full">
                             <label class="text-sm ml-2 my-1 flex items-center">Fecha de entrega esperada
                                 <el-tooltip
                                     content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega"
@@ -239,32 +245,66 @@
                             cargando imagen...
                         </div>
                         <figure v-else-if="selectedCatalogProduct" class="rounded-md h-24 border">
-                            <img :src="selectedCatalogProduct.media[0]?.original_url" class="rounded-md h-24 object-contain">
+                            <img :src="selectedCatalogProduct.media[0]?.original_url"
+                                class="rounded-md h-24 object-contain">
+                            <div
+                                class="w-full text-[#656262] border border-[#9A9A9A] px-1 py-px rounded-[5px] text-[10px] mt-1">
+                                Stock mínimo: <span class="text-black">{{
+                                    selectedCatalogProduct.min_quantity.toLocaleString('en-US', {
+                                        minimumFractionDigits: 2
+                                    }) }} unidades</span>
+                            </div>
                         </figure>
-                        <p v-if="selectedCatalogProduct" class="col-span-full text-xs flex items-center space-x-2">
+                        <p v-if="selectedCatalogProduct" class="col-span-full text-xs flex items-center space-x-2 pt-5">
                             Stock disponible en almacén de producto terminado (no materia prima):
-                            <b class="ml-1">{{ availableStock ? availableStock.quantity : 0 }} unidades.</b>
+                            <b class="ml-1">{{ availableStock ? availableStock.quantity.toLocaleString('en-US', {
+                                minimumFractionDigits: 2
+                            }) : 0 }} unidades.</b>
                             <el-tooltip placement="top">
                                 <template #content>
                                     Se descontarán de estas existencias para despachar la orden. <br>
                                     Se refiere a las piezas ya procesadas para tener el producto final, <br>
-                                    no se refiere a la materia prima. 
+                                    no se refiere a la materia prima.
                                 </template>
-                                <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                                <div class="rounded-full border border-primary size-3 flex items-center justify-center">
                                     <i class="fa-solid fa-info text-primary text-[7px]"></i>
                                 </div>
                             </el-tooltip>
                         </p>
                         <div class="col-span-full">
-                            <IconInput @change="validateQuantity()" v-model="product.quantity" inputPlaceholder="Cantidad *"
+                            <!-- <IconInput @change="validateQuantity()" v-model="product.quantity" inputPlaceholder="Cantidad *"
                                 inputType="number" inputStep="0.01">
                                 <el-tooltip content="Cantidad" placement="top">
                                     #
                                 </el-tooltip>
-                            </IconInput>
+                            </IconInput> -->
+                            <div class="flex items-center space-x-6 ml-5">
+                                <div>
+                                    <label class="block text-xs">Cantidad *</label>
+                                    <el-input-number @change="validateQuantity()" v-model="product.quantity" :min="0.01" />
+                                </div>
+                                <div class="flex items-center space-x-2 mt-3">
+                                    <label class="flex items-center">
+                                        <Checkbox v-model:checked="product.is_new_design" class="bg-transparent" />
+                                        <span class="ml-2 text-xs">Diseño nuevo</span>
+                                    </label>
+                                    <el-tooltip placement="top">
+                                        <template #content>
+                                            <p>
+                                                Selecciona esta opción cuando el diseño <br>
+                                                del producto sea nuevo o distinto de <br>
+                                                los existentes.
+                                            </p>
+                                        </template>
+                                        <div
+                                            class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                                            <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                        </div>
+                                    </el-tooltip>
+                                </div>
+                            </div>
                             <p v-if="alertMaxQuantity" class="text-red-600 text-xs"> Sólo hay material para producir {{
                                 alertMaxQuantity }} unidades. No olvides reportar la adquisición de más mercancía </p>
-                            <!-- <InputError :message="form.errors.fiscal_address" /> -->
                         </div>
                         <div class="flex col-span-full">
                             <el-tooltip content="Notas de producto" placement="top">
@@ -275,7 +315,6 @@
                             </el-tooltip>
                             <textarea v-model="product.notes" class="textarea" autocomplete="off"
                                 placeholder="Notas de producto"></textarea>
-                            <!-- <InputError :message="form.errors.notes" /> -->
                         </div>
                         <div class="col-span-full">
                             <SecondaryButton @click="addProduct"
@@ -379,11 +418,26 @@ export default {
                 catalog_product_company_id: null,
                 quantity: null,
                 notes: null,
+                is_new_design: false,
             },
             editIndex: null,
             alertMaxQuantity: 0,
             selectedCatalogProduct: null,
             commitedUnits: null,
+            shippingCompanies: [
+                'PAQUETEXPRESS',
+                'LOCAL',
+                'DHL',
+                'FEDEX',
+                'TRES GUERRAS',
+            ],
+            orderVias: [
+                'Correo electrónico',
+                'WhatsApp',
+                'Llamada telefónica',
+                'Resurtido programado',
+                'Otro',
+            ],
         };
     },
     components: {
@@ -494,7 +548,7 @@ export default {
                 if (maxQuantity === null || maxQuantity > currentMax) {
                     maxQuantity = currentMax;
                 }
-                
+
             });
 
             if (maxQuantity !== null && this.product.quantity > maxQuantity) {
@@ -531,6 +585,7 @@ export default {
             this.product.catalog_product_company_id = null;
             this.product.quantity = null;
             this.product.notes = null;
+            this.product.is_new_design = false;
         },
         disabledDate(time) {
             const today = new Date();

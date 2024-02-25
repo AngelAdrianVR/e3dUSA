@@ -68,6 +68,27 @@ class RawMaterialController extends Controller
 
         event(new RecordCreated($raw_material));
 
+        if ($request->is_catalog_product) {
+            // crear producto de catalogo
+            // consecutive
+            $last = CatalogProduct::latest()->first();
+            $next_id = $last ? $last->id + 1 : 1;
+            $consecutive = str_pad($next_id, 4, "0", STR_PAD_LEFT);
+            $partNumbe = "C-{$validated['part_number']}" . $consecutive;
+            $data = [
+                'name' => $request->name,
+                'part_number' => $partNumbe,
+                'measure_unit' => $request->measure_unit,
+                'min_quantity' => $request->min_quantity,
+                'max_quantity' => $request->max_quantity,
+                'description' => $request->description,
+                'cost' => $request->cost,
+            ];
+            $catalog_product = CatalogProduct::create($data);
+            $catalog_product->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+            $catalog_product->rawMaterials()->attach($raw_material->id, $request->all());
+        }
+
         if ($request->type == 'materia-prima')
             return to_route('storages.raw-materials.index');
         else
@@ -123,7 +144,7 @@ class RawMaterialController extends Controller
         ]);
 
         event(new RecordEdited($raw_material));
-// 
+        // 
 
         if ($request->type == 'materia-prima')
             return to_route('storages.raw-materials.index');
@@ -216,14 +237,14 @@ class RawMaterialController extends Controller
 
             // Clonar la imagen si existe
             $rawMaterialImage = $rawMaterial->getFirstMedia();
-            
+
             if ($rawMaterialImage) {
                 // Crear una nueva instancia de Media
                 $clonedImage = $catalogProduct
-                ->addMedia($rawMaterialImage->getPath())
-                ->preservingOriginal()
-                ->toMediaCollection();
-                
+                    ->addMedia($rawMaterialImage->getPath())
+                    ->preservingOriginal()
+                    ->toMediaCollection();
+
                 // Agregar la imagen clonada al producto de catálogo
                 $catalogProduct->media()->save($clonedImage);
             }
@@ -249,18 +270,18 @@ class RawMaterialController extends Controller
 
 
     public function fetchSupplierItems($raw_materials_ids)
-{
-    $raw_materials = [];
-    $ids_array = explode(',', $raw_materials_ids);
+    {
+        $raw_materials = [];
+        $ids_array = explode(',', $raw_materials_ids);
 
-    foreach ($ids_array as $raw_material_id) {
-        $raw_material = RawMaterial::with('media')->find($raw_material_id);
+        foreach ($ids_array as $raw_material_id) {
+            $raw_material = RawMaterial::with('media')->find($raw_material_id);
 
-        if ($raw_material) {
-            $raw_materials[] = $raw_material;
+            if ($raw_material) {
+                $raw_materials[] = $raw_material;
+            }
         }
-    }
 
-    return response()->json(['items' => $raw_materials]);
-}
+        return response()->json(['items' => $raw_materials]);
+    }
 }

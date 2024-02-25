@@ -213,5 +213,6 @@ return [
         'bank_information' => 'información bancaria',
         'sent_at' => 'fecha de enviado',
         'devolution_date' => 'fecha de devolución',
+        'company_branches' => 'sucursales',
     ],
 ];

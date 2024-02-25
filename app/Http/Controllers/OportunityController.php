@@ -7,6 +7,7 @@ use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\OportunityResource;
 use App\Http\Resources\TagResource;
+use App\Models\ChMessage;
 use App\Models\Company;
 use App\Models\Oportunity;
 use App\Models\OportunityTask;
@@ -14,13 +15,14 @@ use App\Models\Sale;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class OportunityController extends Controller
 {
 
     public function index()
-    {  
-         // descomentar y comentar la logica de abajo si hay algun fallo en el index-------------
+    {
+        // descomentar y comentar la logica de abajo si hay algun fallo en el index-------------
         // $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks')->whereHas('users', function ($query) {
         //     $query->where('users.id', auth()->id());
         // })->latest()->get());
@@ -32,8 +34,8 @@ class OportunityController extends Controller
 
         //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
         $pre_oportunities = Oportunity::with('oportunityTasks')->whereHas('users', function ($query) {
-                 $query->where('users.id', auth()->id());
-                })->latest()->get();
+            $query->where('users.id', auth()->id());
+        })->latest()->get();
         $oportunities = $pre_oportunities->map(function ($oportunity) {
 
             if ($oportunity->priority == 'Baja') {
@@ -52,7 +54,7 @@ class OportunityController extends Controller
                     'color' => 'text-red-600'
                 ];
             }
-           
+
             return [
                 'id' => $oportunity->id,
                 'name' => $oportunity->name,
@@ -159,6 +161,26 @@ class OportunityController extends Controller
                 'oportunity_id' => $oportunity->id,
                 'asigned_id' => $request->seller_id,
             ]);
+            //Tarea 2.5. Mandar fotografias
+            OportunityTask::create([
+                'name' => 'Mandar fotografias',
+                'limit_date' => now()->addDays(4),
+                'time' =>  $time,
+                'finished_at' => null,
+                'description' => 'Se ha enviado un mensaje automáticamente a Samuel Espinoza mediante el chat interno. Dar seguimiento con fotografias del/los producto(s) de interés y enviar a cliente.',
+                'priority' => 'Media',
+                'reminder' => null,
+                'user_id' => auth()->id(),
+                'oportunity_id' => $oportunity->id,
+                'asigned_id' => $request->seller_id,
+            ]);
+            $chmessage = new ChMessage();
+            $chmessage->id = Str::uuid();
+            $chmessage->from_id = $request->seller_id;
+            $chmessage->to_id = 4; //para samuel
+            $chmessage->body = 'Hola, este es un mensaje automático creado por el sistema para requerirte fotografías de algunos productos para enviar a un cliente. Envía un mensaje de respuesta para proporcionarte más detalles, gracias!';
+            $chmessage->save();
+           
             //Tarea 3. Enviar cotización
             OportunityTask::create([
                 'name' => 'Enviar cotización',
@@ -355,7 +377,7 @@ class OportunityController extends Controller
     {
         $activities = $oportunity->oportunityTasks;
         // eliminar comentarios y actividades
-        $activities->each(function ($activity){
+        $activities->each(function ($activity) {
             $activity->comments->each(fn ($comment) => $comment->delete());
             $activity->delete();
         });

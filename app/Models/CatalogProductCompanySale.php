@@ -21,6 +21,7 @@ class CatalogProductCompanySale extends Model
         'notes',
         'status',
         'sale_id',
+        'is_new_design',
         'catalog_product_company_id',
         'traveler_data',
     ];

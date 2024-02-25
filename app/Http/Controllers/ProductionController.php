@@ -16,9 +16,11 @@ use App\Models\Setting;
 use App\Models\StockMovementHistory;
 use App\Models\Storage;
 use App\Models\User;
+use App\Notifications\LowStockToDispatchOrderNotification;
 use App\Notifications\MentionInProductionNotification;
 use App\Notifications\ProductionCompletedNotification;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
 
 class ProductionController extends Controller
 {
@@ -429,6 +431,20 @@ class ProductionController extends Controller
         $production->update([
             'has_low_stock' => !$production->has_low_stock,
         ]);
+
+        if ($production->has_low_stock) {
+            // notificar a compras
+            $operator_name = $production->operator->name;
+            $product = $production->catalogProductCompanySale->catalogProductCompany->catalogProduct->name;
+            $folio = 'OP-' . str_pad($production->catalogProductCompanySale->sale->id, 4, "0", STR_PAD_LEFT);
+            $route = route('productions.show', $production->catalogProductCompanySale->sale->id);
+            $users = User::where('is_active', true)->get();
+            $users->each(function ($user) use ($operator_name, $product, $folio, $route){
+                if ($user->can('Crear ordenes de compra')) {
+                    $user->notify(new LowStockToDispatchOrderNotification($operator_name, $product, $folio, $route));
+                }
+            });
+        }
 
         return response()->json(['message' => 'Se ha cambiado el status de materia prima']);
     }

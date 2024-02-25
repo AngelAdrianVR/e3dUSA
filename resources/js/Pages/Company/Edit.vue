@@ -57,11 +57,30 @@
               </IconInput>
               <InputError :message="form.errors.fiscal_address" />
             </div>
+            <div class="flex items-center">
+              <el-tooltip content="Vendedor *" placement="top">
+                <i
+                  class="fa-solid fa-user-tie font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
+              </el-tooltip>
+              <el-select v-model="form.seller_id" placeholder="Vendedor *">
+                <el-option v-for="(item, index) in sellers" :key="item.id" :label="item.name" :value="item.id">
+                  <div v-if="$page.props.jetstream.managesProfilePhotos"
+                    class="flex text-sm rounded-full items-center mt-[3px]">
+                    <img class="size-7 rounded-full object-cover mr-4" :src="item.profile_photo_url" :alt="item.name" />
+                    <p>{{ item.name }}</p>
+                  </div>
+                </el-option>
+              </el-select>
+              <InputError :message="form.errors.seller_id" />
+            </div>
           </div>
           <!-- ---------------- Company ends ----------------- -->
 
           <!-- ---------------- Company Branch starts ----------------- -->
           <el-divider content-position="left">Sucursales</el-divider>
+          <button @click="prefillBranchForm" type="button"
+            class="text-sm text-primary underline w-full text-right pr-7">Llenar sucursal con la información
+            anterior</button>
           <ol v-if="form.company_branches.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1 mb-2">
             <template v-for="(item, index) in form.company_branches" :key="index">
               <li class="flex justify-between items-center">
@@ -92,7 +111,6 @@
                   A
                 </el-tooltip>
               </IconInput>
-              <!-- <InputError :message="branch.errors.name" /> -->
             </div>
             <div class="md:col-span-2">
               <IconInput v-model="branch.address" inputPlaceholder="Dirección *" inputType="text">
@@ -100,7 +118,6 @@
                   <i class="fa-solid fa-map-location-dot"></i>
                 </el-tooltip>
               </IconInput>
-              <!-- <InputError :message="branch.errors.address" /> -->
             </div>
             <div>
               <IconInput v-model="branch.post_code" inputPlaceholder="C.P. *" inputType="text">
@@ -108,7 +125,16 @@
                   <i class="fa-solid fa-envelopes-bulk"></i>
                 </el-tooltip>
               </IconInput>
-              <!-- <InputError :message="branch.errors.post_code" /> -->
+            </div>
+            <div class="flex items-center">
+              <el-tooltip content="Cómo nos conoció el cliente *" placement="top">
+                <i
+                  class="fa-solid fa-user-check font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
+              </el-tooltip>
+              <el-select v-model="branch.meet_way" placeholder="Cómo nos conoció el cliente *">
+                <el-option v-for="item in meetWays" :key="item" :value="item" :label="item" />
+              </el-select>
+              <InputError :message="form.errors.meet_way" />
             </div>
             <div class="flex items-center">
               <el-tooltip content="Método de pago" placement="top">
@@ -117,7 +143,7 @@
                   sat
                 </span>
               </el-tooltip>
-              <el-select v-model="branch.sat_method" clearable filterable placeholder="Método de pago">
+              <el-select v-model="branch.sat_method" placeholder="Método de pago">
                 <el-option v-for="item in sat_method" :key="item.value" :label="item.label" :value="item.value">
                   <span style="float: left">{{ item.label }}</span>
                   <span style="
@@ -127,7 +153,6 @@
                                             ">{{ item.value }}</span>
                 </el-option>
               </el-select>
-              <!-- <InputError :message="branch.errors.sat_method" /> -->
             </div>
             <div class="flex items-center">
               <el-tooltip content="Medio de pago" placement="top">
@@ -136,7 +161,7 @@
                   sat
                 </span>
               </el-tooltip>
-              <el-select v-model="branch.sat_way" clearable filterable placeholder="Medio de pago">
+              <el-select v-model="branch.sat_way" placeholder="Medio de pago">
                 <el-option v-for="item in sat_ways" :key="item.value" :label="item.label" :value="item.value">
                   <span style="float: left">{{ item.label }}</span>
                   <span style="
@@ -155,7 +180,7 @@
                   sat
                 </span>
               </el-tooltip>
-              <el-select v-model="branch.sat_type" clearable filterable placeholder="Uso de factura">
+              <el-select v-model="branch.sat_type" placeholder="Uso de factura">
                 <el-option v-for="item in sat_types" :key="item.value" :label="item.label" :value="item.value">
                   <span style="float: left">{{ item.label }}</span>
                   <span style="
@@ -228,44 +253,78 @@
                 <!-- <InputError :message="form.errors.name_contact" /> -->
               </div>
               <div class="md:grid gap-x-6 gap-y-2 md:mb-6 grid-cols-2">
-                <div>
-                  <IconInput v-model="contact.email" inputPlaceholder="Correo electrónico *" inputType="email">
-                    <el-tooltip content="Correo electrónico" placement="top">
+                <div class="col-span-full flex items-center">
+                  <el-tooltip content="Puesto *" placement="top">
+                    <i
+                      class="fa-solid fa-briefcase font-bold text-[16px] items-center inline-flex text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                    </i>
+                  </el-tooltip>
+                  <el-select v-model="contact.charge" placeholder="Puesto *">
+                    <el-option v-for="item in charges" :key="item" :value="item" :label="item" />
+                  </el-select>
+                </div>
+                <div class="cols-pan-full">
+                  <IconInput v-model="contact.email" inputPlaceholder="Correo electrónico principal *" inputType="email">
+                    <el-tooltip content="Correo electrónico principal *" placement="top">
                       <i class="fa-solid fa-envelope"></i>
                     </el-tooltip>
                   </IconInput>
-                  <!-- <InputError :message="form.errors.email" /> -->
+                  <!-- correos adicionales -->
+                  <div v-for="(additionalEmail, index) in contact.additional_emails" :key="index"
+                    class="flex items-center">
+                    <IconInput v-model="contact.additional_emails[index]" inputPlaceholder="Correo electrónico adicional"
+                      inputType="email">
+                      <el-tooltip content="Correo electrónico adicional" placement="top">
+                        <i class="fa-solid fa-envelope"></i>
+                      </el-tooltip>
+                    </IconInput>
+                    <button @click="removeAdditionalEmail(index)" type="button"
+                      class="text-sm ml-1 hover:text-primary">x</button>
+                  </div>
+                  <button @click="createAdditionalEmail" type="button" class="text-xs text-primary ml-6">+ Agregar otro
+                    correo</button>
                 </div>
                 <div>
-                  <IconInput v-model="contact.phone" inputPlaceholder="Teléfono *" inputType="text">
-                    <el-tooltip content="Teléfono" placement="top">
+                  <IconInput v-model="contact.phone" inputPlaceholder="Teléfono principal *" inputType="text">
+                    <el-tooltip content="Teléfono principal *" placement="top">
                       <i class="fa-solid fa-phone"></i>
                     </el-tooltip>
                   </IconInput>
-                  <!-- <InputError :message="form.errors.phone" /> -->
+                  <!-- telefonos adicionales -->
+                  <div v-for="(additionalPhone, index) in contact.additional_phones" :key="index"
+                    class="flex items-center">
+                    <IconInput v-model="contact.additional_phones[index]" inputPlaceholder="Teléfono adicional"
+                      inputType="text">
+                      <el-tooltip content="Teléfono adicional" placement="top">
+                        <i class="fa-solid fa-phone"></i>
+                      </el-tooltip>
+                    </IconInput>
+                    <button @click="removeAdditionalPhone(index)" type="button"
+                      class="text-sm ml-1 hover:text-primary">x</button>
+                  </div>
+                  <button @click="createAdditionalPhone" type="button" class="text-xs text-primary ml-6">+ Agregar otro
+                    teléfono</button>
                 </div>
               </div>
               <div>
                 <div class="flex items-center">
                   <el-tooltip content="Cumpleaños" placement="top">
                     <span
-                      class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                      class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md ">
                       <i class="fa-solid fa-cake"></i>
                     </span>
                   </el-tooltip>
-                  <div class="grid grid-cols-2 gap-2">
-                    <el-select v-model="contact.birthdate_day" clearable placeholder="Dia">
+                  <div class="grid grid-cols-2 gap-2 w-full">
+                    <el-select v-model="contact.birthdate_day" placeholder="Dia">
                       <el-option v-for="day in 31" :key="day" :label="day" :value="day" />
                     </el-select>
-                    <el-select v-model="contact.birthdate_month" clearable placeholder="Mes">
+                    <el-select v-model="contact.birthdate_month" placeholder="Mes">
                       <el-option v-for="(month, index) in months" :key="index" :label="month" :value="index" />
                     </el-select>
                   </div>
-                  <!-- <InputError :message="form.errors.sat_way" /> -->
                 </div>
-                <!-- <InputError :message="form.errors.birthdate" /> -->
               </div>
-              <SecondaryButton @click="addContact" :disabled="!this.contact.name || !this.contact.email || !this.contact.phone
+              <SecondaryButton @click="addContact" :disabled="!this.contact.name || !this.contact.email || !this.contact.phone || !this.contact.charge
                 ">
                 {{
                   editContactIndex !== null
@@ -331,7 +390,7 @@
                   <i class="fa-solid fa-magnifying-glass"></i>
                 </span>
               </el-tooltip>
-              <el-select v-model="product.catalog_product_id" clearable filterable placeholder="Buscar producto">
+              <el-select v-model="product.catalog_product_id" placeholder="Buscar producto">
                 <el-option v-for="item in catalog_products" :key="item.id" :label="item.name" :value="item.id" />
               </el-select>
             </div>
@@ -436,6 +495,7 @@ export default {
       rfc: this.company.rfc,
       post_code: this.company.post_code,
       fiscal_address: this.company.fiscal_address,
+      seller_id: null,
       company_branches: [],
       products: [],
     });
@@ -447,24 +507,46 @@ export default {
       editProductIndex: null,
       editBranchIndex: null,
       contact: {
-        id: null,
         name: null,
         email: null,
         phone: null,
+        charge: null,
         birthdate_day: null,
         birthdate_month: null,
+        additional_emails: [],
+        additional_phones: [],
       },
+      charges: [
+        'Compras',
+        'Dirección',
+        'Facturación',
+        'Gerencia',
+        'Marketing',
+        'Pagos',
+        'Otro',
+      ],
       branch: {
         id: null,
         name: null,
         address: null,
         post_code: null,
+        meet_way: null,
         sat_method: null,
         sat_type: null,
         sat_way: null,
         important_notes: null,
         days_to_reactivate: null,
       },
+      meetWays: [
+        'Recomendación',
+        'Búsqueda en línea',
+        'Publicidad ',
+        'Evento o feria comercial',
+        'Correo electrónico',
+        'Llamada telefónica ',
+        'Sitio web de la empresa',
+        'Otro',
+      ],
       product: {
         catalog_product_id: null,
         old_date: null,
@@ -577,8 +659,26 @@ export default {
     company: Array,
     catalog_products: Array,
     raw_materials: Array,
+    sellers: Array,
   },
   methods: {
+    removeAdditionalEmail(index) {
+      this.contact.additional_emails.splice(index, 1);
+    },
+    removeAdditionalPhone(index) {
+      this.contact.additional_phones.splice(index, 1);
+    },
+    createAdditionalEmail() {
+      this.contact.additional_emails.push(null);
+    },
+    createAdditionalPhone() {
+      this.contact.additional_phones.push(null);
+    },
+    prefillBranchForm() {
+      this.branch.name = this.form.business_name;
+      this.branch.address = this.form.fiscal_address;
+      this.branch.post_code = this.form.post_code;
+    },
     update() {
       this.form.put(route("companies.update", this.company.id), {
         onSuccess: () => {
@@ -614,6 +714,9 @@ export default {
       this.contact.phone = null;
       this.contact.birthdate_day = null;
       this.contact.birthdate_month = null;
+      this.contact.charge = null;
+      this.contact.additional_emails = [];
+      this.contact.additional_phones = [];
     },
     deleteContact(index) {
       this.contacts.splice(index, 1);
@@ -640,6 +743,7 @@ export default {
       this.branch.name = null;
       this.branch.address = null;
       this.branch.post_code = null;
+      this.branch.meet_way = null;
       this.branch.sat_method = null;
       this.branch.sat_type = null;
       this.branch.sat_way = null;
@@ -659,8 +763,11 @@ export default {
           name: element.name,
           email: element.email,
           phone: element.phone,
+          charge: element.charge,
           birthdate_day: element.birthdate_day,
           birthdate_month: element.birthdate_month,
+          additional_emails: element.additional_emails ?? [],
+          additional_phones: element.additional_phones ?? [],
         };
 
         this.contacts.push(contact);
@@ -706,6 +813,7 @@ export default {
         name: element.name,
         address: element.address,
         post_code: element.post_code,
+        meet_way: element.meet_way,
         sat_method: element.sat_method,
         sat_type: element.sat_type,
         sat_way: element.sat_way,
@@ -720,8 +828,11 @@ export default {
           name: item.name,
           email: item.email,
           phone: item.phone,
+          charge: item.charge,
           birthdate_day: item.birthdate_day,
           birthdate_month: item.birthdate_month,
+          additional_emails: item.additional_emails,
+          additional_phones: item.additional_phones,
         };
 
         branch.contacts.push(contact);

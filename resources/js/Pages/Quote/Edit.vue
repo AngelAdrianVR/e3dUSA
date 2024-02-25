@@ -83,8 +83,8 @@
                                         <i class="fa-solid fa-magnifying-glass"></i>
                                     </span>
                                 </el-tooltip>
-                                <el-select @change="getImportantNotes()" v-model="form.company_branch_id" clearable filterable
-                                    placeholder="Busca el cliente" no-data-text="No hay clientes registrados"
+                                <el-select @change="getImportantNotes()" v-model="form.company_branch_id" clearable
+                                    filterable placeholder="Busca el cliente" no-data-text="No hay clientes registrados"
                                     no-match-text="No se encontraron coincidencias">
                                     <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
                                         :value="item.id" />
@@ -148,13 +148,15 @@
                             </IconInput>
                             <InputError :message="form.errors.freight_cost" />
                         </div>
-                        <div>
-                            <IconInput v-model="form.first_production_days"
-                                inputPlaceholder="Dias para primera producción *" inputType="text">
-                                <el-tooltip content="Dias para primera producción" placement="top">
-                                    <i class="fa-solid fa-info"></i>
-                                </el-tooltip>
-                            </IconInput>
+                        <div class="flex items-center">
+                            <el-tooltip content="Dias para primera producción *" placement="top">
+                                <i
+                                    class="fa-solid fa-info font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
+                            </el-tooltip>
+                            <el-select v-model="form.first_production_days" placeholder="Dias para primera producción *">
+                                <el-option v-for="(item, index) in firstProductionDaysList" :key="item" :label="item"
+                                    :value="item" />
+                            </el-select>
                             <InputError :message="form.errors.first_production_days" />
                         </div>
                         <div class="flex col-span-full">
@@ -342,6 +344,14 @@ export default {
                 show_image: true,
                 notes: null,
             },
+            firstProductionDaysList: [
+                'Inmediata',
+                '1 a 2 semanas',
+                '2 a 3 semanas',
+                '3 a 4 semanas',
+                '4 a 5 semanas',
+                '5 a 6 semanas',
+            ],
             currencies: [
                 {
                     label: 'Peso mexicano',
