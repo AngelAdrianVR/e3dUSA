@@ -348,9 +348,12 @@
         <el-radio label="2" size="medium">Es empaque</el-radio>
       </el-radio-group>
       <section v-if="isProduction == '1'">
-        <div class="border border-[#0355B5] rounded-lg px-6 py-2 mt-5 mb-3 mx-7 relative">
-          <p class="text-secondary text-sm">
-            Es importante que seas honesto con esta cantidad porque se notifica a jefe de producción y a dirección.
+        <div class="border border-[#0355B5] rounded-lg px-4 py-2 mt-5 mb-3 mx-7 relative">
+          <p class="text-secondary text-xs">
+            Es importante que seas honesto con la cantidad de merma porque se notifica a jefe de producción y a dirección.
+            La cantidad de merma que debes de ingresar son piezas malas por un error de tu parte en culquier proceso de producción,
+            no son las piezas que venian con defecto de fabricación. Las piezas con defecto de fábrica, regresarlas al encargado de almacén 
+            para que se den de baja del sistema y agregar al almacén de merma.
           </p>
         </div>
         <div>
@@ -379,8 +382,8 @@
         </div>
       </section>
       <section v-else class="lg:grid grid-cols-3 gap-2 mt-3">
-        <div class="border border-[#0355B5] rounded-lg px-6 py-2 mt-5 mb-3 mx-7 relative col-span-full">
-          <p class="text-secondary text-sm">
+        <div class="border border-[#0355B5] rounded-lg px-4 py-2 mt-5 mb-3 mx-7 relative col-span-full">
+          <p class="text-secondary text-xs">
             Ingresa los datos de cada paquete que hayas realizado y agregalos a la lista.
           </p>
         </div>
