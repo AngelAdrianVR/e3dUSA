@@ -12,6 +12,7 @@ use App\Models\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class RawMaterialController extends Controller
 {
@@ -74,7 +75,8 @@ class RawMaterialController extends Controller
             $last = CatalogProduct::latest()->first();
             $next_id = $last ? $last->id + 1 : 1;
             $consecutive = str_pad($next_id, 4, "0", STR_PAD_LEFT);
-            $partNumbe = "C-{$validated['part_number']}" . $consecutive;
+            $exploded = explode('-', $validated['part_number']);
+            $partNumbe = "C-{$exploded[0]}-{$exploded[1]}-" . $consecutive;
             $data = [
                 'name' => $request->name,
                 'part_number' => $partNumbe,
@@ -85,8 +87,36 @@ class RawMaterialController extends Controller
                 'cost' => $request->cost,
             ];
             $catalog_product = CatalogProduct::create($data);
-            $catalog_product->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
-            $catalog_product->rawMaterials()->attach($raw_material->id, $request->all());
+            $rawMaterialData = [
+                'quantity' => 1,
+                'production_costs' => [15],
+            ];
+            $catalog_product->rawMaterials()->attach($raw_material->id, $rawMaterialData);
+
+            $media = $raw_material->getFirstMedia();
+            if ($media) {
+                $catalog_product_media = $catalog_product->addMedia($media->getPath())
+                    ->usingFileName($media->file_name)
+                    ->toMediaCollection();
+
+                // Obtén la ruta de almacenamiento del RawMaterial
+                $raw_material_storage_path = $raw_material->getFirstMediaPath();
+
+                // Crea el directorio si no existe
+                // if (!File::exists($raw_material_storage_path)) {
+                //     File::makeDirectory($raw_material_storage_path, 0755, true, true);
+                // }
+
+                // Copia la imagen al almacenamiento del RawMaterial
+                File::copy($catalog_product_media->getPath(), $raw_material_storage_path);
+            }
+
+            // crear existencias en almacen de producto terminado
+            $catalog_product->storages()->create([
+                'quantity' => $request->initial_stock,
+                'location' => $request->location,
+                'type' => 'producto-terminado',
+            ]);
         }
 
         if ($request->type == 'materia-prima')
