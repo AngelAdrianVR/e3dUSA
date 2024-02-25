@@ -57,6 +57,22 @@
               </IconInput>
               <InputError :message="form.errors.fiscal_address" />
             </div>
+            <div class="flex items-center">
+              <el-tooltip content="Vendedor *" placement="top">
+                <i
+                  class="fa-solid fa-user-tie font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
+              </el-tooltip>
+              <el-select v-model="form.seller_id" placeholder="Vendedor *">
+                <el-option v-for="(item, index) in sellers" :key="item.id" :label="item.name" :value="item.id">
+                  <div v-if="$page.props.jetstream.managesProfilePhotos"
+                    class="flex text-sm rounded-full items-center mt-[3px]">
+                    <img class="size-7 rounded-full object-cover mr-4" :src="item.profile_photo_url" :alt="item.name" />
+                    <p>{{ item.name }}</p>
+                  </div>
+                </el-option>
+              </el-select>
+              <InputError :message="form.errors.seller_id" />
+            </div>
           </div>
           <!-- ---------------- Company ends ----------------- -->
 
@@ -479,6 +495,7 @@ export default {
       rfc: this.company.rfc,
       post_code: this.company.post_code,
       fiscal_address: this.company.fiscal_address,
+      seller_id: null,
       company_branches: [],
       products: [],
     });
@@ -642,6 +659,7 @@ export default {
     company: Array,
     catalog_products: Array,
     raw_materials: Array,
+    sellers: Array,
   },
   methods: {
     removeAdditionalEmail(index) {

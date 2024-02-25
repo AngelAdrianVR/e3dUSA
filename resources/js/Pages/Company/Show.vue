@@ -114,6 +114,13 @@
         <span>{{ company.data.post_code }}</span>
         <span class="text-gray-500 my-2">Dirección</span>
         <span>{{ company.data.fiscal_address }}</span>
+        <span class="text-gray-500 my-2">Vendedor</span>
+        <p class="mr-2" :style="{ color: getColorHex(company.data.seller?.id) }">
+          <i class="fa-solid fa-star"></i>
+          {{ company.data.seller?.name ?? '* Sin información' }}
+        </p>
+        <span class="text-gray-500 my-2">Registro creado por</span>
+        <span>{{ company.data.user?.name ?? '* Sin información' }}</span>
       </div>
       <!-- ------------- Informacion general ends 1 ------------- -->
 
@@ -296,6 +303,60 @@ export default {
     ProjectTable,
   },
   methods: {
+    getColorHex(number) {
+      if (number) {
+        // Ajusta el tono (hue) en función del número proporcionado
+        let tono = (number * 30) % 360;
+
+        // Saturation y lightness se mantienen constantes para colores vibrantes
+        let saturacion = 80;
+        let luminosidad = 40;
+
+        // Convierte de HSL a hexadecimal
+        let colorHex = this.hslToHex(tono, saturacion, luminosidad);
+
+        return colorHex;
+      } else {
+
+        return '#cccccc';
+      }
+    },
+    // Función para convertir de HSL a hexadecimal
+    hslToHex(h, s, l) {
+      h /= 360;
+      s /= 100;
+      l = l > 40 ? 40 : l;
+      l /= 100;
+
+      let r, g, b;
+
+      if (s === 0) {
+        r = g = b = l;
+      } else {
+        const hue2rgb = (p, q, t) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1 / 6) return p + (q - p) * 6 * t;
+          if (t < 1 / 2) return q;
+          if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+          return p;
+        };
+
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+
+        r = hue2rgb(p, q, h + 1 / 3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1 / 3);
+      }
+
+      const toHex = x => {
+        const hex = Math.round(x * 255).toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+      };
+
+      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    },
     async deleteItem() {
       try {
         const response = await axios.delete(
