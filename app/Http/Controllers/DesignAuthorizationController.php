@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\DesignAuthorizationResource;
 use App\Models\CompanyBranch;
 use App\Models\DesignAuthorization;
 use Illuminate\Http\Request;
@@ -49,9 +50,12 @@ class DesignAuthorizationController extends Controller
     }
 
     
-    public function show(DesignAuthorization $design_authorization)
+    public function show($design_authorization_id)
     {
-        //
+        $design_authorization = DesignAuthorizationResource::make(DesignAuthorization::with(['seller:id,name', 'companyBranch:id,name', 'companyBranch.contacts'])->find($design_authorization_id));
+
+        // return $design_authorization;
+        return inertia('DesignAuthorization/Show', compact('design_authorization'));
     }
 
     
@@ -70,6 +74,16 @@ class DesignAuthorizationController extends Controller
     public function destroy(DesignAuthorization $design_authorization)
     {
         //
+    }
+
+
+    public function AuthorizeDesign(DesignAuthorization $design_authorization)
+    {
+        $design_authorization->update([
+            'authorized_at' => now(),
+        ]);
+
+        return response()->json(['authorized_at' => $design_authorization->authorized_at]);
     }
 
 }

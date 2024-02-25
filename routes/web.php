@@ -351,6 +351,7 @@ Route::post('design-modifications/upload-results', [DesignModificationController
 
 // ------- Design autorizations routes  ---------
 Route::resource('design-authorizations', DesignAuthorizationController::class)->middleware('auth');
+Route::put('design-authorizations-authorize/{design_authorization}', [DesignAuthorizationController::class, 'AuthorizeDesign'])->name('design-authorizations.authorize')->middleware('auth');
 
 
 // ------- production department routes  ---------

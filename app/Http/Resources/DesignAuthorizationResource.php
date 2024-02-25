@@ -14,25 +14,33 @@ class DesignAuthorizationResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $status = [
-            'label' => 'Pendiente',
-            'color' => 'text-amber-500',
-            'icon' => '<i class="fa-regular fa-clock"></i>',
-        ];
-
-        if ($this->design_accepted === 1) {
+        if ($this->authorized_at) {
+                $status = [
+                    'label' => 'Esperando respuesta del cliente',
+                    'color' => 'text-amber-500',
+                    'icon' => '<i class="fa-regular fa-clock"></i>',
+                ];
+                
+                if ($this->design_accepted === 1) {
+                    $status = [
+                        'label' => 'Autorizado',
+                        'color' => 'text-green-500',
+                        'icon' => '<i class="fa-solid fa-check"></i>',
+                    ];
+                } else if ($this->design_accepted === 0) {
+                $status = [
+                    'label' => 'Rechazado',
+                    'color' => 'text-red-500',
+                    'icon' => '<i class="fa-solid fa-xmark"></i>',
+                ];
+            }
+        } else {
             $status = [
-                'label' => 'Autorizado',
-                'color' => 'text-green-500',
-                'icon' => '<i class="fa-solid fa-check"></i>',
+                'label' => 'Esperando autorización de formato',
+                'color' => 'text-amber-500',
+                'icon' => '<i class="fa-regular fa-clock"></i>',
             ];
-        } else if ($this->design_accepted === 0) {
-            $status = [
-                'label' => 'Rechazado',
-                'color' => 'text-red-500',
-                'icon' => '<i class="fa-solid fa-xmark"></i>',
-            ];
-        }
+        } 
 
         return [
             'id' => $this->id,
@@ -46,6 +54,7 @@ class DesignAuthorizationResource extends JsonResource
             'authorized_at' => $this->authorized_at?->isoFormat('DD MMM YYYY'),
             'responded_at' => $this->responded_at?->isoFormat('DD MMM YYYY'),
             'design_accepted' => $this->design_accepted,
+            'media' => $this->getMedia('image')->all(),
             'status' => $status,
             'seller' => $this->whenLoaded('seller'),
             'company_branch' => $this->whenLoaded('companyBranch'),

@@ -102,7 +102,6 @@
                     <p class="text-sm text-gray-500">*Los logotipos y marcas mostrados en este formato tienen un propósito exclusivamente ilustrativo, ya que los tonos de los grabados e impresiones pueden variar dependiendo del producto o lote.</p>
                     <p class="text-sm text-gray-500">*Los colores de la pantalla puede variar dependiendo del dispositivo en que se visualicen. </p>
                 </footer>
-                {{form}}
 
                 <div class="text-right my-5 lg:px-8">
                     <PrimaryButton @click="store">Enviar</PrimaryButton>
