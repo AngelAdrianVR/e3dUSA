@@ -23,6 +23,7 @@ class Quote extends Model
         'currency',
         'authorized_user_name',
         'authorized_at',
+        'responded_at',
         'is_spanish_template',
         'company_branch_id',
         'user_id',
@@ -31,6 +32,7 @@ class Quote extends Model
 
     protected $casts = [
         'authorized_at' => 'datetime',
+        'responded_at' => 'datetime',
     ];
 
     //relationships

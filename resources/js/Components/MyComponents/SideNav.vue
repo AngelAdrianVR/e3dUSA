@@ -332,9 +332,6 @@ export default {
                     icon: '<i class="fa-solid fa-pen-ruler text-xs"></i>',
                     route: route('designs.index'),
                     active: route().current('designs.*'),
-                    notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                        return notification.data.module === 'design';
-                    }),
                     show: true
                 },
                 {
