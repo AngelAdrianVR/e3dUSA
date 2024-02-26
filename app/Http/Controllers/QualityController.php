@@ -60,7 +60,7 @@ class QualityController extends Controller
             ];
         });
 
-        return $pre_productions;
+        // return $pre_productions;
 
         return inertia('Quality/Create', compact('productions'));
     }

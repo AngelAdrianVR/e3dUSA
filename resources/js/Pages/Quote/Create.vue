@@ -391,6 +391,7 @@ export default {
     props: {
         catalog_products: Array,
         company_branches: Array,
+        opportunity: Object
     },
     methods: {
         store() {
@@ -479,5 +480,13 @@ export default {
             this.product.show_image = true;
         },
     },
+    mounted() {
+        if (this.opportunity) {
+            this.form.company_branch_id = parseInt(this.opportunity.company_branch_id);
+            this.form.receiver = this.opportunity.contact;
+            this.form.currency = 'Peso mexicano';
+            this.getImportantNotes();
+        }
+    }
 };
 </script>

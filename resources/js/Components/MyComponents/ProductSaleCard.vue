@@ -356,6 +356,16 @@
             para que se den de baja del sistema y agregar al almacén de merma.
           </p>
         </div>
+        <p class="font-bold text-lg my-2">Menciona si fuiste supervisado durante la producción de este producto.</p>
+        <!-- Informacion de upervisión. -->
+        <div v-for="quality in qualities.data" :key="quality" class="grid grid-cols-2 my-4">
+          <p>Nombre del supervisor:</p>
+          <p>{{ quality.supervisor.name }}</p>
+          <p>Número de inspección:</p>
+          <p @click="$inertia.get(route('qualities.show', quality.id))" class="cursor-pointer text-secondary">{{ quality.id }}</p>
+          <p>Fecha y hora:</p>
+          <p>{{ quality.created_at }}</p>
+        </div>
         <div>
           <IconInput v-model="goodUnits" inputPlaceholder="Piezas buenas realizadas *" inputType="number" class="w-1/2">
             <el-tooltip content="Ingreasa la cantidad de piezas buenas que realizaste *" placement="top">
@@ -369,6 +379,12 @@
               <i class="fa-solid fa-prescription-bottle-medical"></i>
             </el-tooltip>
           </IconInput>
+        </div>
+        <div class="block my-4">
+          <label class="flex items-center">
+            <Checkbox v-model:checked="supervision" name="remember" class="bg-transparent"/>
+            <span class="ml-2 text-sm text-[#9A9A9A]">Fuí supervisado</span>
+          </label>
         </div>
         <div v-if="scrap > 0" class="flex">
           <el-tooltip content="Motivo de merma *" placement="top">
@@ -497,6 +513,7 @@ import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import InputError from "@/Components/InputError.vue";
 import RichText from "@/Components/MyComponents/RichText.vue";
+import Checkbox from "@/Components/Checkbox.vue";
 import { useForm } from "@inertiajs/vue3";
 
 export default {
@@ -521,6 +538,7 @@ export default {
       scrap: null,
       reason: null,
       goodUnits: null,
+      supervision: false,
       comment: null,
       users: [],
       // paquetes
@@ -545,6 +563,7 @@ export default {
       type: Boolean,
       default: false
     },
+    qualities: Object
   },
   components: {
     DialogModal,
@@ -554,6 +573,7 @@ export default {
     IconInput,
     InputError,
     RichText,
+    Checkbox
   },
   methods: {
     // paquetes
@@ -707,7 +727,7 @@ export default {
       try {
         let task = this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id);
         const response = await axios.put(route('productions.change-status', task.id), {
-          scrap: this.scrap, reason: this.reason, good_units: this.goodUnits, packages: this.packages
+          scrap: this.scrap, reason: this.reason, good_units: this.goodUnits, packages: this.packages, supervision: this.supervision
         });
         let type = 'success';
         let title = 'Éxito';

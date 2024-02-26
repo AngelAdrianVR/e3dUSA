@@ -6,11 +6,13 @@ use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\ProductionCostResource;
+use App\Http\Resources\QualityResource;
 use App\Http\Resources\SaleResource;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Comment;
 use App\Models\Production;
 use App\Models\ProductionCost;
+use App\Models\Quality;
 use App\Models\Sale;
 use App\Models\Setting;
 use App\Models\StockMovementHistory;
@@ -234,10 +236,11 @@ class ProductionController extends Controller
                 'company_name' => $sale->companyBranch?->name,
             ];
         });
+        $qualities = QualityResource::collection(Quality::with('supervisor:id,name')->where('production_id', $sale->id)->get());
 
-        // return $sale;
+        // return $qualities;
 
-        return inertia('Production/Show', compact('sale', 'sales'));
+        return inertia('Production/Show', compact('sale', 'sales', 'qualities'));
     }
 
     public function edit($sale_id)
@@ -377,6 +380,7 @@ class ProductionController extends Controller
                 'scrap_reason' => $request->reason,
                 'good_units' => $request->good_units,
                 'packages' => $request->packages,
+                'supervision' => $request->supervision,
             ]);
 
             // descontar materia prima utilizada para la producción
