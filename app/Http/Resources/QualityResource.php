@@ -21,8 +21,8 @@ class QualityResource extends JsonResource
             'product_inspection' => $this->product_inspection,
             'supervisor' => $this->whenLoaded('supervisor'),
             'production' => SaleResource::make($this->whenLoaded('production')),
-            'created_at' => $this->created_at?->isoFormat('DD MMMM YYYY, h:m A'),
-            'updated_at' => $this->updated_at?->isoFormat('DD MMMM YYYY, h:m A'),
+            'created_at' => $this->created_at?->isoFormat('DD MMMM YYYY, h:mm A'),
+            'updated_at' => $this->updated_at?->isoFormat('DD MMMM YYYY, h:mm A'),
         ];
     }
 }
