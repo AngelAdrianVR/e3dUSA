@@ -98,9 +98,10 @@ export default {
                     active: route().current('crm.*') || route().current('quotes.*') || route().current('companies.*')
                         || route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*')
                         || route().current('client-monitors.*') || route().current('meeting-monitors.*') || route().current('payment-monitors.*')
-                        || route().current('sale-analitics.*') || route().current('sale-analitics.*'),
+                        || route().current('sale-analitics.*') || route().current('sale-analitics.*')
+                        || route().current('prospects.*') || route().current('prospects.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                        return ['quote', 'sales', 'opportunities', 'companies'].includes(notification.data.module);
+                        return ['quote', 'sales', 'opportunities', 'companies', 'prospects'].includes(notification.data.module);
                     }),
                     options: [
                         {
@@ -110,11 +111,11 @@ export default {
                             notifications: false,
                         },
                         {
-                            label: 'Cotizaciones',
-                            route: 'quotes.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones'),
+                            label: 'Prospectos',
+                            route: 'prospects.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver prospectos'),
                             notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                                return notification.data.module === 'quote';
+                                return notification.data.module === 'prospects';
                             }),
                         },
                         {
@@ -123,14 +124,6 @@ export default {
                             show: this.$page.props.auth.user.permissions.includes('Ver clientes'),
                             notifications: this.$page.props.auth.user?.notifications?.some(notification => {
                                 return notification.data.module === 'companies';
-                            }),
-                        },
-                        {
-                            label: 'Órdenes de venta',
-                            route: 'sales.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver ordenes de venta'),
-                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                                return notification.data.module === 'sales';
                             }),
                         },
                         {
@@ -145,7 +138,22 @@ export default {
                             show: this.$page.props.auth.user.permissions.includes('Ver seguimiento integral'),
                             notifications: false,
                         },
-
+                        {
+                            label: 'Cotizaciones',
+                            route: 'quotes.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'quote';
+                            }),
+                        },
+                        {
+                            label: 'Órdenes de venta',
+                            route: 'sales.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver ordenes de venta'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'sales';
+                            }),
+                        },
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones') ||

@@ -102,12 +102,7 @@ class RawMaterialController extends Controller
                 // Obtén la ruta de almacenamiento del RawMaterial
                 $raw_material_storage_path = $raw_material->getFirstMediaPath();
 
-                // Crea el directorio si no existe
-                // if (!File::exists($raw_material_storage_path)) {
-                //     File::makeDirectory($raw_material_storage_path, 0755, true, true);
-                // }
-
-                // Copia la imagen al almacenamiento del RawMaterial
+                // Copia la imagen al almacenamiento del RawMaterial porque se elimina al guardar en catalog product
                 File::copy($catalog_product_media->getPath(), $raw_material_storage_path);
             }
 

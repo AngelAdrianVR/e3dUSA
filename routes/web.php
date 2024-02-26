@@ -36,6 +36,7 @@ use App\Http\Controllers\ProductionCostController;
 use App\Http\Controllers\ProductionProgressController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectGroupController;
+use App\Http\Controllers\ProspectController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\QualityController;
 use App\Http\Controllers\RawMaterialController;
@@ -157,6 +158,9 @@ Route::get('oportunity-tasks/create/{oportunity_id}', [OportunityTaskController:
 Route::post('oportunity-tasks/store/{oportunity_id}', [OportunityTaskController::class, 'store'])->name('oportunity-tasks.store')->middleware('auth');
 Route::post('oportunity-tasks/{oportunity_task}/comment', [OportunityTaskController::class, 'comment'])->name('oportunity-tasks.comment')->middleware('auth');
 Route::put('oportunity-tasks/mark-as-done/{oportunityTask}', [OportunityTaskController::class, 'markAsDone'])->name('oportunity-tasks.mark-as-done')->middleware('auth');
+
+// ------- CRM (prospectos Routes)  ---------
+Route::resource('prospects', ProspectController::class)->middleware('auth');
 
 // ------- CRM (Client monior Routes)  ---------
 Route::resource('client-monitors', ClientMonitorController::class)->middleware('auth');
