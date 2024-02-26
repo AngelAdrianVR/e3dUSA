@@ -161,6 +161,7 @@ Route::put('oportunity-tasks/mark-as-done/{oportunityTask}', [OportunityTaskCont
 
 // ------- CRM (prospectos Routes)  ---------
 Route::resource('prospects', ProspectController::class)->middleware('auth');
+Route::get('prospects-get-matches/{query}', [ProspectController::class, 'getMatches'])->name('prospects.get-matches');
 
 // ------- CRM (Client monior Routes)  ---------
 Route::resource('client-monitors', ClientMonitorController::class)->middleware('auth');
