@@ -224,8 +224,8 @@
     </div>
 
 <!-- ----------------- Lost modal ----------- -->
-    <Modal :show="showLostOportunityModal || showCreateSaleModal"
-      @close="showLostOportunityModal = false; showCreateSaleModal = false">
+    <Modal :show="showLostOportunityModal || showCreateSaleModal || showCreateQuoteModal"
+      @close="showLostOportunityModal = false; showCreateSaleModal = false; showCreateQuoteModal = false">
       <section v-if="showLostOportunityModal" class="mx-7 my-4 space-y-4 relative">
         <div>
           <label>Causa oportunidad perdida
@@ -253,6 +253,19 @@
           <PrimaryButton @click="CreateSale">Continuar</PrimaryButton>
         </div>
       </section>
+
+      <section v-if="showCreateQuoteModal" class="mx-7 my-4 space-y-4 relative">
+        <div>
+          <h2 class="font bold text-center font-bold mb-5">Paso clave - Crear Cotización</h2>
+          <p class="px-5">Puedes crear una cotización al haber marcado como <span class="text-[#F3FD85] font-bold">pendiente de aprobación</span>  
+           la oportunidad para llevar un correcto seguimiento y flujo de trabajo. 
+          </p>
+        </div>
+        <div class="flex justify-end space-x-3 pt-5 pb-1">
+          <CancelButton @click="showCreateQuoteModal = false; updateOpportunityStatus(this.localStatus)">No crear</CancelButton>  
+          <PrimaryButton @click="CreateQuote">Continuar</PrimaryButton>
+        </div>
+      </section>
     </Modal>
   </AppLayoutNoHeader>
 </template>
@@ -277,6 +290,7 @@ export default {
       inputSearch: "",
       show_type_view: false,
       showLostOportunityModal: false,
+      showCreateQuoteModal: false,
       showCreateSaleModal: false,
       type_view: "Kanban",
       localStatus: null,
@@ -336,8 +350,11 @@ export default {
 
        if (evt.to.id === "lost") {
         this.showLostOportunityModal = true;
-      }else if (evt.to.id === "closed" || evt.to.id === "paid") {
+      } else if (evt.to.id === "closed" || evt.to.id === "paid") {
         this.showCreateSaleModal = true;
+        this.localStatus = status;
+      } else if ( evt.to.id === "pending" ) {
+        this.showCreateQuoteModal = true;
         this.localStatus = status;
       } else {
         this.updateOpportunityStatus(status);
@@ -373,7 +390,6 @@ export default {
               type: "success",
             });
             this.showCreateSaleModal = false;
-            this.updateStatus();
           } else {
             this.updateOpportunityStatus(this.localStatus);
             this.$inertia.get(route('sales.create'), { opportunityId: this.draggingOpportunityId });
@@ -382,6 +398,10 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    CreateQuote() {
+      this.updateOpportunityStatus(this.localStatus);
+      this.$inertia.get(route('quotes.create'), { opportunityId: this.draggingOpportunityId });
     },
     getStatusStyles(oportunity) {
       if (oportunity.status === 'Nueva') {

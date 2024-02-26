@@ -140,7 +140,8 @@
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-7">
                     <ProductSaleCard @selected="handleSelections(index, $event)"
                         v-for="(productSale, index) in sale.data.catalogProductCompanySales" :key="productSale.id"
-                        :catalog_product_company_sale="productSale" :isHighPriority="sale.data.is_high_priority" />
+                        :catalog_product_company_sale="productSale" :isHighPriority="sale.data.is_high_priority"
+                        :qualities="qualities" />
                 </div>
             </div>
 
@@ -188,6 +189,7 @@ export default {
     props: {
         sale: Object,
         sales: Object,
+        qualities: Object,
     },
     components: {
         AppLayoutNoHeader,

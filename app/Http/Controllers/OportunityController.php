@@ -399,6 +399,8 @@ class OportunityController extends Controller
             return response()->json(['message' => 'Ya existe una venta de esta oportunidad. Estatus actualizado correctamente']);
         }
     }
+
+
     public function updateStatus(Request $request, $oportunity_id)
     {
         $oportunity = Oportunity::find($oportunity_id);

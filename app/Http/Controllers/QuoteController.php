@@ -11,6 +11,7 @@ use App\Models\CatalogProductCompany;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Company;
 use App\Models\CompanyBranch;
+use App\Models\Oportunity;
 use App\Models\Quote;
 use App\Models\Sale;
 use App\Models\User;
@@ -55,7 +56,12 @@ class QuoteController extends Controller
         $catalog_products = CatalogProduct::all();
         $company_branches = CompanyBranch::all();
 
-        return inertia('Quote/Create', compact('catalog_products', 'company_branches'));
+        // si se accede a crear cotización desde oportunidad. Recupera la oportunidad y la manda para llenar el formulario.
+        $opportunity = Oportunity::find(request('opportunityId'));
+
+        // return $opportunity;
+
+        return inertia('Quote/Create', compact('catalog_products', 'company_branches', 'opportunity'));
     }
 
     public function store(Request $request)
