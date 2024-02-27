@@ -44,10 +44,14 @@
 
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg px-9 py-5 shadow-md">
                     <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
-                        <div class="col-span-2">
+                        <div class="col-span-2 flex justify-between">
                             <el-radio-group v-model="form.is_spanish_template" size="small">
-                                <el-radio-button :label="1">Plantilla en español</el-radio-button>
-                                <el-radio-button :label="0">Plantilla en inglés</el-radio-button>
+                                <el-radio :label="1">Plantilla en español</el-radio>
+                                <el-radio :label="0">Plantilla en inglés</el-radio>
+                            </el-radio-group>
+                            <el-radio-group v-model="form.is_customer" @change="handleChangeModelId()" size="small">
+                                <el-radio :label="1">Para cliente</el-radio>
+                                <el-radio :label="0">Para prospecto</el-radio>
                             </el-radio-group>
                         </div>
                         <div>
@@ -56,7 +60,7 @@
                                     content="La moneda que se elija se usará para productos y costos de flete y herramental"
                                     placement="top">
                                     <span
-                                        class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                        class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
                                         <i class="fa-solid fa-dollar-sign"></i>
                                     </span>
                                 </el-tooltip>
@@ -80,18 +84,24 @@
                                     content="Para poder cotizar, los clientes (sucursales) deben de estar registrados"
                                     placement="top">
                                     <span
-                                        class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                        class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
                                         <i class="fa-solid fa-magnifying-glass"></i>
                                     </span>
                                 </el-tooltip>
-                                <el-select @change="getImportantNotes()" v-model="form.company_branch_id" clearable
+                                <el-select v-if="form.is_customer" @change="getImportantNotes()" v-model="form.company_branch_id" clearable
                                     filterable placeholder="Busca el cliente" no-data-text="No hay clientes registrados"
                                     no-match-text="No se encontraron coincidencias">
                                     <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
                                         :value="item.id" />
                                 </el-select>
+                                <el-select v-else v-model="form.prospect_id" @change="handleSelectProspect()" clearable
+                                    filterable placeholder="Busca el prospecto" no-data-text="No hay prospectos registrados"
+                                    no-match-text="No se encontraron coincidencias">
+                                    <el-option v-for="item in prospects" :key="item.id" :label="item.name"
+                                        :value="item.id" />
+                                </el-select>
                             </div>
-                            <InputError :message="form.errors.company_branch_id" />
+                            <InputError :message="form.errors.prospect_id" />
                         </div>
                         <div>
                             <IconInput v-model="form.receiver" inputPlaceholder="Nombre de quien recibe *" inputType="text">
@@ -203,7 +213,7 @@
                         <div class="flex items-center mt-2">
                             <el-tooltip content="Producto de catálogo" placement="top">
                                 <span
-                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
                                     <i class="fa-solid fa-magnifying-glass"></i>
                                 </span>
                             </el-tooltip>
@@ -216,7 +226,7 @@
                         <div class="flex items-center">
                             <el-tooltip content="¿Mostrar imagen en cotización?" placement="top">
                                 <span
-                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 w-12">
+                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
                                     <i class="fa-solid fa-eye"></i>
                                 </span>
                             </el-tooltip>
@@ -325,7 +335,9 @@ export default {
             notes: null,
             currency: null,
             is_spanish_template: 1,
+            is_customer: 1,
             company_branch_id: null,
+            prospect_id: null,
             products: [],
         });
         return {
@@ -391,8 +403,20 @@ export default {
     props: {
         catalog_products: Array,
         company_branches: Array,
+        prospects: Array,
     },
     methods: {
+        handleSelectProspect() {
+            const prospect = this.prospects.find(item => item.id === this.form.prospect_id);
+            this.form.receiver = prospect.contact_name;
+            this.form.department = prospect.contact_charge;
+        },
+        handleChangeModelId() {
+            this.form.company_branch_id = null;
+            this.form.prospect_id = null;
+            this.form.receiver = null;
+            this.form.department = null;
+        },
         store() {
             this.form.post(route('quotes.store'), {
                 onSuccess: () => {

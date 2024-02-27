@@ -66,6 +66,7 @@ class QuoteResource extends JsonResource
             'responded_at' => $this->responded_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'is_spanish_template' => boolval($this->is_spanish_template),
             'companyBranch' => $this->companyBranch,
+            'prospect' => $this->prospect,
             'user' => [
                 'id' => $this->user->id,
                 'name' => $this->user->name,

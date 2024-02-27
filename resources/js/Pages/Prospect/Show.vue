@@ -22,9 +22,14 @@
           class="size-9 rounded-[10px] bg-[#D9D9D9]">
           <i class="fa-solid fa-pen text-sm"></i>
         </button>
-        <SecondaryButton @click="turnIntoCustomer" class="!rounded-[10px]">
-          Convertir a cliente
-        </SecondaryButton>
+        <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#D90537" title="¿Continuar?"
+          @confirm="turnIntoCustomer()">
+          <template #reference>
+            <SecondaryButton class="!rounded-[10px]">
+              Convertir a cliente
+            </SecondaryButton>
+          </template>
+        </el-popconfirm>
         <Dropdown align="right" width="48" v-if="$page.props.auth.user.permissions.includes('Crear prospectos')
           || $page.props.auth.user.permissions.includes('Eliminar prospectos')">
           <template #trigger>
