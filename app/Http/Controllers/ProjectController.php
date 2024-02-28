@@ -25,7 +25,6 @@ class ProjectController extends Controller
             $query->where('users.id', auth()->id());
         })->latest()->paginate(20, ['id', 'project_name', 'start_date', 'limit_date', 'finished_at']));
 
-        // return $projects;
 
         return inertia('Project/Index', compact('projects'));
     }

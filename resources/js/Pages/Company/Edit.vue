@@ -57,6 +57,14 @@
               </IconInput>
               <InputError :message="form.errors.fiscal_address" />
             </div>
+            <div>
+              <IconInput v-model="form.branches_number" inputPlaceholder="Sucursales totales con las que cuenta el cliente">
+                <el-tooltip content="Sucursales totales con las que cuenta el cliente" placement="top">
+                  <i class="fa-solid fa-code-branch"></i>
+                </el-tooltip>
+              </IconInput>
+              <InputError :message="form.errors.branches_number" />
+            </div>
             <div class="flex items-center">
               <el-tooltip content="Vendedor *" placement="top">
                 <i
@@ -119,6 +127,17 @@
                 </el-tooltip>
               </IconInput>
             </div>
+            <div class="flex items-center">
+              <el-tooltip content="Estado" placement="top">
+                <i
+                  class="fa-solid fa-map-location-dot font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
+              </el-tooltip>
+              <el-select v-model="form.state" filterable placeholder="Selecciona el estado de la república" class="w-full"
+                no-data-text="No hay opciones para mostrar" no-match-text="No se encontraron coincidencias">
+                <el-option v-for="(item, index) in states" :key="index" :label="item" :value="item" />
+              </el-select>
+              <InputError :message="form.errors.state" />
+            </div>
             <div>
               <IconInput v-model="branch.post_code" inputPlaceholder="C.P. *" inputType="text">
                 <el-tooltip content="C.P." placement="top">
@@ -171,7 +190,6 @@
                                             ">{{ item.value }}</span>
                 </el-option>
               </el-select>
-              <!-- <InputError :message="branch.errors.sat_way" /> -->
             </div>
             <div class="flex items-center">
               <el-tooltip content="Uso de factura" placement="top">
@@ -190,7 +208,6 @@
                                             ">{{ item.value }}</span>
                 </el-option>
               </el-select>
-              <!-- <InputError :message="form.errors.sat_types" /> -->
             </div>
             <div>
               <IconInput v-model="branch.days_to_reactivate"
@@ -402,7 +419,6 @@
                     <i class="fa-solid fa-money-bill"></i>
                   </el-tooltip>
                 </IconInput>
-                <!-- <InputError :message="form.errors.old_price" /> -->
               </div>
               <div class="flex items-center">
                 <el-tooltip content="Moneda" placement="top">
@@ -421,7 +437,6 @@
               <div class="flex items-center">
                 <el-date-picker v-model="product.old_date" type="date" placeholder="Fecha" format="YYYY/MM/DD"
                   value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
-                <!-- <InputError :message="form.errors.branches.old_date" /> -->
               </div>
               <div>
                 <IconInput v-model="product.new_price" inputPlaceholder="Precio nuevo *" inputType="number"
@@ -430,7 +445,6 @@
                     <i class="fa-solid fa-money-bill"></i>
                   </el-tooltip>
                 </IconInput>
-                <!-- <InputError :message="form.errors.new_price" /> -->
               </div>
               <div class="flex items-center">
                 <el-tooltip content="Moneda" placement="top">
@@ -495,7 +509,8 @@ export default {
       rfc: this.company.rfc,
       post_code: this.company.post_code,
       fiscal_address: this.company.fiscal_address,
-      seller_id: null,
+      seller_id: this.company.seller_id,
+      branches_number: this.company.branches_number,
       company_branches: [],
       products: [],
     });
@@ -573,6 +588,40 @@ export default {
         "Octubre",
         "Noviembre",
         "Diciembre",
+      ],
+      states: [
+        'Aguascalientes',
+        'Baja California',
+        'Baja California Sur',
+        'Campeche',
+        'Chiapas',
+        'Chihuahua',
+        'Ciudad de México',
+        'Coahuila',
+        'Colima',
+        'Durango',
+        'Estado de México',
+        'Guanajuato',
+        'Guerrero',
+        'Hidalgo',
+        'Jalisco',
+        'Michoacán',
+        'Morelos',
+        'Nayarit',
+        'Nuevo León',
+        'Oaxaca',
+        'Puebla',
+        'Querétaro',
+        'Quintana Roo',
+        'San Luis Potosí',
+        'Sinaloa',
+        'Sonora',
+        'Tabasco',
+        'Tamaulipas',
+        'Tlaxcala',
+        'Veracruz',
+        'Yucatán',
+        'Zacatecas',
       ],
       sat_method: [
         { value: "PUE", label: "Pago en una sola exhibición" },
@@ -812,6 +861,7 @@ export default {
         id: element.id,
         name: element.name,
         address: element.address,
+        state: element.state,
         post_code: element.post_code,
         meet_way: element.meet_way,
         sat_method: element.sat_method,

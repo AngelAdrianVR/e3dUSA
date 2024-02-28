@@ -57,6 +57,15 @@
               </IconInput>
               <InputError :message="form.errors.fiscal_address" />
             </div>
+            <div>
+              <IconInput v-model="form.branches_number"
+                inputPlaceholder="Sucursales totales con las que cuenta el cliente">
+                <el-tooltip content="Sucursales totales con las que cuenta el cliente" placement="top">
+                  <i class="fa-solid fa-code-branch"></i>
+                </el-tooltip>
+              </IconInput>
+              <InputError :message="form.errors.branches_number" />
+            </div>
             <div class="flex items-center">
               <el-tooltip content="Vendedor *" placement="top">
                 <i
@@ -118,6 +127,17 @@
                   <i class="fa-solid fa-map-location-dot"></i>
                 </el-tooltip>
               </IconInput>
+            </div>
+            <div class="flex items-center">
+              <el-tooltip content="Estado" placement="top">
+                <i
+                  class="fa-solid fa-map-location-dot font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
+              </el-tooltip>
+              <el-select v-model="form.state" filterable placeholder="Selecciona el estado de la república" class="w-full"
+                no-data-text="No hay opciones para mostrar" no-match-text="No se encontraron coincidencias">
+                <el-option v-for="(item, index) in states" :key="index" :label="item" :value="item" />
+              </el-select>
+              <InputError :message="form.errors.state" />
             </div>
             <div>
               <IconInput v-model="branch.post_code" inputPlaceholder="C.P. *" inputType="text">
@@ -490,6 +510,7 @@ export default {
       rfc: null,
       post_code: null,
       fiscal_address: null,
+      branches_number: null,
       seller_id: null,
       company_branches: [],
       products: [],
@@ -514,6 +535,7 @@ export default {
       branch: {
         name: null,
         address: null,
+        state: null,
         post_code: null,
         meet_way: null,
         sat_method: null,
@@ -522,6 +544,40 @@ export default {
         important_notes: null,
         days_to_reactivate: 30,
       },
+      states: [
+        'Aguascalientes',
+        'Baja California',
+        'Baja California Sur',
+        'Campeche',
+        'Chiapas',
+        'Chihuahua',
+        'Ciudad de México',
+        'Coahuila',
+        'Colima',
+        'Durango',
+        'Estado de México',
+        'Guanajuato',
+        'Guerrero',
+        'Hidalgo',
+        'Jalisco',
+        'Michoacán',
+        'Morelos',
+        'Nayarit',
+        'Nuevo León',
+        'Oaxaca',
+        'Puebla',
+        'Querétaro',
+        'Quintana Roo',
+        'San Luis Potosí',
+        'Sinaloa',
+        'Sonora',
+        'Tabasco',
+        'Tamaulipas',
+        'Tlaxcala',
+        'Veracruz',
+        'Yucatán',
+        'Zacatecas',
+      ],
       meetWays: [
         'Recomendación',
         'Búsqueda en línea',

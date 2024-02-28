@@ -108,6 +108,8 @@
       <div v-if="tabs == 1" class="md:w-1/2 grid grid-cols-2 text-left p-4 md:ml-20 text-sm items-center">
         <span class="text-gray-500">ID</span>
         <span>{{ company.data.id }}</span>
+        <span class="text-gray-500">Sucursales totales con las que cuenta el cliente</span>
+        <span>{{ company.data.branches_number ?? '* No especificado' }}</span>
 
         <span class="col-span-2 mt-8 mb-2">Datos fiscales</span>
 
