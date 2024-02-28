@@ -101,6 +101,7 @@
                                         :value="item.id" />
                                 </el-select>
                             </div>
+                            <InputError :message="form.errors.company_branch_id" />
                             <InputError :message="form.errors.prospect_id" />
                         </div>
                         <div>

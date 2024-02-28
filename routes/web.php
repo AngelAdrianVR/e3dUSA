@@ -162,6 +162,8 @@ Route::put('oportunity-tasks/mark-as-done/{oportunityTask}', [OportunityTaskCont
 // ------- CRM (prospectos Routes)  ---------
 Route::resource('prospects', ProspectController::class)->middleware('auth');
 Route::get('prospects-get-matches/{query}', [ProspectController::class, 'getMatches'])->name('prospects.get-matches');
+Route::get('prospects-get-quotes/{prospect}', [ProspectController::class, 'getQuotes'])->name('prospects.get-quotes');
+Route::post('prospects/turn-into-customer/{prospect}', [ProspectController::class, 'turnIntoCustomer'])->name('prospects.turn-into-customer');
 
 // ------- CRM (Client monior Routes)  ---------
 Route::resource('client-monitors', ClientMonitorController::class)->middleware('auth');

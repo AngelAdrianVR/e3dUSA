@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Events\RecordDeleted;
 use App\Http\Resources\ProspectResource;
+use App\Models\Company;
+use App\Models\CompanyBranch;
 use App\Models\Prospect;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -89,8 +91,14 @@ class ProspectController extends Controller
 
     public function destroy(Prospect $prospect)
     {
+        // Eliminar cotizaciones relacionadas
+        $prospect->quotes()->delete(); 
+
+        // eliminar prospecto
         $prospect->delete();
         event(new RecordDeleted($prospect));
+
+        return to_route('prospects.index');
     }
 
     public function getMatches($query)
@@ -110,5 +118,63 @@ class ProspectController extends Controller
         }
 
         return response()->json(['items' => $prospects]);
+    }
+
+    public function getQuotes(Prospect $prospect)
+    {
+        $quotes = $prospect->quotes->load('user');
+
+        return response()->json(['items' => $quotes]);
+    }
+
+    public function turnIntoCustomer(Prospect $prospect)
+    {
+        // crear nuevo cliente
+        $customer_data = [
+            'business_name' => $prospect->name,
+            'phone' => $prospect->contact_phone,
+            'rfc' => 'RFC No especificado de prospecto ' . $prospect->id,
+            'post_code' => '12345',
+            'fiscal_address' => $prospect->address ?? 'No especificado',
+            'branches_number' => $prospect->branches_number,
+            'seller_id' => $prospect->seller_id ?? $prospect->seller_id,
+        ];
+        $company = Company::create($customer_data + ['user_id' => auth()->id()]);
+
+        // crear sucursal
+        $branch = [
+            'company_id' => $company->id,
+            'name' => $prospect->name,
+            'password' => '$2y$10$HOl.Lb1BpPJbGrUZUA4OQu0dTziq/jWOOkLNuUI8RGf5dtrr.dovC',
+            'address' => $prospect->address ?? 'No especificado',
+            'state' => $prospect->state,
+            'post_code' => '12345',
+            'meet_way' => 'Convertido desde prospecto',
+            'sat_method' => 'PDD',
+            'sat_type' => 'G03',
+            'sat_way' => 'Transferencia electrónica de fondos',
+            'days_to_reactivate' => 30,
+            'important_notes' => "Este cliente fue creado desde un prospecto por " . auth()->user()->name . " el " . now()->isoFormat('DD MMM, YYYY h:mm A') . ". Algunos datos fueron prellenados por el sistema automáticamente, revisar que la información sea correcta. Resumen de prospecto: $prospect->abstract",
+        ];
+        $compay_branch = CompanyBranch::create($branch);
+
+        // crear contacto
+        $contact = [
+            'name' => $prospect->contact_name,
+            'email' => $prospect->contact_email,
+            'phone' => $prospect->contact_phone,
+            'charge' => $prospect->contact_charge,
+        ];
+        $compay_branch->contacts()->create($contact);
+
+        // pasar sus contizaciones a "cliente"
+        $prospect->quotes->each(function ($quote) use ($compay_branch) {
+            $quote->update(['company_branch_id' => $compay_branch->id, 'prospect_id' => null]);
+        });
+
+        // eliminar prospecto
+        $prospect->delete();
+
+        return response()->json(['company_id' => $company->id]);
     }
 }

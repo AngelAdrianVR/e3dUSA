@@ -15,7 +15,6 @@ import Modal from "@/Components/Modal.vue";
 import DialogModal from "@/Components/DialogModal.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
-import IconInput from "@/Components/MyComponents/IconInput.vue";
 import axios from "axios";
 import { ElNotification } from "element-plus";
 import dayjs from 'dayjs';
@@ -370,7 +369,7 @@ onMounted(() => {
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                   <Link :href="route('dashboard')">
-                  <Applicati onMark class="w-1/3" />
+                  <ApplicationMark class="w-1/3" />
                   </Link>
                 </div>
               </div>

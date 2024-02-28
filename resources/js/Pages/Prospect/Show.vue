@@ -1,5 +1,6 @@
 <template>
   <AppLayoutNoHeader title="Detalles de prospecto">
+    <AllPageLoading v-if="loading" />
     <div class="flex justify-between text-lg mx-2 lg:mx-14 mt-11">
       <span>Prospectos</span>
       <Link :href="route('prospects.index')"
@@ -7,7 +8,6 @@
       <i class="fa-solid fa-xmark"></i>
       </Link>
     </div>
-
     <!-- buscador y botones -->
     <div class="flex justify-between mt-5 mx-2 lg:mx-14">
       <div class="md:w-1/3 mr-2">
@@ -22,7 +22,7 @@
           class="size-9 rounded-[10px] bg-[#D9D9D9]">
           <i class="fa-solid fa-pen text-sm"></i>
         </button>
-        <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#D90537" title="¿Continuar?"
+        <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#D90537" title="Se eliminará este prospecto y se creará un cliente con esta información. ¿Continuar?"
           @confirm="turnIntoCustomer()">
           <template #reference>
             <SecondaryButton class="!rounded-[10px]">
@@ -57,7 +57,7 @@
         <General :prospect="prospect.data" />
       </el-tab-pane>
       <el-tab-pane label="Cotizaciones" name="2">
-        <Quotes />
+        <Quotes :prospect="prospect.data" />
       </el-tab-pane>
     </el-tabs>
 
@@ -67,7 +67,7 @@
         Eliminar prospecto
       </template>
       <template #content>
-        No se podrá recuperar la información. ¿Continuar con la eliminación?
+        También se eliminarán las cotizaciones relacionadas con el prospeto, no se podrá recuperar la información. ¿Continuar con la eliminación?
       </template>
       <template #footer>
         <div>
@@ -84,6 +84,7 @@ import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+import AllPageLoading from "@/Components/MyComponents/AllPageLoading.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import General from "./Tabs/General.vue";
@@ -98,6 +99,7 @@ export default {
       selectedProspect: null,
       showConfirmModal: false,
       activeTab: '1',
+      loading: false,
     };
   },
   components: {
@@ -111,6 +113,7 @@ export default {
     ConfirmationModal,
     General,
     Quotes,
+    AllPageLoading,
   },
   props: {
     prospects: Object,
@@ -127,6 +130,18 @@ export default {
       currentURL.searchParams.set('currentTab', tab.props.name);
       // Actualiza la URL
       window.history.replaceState({}, document.title, currentURL.href);
+    },
+    async turnIntoCustomer() {
+      try {
+        this.loading = true
+        const response = await axios.post(route('prospects.turn-into-customer', this.prospect.data.id));
+
+        if (response.status === 200) {
+          this.$inertia.get(route('companies.edit', response.data.company_id));
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
   },
   mounted() {

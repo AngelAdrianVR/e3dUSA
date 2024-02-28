@@ -20,6 +20,7 @@ class Company extends Model
         'fiscal_address',
         'user_id',
         'seller_id',
+        'branches_number',
     ];
 
     //relationships

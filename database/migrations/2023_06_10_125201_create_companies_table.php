@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('rfc');
             $table->string('post_code');
             $table->text('fiscal_address');
+            $table->unsignedTinyInteger('branches_number')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('seller_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestamps();

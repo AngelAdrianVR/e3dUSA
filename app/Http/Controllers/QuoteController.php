@@ -115,11 +115,12 @@ class QuoteController extends Controller
 
     public function edit(Quote $quote)
     {
-        $quote = Quote::with('catalogProducts')->find($quote->id);
+        $quote = $quote->load('catalogProducts');
         $catalog_products = CatalogProduct::all();
-        $company_branches = CompanyBranch::all();
+        $company_branches = CompanyBranch::all(['id', 'name']);
+        $prospects = Prospect::get(['id', 'name', 'contact_name', 'contact_charge']);
 
-        return inertia('Quote/Edit', compact('catalog_products', 'company_branches', 'quote'));
+        return inertia('Quote/Edit', compact('catalog_products', 'company_branches', 'quote', 'prospects'));
     }
 
     public function update(Request $request, Quote $quote)
@@ -132,7 +133,8 @@ class QuoteController extends Controller
             'first_production_days' => 'required|string|max:191',
             'notes' => 'nullable|string|max:191',
             'currency' => 'required|string|max:191',
-            'company_branch_id' => 'required|numeric|min:1',
+            'company_branch_id' => 'nullable|numeric|min:1',
+            'prospect_id' => 'nullable|numeric|min:1',
             'products' => 'array|min:1'
         ]);
 
