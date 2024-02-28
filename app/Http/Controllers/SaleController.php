@@ -16,7 +16,7 @@ use App\Models\Storage;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
 use Illuminate\Http\Request;
-
+use Nette\Utils\Strings;
 
 class SaleController extends Controller
 {
@@ -99,7 +99,8 @@ class SaleController extends Controller
             'is_high_priority' => 'boolean',
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
-            'products' => 'array|min:1'
+            'products' => 'array|min:1',
+            'partialities' => 'nullable'
         ]);
 
         $sale = Sale::create($request->except('products') + ['user_id' => auth()->id()]);
@@ -251,10 +252,10 @@ class SaleController extends Controller
             'is_high_priority' => 'nullable',
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
-            'products' => 'array|min:1'
+            'products' => 'array|min:1',
+            'partialities' => 'nullable'
         ]);
 
-        // dd($request->all());
         $updatedProductIds = [];
         $sale->update($request->except('products'));
 
@@ -298,7 +299,8 @@ class SaleController extends Controller
             'is_high_priority' => 'boolean',
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
-            'products' => 'array|min:1'
+            'products' => 'array|min:1',
+            'partialities' => 'nullable'
         ]);
 
         $updatedProductIds = [];

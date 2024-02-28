@@ -23,6 +23,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->boolean('is_high_priority')->default(false);
             $table->string('authorized_user_name')->nullable();
+            $table->json('partialities')->nullable();
             $table->timestamp('authorized_at')->nullable();
             $table->timestamp('recieved_at')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();

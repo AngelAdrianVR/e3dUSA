@@ -24,6 +24,7 @@ class SaleResource extends JsonResource
             'is_high_priority' => $this->is_high_priority,
             // 'products' => $this->whenLoaded('products'),
             'notes' => $this->notes ?? '--',
+            'partialities' => $this->partialities,
             'authorized_user_name' => $this->authorized_user_name ?? 'No autorizado',
             'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:mm A') ?? 'No autorizado',
             'recieved_at' => $this->recieved_at?->isoFormat('DD MMM, YYYY h:mm A'),

@@ -115,41 +115,54 @@
       <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
           <p class="text-secondary col-span-2 mb-2">Logística</p>
-
           <span class="text-gray-500">Paquetería</span>
           <span>{{ sale.data.shipping_company }}</span>
-          <span class="text-gray-500 my-2">Guía</span>
+          <span class="text-gray-500 my-1">Guía</span>
           <span>{{ sale.data.traking_guide }}</span>
-          <span class="text-gray-500 my-2">Costo de envío</span>
-          <span>{{ sale.data.freight_cost }}</span>
+          <span class="text-gray-500 my-1">Costo de envío</span>
+          <span>$ {{ sale.data.freight_cost }}</span>
+          <span v-if="sale.data.promise_date" class="text-gray-500 my-1">Fecha de entrega</span>
+          <span v-if="sale.data.promise_date" class="text-red-600 bg-red-200 px-2 py-1">{{ sale.data.promise_date
+          }}</span>
+          <div v-if="sale.data.partialities" class="col-span-full">
+            <article v-for="(item, index) in sale.data.partialities" :key="index" class="grid grid-cols-2">
+              <span class="col-span-full font-bold my-2">Parcialidad {{ (index + 2) }}</span>
+              <span class="text-gray-500">Paquetería</span>
+              <span>{{ item.shipping_company }}</span>
+              <span class="text-gray-500 my-1">Guía</span>
+              <span>{{ item.traking_guide }}</span>
+              <span class="text-gray-500 my-1">Costo de envío</span>
+              <span>$ {{ item.freight_cost }}</span>
+              <span v-if="item.promise_date" class="text-gray-500 my-1">Fecha de entrega</span>
+              <span v-if="item.promise_date" class="text-red-600 bg-red-200 px-2 py-1">{{ dateFormat(item.promise_date) }}</span>
+            </article>
+          </div>
 
           <p class="text-secondary col-span-2 mb-2 mt-8">Datos de la órden</p>
 
           <span class="text-gray-500">ID</span>
           <span>{{ sale.data.id }}</span>
-          <span class="text-gray-500 my-2">Solicitada por</span>
+          <span class="text-gray-500 my-1">Solicitada por</span>
           <span>{{ sale.data.user.name }}</span>
-          <span class="text-gray-500 my-2">Solicitada el</span>
+          <span class="text-gray-500 my-1">Solicitada el</span>
           <span>{{ sale.data.created_at }}</span>
-          <span class="text-gray-500 my-2">Medio de petición</span>
+          <span class="text-gray-500 my-1">Medio de petición</span>
           <span>{{ sale.data.order_via }}</span>
-          <span class="text-gray-500 my-2">Es prioridad alta</span>
+          <span class="text-gray-500 my-1">Es prioridad alta</span>
           <span>
             <i v-if="currentSale?.is_high_priority" class="fa-solid fa-check text-red-500"></i>
             <i v-else class="fa-solid fa-minus"></i>
           </span>
-          <span v-if="sale.data.promise_date" class="text-gray-500 my-2">Fecha de entrega</span>
-          <span v-if="sale.data.promise_date" class="text-red-600 bg-red-200 px-2 py-1">{{ sale.data.promise_date }}</span>
-          <span class="text-gray-500 my-2">OCE</span> 
+          <span class="text-gray-500 my-1">OCE</span>
           <span>{{ sale.data.oce_name }}</span>
-          <span class="text-gray-500 my-2">Factura</span>
+          <span class="text-gray-500 my-1">Factura</span>
           <span>{{ sale.data.invoice }}</span>
-          <span class="text-gray-500 my-2">Estatus</span>
+          <span class="text-gray-500 my-1">Estatus</span>
           <span :class="sale.data.status['text-color'] +
             ' ' +
             sale.data.status['border-color']
             " class="rounded-full border text-center">{{ sale.data.status["label"] }}</span>
-          <span class="text-gray-500 my-2">Notas</span>
+          <span class="text-gray-500 my-1">Notas</span>
           <span>{{ sale.data.notes }}</span>
         </div>
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
@@ -159,24 +172,24 @@
           <span class="mb-6">{{ sale.data.company_branch?.company?.business_name }}</span>
           <span class="text-gray-500">ID</span>
           <span>{{ sale.data.company_branch?.id }}</span>
-          <span class="text-gray-500 my-2">Sucursal</span>
+          <span class="text-gray-500 my-1">Sucursal</span>
           <span>{{ sale.data.company_branch?.name }}</span>
-          <span class="text-gray-500 my-2">Dirección</span>
+          <span class="text-gray-500 my-1">Dirección</span>
           <span>{{ sale.data.company_branch?.address }}</span>
-          <span class="text-gray-500 my-2">Código postal</span>
+          <span class="text-gray-500 my-1">Código postal</span>
           <span>{{ sale.data.company_branch?.post_code }}</span>
-          <span class="text-gray-500 my-2">Teléfono</span>
+          <span class="text-gray-500 my-1">Teléfono</span>
           <span>{{ sale.data.company_branch?.phone }}</span>
 
           <p class="text-secondary col-span-2 mt-7">Contacto</p>
 
-          <span class="text-gray-500 my-2">Nombre</span>
+          <span class="text-gray-500 my-1">Nombre</span>
           <span>{{ sale.data.contact?.name }}</span>
-          <span class="text-gray-500 my-2">Correo(s) electrónico(s)</span>
+          <span class="text-gray-500 my-1">Correo(s) electrónico(s)</span>
           <span>{{ sale.data.contact?.email }}, {{ sale.data.contact?.additional_emails?.join(', ') }}</span>
-          <span class="text-gray-500 my-2">telefono(s)</span>
+          <span class="text-gray-500 my-1">telefono(s)</span>
           <span>{{ sale.data.contact?.phone }}, {{ sale.data.contact?.additional_phones?.join(', ') }}</span>
-          <span class="text-gray-500 my-2">Cargo</span>
+          <span class="text-gray-500 my-1">Cargo</span>
           <span>{{ sale.data.contact?.charge }}</span>
         </div>
       </div>
@@ -198,7 +211,6 @@
 
       <div v-if="tabs == 3" class="p-7">
         <p class="text-secondary mb-2">Historial</p>
-
       </div>
 
       <!-- ------------- tab 3 history ends ------------ -->
@@ -221,7 +233,6 @@
 
           <div class="flex justify-end space-x-3 pt-5 pb-1">
             <PrimaryButton>Crear órden</PrimaryButton>
-            <!-- <CancelButton @click="productionOrderModal = false" class="mr-2">Cancelar</CancelButton> -->
           </div>
         </div>
       </Modal>
@@ -241,12 +252,13 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import ProductSaleCard from "@/Components/MyComponents/ProductSaleCard.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from "axios";
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default {
   data() {
     return {
       saleSelected: "",
-      // currentSale: null,
       tabs: 1,
       showConfirmModal: false,
       productionOrderModal: false,
@@ -269,6 +281,11 @@ export default {
     ProductSaleCard
   },
   methods: {
+    dateFormat(date) {
+      const formattedDate = format(new Date(date), 'dd MMMM yyyy', { locale: es });
+
+      return formattedDate;
+    },
     async deleteItem() {
       try {
         const response = await axios.delete(

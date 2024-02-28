@@ -59,26 +59,40 @@
             <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
                 <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
                     <h2 class="text-secondary col-span-full">Logística</h2>
-                    <span class="text-gray-500">ID</span>
-                    <span>{{ sale.data?.folio.replace('OV', 'OP') }}</span>
-                    <span class="text-gray-500">Paquetería</span>
+                    <span class="text-gray-500 my-1">Paquetería</span>
                     <span>{{ sale.data?.shipping_company }}</span>
-                    <span class="text-gray-500">Guía</span>
+                    <span class="text-gray-500 my-1">Guía</span>
                     <span>{{ sale.data?.tracking_guide ?? '--' }}</span>
-                    <span class="text-gray-500">Costo logística</span>
-                    <span>${{ sale.data?.freight_cost }}</span>
+                    <span class="text-gray-500 my-1">Costo logística</span>
+                    <span>$ {{ sale.data?.freight_cost }}</span>
+                    <span v-if="sale.data?.promise_date" class="text-gray-500 my-1">Fecha de entrega</span>
+                    <span v-if="sale.data?.promise_date" class="text-red-600 bg-red-200 px-2 py-1">
+                        {{ sale.data.promise_date }}
+                    </span>
+                    <div v-if="sale.data.partialities" class="col-span-full">
+                        <article v-for="(item, index) in sale.data.partialities" :key="index" class="grid grid-cols-2">
+                            <span class="col-span-full font-bold my-2">Parcialidad {{ (index + 2) }}</span>
+                            <span class="text-gray-500">Paquetería</span>
+                            <span>{{ item.shipping_company }}</span>
+                            <span class="text-gray-500 my-1">Guía</span>
+                            <span>{{ item.traking_guide }}</span>
+                            <span class="text-gray-500 my-1">Costo de envío</span>
+                            <span>$ {{ item.freight_cost }}</span>
+                            <span v-if="item.promise_date" class="text-gray-500 my-1">Fecha de entrega</span>
+                            <span v-if="item.promise_date" class="text-red-600 bg-red-200 px-2 py-1">{{
+                                dateFormat(item.promise_date) }}</span>
+                        </article>
+                    </div>
 
                     <h2 class="text-secondary col-span-full mt-6">Datos de la orden</h2>
+                    <span class="text-gray-500">ID</span>
+                    <span>{{ sale.data?.folio.replace('OV', 'OP') }}</span>
                     <span class="text-gray-500 my-2">Vendedor</span>
                     <span>{{ sale.data?.user?.name }}</span>
                     <span class="text-gray-500 my-2">Creador de orden de producción</span>
                     <span>{{ sale.data?.productions[0].user?.name }}</span>
                     <span class="text-gray-500 my-2">Solicitada el</span>
                     <span>{{ getDateFormtted(sale.data?.productions[0].created_at) }}</span>
-                    <span v-if="sale.data?.promise_date" class="text-gray-500 my-2">Fecha de entrega</span>
-                    <span v-if="sale.data?.promise_date" class="text-red-600 bg-red-200 px-2 py-1">
-                        {{ sale.data.promise_date }}
-                    </span>
                     <span class="text-gray-500 my-2">Medio de petición</span>
                     <span>{{ sale.data?.order_via }}</span>
                     <span class="text-gray-500 my-2">Factura</span>
@@ -166,6 +180,8 @@ import InputError from "@/Components/InputError.vue";
 import Traveler from "./Tabs/Traveler.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import moment from "moment";
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default {
     data() {
@@ -176,12 +192,7 @@ export default {
         return {
             form,
             selectedSale: "",
-            // currentSale: null,
-            // startOrderModal: false,
-            // helpDialog: false,
             tabs: 1,
-
-            // selections
             orderedProductsSelected: [],
         };
     },
@@ -196,13 +207,17 @@ export default {
         DropdownLink,
         CancelButton,
         PrimaryButton,
-        // Modal,
         CancelButton,
         Traveler,
         InputError,
         Link
     },
     methods: {
+        dateFormat(date) {
+            const formattedDate = format(new Date(date), 'dd MMMM yyyy', { locale: es });
+
+            return formattedDate;
+        },
         handleSelections(index, isSelected) {
             if (isSelected) {
                 this.orderedProductsSelected.push(this.sale.data.catalogProductCompanySales[index].id);
