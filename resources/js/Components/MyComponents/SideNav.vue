@@ -147,7 +147,7 @@ export default {
                             }),
                         },
                         {
-                            label: 'Órdenes de venta',
+                            label: 'Órdenes de venta / stock',
                             route: 'sales.index',
                             show: this.$page.props.auth.user.permissions.includes('Ver ordenes de venta'),
                             notifications: this.$page.props.auth.user?.notifications?.some(notification => {
@@ -375,7 +375,7 @@ export default {
                     active: route().current('machines.*') || route().current('more-additional-times.*') || route().current('meetings.*') ||
                         route().current('samples.*') || route().current('production-costs.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                        return ['machine', 'meeting', 'sample', 'media-library'].includes(notification.data.module);
+                        return ['machine', 'meeting', 'samples', 'media-library'].includes(notification.data.module);
                     }),
                     options: [
                         {
@@ -423,7 +423,7 @@ export default {
                             route: 'samples.index',
                             show: this.$page.props.auth.user.permissions.includes('Ver muestra'),
                             notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                                return notification.data.module === 'sample';
+                                return notification.data.module === 'samples';
                             }),
                         },
                         {

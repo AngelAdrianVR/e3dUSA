@@ -94,7 +94,7 @@ export default {
                             show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones')
                         },
                         {
-                            label: 'Órdenes de venta',
+                            label: 'Órdenes de venta / stock',
                             route: route('sales.index'),
                             active: route().current('sales.*'),
                             show: this.$page.props.auth.user.permissions.includes('Ver ordenes de venta')

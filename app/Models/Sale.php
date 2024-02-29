@@ -33,12 +33,15 @@ class Sale extends Model implements HasMedia
         'user_id',
         'company_branch_id',
         'contact_id',
-        'oportunity_id'
+        'oportunity_id',
+        'partialities',
+        'is_sale_production',
     ];
 
     protected $casts = [
         'authorized_at' => 'datetime',
         'recieved_at' => 'datetime',
+        'partialities' => 'array',
         'promise_date' => 'date',
     ];
 
