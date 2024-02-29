@@ -24,7 +24,6 @@ class Sample extends Model implements HasMedia
         'user_id',
         'authorized_user_name',
         'authorized_at',
-        'user_id',
         'products',
         'will_back',
         'requires_modification',

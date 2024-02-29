@@ -25,6 +25,7 @@
 
             <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
+                <NotificationCenter module="samples" />
                 <div class="flex justify-between">
                     <!-- pagination -->
                     <div>
@@ -94,7 +95,7 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
-
+import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 
 export default {
     data() {
@@ -115,6 +116,7 @@ export default {
         SecondaryButton,
         Link,
         TextInput,
+        NotificationCenter,
     },
     props: {
         samples: Array
