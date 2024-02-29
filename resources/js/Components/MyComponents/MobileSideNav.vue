@@ -58,7 +58,7 @@ export default {
                      route().current('prospects.*'),
                     options: [
                         {
-                            label: 'Análisis de ventas',
+                            label: 'Inicio CRM',
                             route: route('sale-analitics.index'),
                             show: this.$page.props.auth.user.permissions.includes('Analisis de ventas'),
                             notifications: false,
