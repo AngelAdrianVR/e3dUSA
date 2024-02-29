@@ -35,6 +35,7 @@ class Sale extends Model implements HasMedia
         'contact_id',
         'oportunity_id',
         'partialities',
+        'is_sale_production',
     ];
 
     protected $casts = [

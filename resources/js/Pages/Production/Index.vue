@@ -31,7 +31,7 @@
                             <el-pagination @current-change="handlePagination" layout="prev, pager, next"
                                 :total="productions.data.length" />
                         </div>
-    
+
                         <!-- buttons -->
                         <div>
                             <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
@@ -44,20 +44,54 @@
                         </div>
                     </div>
                     <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
-                        @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
+                        @selection-change="handleSelectionChange" ref="multipleTableRef"
+                        :row-class-name="tableRowClassName">
                         <el-table-column type="selection" width="55" />
-                        <el-table-column prop="p_folio" label="Folio" />
+                        <el-table-column label="p_folio" width="100">
+                            <template #default="scope">
+                                <div class="flex">
+                                    <p class="mr-2">
+                                        <el-tooltip v-if="scope.row.is_sale_production" content="Orden de venta" placement="top">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="size-4 mt-1 text-purple-500">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                            </svg>
+                                        </el-tooltip>
+                                        <el-tooltip v-else content="Orden de stock" placement="top">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="size-4 mt-1 text-rose-500">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                                            </svg>
+                                        </el-tooltip>
+                                    </p>
+                                    <p class="flex-0 w-[80%]">{{ scope.row.folio }}</p>
+                                </div>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="user.name" label="Vendedor" />
                         <el-table-column prop="company_branch.name" label="Cliente" />
                         <el-table-column prop="created_at" label="Creada el" />
-                        <el-table-column prop="status['label']" label="Estatus" />
+                        <el-table-column label="Estatus">
+                            <template #default="scope">
+                                <div class="flex">
+                                    <p class="mr-2" :class="getStatusColor(scope.row)">
+                                        <i class="fa-solid fa-circle text-[10px]"></i>
+                                    </p>
+                                    <p class="flex-0 w-[80%]">{{ scope.row.status['label'] }}</p>
+                                </div>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="productions.length" label="Operadores" />
                         <el-table-column align="right" fixed="right" width="190">
                             <template #header>
                                 <div class="flex space-x-2">
-                                <TextInput v-model="inputSearch" type="search" @keyup.enter="handleSearch" class="w-full text-gray-600" placeholder="Buscar" />
-                                <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
-                            </div>
+                                    <TextInput v-model="inputSearch" type="search" @keyup.enter="handleSearch"
+                                        class="w-full text-gray-600" placeholder="Buscar" />
+                                    <el-button @click="handleSearch" type="primary" plain class="mb-3"><i
+                                            class="fa-solid fa-magnifying-glass"></i></el-button>
+                                </div>
                             </template>
                             <template #default="scope">
                                 <el-dropdown trigger="click" @command="handleCommand">
@@ -66,9 +100,11 @@
                                     </span>
                                     <template #dropdown>
                                         <el-dropdown-menu>
-                                            <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
+                                            <el-dropdown-item :command="'show-' + scope.row.id"><i
+                                                    class="fa-solid fa-eye"></i>
                                                 Ver</el-dropdown-item>
-                                            <el-dropdown-item :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                            <el-dropdown-item :command="'edit-' + scope.row.id"><i
+                                                    class="fa-solid fa-pen"></i>
                                                 Editar</el-dropdown-item>
                                         </el-dropdown-menu>
                                     </template>
@@ -117,7 +153,7 @@ export default {
         productions: Array
     },
     methods: {
-        handleSearch(){
+        handleSearch() {
             this.search = this.inputSearch;
         },
         handleSelectionChange(val) {
@@ -180,16 +216,20 @@ export default {
             }
         },
         tableRowClassName({ row, rowIndex }) {
-            if (row.status['label'] == 'Producción sin iniciar') {
-                return 'cursor-pointer text-amber-500';
+            return 'cursor-pointer text-xs';
+        },
+        getStatusColor(row) {
+            if (row.status['label'] == 'Esperando autorización') {
+                return 'text-red-500';
+            } else if (row.status['label'] == 'Producción sin iniciar') {
+                return 'text-amber-500';
             } else if (row.status['label'] == 'Producción en proceso') {
-                return 'cursor-pointer text-blue-500';
+                return 'text-blue-500';
             } else if (row.status['label'] == 'Producción terminada') {
-                return 'cursor-pointer text-green-500';
-            } else if (row.status['label'] == 'Falta de materia prima') {
-                return 'cursor-pointer text-red-500';
+                return 'text-green-500';
+            } else if (row.status['label'] == 'Autorizado sin orden de producción') {
+                return 'text-gray-500';
             }
-            return 'cursor-pointer';
         },
         handleRowClick(row) {
             this.$inertia.get(route('productions.show', row));

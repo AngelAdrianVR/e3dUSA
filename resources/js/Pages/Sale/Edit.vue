@@ -42,6 +42,10 @@
                     </div>
                 </div>
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
+                    <el-radio-group v-model="form.is_sale_production" @change="handleChangeProductionType" size="small">
+                        <el-radio :label="1">Orden de venta</el-radio>
+                        <el-radio :label="0">Orden de stock</el-radio>
+                    </el-radio-group>
                     <div class="flex items-center">
                         <el-tooltip content="Cliente: Seleccione para poder habilitar sus productos" placement="top">
                             <span
@@ -72,163 +76,165 @@
                         <p v-if="!form.contact_id" class="text-xs text-primary ml-2">No olvides seleccionar el contacto.</p>
                         <InputError :message="form.errors.contact_id" />
                     </div>
-                    <el-divider content-position="left">Logistica</el-divider>
-                    <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
-                        <div class="ml-7 col-span-full">
-                            <label class="text-sm ml-2 mb-px flex items-center">Fecha de entrega esperada
-                                <el-tooltip
-                                    content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega"
-                                    placement="right">
-                                    <div
-                                        class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
-                                        <i class="fa-solid fa-info text-primary text-[7px]"></i>
-                                    </div>
-                                </el-tooltip>
-                            </label>
-                            <el-date-picker v-model="form.promise_date" type="date" placeholder="Fecha de entrega esperada"
-                                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
-                            <InputError :message="form.errors.promise_date" />
-                        </div>
-                        <div class="flex items-center">
-                            <el-tooltip content="Paquetería" placement="top">
-                                <i
-                                    class="fa-solid fa-truck-fast font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
-                            </el-tooltip>
-                            <el-select v-model="form.shipping_company" placeholder="Paquetería">
-                                <el-option v-for="(item, index) in shippingCompanies" :key="item" :label="item"
-                                    :value="item" />
-                            </el-select>
-                            <InputError :message="form.errors.shipping_company" />
-                        </div>
-                        <div>
-                            <IconInput v-model="form.freight_cost" inputPlaceholder="Costo logística" inputType="text">
-                                <el-tooltip content="Costo logística" placement="top">
-                                    <i class="fa-solid fa-file-invoice-dollar"></i>
-                                </el-tooltip>
-                            </IconInput>
-                            <InputError :message="form.errors.freight_cost" />
-                        </div>
-                        <div class="col-span-full">
-                            <IconInput v-model="form.tracking_guide" inputPlaceholder="Guía" inputType="text">
-                                <el-tooltip content="Guía" placement="top">
-                                    <i class="fa-solid fa-magnifying-glass-location"></i>
-                                </el-tooltip>
-                            </IconInput>
-                            <InputError :message="form.errors.tracking_guide" />
-                        </div>
-                    </div>
-                    <!-- Agregar parcialidades -->
-                    <div v-for="(item, index) in form.partialities" :key="index" class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
-                        <h2 class="col-span-full font-bold flex items-center space-x-3">
-                            <span>Parcialidad {{ (index + 2) }}</span>
-                            <button @click="removePartial(index)" type="button" class="text-xs size-6 text-primary rounded-full hover:bg-gray-200">
-                                <i class="fa-regular fa-trash-can"></i>
-                            </button>
-                        </h2>
-                        <div class="ml-7 col-span-full">
-                            <label class="text-sm ml-2 mb-px flex items-center">Fecha de entrega esperada
-                                <el-tooltip
-                                    content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega"
-                                    placement="right">
-                                    <div
-                                        class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
-                                        <i class="fa-solid fa-info text-primary text-[7px]"></i>
-                                    </div>
-                                </el-tooltip>
-                            </label>
-                            <el-date-picker v-model="form.partialities[index].promise_date" type="date" placeholder="Fecha de entrega esperada"
-                                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
-                        </div>
-                        <div class="flex items-center">
-                            <el-tooltip content="Paquetería" placement="top">
-                                <i
-                                    class="fa-solid fa-truck-fast font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
-                            </el-tooltip>
-                            <el-select v-model="form.partialities[index].shipping_company" placeholder="Paquetería">
-                                <el-option v-for="(item, index) in shippingCompanies" :key="item" :label="item"
-                                    :value="item" />
-                            </el-select>
-                        </div>
-                        <div>
-                            <IconInput v-model="form.partialities[index].freight_cost" inputPlaceholder="Costo logística" inputType="text">
-                                <el-tooltip content="Costo logística" placement="top">
-                                    <i class="fa-solid fa-file-invoice-dollar"></i>
-                                </el-tooltip>
-                            </IconInput>
-                        </div>
-                        <div class="col-span-full">
-                            <IconInput v-model="form.partialities[index].tracking_guide" inputPlaceholder="Guía" inputType="text">
-                                <el-tooltip content="Guía" placement="top">
-                                    <i class="fa-solid fa-magnifying-glass-location"></i>
-                                </el-tooltip>
-                            </IconInput>
-                        </div>
-                    </div>
-                    
-                    <!-- btn agregar parcialidad -->
-                    <button @click="addPartial" type="button" class="col-span-full w-full text-primary text-xs text-right underline">+ Agregar parcialidad</button>
-
-                    <el-divider content-position="left">Datos de la órden</el-divider>
-                    <div class="grid gap-x-6 gap-y-2 mb-6 md:grid-cols-2">
-                        <div class="flex items-center">
-                            <el-tooltip content="Medio de petición *" placement="top">
-                                <i
-                                    class="fa-solid fa-arrow-right-to-bracket font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
-                            </el-tooltip>
-                            <el-select v-model="form.order_via" placeholder="Medio de petición *">
-                                <el-option v-for="(item, index) in orderVias" :key="item" :label="item" :value="item" />
-                            </el-select>
-                            <InputError :message="form.errors.order_via" />
-                        </div>
-                        <div>
-                            <IconInput v-model="form.invoice" inputPlaceholder="Factura">
-                                <el-tooltip content="Factura" placement="top">
-                                    <i class="fa-solid fa-money-check-dollar"></i>
-                                </el-tooltip>
-                            </IconInput>
-                            <InputError :message="form.errors.invoice" />
-                        </div>
-                        <div class="md:col-span-3">
-                            <IconInput v-model="form.oce_name" inputPlaceholder="Nombre / folio OCE">
-                                <el-tooltip content="Nombre / folio OCE" placement="top">
-                                    <i class="fa-solid fa-file-invoice"></i>
-                                </el-tooltip>
-                            </IconInput>
-                            <InputError :message="form.errors.oce_name" />
-                        </div>
-                        <div class="col-span-full">
+                    <section v-if="form.is_sale_production">
+                        <el-divider content-position="left">Logistica</el-divider>
+                        <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
+                            <div class="ml-7 col-span-full">
+                                <label class="text-sm ml-2 mb-px flex items-center">Fecha de entrega esperada
+                                    <el-tooltip
+                                        content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega"
+                                        placement="right">
+                                        <div
+                                            class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
+                                            <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                        </div>
+                                    </el-tooltip>
+                                </label>
+                                <el-date-picker v-model="form.promise_date" type="date" placeholder="Fecha de entrega esperada"
+                                    format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
+                                <InputError :message="form.errors.promise_date" />
+                            </div>
                             <div class="flex items-center">
-                                <span
-                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                                    <el-tooltip content="OCE" placement="top">
+                                <el-tooltip content="Paquetería" placement="top">
+                                    <i
+                                        class="fa-solid fa-truck-fast font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
+                                </el-tooltip>
+                                <el-select v-model="form.shipping_company" placeholder="Paquetería">
+                                    <el-option v-for="(item, index) in shippingCompanies" :key="item" :label="item"
+                                        :value="item" />
+                                </el-select>
+                                <InputError :message="form.errors.shipping_company" />
+                            </div>
+                            <div>
+                                <IconInput v-model="form.freight_cost" inputPlaceholder="Costo logística" inputType="text">
+                                    <el-tooltip content="Costo logística" placement="top">
+                                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                                    </el-tooltip>
+                                </IconInput>
+                                <InputError :message="form.errors.freight_cost" />
+                            </div>
+                            <div class="col-span-full">
+                                <IconInput v-model="form.tracking_guide" inputPlaceholder="Guía" inputType="text">
+                                    <el-tooltip content="Guía" placement="top">
+                                        <i class="fa-solid fa-magnifying-glass-location"></i>
+                                    </el-tooltip>
+                                </IconInput>
+                                <InputError :message="form.errors.tracking_guide" />
+                            </div>
+                        </div>
+                        <!-- Agregar parcialidades -->
+                        <div v-for="(item, index) in form.partialities" :key="index" class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
+                            <h2 class="col-span-full font-bold flex items-center space-x-3">
+                                <span>Parcialidad {{ (index + 2) }}</span>
+                                <button @click="removePartial(index)" type="button" class="text-xs size-6 text-primary rounded-full hover:bg-gray-200">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                </button>
+                            </h2>
+                            <div class="ml-7 col-span-full">
+                                <label class="text-sm ml-2 mb-px flex items-center">Fecha de entrega esperada
+                                    <el-tooltip
+                                        content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega"
+                                        placement="right">
+                                        <div
+                                            class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
+                                            <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                        </div>
+                                    </el-tooltip>
+                                </label>
+                                <el-date-picker v-model="form.partialities[index].promise_date" type="date" placeholder="Fecha de entrega esperada"
+                                    format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
+                            </div>
+                            <div class="flex items-center">
+                                <el-tooltip content="Paquetería" placement="top">
+                                    <i
+                                        class="fa-solid fa-truck-fast font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
+                                </el-tooltip>
+                                <el-select v-model="form.partialities[index].shipping_company" placeholder="Paquetería">
+                                    <el-option v-for="(item, index) in shippingCompanies" :key="item" :label="item"
+                                        :value="item" />
+                                </el-select>
+                            </div>
+                            <div>
+                                <IconInput v-model="form.partialities[index].freight_cost" inputPlaceholder="Costo logística" inputType="text">
+                                    <el-tooltip content="Costo logística" placement="top">
+                                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                                    </el-tooltip>
+                                </IconInput>
+                            </div>
+                            <div class="col-span-full">
+                                <IconInput v-model="form.partialities[index].tracking_guide" inputPlaceholder="Guía" inputType="text">
+                                    <el-tooltip content="Guía" placement="top">
+                                        <i class="fa-solid fa-magnifying-glass-location"></i>
+                                    </el-tooltip>
+                                </IconInput>
+                            </div>
+                        </div>
+                        <!-- btn agregar parcialidad -->
+                        <button @click="addPartial" type="button" class="col-span-full w-full text-primary text-xs text-right underline">+ Agregar parcialidad</button>
+                    </section>
+                    <section v-if="form.is_sale_production">
+                        <el-divider content-position="left">Datos de la órden</el-divider>
+                        <div class="grid gap-x-6 gap-y-2 mb-6 md:grid-cols-2">
+                            <div class="flex items-center">
+                                <el-tooltip content="Medio de petición *" placement="top">
+                                    <i
+                                        class="fa-solid fa-arrow-right-to-bracket font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
+                                </el-tooltip>
+                                <el-select v-model="form.order_via" placeholder="Medio de petición *">
+                                    <el-option v-for="(item, index) in orderVias" :key="item" :label="item" :value="item" />
+                                </el-select>
+                                <InputError :message="form.errors.order_via" />
+                            </div>
+                            <div>
+                                <IconInput v-model="form.invoice" inputPlaceholder="Factura">
+                                    <el-tooltip content="Factura" placement="top">
+                                        <i class="fa-solid fa-money-check-dollar"></i>
+                                    </el-tooltip>
+                                </IconInput>
+                                <InputError :message="form.errors.invoice" />
+                            </div>
+                            <div class="md:col-span-3">
+                                <IconInput v-model="form.oce_name" inputPlaceholder="Nombre / folio OCE">
+                                    <el-tooltip content="Nombre / folio OCE" placement="top">
                                         <i class="fa-solid fa-file-invoice"></i>
                                     </el-tooltip>
-                                </span>
-                                <input @input="form.media = $event.target.files[0]" class="input h-12 rounded-lg
-                            file:mr-4 file:py-1 file:px-2
-                            file:rounded-full file:border-0
-                            file:text-sm file:font-semibold
-                            file:bg-primary file:text-white
-                            file:cursor-pointer
-                            hover:file:bg-red-600" aria-describedby="file_input_help" id="file_input" type="file">
+                                </IconInput>
+                                <InputError :message="form.errors.oce_name" />
                             </div>
-                            <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">SVG, PNG, JPG o
-                                GIF (MAX. 4 MB).</p>
-                        </div>
-                        <div class="flex items-center space-x-2 col-span-full">
-                            <label class="flex items-center">
-                                <Checkbox v-model:checked="form.is_high_priority" class="bg-transparent" />
-                                <span class="ml-2 text-xs">Prioridad alta</span>
-                            </label>
-                            <el-tooltip
-                                content="Al seleccionar esta opción, se recordará diariamente por notificación si no se ha creado una orden de producción"
-                                placement="top">
-                                <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
-                                    <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                            <div class="col-span-full">
+                                <div class="flex items-center">
+                                    <span
+                                        class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                                        <el-tooltip content="OCE" placement="top">
+                                            <i class="fa-solid fa-file-invoice"></i>
+                                        </el-tooltip>
+                                    </span>
+                                    <input @input="form.media = $event.target.files[0]" class="input h-12 rounded-lg
+                                file:mr-4 file:py-1 file:px-2
+                                file:rounded-full file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-primary file:text-white
+                                file:cursor-pointer
+                                hover:file:bg-red-600" aria-describedby="file_input_help" id="file_input" type="file">
                                 </div>
-                            </el-tooltip>
+                                <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">SVG, PNG, JPG o
+                                    GIF (MAX. 4 MB).</p>
+                            </div>
+                            <div class="flex items-center space-x-2 col-span-full">
+                                <label class="flex items-center">
+                                    <Checkbox v-model:checked="form.is_high_priority" class="bg-transparent" />
+                                    <span class="ml-2 text-xs">Prioridad alta</span>
+                                </label>
+                                <el-tooltip
+                                    content="Al seleccionar esta opción, se recordará diariamente por notificación si no se ha creado una orden de producción"
+                                    placement="top">
+                                    <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                                        <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                    </div>
+                                </el-tooltip>
+                            </div>
                         </div>
-                    </div>
+                    </section>
                     <div class="flex">
                         <el-tooltip content="Notas de la órden" placement="top">
                             <span
@@ -434,6 +440,7 @@ export default {
             products: [],
             media: null,
             partialities: this.sale.partialities,
+            is_sale_production: this.sale.is_sale_production,
         });
 
         return {
@@ -490,6 +497,9 @@ export default {
         media: Array,
     },
     methods: {
+        handleChangeProductionType() {
+            
+        },
         addPartial() {
             const partiality = {
                 shipping_company: null,

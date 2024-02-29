@@ -92,11 +92,12 @@ class SaleController extends Controller
     {
         $request->validate([
             'shipping_company' => 'nullable',
-            'freight_cost' => 'required|numeric|min:0',
-            'order_via' => 'required',
+            'freight_cost' => 'nullable|numeric|min:0',
+            'order_via' => 'nullable',
             'tracking_guide' => 'nullable',
             'notes' => 'nullable',
             'is_high_priority' => 'boolean',
+            'is_sale_production' => 'boolean',
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
             'products' => 'array|min:1',
@@ -111,7 +112,7 @@ class SaleController extends Controller
         } elseif (app()->environment() === 'production') {
             // notify to Maribel
             $maribel = User::find(3);
-            $maribel->notify(new ApprovalRequiredNotification('orden de venta', 'sales.index'));
+            $maribel->notify(new ApprovalRequiredNotification('orden de venta / stock', 'sales.index'));
         }
 
         // store media
@@ -171,9 +172,10 @@ class SaleController extends Controller
         $sale = SaleResource::make(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator', 'comments.user'], 'productions' => ['user', 'operator']])->find($sale_id));
         $pre_sales = Sale::latest()->get();
         $sales = $pre_sales->map(function ($sale) {
+            $prefix = $sale->is_sale_production ? 'OV-' : 'OS-';
             return [
                 'id' => $sale->id,
-                'folio' => 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT),
+                'folio' => $prefix . str_pad($sale->id, 4, "0", STR_PAD_LEFT),
             ];
         });
 
@@ -244,12 +246,13 @@ class SaleController extends Controller
     {
         $request->validate([
             'shipping_company' => 'nullable',
-            'freight_cost' => 'required|numeric|min:0',
-            'order_via' => 'required',
+            'freight_cost' => 'nullable|numeric|min:0',
+            'order_via' => 'nullable',
             'tracking_guide' => 'nullable',
             'invoice' => 'nullable',
             'notes' => 'nullable',
             'is_high_priority' => 'nullable',
+            'is_sale_production' => 'boolean',
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
             'products' => 'array|min:1',
@@ -291,12 +294,13 @@ class SaleController extends Controller
     {
         $request->validate([
             'shipping_company' => 'nullable',
-            'freight_cost' => 'required|numeric|min:0',
-            'order_via' => 'required',
+            'freight_cost' => 'nullable|numeric|min:0',
+            'order_via' => 'nullable',
             'tracking_guide' => 'nullable',
             'invoice' => 'nullable',
             'notes' => 'nullable',
             'is_high_priority' => 'boolean',
+            'is_sale_production' => 'boolean',
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
             'products' => 'array|min:1',
@@ -403,7 +407,7 @@ class SaleController extends Controller
 
         return response()
             ->json([
-                'message' => "Orden de venta clonada: $new_item_folio", 'newItem' => saleResource::make(Sale::with('companyBranch', 'user')->find($clone->id))
+                'message' => "Orden clonada: $new_item_folio", 'newItem' => saleResource::make(Sale::with('companyBranch', 'user')->find($clone->id))
             ]);
     }
 
