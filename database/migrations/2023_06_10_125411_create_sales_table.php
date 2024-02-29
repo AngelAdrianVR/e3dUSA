@@ -14,15 +14,17 @@ return new class extends Migration
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
             $table->string('shipping_company')->nullable();
-            $table->unsignedFloat('freight_cost');
+            $table->unsignedFloat('freight_cost')->nullable();
             $table->string('oce_name')->nullable();
-            $table->string('order_via');
+            $table->string('order_via')->nullable();
             $table->string('tracking_guide')->nullable();
+            $table->string('is_sale_production')->default(1);
             $table->date('promise_date')->nullable();
             $table->string('invoice')->nullable();
             $table->text('notes')->nullable();
             $table->boolean('is_high_priority')->default(false);
             $table->string('authorized_user_name')->nullable();
+            $table->json('partialities')->nullable();
             $table->timestamp('authorized_at')->nullable();
             $table->timestamp('recieved_at')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();

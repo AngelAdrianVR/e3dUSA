@@ -23,20 +23,28 @@ class Quote extends Model
         'currency',
         'authorized_user_name',
         'authorized_at',
+        'responded_at',
         'is_spanish_template',
         'company_branch_id',
+        'prospect_id',
         'user_id',
         'sale_id'
     ];
 
     protected $casts = [
         'authorized_at' => 'datetime',
+        'responded_at' => 'datetime',
     ];
 
     //relationships
     public function companyBranch(): BelongsTo
     {
         return $this->belongsTo(CompanyBranch::class);
+    }
+    
+    public function prospect(): BelongsTo
+    {
+        return $this->belongsTo(Prospect::class);
     }
 
     public function user(): BelongsTo

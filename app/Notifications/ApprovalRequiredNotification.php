@@ -24,7 +24,9 @@ class ApprovalRequiredNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        if (app()->environment() === 'production') {
+            return ['mail'];
+        }
     }
 
     /**

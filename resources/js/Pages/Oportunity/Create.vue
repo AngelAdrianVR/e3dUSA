@@ -99,7 +99,8 @@
               <label class="text-sm">Contacto *</label> <br />
               <el-select @change="saveContactPhone()" v-model="form.contact" clearable filterable placeholder="Seleccione"
                 no-data-text="No hay contactos registrados" no-match-text="No se encontraron coincidencias">
-                <el-option v-for="contact in company_branch_obj?.contacts" :key="contact" :label="contact.name"
+                <el-option v-for="contact in company_branch_obj?.contacts" :key="contact" style="font-size: 11px"
+                  :label="contact.name + ' (' + contact.email + ', ' + contact.additional_emails?.join(', ') + ')'"
                   :value="contact.name" />
               </el-select>
               <p v-if="$page.props.errors?.contact" class="text-xs text-red-600">El campo contacto es obligatorio</p>

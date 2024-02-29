@@ -28,8 +28,9 @@ class CompanyBranchController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
-            'address' => 'required|string',
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'state' => 'nullable|string|max:255',
             'post_code_branch' => 'required|string',
             'sat_method' => 'required|string',
             'sat_type' => 'required|string',
@@ -39,6 +40,7 @@ class CompanyBranchController extends Controller
        $company_branch = CompanyBranch::create([
             'name' => $request->name,
             'address' => $request->address,
+            'state' => $request->state,
             'post_code' => $request->post_code_branch,
             'sat_method' => $request->sat_method,
             'sat_type' => $request->sat_type,

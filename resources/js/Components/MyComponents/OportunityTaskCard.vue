@@ -75,7 +75,7 @@
             :disabled="!canEdit" format="YYYY-MM-DD" />
           <InputError :message="form.errors.limit_date" />
         </div>
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-2 w-full">
           <label class="text-sm">Hora</label>
           <el-time-select v-model="form.time" start="07:00" step="00:15" end="23:30"
               placeholder="Seleccione una hora" :disabled="!canEdit" />

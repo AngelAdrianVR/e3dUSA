@@ -11,6 +11,8 @@ use App\Models\CatalogProductCompany;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Company;
 use App\Models\CompanyBranch;
+use App\Models\Oportunity;
+use App\Models\Prospect;
 use App\Models\Quote;
 use App\Models\Sale;
 use App\Models\User;
@@ -23,39 +25,46 @@ class QuoteController extends Controller
 {
     public function index()
     {
-        // $quotes = QuoteResource::collection(Quote::latest()->get());
+        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
+        $pre_quotes = Quote::latest()->get();
+        $quotes = $pre_quotes->map(function ($quote) {
+            return [
+                'id' => $quote->id,
+                'folio' => 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT),
+                'user' => [
+                    'id' => $quote->user->id,
+                    'name' => $quote->user->name
+                ],
+                'receiver' => $quote->receiver,
+                'companyBranch' => [
+                    'id' => $quote->companyBranch?->id,
+                    'name' => $quote->companyBranch?->name
+                ],
+                'prospect' => [
+                    'id' => $quote->prospect?->id,
+                    'name' => $quote->prospect?->name
+                ],
+                'authorized_user_name' => $quote->authorized_user_name ?? '--',
+                'authorized_at' => $quote->authorized_at,
+                'created_at' => $quote->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+            ];
+        });
 
-        // return inertia('Quote/Index', compact('quotes'));
-
-         //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
-         $pre_quotes = Quote::latest()->get();
-         $quotes = $pre_quotes->map(function ($quote) {
-             return [
-                 'id' => $quote->id,
-                 'folio' => 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT),
-                 'user' => ['id' => $quote->user->id,
-                            'name' => $quote->user->name
-                            ],
-                 'receiver' => $quote->receiver,
-                 'companyBranch' => ['id' => $quote->companyBranch->id,
-                                    'name' => $quote->companyBranch->name
-                                     ],
-                 'authorized_user_name' => $quote->authorized_user_name ?? '--',
-                 'authorized_at' => $quote->authorized_at,
-                 'created_at' => $quote->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
-                    ];
-                });
-        //  return $quotes;
-
-         return inertia('Quote/Index', compact('quotes'));
+        return inertia('Quote/Index', compact('quotes'));
     }
 
     public function create()
     {
         $catalog_products = CatalogProduct::all();
-        $company_branches = CompanyBranch::all();
+        $company_branches = CompanyBranch::get(['id', 'name']);
+        $prospects = Prospect::get(['id', 'name', 'contact_name', 'contact_charge']);
 
-        return inertia('Quote/Create', compact('catalog_products', 'company_branches'));
+        // si se accede a crear cotización desde oportunidad. Recupera la oportunidad y la manda para llenar el formulario.
+        $opportunity = Oportunity::find(request('opportunityId'));
+
+        // return $opportunity;
+
+        return inertia('Quote/Create', compact('catalog_products', 'company_branches', 'opportunity', 'prospects'));
     }
 
     public function store(Request $request)
@@ -68,7 +77,8 @@ class QuoteController extends Controller
             'first_production_days' => 'required|string|max:191',
             'notes' => 'nullable|string|max:191',
             'currency' => 'required|string|max:191',
-            'company_branch_id' => 'required|numeric|min:1',
+            'company_branch_id' => 'nullable|numeric|min:1',
+            'prospect_id' => 'nullable|numeric|min:1',
             'products' => 'array|min:1',
             'tooling_currency' => 'nullable'
         ]);
@@ -101,9 +111,7 @@ class QuoteController extends Controller
 
     public function show(Quote $quote)
     {
-        $quote = QuoteResource::make(Quote::with('catalogProducts')->findOrFail($quote->id));
-
-        // return $quote;
+        $quote = QuoteResource::make(Quote::with(['catalogProducts', 'prospect'])->findOrFail($quote->id));
 
         if ($quote->is_spanish_template)
             return inertia('Quote/SpanishTemplate', compact('quote'));
@@ -113,11 +121,12 @@ class QuoteController extends Controller
 
     public function edit(Quote $quote)
     {
-        $quote = Quote::with('catalogProducts')->find($quote->id);
+        $quote = $quote->load('catalogProducts');
         $catalog_products = CatalogProduct::all();
-        $company_branches = CompanyBranch::all();
+        $company_branches = CompanyBranch::all(['id', 'name']);
+        $prospects = Prospect::get(['id', 'name', 'contact_name', 'contact_charge']);
 
-        return inertia('Quote/Edit', compact('catalog_products', 'company_branches', 'quote'));
+        return inertia('Quote/Edit', compact('catalog_products', 'company_branches', 'quote', 'prospects'));
     }
 
     public function update(Request $request, Quote $quote)
@@ -130,7 +139,8 @@ class QuoteController extends Controller
             'first_production_days' => 'required|string|max:191',
             'notes' => 'nullable|string|max:191',
             'currency' => 'required|string|max:191',
-            'company_branch_id' => 'required|numeric|min:1',
+            'company_branch_id' => 'nullable|numeric|min:1',
+            'prospect_id' => 'nullable|numeric|min:1',
             'products' => 'array|min:1'
         ]);
 

@@ -19,14 +19,19 @@ class Contact extends Model
         'birthdate_day',
         'birthdate_month',
         'charge',
+        'additional_emails',
+        'additional_phones',
+    ];
+
+    protected $casts = [
+        'additional_emails' => 'array',
+        'additional_phones' => 'array',
     ];
 
     //relationships
-
     public function contactable(): MorphTo
     {
         return $this->morphTo();
     }
-
 
 }

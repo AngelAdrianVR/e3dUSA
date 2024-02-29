@@ -54,31 +54,26 @@ export default {
                     icon: '<i class="fa-solid fa-chart-line text-xs"></i>',
                     active:  route().current('crm.*') || route().current('quotes.*') || route().current('companies.*') ||
                      route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*') ||
-                     route().current('client-monitors.*') || route().current('sale-analitics.*'),
+                     route().current('client-monitors.*') || route().current('sale-analitics.*') ||
+                     route().current('prospects.*'),
                     options: [
                         {
-                            label: 'Análisis de ventas',
+                            label: 'Inicio CRM',
                             route: route('sale-analitics.index'),
                             show: this.$page.props.auth.user.permissions.includes('Analisis de ventas'),
                             notifications: false,
                         },
                         {
-                            label: 'Cotizaciones',
-                            route: route('quotes.index'),
-                            active: route().current('quotes.*'),
-                            show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones')
+                            label: 'Prospectos',
+                            route: route('prospects.index'),
+                            active: route().current('prospects.*'),
+                            show: this.$page.props.auth.user.permissions.includes('Ver prospectos')
                         },
                         {
                             label: 'Clientes',
                             route: route('companies.index'),
                             active: route().current('companies.*'),
                             show: this.$page.props.auth.user.permissions.includes('Ver clientes')
-                        },
-                        {
-                            label: 'Órdenes de venta',
-                            route: route('sales.index'),
-                            active: route().current('sales.*'),
-                            show: this.$page.props.auth.user.permissions.includes('Ver ordenes de venta')
                         },
                         {
                             label: 'Oportunidades',
@@ -92,15 +87,26 @@ export default {
                             active: route().current('client-monitors.*'),
                             show: this.$page.props.auth.user.permissions.includes('Ver seguimiento integral')
                         },
-                        
-
+                        {
+                            label: 'Cotizaciones',
+                            route: route('quotes.index'),
+                            active: route().current('quotes.*'),
+                            show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones')
+                        },
+                        {
+                            label: 'Órdenes de venta / stock',
+                            route: route('sales.index'),
+                            active: route().current('sales.*'),
+                            show: this.$page.props.auth.user.permissions.includes('Ver ordenes de venta')
+                        },
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones') ||
                         this.$page.props.auth.user.permissions.includes('Ver clientes') ||
                         this.$page.props.auth.user.permissions.includes('Ver ordenes de venta') ||
                         this.$page.props.auth.user.permissions.includes('Ver oportunidades')||
-                        this.$page.props.auth.user.permissions.includes('Ver seguimiento integral')
+                        this.$page.props.auth.user.permissions.includes('Ver seguimiento integral') ||
+                        this.$page.props.auth.user.permissions.includes('Ver prospectos')
                 },
                 {
                     label: 'Proyectos',

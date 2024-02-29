@@ -16,7 +16,9 @@ class CompanyBranch extends Model
         'name',
         'password', // se utiliza para ingresar a la app de clientes
         'address',
+        'state',
         'post_code',
+        'meet_way',
         'sat_method',
         'sat_type',
         'sat_way',
@@ -53,5 +55,10 @@ class CompanyBranch extends Model
     public function quotes():HasMany
     {
         return $this->hasMany(Quote::class);
+    }
+
+    public function designAuthorizations():HasMany
+    {
+        return $this->hasMany(DesignAuthorization::class);
     }
 }
