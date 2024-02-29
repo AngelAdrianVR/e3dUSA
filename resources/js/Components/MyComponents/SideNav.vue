@@ -105,7 +105,7 @@ export default {
                     }),
                     options: [
                         {
-                            label: 'Análisis de ventas',
+                            label: 'Inicio CRM',
                             route: 'sale-analitics.index',
                             show: this.$page.props.auth.user.permissions.includes('Analisis de ventas'),
                             notifications: false,

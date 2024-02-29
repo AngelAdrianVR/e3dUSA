@@ -3,52 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\CatalogProductCompanySale;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
+use App\Models\CompanyBranch;
+use App\Models\Sale;
 
 class SaleAnaliticController extends Controller
 {
-    
+
     public function index()
     {
+        $current_month_sales = Sale::with(['companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct'])->where('is_sale_production', true)
+            ->whereNotNull('authorized_user_name')
+            ->whereMonth('created_at', today())
+            ->get();
 
-    //    // Obtener las ventas del producto
-    //     $product = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')
-    //     ->whereHas('catalogProductCompany.catalogProduct', function ($query) {
-    //         $query->where('part_number', 'C-LL-CLE-0247');
-    //     })
-    //     ->get();
+        $meet_ways = CompanyBranch::selectRaw('meet_way as concept, count(*) as total')
+            ->groupBy('meet_way')
+            ->get()
+            ->toArray();
+        // return $meet_ways;
 
-    //     // Verificar si hay al menos un elemento en el array
-    //     if ($product->isNotEmpty()) {
-    //     // Obtener el valor de new_price de la primera entrada del array
-    //     $product_price = $product[0]->catalogProductCompany->new_price;
-    //     } else {
-    //     // Manejar el caso donde el array $product está vacío
-    //     $product_price = 0;
-    //     }
-
-    //     // Resto del código...
-    //     $grouped = $product->groupBy(function ($item) {
-    //         return \Carbon\Carbon::parse($item->created_at)->format('Y-m');
-    //     });
-
-    //     // Resto del código...
-    //     $monthlySales = $grouped->map(function ($sales, $month) use ($product_price) {
-    //         return [
-    //             'month' => $month,
-    //             'total_sales' => $sales->sum('quantity'),
-    //             'money_sales' => $sales->sum('quantity') * $product_price,
-    //         ];
-    //     })->values()->sortBy('month');
-        
-
-
-            
-            // return $monthlySales;
-
-
-        return inertia('SaleAnalitic/Index');
+        return inertia('SaleAnalitic/Index', compact('current_month_sales', 'meet_ways'));
     }
 
 
@@ -74,7 +48,7 @@ class SaleAnaliticController extends Controller
             ->where('created_at', '>=', $startDate)
             ->get();
 
-            $agrouped = $products->groupBy('catalogProductCompany.catalogProduct.part_number')
+        $agrouped = $products->groupBy('catalogProductCompany.catalogProduct.part_number')
             ->map(function ($group) {
                 return [
                     'name' => $group->first()->catalogProductCompany?->catalogProduct?->name,
@@ -99,18 +73,18 @@ class SaleAnaliticController extends Controller
     {
         // Obtener las ventas del producto
         $product = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')
-        ->whereHas('catalogProductCompany.catalogProduct', function ($query) use($part_number) {
-            $query->where('part_number', $part_number);
-        })
-        ->get();
+            ->whereHas('catalogProductCompany.catalogProduct', function ($query) use ($part_number) {
+                $query->where('part_number', $part_number);
+            })
+            ->get();
 
         // Verificar si hay al menos un elemento en el array
         if ($product->isNotEmpty()) {
-        // Obtener el valor de new_price de la primera entrada del array
-        $product_price = $product[0]->catalogProductCompany->new_price;
+            // Obtener el valor de new_price de la primera entrada del array
+            $product_price = $product[0]->catalogProductCompany->new_price;
         } else {
-        // Manejar el caso donde el array $product está vacío
-        $product_price = 0;
+            // Manejar el caso donde el array $product está vacío
+            $product_price = 0;
         }
 
         // Resto del código...
@@ -129,6 +103,4 @@ class SaleAnaliticController extends Controller
 
         return response()->json(['items' => $monthlySales]);
     }
-
-
 }
