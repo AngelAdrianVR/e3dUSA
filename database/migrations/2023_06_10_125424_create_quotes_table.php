@@ -28,7 +28,8 @@ return new class extends Migration
             $table->string('rejected_razon')->nullable();
             $table->timestamp('responded_at')->nullable();
             $table->boolean('is_spanish_template')->default(true);
-            $table->foreignId('company_branch_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('company_branch_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('prospect_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('sale_id')->nullable()->constrained()->cascadeOnDelete();
             $table->timestamps();

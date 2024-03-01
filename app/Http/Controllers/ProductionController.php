@@ -143,9 +143,10 @@ class ProductionController extends Controller
                     'promise_date' => $production->promise_date?->isoFormat('DD MMMM YYYY') ?? '--',
                     // 'delivery_status' => $delivery_status,
                     'created_at' => $production->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+                    'is_sale_production' => $production->is_sale_production,
                 ];
             });
-            // return $productions;
+
             return inertia('Production/Admin', compact('productions'));
         } elseif (auth()->user()->can('Ordenes de produccion personal')) {
             $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch')->whereHas('productions')->where('user_id', auth()->id())->latest()->get());
@@ -400,6 +401,37 @@ class ProductionController extends Controller
                 ]);
             }
 
+            // agregar a almacen de producto terminado si es orden de stock
+            if (!$production->catalogProductCompanySale->sale->is_sale_production) {
+                $catalog_product = $cpcs->catalogProductCompany->catalogProduct;
+                // Buscar el registro existente de storage para producto-terminado
+                $existingStorage = $catalog_product->storages()
+                    ->where('type', 'producto-terminado')
+                    ->first();
+
+                if ($existingStorage) {
+                    // Si existe, incrementar la cantidad existente
+                    $existingStorage->increment('quantity', $cpcs->quantity);
+                } else {
+                    // Si no existe, crear un nuevo registro de storage
+                    $catalog_product->storages()->create([
+                        'quantity' => $cpcs->quantity,
+                        'location' => 'Por definir',
+                        'type' => 'producto-terminado',
+                    ]);
+                    $existingStorage = $catalog_product->storages()
+                    ->where('type', 'producto-terminado')
+                    ->first();
+                }
+                StockMovementHistory::Create([
+                    'storage_id' => $existingStorage->id,
+                    'user_id' => auth()->id(),
+                    'type' => 'Entrada',
+                    'quantity' => $cpcs->quantity,
+                    'notes' => 'Entrada de producto terminado desde orden de stock OP-' . str_pad($production->catalogProductCompanySale->sale->id, 4, "0", STR_PAD_LEFT),
+                ]);
+            }
+
             // // rebajar o eliminar cantidad en almacen de producto terminado en caso de que hubiera disponible
             // if ($production->catalogProductCompanySale->finished_product_used > 0) {
             //     $finished_product = $production->catalogProductCompanySale->catalogProductCompany->catalogProduct->storages[0];
@@ -443,7 +475,7 @@ class ProductionController extends Controller
             $folio = 'OP-' . str_pad($production->catalogProductCompanySale->sale->id, 4, "0", STR_PAD_LEFT);
             $route = route('productions.show', $production->catalogProductCompanySale->sale->id);
             $users = User::where('is_active', true)->get();
-            $users->each(function ($user) use ($operator_name, $product, $folio, $route){
+            $users->each(function ($user) use ($operator_name, $product, $folio, $route) {
                 if ($user->can('Crear ordenes de compra')) {
                     $user->notify(new LowStockToDispatchOrderNotification($operator_name, $product, $folio, $route));
                 }

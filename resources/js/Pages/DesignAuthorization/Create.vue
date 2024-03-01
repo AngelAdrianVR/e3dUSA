@@ -70,7 +70,7 @@
                         <div>
                             <el-select @change="form.contact_id = null; form.contact_charge = null" v-model="form.company_branch_id" class="" clearable
                                 filterable placeholder="Selecciona un cliente">
-                                <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
+                                <el-option v-for="item in company_branches.filter(cb => cb.company_id == company_id)" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
                             <InputError :message="form.errors.company_branch_id" />
@@ -151,7 +151,8 @@ InputError,
 Back
 },
 props:{
-company_branches: Array
+company_branches: Array,
+company_id: Number,
 },
 methods:{
     store() {

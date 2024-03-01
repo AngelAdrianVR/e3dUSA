@@ -26,6 +26,7 @@ class Quote extends Model
         'responded_at',
         'is_spanish_template',
         'company_branch_id',
+        'prospect_id',
         'user_id',
         'sale_id'
     ];
@@ -39,6 +40,11 @@ class Quote extends Model
     public function companyBranch(): BelongsTo
     {
         return $this->belongsTo(CompanyBranch::class);
+    }
+    
+    public function prospect(): BelongsTo
+    {
+        return $this->belongsTo(Prospect::class);
     }
 
     public function user(): BelongsTo

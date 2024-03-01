@@ -13,6 +13,16 @@
         </template>
 
         <div class="relative overflow-hidden min-h-[60vh]">
+            <div class="flex justify-center space-x-5 mt-5">
+                <p class="mr-2 text-xs text-green-500 flex items-center space-x-2">
+                    <i class="fa-solid fa-circle"></i>
+                    <span>Clilentes</span>
+                </p>
+                <p class="mr-2 text-xs text-blue-500 flex items-center space-x-2">
+                    <i class="fa-solid fa-circle"></i>
+                    <span>Prospectos</span>
+                </p>
+            </div>
             <NotificationCenter module="quote" />
             <div class="lg:w-5/6 mx-auto mt-6">
 
@@ -41,14 +51,24 @@
                     <el-table-column prop="folio" label="Folio" width="100" />
                     <el-table-column prop="user.name" label="Creado por" />
                     <el-table-column prop="receiver" label="Receptor" />
-                    <el-table-column prop="companyBranch.name" label="Cliente" />
+                    <el-table-column prop="companyBranch.name" label="Cliente / Prospecto">
+                        <template #default="scope">
+                            <div class="flex">
+                                <p class="mr-2 mt-px text-[10px]"
+                                    :class="scope.row.companyBranch.name ? 'text-green-500' : 'text-blue-500'">
+                                    <i class="fa-solid fa-circle"></i>
+                                </p>
+                                <span>{{ scope.row.companyBranch.name ?? scope.row.prospect.name }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="authorized_user_name" label="Autorizado por" />
                     <el-table-column prop="created_at" label="Creado el" width="180" />
                     <el-table-column align="right" fixed="right" width="190">
                         <template #header>
                             <div class="flex space-x-2">
-                                <TextInput v-model="inputSearch" @keyup.enter="handleSearch" type="search" class="w-full text-gray-600"
-                                    placeholder="Buscar" />
+                                <TextInput v-model="inputSearch" @keyup.enter="handleSearch" type="search"
+                                    class="w-full text-gray-600" placeholder="Buscar" />
                                 <el-button @click="handleSearch" type="primary" plain class="mb-3"><i
                                         class="fa-solid fa-magnifying-glass"></i></el-button>
                             </div>
@@ -315,7 +335,8 @@ export default {
                         quote.folio.toLowerCase().includes(this.search.toLowerCase()) ||
                         quote.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
                         quote.receiver.toLowerCase().includes(this.search.toLowerCase()) ||
-                        quote.companyBranch.name.toLowerCase().includes(this.search.toLowerCase())
+                        quote.companyBranch.name?.toLowerCase().includes(this.search.toLowerCase()) ||
+                        quote.prospect.name?.toLowerCase().includes(this.search.toLowerCase())
                 );
             }
         }
