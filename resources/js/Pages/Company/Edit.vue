@@ -407,7 +407,7 @@
                   <i class="fa-solid fa-magnifying-glass"></i>
                 </span>
               </el-tooltip>
-              <el-select v-model="product.catalog_product_id" placeholder="Buscar producto">
+              <el-select v-model="product.catalog_product_id" filterable placeholder="Buscar producto">
                 <el-option v-for="item in catalog_products" :key="item.id" :label="item.name" :value="item.id" />
               </el-select>
             </div>
