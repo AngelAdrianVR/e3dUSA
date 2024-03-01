@@ -26,18 +26,22 @@ class Sale extends Model implements HasMedia
         'invoice',
         'notes',
         'is_high_priority',
+        'is_new_design',
         'authorized_user_name',
         'authorized_at',
         'recieved_at',
         'user_id',
         'company_branch_id',
         'contact_id',
-        'oportunity_id'
+        'oportunity_id',
+        'partialities',
+        'is_sale_production',
     ];
 
     protected $casts = [
         'authorized_at' => 'datetime',
         'recieved_at' => 'datetime',
+        'partialities' => 'array',
         'promise_date' => 'date',
     ];
 

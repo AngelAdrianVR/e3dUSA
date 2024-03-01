@@ -213,5 +213,12 @@ return [
         'bank_information' => 'información bancaria',
         'sent_at' => 'fecha de enviado',
         'devolution_date' => 'fecha de devolución',
+        'company_branches' => 'sucursales',
+        'contact_name' => 'nombre del contacto',
+        'contact_phone' => 'teléfono del contacto',
+        'contact_email' => 'correo del contacto',
+        'contact_charge' => 'puesto del contacto',
+        'branches_number' => 'número de sucursales',
+        'abstract' => 'resumen',
     ],
 ];

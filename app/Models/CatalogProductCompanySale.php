@@ -21,12 +21,15 @@ class CatalogProductCompanySale extends Model
         'notes',
         'status',
         'sale_id',
+        'is_new_design',
         'catalog_product_company_id',
+        'traveler_data',
     ];
 
     protected $table = 'catalog_product_company_sale';
 
     protected $casts = [
+        'traveler_data' => 'array',
     ];
 
     //relationships
@@ -49,5 +52,4 @@ class CatalogProductCompanySale extends Model
     {
         return $this->morphMany(Comment::class, 'commentable');
     }
-
 }

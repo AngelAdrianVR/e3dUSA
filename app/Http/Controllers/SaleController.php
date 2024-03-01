@@ -16,7 +16,7 @@ use App\Models\Storage;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
 use Illuminate\Http\Request;
-
+use Nette\Utils\Strings;
 
 class SaleController extends Controller
 {
@@ -69,6 +69,9 @@ class SaleController extends Controller
                     'id' => $contact->id,
                     'name' => $contact->name,
                     'email' => $contact->email,
+                    'charge' => $contact->charge,
+                    'additional_emails' => $contact->additional_emails,
+                    'additional_phones' => $contact->additional_phones,
                 ];
             });
 
@@ -81,7 +84,7 @@ class SaleController extends Controller
             ];
         });
 
-        // return $company_branches;
+
         return inertia('Sale/Create', compact('company_branches', 'opportunityId', 'sample'));
     }
 
@@ -89,14 +92,16 @@ class SaleController extends Controller
     {
         $request->validate([
             'shipping_company' => 'nullable',
-            'freight_cost' => 'required|numeric|min:0',
-            'order_via' => 'required',
+            'freight_cost' => 'nullable|numeric|min:0',
+            'order_via' => 'nullable',
             'tracking_guide' => 'nullable',
             'notes' => 'nullable',
             'is_high_priority' => 'boolean',
+            'is_sale_production' => 'boolean',
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
-            'products' => 'array|min:1'
+            'products' => 'array|min:1',
+            'partialities' => 'nullable'
         ]);
 
         $sale = Sale::create($request->except('products') + ['user_id' => auth()->id()]);
@@ -107,7 +112,7 @@ class SaleController extends Controller
         } elseif (app()->environment() === 'production') {
             // notify to Maribel
             $maribel = User::find(3);
-            $maribel->notify(new ApprovalRequiredNotification('orden de venta', 'sales.index'));
+            $maribel->notify(new ApprovalRequiredNotification('orden de venta / stock', 'sales.index'));
         }
 
         // store media
@@ -167,9 +172,10 @@ class SaleController extends Controller
         $sale = SaleResource::make(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator', 'comments.user'], 'productions' => ['user', 'operator']])->find($sale_id));
         $pre_sales = Sale::latest()->get();
         $sales = $pre_sales->map(function ($sale) {
+            $prefix = $sale->is_sale_production ? 'OV-' : 'OS-';
             return [
                 'id' => $sale->id,
-                'folio' => 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT),
+                'folio' => $prefix . str_pad($sale->id, 4, "0", STR_PAD_LEFT),
             ];
         });
 
@@ -181,8 +187,57 @@ class SaleController extends Controller
     {
         $sale = Sale::find($sale->id);
         $catalog_products_company_sale = CatalogProductCompanySale::with('catalogProductCompany')->where('sale_id', $sale->id)->get();
-        $company_branches = CompanyBranch::with('company.catalogProducts', 'contacts')->get();
         $media = $sale->getMedia('oce')->all();
+
+        //optimizacion de datos en vista para reducir el tiempo de carga
+        $pre_company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
+        $company_branches = $pre_company_branches->map(function ($company_branch) {
+
+            $catalog_products = $company_branch->company->catalogProducts->map(function ($product) {
+
+                $raw_materials = $product->rawMaterials->map(function ($raw_material) {
+
+                    $storages = $raw_material->storages->map(function ($storage) {
+                        return [
+                            'quantity' => $storage->quantity,
+                        ];
+                    });
+
+                    return [
+                        'name' => $raw_material->name,
+                        'pivot' => ['quantity' => $raw_material->pivot->quantity],
+                        'storages' => $storages,
+                    ];
+                });
+
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'pivot' => ['id' => $product->pivot->id],
+                    'raw_materials' => $raw_materials,
+                ];
+            });
+
+
+            $contacts = $company_branch->contacts->map(function ($contact) {
+                return [
+                    'id' => $contact->id,
+                    'name' => $contact->name,
+                    'email' => $contact->email,
+                    'charge' => $contact->charge,
+                    'additional_emails' => $contact->additional_emails,
+                    'additional_phones' => $contact->additional_phones,
+                ];
+            });
+
+            return [
+                'id' => $company_branch->id,
+                'name' => $company_branch->name,
+                'important_notes' => $company_branch->important_notes,
+                'contacts' => $contacts,
+                'catalog_products' => $catalog_products,
+            ];
+        });
 
         return inertia('Sale/Edit', compact('company_branches', 'sale', 'catalog_products_company_sale', 'media'));
     }
@@ -191,18 +246,19 @@ class SaleController extends Controller
     {
         $request->validate([
             'shipping_company' => 'nullable',
-            'freight_cost' => 'required|numeric|min:0',
-            'order_via' => 'required',
+            'freight_cost' => 'nullable|numeric|min:0',
+            'order_via' => 'nullable',
             'tracking_guide' => 'nullable',
             'invoice' => 'nullable',
             'notes' => 'nullable',
             'is_high_priority' => 'nullable',
+            'is_sale_production' => 'boolean',
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
-            'products' => 'array|min:1'
+            'products' => 'array|min:1',
+            'partialities' => 'nullable'
         ]);
 
-        // dd($request->all());
         $updatedProductIds = [];
         $sale->update($request->except('products'));
 
@@ -238,15 +294,17 @@ class SaleController extends Controller
     {
         $request->validate([
             'shipping_company' => 'nullable',
-            'freight_cost' => 'required|numeric|min:0',
-            'order_via' => 'required',
+            'freight_cost' => 'nullable|numeric|min:0',
+            'order_via' => 'nullable',
             'tracking_guide' => 'nullable',
             'invoice' => 'nullable',
             'notes' => 'nullable',
             'is_high_priority' => 'boolean',
+            'is_sale_production' => 'boolean',
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
-            'products' => 'array|min:1'
+            'products' => 'array|min:1',
+            'partialities' => 'nullable'
         ]);
 
         $updatedProductIds = [];
@@ -349,7 +407,7 @@ class SaleController extends Controller
 
         return response()
             ->json([
-                'message' => "Orden de venta clonada: $new_item_folio", 'newItem' => saleResource::make(Sale::with('companyBranch', 'user')->find($clone->id))
+                'message' => "Orden clonada: $new_item_folio", 'newItem' => saleResource::make(Sale::with('companyBranch', 'user')->find($clone->id))
             ]);
     }
 
@@ -373,22 +431,22 @@ class SaleController extends Controller
     {
         if ($query != 'nullable') {
             $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])
-            ->latest()
-            ->where('id', 'LIKE', "%$query%")
-            ->orWhere('created_at', 'LIKE', "%$query%")
-            ->orWhere('authorized_at', 'LIKE', "%$query%")
-            ->orWhere('promise_date', 'LIKE', "%$query%")
-            ->orWhereHas('user', function ($user) use ($query){
-                $user->where('name', 'LIKE', "%$query%");
-            })
-            ->orWhereHas('companyBranch', function ($user) use ($query){
-                $user->where('name', 'LIKE', "%$query%");
-            })
-            ->get());
+                ->latest()
+                ->where('id', 'LIKE', "%$query%")
+                ->orWhere('created_at', 'LIKE', "%$query%")
+                ->orWhere('authorized_at', 'LIKE', "%$query%")
+                ->orWhere('promise_date', 'LIKE', "%$query%")
+                ->orWhereHas('user', function ($user) use ($query) {
+                    $user->where('name', 'LIKE', "%$query%");
+                })
+                ->orWhereHas('companyBranch', function ($user) use ($query) {
+                    $user->where('name', 'LIKE', "%$query%");
+                })
+                ->get());
         } else {
             $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->latest()->paginate(20));
         }
-        
+
         return response()->json(['items' => $sales]);
     }
 }

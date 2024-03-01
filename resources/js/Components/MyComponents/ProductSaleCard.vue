@@ -13,6 +13,11 @@
       <i class="fa-solid fa-exclamation mr-2 text-primary"></i>
       Prioridad alta
     </div>
+    <!-- is new design message -->
+    <div v-if="catalog_product_company_sale.is_new_design"
+      class="z-20 rounded-[3px] absolute font-bold text-sm bg-primarylight text-primary py-1 px-2 -top-10 -right-4 flex items-center justify-center">
+      Diseño nuevo
+    </div>
     <!-- selection circle -->
     <div @click="handleSelection" v-if="!is_view_for_seller"
       class="w-5 h-5 border-2 rounded-full absolute top-3 left-3 cursor-pointer flex items-center justify-center"
@@ -58,11 +63,10 @@
         <!-- Partes que componen el producto  -->
         <div>
           <p class="text-primary text-left">Componentes</p>
-          <p
-            v-for="( raw_material, index ) in  catalog_product_company_sale.catalog_product_company?.catalog_product?.raw_materials "
+          <p v-for="( raw_material, index ) in  catalog_product_company_sale.catalog_product_company?.catalog_product?.raw_materials "
             :key="index" class="text-secondary text-xs underline cursor-pointer uppercase">
-            <p @click.stop="$inertia.get(route('storages.show', comp_storage.id))"
-              v-for="comp_storage in raw_material.storages" :key="comp_storage">•{{ comp_storage.storageable.name }}</p>
+          <p @click.stop="$inertia.get(route('storages.show', comp_storage.id))"
+            v-for="comp_storage in raw_material.storages" :key="comp_storage">•{{ comp_storage.storageable.name }}</p>
           </p>
         </div>
       </div>
@@ -132,7 +136,7 @@
         <button @click="showProgressDetailsModal = true"
           class="bg-primary rounded-full px-1 py-px text-white text-[10px]">Avances</button>
       </div>
-      <p v-for=" production  in  catalog_product_company_sale.productions " :key="production.id"
+      <p v-for="production in catalog_product_company_sale.productions" :key="production.id"
         class="mt-1 flex justify-between items-center">
         <span :class="{
           'text-green-600': $page.props.auth.user.id == production.operator.id,
@@ -140,6 +144,27 @@
         }
           ">-{{ production.operator.name }} {{ production.is_paused ? ' (pausado)' : '' }}
         </span>
+      <div class="flex items-center space-x-1">
+        <el-tooltip v-if="getNextAction(production) == 'Finalizar'"
+          :content="production.is_paused ? 'Reanudar producción' : 'Pausar producción'" placement="top">
+          <button @click="pauseProduction(production)" v-if="production.operator_id == $page.props.auth.user.id"
+            class="bg-secondary size-4 rounded-full text-[7px] text-white disabled:opacity-25 disabled:cursor-not-allowed">
+            <i v-if="production.is_paused" class="fa-solid fa-play"></i>
+            <i v-else class="fa-solid fa-pause"></i>
+          </button>
+        </el-tooltip>
+        <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+          :title="getNextAction(production) == 'Finalizar' ? 'Finalizar producción' : 'Iniciar producción'"
+          @confirm="confirmedChangeStatus(production)">
+          <template #reference>
+            <button v-if="production.operator_id == $page.props.auth.user.id"
+              :disabled="getNextAction(production) == 'Finalizado'"
+              class="bg-primary size-4 rounded-full text-[7px] text-white disabled:opacity-25 disabled:cursor-not-allowed">
+              <i v-if="getNextAction(production) == 'Finalizar'" class="fa-solid fa-stop"></i>
+              <i v-else class="fa-solid fa-play"></i>
+            </button>
+          </template>
+        </el-popconfirm>
         <el-tooltip placement="right">
           <template #content>
             <p> <strong class="text-yellow-500">Tareas: </strong>{{ production.tasks }}</p>
@@ -153,13 +178,14 @@
           </template>
           <i class="fa-solid fa-list-check"></i>
         </el-tooltip>
+      </div>
 
-        <!-- pause alert -->
+      <!-- pause alert -->
       <div v-if="production.is_paused"
         class="absolute w-[90%] top-10 left-[5%] px-2 py-4 text-primary text-2xl flex items-center bg-[#D9D9D9] rounded-[10px] border-4 border-[#D90537]">
         <p class="mr-3 text-center">Producción Pausada</p>
         <el-tooltip content="Reanudar producción" placement="top">
-          <button @click="pauseProduction"
+          <button @click="pauseProduction(production)"
             class="border-2 border-[#D90537] rounded-full w-7 h-7 flex items-center justify-center mr-5">
             <i class="fa-solid fa-play text-sm"></i>
           </button>
@@ -168,15 +194,25 @@
       </p>
     </div>
     <div class="flex items-center justify-between mt-2">
-      <div v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id) && getOrderStatus() != 'Terminado'">
-        <el-tooltip v-if="!catalog_product_company_sale.productions.find(item => item.operator_id ==
+      <div
+        v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id) && getOrderStatus() != 'Terminado'">
+        <!-- <el-tooltip v-if="!catalog_product_company_sale.productions.find(item => item.operator_id ==
           $page.props.auth.user.id)?.has_low_stock"
           content="Con este botón se indica si no es posible continuar con la producción por materia prima insuficiente"
           placement="top">
           <button @click="toggleStockStatus" class="bg-primary rounded-full px-1 py-px text-white text-[10px]">
             No hay materia prima suficiente
           </button>
-        </el-tooltip>
+        </el-tooltip> -->
+        <el-popconfirm v-if="!catalog_product_company_sale.productions.find(item => item.operator_id ==
+          $page.props.auth.user.id)?.has_low_stock" confirm-button-text="Si" cancel-button-text="No"
+          icon-color="#0355B5" title="Se notificará a compras. ¿Continuar?" @confirm="toggleStockStatus">
+          <template #reference>
+            <button class="bg-primary rounded-full px-1 py-px text-white text-[10px]">
+              No hay materia prima suficiente
+            </button>
+          </template>
+        </el-popconfirm>
         <el-tooltip v-else
           content="Con este botón se indica que ya hay suficiente materia prima para continuar con la producción"
           placement="top">
@@ -216,7 +252,7 @@
     </div>
 
     <div class="absolute bottom-3 right-4">
-      <el-tooltip
+      <!-- <el-tooltip
         :content="catalog_product_company_sale.productions.find(item => item.operator_id == $page.props.auth.user.id)?.is_paused ? 'Reanudar producción' : 'Pausar producción'"
         placement="top">
         <button @click="pauseProduction"
@@ -226,8 +262,8 @@
             class="fa-solid fa-play"></i>
           <i v-else class="fa-solid fa-pause"></i>
         </button>
-      </el-tooltip>
-      <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
+      </el-tooltip> -->
+      <!-- <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
         @confirm="getNextAction() == 'Finalizar' ? showScrapModal = true : changeTaskStatus()">
         <template #reference>
           <button
@@ -237,7 +273,7 @@
             {{ getNextAction() }}
           </button>
         </template>
-      </el-popconfirm>
+      </el-popconfirm> -->
     </div>
   </div>
 
@@ -326,35 +362,135 @@
   <!-- scrap modal -->
   <DialogModal :show="showScrapModal" @close="showScrapModal = false">
     <template #title>
-      <h1>Registro de merma</h1>
+      <h1>Finalización de tarea</h1>
     </template>
     <template #content>
-      <div class="border border-[#0355B5] rounded-lg px-6 py-2 mt-5 mb-3 mx-7 relative">
-        <p class="text-secondary text-sm">
-          Es importante que seas honesto con esta cantidad porque se notifica a jefe de producción y a dirección.
-        </p>
-      </div>
-      <div>
-        <IconInput v-model="scrap" inputPlaceholder="Piezas malas *" inputType="number" class="w-1/2">
-          <el-tooltip content="Ingreasa la cantidad de piezas malas *" placement="top">
-            <i class="fa-solid fa-prescription-bottle-medical"></i>
+      <el-radio-group v-model="isProduction" class="ml-4">
+        <el-radio label="1" size="medium">Es producción</el-radio>
+        <el-radio label="2" size="medium">Es empaque</el-radio>
+      </el-radio-group>
+      <section v-if="isProduction == '1'">
+        <div class="border border-[#0355B5] rounded-lg px-4 py-2 mt-5 mb-3 mx-7 relative">
+          <p class="text-secondary text-xs">
+            Es importante que seas honesto con la cantidad de merma porque se notifica a jefe de producción y a dirección.
+            La cantidad de merma que debes de ingresar son piezas malas por un error de tu parte en culquier proceso de
+            producción,
+            no son las piezas que venian con defecto de fabricación. Las piezas con defecto de fábrica, regresarlas al
+            encargado de almacén
+            para que se den de baja del sistema y agregar al almacén de merma.
+          </p>
+        </div>
+<<<<<<< HEAD
+=======
+        <p class="font-bold text-lg my-2">Menciona si fuiste supervisado durante la producción de este producto.</p>
+        <!-- Informacion de upervisión. -->
+        <div v-for="quality in qualities.data" :key="quality" class="grid grid-cols-2 my-4">
+          <p>Nombre del supervisor:</p>
+          <p>{{ quality.supervisor.name }}</p>
+          <p>Número de inspección:</p>
+          <p @click="$inertia.get(route('qualities.show', quality.id))" class="cursor-pointer text-secondary">{{
+            quality.id }}</p>
+          <p>Fecha y hora:</p>
+          <p>{{ quality.created_at }}</p>
+        </div>
+>>>>>>> 3ddb5f95700407bbc9f2b87eaf87bc835431b033
+        <div>
+          <IconInput v-model="goodUnits" inputPlaceholder="Piezas buenas realizadas *" inputType="number" class="w-1/2">
+            <el-tooltip content="Ingreasa la cantidad de piezas buenas que realizaste *" placement="top">
+              <i class="fa-regular fa-square-check"></i>
+            </el-tooltip>
+          </IconInput>
+        </div>
+        <div>
+          <IconInput v-model="scrap" inputPlaceholder="Piezas malas *" inputType="number" class="w-1/2">
+            <el-tooltip content="Ingreasa la cantidad de piezas malas *" placement="top">
+              <i class="fa-solid fa-prescription-bottle-medical"></i>
+            </el-tooltip>
+          </IconInput>
+        </div>
+        <div v-if="scrap > 0" class="flex">
+          <el-tooltip content="Motivo de merma *" placement="top">
+            <span
+              class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
+              <i class="fa-solid fa-grip-lines"></i>
+            </span>
           </el-tooltip>
-        </IconInput>
-        <!-- <p :message="!scrap" class="text-xs text-red-500 ml-6">Este campo es requerido</p> -->
-      </div>
-      <div v-if="scrap > 0" class="flex">
-        <el-tooltip content="Motivo de merma *" placement="top">
-          <span
-            class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-            <i class="fa-solid fa-grip-lines"></i>
-          </span>
-        </el-tooltip>
-        <textarea v-model="reason" class="textarea mb-1" autocomplete="off" placeholder="Motivo. Ejemplo: Al grabar los medallones, moví el escantillón por accidente"></textarea>
-      </div>
+          <textarea v-model="reason" class="textarea mb-1" autocomplete="off"
+            placeholder="Motivo. Ejemplo: Al grabar los medallones, moví el escantillón por accidente"></textarea>
+        </div>
+<<<<<<< HEAD
+        <p class="font-bold text-lg my-2">Menciona si fuiste supervisado durante la producción de este producto.</p>
+        <p class="text-secondary">Supervisiones a esta OP</p>
+        <!-- Informacion de upervisión. -->
+        <div v-for="quality in qualities.data" :key="quality" class="grid grid-cols-2 my-3 border border-[#9A9A9A] rounded-md p-4">
+          <p>Nombre del supervisor:</p>
+          <p>{{ quality.supervisor.name }}</p>
+          <p>Número de inspección:</p>
+          <p @click="$inertia.get(route('qualities.show', quality.id))" class="cursor-pointer text-secondary">{{ quality.id }}</p>
+          <p>Fecha y hora:</p>
+          <p>{{ quality.created_at }}</p>
+        </div>
+        <div class="block my-4">
+          <label class="flex items-center">
+            <Checkbox v-model:checked="supervision" name="remember" class="bg-transparent"/>
+=======
+        <div class="block my-4">
+          <label class="flex items-center">
+            <Checkbox v-model:checked="supervision" name="remember" class="bg-transparent" />
+>>>>>>> 3ddb5f95700407bbc9f2b87eaf87bc835431b033
+            <span class="ml-2 text-sm text-[#9A9A9A]">Fuí supervisado</span>
+          </label>
+        </div>
+      </section>
+      <section v-else class="lg:grid grid-cols-3 gap-2 mt-3">
+        <div class="border border-[#0355B5] rounded-lg px-4 py-2 mt-5 mb-3 mx-7 relative col-span-full">
+          <p class="text-secondary text-xs">
+            Ingresa los datos de cada paquete que hayas realizado y agregalos a la lista.
+          </p>
+        </div>
+        <div>
+          <label class="block">Largo de empaque (en centímetros) *</label>
+          <el-input-number v-model="package.large" :min="1" />
+        </div>
+        <div>
+          <label class="block">Ancho de empaque (en centímetros) *</label>
+          <el-input-number v-model="package.width" :min="1" />
+        </div>
+        <div>
+          <label class="block">Alto de empaque (en centímetros) *</label>
+          <el-input-number v-model="package.height" :min="1" />
+        </div>
+        <div>
+          <label class="block">Peso de empaque (en kilogramos) *</label>
+          <el-input-number v-model="package.weight" :min="1" />
+        </div>
+        <div>
+          <label class="block">Piezas en empaque *</label>
+          <el-input-number v-model="package.quantity" :min="1" />
+        </div>
+        <div class="col-span-full">
+          <SecondaryButton @click="addPackage()"
+            :disabled="!package.large || !package.width || !package.height || !package.quantity || !package.weight">
+            Agregar paquete a lista</SecondaryButton>
+        </div>
+        <p class="col-span-full border-t border-gray-400 pt-2">Lista de paquetes o empaques</p>
+        <ul class="col-span-full">
+          <li v-for="(item, index) in packages" :key="index" class="flex items-center justify-between">
+            • Paquete {{ (index + 1) }}: {{ item.large + 'cm largo, ' + item.width + 'cm ancho, ' + item.height + 'cm alto. ' + item.weight + ' Kg.' }}
+            <button @click="removePackage(index)" class="size-5 rounded-full hover:text-red-500">x</button>
+          </li>
+        </ul>
+      </section>
     </template>
     <template #footer>
       <CancelButton @click="showScrapModal = false">Cerrar</CancelButton>
-      <PrimaryButton @click="changeTaskStatus" :disabled="!scrap || (scrap > 0 && !reason)">Finalizar producción</PrimaryButton>
+      <PrimaryButton v-if="isProduction == '1'" @click="changeTaskStatus(production)"
+        :disabled="!goodUnits || !scrap || (scrap > 0 && !reason)">Finalizar
+        producción
+      </PrimaryButton>
+      <PrimaryButton v-else @click="changeTaskStatus(production)" :disabled="!packages.length">Finalizar
+        producción
+      </PrimaryButton>
     </template>
   </DialogModal>
 
@@ -422,6 +558,7 @@ import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import InputError from "@/Components/InputError.vue";
 import RichText from "@/Components/MyComponents/RichText.vue";
+import Checkbox from "@/Components/Checkbox.vue";
 import { useForm } from "@inertiajs/vue3";
 
 export default {
@@ -442,10 +579,23 @@ export default {
       showScrapModal: false,
       showCommentsModal: false,
       sendingComments: false,
+      isProduction: '1',
+      production: null,
       scrap: null,
       reason: null,
+      goodUnits: null,
+      supervision: false,
       comment: null,
       users: [],
+      // paquetes
+      packages: [],
+      package: {
+        large: null,
+        width: null,
+        height: null,
+        weight: null,
+        quantity: null,
+      }
     };
   },
   emits: ['selected'],
@@ -459,6 +609,7 @@ export default {
       type: Boolean,
       default: false
     },
+    qualities: Object
   },
   components: {
     DialogModal,
@@ -468,8 +619,32 @@ export default {
     IconInput,
     InputError,
     RichText,
+    Checkbox
   },
   methods: {
+    confirmedChangeStatus(production) {
+      if (this.getNextAction(production) == 'Finalizar') {
+        this.showScrapModal = true;
+        this.production = production;
+      } else {
+        this.changeTaskStatus(production);
+      }
+    },
+    // paquetes
+    addPackage() {
+      const pack = { ...this.package };
+      this.packages.push(pack);
+      this.package = {
+        large: null,
+        width: null,
+        height: null,
+        weight: null,
+        quantity: null,
+      };
+    },
+    removePackage(index) {
+      this.packages.splice(index, 1)
+    },
     async fetchUsers() {
       try {
         const response = await axios.get(route('users.get-all'));
@@ -508,17 +683,17 @@ export default {
     submitForm() {
       this.$refs.myForm.dispatchEvent(new Event('submit', { cancelable: true }));
     },
-    pauseProduction() {
-      this.form.production_id = this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id)?.id;
-      if (this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id)?.is_paused) {
-        this.continueProduction();
+    pauseProduction(production) {
+      this.form.production_id = production.id;
+      if (production.is_paused) {
+        this.continueProduction(production);
       } else {
         this.showProgressModal = true;
       }
     },
-    async continueProduction() {
+    async continueProduction(production) {
       try {
-        const response = await axios.put(route('productions.continue-production', this.form.production_id));
+        const response = await axios.put(route('productions.continue-production', production.id));
 
         if (response.status === 200) {
           this.$notify({
@@ -527,7 +702,8 @@ export default {
             type: 'success'
           });
 
-          this.catalog_product_company_sale.productions.find(item => item.id == this.form.production_id).is_paused = 0;
+          // this.catalog_product_company_sale.productions.find(item => item.id == this.form.production_id).is_paused = 0;
+          production.is_paused = 0;
         }
       } catch (error) {
         console.log(error);
@@ -570,8 +746,8 @@ export default {
         return "En proceso";
       }
     },
-    getNextAction() {
-      const task = this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id);
+    getNextAction(task) {
+      // const task = this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id);
       if (task.finished_at) return 'Finalizado';
       else if (task.started_at) return 'Finalizar';
       else return 'Iniciar';
@@ -602,18 +778,20 @@ export default {
         });
       }
     },
-    async changeTaskStatus() {
+    async changeTaskStatus(production) {
       try {
-        let task = this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id);
-        const response = await axios.put(route('productions.change-status', task.id), { scrap: this.scrap, reason: this.reason });
+        const response = await axios.put(route('productions.change-status', production.id), {
+          scrap: this.scrap, reason: this.reason, good_units: this.goodUnits, packages: this.packages, supervision: this.supervision
+        });
         let type = 'success';
         let title = 'Éxito';
         if (response.status === 200) {
           if (response.data.item === null) {
             this.showInfoModal = true;
           } else {
-            this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id).started_at = response.data.item.started_at;
-            this.catalog_product_company_sale.productions.find(item => item.operator_id == this.$page.props.auth.user.id).finished_at = response.data.item.finished_at;
+            production.started_at = response.data.item.started_at;
+            production.finished_at = response.data.item.finished_at;
+            this.production = null;
             this.showScrapModal = false;
             this.scrap = null;
             this.$notify({

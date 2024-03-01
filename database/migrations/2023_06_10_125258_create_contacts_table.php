@@ -20,6 +20,8 @@ return new class extends Migration
             $table->unsignedTinyInteger('birthdate_day')->nullable();
             $table->unsignedTinyInteger('birthdate_month')->nullable();
             $table->string('charge')->nullable();
+            $table->json('additional_emails')->nullable();
+            $table->json('additional_phones')->nullable();
             $table->timestamps();
         });
     }

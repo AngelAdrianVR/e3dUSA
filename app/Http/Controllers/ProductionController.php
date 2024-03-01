@@ -6,19 +6,23 @@ use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\ProductionCostResource;
+use App\Http\Resources\QualityResource;
 use App\Http\Resources\SaleResource;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Comment;
 use App\Models\Production;
 use App\Models\ProductionCost;
+use App\Models\Quality;
 use App\Models\Sale;
 use App\Models\Setting;
 use App\Models\StockMovementHistory;
 use App\Models\Storage;
 use App\Models\User;
+use App\Notifications\LowStockToDispatchOrderNotification;
 use App\Notifications\MentionInProductionNotification;
 use App\Notifications\ProductionCompletedNotification;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
 
 class ProductionController extends Controller
 {
@@ -139,9 +143,10 @@ class ProductionController extends Controller
                     'promise_date' => $production->promise_date?->isoFormat('DD MMMM YYYY') ?? '--',
                     // 'delivery_status' => $delivery_status,
                     'created_at' => $production->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+                    'is_sale_production' => $production->is_sale_production,
                 ];
             });
-            // return $productions;
+
             return inertia('Production/Admin', compact('productions'));
         } elseif (auth()->user()->can('Ordenes de produccion personal')) {
             $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch')->whereHas('productions')->where('user_id', auth()->id())->latest()->get());
@@ -160,8 +165,6 @@ class ProductionController extends Controller
         $sales = SaleResource::collection(Sale::with('companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct.media')->whereNotNull('authorized_at')->whereDoesntHave('productions')->get());
         $is_automatic_assignment = boolval(Setting::where('key', 'AUTOMATIC_PRODUCTION_ASSIGNMENT')->first()->value);
         $production_processes = ProductionCostResource::collection(ProductionCost::all());
-
-        // return $sales;
 
         return inertia('Production/Create', compact('operators', 'sales', 'is_automatic_assignment', 'production_processes'));
     }
@@ -234,15 +237,16 @@ class ProductionController extends Controller
                 'company_name' => $sale->companyBranch?->name,
             ];
         });
+        $qualities = QualityResource::collection(Quality::with('supervisor:id,name')->where('production_id', $sale->id)->get());
 
-        // return $sale;
+        // return $qualities;
 
-        return inertia('Production/Show', compact('sale', 'sales'));
+        return inertia('Production/Show', compact('sale', 'sales', 'qualities'));
     }
 
     public function edit($sale_id)
     {
-        $operators = User::where('employee_properties->department', 'Producción')->get();
+        $operators = User::where('employee_properties->department', 'Producción')->where('is_active', 1)->get();
         $sale = SaleResource::make(Sale::with('companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct', 'productions')->find($sale_id));
         $production_processes = ProductionCostResource::collection(ProductionCost::all());
 
@@ -327,7 +331,7 @@ class ProductionController extends Controller
         // Eliminar las producciones que no se actualizaron o crearon
         Production::destroy($existingProductionIds);
 
-        return to_route('productions.index');
+        return to_route('productions.show', $sale_id);
     }
 
 
@@ -364,15 +368,20 @@ class ProductionController extends Controller
         if (!$production->started_at) {
             $production->update(['started_at' => now()]);
             $message = 'Se ha registrado el inicio';
-        } else if ($production->started_at->diffInMinutes(now()) > 0) {
+        } else if ($production->started_at->diffInMinutes(now()) > 4) {
             $request->validate([
-                'scrap' => 'required|numeric|min:0',
+                'good_units' => 'nullable|numeric|min:0',
+                'scrap' => 'nullable|numeric|min:0',
                 'reason' => 'nullable|string|max:800',
+                'packages' => 'nullable|array',
             ]);
             $production->update([
                 'finished_at' => now(), 'is_paused' => 0,
                 'scrap' => $request->scrap,
                 'scrap_reason' => $request->reason,
+                'good_units' => $request->good_units,
+                'packages' => $request->packages,
+                'supervision' => $request->supervision,
             ]);
 
             // descontar materia prima utilizada para la producción
@@ -389,6 +398,37 @@ class ProductionController extends Controller
                     'type' => 'Salida',
                     'quantity' => $quantity_needed,
                     'notes' => 'Salida de material automática por orden de producción terminada',
+                ]);
+            }
+
+            // agregar a almacen de producto terminado si es orden de stock
+            if (!$production->catalogProductCompanySale->sale->is_sale_production) {
+                $catalog_product = $cpcs->catalogProductCompany->catalogProduct;
+                // Buscar el registro existente de storage para producto-terminado
+                $existingStorage = $catalog_product->storages()
+                    ->where('type', 'producto-terminado')
+                    ->first();
+
+                if ($existingStorage) {
+                    // Si existe, incrementar la cantidad existente
+                    $existingStorage->increment('quantity', $cpcs->quantity);
+                } else {
+                    // Si no existe, crear un nuevo registro de storage
+                    $catalog_product->storages()->create([
+                        'quantity' => $cpcs->quantity,
+                        'location' => 'Por definir',
+                        'type' => 'producto-terminado',
+                    ]);
+                    $existingStorage = $catalog_product->storages()
+                    ->where('type', 'producto-terminado')
+                    ->first();
+                }
+                StockMovementHistory::Create([
+                    'storage_id' => $existingStorage->id,
+                    'user_id' => auth()->id(),
+                    'type' => 'Entrada',
+                    'quantity' => $cpcs->quantity,
+                    'notes' => 'Entrada de producto terminado desde orden de stock OP-' . str_pad($production->catalogProductCompanySale->sale->id, 4, "0", STR_PAD_LEFT),
                 ]);
             }
 
@@ -427,6 +467,20 @@ class ProductionController extends Controller
         $production->update([
             'has_low_stock' => !$production->has_low_stock,
         ]);
+
+        if ($production->has_low_stock) {
+            // notificar a compras
+            $operator_name = $production->operator->name;
+            $product = $production->catalogProductCompanySale->catalogProductCompany->catalogProduct->name;
+            $folio = 'OP-' . str_pad($production->catalogProductCompanySale->sale->id, 4, "0", STR_PAD_LEFT);
+            $route = route('productions.show', $production->catalogProductCompanySale->sale->id);
+            $users = User::where('is_active', true)->get();
+            $users->each(function ($user) use ($operator_name, $product, $folio, $route) {
+                if ($user->can('Crear ordenes de compra')) {
+                    $user->notify(new LowStockToDispatchOrderNotification($operator_name, $product, $folio, $route));
+                }
+            });
+        }
 
         return response()->json(['message' => 'Se ha cambiado el status de materia prima']);
     }

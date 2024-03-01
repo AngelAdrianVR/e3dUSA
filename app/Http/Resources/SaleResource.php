@@ -9,9 +9,11 @@ class SaleResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $prefix = $this->is_sale_production ? 'OV-' : 'OS-';
+
         return [
             'id' => $this->id,
-            'folio' => 'OV-' . str_pad($this->id, 4, "0", STR_PAD_LEFT),
+            'folio' => $prefix . str_pad($this->id, 4, "0", STR_PAD_LEFT),
             'p_folio' => 'OP-' . str_pad($this->id, 4, "0", STR_PAD_LEFT),
             'shipping_company' => $this->shipping_company,
             'freight_cost' => $this->freight_cost,
@@ -22,8 +24,9 @@ class SaleResource extends JsonResource
             'promise_date' => $this->promise_date?->isoFormat('DD MMMM YYYY') ?? '--',
             'invoice' => $this->invoice,
             'is_high_priority' => $this->is_high_priority,
-            // 'products' => $this->whenLoaded('products'),
+            'is_sale_production' => $this->is_sale_production,
             'notes' => $this->notes ?? '--',
+            'partialities' => $this->partialities,
             'authorized_user_name' => $this->authorized_user_name ?? 'No autorizado',
             'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:mm A') ?? 'No autorizado',
             'recieved_at' => $this->recieved_at?->isoFormat('DD MMM, YYYY h:mm A'),

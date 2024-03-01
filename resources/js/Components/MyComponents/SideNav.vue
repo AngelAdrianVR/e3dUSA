@@ -98,23 +98,24 @@ export default {
                     active: route().current('crm.*') || route().current('quotes.*') || route().current('companies.*')
                         || route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*')
                         || route().current('client-monitors.*') || route().current('meeting-monitors.*') || route().current('payment-monitors.*')
-                        || route().current('sale-analitics.*') || route().current('sale-analitics.*'),
+                        || route().current('sale-analitics.*') || route().current('sale-analitics.*')
+                        || route().current('prospects.*') || route().current('prospects.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                        return ['quote', 'sales', 'opportunities', 'companies'].includes(notification.data.module);
+                        return ['quote', 'sales', 'opportunities', 'companies', 'prospects'].includes(notification.data.module);
                     }),
                     options: [
                         {
-                            label: 'Análisis de ventas',
+                            label: 'Inicio CRM',
                             route: 'sale-analitics.index',
                             show: this.$page.props.auth.user.permissions.includes('Analisis de ventas'),
                             notifications: false,
                         },
                         {
-                            label: 'Cotizaciones',
-                            route: 'quotes.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones'),
+                            label: 'Prospectos',
+                            route: 'prospects.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver prospectos'),
                             notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                                return notification.data.module === 'quote';
+                                return notification.data.module === 'prospects';
                             }),
                         },
                         {
@@ -123,14 +124,6 @@ export default {
                             show: this.$page.props.auth.user.permissions.includes('Ver clientes'),
                             notifications: this.$page.props.auth.user?.notifications?.some(notification => {
                                 return notification.data.module === 'companies';
-                            }),
-                        },
-                        {
-                            label: 'Órdenes de venta',
-                            route: 'sales.index',
-                            show: this.$page.props.auth.user.permissions.includes('Ver ordenes de venta'),
-                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                                return notification.data.module === 'sales';
                             }),
                         },
                         {
@@ -145,7 +138,22 @@ export default {
                             show: this.$page.props.auth.user.permissions.includes('Ver seguimiento integral'),
                             notifications: false,
                         },
-
+                        {
+                            label: 'Cotizaciones',
+                            route: 'quotes.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'quote';
+                            }),
+                        },
+                        {
+                            label: 'Órdenes de venta / stock',
+                            route: 'sales.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver ordenes de venta'),
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'sales';
+                            }),
+                        },
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones') ||
@@ -332,9 +340,6 @@ export default {
                     icon: '<i class="fa-solid fa-pen-ruler text-xs"></i>',
                     route: route('designs.index'),
                     active: route().current('designs.*'),
-                    notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                        return notification.data.module === 'design';
-                    }),
                     show: true
                 },
                 {
@@ -370,7 +375,7 @@ export default {
                     active: route().current('machines.*') || route().current('more-additional-times.*') || route().current('meetings.*') ||
                         route().current('samples.*') || route().current('production-costs.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                        return ['machine', 'meeting', 'sample', 'media-library'].includes(notification.data.module);
+                        return ['machine', 'meeting', 'samples', 'media-library'].includes(notification.data.module);
                     }),
                     options: [
                         {
@@ -418,7 +423,7 @@ export default {
                             route: 'samples.index',
                             show: this.$page.props.auth.user.permissions.includes('Ver muestra'),
                             notifications: this.$page.props.auth.user?.notifications?.some(notification => {
-                                return notification.data.module === 'sample';
+                                return notification.data.module === 'samples';
                             }),
                         },
                         {

@@ -12,7 +12,7 @@
                Aniversarios 
             </template>
              <template v-slot:icon>
-               <i class="fa-solid fa-champagne-glasses ml-2 border-green-500"></i>
+               <i class="fa-solid fa-champagne-glasses ml-2 border-green-500 text-[#000620]"></i>
             </template>
              <template v-slot:subtitle>
                ¡Gracias por un año más de compromiso en la familia Emblems 3D!

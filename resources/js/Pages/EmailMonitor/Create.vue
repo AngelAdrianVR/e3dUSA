@@ -49,7 +49,8 @@
             <label>Contacto</label>
             <el-select @change="getContactEmail" v-model="form.contact_id" clearable filterable placeholder="Seleccione"
               no-data-text="No hay contactos registrados" no-match-text="No se encontraron coincidencias">
-              <el-option v-for="contact in company_branch_obj?.contacts" :key="contact" :label="contact.name"
+              <el-option v-for="contact in company_branch_obj?.contacts" :key="contact" style="font-size: 11px"
+              :label="contact.name + ' (' + contact.email + ')'"
                 :value="contact.id" />
             </el-select>
             <InputError :message="form.errors.contact_id" />

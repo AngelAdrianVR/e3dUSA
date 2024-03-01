@@ -24,7 +24,6 @@
                             <el-pagination @current-change="handlePagination" layout="prev, pager, next"
                                 :total="companies.length" />
                         </div>
-
                         <!-- buttons -->
                         <div v-if="$page.props.auth.user.permissions.includes('Eliminar clientes')">
                             <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
@@ -46,6 +45,16 @@
                         <el-table-column prop="phone" label="Teléfono" width="120" />
                         <el-table-column prop="rfc" label="RFC" width="100" />
                         <el-table-column prop="post_code" label="Código postal" width="120" />
+                        <el-table-column label="Vendedor" width="180">
+                            <template #default="scope">
+                                <div class="flex items-center">
+                                    <p class="mr-2" :style="{ color: getColorHex(scope.row.seller_id) }">
+                                        <i class="fa-solid fa-star"></i>
+                                    </p>
+                                    <p class="flex-0 w-[80%]">{{ scope.row.seller_name }}</p>
+                                </div>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="company_branches_names" label="Sucursales" />
                         <el-table-column prop="fiscal_address" label="Domicilio Fiscal" />
                         <el-table-column align="right" fixed="right" width="190">
@@ -122,6 +131,60 @@ export default {
         companies: Object
     },
     methods: {
+        getColorHex(number) {
+            if (number) {
+                // Ajusta el tono (hue) en función del número proporcionado
+                let tono = (number * 30) % 360;
+
+                // Saturation y lightness se mantienen constantes para colores vibrantes
+                let saturacion = 80;
+                let luminosidad = 40;
+
+                // Convierte de HSL a hexadecimal
+                let colorHex = this.hslToHex(tono, saturacion, luminosidad);
+
+                return colorHex;
+            } else {
+
+                return '#cccccc';
+            }
+        },
+        // Función para convertir de HSL a hexadecimal
+        hslToHex(h, s, l) {
+            h /= 360;
+            s /= 100;
+            l = l > 40 ? 40 : l;
+            l /= 100;
+
+            let r, g, b;
+
+            if (s === 0) {
+                r = g = b = l;
+            } else {
+                const hue2rgb = (p, q, t) => {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1 / 6) return p + (q - p) * 6 * t;
+                    if (t < 1 / 2) return q;
+                    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                    return p;
+                };
+
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+
+                r = hue2rgb(p, q, h + 1 / 3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1 / 3);
+            }
+
+            const toHex = x => {
+                const hex = Math.round(x * 255).toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            };
+
+            return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+        },
         handleSearch() {
             this.search = this.inputSearch;
         },
@@ -139,13 +202,15 @@ export default {
             this.end = val * this.itemsPerPage;
         },
         tableRowClassName({ row, rowIndex }) {
-            if (row.status === 1) {
-                return 'text-green-600 cursor-pointer';
-            }
-
+            // if (row.seller_id) {
+            //     let textColorClass = `text-[${this.getColorHex(row.seller_id)}]`;
+            //     console.log(textColorClass);
+            //     return ['cursor-pointer', textColorClass];
+            // } else {
+            //     return 'cursor-not-allowed';
+            // }
             return 'cursor-pointer';
         },
-
         handleRowClick(row) {
             this.$inertia.get(route('companies.show', row));
         },
@@ -252,7 +317,8 @@ export default {
                         company.business_name.toLowerCase().includes(this.search.toLowerCase()) ||
                         company.rfc.toLowerCase().includes(this.search.toLowerCase()) ||
                         company.company_branches_names.toLowerCase().includes(this.search.toLowerCase()) ||
-                        company.id.toString().toLowerCase().includes(this.search.toLowerCase())
+                        company.id.toString().toLowerCase().includes(this.search.toLowerCase()) ||
+                        company.seller_name?.toLowerCase().includes(this.search.toLowerCase())
                 )
             }
         }

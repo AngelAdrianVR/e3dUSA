@@ -25,11 +25,15 @@ class Production extends Model
         'additionals',
         'scrap',
         'scrap_reason',
+        'supervision',
+        'good_units',
+        'packages',
         'has_low_stock',
     ];
 
     protected $casts = [
         'additionals' => 'array',
+        'packages' => 'array',
         'started_at' => 'datetime',
         'finished_at' => 'datetime',
     ];

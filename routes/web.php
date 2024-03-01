@@ -5,12 +5,14 @@ use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CallMonitorController;
+use App\Http\Controllers\CatalogProductCompanySaleController;
 use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\ClientMonitorController;
 use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomerMeetingController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DesignAuthorizationController;
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\DesignModificationController;
 use App\Http\Controllers\DiscountController;
@@ -34,6 +36,7 @@ use App\Http\Controllers\ProductionCostController;
 use App\Http\Controllers\ProductionProgressController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectGroupController;
+use App\Http\Controllers\ProspectController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\QualityController;
 use App\Http\Controllers\RawMaterialController;
@@ -50,7 +53,6 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WhatsappMonitorController;
-use App\Models\CatalogProductCompanySale;
 use App\Models\CompanyBranch;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Artisan;
@@ -116,6 +118,12 @@ Route::get('customers-report', function () {
 
 
 // ------- Catalog Products Routes ---------
+Route::post('catalog-product-company-sale/store-traveler-data/{cpcs}', [CatalogProductCompanySaleController::class, 'storeTravelerData'])->middleware('auth')->name('catalog-product-company-sale.store-traveler-data');
+Route::get('catalog-product-company-sale/get-traveler-data/{cpcs}', [CatalogProductCompanySaleController::class, 'getTravelerData'])->middleware('auth')->name('catalog-product-company-sale.get-traveler-data');
+Route::get('catalog-product-company-sale/get-productions/{cpcs}', [CatalogProductCompanySaleController::class, 'getProductions'])->middleware('auth')->name('catalog-product-company-sale.get-productions');
+Route::get('catalog-product-company-sale/get-raw-materials/{cpcs}', [CatalogProductCompanySaleController::class, 'getRawMaterials'])->middleware('auth')->name('catalog-product-company-sale.get-raw-materials');
+
+// ------- Catalog Products Routes ---------
 Route::resource('catalog-products', CatalogProductController::class)->middleware('auth');
 Route::post('catalog-products/massive-delete', [CatalogProductController::class, 'massiveDelete'])->name('catalog-products.massive-delete');
 Route::post('catalog-products/clone', [CatalogProductController::class, 'clone'])->name('catalog-products.clone');
@@ -150,6 +158,12 @@ Route::get('oportunity-tasks/create/{oportunity_id}', [OportunityTaskController:
 Route::post('oportunity-tasks/store/{oportunity_id}', [OportunityTaskController::class, 'store'])->name('oportunity-tasks.store')->middleware('auth');
 Route::post('oportunity-tasks/{oportunity_task}/comment', [OportunityTaskController::class, 'comment'])->name('oportunity-tasks.comment')->middleware('auth');
 Route::put('oportunity-tasks/mark-as-done/{oportunityTask}', [OportunityTaskController::class, 'markAsDone'])->name('oportunity-tasks.mark-as-done')->middleware('auth');
+
+// ------- CRM (prospectos Routes)  ---------
+Route::resource('prospects', ProspectController::class)->middleware('auth');
+Route::get('prospects-get-matches/{query}', [ProspectController::class, 'getMatches'])->name('prospects.get-matches');
+Route::get('prospects-get-quotes/{prospect}', [ProspectController::class, 'getQuotes'])->name('prospects.get-quotes');
+Route::post('prospects/turn-into-customer/{prospect}', [ProspectController::class, 'turnIntoCustomer'])->name('prospects.turn-into-customer');
 
 // ------- CRM (Client monior Routes)  ---------
 Route::resource('client-monitors', ClientMonitorController::class)->middleware('auth');
@@ -341,6 +355,13 @@ Route::post('designs/update-with-media/{design}', [DesignController::class, 'upd
 // ------- Design modifications routes  ---------
 Route::resource('design-modifications', DesignModificationController::class)->middleware('auth');
 Route::post('design-modifications/upload-results', [DesignModificationController::class, 'uploadResults'])->name('design-modifications.upload-results');
+
+
+// ------- Design autorizations routes  ---------
+Route::resource('design-authorizations', DesignAuthorizationController::class)->middleware('auth');
+Route::put('design-authorizations-authorize/{design_authorization}', [DesignAuthorizationController::class, 'AuthorizeDesign'])->name('design-authorizations.authorize')->middleware('auth');
+Route::post('design-authorizations/update-with-media/{design_authorization}', [DesignAuthorizationController::class, 'updateWithMedia'])->name('design-authorizations.update-with-media');
+
 
 // ------- production department routes  ---------
 Route::resource('productions', ProductionController::class)->middleware('auth');

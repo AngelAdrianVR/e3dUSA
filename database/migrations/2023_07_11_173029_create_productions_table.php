@@ -24,6 +24,9 @@ return new class extends Migration
             $table->timestamp('finished_at')->nullable();
             $table->unsignedMediumInteger('scrap')->default(0);
             $table->text('scrap_reason')->nullable();
+            $table->boolean('supervision')->default(false);
+            $table->unsignedMediumInteger('good_units')->nullable();
+            $table->json('packages')->nullable();
             $table->boolean('has_low_stock')->default(0);
             $table->boolean('is_paused')->default(0);
             $table->json('additionals')->nullable();

@@ -79,6 +79,8 @@ class CatalogProductController extends Controller
         $validated['part_number'] .= $consecutive;
        
         $catalog_product = CatalogProduct::create($validated);
+
+        // Subir y asociar las imagenes
         $catalog_product->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
 
         foreach ($request->raw_materials as $product) {
@@ -179,10 +181,10 @@ class CatalogProductController extends Controller
             $catalog_product->rawMaterials()->attach($product['raw_material_id'], $product);
         }
 
-        // update image
+        // update images. Clear all then attach all
         $catalog_product->clearMediaCollection();
-        $catalog_product->addMediaFromRequest('media')->toMediaCollection();
-        $catalog_product->save();
+        $catalog_product->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+
 
         $catalog_product->update(['cost' => $total_cost]);
 
