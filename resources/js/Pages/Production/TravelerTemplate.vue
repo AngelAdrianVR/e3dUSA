@@ -40,7 +40,7 @@
                     <tbody>
                         <tr class="*:border *:border-gray-400">
                             <td class="w-1/2">Fecha de entrega</td>
-                            <td>
+                            <td v-if="$page.props.auth.user.permissions.includes('Editar hojas viajeras')">
                                 <input @keydown.enter="storeInputValues()" v-model="travelerData[4].date" type="text"
                                     class="bg-transparent border-none focus:ring-0 h-4 py-2 text-[10px] w-full lg:w-3/4">
                                 <el-tooltip placement="right"
@@ -48,6 +48,9 @@
                                     <i
                                         class="fa-solid fa-circle-info w-1/4 pr-3 text-gray-500 text-right text-[9px] hidden lg:inline"></i>
                                 </el-tooltip>
+                            </td>
+                            <td v-else>
+                                <p>{{ travelerData[4].date }}</p>
                             </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
@@ -61,10 +64,10 @@
                             <td>
                                 {{ getFirstStageProductions.medallions[0]?.pivot.quantity * (cpcs.quantity + 5) }} unidades
                             </td>
-                        </tr>
+                        </tr>   
                         <tr class="*:border *:border-gray-400">
                             <td>Entregó</td>
-                            <td>
+                            <td v-if="$page.props.auth.user.permissions.includes('Editar hojas viajeras')">
                                 <input @keydown.enter="storeInputValues()" v-model="travelerData[4].supplier" type="text"
                                     class="bg-transparent border-none focus:ring-0 h-4 py-2 text-[10px] w-full lg:w-3/4">
                                 <el-tooltip placement="right"
@@ -73,10 +76,13 @@
                                         class="fa-solid fa-circle-info w-1/4 pr-3 text-gray-500 text-right text-[9px] hidden lg:inline"></i>
                                 </el-tooltip>
                             </td>
+                            <td v-else>
+                                <p>{{ travelerData[4].supplier }}</p>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Recibió</td>
-                            <td>
+                            <td v-if="$page.props.auth.user.permissions.includes('Editar hojas viajeras')">
                                 <input @keydown.enter="storeInputValues()" v-model="travelerData[4].receiver" type="text"
                                     class="bg-transparent border-none focus:ring-0 h-4 py-2 text-[10px] w-full lg:w-3/4">
                                 <el-tooltip placement="right"
@@ -84,6 +90,9 @@
                                     <i
                                         class="fa-solid fa-circle-info w-1/4 pr-3 text-gray-500 text-right text-[9px] hidden lg:inline"></i>
                                 </el-tooltip>
+                            </td>
+                            <td v-else>
+                                <p>{{ travelerData[4].receiver }}</p>
                             </td>
                         </tr>
                     </tbody>
@@ -97,7 +106,7 @@
                     <tbody>
                         <tr class="*:border *:border-gray-400">
                             <td class="w-1/2">Fecha de entrega</td>
-                            <td>
+                            <td v-if="$page.props.auth.user.permissions.includes('Editar hojas viajeras')">
                                 <input @keydown.enter="storeInputValues()" v-model="travelerData[5].date" type="text"
                                     class="bg-transparent border-none focus:ring-0 h-4 py-2 text-[10px] w-full lg:w-3/4">
                                 <el-tooltip placement="right"
@@ -105,6 +114,9 @@
                                     <i
                                         class="fa-solid fa-circle-info w-1/4 pr-3 text-gray-500 text-right text-[9px] hidden lg:inline"></i>
                                 </el-tooltip>
+                            </td>
+                            <td v-else>
+                                <p>{{ travelerData[5].date }}</p>
                             </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
@@ -125,7 +137,7 @@
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Entregó</td>
-                            <td>
+                            <td v-if="$page.props.auth.user.permissions.includes('Editar hojas viajeras')">
                                 <input @keydown.enter="storeInputValues()" v-model="travelerData[5].supplier" type="text"
                                     class="bg-transparent border-none focus:ring-0 h-4 py-2 text-[10px] w-full lg:w-3/4">
                                 <el-tooltip placement="right"
@@ -134,10 +146,13 @@
                                         class="fa-solid fa-circle-info w-1/4 pr-3 text-gray-500 text-right text-[9px] hidden lg:inline"></i>
                                 </el-tooltip>
                             </td>
+                            <td v-else>
+                                <p>{{ travelerData[5].supplier }}</p>
+                            </td>
                         </tr>
                         <tr class="*:border *:border-gray-400">
                             <td>Recibió</td>
-                            <td>
+                            <td v-if="$page.props.auth.user.permissions.includes('Editar hojas viajeras')">
                                 <input @keydown.enter="storeInputValues()" v-model="travelerData[5].receiver" type="text"
                                     class="bg-transparent border-none focus:ring-0 h-4 py-2 text-[10px] w-full lg:w-3/4">
                                 <el-tooltip placement="right"
@@ -145,6 +160,9 @@
                                     <i
                                         class="fa-solid fa-circle-info w-1/4 pr-3 text-gray-500 text-right text-[9px] hidden lg:inline"></i>
                                 </el-tooltip>
+                            </td>
+                            <td v-else>
+                                <p>{{ travelerData[5].receiver }}</p>
                             </td>
                         </tr>
                     </tbody>
@@ -900,14 +918,24 @@ export default {
             return formattedDate;
         },
         async storeCriteriaValue(stage, CriteriaIndex, value) {
-            this.travelerData[stage][CriteriaIndex].userId = 2; //this.$page.props.auth.user.id;
-            this.travelerData[stage][CriteriaIndex].value = value;
-            this.travelerData[stage][CriteriaIndex].timestamp = format(new Date(), 'dd-MMM-yyyy h:mm a', { locale: es });
-            try {
-                const response = await axios.post(route('catalog-product-company-sale.store-traveler-data', this.cpcs.id), { traveler_data: this.travelerData });
-
-            } catch (error) {
-                console.log(error);
+            if (this.$page.props.auth.user.permissions.includes('Editar hojas viajeras')) {
+                this.travelerData[stage][CriteriaIndex].userId = 2; //this.$page.props.auth.user.id;
+                this.travelerData[stage][CriteriaIndex].value = value;
+                this.travelerData[stage][CriteriaIndex].timestamp = format(new Date(), 'dd-MMM-yyyy h:mm a', { locale: es });
+                const notify = !value;
+                try {
+                    const response = await axios.post(route('catalog-product-company-sale.store-traveler-data', this.cpcs.id), { traveler_data: this.travelerData, notify: notify });
+                    
+                    if (response.status === 200 && notify) {
+                        this.$notify({
+                        title: 'Correcto',
+                        message: 'Se ha notificado a varios usuarios de este rechazo',
+                        type: 'info',
+                    })
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
             }
         },
         async storeInputValues() {
