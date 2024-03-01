@@ -213,7 +213,7 @@
       <div v-if="tabs === 9" class="px-7 w-full my-4">
         <div class="flex justify-between items-center">
           <p class="text-secondary">Formatos de autorización de diseño</p>
-          <PrimaryButton @click="$inertia.get(route('design-authorizations.create'))" class="self-start">Agregar formato</PrimaryButton>
+          <PrimaryButton @click="$inertia.get(route('design-authorizations.create', {company_id: company.data.id}))" class="self-start">Agregar formato</PrimaryButton>
         </div>
         <div class="mt-5 mx-auto" v-if="company.data.company_branches?.some(branch => branch.designAuthorizations?.length > 0)">
           <DesignAuthorizationTable :designAuthorizations="allDesignAuthorizations" />

@@ -186,29 +186,10 @@
               ></el-option>
             </el-select>
           </div>
-          <div class="col-span-full mt-2">
-            <div class="flex items-center">
-              <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
-              >
-                <el-tooltip content="Imagen del producto" placement="top">
-                  <i class="fa-solid fa-images"></i>
-                </el-tooltip>
-              </span>
-              <input
-                @input="form.media = $event.target.files[0]"
-                class="input h-12 rounded-lg file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white file:cursor-pointer hover:file:bg-red-600"
-                aria-describedby="file_input_help"
-                id="file_input"
-                type="file"
-              />
-            </div>
-            <p
-              class="mt-1 text-xs text-right text-gray-500"
-              id="file_input_help"
-            >
-              SVG, PNG, JPG o GIF (MAX. 4 MB).
-            </p>
+          <p class="text-primary text-xs col-span-full">Al editar las imagenes debes de subir de nuevo todas ya que se eliminarán las que actualmente tiene el producto.</p>
+          <div class="grid grid-cols-2 lg:grid-cols-3 gap-10 col-span-full">
+              <InputFilePreview v-for="(file,index) in form.media" :key="index" :canDelete="index == (form.media.length - 2)"
+                  @imagen="saveImage" @cleared="handleCleared(index)" class="p-2" />
           </div>
 
           <el-divider content-position="left" class="col-span-full"
@@ -369,6 +350,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import InputFilePreview from "@/Components/MyComponents/InputFilePreview.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 
@@ -383,7 +365,7 @@ export default {
       max_quantity: this.catalog_product.max_quantity,
       description: this.catalog_product.description,
       raw_materials: [],
-      media: null,
+      media: [null],
       features: this.catalog_product.features,
     });
 
@@ -510,10 +492,11 @@ export default {
   },
   components: {
     AppLayout,
+    InputFilePreview,
+    SecondaryButton,
     PrimaryButton,
     InputError,
     IconInput,
-    SecondaryButton,
     Back,
     Link
   },
@@ -593,6 +576,15 @@ export default {
         this.features.push(this.newFeature);
         this.newFeature = "";
       }
+    },
+    saveImage(image) {
+      const currentIndex = this.form.media.length -1;
+      this.form.media[currentIndex] = image;
+      this.form.media.push(null);
+    },
+    handleCleared(index) {
+      // Eliminar el componente y su informacion correspondiente cuando se borra la imagen
+      this.form.media.splice(index, 1);
     },
     async fetchRawMaterial() {
         this.loading = true;

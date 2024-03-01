@@ -380,6 +380,8 @@
             para que se den de baja del sistema y agregar al almacén de merma.
           </p>
         </div>
+<<<<<<< HEAD
+=======
         <p class="font-bold text-lg my-2">Menciona si fuiste supervisado durante la producción de este producto.</p>
         <!-- Informacion de upervisión. -->
         <div v-for="quality in qualities.data" :key="quality" class="grid grid-cols-2 my-4">
@@ -391,6 +393,7 @@
           <p>Fecha y hora:</p>
           <p>{{ quality.created_at }}</p>
         </div>
+>>>>>>> 3ddb5f95700407bbc9f2b87eaf87bc835431b033
         <div>
           <IconInput v-model="goodUnits" inputPlaceholder="Piezas buenas realizadas *" inputType="number" class="w-1/2">
             <el-tooltip content="Ingreasa la cantidad de piezas buenas que realizaste *" placement="top">
@@ -415,9 +418,26 @@
           <textarea v-model="reason" class="textarea mb-1" autocomplete="off"
             placeholder="Motivo. Ejemplo: Al grabar los medallones, moví el escantillón por accidente"></textarea>
         </div>
+<<<<<<< HEAD
+        <p class="font-bold text-lg my-2">Menciona si fuiste supervisado durante la producción de este producto.</p>
+        <p class="text-secondary">Supervisiones a esta OP</p>
+        <!-- Informacion de upervisión. -->
+        <div v-for="quality in qualities.data" :key="quality" class="grid grid-cols-2 my-3 border border-[#9A9A9A] rounded-md p-4">
+          <p>Nombre del supervisor:</p>
+          <p>{{ quality.supervisor.name }}</p>
+          <p>Número de inspección:</p>
+          <p @click="$inertia.get(route('qualities.show', quality.id))" class="cursor-pointer text-secondary">{{ quality.id }}</p>
+          <p>Fecha y hora:</p>
+          <p>{{ quality.created_at }}</p>
+        </div>
+        <div class="block my-4">
+          <label class="flex items-center">
+            <Checkbox v-model:checked="supervision" name="remember" class="bg-transparent"/>
+=======
         <div class="block my-4">
           <label class="flex items-center">
             <Checkbox v-model:checked="supervision" name="remember" class="bg-transparent" />
+>>>>>>> 3ddb5f95700407bbc9f2b87eaf87bc835431b033
             <span class="ml-2 text-sm text-[#9A9A9A]">Fuí supervisado</span>
           </label>
         </div>

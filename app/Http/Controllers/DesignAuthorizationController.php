@@ -20,9 +20,11 @@ class DesignAuthorizationController extends Controller
     
     public function create()
     {
-        $company_branches = CompanyBranch::with('contacts')->get(['id', 'name']);
+        $company_branches = CompanyBranch::with('contacts')->get(['id', 'name', 'company_id']);
+        $company_id = request('company_id');
+        $company_id_numero = intval($company_id);
 
-        return inertia('DesignAuthorization/Create', compact('company_branches'));
+        return inertia('DesignAuthorization/Create', compact('company_branches', 'company_id'));
     }
 
     

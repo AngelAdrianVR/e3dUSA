@@ -62,13 +62,18 @@
                                 </div>
                             </template>
                         </el-image> -->
-                        <img class="object-contain h-60" :src="catalog_product.data.media[0]?.original_url" alt="">
+                        <img class="object-contain h-60" :src="catalog_product.data.media[currentImage]?.original_url" alt="">
                         <div v-if="imageHovered" @click="openImage(catalog_product.data.media[0]?.original_url)"
                             class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
                             <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
                         </div>
                     </figure>
                     <!-- <i :class="currentIndexProduct == catalog_products.data.length - 1 ? 'hidden' : 'block'" @click="next" class="fa-solid fa-chevron-right ml-4 text-lg text-gray-600 cursor-pointer p-1 mb-2 rounded-full"></i> -->
+                    </div>
+                    <div v-if="catalog_product.data.media?.length > 1" class="mt-3 flex items-center justify-center space-x-3">
+                        <i @click="currentImage = index" v-for="(image, index) in catalog_product.data.media?.length" :key="index" 
+                        :class="index == currentImage ? 'text-black' : 'text-gray-300'" 
+                        class="fa-solid fa-circle text-xs cursor-pointer"></i>
                     </div>
                     <div class="mt-8 ml-6 text-sm">
                         <div class="flex mb-2">
@@ -168,6 +173,7 @@ export default {
             imageHovered: false,
             showConfirmModal: false,
             currentIndexProduct: null,
+            currentImage: 0,
         };
     },
     components: {
