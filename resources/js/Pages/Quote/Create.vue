@@ -509,7 +509,7 @@ export default {
         if (this.opportunity) {
             this.form.company_branch_id = parseInt(this.opportunity.company_branch_id);
             this.form.receiver = this.opportunity.contact;
-            this.form.currency = 'Peso mexicano';
+            this.form.currency = '$MXN';
             this.getImportantNotes();
         }
     }
