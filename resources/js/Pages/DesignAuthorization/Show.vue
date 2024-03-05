@@ -58,9 +58,9 @@
                         <p class="text-[#9A9A9A] my-2">Fecha de aceptación de diseño:</p>
                         <p class="my-2">{{ contact?.responded_at ?? '--' }}</p>
 
-                        <div class="w-96 flex space-x-4">
+                        <div class="w-96 flex space-x-4 relative">
                             <p class="text-[#9A9A9A] mt-10">Firma de autorización:</p>
-                            <figure class="w-32 absolute right-4 -top-[70px]" v-if="design_authorization.data.signature_media?.length > 0">
+                            <figure class="w-32 absolute right-4 -top-[70px]">
                                 <img class="border-b border-gray-600 pb-3" :src="procesarUrlImagen(design_authorization.data.signature_media[0]?.original_url)" alt="">
                             </figure>
                         </div>
@@ -119,7 +119,7 @@ methods:{
     // Método para procesar la URL de la imagen
     procesarUrlImagen(originalUrl) {
         // Reemplaza la parte inicial de la URL
-        const nuevaUrl = originalUrl.replace('http://www.intranetemblems3d.dtw.com.mx', 'https://clientes-emblems3d.dtw.com.mx');
+        const nuevaUrl = originalUrl.replace('https://intranetemblems3d.dtw.com.mx', 'https://clientes-emblems3d.dtw.com.mx');
         return nuevaUrl;
     },
 },

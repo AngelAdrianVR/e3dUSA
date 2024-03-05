@@ -83,8 +83,8 @@
 
             <!-- signature -->
             <div class="mr-7 flex space-x-4 w-1/3">
-                <p class="text-gray-500">Firma de autorización: </p>
-                <figure class="w-32" v-if="quote.data.signature_media?.length > 0">
+                <p class="text-gray-500 self-start">Firma de autorización: </p>
+                <figure class="w-32 self-start" v-if="quote.data.signature_media?.length > 0">
                     <img class="border-b border-gray-600 pb-3" :src="procesarUrlImagen(quote.data.signature_media[0].original_url)" alt="">
                 </figure>
             </div>
@@ -237,8 +237,8 @@ export default {
         },
         // Método para procesar la URL de la imagen
         procesarUrlImagen(originalUrl) {
-            // Reemplaza la parte inicial de la URL
-            const nuevaUrl = originalUrl.replace('http://www.intranetemblems3d.dtw.com.mx', 'https://clientes-emblems3d.dtw.com.mx');
+            // Reemplaza la parte inicial de la URL 
+            const nuevaUrl = originalUrl.replace('https://intranetemblems3d.dtw.com.mx', 'https://clientes-emblems3d.dtw.com.mx');
             return nuevaUrl;
         },
     }
