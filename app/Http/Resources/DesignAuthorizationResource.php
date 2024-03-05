@@ -56,6 +56,7 @@ class DesignAuthorizationResource extends JsonResource
             'design_accepted' => $this->design_accepted,
             'rejected_razon' => $this->rejected_razon,
             'media' => $this->getMedia('image')->all(),
+            'signature_media' => $this->getMedia('signature')->all(),
             'status' => $status,
             'seller' => $this->whenLoaded('seller'),
             'company_branch' => $this->whenLoaded('companyBranch'),
