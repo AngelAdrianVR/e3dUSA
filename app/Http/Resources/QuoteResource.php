@@ -62,6 +62,7 @@ class QuoteResource extends JsonResource
             'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'status' => $status,
             'quote_acepted' => $this->quote_acepted,
+            'signature_media' => $this->getMedia('signature')->all(),
             'rejected_razon' => $this->rejected_razon,
             'responded_at' => $this->responded_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'is_spanish_template' => boolval($this->is_spanish_template),

@@ -58,12 +58,13 @@
                         <p class="text-[#9A9A9A] my-2">Fecha de aceptación de diseño:</p>
                         <p class="my-2">{{ contact?.responded_at ?? '--' }}</p>
 
-                        <div class="w-96">
-                            <!-- <figure @click="showSideOptions = true" class="w-32 absolute right-4 -top-[70px] border border-dashed border-green-500" v-if="design.data.media?.find(file => file.collection_name === 'signarute')">
-                                <img :src="quote.data.media[0].original_url" alt="">
-                            </figure> -->
-                            <p class="text-[#9A9A9A] mt-10">Firma de autorización: _________________________________</p>
+                        <div class="w-96 relative">
+                            <p class="text-[#9A9A9A] mt-16">Firma de autorización: __________________________</p>
+                            <figure class="w-32 absolute right-20 top-4">
+                                <img :src="procesarUrlImagen(design_authorization.data.signature_media[0]?.original_url)" alt="">
+                            </figure>
                         </div>
+
                     </div>
                 </div> 
             
@@ -115,7 +116,13 @@ methods:{
         } catch (error) {
             console.log(error);
         }
-    }
+    },
+    // Método para procesar la URL de la imagen
+    procesarUrlImagen(originalUrl) {
+        // Reemplaza la parte inicial de la URL
+        const nuevaUrl = originalUrl?.replace('https://intranetemblems3d.dtw.com.mx', 'https://clientes-emblems3d.dtw.com.mx');
+        return nuevaUrl;
+    },
 },
 mounted() {
     //Guardar la informacion del contacto

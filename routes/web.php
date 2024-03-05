@@ -453,6 +453,25 @@ Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store
 
 Route::post('/upload-image', [FileUploadController::class, 'upload'])->name('upload-image');
 
+// // API para imagenes
+// Route::get('/get-multimedia-file/{file}', function ($fileId) {
+//     // Obtén el modelo de medios por ID
+//     $media = Media::findOrFail($fileId);
+
+//     // Verifica si el archivo existe
+//     if (!Storage::disk($media->disk)->exists($media->getPath())) {
+//         abort(404, 'Archivo no encontrado');
+//     }
+
+//     // Lee el contenido del archivo
+//     $contenido = Storage::disk($media->disk)->get($media->getPath());
+
+//     // Devuelve la respuesta con el contenido y el tipo de contenido adecuado
+//     return response($contenido, 200)
+//         ->header('Content-Type', $media->mime_type);
+// });
+
+
 //artisan commands
 
 Route::get('/clear-all', function () {
@@ -486,6 +505,7 @@ Route::get('mail-test', function () {
 
     return "Correo de prueba enviado a $destinatario.";
 });
+
 
 // Route::get('/sorry-miss-u', function () {
 //     return inertia('Cin/so');

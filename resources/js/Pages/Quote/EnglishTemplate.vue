@@ -72,11 +72,21 @@
             </template>
         </div>
 
-        <!-- goodbyes -->
-        <p class="w-11/12 mx-auto my-2 pb-2 text-gray-700">
-            Nothing more for the moment and awaiting your preference, I remain at your service for any questions or
-            comments. Quotation sheet: <span class="font-bold bg-yellow-100">{{ quote.data.folio }}</span>
-        </p>
+        <div class="flex justify-between items-center mx-10 mt-9">
+            <!-- goodbyes -->
+            <p class="w-11/12 mx-auto my-2 pb-2 text-gray-700">
+                Nothing more for the moment and awaiting your preference, I remain at your service for any questions or
+                comments. Quotation sheet: <span class="font-bold bg-yellow-100">{{ quote.data.folio }}</span>
+            </p>
+
+            <!-- signature -->
+            <div class="mr-7 flex space-x-4 w-96 relative mt-20 md:mt-0">
+                <p class="text-gray-500">Firma de autorización: </p>
+                <figure class="w-32 absolute md:right-24 lg:right-16 -top-[55px]">
+                    <img :src="procesarUrlImagen(quote.data.signature_media[0]?.original_url)" alt="">
+                </figure>
+            </div>
+        </div>
 
         <!-- Notes -->
         <div class="w-11/12 mx-auto border border-gray-500 px-3 pb-1 mt-1 rounded-xl text-gray-500 leading-normal uppercase"
@@ -219,6 +229,12 @@ export default {
                         this.$inertia.get(route('quotes.index'));
                     }
                 }
+        },
+        // Método para procesar la URL de la imagen
+        procesarUrlImagen(originalUrl) {
+            // Reemplaza la parte inicial de la URL 
+            const nuevaUrl = originalUrl?.replace('https://intranetemblems3d.dtw.com.mx', 'https://clientes-emblems3d.dtw.com.mx');
+            return nuevaUrl;
         },
      }
 }
