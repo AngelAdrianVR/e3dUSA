@@ -265,4 +265,11 @@ class CompanyController extends Controller
 
         return response()->json(['items' => $companies]);
     }
+
+    public function getExclusiveDesigns(Company $company)
+    {
+        $items = $company->exclusiveDesigns->load(['media', 'user']);
+
+        return response()->json(compact('items'));
+    }
 }

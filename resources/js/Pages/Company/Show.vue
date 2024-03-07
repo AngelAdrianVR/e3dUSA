@@ -56,49 +56,53 @@
       <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2">
         <div class="flex overflow-x-auto pb-3 lg:pb-0">
           <p @click="tabs = 1" :class="tabs == 1 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            "
-            class="h-10 w-96 lg:w-auto p-2 cursor-pointer ml-5 transition duration-300 ease-in-out text-sm md:text-base">
+            " class="w-96 lg:w-auto p-2 cursor-pointer ml-5 transition duration-300 ease-in-out text-sm md:text-base">
             Información general
           </p>
-          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
           <p @click="tabs = 2" :class="tabs == 2 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Sucursales
           </p>
-          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
           <p @click="tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Productos
           </p>
-          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
           <p @click="tabs = 4" :class="tabs == 4 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Oportunidades
           </p>
-          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
           <p @click="tabs = 5" :class="tabs == 5 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Cotizaciones
           </p>
-          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
           <p @click="tabs = 6" :class="tabs == 6 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Seguimiento integral
           </p>
-          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
           <p @click="tabs = 7" :class="tabs == 7 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Proyectos
           </p>
-          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
           <p @click="tabs = 8" :class="tabs == 8 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Ordenes de venta
           </p>
-          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
           <p @click="tabs = 9" :class="tabs == 9 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             F. autorización de diseño
+          </p>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
+          <p @click="tabs = 10" :class="tabs == 10 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Diseños exclusivos
           </p>
         </div>
       </div>
@@ -213,9 +217,11 @@
       <div v-if="tabs === 9" class="px-7 w-full my-4">
         <div class="flex justify-between items-center">
           <p class="text-secondary">Formatos de autorización de diseño</p>
-          <PrimaryButton @click="$inertia.get(route('design-authorizations.create', {company_id: company.data.id}))" class="self-start">Agregar formato</PrimaryButton>
+          <PrimaryButton @click="$inertia.get(route('design-authorizations.create', { company_id: company.data.id }))"
+            class="self-start">Agregar formato</PrimaryButton>
         </div>
-        <div class="mt-5 mx-auto" v-if="company.data.company_branches?.some(branch => branch.designAuthorizations?.length > 0)">
+        <div class="mt-5 mx-auto"
+          v-if="company.data.company_branches?.some(branch => branch.designAuthorizations?.length > 0)">
           <DesignAuthorizationTable :designAuthorizations="allDesignAuthorizations" />
         </div>
         <div class="flex flex-col text-center justify-center" v-else>
@@ -224,6 +230,22 @@
         </div>
       </div>
       <!-- ------------- Formatos de autorización de diseño ends 9 ------------- -->
+
+      <!-- ------------- diseños exclusivos starts 10 ------------- -->
+      <div v-if="tabs === 10" class="px-7 w-full my-4">
+        <div class="flex justify-between items-center">
+          <p class="text-secondary">Diseños exclusivos</p>
+          <PrimaryButton v-if="$page.props.auth.user.permissions.includes('Crear diseños exclusivos')"
+            @click="$inertia.get(route('exclusive-designs.create'), { company_id: company.data.id })"
+            class="self-start">
+            Agregar formato
+          </PrimaryButton>
+        </div>
+        <div class="mt-5 mx-auto">
+          <ExclusiveDesignTable :companyId="company.data.id" />
+        </div>
+      </div>
+      <!-- ------------- diseños exclusivos ends 10 ------------- -->
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar cliente </template>
@@ -244,6 +266,7 @@ import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import CompanyBranchCard from "@/Components/MyComponents/CompanyBranchCard.vue";
 import CompanyProductCard from "@/Components/MyComponents/CompanyProductCard.vue";
 import DesignAuthorizationTable from "@/Components/MyComponents/DesignAuthorizationTable.vue";
+import ExclusiveDesignTable from "@/Components/MyComponents/ExclusiveDesignTable.vue";
 import CompanyQuoteTable from "@/Components/MyComponents/CompanyQuoteTable.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
@@ -261,8 +284,7 @@ export default {
   data() {
     return {
       selectedCompany: "",
-      // currentCompany: null,
-      // currentCompanyProducts: null,
+      allExclusiveDesigns: [],
       tabs: 1,
       showConfirmModal: false,
       loading: false,
@@ -286,6 +308,7 @@ export default {
     CompanyOportunityTable,
     CompanyClientMonitorTable,
     DesignAuthorizationTable,
+    ExclusiveDesignTable,
     CompanyQuoteTable,
     ProjectTable,
     Link,

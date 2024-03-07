@@ -17,6 +17,7 @@ use App\Http\Controllers\DesignController;
 use App\Http\Controllers\DesignModificationController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\EmailMonitorController;
+use App\Http\Controllers\ExclusiveDesignController;
 use App\Http\Controllers\ExtraTimeRequestController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\HolidayController;
@@ -137,10 +138,14 @@ Route::resource('companies', CompanyController::class)->middleware('auth');
 Route::post('companies/massive-delete', [CompanyController::class, 'massiveDelete'])->name('companies.massive-delete');
 Route::post('companies/clone', [CompanyController::class, 'clone'])->name('companies.clone');
 Route::post('companies/get-all-companies', [CompanyController::class, 'getAllCompanies'])->name('companies.get-all-companies')->middleware('auth');
+Route::get('companies-get-exclusive-designs/{company}', [CompanyController::class, 'getExclusiveDesigns'])->name('companies.get-exclusive-designs')->middleware('auth');
 
 
 // ------- CRM (Clients Routes)  ---------
 Route::get('crm', [DashboardController::class, 'crmDashboard'])->middleware('auth')->name('crm.dashboard');
+
+// ------- CRM (exclusive customer designs Routes)  ---------
+Route::resource('exclusive-designs', ExclusiveDesignController::class)->middleware('auth');
 
 // ------- CRM (oportunities Routes)  ---------
 Route::resource('oportunities', OportunityController::class)->middleware('auth');
