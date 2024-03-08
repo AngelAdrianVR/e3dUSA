@@ -52,6 +52,7 @@
       <p class="text-center font-bold text-lg mb-4">
         {{ company.data.business_name }}
       </p>
+
       <!-- ------------- tabs section starts ------------- -->
       <div class="border-y-2 border-[#cccccc] flex flex-nowrap justify-between items-center py-2 overflow-auto w-full">
         <div class="flex overflow-x-auto pb-3 lg:pb-0">
@@ -267,6 +268,38 @@
         </div>
       </div>
       <!-- ------------- diseños exclusivos ends 11 ------------- -->
+      <el-tabs v-model="activeTab" class="mx-5" @tab-click="handleClick">
+        <el-tab-pane label="Información general" name="1">
+          <General :company="company.data" />
+        </el-tab-pane>
+        <el-tab-pane label="Sucursales" name="2">
+          <Branches :company="company.data" />
+        </el-tab-pane>
+        <el-tab-pane label="Productos" name="3">
+          <Products :company="company.data" />
+        </el-tab-pane>
+        <el-tab-pane label="Oportunidades" name="4">
+          <Opportunities :company="company.data" />
+        </el-tab-pane>
+        <el-tab-pane label="Cotizaciones" name="5">
+          <Quotes :company="company.data" />
+        </el-tab-pane>
+        <el-tab-pane label="Seguimiento integral" name="6">
+          <CustomerMonitor :company="company.data" />
+        </el-tab-pane>
+        <el-tab-pane label="Proyectos" name="7">
+          <Projects :company="company.data" />
+        </el-tab-pane>
+        <el-tab-pane label="Ordenes de venta" name="8">
+          <Sales :company="company.data" />
+        </el-tab-pane>
+        <el-tab-pane label=" F. autorización de diseño" name="9">
+          <DesignsFormat :company="company.data" />
+        </el-tab-pane>
+        <el-tab-pane label="Diseños exclusivos" name="10">
+          <ExclusiveDesigns :company="company.data" />
+        </el-tab-pane>
+      </el-tabs>
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar cliente </template>
@@ -284,8 +317,8 @@
 
 <script>
 import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
-import CompanyBranchCard from "@/Components/MyComponents/CompanyBranchCard.vue";
-import CompanyProductCard from "@/Components/MyComponents/CompanyProductCard.vue";
+// import CompanyBranchCard from "@/Components/MyComponents/CompanyBranchCard.vue";
+// import CompanyProductCard from "@/Components/MyComponents/CompanyProductCard.vue";
 import DesignAuthorizationTable from "@/Components/MyComponents/DesignAuthorizationTable.vue";
 import ExclusiveDesignTable from "@/Components/MyComponents/ExclusiveDesignTable.vue";
 import CompanyQuoteTable from "@/Components/MyComponents/CompanyQuoteTable.vue";
@@ -299,6 +332,16 @@ import CompanyClientMonitorTable from "@/Components/MyComponents/CompanyClientMo
 import CompanySalesTable from "@/Components/MyComponents/CompanySalesTable.vue";
 import ProjectTable from "@/Components/MyComponents/ProjectTable.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import General from "./Tabs/General.vue";
+import Branches from "./Tabs/Branches.vue";
+import Products from "./Tabs/Products.vue";
+import Opportunities from "./Tabs/Opportunities.vue";
+import Quotes from "./Tabs/Quotes.vue";
+import CustomerMonitor from "./Tabs/CustomerMonitor.vue";
+import Projects from "./Tabs/Projects.vue";
+import Sales from "./Tabs/Sales.vue";
+import DesignsFormat from "./Tabs/DesignsFormat.vue";
+import ExclusiveDesigns from "./Tabs/ExclusiveDesigns.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 
@@ -307,7 +350,7 @@ export default {
     return {
       selectedCompany: "",
       allExclusiveDesigns: [],
-      tabs: 1,
+      activeTab: '1',
       showConfirmModal: false,
       loading: false,
     };
@@ -319,8 +362,8 @@ export default {
   },
   components: {
     AppLayoutNoHeader,
-    CompanyBranchCard,
-    CompanyProductCard,
+    // CompanyBranchCard,
+    // CompanyProductCard,
     Dropdown,
     DropdownLink,
     ConfirmationModal,
@@ -335,62 +378,79 @@ export default {
     CompanyQuoteTable,
     ProjectTable,
     Link,
+    General,
+    Branches,
+    Products,
+    Opportunities,
+    Quotes,
+    CustomerMonitor,
+    Projects,
+    Sales,
+    DesignsFormat,
+    ExclusiveDesigns,
   },
   methods: {
-    getColorHex(number) {
-      if (number) {
-        // Ajusta el tono (hue) en función del número proporcionado
-        let tono = (number * 30) % 360;
-
-        // Saturation y lightness se mantienen constantes para colores vibrantes
-        let saturacion = 80;
-        let luminosidad = 40;
-
-        // Convierte de HSL a hexadecimal
-        let colorHex = this.hslToHex(tono, saturacion, luminosidad);
-
-        return colorHex;
-      } else {
-
-        return '#cccccc';
-      }
+    handleClick(tab) {
+      // Agrega la variable currentTab=tab.props.name a la URL para mejorar la navegacion al actalizar o cambiar de pagina
+      const currentURL = new URL(window.location.href);
+      currentURL.searchParams.set('currentTab', tab.props.name);
+      // Actualiza la URL
+      window.history.replaceState({}, document.title, currentURL.href);
     },
-    // Función para convertir de HSL a hexadecimal
-    hslToHex(h, s, l) {
-      h /= 360;
-      s /= 100;
-      l = l > 40 ? 40 : l;
-      l /= 100;
+    // getColorHex(number) {
+    //   if (number) {
+    //     // Ajusta el tono (hue) en función del número proporcionado
+    //     let tono = (number * 30) % 360;
 
-      let r, g, b;
+    //     // Saturation y lightness se mantienen constantes para colores vibrantes
+    //     let saturacion = 80;
+    //     let luminosidad = 40;
 
-      if (s === 0) {
-        r = g = b = l;
-      } else {
-        const hue2rgb = (p, q, t) => {
-          if (t < 0) t += 1;
-          if (t > 1) t -= 1;
-          if (t < 1 / 6) return p + (q - p) * 6 * t;
-          if (t < 1 / 2) return q;
-          if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-          return p;
-        };
+    //     // Convierte de HSL a hexadecimal
+    //     let colorHex = this.hslToHex(tono, saturacion, luminosidad);
 
-        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        const p = 2 * l - q;
+    //     return colorHex;
+    //   } else {
 
-        r = hue2rgb(p, q, h + 1 / 3);
-        g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1 / 3);
-      }
+    //     return '#cccccc';
+    //   }
+    // },
+    // // Función para convertir de HSL a hexadecimal
+    // hslToHex(h, s, l) {
+    //   h /= 360;
+    //   s /= 100;
+    //   l = l > 40 ? 40 : l;
+    //   l /= 100;
 
-      const toHex = x => {
-        const hex = Math.round(x * 255).toString(16);
-        return hex.length === 1 ? '0' + hex : hex;
-      };
+    //   let r, g, b;
 
-      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-    },
+    //   if (s === 0) {
+    //     r = g = b = l;
+    //   } else {
+    //     const hue2rgb = (p, q, t) => {
+    //       if (t < 0) t += 1;
+    //       if (t > 1) t -= 1;
+    //       if (t < 1 / 6) return p + (q - p) * 6 * t;
+    //       if (t < 1 / 2) return q;
+    //       if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+    //       return p;
+    //     };
+
+    //     const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    //     const p = 2 * l - q;
+
+    //     r = hue2rgb(p, q, h + 1 / 3);
+    //     g = hue2rgb(p, q, h);
+    //     b = hue2rgb(p, q, h - 1 / 3);
+    //   }
+
+    //   const toHex = x => {
+    //     const hex = Math.round(x * 255).toString(16);
+    //     return hex.length === 1 ? '0' + hex : hex;
+    //   };
+
+    //   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    // },
     async deleteItem() {
       try {
         const response = await axios.delete(
@@ -422,57 +482,24 @@ export default {
         this.$inertia.get(route('companies.index'));
       }
     },
-    hasQuotes() {
-      const tieneCotizaciones = this.company.data.company_branches
-        .map((branch) => branch.quotes.length > 0)
-        .some((tieneCotizacionesEnBranch) => tieneCotizacionesEnBranch);
+    // hasQuotes() {
+    //   const tieneCotizaciones = this.company.data.company_branches
+    //     .map((branch) => branch.quotes.length > 0)
+    //     .some((tieneCotizacionesEnBranch) => tieneCotizacionesEnBranch);
 
-      return tieneCotizaciones; // Devolverá true si hay cotizaciones en al menos un company_branch
-    },
-  },
-  computed: {
-    allSales() {
-      // Recopila todas las ventas de todos los company_branches
-      const sales = [];
-      if (this.company.data && this.company.data.company_branches) {
-        this.company.data.company_branches.forEach(branch => {
-          if (branch.sales) {
-            sales.push(...branch.sales);
-          }
-        });
-      }
-      return sales;
-    },
-    allDesignAuthorizations() {
-      // Recopila todas las ventas de todos los company_branches
-      const designAuthorizations = [];
-      if (this.company.data && this.company.data.company_branches) {
-        this.company.data.company_branches.forEach(branch => {
-          if (branch.designAuthorizations) {
-            designAuthorizations.push(...branch.designAuthorizations);
-          }
-        });
-      }
-      return designAuthorizations;
-    },
-    allQuotes() {
-      // Recopila todas las ventas de todos los company_branches
-      const quotes = [];
-      if (this.company.data && this.company.data.company_branches) {
-        this.company.data.company_branches.forEach(branch => {
-          if (branch.quotes) {
-            quotes.push(...branch.quotes);
-          }
-        });
-      }
-      return quotes;
-    },
+    //   return tieneCotizaciones; // Devolverá true si hay cotizaciones en al menos un company_branch
+    // },
   },
   mounted() {
     this.selectedCompany = this.company.data.id;
-    // tabs
-    if (this.defaultTab != null) {
-      this.tabs = parseInt(this.defaultTab);
+
+    // Obtener la URL actual
+    const currentURL = new URL(window.location.href);
+    // Extraer el valor de 'currentTab' de los parámetros de búsqueda
+    const currentTabFromURL = currentURL.searchParams.get('currentTab');
+
+    if (currentTabFromURL) {
+      this.activeTab = currentTabFromURL;
     }
   },
 };

@@ -369,6 +369,7 @@ class ProductionController extends Controller
             $production->update(['started_at' => now()]);
             $message = 'Se ha registrado el inicio';
         } else if ($production->started_at->diffInMinutes(now()) > 4) {
+            $production_folio = 'OP-' . str_pad($production->catalogProductCompanySale->sale->id, 4, "0", STR_PAD_LEFT);
             $request->validate([
                 'good_units' => 'nullable|numeric|min:0',
                 'scrap' => 'nullable|numeric|min:0',
@@ -384,53 +385,57 @@ class ProductionController extends Controller
                 'supervision' => $request->supervision,
             ]);
 
-            // descontar materia prima utilizada para la producción
-            $cpcs = CatalogProductCompanySale::find($production['catalog_product_company_sale_id']);
-            $raw_materials = $cpcs->catalogProductCompany->catalogProduct->rawMaterials;
-            foreach ($raw_materials as $raw_material) {
-                $quantity_needed = intval($raw_material->pivot->quantity * $cpcs->quantity);
-                $storage = Storage::where('storageable_id', $raw_material->id)->where('storageable_type', 'App\Models\RawMaterial')->first();
-                $updated_quantity =  $storage->quantity - $quantity_needed;
-                $storage->update(['quantity' => $updated_quantity]);
-                StockMovementHistory::Create([
-                    'storage_id' => $storage->id,
-                    'user_id' => auth()->id(),
-                    'type' => 'Salida',
-                    'quantity' => $quantity_needed,
-                    'notes' => 'Salida de material automática por orden de producción terminada',
-                ]);
-            }
-
-            // agregar a almacen de producto terminado si es orden de stock
-            if (!$production->catalogProductCompanySale->sale->is_sale_production) {
-                $catalog_product = $cpcs->catalogProductCompany->catalogProduct;
-                // Buscar el registro existente de storage para producto-terminado
-                $existingStorage = $catalog_product->storages()
-                    ->where('type', 'producto-terminado')
-                    ->first();
-
-                if ($existingStorage) {
-                    // Si existe, incrementar la cantidad existente
-                    $existingStorage->increment('quantity', $cpcs->quantity);
-                } else {
-                    // Si no existe, crear un nuevo registro de storage
-                    $catalog_product->storages()->create([
-                        'quantity' => $cpcs->quantity,
-                        'location' => 'Por definir',
-                        'type' => 'producto-terminado',
+            // si ya se finalizó completamente
+            if ($production->catalogProductCompanySale->sale->getStatus()['label'] == 'Producción terminada') {
+                // descontar materia prima utilizada para la producción si ya se finalizó
+                $cpcs = CatalogProductCompanySale::find($production['catalog_product_company_sale_id']);
+                $raw_materials = $cpcs->catalogProductCompany->catalogProduct->rawMaterials;
+                foreach ($raw_materials as $raw_material) {
+                    $quantity_needed = intval($raw_material->pivot->quantity * $cpcs->quantity);
+                    $storage = Storage::where('storageable_id', $raw_material->id)->where('storageable_type', 'App\Models\RawMaterial')->first();
+                    $updated_quantity =  $storage->quantity - $quantity_needed;
+                    $storage->update(['quantity' => $updated_quantity]);
+                    StockMovementHistory::Create([
+                        'storage_id' => $storage->id,
+                        'user_id' => auth()->id(),
+                        'type' => 'Salida',
+                        'quantity' => $quantity_needed,
+                        'notes' => 'Salida de material automática por orden de producción terminada ' .  $production_folio,
                     ]);
-                    $existingStorage = $catalog_product->storages()
-                    ->where('type', 'producto-terminado')
-                    ->first();
                 }
-                StockMovementHistory::Create([
-                    'storage_id' => $existingStorage->id,
-                    'user_id' => auth()->id(),
-                    'type' => 'Entrada',
-                    'quantity' => $cpcs->quantity,
-                    'notes' => 'Entrada de producto terminado desde orden de stock OP-' . str_pad($production->catalogProductCompanySale->sale->id, 4, "0", STR_PAD_LEFT),
-                ]);
+                
+                // agregar a almacen de producto terminado si es orden de stock
+                if (!$production->catalogProductCompanySale->sale->is_sale_production) {
+                    $catalog_product = $cpcs->catalogProductCompany->catalogProduct;
+                    // Buscar el registro existente de storage para producto-terminado
+                    $existingStorage = $catalog_product->storages()
+                        ->where('type', 'producto-terminado')
+                        ->first();
+    
+                    if ($existingStorage) {
+                        // Si existe, incrementar la cantidad existente
+                        $existingStorage->increment('quantity', $cpcs->quantity);
+                    } else {
+                        // Si no existe, crear un nuevo registro de storage
+                        $catalog_product->storages()->create([
+                            'quantity' => $cpcs->quantity,
+                            'location' => 'Por definir',
+                            'type' => 'producto-terminado',
+                        ]);
+                        $existingStorage = $catalog_product->storages()
+                        ->where('type', 'producto-terminado')
+                        ->first();
+                    }
+                    StockMovementHistory::Create([
+                        'storage_id' => $existingStorage->id,
+                        'user_id' => auth()->id(),
+                        'type' => 'Entrada',
+                        'quantity' => $cpcs->quantity,
+                        'notes' => 'Entrada de producto terminado desde orden de stock ' .  $production_folio,
+                    ]);
+                }
             }
+
 
             // // rebajar o eliminar cantidad en almacen de producto terminado en caso de que hubiera disponible
             // if ($production->catalogProductCompanySale->finished_product_used > 0) {
