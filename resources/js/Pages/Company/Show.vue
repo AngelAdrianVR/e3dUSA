@@ -59,227 +59,33 @@
           <General :company="company.data" />
         </el-tab-pane>
         <el-tab-pane label="Sucursales" name="2">
-          <General :company="company.data" />
+          <Branches :company="company.data" />
         </el-tab-pane>
         <el-tab-pane label="Productos" name="3">
-          <General :company="company.data" />
+          <Products :company="company.data" />
         </el-tab-pane>
         <el-tab-pane label="Oportunidades" name="4">
-          <General :company="company.data" />
+          <Opportunities :company="company.data" />
         </el-tab-pane>
         <el-tab-pane label="Cotizaciones" name="5">
-          <General :company="company.data" />
+          <Quotes :company="company.data" />
         </el-tab-pane>
         <el-tab-pane label="Seguimiento integral" name="6">
-          <General :company="company.data" />
+          <CustomerMonitor :company="company.data" />
         </el-tab-pane>
         <el-tab-pane label="Proyectos" name="7">
-          <General :company="company.data" />
+          <Projects :company="company.data" />
         </el-tab-pane>
         <el-tab-pane label="Ordenes de venta" name="8">
-          <General :company="company.data" />
+          <Sales :company="company.data" />
         </el-tab-pane>
         <el-tab-pane label=" F. autorización de diseño" name="9">
-          <General :company="company.data" />
+          <DesignsFormat :company="company.data" />
         </el-tab-pane>
         <el-tab-pane label="Diseños exclusivos" name="10">
-          <General :company="company.data" />
+          <ExclusiveDesigns :company="company.data" />
         </el-tab-pane>
       </el-tabs>
-
-      <!-- <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2">
-        <div class="flex overflow-x-auto pb-3 lg:pb-0">
-          <p @click="activeTab = 1" :class="activeTab == 1 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="w-96 lg:w-auto p-2 cursor-pointer ml-5 transition duration-300 ease-in-out text-sm md:text-base">
-            Información general
-          </p>
-          <div class="border-r-2 border-[#cccccc] ml-3"></div>
-          <p @click="activeTab = 2" :class="activeTab == 2 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-            Sucursales
-          </p>
-          <div class="border-r-2 border-[#cccccc] ml-3"></div>
-          <p @click="activeTab = 3" :class="activeTab == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-            Productos
-          </p>
-          <div class="border-r-2 border-[#cccccc] ml-3"></div>
-          <p @click="activeTab = 4" :class="activeTab == 4 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-            Oportunidades
-          </p>
-          <div class="border-r-2 border-[#cccccc] ml-3"></div>
-          <p @click="activeTab = 5" :class="activeTab == 5 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-            Cotizaciones
-          </p>
-          <div class="border-r-2 border-[#cccccc] ml-3"></div>
-          <p @click="activeTab = 6" :class="activeTab == 6 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-            Seguimiento integral
-          </p>
-          <div class="border-r-2 border-[#cccccc] ml-3"></div>
-          <p @click="activeTab = 7" :class="activeTab == 7 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-            Proyectos
-          </p>
-          <div class="border-r-2 border-[#cccccc] ml-3"></div>
-          <p @click="activeTab = 8" :class="activeTab == 8 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-            Ordenes de venta
-          </p>
-          <div class="border-r-2 border-[#cccccc] ml-3"></div>
-          <p @click="activeTab = 9" :class="activeTab == 9 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-            F. autorización de diseño
-          </p>
-          <div class="border-r-2 border-[#cccccc] ml-3"></div>
-          <p @click="activeTab = 10" :class="activeTab == 10 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-            Diseños exclusivos
-          </p>
-        </div>
-      </div> -->
-      <!-- ------------- activeTab section ends ------------- -->
-
-      <!-- ------------- Informacion general Starts 1 ------------- -->
-      <!-- <div v-if="activeTab == 1" class="md:w-1/2 grid grid-cols-2 text-left p-4 md:ml-20 text-sm items-center">
-        <span class="text-gray-500">ID</span>
-        <span>{{ company.data.id }}</span>
-        <span class="text-gray-500">Sucursales totales con las que cuenta el cliente</span>
-        <span>{{ company.data.branches_number ?? '* No especificado' }}</span>
-
-        <span class="col-span-2 mt-8 mb-2">Datos fiscales</span>
-
-        <span class="text-gray-500 my-2">Razón social</span>
-        <span>{{ company.data.business_name }}</span>
-        <span class="text-gray-500 my-2">RFC</span>
-        <span>{{ company.data.rfc }}</span>
-        <span class="text-gray-500 my-2">Código postal</span>
-        <span>{{ company.data.post_code }}</span>
-        <span class="text-gray-500 my-2">Dirección</span>
-        <span>{{ company.data.fiscal_address }}</span>
-        <span class="text-gray-500 my-2">Vendedor</span>
-        <p class="mr-2" :style="{ color: getColorHex(company.data.seller?.id) }">
-          <i class="fa-solid fa-star"></i>
-          {{ company.data.seller?.name ?? '* Sin información' }}
-        </p>
-        <span class="text-gray-500 my-2">Registro creado por</span>
-        <span>{{ company.data.user?.name ?? '* Sin información' }}</span>
-      </div> -->
-      <!-- ------------- Informacion general ends 1 ------------- -->
-
-      <!-- -------------Sucursales starts 2 ------------- -->
-      <!-- <div v-if="activeTab == 2" class="lg:grid grid-cols-2 gap-8 md:mt-12 md:px-14">
-        <CompanyBranchCard :company_branches="company.data.company_branches" />
-      </div> -->
-      <!-- ------------- Sucursales ends 2 ------------- -->
-
-      <!-- -------------Productos starts 3 ------------- -->
-      <!-- <div v-if="activeTab == 3" class="p-7">
-        <p class="text-secondary">Productos registrados</p>
-        <div class="grid lg:grid-cols-4 md:grid-cols-2 mt-7 gap-10">
-          <CompanyProductCard v-for="company_product in company.data.catalogProducts" :key="company_product.id"
-            :company_product="company_product" />
-        </div>
-      </div> -->
-      <!-- ------------- Productos ends 3 ------------- -->
-
-      <!-- -------------Oportunidades starts 4 ------------- -->
-      <!-- <div v-if="activeTab == 4" class="p-7 w-full mx-auto my-4">
-        <div v-if="company.data.oportunities.length">
-          <CompanyOportunityTable :oportunities="company.data.oportunities" />
-        </div>
-        <div class="flex flex-col text-center justify-center" v-else>
-          <p class="text-sm text-center">No hay oportunidades para mostrar</p>
-          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
-        </div>
-      </div> -->
-      <!-- ------------- Oportunidades ends 4 ------------- -->
-
-      <!-- -------------Cotizaciones starts 5 ------------- -->
-      <!-- <div v-if="activeTab == 5" class="p-7 w-full mx-auto my-4">
-        <div v-if="hasQuotes()" class="overflow-x-auto">
-          <CompanyQuoteTable :quotes="allQuotes" />
-        </div>
-        <div class="flex flex-col text-center justify-center" v-else>
-          <p class="text-sm text-center">No hay cotizaciones para mostrar</p>
-          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
-        </div>
-
-      </div> -->
-      <!-- ------------- Cotizaciones ends 5 ------------- -->
-
-      <!-- -------------Seguimiento integral starts 6 ------------- -->
-      <!-- <div v-if="activeTab == 6" class="p-7 w-full mx-auto my-4">
-        <div v-if="company.data.clientMonitors?.length">
-          <CompanyClientMonitorTable :client_monitors="company.data.clientMonitors" />
-        </div>
-        <div class="flex flex-col text-center justify-center" v-else>
-          <p class="text-sm text-center">No hay Seguimiento para mostrar</p>
-          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
-        </div>
-      </div> -->
-      <!-- ------------- Seguimiento integral ends 6 ------------- -->
-
-      <!-- -------------Proyectos starts 7 ------------- -->
-      <!-- <div v-if="activeTab == 7" class="p-7 w-full mx-auto my-4">
-        <div v-if="company.data.projects?.length">
-          <ProjectTable :projects="company.data.projects" />
-        </div>
-        <div class="flex flex-col text-center justify-center" v-else>
-          <p class="text-sm text-center">No hay proyectos para mostrar</p>
-          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
-        </div>
-      </div> -->
-      <!-- ------------- Proyectos ends 7 ------------- -->
-
-      <!-- -------------Ordenes de venta starts 8 ------------- -->
-      <!-- <div v-if="activeTab == 8" class="lg:p-7 w-full mx-auto my-4">
-        <div v-if="company.data.company_branches?.some(branch => branch.sales?.length > 0)">
-          <CompanySalesTable :company_sales="allSales" />
-        </div>
-        <div class="flex flex-col text-center justify-center" v-else>
-          <p class="text-sm text-center">No hay ordenes de venta de este cliente</p>
-          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
-        </div>
-      </div> -->
-      <!-- ------------- Ordenes de venta ends 8 ------------- -->
-
-
-      <!-- ------------- Formatos de autorización de diseño starts 9 ------------- -->
-      <!-- <div v-if="activeTab === 9" class="px-7 w-full my-4">
-        <div class="flex justify-between items-center">
-          <p class="text-secondary">Formatos de autorización de diseño</p>
-          <PrimaryButton @click="$inertia.get(route('design-authorizations.create', { company_id: company.data.id }))"
-            class="self-start">Agregar formato</PrimaryButton>
-        </div>
-        <div class="mt-5 mx-auto"
-          v-if="company.data.company_branches?.some(branch => branch.designAuthorizations?.length > 0)">
-          <DesignAuthorizationTable :designAuthorizations="allDesignAuthorizations" />
-        </div>
-        <div class="flex flex-col text-center justify-center" v-else>
-          <p class="text-sm text-center">No hay Formatos de autorización de diseño de este cliente</p>
-          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
-        </div>
-      </div> -->
-      <!-- ------------- Formatos de autorización de diseño ends 9 ------------- -->
-
-      <!-- ------------- diseños exclusivos starts 10 ------------- -->
-      <!-- <div v-if="activeTab === 10" class="px-7 w-full my-4">
-        <div class="flex justify-between items-center">
-          <p class="text-secondary">Diseños exclusivos</p>
-          <PrimaryButton v-if="$page.props.auth.user.permissions.includes('Crear diseños exclusivos')"
-            @click="$inertia.get(route('exclusive-designs.create'), { company_id: company.data.id })"
-            class="self-start">
-            Agregar formato
-          </PrimaryButton>
-        </div>
-        <div class="mt-5 mx-auto">
-          <ExclusiveDesignTable :companyId="company.data.id" />
-        </div>
-      </div> -->
-      <!-- ------------- diseños exclusivos ends 10 ------------- -->
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar cliente </template>
@@ -297,8 +103,8 @@
 
 <script>
 import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
-import CompanyBranchCard from "@/Components/MyComponents/CompanyBranchCard.vue";
-import CompanyProductCard from "@/Components/MyComponents/CompanyProductCard.vue";
+// import CompanyBranchCard from "@/Components/MyComponents/CompanyBranchCard.vue";
+// import CompanyProductCard from "@/Components/MyComponents/CompanyProductCard.vue";
 import DesignAuthorizationTable from "@/Components/MyComponents/DesignAuthorizationTable.vue";
 import ExclusiveDesignTable from "@/Components/MyComponents/ExclusiveDesignTable.vue";
 import CompanyQuoteTable from "@/Components/MyComponents/CompanyQuoteTable.vue";
@@ -312,6 +118,15 @@ import CompanySalesTable from "@/Components/MyComponents/CompanySalesTable.vue";
 import ProjectTable from "@/Components/MyComponents/ProjectTable.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import General from "./Tabs/General.vue";
+import Branches from "./Tabs/Branches.vue";
+import Products from "./Tabs/Products.vue";
+import Opportunities from "./Tabs/Opportunities.vue";
+import Quotes from "./Tabs/Quotes.vue";
+import CustomerMonitor from "./Tabs/CustomerMonitor.vue";
+import Projects from "./Tabs/Projects.vue";
+import Sales from "./Tabs/Sales.vue";
+import DesignsFormat from "./Tabs/DesignsFormat.vue";
+import ExclusiveDesigns from "./Tabs/ExclusiveDesigns.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 
@@ -332,8 +147,8 @@ export default {
   },
   components: {
     AppLayoutNoHeader,
-    CompanyBranchCard,
-    CompanyProductCard,
+    // CompanyBranchCard,
+    // CompanyProductCard,
     Dropdown,
     DropdownLink,
     ConfirmationModal,
@@ -348,62 +163,78 @@ export default {
     ProjectTable,
     Link,
     General,
+    Branches,
+    Products,
+    Opportunities,
+    Quotes,
+    CustomerMonitor,
+    Projects,
+    Sales,
+    DesignsFormat,
+    ExclusiveDesigns,
   },
   methods: {
-    getColorHex(number) {
-      if (number) {
-        // Ajusta el tono (hue) en función del número proporcionado
-        let tono = (number * 30) % 360;
-
-        // Saturation y lightness se mantienen constantes para colores vibrantes
-        let saturacion = 80;
-        let luminosidad = 40;
-
-        // Convierte de HSL a hexadecimal
-        let colorHex = this.hslToHex(tono, saturacion, luminosidad);
-
-        return colorHex;
-      } else {
-
-        return '#cccccc';
-      }
+    handleClick(tab) {
+      // Agrega la variable currentTab=tab.props.name a la URL para mejorar la navegacion al actalizar o cambiar de pagina
+      const currentURL = new URL(window.location.href);
+      currentURL.searchParams.set('currentTab', tab.props.name);
+      // Actualiza la URL
+      window.history.replaceState({}, document.title, currentURL.href);
     },
-    // Función para convertir de HSL a hexadecimal
-    hslToHex(h, s, l) {
-      h /= 360;
-      s /= 100;
-      l = l > 40 ? 40 : l;
-      l /= 100;
+    // getColorHex(number) {
+    //   if (number) {
+    //     // Ajusta el tono (hue) en función del número proporcionado
+    //     let tono = (number * 30) % 360;
 
-      let r, g, b;
+    //     // Saturation y lightness se mantienen constantes para colores vibrantes
+    //     let saturacion = 80;
+    //     let luminosidad = 40;
 
-      if (s === 0) {
-        r = g = b = l;
-      } else {
-        const hue2rgb = (p, q, t) => {
-          if (t < 0) t += 1;
-          if (t > 1) t -= 1;
-          if (t < 1 / 6) return p + (q - p) * 6 * t;
-          if (t < 1 / 2) return q;
-          if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-          return p;
-        };
+    //     // Convierte de HSL a hexadecimal
+    //     let colorHex = this.hslToHex(tono, saturacion, luminosidad);
 
-        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        const p = 2 * l - q;
+    //     return colorHex;
+    //   } else {
 
-        r = hue2rgb(p, q, h + 1 / 3);
-        g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1 / 3);
-      }
+    //     return '#cccccc';
+    //   }
+    // },
+    // // Función para convertir de HSL a hexadecimal
+    // hslToHex(h, s, l) {
+    //   h /= 360;
+    //   s /= 100;
+    //   l = l > 40 ? 40 : l;
+    //   l /= 100;
 
-      const toHex = x => {
-        const hex = Math.round(x * 255).toString(16);
-        return hex.length === 1 ? '0' + hex : hex;
-      };
+    //   let r, g, b;
 
-      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-    },
+    //   if (s === 0) {
+    //     r = g = b = l;
+    //   } else {
+    //     const hue2rgb = (p, q, t) => {
+    //       if (t < 0) t += 1;
+    //       if (t > 1) t -= 1;
+    //       if (t < 1 / 6) return p + (q - p) * 6 * t;
+    //       if (t < 1 / 2) return q;
+    //       if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+    //       return p;
+    //     };
+
+    //     const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    //     const p = 2 * l - q;
+
+    //     r = hue2rgb(p, q, h + 1 / 3);
+    //     g = hue2rgb(p, q, h);
+    //     b = hue2rgb(p, q, h - 1 / 3);
+    //   }
+
+    //   const toHex = x => {
+    //     const hex = Math.round(x * 255).toString(16);
+    //     return hex.length === 1 ? '0' + hex : hex;
+    //   };
+
+    //   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    // },
     async deleteItem() {
       try {
         const response = await axios.delete(
@@ -435,51 +266,13 @@ export default {
         this.$inertia.get(route('companies.index'));
       }
     },
-    hasQuotes() {
-      const tieneCotizaciones = this.company.data.company_branches
-        .map((branch) => branch.quotes.length > 0)
-        .some((tieneCotizacionesEnBranch) => tieneCotizacionesEnBranch);
+    // hasQuotes() {
+    //   const tieneCotizaciones = this.company.data.company_branches
+    //     .map((branch) => branch.quotes.length > 0)
+    //     .some((tieneCotizacionesEnBranch) => tieneCotizacionesEnBranch);
 
-      return tieneCotizaciones; // Devolverá true si hay cotizaciones en al menos un company_branch
-    },
-  },
-  computed: {
-    allSales() {
-      // Recopila todas las ventas de todos los company_branches
-      const sales = [];
-      if (this.company.data && this.company.data.company_branches) {
-        this.company.data.company_branches.forEach(branch => {
-          if (branch.sales) {
-            sales.push(...branch.sales);
-          }
-        });
-      }
-      return sales;
-    },
-    allDesignAuthorizations() {
-      // Recopila todas las ventas de todos los company_branches
-      const designAuthorizations = [];
-      if (this.company.data && this.company.data.company_branches) {
-        this.company.data.company_branches.forEach(branch => {
-          if (branch.designAuthorizations) {
-            designAuthorizations.push(...branch.designAuthorizations);
-          }
-        });
-      }
-      return designAuthorizations;
-    },
-    allQuotes() {
-      // Recopila todas las ventas de todos los company_branches
-      const quotes = [];
-      if (this.company.data && this.company.data.company_branches) {
-        this.company.data.company_branches.forEach(branch => {
-          if (branch.quotes) {
-            quotes.push(...branch.quotes);
-          }
-        });
-      }
-      return quotes;
-    },
+    //   return tieneCotizaciones; // Devolverá true si hay cotizaciones en al menos un company_branch
+    // },
   },
   mounted() {
     this.selectedCompany = this.company.data.id;

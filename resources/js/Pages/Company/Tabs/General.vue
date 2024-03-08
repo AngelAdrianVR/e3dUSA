@@ -43,13 +43,6 @@ export default {
 
             return formattedDate;
         },
-        handleClick(tab) {
-            // Agrega la variable currentTab=tab.props.name a la URL para mejorar la navegacion al actalizar o cambiar de pagina
-            const currentURL = new URL(window.location.href);
-            currentURL.searchParams.set('currentTab', tab.props.name);
-            // Actualiza la URL
-            window.history.replaceState({}, document.title, currentURL.href);
-        },
         getColorHex(number) {
             if (number) {
                 // Ajusta el tono (hue) en función del número proporcionado

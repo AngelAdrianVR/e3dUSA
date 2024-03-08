@@ -48,7 +48,7 @@ class ProductionCompletedNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'description' => "Se ha marcado como finalizada la producción del producto <b>$this->item_id</b> de la venta con folio <b>$this->production_folio</b>. Revisar la cantidad de merma especificada por el operador.",
+            'description' => "Se ha marcado una tarea como finalizada de la producción del producto <b>$this->item_id</b> correspondiente a la venta con folio <b>$this->production_folio</b>. Revisar la cantidad de merma especificada por el operador.",
             'additional_info' => "$this->additional_info",
             'module' => "$this->module",
         ];
