@@ -64,12 +64,16 @@ class CatalogProduct extends Model implements HasMedia
       return $this->belongsToMany(Company::class, 'catalog_product_company', 'catalog_product_id', 'company_id')
             ->withPivot([
                 'id',
+                'oldest_price',
+                'oldest_date',
+                'oldest_currency',
                 'old_price',
                 'old_date',
                 'old_currency',
                 'new_price',
                 'new_date',
                 'new_currency',
+                'user_id',
             ])->withTimestamps()
             ->using(CatalogProductCompany::class);
     }

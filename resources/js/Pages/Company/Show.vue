@@ -54,6 +54,220 @@
       </p>
 
       <!-- ------------- tabs section starts ------------- -->
+      <div class="border-y-2 border-[#cccccc] flex flex-nowrap justify-between items-center py-2 overflow-auto w-full">
+        <div class="flex overflow-x-auto pb-3 lg:pb-0">
+          <p @click="tabs = 1" :class="tabs == 1 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="w-96 lg:w-auto p-2 cursor-pointer ml-5 transition duration-300 ease-in-out text-sm md:text-base">
+            Info. general
+          </p>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
+          <p @click="tabs = 2" :class="tabs == 2 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Sucursales
+          </p>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
+          <p @click="tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Productos
+          </p>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
+          <p @click="tabs = 4" :class="tabs == 4 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Oportunidades
+          </p>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
+          <p @click="tabs = 5" :class="tabs == 5 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Cotizaciones
+          </p>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
+          <p @click="tabs = 6" :class="tabs == 6 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Seguimiento integral
+          </p>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
+          <p @click="tabs = 7" :class="tabs == 7 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Proyectos
+          </p>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
+          <p @click="tabs = 8" :class="tabs == 8 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Ordenes de venta
+          </p>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
+          <p @click="tabs = 9" :class="tabs == 9 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            F. autorización de diseño
+          </p>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
+          <p @click="tabs = 10" :class="tabs == 10 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Hist. precios
+          </p>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
+          <p @click="tabs = 11" :class="tabs == 11 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Diseños exclusivos
+          </p>
+        </div>
+      </div>
+      <!-- ------------- tabs section ends ------------- -->
+
+      <!-- ------------- Informacion general Starts 1 ------------- -->
+      <div v-if="tabs == 1" class="md:w-1/2 grid grid-cols-2 text-left p-4 md:ml-20 text-sm items-center">
+        <span class="text-gray-500">ID</span>
+        <span>{{ company.data.id }}</span>
+        <span class="text-gray-500">Sucursales totales con las que cuenta el cliente</span>
+        <span>{{ company.data.branches_number ?? '* No especificado' }}</span>
+
+        <span class="col-span-2 mt-8 mb-2">Datos fiscales</span>
+
+        <span class="text-gray-500 my-2">Razón social</span>
+        <span>{{ company.data.business_name }}</span>
+        <span class="text-gray-500 my-2">RFC</span>
+        <span>{{ company.data.rfc }}</span>
+        <span class="text-gray-500 my-2">Código postal</span>
+        <span>{{ company.data.post_code }}</span>
+        <span class="text-gray-500 my-2">Dirección</span>
+        <span>{{ company.data.fiscal_address }}</span>
+        <span class="text-gray-500 my-2">Vendedor</span>
+        <p class="mr-2" :style="{ color: getColorHex(company.data.seller?.id) }">
+          <i class="fa-solid fa-star"></i>
+          {{ company.data.seller?.name ?? '* Sin información' }}
+        </p>
+        <span class="text-gray-500 my-2">Registro creado por</span>
+        <span>{{ company.data.user?.name ?? '* Sin información' }}</span>
+      </div>
+      <!-- ------------- Informacion general ends 1 ------------- -->
+
+      <!-- -------------Sucursales starts 2 ------------- -->
+      <div v-if="tabs == 2" class="lg:grid grid-cols-2 gap-8 md:mt-12 md:px-14">
+        <CompanyBranchCard :company_branches="company.data.company_branches" />
+      </div>
+      <!-- ------------- Sucursales ends 2 ------------- -->
+
+      <!-- -------------Productos starts 3 ------------- -->
+      <div v-if="tabs == 3" class="p-7">
+        <p class="text-secondary">Productos registrados</p>
+        <div class="grid lg:grid-cols-4 md:grid-cols-2 mt-7 gap-10">
+          <CompanyProductCard v-for="company_product in company.data.catalogProducts" :key="company_product.id"
+            :company_product="company_product" />
+        </div>
+      </div>
+      <!-- ------------- Productos ends 3 ------------- -->
+
+      <!-- -------------Oportunidades starts 4 ------------- -->
+      <div v-if="tabs == 4" class="p-7 w-full mx-auto my-4">
+        <div v-if="company.data.oportunities.length">
+          <CompanyOportunityTable :oportunities="company.data.oportunities" />
+        </div>
+        <div class="flex flex-col text-center justify-center" v-else>
+          <p class="text-sm text-center">No hay oportunidades para mostrar</p>
+          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+        </div>
+      </div>
+      <!-- ------------- Oportunidades ends 4 ------------- -->
+
+      <!-- -------------Cotizaciones starts 5 ------------- -->
+      <div v-if="tabs == 5" class="p-7 w-full mx-auto my-4">
+        <div v-if="hasQuotes()" class="overflow-x-auto">
+          <CompanyQuoteTable :quotes="allQuotes" />
+        </div>
+        <div class="flex flex-col text-center justify-center" v-else>
+          <p class="text-sm text-center">No hay cotizaciones para mostrar</p>
+          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+        </div>
+
+      </div>
+      <!-- ------------- Cotizaciones ends 5 ------------- -->
+
+      <!-- -------------Seguimiento integral starts 6 ------------- -->
+      <div v-if="tabs == 6" class="p-7 w-full mx-auto my-4">
+        <div v-if="company.data.clientMonitors?.length">
+          <CompanyClientMonitorTable :client_monitors="company.data.clientMonitors" />
+        </div>
+        <div class="flex flex-col text-center justify-center" v-else>
+          <p class="text-sm text-center">No hay Seguimiento para mostrar</p>
+          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+        </div>
+      </div>
+      <!-- ------------- Seguimiento integral ends 6 ------------- -->
+
+      <!-- -------------Proyectos starts 7 ------------- -->
+      <div v-if="tabs == 7" class="p-7 w-full mx-auto my-4">
+        <div v-if="company.data.projects?.length">
+          <ProjectTable :projects="company.data.projects" />
+        </div>
+        <div class="flex flex-col text-center justify-center" v-else>
+          <p class="text-sm text-center">No hay proyectos para mostrar</p>
+          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+        </div>
+      </div>
+      <!-- ------------- Proyectos ends 7 ------------- -->
+
+      <!-- -------------Ordenes de venta starts 8 ------------- -->
+      <div v-if="tabs == 8" class="lg:p-7 w-full mx-auto my-4">
+        <div v-if="company.data.company_branches?.some(branch => branch.sales?.length > 0)">
+          <CompanySalesTable :company_sales="allSales" />
+        </div>
+        <div class="flex flex-col text-center justify-center" v-else>
+          <p class="text-sm text-center">No hay ordenes de venta de este cliente</p>
+          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+        </div>
+      </div>
+      <!-- ------------- Ordenes de venta ends 8 ------------- -->
+
+
+      <!-- ------------- Formatos de autorización de diseño starts 9 ------------- -->
+      <div v-if="tabs === 9" class="px-7 w-full my-4">
+        <div class="flex justify-between items-center">
+          <p class="text-secondary">Formatos de autorización de diseño</p>
+          <PrimaryButton @click="$inertia.get(route('design-authorizations.create', { company_id: company.data.id }))"
+            class="self-start">Agregar formato</PrimaryButton>
+        </div>
+        <div class="mt-5 mx-auto"
+          v-if="company.data.company_branches?.some(branch => branch.designAuthorizations?.length > 0)">
+          <DesignAuthorizationTable :designAuthorizations="allDesignAuthorizations" />
+        </div>
+        <div class="flex flex-col text-center justify-center" v-else>
+          <p class="text-sm text-center">No hay Formatos de autorización de diseño de este cliente</p>
+          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+        </div>
+      </div>
+      <!-- ------------- Formatos de autorización de diseño ends 9 ------------- -->
+
+      <!-- ------------- Historial de precios starts 10 ------------- -->
+      <div v-if="tabs === 10" class="px-7 w-full my-4">
+        <div class="flex justify-between items-center">
+          <p class="text-secondary">Historial de precios</p>
+        </div>
+        <div v-if="company.data.catalogProducts?.length > 0" class="mt-5 mx-auto">
+          <PriceHistoryTable :catalogProductsCompany="company.data.catalogProducts" />
+        </div>
+        <div class="flex flex-col text-center justify-center" v-else>
+          <p class="text-sm text-center">Este cliente no cuenta con productos registrados</p>
+          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+        </div>
+      </div>
+      <!-- ------------- Historial de precios ends 10 ------------- -->
+
+
+      <!-- ------------- diseños exclusivos starts 11 ------------- -->
+      <div v-if="tabs === 11" class="px-7 w-full my-4">
+        <div class="flex justify-between items-center">
+          <p class="text-secondary">Diseños exclusivos</p>
+          <PrimaryButton v-if="$page.props.auth.user.permissions.includes('Crear diseños exclusivos')"
+            @click="$inertia.get(route('exclusive-designs.create'), { company_id: company.data.id })"
+            class="self-start">
+            Agregar formato
+          </PrimaryButton>
+        </div>
+        <div class="mt-5 mx-auto">
+          <ExclusiveDesignTable :companyId="company.data.id" />
+        </div>
+      </div>
+      <!-- ------------- diseños exclusivos ends 11 ------------- -->
       <el-tabs v-model="activeTab" class="mx-5" @tab-click="handleClick">
         <el-tab-pane label="Información general" name="1">
           <General :company="company.data" />
@@ -108,6 +322,7 @@ import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import DesignAuthorizationTable from "@/Components/MyComponents/DesignAuthorizationTable.vue";
 import ExclusiveDesignTable from "@/Components/MyComponents/ExclusiveDesignTable.vue";
 import CompanyQuoteTable from "@/Components/MyComponents/CompanyQuoteTable.vue";
+import PriceHistoryTable from "@/Components/MyComponents/Company/PriceHistoryTable.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
@@ -158,6 +373,7 @@ export default {
     CompanyOportunityTable,
     CompanyClientMonitorTable,
     DesignAuthorizationTable,
+    PriceHistoryTable,
     ExclusiveDesignTable,
     CompanyQuoteTable,
     ProjectTable,
