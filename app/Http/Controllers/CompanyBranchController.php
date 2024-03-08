@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
+use App\Models\CatalogProductCompany;
 use App\Models\CompanyBranch;
 use Illuminate\Http\Request;
 
@@ -19,11 +20,6 @@ class CompanyBranchController extends Controller
     {
         //
     }
-
-    // public function show()
-    // {
-    //     //
-    // }
     
     public function store(Request $request)
     {
@@ -65,6 +61,23 @@ class CompanyBranchController extends Controller
         $company_branch->save();
 
         return response()->json(['message' => 'Notas guardadas']);
+    }
+
+
+    public function updateProductPrice(CatalogProductCompany $product_company, Request $request)
+    {
+        $product_company->update([
+            'oldest_date' => $product_company->old_date,
+            'oldest_price' => $product_company->old_price,
+            'oldest_currency' => $product_company->old_currency,
+            'old_date' => $product_company->new_date,
+            'old_price' => $product_company->new_price,
+            'old_currency' => $product_company->new_currency,
+            'new_date' => now(),
+            'new_price' => $request->new_price,
+            'new_currency' => $request->new_currency,
+            'user_id' => auth()->id()
+        ]);
     }
 
 }

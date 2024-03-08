@@ -14,6 +14,9 @@ class CatalogProductCompany extends Pivot
     public $incrementing = true;
 
     protected $fillable = [
+        'oldest_price',
+        'oldest_date',
+        'oldest_currency',
         'old_date',
         'new_date',
         'old_price',
@@ -23,6 +26,12 @@ class CatalogProductCompany extends Pivot
         'catalog_product_id',
         'company_id',
         'user_id',
+    ];
+
+    protected $casts = [
+        'oldest_date' => 'datetime',
+        'old_date' => 'datetime',
+        'new_date' => 'datetime',
     ];
 
     //relationships

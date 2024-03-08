@@ -53,8 +53,7 @@
         {{ company.data.business_name }}
       </p>
 
-      <!-- ------------- tabs section starts ------------- -->
-      <el-tabs v-model="activeTab" class="mx-5" @tab-click="handleClick">
+      <el-tabs v-model="activeTab" class="mx-5 mt-3" @tab-click="handleClick">
         <el-tab-pane label="Información general" name="1">
           <General :company="company.data" />
         </el-tab-pane>
@@ -85,6 +84,9 @@
         <el-tab-pane label="Diseños exclusivos" name="10">
           <ExclusiveDesigns :company="company.data" />
         </el-tab-pane>
+        <el-tab-pane label="Historial de precios" name="11">
+          <PriceHistorical :company="company.data" />
+        </el-tab-pane>
       </el-tabs>
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
@@ -108,6 +110,7 @@ import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import DesignAuthorizationTable from "@/Components/MyComponents/DesignAuthorizationTable.vue";
 import ExclusiveDesignTable from "@/Components/MyComponents/ExclusiveDesignTable.vue";
 import CompanyQuoteTable from "@/Components/MyComponents/CompanyQuoteTable.vue";
+import PriceHistoryTable from "@/Components/MyComponents/Company/PriceHistoryTable.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
@@ -127,6 +130,7 @@ import Projects from "./Tabs/Projects.vue";
 import Sales from "./Tabs/Sales.vue";
 import DesignsFormat from "./Tabs/DesignsFormat.vue";
 import ExclusiveDesigns from "./Tabs/ExclusiveDesigns.vue";
+import PriceHistorical from "./Tabs/PriceHistorical.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 
@@ -158,6 +162,7 @@ export default {
     CompanyOportunityTable,
     CompanyClientMonitorTable,
     DesignAuthorizationTable,
+    PriceHistoryTable,
     ExclusiveDesignTable,
     CompanyQuoteTable,
     ProjectTable,
@@ -172,6 +177,7 @@ export default {
     Sales,
     DesignsFormat,
     ExclusiveDesigns,
+    PriceHistorical,
   },
   methods: {
     handleClick(tab) {
