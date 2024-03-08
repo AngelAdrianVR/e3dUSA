@@ -28,6 +28,11 @@ class Company extends Model
     {
         return $this->hasMany(CompanyBranch::class);
     }
+    
+    public function exclusiveDesigns(): HasMany
+    {
+        return $this->hasMany(ExclusiveDesign::class);
+    }
 
     public function catalogProducts(): BelongsToMany
     {
