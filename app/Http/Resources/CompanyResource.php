@@ -31,7 +31,7 @@ class CompanyResource extends JsonResource
             'seller' => $this->whenLoaded('seller'),
             'user' => $this->whenLoaded('user'),
             'company_branches' => CompanyBranchResource::collection($this->whenLoaded('companyBranches')),
-            'catalogProducts' => $this->whenLoaded('catalogProducts'),
+            'catalogProducts' => CatalogProductResource::collection($this->whenLoaded('catalogProducts')),
             'oportunities' => OportunityResource::collection($this->whenLoaded('oportunities')),
             'clientMonitors' => ClientMonitorResource::collection($this->whenLoaded('clientMonitors')),
             'projects' => ProjectResource::collection($this->whenLoaded('projects')),

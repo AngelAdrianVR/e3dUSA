@@ -53,11 +53,11 @@
         {{ company.data.business_name }}
       </p>
       <!-- ------------- tabs section starts ------------- -->
-      <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2">
+      <div class="border-y-2 border-[#cccccc] flex flex-nowrap justify-between items-center py-2 overflow-auto w-full">
         <div class="flex overflow-x-auto pb-3 lg:pb-0">
           <p @click="tabs = 1" :class="tabs == 1 ? 'bg-secondary-gray rounded-xl text-primary' : ''
             " class="w-96 lg:w-auto p-2 cursor-pointer ml-5 transition duration-300 ease-in-out text-sm md:text-base">
-            Información general
+            Info. general
           </p>
           <div class="border-r-2 border-[#cccccc] ml-3"></div>
           <p @click="tabs = 2" :class="tabs == 2 ? 'bg-secondary-gray rounded-xl text-primary' : ''
@@ -101,6 +101,11 @@
           </p>
           <div class="border-r-2 border-[#cccccc] ml-3"></div>
           <p @click="tabs = 10" :class="tabs == 10 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Hist. precios
+          </p>
+          <div class="border-r-2 border-[#cccccc] ml-3"></div>
+          <p @click="tabs = 11" :class="tabs == 11 ? 'bg-secondary-gray rounded-xl text-primary' : ''
             " class="ml-3 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Diseños exclusivos
           </p>
@@ -231,8 +236,24 @@
       </div>
       <!-- ------------- Formatos de autorización de diseño ends 9 ------------- -->
 
-      <!-- ------------- diseños exclusivos starts 10 ------------- -->
+      <!-- ------------- Historial de precios starts 10 ------------- -->
       <div v-if="tabs === 10" class="px-7 w-full my-4">
+        <div class="flex justify-between items-center">
+          <p class="text-secondary">Historial de precios</p>
+        </div>
+        <div v-if="company.data.catalogProducts?.length > 0" class="mt-5 mx-auto">
+          <PriceHistoryTable :catalogProductsCompany="company.data.catalogProducts" />
+        </div>
+        <div class="flex flex-col text-center justify-center" v-else>
+          <p class="text-sm text-center">Este cliente no cuenta con productos registrados</p>
+          <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-400/30"></i>
+        </div>
+      </div>
+      <!-- ------------- Historial de precios ends 10 ------------- -->
+
+
+      <!-- ------------- diseños exclusivos starts 11 ------------- -->
+      <div v-if="tabs === 11" class="px-7 w-full my-4">
         <div class="flex justify-between items-center">
           <p class="text-secondary">Diseños exclusivos</p>
           <PrimaryButton v-if="$page.props.auth.user.permissions.includes('Crear diseños exclusivos')"
@@ -245,7 +266,7 @@
           <ExclusiveDesignTable :companyId="company.data.id" />
         </div>
       </div>
-      <!-- ------------- diseños exclusivos ends 10 ------------- -->
+      <!-- ------------- diseños exclusivos ends 11 ------------- -->
 
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar cliente </template>
@@ -268,6 +289,7 @@ import CompanyProductCard from "@/Components/MyComponents/CompanyProductCard.vue
 import DesignAuthorizationTable from "@/Components/MyComponents/DesignAuthorizationTable.vue";
 import ExclusiveDesignTable from "@/Components/MyComponents/ExclusiveDesignTable.vue";
 import CompanyQuoteTable from "@/Components/MyComponents/CompanyQuoteTable.vue";
+import PriceHistoryTable from "@/Components/MyComponents/Company/PriceHistoryTable.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
@@ -308,6 +330,7 @@ export default {
     CompanyOportunityTable,
     CompanyClientMonitorTable,
     DesignAuthorizationTable,
+    PriceHistoryTable,
     ExclusiveDesignTable,
     CompanyQuoteTable,
     ProjectTable,

@@ -204,6 +204,7 @@ Route::get('sales-get-matches/{query}', [SaleController::class, 'getMatches'])->
 Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');
 Route::put('company-branches/clear-important-notes/{company_branch}', [CompanyBranchController::class, 'clearImportantNotes'])->name('company-branches.clear-important-notes')->middleware('auth');
 Route::put('company-branches/store-important-notes/{company_branch}', [CompanyBranchController::class, 'storeImportantNotes'])->name('company-branches.store-important-notes')->middleware('auth');
+Route::put('company-branches/update-product-price/{product_company}', [CompanyBranchController::class, 'updateProductPrice'])->name('company-branches.update-product-price')->middleware('auth');
 
 // ------- Compras(Suppliers Routes)  ---------
 Route::resource('suppliers', SupplierController::class)->middleware('auth');

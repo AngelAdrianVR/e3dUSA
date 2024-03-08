@@ -21,7 +21,7 @@ class CatalogProductResource extends JsonResource
             'part_number' => $this->part_number,
             'measure_unit' => $this->measure_unit,
             'media' => $this->getMedia()->all(),
-            'pivot' => $this->pivot,
+            'pivot' => CatalogProductCompanyResource::make($this->pivot),
             'cost' => [
                'raw' => $this->cost,
                'number_format' => number_format($this->cost, 2) . ' ' . '$MXN'

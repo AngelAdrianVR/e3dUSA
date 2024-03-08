@@ -223,7 +223,7 @@
       <!-- ------------ Lista view ends ----------------- -->
     </div>
 
-<!-- ----------------- Lost modal ----------- -->
+    <!-- ----------------- Lost modal ----------- -->
     <Modal :show="showLostOportunityModal || showCreateSaleModal || showCreateQuoteModal"
       @close="showLostOportunityModal = false; showCreateSaleModal = false; showCreateQuoteModal = false">
       <section v-if="showLostOportunityModal" class="mx-7 my-4 space-y-4 relative">
