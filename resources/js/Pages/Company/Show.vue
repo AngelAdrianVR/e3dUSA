@@ -54,7 +54,7 @@
       </p>
 
       <!-- ------------- tabs section starts ------------- -->
-      <div class="border-y-2 border-[#cccccc] flex flex-nowrap justify-between items-center py-2 overflow-auto w-full">
+      <!-- <div class="border-y-2 border-[#cccccc] flex flex-nowrap justify-between items-center py-2 overflow-auto w-full">
         <div class="flex overflow-x-auto pb-3 lg:pb-0">
           <p @click="tabs = 1" :class="tabs == 1 ? 'bg-secondary-gray rounded-xl text-primary' : ''
             " class="w-96 lg:w-auto p-2 cursor-pointer ml-5 transition duration-300 ease-in-out text-sm md:text-base">
@@ -111,7 +111,7 @@
             Diseños exclusivos
           </p>
         </div>
-      </div>
+      </div> -->
       <!-- ------------- tabs section ends ------------- -->
 
       <!-- ------------- Informacion general Starts 1 ------------- -->

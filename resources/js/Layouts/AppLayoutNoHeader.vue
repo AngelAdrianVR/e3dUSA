@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed  } from "vue";
 import { Head, Link, router, useForm } from "@inertiajs/vue3";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
 import Banner from "@/Components/Banner.vue";
@@ -39,6 +39,11 @@ const unseenMessages = ref(null);
 const openPasswordModal = ref(false);
 const daysSinceNewDate = ref(0);
 const superPassword = ref(null);
+const showSearchInput = ref(false); //buscador general
+const showSearchResults = ref(false); //buscador general
+const searchResults = ref(null); //buscador general
+const searchInput = ref(null); //buscador general
+const loadingSearch = ref(false); //buscador general
 
 const form = useForm({
   barCode: null,
@@ -337,6 +342,33 @@ const greeting = computed(() => {
   }
 });
 
+const searchStart = () => {
+  showSearchInput.value = true;
+};
+
+const searchEnd = () => {
+  setTimeout(() => {
+    showSearchInput.value = false;
+    showSearchResults.value = false;
+  }, 100);
+};
+
+const searching = () => {
+  const searchInputRef = document.getElementById('generalInputSearch'); //obtiene el texto del input
+  loadingSearch.value = true;
+  showSearchResults.value = true;
+   // Realizar solicitud Axios a la ruta de búsqueda en Laravel
+  axios.get(`/search?query=${searchInputRef.value}`)
+    .then(response => {
+      searchResults.value = response.data.results;
+      loadingSearch.value = false;
+    })
+    .catch(error => {
+      console.error('Error al realizar la búsqueda:', error);
+      loadingSearch.value = false;
+    });
+};
+
 onMounted(() => {
   getAttendanceTextButton();
   getPauseStatus();
@@ -345,7 +377,7 @@ onMounted(() => {
   setInterval(() => {
     currentTime.value = new Date().getHours();
   }, 60000); // 60000 ms = 1 minute
-});
+}); 
 </script>
 
 <template>
@@ -364,13 +396,44 @@ onMounted(() => {
         <nav class="bg-[#F2F2F2] border-b border-[#D9D9D9]">
           <!-- Primary Navigation Menu -->
           <div class="w-11/12 mx-auto">
-            <div class="flex justify-between h-14">
+            <div class="flex items-center justify-between h-14">
               <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                   <Link :href="route('dashboard')">
                   <ApplicationMark class="w-1/3" />
                   </Link>
+                </div>
+              </div>
+
+              <!-- Buscador general -->
+              <div>
+                <button v-if="!showSearchInput" @click="searchStart" class="rounded-full size-9 flex justify-center items-center border border-[#9A9A9A]">
+                  <i class="fa-solid fa-magnifying-glass text-sm text-[#9A9A9A]"></i>
+                </button>
+                <div v-else class="relative">
+                  <input @input="searching" ref="searchInput" @blur="searchEnd" type="text" id="generalInputSearch" class="input !rounded-full !bg-transparent border-[#9A9A9A] pl-8">
+                  <i class="fa-solid fa-magnifying-glass text-sm text-[#9A9A9A] absolute left-3 top-[6px]"></i>
+
+                  <!-- Resultados -->
+                  <div v-if="showSearchResults" class="bg-white w-72 max-h-80 overflow-auto absolute top-[50px] -left-12 rounded-md py-4 z-50">
+                    <!-- estado de carga -->
+                    <div v-if="loadingSearch" class="flex justify-center items-center">
+                      <i class="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
+                    </div>
+                    <!-- Mostrar los resultados aquí -->
+                   <div v-else-if="searchResults">
+                      <div v-for="(results, modelName) in searchResults" :key="modelName">
+                        <h2 class="font-bold px-4">{{ modelName }}</h2>
+                        <ul>
+                          <li @click="$inertia.get(route(result.model + '.show', result.id))" class="text-gray-500 hover:bg-gray-200 text-sm cursor-default px-4" v-for="result in results" :key="result.id">
+                            {{ result.name }} <!-- Ajusta según tu estructura de datos -->
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    <p class="text-sm text-center text-gray-400" v-else>No se encontraron coincidencias</p>
+                  </div>
                 </div>
               </div>
 

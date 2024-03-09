@@ -45,6 +45,7 @@ use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\SaleAnaliticController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SampleController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
@@ -117,6 +118,8 @@ Route::get('customers-report', function () {
     return inertia('Sale/Report', compact('data'));
 })->name('sales.customers-report');
 
+// ----------- Search routes --------
+Route::get('/search', [SearchController::class, 'index'])->name('search');
 
 // ------- Catalog Products Routes ---------
 Route::post('catalog-product-company-sale/store-traveler-data/{cpcs}', [CatalogProductCompanySaleController::class, 'storeTravelerData'])->middleware('auth')->name('catalog-product-company-sale.store-traveler-data');
