@@ -51,7 +51,14 @@ class CompanyController extends Controller
     {
         $catalog_products = CatalogProduct::all();
         $raw_materials = RawMaterial::all();
-        $sellers = User::where('employee_properties->department', 'Ventas')->get(['id', 'name', 'profile_photo_path']);
+        $sellers = User::where('is_active', true)
+            ->where(function ($query) {
+                $query->whereIn('id', [2, 3])
+                    ->orWhere(function ($query) {
+                        $query->whereIn('employee_properties->department', ['Ventas', 'Administración', 'Dirección']);
+                    });
+            })
+            ->get(['id', 'name', 'profile_photo_path']);
 
         return inertia('Company/Create', compact('catalog_products', 'raw_materials', 'sellers'));
     }
@@ -115,7 +122,14 @@ class CompanyController extends Controller
         $company = Company::with('catalogProducts', 'companyBranches.contacts')->find($company->id);
         $catalog_products = CatalogProduct::all();
         $raw_materials = RawMaterial::all();
-        $sellers = User::where('employee_properties->department', 'Ventas')->get(['id', 'name', 'profile_photo_path']);
+        $sellers = User::where('is_active', true)
+            ->where(function ($query) {
+                $query->whereIn('id', [2, 3])
+                    ->orWhere(function ($query) {
+                        $query->whereIn('employee_properties->department', ['Ventas', 'Administración', 'Dirección']);
+                    });
+            })
+            ->get(['id', 'name', 'profile_photo_path']);
 
         return inertia('Company/Edit', compact('company', 'catalog_products', 'raw_materials', 'sellers'));
     }
