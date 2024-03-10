@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CatalogProductCompanySale;
 use App\Models\CompanyBranch;
 use App\Models\Sale;
+use Carbon\Carbon;
 
 class SaleAnaliticController extends Controller
 {
@@ -93,7 +94,7 @@ class SaleAnaliticController extends Controller
         });
 
         // Resto del código...
-        $monthlySales = $grouped->map(function ($sales, $month) use ($product_price) {
+        $sales = $grouped->map(function ($sales, $month) use ($product_price) {
             return [
                 'month' => $month,
                 'total_sales' => $sales->sum('quantity'),
@@ -101,6 +102,46 @@ class SaleAnaliticController extends Controller
             ];
         })->values()->sortBy('month');
 
-        return response()->json(['items' => $monthlySales]);
+        return response()->json(['items' => $sales, 'yearSales' => $this->getYearSales($product)]);
+    }
+
+    public function getYearSales($productSales)
+    {
+        $currentYear = now()->year;
+        $lastYear = $currentYear - 1;
+
+        // $records = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')
+        //     ->whereYear('created_at', '>=', $lastYear)
+        //     ->get();
+
+        $currentYearSales = $productSales->filter(function ($record) use ($currentYear) {
+            return Carbon::parse($record->created_at)->year == $currentYear;
+        })->groupBy(function ($record) {
+            return Carbon::parse($record->created_at)->month;
+        })->map(function ($monthRecords) {
+            return round($monthRecords->sum(function ($record) {
+                $price = $record->catalogProductCompany->new_price ?? 0;
+                return $record->quantity * $price;
+            }), 1);
+        })->toArray();
+
+        $lastYearSales = $productSales->filter(function ($record) use ($lastYear) {
+            return Carbon::parse($record->created_at)->year == $lastYear;
+        })->groupBy(function ($record) {
+            return Carbon::parse($record->created_at)->month;
+        })->map(function ($monthRecords) {
+            return round($monthRecords->sum(function ($record) {
+                $price = $record->catalogProductCompany->new_price ?? 0;
+                return $record->quantity * $price;
+            }), 1);
+        })->toArray();
+
+        // Rellenar con ceros los meses que no tienen ventas
+        for ($i = 1; $i <= 12; $i++) {
+            $currentYearSales[$i] = $currentYearSales[$i] ?? 0;
+            $lastYearSales[$i] = $lastYearSales[$i] ?? 0;
+        }
+
+        return compact('lastYearSales', 'currentYearSales');
     }
 }

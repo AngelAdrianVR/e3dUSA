@@ -7,7 +7,7 @@
 
       <!-- analisis de ventas -->
       <h2 class="text-primary lg:text-lg text-sm lg:mt-8 mt-6 font-bold">Análisis de ventas</h2>
-      <div class="flex justify-between space-x-7 lg:w-1/2">
+      <div class="flex justify-between space-x-7 mt-4 lg:w-1/2">
         <div class="flex items-center space-x-4 w-2/3 lg:w-1/2">
           <el-select @change="fetchProductSalesTop" class="lg:w-1/2" v-model="familySelected" filterable
             placeholder="Seleccione la familia" no-data-text="No hay opciones registradas"
@@ -86,7 +86,7 @@
         </div>
       </div>
       <!-- Estado de carga  -->
-      <div v-else class="flex justify-center items-center pt-10">
+      <div v-else class="flex justify-center items-center lg:my-40">
         <i class="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
       </div>
       <!-- Analisis de producto -->
@@ -97,18 +97,18 @@
             <p>{{ productSelected.name }}</p>
           </div>
           <div class="lg:flex space-x-4 mt-5">
-            <figure class="rounded-md">
+            <figure class="rounded-md w-1/6 h-28">
               <img :src="productSelected.media?.original_url" class="rounded-md object-contain w-full h-28">
             </figure>
-            <div class="lg:grid grid-cols-2 gap-4 text-center border w-[90%]">
+            <div class="lg:grid grid-cols-2 gap-4 text-center w-full">
               <LinealChart :options="productAmountSalesMonth" title="Ventas acumuladas por mes" />
-              <!-- <ColumWithMakersChart :options="productMoneySalesMonth" title="Ventas vs Espectativas" />  -->
               <LinealChart :options="productMoneySalesMonth" title="Ventas en pesos mexicanos $MXN por mes" />
+              <BarChart :options="barChartOptions" title="Ventas año en curso vs anterior" />
             </div>
           </div>
         </div>
         <!-- Estado de carga  -->
-        <div v-else class="flex justify-center items-center pt-10">
+        <div v-else class="flex justify-center items-center lg:py-6">
           <i class="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
         </div>
       </div>
@@ -128,6 +128,7 @@ import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import LinealChart from "@/Components/MyComponents/LinealChart.vue";
 import ColumWithMakersChart from "@/Components/MyComponents/ColumWithMakersChart.vue";
+import BarChart from "@/Components/MyComponents/BarChart.vue";
 import axios from 'axios';
 import PieChart from '@/Components/MyComponents/PieChart.vue';
 import { format } from 'date-fns';
@@ -143,6 +144,8 @@ export default {
       familySelected: null,
       productSelected: null,
       productAmountSalesMonth: {},
+      barChartOptions: {},
+      test: null,
       range: 'Total',
       ranges: [
         'Mensual',
@@ -200,6 +203,7 @@ export default {
     LinealChart,
     InputLabel,
     PieChart,
+    BarChart,
   },
   props: {
     current_month_sales: Array,
@@ -272,6 +276,7 @@ export default {
       this.currentMonth = format(currentDate, 'MMMM', { locale: es });
     },
     async fetchProductSalesTop() {
+      this.productSelected = null;
       this.loading = true;
       try {
         const response = await axios.get(route('sale-analitics.fetch-top-products', [this.familySelected, this.range]));
@@ -292,7 +297,6 @@ export default {
         const response = await axios.get(route('sale-analitics.fetch-product-info', this.productSelected.part_number));
 
         if (response.status === 200) {
-
           this.productAmountSalesMonth = {
             colors: ['#f3f3f3', 'transparent'],
             categories: response.data.items.map(sale => sale.month),
@@ -310,6 +314,19 @@ export default {
               data: response.data.items.map(sale => sale.money_sales)
             }],
           };
+
+          this.barChartOptions = {
+            colors: ['#D90537', '#0355B5'],
+            categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+            series: [{
+              name: 'Año anterior',
+              data: Object.values(response.data.yearSales.lastYearSales).map(item => (item/1000).toFixed(2)),
+            },
+            {
+              name: 'Año en curso',
+              data: Object.values(response.data.yearSales.currentYearSales).map(item => (item/1000).toFixed(2)),
+            }],
+          }
 
         }
       } catch (error) {
@@ -386,7 +403,7 @@ export default {
       });
 
       return resultArrays;
-    }
+    },
   },
   mounted() {
     this.getCurrentMonth();
