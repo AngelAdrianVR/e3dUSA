@@ -139,7 +139,7 @@ class SaleController extends Controller
 
     public function show($sale_id)
     {
-        $sale = SaleResource::make(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator', 'comments.user'], 'productions' => ['user', 'operator']])->find($sale_id));
+        $sale = SaleResource::make(Sale::with(['user:id,name', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator:id,name', 'comments.user'], 'productions' => ['user:id,name', 'operator:id,name']])->find($sale_id));
         $pre_sales = Sale::latest()->get();
         $sales = $pre_sales->map(function ($sale) {
             $prefix = $sale->is_sale_production ? 'OV-' : 'OS-';
@@ -421,8 +421,11 @@ class SaleController extends Controller
     }
 
 
-    public function qualityCertificate()
+    public function qualityCertificate($sale_id)
     {
-        return inertia('Sale/QualityCertificate');
+        $sale = SaleResource::make(Sale::with(['user:id,name', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator:id,name', 'comments.user'], 'productions' => ['user:id,name', 'operator:id,name']])->find($sale_id));
+
+        // return $sale;
+        return inertia('Sale/QualityCertificate', compact('sale'));
     }
 }
