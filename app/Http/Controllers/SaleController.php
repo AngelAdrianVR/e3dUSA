@@ -419,4 +419,10 @@ class SaleController extends Controller
 
         return response()->json(['items' => $sales]);
     }
+
+
+    public function qualityCertificate()
+    {
+        return inertia('Sale/QualityCertificate');
+    }
 }
