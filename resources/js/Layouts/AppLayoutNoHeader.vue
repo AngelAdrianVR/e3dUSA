@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed  } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { Head, Link, router, useForm } from "@inertiajs/vue3";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
 import Banner from "@/Components/Banner.vue";
@@ -357,7 +357,7 @@ const searching = () => {
   const searchInputRef = document.getElementById('generalInputSearch'); //obtiene el texto del input
   loadingSearch.value = true;
   showSearchResults.value = true;
-   // Realizar solicitud Axios a la ruta de búsqueda en Laravel
+  // Realizar solicitud Axios a la ruta de búsqueda en Laravel
   axios.get(`/search?query=${searchInputRef.value}`)
     .then(response => {
       searchResults.value = response.data.results;
@@ -397,36 +397,41 @@ onMounted(() => {
           <!-- Primary Navigation Menu -->
           <div class="w-11/12 mx-auto">
             <div class="flex items-center justify-between h-14">
-              <div class="flex">
+              <div class="flex w-1/5">
                 <!-- Logo -->
-                <div class="shrink-0 flex items-center">
+                <div class="shrink-0 w-2/3 flex items-center">
                   <Link :href="route('dashboard')">
-                  <ApplicationMark class="w-1/3" />
+                  <ApplicationMark class="w-full" />
                   </Link>
                 </div>
               </div>
-
               <!-- Buscador general -->
-              <div>
-                <button v-if="!showSearchInput" @click="searchStart" class="rounded-full size-9 flex justify-center items-center border border-[#9A9A9A]">
+              <div class="w-1/4">
+                <button v-if="!showSearchInput" @click="searchStart"
+                  class="rounded-full size-9 flex justify-center items-center border border-[#9A9A9A]">
                   <i class="fa-solid fa-magnifying-glass text-sm text-[#9A9A9A]"></i>
                 </button>
                 <div v-else class="relative">
-                  <input @input="searching" ref="searchInput" @blur="searchEnd" type="text" id="generalInputSearch" class="input !rounded-full !bg-transparent border-[#9A9A9A] pl-8">
+                  <input @input="searching" placeholder="Escribe lo que estas buscando" ref="searchInput"
+                    @blur="searchEnd" type="text" id="generalInputSearch"
+                    class="input !rounded-full !bg-transparent border-[#9A9A9A] pl-8">
                   <i class="fa-solid fa-magnifying-glass text-sm text-[#9A9A9A] absolute left-3 top-[6px]"></i>
 
                   <!-- Resultados -->
-                  <div v-if="showSearchResults" class="bg-white w-72 max-h-80 overflow-auto absolute top-[50px] -left-12 rounded-md py-4 z-50">
+                  <div v-if="showSearchResults"
+                    class="bg-white w-72 max-h-80 overflow-auto absolute top-[50px] -left-12 rounded-md py-4 z-50">
                     <!-- estado de carga -->
                     <div v-if="loadingSearch" class="flex justify-center items-center">
                       <i class="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
                     </div>
                     <!-- Mostrar los resultados aquí -->
-                   <div v-else-if="searchResults">
+                    <div v-else-if="searchResults">
                       <div v-for="(results, modelName) in searchResults" :key="modelName">
                         <h2 class="font-bold px-4">{{ modelName }}</h2>
                         <ul>
-                          <li @click="$inertia.get(route(result.model + '.show', result.id))" class="text-gray-500 hover:bg-gray-200 text-sm cursor-default px-4" v-for="result in results" :key="result.id">
+                          <li @click="$inertia.get(route(result.model + '.show', result.id))"
+                            class="text-gray-500 hover:bg-gray-200 text-sm cursor-default px-4"
+                            v-for="result in results" :key="result.id">
                             {{ result.name }} <!-- Ajusta según tu estructura de datos -->
                           </li>
                         </ul>
@@ -437,215 +442,212 @@ onMounted(() => {
                 </div>
               </div>
 
-              <div class="hidden sm:flex sm:items-center sm:ml-6">
-                <el-tooltip content="Escanear QR">
-                  <PrimaryButton @click="QRScan" class="mr-10">
-                    <i class="fa-solid fa-qrcode"></i>
-                  </PrimaryButton>
-                </el-tooltip>
+              <div class="w-1/2">
+                <div class="hidden sm:flex sm:items-center sm:ml-1">
+                  <el-tooltip content="Escanear producto con código QR">
+                    <PrimaryButton @click="QRScan" class="mr-10">
+                      <i class="fa-solid fa-qrcode"></i>
+                    </PrimaryButton>
+                  </el-tooltip>
 
-                <p class="mr-4">
-                  <i :class="greeting.class"></i>
-                  {{ greeting.text }}
-                  <strong>{{
-                    $page.props.auth.user.name.split(" ")[0]
-                  }}</strong>
-                </p>
+                  <p class="mr-4 text-xs w-2/3">
+                    <i :class="greeting.class"></i>
+                    {{ greeting.text }}
+                    <strong>{{
+      $page.props.auth.user.name.split(" ")[0]
+    }}</strong>
+                  </p>
 
-                <!-- pause work time -->
-                <el-popconfirm v-if="$page.props.isKiosk && isPaused !== null &&
-                    nextAttendance &&
-                    $page.props.auth.user.permissions.includes(
-                      'Registrar asistencia'
-                    )
-                    " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
-                  :title="isPaused ? '¿Reanudar tiempo?' : 'Pausar tiempo?'" @confirm="setPause">
-                  <template #reference>
-                    <button v-if="nextAttendance == 'Registrar salida'"
-                      class="w-8 h-8 mr-5 rounded-full border-2 border-[#0355B5] text-secondary">
-                      <i v-if="isPaused" class="fa-solid fa-play"></i>
-                      <i v-else class="fa-solid fa-pause"></i>
-                    </button>
-                  </template>
-                </el-popconfirm>
-
-                <!-- attendances -->
-                <div v-if="$page.props.isKiosk &&
-                  nextAttendance &&
-                  $page.props.auth.user.permissions.includes(
-                    'Registrar asistencia'
-                  ) && !isPaused">
-                  <div v-if="nextAttendance == 'Registrar salida' && $page.props.auth.user.has_pendent_production">
-                    <SecondaryButton @click="openPasswordModal = true" v-if="nextAttendance != 'Dia terminado'"
-                      class="mr-14">
-                      {{ nextAttendance }}
-                    </SecondaryButton>
-                    <span v-else class="bg-[#75b3f9] text-[#0355B5] mr-14 rounded-md px-3 py-1">
-                      {{ nextAttendance }}
-                    </span>
-                  </div>
-                  <el-popconfirm v-else confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
-                    title="¿Continuar?" @confirm="setAttendance">
+                  <!-- pause work time -->
+                  <el-popconfirm v-if="$page.props.isKiosk && isPaused !== null &&
+      nextAttendance &&
+      $page.props.auth.user.permissions.includes(
+        'Registrar asistencia'
+      )
+      " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                    :title="isPaused ? '¿Reanudar tiempo?' : 'Pausar tiempo?'" @confirm="setPause">
                     <template #reference>
-                      <SecondaryButton v-if="nextAttendance != 'Dia terminado'" class="mr-14">
+                      <button v-if="nextAttendance == 'Registrar salida'"
+                        class="w-8 h-8 mr-5 rounded-full border-2 border-[#0355B5] text-secondary">
+                        <i v-if="isPaused" class="fa-solid fa-play"></i>
+                        <i v-else class="fa-solid fa-pause"></i>
+                      </button>
+                    </template>
+                  </el-popconfirm>
+
+                  <div class="w-1/3" v-if="$page.props.isKiosk &&
+      nextAttendance &&
+      $page.props.auth.user.permissions.includes(
+        'Registrar asistencia'
+      ) && !isPaused">
+                    <div v-if="nextAttendance == 'Registrar salida' && $page.props.auth.user.has_pendent_production">
+                      <SecondaryButton @click="openPasswordModal = true" v-if="nextAttendance != 'Dia terminado'"
+                        class="mr-14">
                         {{ nextAttendance }}
                       </SecondaryButton>
                       <span v-else class="bg-[#75b3f9] text-[#0355B5] mr-14 rounded-md px-3 py-1">
                         {{ nextAttendance }}
                       </span>
+                    </div>
+                    <el-popconfirm v-else confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                      title="¿Continuar?" @confirm="setAttendance">
+                      <template #reference>
+                        <SecondaryButton v-if="nextAttendance != 'Dia terminado'" class="mr-14">
+                          {{ nextAttendance }}
+                        </SecondaryButton>
+                        <span v-else class="bg-[#75b3f9] text-[#0355B5] mr-14 rounded-md px-3 py-1">
+                          {{ nextAttendance }}
+                        </span>
+                      </template>
+                    </el-popconfirm>
+                  </div>
+
+                  <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear kiosco')
+      " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
+                    @confirm="createKiosk">
+                    <template #reference>
+                      <el-tooltip v-if="$page.props.isKiosk || temporalFlag"
+                        content="Se puede registrar asistencias desde este dispositivo">
+                        <span class="bg-[#75b3f9] text-[#0355B5] mr-14 rounded-md px-3 py-1 text-xs">
+                          Kiosco
+                        </span>
+                      </el-tooltip>
+                      <SecondaryButton v-else class="w-1/2">
+                        Hacer kiosco
+                      </SecondaryButton>
                     </template>
                   </el-popconfirm>
-                </div>
 
-                <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear kiosco')
-                  " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
-                  @confirm="createKiosk">
-                  <template #reference>
-                    <el-tooltip v-if="$page.props.isKiosk || temporalFlag"
-                      content="Se puede registrar asistencias desde este dispositivo">
-                      <span class="bg-[#75b3f9] text-[#0355B5] mr-14 rounded-md px-3 py-1 text-xs">
-                        Kiosco
-                      </span>
-                    </el-tooltip>
-                    <SecondaryButton v-else class="mr-14">
-                      Hacer kiosco
-                    </SecondaryButton>
-                  </template>
-                </el-popconfirm>
+                  <div class="w-full flex items-center justify-end">
+                    <!-- calendario -->
+                    <div class="mr-9 relative">
+                      <el-tooltip content="Calendario">
+                        <Link :href="route('calendars.index')">
+                        <i class="fa-solid fa-calendar-days text-[#9A9A9A]"></i>
+                        </Link>
+                      </el-tooltip>
+                      <div v-if="$page.props.auth.user?.notifications?.some(notification => {
+      return notification.data.module === 'calendar';
+    })"
+                        class="bg-primary w-[10px] h-[10px] border border-white rounded-full absolute -top-1 -right-2">
+                      </div>
+                    </div>
 
-                <div class="mr-9 relative">
-                  <el-tooltip content="Calendario">
-                    <Link :href="route('calendars.index')">
-                    <i class="fa-solid fa-calendar-days text-[#9A9A9A]"></i>
-                    </Link>
-                  </el-tooltip>
-                  <div v-if="$page.props.auth.user?.notifications?.some(notification => {
-                    return notification.data.module === 'calendar';
-                  })" class="bg-primary w-[10px] h-[10px] border border-white rounded-full absolute -top-1 -right-2">
+                    <!-- chat -->
+                    <div class="relative">
+                      <el-tooltip v-if="$page.props.auth.user.permissions.includes('Chatear')" content="Chat"
+                        placement="bottom">
+                        <a :href="route('chatify')" target="_blank" class="mr-8">
+                          <i class="fa-solid fa-comments text-[#9A9A9A]"></i>
+                        </a>
+                      </el-tooltip>
+                      <div v-if="unseenMessages > 0"
+                        class="absolute bottom-4 right-5 bg-primary text-white w-4 h-4 flex items-center justify-center text-[10px] rounded-full">
+                        {{ unseenMessages }}
+                      </div>
+                    </div>
+
+                    <!-- Settings Dropdown -->
+                    <div class="ml-3 relative">
+                      <Dropdown align="right" width="48">
+                        <template #trigger>
+                          <button v-if="$page.props.jetstream.managesProfilePhotos"
+                            class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
+                            <img class="h-8 w-8 rounded-full object-cover"
+                              :src="$page.props.auth.user.profile_photo_url" :alt="$page.props.auth.user.name" />
+                          </button>
+
+                          <span v-else class="inline-flex rounded-md">
+                            <button type="button"
+                              class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
+                              {{ $page.props.auth.user.name }}
+
+                              <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                              </svg>
+                            </button>
+                          </span>
+                        </template>
+
+                        <template #content>
+                          <!-- Account Management -->
+                          <div class="block px-4 py-2 text-xs rounded-md" :class="{
+      'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
+      'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
+      'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
+    }">
+                            Nivel {{ $page.props.auth.user.experience }}
+                          </div>
+                          <div class="block px-4 py-2 text-xs text-gray-400">
+                            Administrador de cuenta
+                          </div>
+                          <DropdownLink :href="route('profile.show')">
+                            Perfil
+                          </DropdownLink>
+                          <DropdownLink v-if="$page.props.jetstream.hasApiFeatures" :href="route('api-tokens.index')">
+                            API Tokens
+                          </DropdownLink>
+                          <div class="border-t border-gray-200" />
+
+                          <!-- Authentication -->
+                          <form @submit.prevent="logout">
+                            <DropdownLink as="button"> Cerrar sesión </DropdownLink>
+                          </form>
+                        </template>
+                      </Dropdown>
+                    </div>
                   </div>
                 </div>
-
-                <div class="relative">
-                  <el-tooltip v-if="$page.props.auth.user.permissions.includes('Chatear')" content="Chat"
-                    placement="bottom">
-                    <a :href="route('chatify')" target="_blank" class="mr-8">
-                      <i class="fa-solid fa-comments text-[#9A9A9A]"></i>
-                    </a>
-                  </el-tooltip>
-                  <div v-if="unseenMessages > 0"
-                    class="absolute bottom-4 right-5 bg-primary text-white w-4 h-4 flex items-center justify-center text-[10px] rounded-full">
-                    {{ unseenMessages }}</div>
+                <!-- Hamburger -->
+                <div class="-mr-2 flex items-center sm:hidden w-1/4">
+                  <div class="relative">
+                    <el-tooltip v-if="$page.props.auth.user.permissions.includes('Chatear')" content="Chat"
+                      placement="bottom">
+                      <a :href="route('chatify')" target="_blank" class="mr-8">
+                        <i class="fa-solid fa-comments text-[#9A9A9A]"></i>
+                      </a>
+                    </el-tooltip>
+                    <div v-if="unseenMessages > 0"
+                      class="absolute bottom-4 right-5 bg-primary text-white w-4 h-4 flex items-center justify-center text-[10px] rounded-full">
+                      {{ unseenMessages }}
+                    </div>
+                  </div>
+                  <button
+                    class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
+                    @click="
+      showingNavigationDropdown = !showingNavigationDropdown
+      ">
+                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                      <path :class="{
+      hidden: showingNavigationDropdown,
+      'inline-flex': !showingNavigationDropdown,
+    }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                      <path :class="{
+      hidden: !showingNavigationDropdown,
+      'inline-flex': showingNavigationDropdown,
+    }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </div>
-
-                <!-- <i class="fa-solid fa-bell text-[#9A9A9A] mr-8"></i> -->
-
-                <!-- reminders -->
-                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                    class="bi bi-alarm-fill text-[#9A9A9A] mr-3" viewBox="0 0 16 16">
-                                    <path
-                                        d="M6 .5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1H9v1.07a7.001 7.001 0 0 1 3.274 12.474l.601.602a.5.5 0 0 1-.707.708l-.746-.746A6.97 6.97 0 0 1 8 16a6.97 6.97 0 0 1-3.422-.892l-.746.746a.5.5 0 0 1-.707-.708l.602-.602A7.001 7.001 0 0 1 7 2.07V1h-.5A.5.5 0 0 1 6 .5zm2.5 5a.5.5 0 0 0-1 0v3.362l-1.429 2.38a.5.5 0 1 0 .858.515l1.5-2.5A.5.5 0 0 0 8.5 9V5.5zM.86 5.387A2.5 2.5 0 1 1 4.387 1.86 8.035 8.035 0 0 0 .86 5.387zM11.613 1.86a2.5 2.5 0 1 1 3.527 3.527 8.035 8.035 0 0 0-3.527-3.527z" />
-                                </svg> -->
-
-                <!-- Settings Dropdown -->
-                <div class="ml-3 relative">
-                  <Dropdown align="right" width="48">
-                    <template #trigger>
-                      <button v-if="$page.props.jetstream.managesProfilePhotos"
-                        class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
-                        <img class="h-8 w-8 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url"
-                          :alt="$page.props.auth.user.name" />
-                      </button>
-
-                      <span v-else class="inline-flex rounded-md">
-                        <button type="button"
-                          class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
-                          {{ $page.props.auth.user.name }}
-
-                          <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                          </svg>
-                        </button>
-                      </span>
-                    </template>
-
-                    <template #content>
-                      <div class="block px-4 py-1 text-xs rounded-md" :class="{
-                        'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
-                        'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
-                        'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
-                      }">
-                        Nivel {{ $page.props.auth.user.experience }}
-                      </div>
-                      <!-- Account Management -->
-                      <div class="block px-4 py-2 text-xs text-gray-400">
-                        Administrador de cuenta
-                      </div>
-                      <DropdownLink :href="route('profile.show')">
-                        Perfil
-                      </DropdownLink>
-                      <DropdownLink v-if="$page.props.jetstream.hasApiFeatures" :href="route('api-tokens.index')">
-                        API Tokens
-                      </DropdownLink>
-                      <div class="border-t border-gray-200" />
-
-                      <!-- Authentication -->
-                      <form @submit.prevent="logout">
-                        <DropdownLink as="button"> Cerrar sesión </DropdownLink>
-                      </form>
-                    </template>
-                  </Dropdown>
-                </div>
-              </div>
-
-              <!-- Hamburger -->
-              <div class="-mr-2 flex items-center sm:hidden">
-                <div class="relative">
-                  <el-tooltip v-if="$page.props.auth.user.permissions.includes('Chatear')" content="Chat"
-                    placement="bottom">
-                    <a :href="route('chatify')" target="_blank" class="mr-8">
-                      <i class="fa-solid fa-comments text-[#9A9A9A]"></i>
-                    </a>
-                  </el-tooltip>
-                  <div v-if="unseenMessages > 0"
-                    class="absolute bottom-4 right-5 bg-primary text-white w-4 h-4 flex items-center justify-center text-[10px] rounded-full">
-                    {{ unseenMessages }}</div>
-                </div>
-                <button
-                  class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
-                  @click="
-                    showingNavigationDropdown = !showingNavigationDropdown
-                    ">
-                  <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                    <path :class="{
-                      hidden: showingNavigationDropdown,
-                      'inline-flex': !showingNavigationDropdown,
-                    }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    <path :class="{
-                      hidden: !showingNavigationDropdown,
-                      'inline-flex': showingNavigationDropdown,
-                    }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
               </div>
             </div>
           </div>
-
           <!-- Responsive Navigation Menu -->
           <div :class="{
-            block: showingNavigationDropdown,
-            hidden: !showingNavigationDropdown,
-          }"
+              block: showingNavigationDropdown,
+              hidden: !showingNavigationDropdown,
+            }"
             class="sm:hidden bg-[#d9d9d9] w-4/6 absolute right-0 top-14 z-40 max-h-[90%] overflow-y-scroll overflow-x-hidden shadow-lg border border-[#cccccc] pt-4">
             <MobileSideNav />
 
             <!-- Responsive Settings Options -->
             <div class="pt-4 pb-1 border-t border-gray-200">
               <div class="block px-4 py-1 text-xs" :class="{
-                'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
-                'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
-                'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
-              }">
+                  'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
+                  'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
+                  'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
+                }">
                 Nivel {{ $page.props.auth.user.experience }}
               </div>
               <div class="flex items-center px-4">
@@ -747,9 +749,9 @@ onMounted(() => {
         <h2 v-if="is_product" class="font-bold text-center mr-2">Movimientos y detalles de producto</h2>
         <h2 v-else class="font-bold text-center mr-2">Búsqueda de maquinaria</h2>
         <div @click="
-          qrScan = false;
-        form.reset();
-        "
+      qrScan = false;
+    form.reset();
+    "
           class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
           <i class="fa-solid fa-xmark"></i>
         </div>
@@ -759,13 +761,13 @@ onMounted(() => {
         <div style="margin-top: 20px">
           <el-radio-group v-model="form.scanType">
             <el-radio-button v-if="$page.props.auth.user.permissions.includes('Crear entradas')
-              " label="Entrada" />
+      " label="Entrada" />
             <el-radio-button v-if="$page.props.auth.user.permissions.includes('Crear salidas')" label="Salida" />
             <el-radio-button label="Buscar materia prima" />
             <el-radio-button v-if="$page.props.auth.user.permissions.includes(
-              'QR producto de catalogo'
-            )
-              " label="Producto de catalogo" />
+      'QR producto de catalogo'
+    )
+      " label="Producto de catalogo" />
           </el-radio-group>
         </div>
 
@@ -777,8 +779,8 @@ onMounted(() => {
                 <i class="fa-solid fa-qrcode ml-2"></i>
               </span>
             </el-tooltip>
-            <input ref="partNumberInput" v-model="form.barCode" class="input" autocomplete="off" placeholder="Código QR *"
-              type="text" />
+            <input ref="partNumberInput" v-model="form.barCode" class="input" autocomplete="off"
+              placeholder="Código QR *" type="text" />
             <InputError :message="form.errors.barCode" />
           </div>
         </div>
@@ -818,18 +820,18 @@ onMounted(() => {
               <li>
                 <label class="text-primary">Stock: </label>
                 {{
-                  productFound.quantity
-                    .toFixed(2)
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                }}
+      productFound.quantity
+        .toFixed(2)
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    }}
                 {{ productFound.storageable?.measure_unit }}
               </li>
               <li>
                 <label class="text-primary">costo: </label> ${{
-                  productFound.storageable?.cost
-                    .toFixed(2)
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                }}
+      productFound.storageable?.cost
+        .toFixed(2)
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    }}
               </li>
             </ul>
             <Link class="text-center mt-5" :href="route('storages.show', productFound.id)">
@@ -878,8 +880,8 @@ onMounted(() => {
               </li>
               <li>
                 <label class="text-primary">costo: </label> ${{
-                  catalogProductFound.cost.number_format
-                }}
+      catalogProductFound.cost.number_format
+    }}
               </li>
             </ul>
             <Link class="text-center my-5" :href="route('catalog-products.show', catalogProductFound.id)">
@@ -895,17 +897,17 @@ onMounted(() => {
               <div v-for="company_info in catalogProductFound.companies" :key="company_info"
                 class="p-3 flex flex-col border rounde-lg">
                 <p class="text-secondary font-bold">Razon social: <span class="text-gray-600 font-thin">{{
-                  company_info.business_name }}</span></p>
+      company_info.business_name }}</span></p>
                 <p class="text-secondary font-bold">Precio anterior: <span class="text-gray-600 font-thin">{{
-                  company_info.pivot.old_price }} {{ company_info.pivot.new_currency
-  }}</span></p>
+      company_info.pivot.old_price }} {{ company_info.pivot.new_currency
+                    }}</span></p>
                 <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{
-                  company_info.pivot.old_date }}</span></p>
+      company_info.pivot.old_date }}</span></p>
                 <p class="text-secondary font-bold">Precio actual: <span class="text-gray-600 font-thin">{{
-                  company_info.pivot.new_price }} {{ company_info.pivot.new_currency
-  }}</span></p>
+      company_info.pivot.new_price }} {{ company_info.pivot.new_currency
+                    }}</span></p>
                 <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{
-                  company_info.pivot.new_date }}</span></p>
+      company_info.pivot.new_date }}</span></p>
                 <p class="text-secondary font-bold">Último ajuste de precio hace:
                   <span class="text-gray-600 font-thin">{{ timeSinceNewPrice(company_info) }}</span>
                 </p>
@@ -917,13 +919,14 @@ onMounted(() => {
         <!-- -------------- Catalog Product found in search ends--------------------- -->
 
         <div class="flex justify-between items-center">
-          <button type="button" @click="QRMachineScan()" class="text-primary text-sm flex items-center">Escanear máquinas
+          <button type="button" @click="QRMachineScan()" class="text-primary text-sm flex items-center">Escanear
+            máquinas
             <i class="fa-solid fa-arrow-right-long ml-2 mt-1"></i></button>
           <div class="flex justify-end space-x-3 pt-5 pb-1">
             <CancelButton @click="
-              qrScan = false;
-            form.reset();
-            ">Cancelar</CancelButton>
+      qrScan = false;
+    form.reset();
+    ">Cancelar</CancelButton>
             <PrimaryButton :disabled="form.processing">Buscar</PrimaryButton>
           </div>
         </div>
@@ -939,8 +942,8 @@ onMounted(() => {
                 <i class="fa-solid fa-qrcode ml-2"></i>
               </span>
             </el-tooltip>
-            <input ref="partNumberInput" v-model="form.barCode" class="input" autocomplete="off" placeholder="Código QR *"
-              type="text" />
+            <input ref="partNumberInput" v-model="form.barCode" class="input" autocomplete="off"
+              placeholder="Código QR *" type="text" />
             <InputError :message="form.errors.barCode" />
           </div>
         </div>
@@ -1003,10 +1006,10 @@ onMounted(() => {
               </li>
               <li>
                 <label class="text-primary">costo: </label> ${{
-                  machineFound.cost
-                    .toFixed(2)
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                }}
+      machineFound.cost
+        .toFixed(2)
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    }}
               </li>
               <li>
                 <label class="text-primary mt-2">Archivos: </label>
@@ -1030,9 +1033,9 @@ onMounted(() => {
               class="fa-solid fa-arrow-left-long mr-2 mt-1"></i> Escanear productos</button>
           <div class="flex justify-end space-x-3 pt-5 pb-1">
             <CancelButton @click="
-              qrScan = false;
-            form.reset();
-            ">Cancelar</CancelButton>
+      qrScan = false;
+    form.reset();
+    ">Cancelar</CancelButton>
             <PrimaryButton :disabled="form.processing">Buscar</PrimaryButton>
           </div>
         </div>
@@ -1050,7 +1053,8 @@ onMounted(() => {
     <template #content>
       <p class="text-center text-sm my-4">Para garantizar la precisión en nuestros registros de producción, se solicita
         que obtengan la autorización del
-        supervisor antes de registrar su salida. Asegúrense de proporcionar el estatus de cualquier trabajo pendiente. La
+        supervisor antes de registrar su salida. Asegúrense de proporcionar el estatus de cualquier trabajo pendiente.
+        La
         contraseña del supervisor es necesaria para completar este proceso.
         Gracias por su colaboración.</p>
       <InputLabel value="Contraseña de supervisor" />
