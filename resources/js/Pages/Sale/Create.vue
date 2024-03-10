@@ -321,7 +321,7 @@
                             <b class="ml-1">{{ availableStock ? availableStock.quantity.toLocaleString('en-US', {
                                 minimumFractionDigits: 2
                             }) : 0 }} unidades.</b>
-                            <el-tooltip placement="top">
+                            <el-tooltip v-if="form.is_sale_production" placement="top">
                                 <template #content>
                                     Se descontarán de estas existencias para despachar la orden. <br>
                                     Se refiere a las piezas ya procesadas para tener el producto final, <br>
@@ -344,7 +344,7 @@
                                     <label class="block text-xs">Cantidad *</label>
                                     <el-input-number @change="validateQuantity()" v-model="product.quantity" :min="0.01" />
                                 </div>
-                                <div class="flex items-center space-x-2 mt-3">
+                                <div v-if="form.is_sale_production" class="flex items-center space-x-2 mt-3">
                                     <label class="flex items-center">
                                         <Checkbox v-model:checked="product.is_new_design" class="bg-transparent" />
                                         <span class="ml-2 text-xs">Diseño nuevo</span>

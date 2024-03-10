@@ -121,50 +121,20 @@ class SaleController extends Controller
         foreach ($request->products as $product) {
             $cpcs = CatalogProductCompanySale::create($product + ['sale_id' => $sale->id]);
 
-            // producto terminado disponible
-            $finished_quantity_available = $cpcs->catalogProductCompany->catalogProduct->storages[0]->quantity ?? 0;
-            if ($finished_quantity_available < $cpcs->quantity) {
-                $quntity_to_produce = ($cpcs->quantity - $finished_quantity_available);
-                $finished_product_used = $finished_quantity_available;
-            } else {
-                $quntity_to_produce = 0;
-                $finished_product_used = $cpcs->quantity;
-            }
+            // guardar en producto ordenado producto terminado disponible usado (siempre y cuando sea orden venta y no stock)
+            if ($request->is_sale_production) {
+                $finishedQuantityAvailable = $cpcs->catalogProductCompany->catalogProduct->storages[0]->quantity ?? 0;
 
-            // guardar cantidad que se usó de producto terminado
-            if ($finished_product_used > 0) {
-                $cpcs->update(['finished_product_used' => $finished_product_used]);
+                $finishedProductUsed = min($finishedQuantityAvailable, $cpcs->quantity);
 
-                // rebajar o eliminar cantidad en almacen de producto terminado en caso de que hubiera disponible
-                $finished_product = $cpcs->catalogProductCompany->catalogProduct->storages[0];
-                if ($finished_product->quantity > $cpcs->quantity) {
-                    $finished_product->decrement('quantity', $cpcs->quantity);
-                } else {
-                    $finished_product->delete();
+                // guardar cantidad que se usó de producto terminado
+                if ($finishedProductUsed > 0) {
+                    $cpcs->update(['finished_product_used' => $finishedProductUsed]);
                 }
             }
-
-            // descontar materia prima de inventario
-            // if ($quntity_to_produce > 0) {
-            //     $raw_materials = $cpcs->catalogProductCompany->catalogProduct->rawMaterials;
-            //     foreach ($raw_materials as $raw_material) {
-            //         $quantity_needed = $raw_material->pivot->quantity * $quntity_to_produce;
-            //         $storage = Storage::where('storageable_id', $raw_material->id)->where('storageable_type', 'App\Models\RawMaterial')->first();
-            //         $storage->decrement('quantity', $quantity_needed);
-            //         StockMovementHistory::Create([
-            //             'storage_id' => $storage->id,
-            //             'user_id' => auth()->id(),
-            //             'type' => 'Salida',
-            //             'quantity' => $quantity_needed,
-            //             'notes' => 'Salida de material automática por orden de venta creada',
-            //         ]);
-            //     }
-            // }
         }
 
         event(new RecordCreated($sale));
-
-        // return to_route('sales.index');
     }
 
     public function show($sale_id)

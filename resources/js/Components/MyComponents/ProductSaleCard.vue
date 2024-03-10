@@ -75,7 +75,7 @@
     <div class="border-b-2 border-[#9a9a9a] pb-1">
       <p class="text-black flex justify-between">
       <div class="flex items-center space-x-1">
-        <span>Unidades disponibles en almacén</span>
+        <span>Unidades de stock usadas</span>
         <el-tooltip placement="top">
           <template #content>
             <p>
@@ -456,7 +456,7 @@
         <p class="col-span-full border-t border-gray-400 pt-2">Lista de paquetes o empaques</p>
         <ul class="col-span-full">
           <li v-for="(item, index) in packages" :key="index" class="flex items-center justify-between">
-            • Paquete {{ (index + 1) }}: {{ item.large + 'cm largo, ' + item.width + 'cm ancho, ' + item.height + 'cm alto. ' + item.weight + ' Kg.' }}
+            • Paquete {{ (index + 1) }}: {{ item.large + 'cm largo, ' + item.width + 'cm ancho, ' + item.height + 'cm alto. ' + item.weight + ' Kg.' + item.quantity + ' Pzs.' }}
             <button @click="removePackage(index)" class="size-5 rounded-full hover:text-red-500">x</button>
           </li>
         </ul>
