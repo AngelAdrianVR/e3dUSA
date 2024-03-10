@@ -103,7 +103,7 @@ class RawMaterial extends Model implements HasMedia
                 // Filtrar los elementos en la relación rawMaterials por el ID
                 $matchingRawMaterial = $rawMaterialsRelation->firstWhere('id', $this->id);
 
-                return $matchingRawMaterial->pivot->quantity * $product->quantity;
+                return $matchingRawMaterial->pivot->quantity * ($product->quantity - $product->finished_product_used);
             }
         });
 

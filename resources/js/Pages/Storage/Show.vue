@@ -135,7 +135,7 @@
                 <template #content>
                   <ul>
                     <li v-for="item in storage.data.salesInProcess" :key="item.id">
-                      • {{ `OV-${String(item.id).padStart(4, '0')}` }}
+                      • {{ item.is_sale_production ? 'OV-' : 'OS-' }} {{ String(item.id).padStart(4, '0') }}
                     </li>
                   </ul>
                   <p v-if="!storage.data.salesInProcess.length">No hay ordenes de venta en proceso</p>

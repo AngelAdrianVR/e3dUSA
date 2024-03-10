@@ -33,11 +33,11 @@
 
           <template v-if="saleId">
             <div v-for="product in orderedProducts" :key="product" class="grid grid-cols-3 gap-x-3 self-start text-xs border-b border-gray-400">
-              <div  class="col-span-2 grid grid-cols-2 gap-x-3 self-start pb-5">
+              <div class="col-span-2 grid grid-cols-2 gap-x-3 self-start pb-5">
                 <p>Producto</p>
                 <span>{{ product?.catalog_product_company.catalog_product.name }}</span>
-                <p>Cantidad disponible en almacén</p>
-                <div class="flex items-center">
+                <p v-if="isSaleProduction">Cantidad usada de almacén de producto terminado</p>
+                <div v-if="isSaleProduction" class="flex items-center">
                   {{ product?.finished_product_used }} unidades 
                   <div v-if="(product?.finished_product_used - (product?.quantity - product?.finished_product_used)) < product?.catalog_product_company.catalog_product.min_quantity" class="flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3 ml-2 mr-1">
@@ -288,6 +288,7 @@ export default {
       errorMessage: null,
       isFreeTask: false,
       orderedProducts: [],
+      isSaleProduction: null,
       production: {
         tasks: [],
         user_id: this.$page.props.auth.user.id,
@@ -500,6 +501,7 @@ export default {
   watch: {
     saleId(newVal) {
       this.orderedProducts = [...this.sales.data.find(item => item.id == newVal).catalogProductCompanySales];
+      this.isSaleProduction = this.sales.data.find(item => item.id == newVal).is_sale_production;
     }
   }
 
