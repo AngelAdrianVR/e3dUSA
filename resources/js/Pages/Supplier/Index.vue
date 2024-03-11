@@ -21,7 +21,6 @@
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
                             :total="suppliers.length" />
                     </div>
-
                     <!-- buttons -->
                     <div>
                         <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar proveedores')"
@@ -33,29 +32,26 @@
                             </template>
                         </el-popconfirm>
                     </div>
+                    <!-- buscador -->
+                    <IndexSearchBar @search="handleSearch" />
                 </div>
                 <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
-                    <el-table-column type="selection" width="45" />
+                    <el-table-column type="selection" width="30" />
                     <el-table-column prop="id" label="ID" width="45" />
-                    <el-table-column prop="name" label="Nombre" width="190" />
-                    <el-table-column prop="nickname" label="Alias" width="190" />
-                    <el-table-column prop="phone" label="Teléfono" width="150" />
-                    <el-table-column prop="address" label="Dirección" width="210" />
-                    <el-table-column prop="post_code" label="C.P." width="100" />
-                    <el-table-column prop="created_at" label="Agregado el" width="210" />
-                    <el-table-column align="right" fixed="right" width="190">
-                        <template #header>
-                            <div class="flex space-x-2">
-                            <TextInput v-model="inputSearch" type="search" @keyup.enter="handleSearch" class="w-full text-gray-600" placeholder="Buscar" />
-                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
-                        </div>
-                        </template>
+                    <el-table-column prop="name" label="Nombre" />
+                    <el-table-column prop="nickname" label="Alias" />
+                    <el-table-column prop="phone" label="Teléfono" />
+                    <el-table-column prop="address" label="Dirección" />
+                    <el-table-column prop="post_code" label="C.P." />
+                    <el-table-column prop="created_at" label="Agregado el" />
+                    <el-table-column align="right">
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
-                                <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                </span>
+                                <button @click.stop
+                                        class="el-dropdown-link mr-3 justify-center items-center size-8 rounded-full text-primary hover:bg-gray2 transition-all duration-200 ease-in-out">
+                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    </button>
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
@@ -81,7 +77,8 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
-import { Link, useForm } from "@inertiajs/vue3";
+import { Link } from "@inertiajs/vue3";
+import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import axios from 'axios';
 
 
@@ -102,17 +99,17 @@ export default {
         SecondaryButton,
         Link,
         TextInput,
+        IndexSearchBar,
     },
     props: {
         suppliers: Array
     },
     methods: {
-        handleSearch(){
-            this.search = this.inputSearch;
+        handleSearch(search){
+            this.search = search;
         },
         tableRowClassName({ row, rowIndex }) {
-
-            return 'cursor-pointer';
+            return 'cursor-pointer text-xs';
         },
         handleRowClick(row) {
             this.$inertia.get(route('suppliers.show', row));

@@ -400,7 +400,7 @@ onMounted(() => {
             <div class="flex items-center justify-between h-14">
               <div class="flex w-1/5">
                 <!-- Logo -->
-                <div class="shrink-0 w-2/3 flex items-center">
+                <div class="w-44 lg:w-2/3 flex items-center">
                   <Link :href="route('dashboard')">
                   <ApplicationMark class="w-full" />
                   </Link>
@@ -408,7 +408,7 @@ onMounted(() => {
               </div>
 
               <!-- Buscador general -->
-              <div class="w-1/4">
+              <div class="w-full mx-5 lg:mx-0 lg:w-1/4 text-xs lg:text-sm">
                 <button v-if="!showSearchInput" @click="searchStart" class="rounded-full size-9 flex justify-center items-center border border-[#9A9A9A]">
                   <i class="fa-solid fa-magnifying-glass text-sm text-[#9A9A9A]"></i>
                 </button>
@@ -595,7 +595,7 @@ onMounted(() => {
                   </div>
                 </div>
                 <!-- Hamburger -->
-                <div class="-mr-2 flex items-center sm:hidden w-1/4">
+                <div class="flex items-center justify-end sm:hidden w-full">
                   <div class="relative">
                     <el-tooltip v-if="$page.props.auth.user.permissions.includes('Chatear')" content="Chat"
                       placement="bottom">
@@ -726,8 +726,8 @@ onMounted(() => {
             </div>
           </div>
         </nav>
-        <header v-if="$slots.header" class="bg-gray-800 border-t-2 border-gray-400">
-          <div class="mx-auto py-2 px-4 sm:px-6 lg:px-8 text-white">
+        <header v-if="$slots.header" class="">
+          <div class="mx-auto py-2 px-4 sm:px-6 lg:px-8">
             <slot name="header" />
           </div>
         </header>

@@ -15,7 +15,7 @@
 
             <div v-if="$page.props.auth.user.permissions.includes('Ver costo de almacen de seguimiento de muestras')"
                 class="text-center mt-3">
-                <el-tag class="mt-3" style="font-size: 20px;" type="danger">Muestras total:
+                <el-tag class="mt-3" size="small" style="font-size: 16px;" type="danger">Muestras total:
                     ${{ totalSamplesMoney.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} MXN</el-tag>
             </div>
 
@@ -38,23 +38,21 @@
                             </template>
                         </el-popconfirm>
                     </div>
+                     <!-- buscador -->
+                     <IndexSearchBar @search="handleSearch" />
                 </div>
                 <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
                     class="cursor-pointer" @selection-change="handleSelectionChange" ref="multipleTableRef"
                     :row-class-name="tableRowClassName">
-                    <el-table-column type="selection" width="45" />
+                    <el-table-column type="selection" width="30" />
                     <el-table-column prop="storageable.name" label="Nombre" />
                     <el-table-column prop="storageable.part_number" label="N° parte" />
                     <el-table-column prop="location" label="Ubicación" />
-                    <el-table-column prop="quantity" label="Cantidad" />
-                    <el-table-column align="right" fixed="right" width="190">
-                        <template #header>
-                            <div class="flex space-x-2">
-                                <TextInput v-model="inputSearch" type="search" @keyup.enter="handleSearch"
-                                    class="w-full text-gray-600" placeholder="Buscar" />
-                                <el-button @click="handleSearch" type="primary" plain class="mb-3"><i
-                                        class="fa-solid fa-magnifying-glass"></i></el-button>
-                            </div>
+                    <el-table-column prop="quantity" label="Cantidad">
+                        <template #default="scope">
+                            <span>
+                                {{ scope.row.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
+                            </span>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -68,6 +66,7 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
+import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 
@@ -91,14 +90,18 @@ export default {
         SecondaryButton,
         Link,
         TextInput,
+        IndexSearchBar,
     },
     props: {
         sample_products: Array,
         totalSamplesMoney: Number,
     },
     methods: {
-        handleSearch() {
-            this.search = this.inputSearch;
+        handleSearch(search) {
+            this.search = search;
+        },
+        tableRowClassName({ row, rowIndex }) {
+            return 'cursor-pointer text-xs';
         },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;

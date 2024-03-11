@@ -399,14 +399,15 @@ onMounted(() => {
             <div class="flex items-center justify-between h-14">
               <div class="flex w-1/5">
                 <!-- Logo -->
-                <div class="shrink-0 w-2/3 flex items-center">
+                <div class="w-44 lg:w-2/3 flex items-center">
                   <Link :href="route('dashboard')">
                   <ApplicationMark class="w-full" />
                   </Link>
                 </div>
               </div>
+
               <!-- Buscador general -->
-              <div class="w-1/4">
+              <div class="w-full mx-5 lg:mx-0 lg:w-1/4 text-xs lg:text-sm">
                 <button v-if="!showSearchInput" @click="searchStart"
                   class="rounded-full size-9 flex justify-center items-center border border-[#9A9A9A]">
                   <i class="fa-solid fa-magnifying-glass text-sm text-[#9A9A9A]"></i>
@@ -600,7 +601,7 @@ onMounted(() => {
                   </div>
                 </div>
                 <!-- Hamburger -->
-                <div class="-mr-2 flex items-center sm:hidden w-1/4">
+                <div class="flex items-center justify-end sm:hidden w-full">
                   <div class="relative">
                     <el-tooltip v-if="$page.props.auth.user.permissions.includes('Chatear')" content="Chat"
                       placement="bottom">
@@ -635,19 +636,19 @@ onMounted(() => {
           </div>
           <!-- Responsive Navigation Menu -->
           <div :class="{
-              block: showingNavigationDropdown,
-              hidden: !showingNavigationDropdown,
-            }"
+      block: showingNavigationDropdown,
+      hidden: !showingNavigationDropdown,
+    }"
             class="sm:hidden bg-[#d9d9d9] w-4/6 absolute right-0 top-14 z-40 max-h-[90%] overflow-y-scroll overflow-x-hidden shadow-lg border border-[#cccccc] pt-4">
             <MobileSideNav />
 
             <!-- Responsive Settings Options -->
             <div class="pt-4 pb-1 border-t border-gray-200">
               <div class="block px-4 py-1 text-xs" :class="{
-                  'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
-                  'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
-                  'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
-                }">
+      'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
+      'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
+      'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
+    }">
                 Nivel {{ $page.props.auth.user.experience }}
               </div>
               <div class="flex items-center px-4">
@@ -692,7 +693,7 @@ onMounted(() => {
 
                   <!-- Team Settings -->
                   <ResponsiveNavLink :href="route('teams.show', $page.props.auth.user.current_team)
-                    " :active="route().current('teams.show')">
+      " :active="route().current('teams.show')">
                     Team Settings
                   </ResponsiveNavLink>
 
@@ -714,7 +715,7 @@ onMounted(() => {
                         <ResponsiveNavLink as="button">
                           <div class="flex items-center">
                             <svg v-if="team.id == $page.props.auth.user.current_team_id
-                              " class="mr-2 h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+      " class="mr-2 h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none"
                               viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                               <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -751,8 +752,7 @@ onMounted(() => {
         <div @click="
       qrScan = false;
     form.reset();
-    "
-          class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
+    " class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
           <i class="fa-solid fa-xmark"></i>
         </div>
       </div>

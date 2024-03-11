@@ -4,7 +4,7 @@
     <div class="absolute right-0 flex z-20" :style="{top: topPosition}">
         <button @click="toggleNotifications" class="bg-[#D9D9D9] rounded-tl-xl rounded-bl-xl pl-3 pr-4 py-1 self-start"
             style="width: 40px;">
-            <i class="fa-regular fa-bell text-[#9A9A9A] text-xl"></i>
+            <i class="fa-regular fa-bell text-[#9A9A9A] text-base"></i>
         </button>
         <transition name="slide">
             <div v-if="showNotifications" class="w-56 h-[300px] bg-[#D9D9D9] rounded-bl-xl py-1">

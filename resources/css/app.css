@@ -6,7 +6,7 @@
     display: none;
 }
 
-@layer utilities{
+/* @layer utilities{
     .bg-primary {
         background-color: #D90537;
     }
@@ -36,7 +36,7 @@
     .bg-secondary-gray{
         background-color: #cccccc;
     }
-}
+} */
 
 *::-webkit-scrollbar {
 	width: 3px;
@@ -54,14 +54,9 @@
     background: #a4a4a4;
 }
 
-/* *::-webkit-scrollbar-thumb:horizontal {
-	background: #cccccc;
-	border-radius: 2px;
-} */
-
 @layer components{
     .input{
-        @apply h-8 bg-[#CCCCCC] border placeholder:text-gray-400 border-transparent text-gray-700 text-sm rounded-lg focus:ring-0 focus:border-primary block w-full p-2.5 disabled:cursor-not-allowed;
+        @apply h-8 bg-[#CCCCCC] border placeholder:text-gray-400 border-transparent text-gray-700 text-sm rounded-lg focus:ring-0 focus:border-primary block w-full p-2.5 disabled:cursor-not-allowed placeholder:text-xs placeholder:lg:text-sm;
     }
 
     .textarea{

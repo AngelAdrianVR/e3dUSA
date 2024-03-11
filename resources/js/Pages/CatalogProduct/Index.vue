@@ -15,16 +15,16 @@
             </template>
 
             <!-- tabla -->
-            <div class="lg:w-5/6 mx-auto mt-6">
-                <div class="flex justify-between mb-2">
+            <div class="w-[95%] lg:w-5/6 mx-auto mt-6">
+                <div class="lg:flex justify-between mb-2">
                     <!-- pagination -->
                     <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
                             :total="catalog_products.length" />
                     </div>
-
                     <!-- buttons -->
-                    <div v-if="$page.props.auth.user.permissions.includes('Eliminar catalogo de productos')">
+                    <div v-if="$page.props.auth.user.permissions.includes('Eliminar catalogo de productos')"
+                        class="mt-2 lg:mt-0">
                         <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
                             title="¿Continuar?" @confirm="deleteSelections">
                             <template #reference>
@@ -33,31 +33,28 @@
                             </template>
                         </el-popconfirm>
                     </div>
+                    <!-- buscador -->
+                    <IndexSearchBar @search="handleSearch" />
                 </div>
                 <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
-                    @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
-                    <el-table-column type="selection" width="45" />
+                    @selection-change="handleSelectionChange" ref="multipleTableRef"
+                    :row-class-name="tableRowClassName">
+                    <el-table-column type="selection" width="30" />
                     <el-table-column prop="part_number" label="Num de parte" width="200" />
                     <el-table-column prop="name" label="Nombre" width="200" />
                     <el-table-column prop="cost.number_format" label="Costo $" width="150" />
                     <el-table-column prop="description" label="Descripción" />
-                    <el-table-column align="right" fixed="right" width="190">
-                        <template #header>
-                            <div class="flex space-x-2">
-                                <TextInput v-model="inputSearch" @keyup.enter="handleSearch" type="search" class="w-full text-gray-600"
-                                    placeholder="Buscar" />
-                                <el-button @click="handleSearch" type="primary" plain class="mb-3"><i
-                                        class="fa-solid fa-magnifying-glass"></i></el-button>
-                            </div>
-                        </template>
+                    <el-table-column align="right">
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
-                                <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
+                                <button @click.stop
+                                    class="el-dropdown-link mr-3 justify-center items-center size-8 rounded-full text-primary hover:bg-gray2 transition-all duration-200 ease-in-out">
                                     <i class="fa-solid fa-ellipsis-vertical"></i>
-                                </span>
+                                </button>
                                 <template #dropdown>
                                     <el-dropdown-menu>
-                                        <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
+                                        <el-dropdown-item :command="'show-' + scope.row.id"><i
+                                                class="fa-solid fa-eye"></i>
                                             Ver</el-dropdown-item>
                                         <el-dropdown-item
                                             v-if="$page.props.auth.user.permissions.includes('Editar catalogo de productos')"
@@ -82,10 +79,11 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
 import { Link } from "@inertiajs/vue3";
+import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import axios from 'axios';
-
 
 export default {
     data() {
@@ -103,16 +101,18 @@ export default {
     },
     components: {
         AppLayout,
+        PrimaryButton,
         SecondaryButton,
         Link,
         TextInput,
+        IndexSearchBar,
     },
     props: {
         catalog_products: Object
     },
     methods: {
-        handleSearch() {
-            this.search = this.inputSearch;
+        handleSearch(search) {
+            this.search = search;
         },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
@@ -206,17 +206,11 @@ export default {
             }
         },
         tableRowClassName({ row, rowIndex }) {
-            if (row.status === 1) {
-                return 'text-green-600 cursor-pointer';
-            }
-
-            return 'cursor-pointer';
+            return 'cursor-pointer text-xs';
         },
-
         handleRowClick(row) {
             this.$inertia.get(route('catalog-products.show', row));
         },
-
         handleCommand(command) {
             const commandName = command.split('-')[0];
             const rowId = command.split('-')[1];
