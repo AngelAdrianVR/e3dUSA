@@ -27,7 +27,6 @@
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
                             :total="users.length" />
                     </div>
-
                     <!-- buttons -->
                     <div>
                         <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
@@ -38,35 +37,47 @@
                             </template>
                         </el-popconfirm>
                     </div>
+                    <!-- buscador -->
+                    <IndexSearchBar @search="handleSearch" />
                 </div>
-                <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%" @selection-change="handleSelectionChange"
-                    ref="multipleTableRef" :row-class-name="tableRowClassName">
-                    <el-table-column prop="id" label="ID" width="45" />
+                <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
+                    @selection-change="handleSelectionChange" ref="multipleTableRef"
+                    :row-class-name="tableRowClassName">
+                    <el-table-column prop="id" label="ID" width="80" />
                     <el-table-column prop="name" label="Nombre" />
-                    <el-table-column prop="is_active.string" label="Estatus" />
+                    <el-table-column prop="is_active.string" label="Estatus">
+                        <template #default="scope">
+                            <div class="flex">
+                                <p class="mr-2 mt-px text-[6px]"
+                                    :class="scope.row.is_active.bool ? 'text-green-500' : 'text-red-500'">
+                                    <i class="fa-solid fa-circle"></i>
+                                </p>
+                                <span>{{ scope.row.is_active.string }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="employee_properties.job_position" label="Puesto" />
                     <el-table-column prop="employee_properties.join_date" label="Fecha ingreso" width="160" />
-                    <el-table-column align="right" fixed="right" width="190">
-                        <template #header>
-                            <div class="flex space-x-2">
-                            <TextInput v-model="inputSearch" type="search" @keyup.enter="handleSearch" class="w-full text-gray-600" placeholder="Buscar" />
-                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
-                        </div>
-                        </template>
+                    <el-table-column align="right">
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
-                                <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
+                                <button @click.stop
+                                    class="el-dropdown-link mr-3 justify-center items-center size-8 rounded-full text-primary hover:bg-gray2 transition-all duration-200 ease-in-out">
                                     <i class="fa-solid fa-ellipsis-vertical"></i>
-                                </span>
+                                </button>
                                 <template #dropdown>
                                     <el-dropdown-menu>
-                                        <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
+                                        <el-dropdown-item :command="'show-' + scope.row.id"><i
+                                                class="fa-solid fa-eye"></i>
                                             Ver</el-dropdown-item>
-                                        <el-dropdown-item :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                        <el-dropdown-item :command="'edit-' + scope.row.id"><i
+                                                class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
                                         <el-dropdown-item @click="changeStatus(scope.row)"><i
-                                                class="fa-solid fa-user-slash"></i>
-                                            {{scope.row.is_active.bool ? 'Deshabilitar' : 'Habilitar'}}</el-dropdown-item>
+                                                :class="scope.row.is_active.bool ? 'fa-solid fa-user-slash' :
+                                            'fa-solid fa-user'"></i>
+                                            {{ scope.row.is_active.bool ? 'Deshabilitar' :
+                                            'Habilitar' }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -83,14 +94,12 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
+import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 
-
 export default {
     data() {
-
-
         return {
             disableMassiveActions: true,
             inputSearch: '',
@@ -106,13 +115,14 @@ export default {
         SecondaryButton,
         Link,
         TextInput,
+        IndexSearchBar,
     },
     props: {
         users: Object,
     },
     methods: {
-        handleSearch(){
-            this.search = this.inputSearch;
+        handleSearch(search) {
+            this.search = search;
         },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
@@ -128,11 +138,7 @@ export default {
             this.end = val * this.itemsPerPage;
         },
         tableRowClassName({ row, rowIndex }) {
-            if (row.is_active.bool) {
-                return 'text-green-500 cursor-pointer';
-            } else {
-                return 'text-red-500 cursor-pointer';
-            }
+            return 'cursor-pointer text-xs';
         },
         handleRowClick(row) {
             this.$inertia.get(route('users.show', row));
@@ -143,19 +149,19 @@ export default {
 
             if (commandName == 'clone') {
                 this.clone(rowId);
-            }else {
+            } else {
                 this.$inertia.get(route('users.' + commandName, rowId));
             }
         },
-        changeStatus(user){
+        changeStatus(user) {
 
             this.$inertia.put(route("users.change-status", user)),
-            
-            this.$notify({
-                title: "Éxito",
-            message: "Se cambió el estatus del usuario",
-            type: "success",
-          });
+
+                this.$notify({
+                    title: "Éxito",
+                    message: "Se cambió el estatus del usuario",
+                    type: "success",
+                });
 
         }
     },

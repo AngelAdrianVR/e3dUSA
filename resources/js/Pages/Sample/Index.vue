@@ -17,8 +17,9 @@
 
             <div class="flex space-x-6 items-center justify-center text-xs mt-2">
                 <p class="text-amber-600"><i class="fa-solid fa-circle mr-1"></i>Enviado. Esperando respuesta </p>
-                <p class="text-blue-600"><i class="fa-solid fa-circle mr-1"></i>Muestra devuelta/ esperando retroalimentación</p>
-                <p class="text-indigo-500"><i class="fa-solid fa-circle mr-1"></i>Enviada con modificaciones</p>
+                <p class="text-blue-600"><i class="fa-solid fa-circle mr-1"></i>Muestra devuelta/ esperando
+                    retroalimentación</p>
+                <p class="text-sky-500"><i class="fa-solid fa-circle mr-1"></i>Enviada con modificaciones</p>
                 <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Venta cerrada</p>
                 <p class="text-primary"><i class="fa-solid fa-circle mr-1"></i>Venta no concretada</p>
             </div>
@@ -43,38 +44,50 @@
                             </template>
                         </el-popconfirm>
                     </div>
+                    <!-- buscador -->
+                    <IndexSearchBar @search="handleSearch" />
                 </div>
                 <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
-                    @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
-                    <el-table-column type="selection" width="45" />
-                    <el-table-column prop="folio" label="Folio" width="110" />
-                    <el-table-column prop="user.name" label="Creado por" width="180" />
-                    <el-table-column prop="name" label="Nombre" width="150" />
-                    <el-table-column prop="company_branch.name" label="Cliente" width="160" />
-                    <el-table-column prop="quantity" label="Cantidad" width="85" />
-                    <el-table-column prop="sent_at" label="Enviado el" width="120" />
-                    <el-table-column prop="returned_at" label="devuelto el" widh="120" />
-                    <el-table-column prop="comments" label="Comentarios" widh="150" />
-                    <!-- <el-table-column prop="status.label" label="Estatus" width="150" /> -->
-                    <el-table-column align="right" fixed="right" width="190">
-                        <template #header>
-                            <div class="flex space-x-2">
-                            <TextInput v-model="inputSearch" type="search" @keyup.enter="handleSearch" class="w-full text-gray-600" placeholder="Buscar" />
-                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
-                        </div>
+                    @selection-change="handleSelectionChange" ref="multipleTableRef"
+                    :row-class-name="tableRowClassName">
+                    <el-table-column type="selection" width="30" />
+                    <el-table-column prop="folio" label="Folio" width="120">
+                        <template #default="scope">
+                            <div class="flex">
+                                <p class="mr-2 mt-px text-[6px]" :class="scope.row.status['text-color']">
+                                    <i class="fa-solid fa-circle"></i>
+                                </p>
+                                <span>{{ scope.row.folio }}</span>
+                            </div>
                         </template>
+                    </el-table-column>
+                    <el-table-column prop="user.name" label="Creado por" />
+                    <el-table-column prop="name" label="Nombre" />
+                    <el-table-column prop="company_branch.name" label="Cliente" />
+                    <el-table-column prop="quantity" label="Cantidad">
+                        <template #default="scope">
+                            <span>
+                                {{ scope.row.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
+                            </span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="sent_at" label="Enviado el" />
+                    <el-table-column prop="returned_at" label="devuelto el" />
+                    <el-table-column prop="comments" label="Comentarios" />
+                    <el-table-column align="right">
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
-                                <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
+                                <button @click.stop
+                                    class="el-dropdown-link mr-3 justify-center items-center size-8 rounded-full text-primary hover:bg-gray2 transition-all duration-200 ease-in-out">
                                     <i class="fa-solid fa-ellipsis-vertical"></i>
-                                </span>
+                                </button>
                                 <template #dropdown>
                                     <el-dropdown-menu>
-                                        <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
+                                        <el-dropdown-item :command="'show-' + scope.row.id"><i
+                                                class="fa-solid fa-eye"></i>
                                             Ver</el-dropdown-item>
-                                        <el-dropdown-item
-                                            v-if="$page.props.auth.user.permissions.includes('Editar muestra')
-                                            && scope.row.status['label'] == 'Enviado. Esperando respuesta'"
+                                        <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar muestra')
+                            && scope.row.status['label'] == 'Enviado. Esperando respuesta'"
                                             :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                             Editar</el-dropdown-item>
                                     </el-dropdown-menu>
@@ -93,14 +106,13 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
+import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 
 export default {
     data() {
-
-
         return {
             disableMassiveActions: true,
             inputSearch: '',
@@ -117,16 +129,17 @@ export default {
         Link,
         TextInput,
         NotificationCenter,
+        IndexSearchBar,
     },
     props: {
         samples: Array
     },
     methods: {
-        handleSearch(){
-            this.search = this.inputSearch;
+        handleSearch(search) {
+            this.search = search;
         },
-        tableRowClassName({ row }) {
-            return row.status['text-color'];
+        tableRowClassName({ row, rowIndex }) {
+            return 'cursor-pointer text-xs';
         },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
@@ -154,7 +167,7 @@ export default {
                 this.$inertia.get(route('samples.' + commandName, rowId));
             }
         },
-        
+
         async deleteSelections() {
             try {
                 const response = await axios.post(route('samples.massive-delete', {
