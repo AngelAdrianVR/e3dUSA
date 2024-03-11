@@ -34,12 +34,14 @@
                                 </template>
                             </el-popconfirm>
                         </div>
+                        <!-- buscador -->
+                        <IndexSearchBar @search="handleSearch" />
                     </div>
 
                     <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
                         @selection-change="handleSelectionChange" ref="multipleTableRef"
                         :row-class-name="tableRowClassName">
-                        <el-table-column type="selection" width="45" />
+                        <el-table-column type="selection" width="30" />
                         <el-table-column prop="id" label="ID" width="55" />
                         <el-table-column prop="business_name" label="Nombre" width="120" />
                         <el-table-column prop="phone" label="Teléfono" width="120" />
@@ -57,20 +59,12 @@
                         </el-table-column>
                         <el-table-column prop="company_branches_names" label="Sucursales" />
                         <el-table-column prop="fiscal_address" label="Domicilio Fiscal" />
-                        <el-table-column align="right" fixed="right" width="190">
-                            <template #header>
-                                <div class="flex space-x-2">
-                                    <TextInput v-model="inputSearch" type="search" @keyup.enter="handleSearch"
-                                        class="w-full text-gray-600" placeholder="Buscar" />
-                                    <el-button @click="handleSearch" type="primary" plain class="mb-3"><i
-                                            class="fa-solid fa-magnifying-glass"></i></el-button>
-                                </div>
-                            </template>
+                        <el-table-column align="right">
                             <template #default="scope">
                                 <el-dropdown trigger="click" @command="handleCommand">
-                                    <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
+                                    <button @click.stop class="el-dropdown-link mr-3 justify-center items-center size-8 rounded-full text-primary hover:bg-gray2 transition-all duration-200 ease-in-out">
                                         <i class="fa-solid fa-ellipsis-vertical"></i>
-                                    </span>
+                                    </button>
                                     <template #dropdown>
                                         <el-dropdown-menu>
                                             <el-dropdown-item :command="'show-' + scope.row.id"><i
@@ -100,10 +94,12 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
+import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 
 
 export default {
@@ -122,10 +118,12 @@ export default {
     },
     components: {
         AppLayout,
+        PrimaryButton,
         SecondaryButton,
         Link,
         TextInput,
         NotificationCenter,
+        IndexSearchBar,
     },
     props: {
         companies: Object
@@ -185,8 +183,8 @@ export default {
 
             return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
         },
-        handleSearch() {
-            this.search = this.inputSearch;
+        handleSearch(search) {
+            this.search = search;
         },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
@@ -202,14 +200,7 @@ export default {
             this.end = val * this.itemsPerPage;
         },
         tableRowClassName({ row, rowIndex }) {
-            // if (row.seller_id) {
-            //     let textColorClass = `text-[${this.getColorHex(row.seller_id)}]`;
-            //     console.log(textColorClass);
-            //     return ['cursor-pointer', textColorClass];
-            // } else {
-            //     return 'cursor-not-allowed';
-            // }
-            return 'cursor-pointer';
+            return 'cursor-pointer text-xs';
         },
         handleRowClick(row) {
             this.$inertia.get(route('companies.show', row));

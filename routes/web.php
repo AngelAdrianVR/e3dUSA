@@ -202,6 +202,7 @@ Route::get('sales/print/{sale}', [SaleController::class, 'print'])->name('sales.
 Route::post('sales/update-with-media/{sale}', [SaleController::class, 'updateWithMedia'])->name('sales.update-with-media')->middleware('auth');
 Route::get('sales-get-unauthorized', [SaleController::class, 'getUnauthorized'])->name('sales.get-unauthorized');
 Route::get('sales-get-matches/{query}', [SaleController::class, 'getMatches'])->name('sales.get-matches');
+Route::get('sales-quality-certificate/{sale_id}', [SaleController::class, 'QualityCertificate'])->name('sales.quality-certificate');
 
 // ------- CRM(Companybranches sucursales Routes)  ---------
 Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');
@@ -462,27 +463,8 @@ Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store
 
 Route::post('/upload-image', [FileUploadController::class, 'upload'])->name('upload-image');
 
-// // API para imagenes
-// Route::get('/get-multimedia-file/{file}', function ($fileId) {
-//     // Obtén el modelo de medios por ID
-//     $media = Media::findOrFail($fileId);
 
-//     // Verifica si el archivo existe
-//     if (!Storage::disk($media->disk)->exists($media->getPath())) {
-//         abort(404, 'Archivo no encontrado');
-//     }
-
-//     // Lee el contenido del archivo
-//     $contenido = Storage::disk($media->disk)->get($media->getPath());
-
-//     // Devuelve la respuesta con el contenido y el tipo de contenido adecuado
-//     return response($contenido, 200)
-//         ->header('Content-Type', $media->mime_type);
-// });
-
-
-//artisan commands
-
+//artisan commands -------------------
 Route::get('/clear-all', function () {
     Artisan::call('cache:clear');
     Artisan::call('config:clear');
@@ -514,6 +496,8 @@ Route::get('mail-test', function () {
 
     return "Correo de prueba enviado a $destinatario.";
 });
+
+
 
 
 // Route::get('/sorry-miss-u', function () {

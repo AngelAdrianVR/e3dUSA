@@ -17,10 +17,10 @@
       </template>
 
       <div class="flex space-x-6 items-center justify-center text-xs mt-2">
-          <p class="text-red-500"><i class="fa-solid fa-circle mr-1"></i>Sin autorización</p>
-          <p class="text-yellow-500"><i class="fa-solid fa-circle mr-1"></i>Autorizado.Compra no realizada</p>
-          <p class="text-blue-600"><i class="fa-solid fa-circle mr-1"></i>Compra realizada</p>
-          <p class="text-green-600"><i class="fa-solid fa-circle mr-1"></i>Producto recibido</p>
+        <p class="text-red-500"><i class="fa-solid fa-circle mr-1"></i>Sin autorización</p>
+        <p class="text-yellow-500"><i class="fa-solid fa-circle mr-1"></i>Autorizado.Compra no realizada</p>
+        <p class="text-blue-600"><i class="fa-solid fa-circle mr-1"></i>Compra realizada</p>
+        <p class="text-green-600"><i class="fa-solid fa-circle mr-1"></i>Producto recibido</p>
       </div>
 
       <!-- tabla -->
@@ -30,55 +30,62 @@
           <div>
             <el-pagination @current-change="handlePagination" layout="prev, pager, next" :total="purchases.length" />
           </div>
-
           <!-- buttons -->
           <div>
-            <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar ordenes de compra')" confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
+            <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar ordenes de compra')"
+              confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
               @confirm="deleteSelections">
               <template #reference>
                 <el-button type="danger" plain class="mb-3" :disabled="disableMassiveActions">Eliminar</el-button>
               </template>
             </el-popconfirm>
           </div>
+          <!-- buscador -->
+          <IndexSearchBar @search="handleSearch" />
         </div>
 
         <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
           @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
-          <el-table-column type="selection" width="45" />
-          <el-table-column prop="id" label="ID" width="45" />
-          <el-table-column prop="folio" label="Folio" width="90" />
-          <el-table-column prop="user" label="Creador" width="150" />
-          <el-table-column prop="created_at" label="Creado el" width="120" />
-          <el-table-column prop="authorized_user_name" label="Autorizado por" width="130" />
-          <el-table-column prop="status" label="Estatus" width="100" />
-          <el-table-column prop="emited_at" label="Pedido el" width="120" />
-          <el-table-column prop="recieved_at" label="Recibido el" width="120" />
-          <el-table-column prop="supplier_name" label="Proveedor" width="150" />
-          <el-table-column align="right" fixed="right" width="190">
-            <template #header>
-              <div class="flex space-x-2">
-                            <TextInput v-model="inputSearch" type="search" @keyup.enter="handleSearch" class="w-full text-gray-600" placeholder="Buscar" />
-                            <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
-                        </div>
+          <el-table-column type="selection" width="30" />
+          <el-table-column prop="folio" label="Folio" />
+          <el-table-column prop="user" label="Creador" />
+          <el-table-column prop="created_at" label="Creado el" />
+          <el-table-column prop="authorized_user_name" label="Autorizado por" />
+          <el-table-column prop="status" label="Estatus">
+            <template #default="scope">
+              <div class="flex">
+                <p class="mr-2 mt-px text-[6px]" :class="getStatusColor(scope.row.status)">
+                  <i class="fa-solid fa-circle"></i>
+                </p>
+                <span>{{ scope.row.status }}</span>
+              </div>
             </template>
+          </el-table-column>
+          <el-table-column prop="emited_at" label="Pedido el" />
+          <el-table-column prop="recieved_at" label="Recibido el" />
+          <el-table-column prop="supplier_name" label="Proveedor" />
+          <el-table-column align="right">
             <template #default="scope">
               <el-dropdown trigger="click" @command="handleCommand">
-                <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
+                <button @click.stop
+                  class="el-dropdown-link mr-3 justify-center items-center size-8 rounded-full text-primary hover:bg-gray2 transition-all duration-200 ease-in-out">
                   <i class="fa-solid fa-ellipsis-vertical"></i>
-                </span>
+                </button>
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
                       Ver</el-dropdown-item>
                     <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar ordenes de compra') ||
-                                      scope.row.user.id == $page.props.auth.user.id" :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+              scope.row.user.id == $page.props.auth.user.id" :command="'edit-' + scope.row.id"><i
+                        class="fa-solid fa-pen"></i>
                       Editar</el-dropdown-item>
-                    <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear ordenes de compra')" :command="'clone-' + scope.row.id"><i class="fa-solid fa-clone"></i>
+                    <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear ordenes de compra')"
+                      :command="'clone-' + scope.row.id"><i class="fa-solid fa-clone"></i>
                       Clonar</el-dropdown-item>
-                      <el-dropdown-item
-                        v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de compra') && scope.row.status == 'Pendiente'"
-                        :command="'authorize-' + scope.row.id"><i
-                            class="fa-solid fa-check"></i>Autorizar</el-dropdown-item>
+                    <el-dropdown-item
+                      v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de compra') && scope.row.status == 'Pendiente'"
+                      :command="'authorize-' + scope.row.id"><i
+                        class="fa-solid fa-check"></i>Autorizar</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -94,6 +101,7 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from "axios";
@@ -115,14 +123,15 @@ export default {
     SecondaryButton,
     Link,
     TextInput,
+    IndexSearchBar,
   },
   props: {
     purchases: Array,
   },
   methods: {
-    handleSearch(){
-            this.search = this.inputSearch;
-        },
+    handleSearch(search) {
+      this.search = search;
+    },
     handleSelectionChange(val) {
       this.$refs.multipleTableRef.value = val;
 
@@ -132,21 +141,25 @@ export default {
         this.disableMassiveActions = false;
       }
     },
+    getStatusColor(status) {
+      if (status == 'Pendiente') {
+        return 'text-red-500';
+      } else if (status == 'Autorizado') {
+        return 'text-yellow-500';
+      } else if (status == 'Emitido') {
+        return 'text-blue-500';
+      } else if (status == 'Recibido') {
+        return 'text-green-500';
+      } else {
+        return 'text-gray-500';
+      }
+    },
     handlePagination(val) {
       this.start = (val - 1) * this.itemsPerPage;
       this.end = val * this.itemsPerPage;
     },
     tableRowClassName({ row, rowIndex }) {
-      if (row.status === 'Recibido') {
-        return "text-green-600 cursor-pointer";
-      } else if (row.status === 'Autorizado') {
-        return "text-yellow-500 cursor-pointer";
-      } else if (row.status === 'Emitido') {
-        return "text-blue-600 cursor-pointer";
-      } else {
-        return "text-red-500 cursor-pointer";
-      }
-
+      return 'cursor-pointer text-xs';
     },
 
     handleRowClick(row) {
@@ -233,35 +246,35 @@ export default {
       }
     },
     async authorize(purchase_id) {
-        try {
-            const response = await axios.put(route('purchases.authorize', purchase_id));
+      try {
+        const response = await axios.put(route('purchases.authorize', purchase_id));
 
-            if (response.status === 200) {
-                const index = this.purchases.findIndex(item => item.id == purchase_id);
-                this.purchases[index].authorized_at = response.data.item.authorized_at;
-                this.purchases[index].authorized_user_name = response.data.item.authorized_user_name;
-                this.purchases[index].status = response.data.item.status;
-                // window.location.reload();
-                this.$notify({
-                    title: 'Éxito',
-                    message: response.data.message,
-                    type: 'success'
-                });
-            } else {
-                this.$notify({
-                    title: 'Algo salió mal',
-                    message: response.data.message,
-                    type: 'error'
-                });
-            }
-        } catch (err) {
-            this.$notify({
-                title: 'Algo salió mal',
-                message: err.message,
-                type: 'error'
-            });
-            console.log(err);
+        if (response.status === 200) {
+          const index = this.purchases.findIndex(item => item.id == purchase_id);
+          this.purchases[index].authorized_at = response.data.item.authorized_at;
+          this.purchases[index].authorized_user_name = response.data.item.authorized_user_name;
+          this.purchases[index].status = response.data.item.status;
+          // window.location.reload();
+          this.$notify({
+            title: 'Éxito',
+            message: response.data.message,
+            type: 'success'
+          });
+        } else {
+          this.$notify({
+            title: 'Algo salió mal',
+            message: response.data.message,
+            type: 'error'
+          });
         }
+      } catch (err) {
+        this.$notify({
+          title: 'Algo salió mal',
+          message: err.message,
+          type: 'error'
+        });
+        console.log(err);
+      }
     },
     handleCommand(command) {
       const commandName = command.split("-")[0];
@@ -272,8 +285,8 @@ export default {
       } else if (commandName == "make_so") {
         console.log("SO");
       } else if (commandName == 'authorize') {
-          this.authorize(rowId);
-      }else {
+        this.authorize(rowId);
+      } else {
         this.$inertia.get(route("purchases." + commandName, rowId));
       }
     },
@@ -287,9 +300,12 @@ export default {
       } else {
         return this.purchases.filter(
           (purchase) =>
-            purchase.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
-            purchase.status.toLowerCase().includes(this.search.toLowerCase()) ||
-            purchase.authorized_user_name.toLowerCase().includes(this.search.toLowerCase())
+            purchase.user?.toLowerCase().includes(this.search.toLowerCase()) ||
+            purchase.status?.toLowerCase().includes(this.search.toLowerCase()) ||
+            purchase.folio?.toLowerCase().includes(this.search.toLowerCase()) ||
+            purchase.created_at?.toLowerCase().includes(this.search.toLowerCase()) ||
+            purchase.supplier_name?.toLowerCase().includes(this.search.toLowerCase()) ||
+            purchase.authorized_user_name?.toLowerCase().includes(this.search.toLowerCase())
         );
       }
     },

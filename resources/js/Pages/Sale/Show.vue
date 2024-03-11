@@ -121,6 +121,11 @@
             " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
             Productos
           </p>
+          <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
+          <p v-if="sale.data.catalogProductCompanySales.some(item => item?.catalog_product_company?.catalog_product?.part_number.includes('EM'))" @click="tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
+            " class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
+            Certificado de calidad
+          </p>
         </div>
       </div>
       <!-- ------------- tabs section ends ------------- -->
@@ -225,7 +230,9 @@
       <!-- -------------tab 3 history starts ------------- -->
 
       <div v-if="tabs == 3" class="p-7">
-        <p class="text-secondary mb-2">Historial</p>
+        <a class="inline-block" :href="route('sales.quality-certificate', sale.data.id)" target="_blank">
+          <p class="text-secondary underline mb-2 cursor-pointer">Ver certificado de calidad</p>
+        </a>
       </div>
 
       <!-- ------------- tab 3 history ends ------------ -->

@@ -10,41 +10,47 @@
       </template>
 
       <div class="flex space-x-6 items-center justify-center text-xs mt-2">
-          <p class="text-blue-600"><i class="fa-solid fa-circle mr-1"></i>Nómina en curso</p>
+        <p class="text-blue-600"><i class="fa-solid fa-circle mr-1"></i>Nómina en curso</p>
       </div>
       <!-- tabla -->
       <div class="lg:w-5/6 mx-auto mt-6">
         <div class="flex justify-between">
           <!-- pagination -->
           <div class="mb-3">
-            <el-pagination @current-change="handlePagination" layout="prev, pager, next" :total="payrolls.data.length" />
+            <el-pagination @current-change="handlePagination" layout="prev, pager, next"
+              :total="payrolls.data.length" />
           </div>
-
           <!-- buttons -->
-          <div>
-            <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear nominas')" confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
-              @confirm="closePayroll">
+          <!-- <div>
+            <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear nominas')" confirm-button-text="Si"
+              cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?" @confirm="closePayroll">
               <template #reference>
                 <PrimaryButton :disabled="!isThursdayAfter8PM">
                   Cerrar nómina
                 </PrimaryButton>
               </template>
             </el-popconfirm>
-          </div>
+          </div> -->
+          <!-- buscador -->
+          <IndexSearchBar @search="handleSearch" />
         </div>
         <el-table @row-click="handleRowClick" :data="filteredTableData" max-height="670" style="width: 100%"
           class="cursor-pointer" @selection-change="handleSelectionChange" ref="multipleTableRef"
           :row-class-name="tableRowClassName">
-          <el-table-column type="selection" width="45" />
+          <el-table-column type="selection" width="30" />
           <el-table-column prop="id" label="ID" width="85" />
-          <el-table-column prop="week" label="Semana" />
-          <el-table-column prop="start_date" label="Inicio" />
-          <el-table-column prop="end_date" label="Fin" />
-          <el-table-column align="right" fixed="right" width="200">
-            <template #header>
-              <TextInput v-model="search" type="search" class="w-full" placeholder="Buscar" />
+          <el-table-column prop="week" label="Semana" width="85">
+            <template #default="scope">
+              <div class="flex">
+                <p v-if="scope.row.is_active" class="mr-2 mt-px text-[6px] text-blue-600">
+                  <i class="fa-solid fa-circle"></i>
+                </p>
+                <span>{{ scope.row.week }}</span>
+              </div>
             </template>
           </el-table-column>
+          <el-table-column prop="start_date" label="Inicio" />
+          <el-table-column prop="end_date" label="Fin" />
         </el-table>
       </div>
       <!-- tabla -->
@@ -61,15 +67,12 @@ import Table from "@/Components/MyComponents/Table.vue";
 import TextInput from '@/Components/TextInput.vue';
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
+import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import moment from 'moment';
 import 'moment/locale/es';
-moment.locale('es');
-
 
 export default {
   data() {
-
-
     return {
       disableMassiveActions: true,
       search: '',
@@ -87,16 +90,18 @@ export default {
     SecondaryButton,
     Link,
     TextInput,
-    PrimaryButton
+    PrimaryButton,
+    IndexSearchBar,
   },
   props: {
     payrolls: Object
   },
   methods: {
+    handleSearch(search) {
+      this.search = search;
+    },
     tableRowClassName({ row, rowIndex }) {
-      if (row.is_active == true) {
-        return 'text-blue-600';
-      }
+      return 'cursor-pointer text-xs';
     },
     handleSelectionChange(val) {
       this.$refs.multipleTableRef.value = val;
@@ -152,11 +157,17 @@ export default {
   },
   computed: {
     filteredTableData() {
-      return this.payrolls.data.filter(
-        (payroll) =>
-          !this.search ||
-          payroll.start_date.toLowerCase().includes(this.search.toLowerCase())
-      )
+      if (!this.search) {
+        return this.payrolls.data.filter((item, index) => index >= this.start && index < this.end);
+      } else {
+        return this.payrolls.data.filter(
+          (payroll) =>
+            payroll.id.toString().toLowerCase().includes(this.search.toLowerCase()) ||
+            payroll.week.toString().toLowerCase().includes(this.search.toLowerCase()) ||
+            payroll.start_date.toLowerCase().includes(this.search.toLowerCase()) ||
+            payroll.end_date.toLowerCase().includes(this.search.toLowerCase())
+        );
+      }
     }
   },
 };

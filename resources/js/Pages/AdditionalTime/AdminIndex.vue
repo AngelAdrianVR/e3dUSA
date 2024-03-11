@@ -9,20 +9,16 @@
             </h2>
           </div>
           <div>
-            <SecondaryButton @click="
-              createRequestModal = true;
-            form.reset();
-            editFlag = false;
-            ">+ Nuevo</SecondaryButton>
+            <SecondaryButton @click="createRequestModal = true; form.reset(); editFlag = false;">
+              + Nuevo
+            </SecondaryButton>
           </div>
         </div>
       </template>
 
       <div class="flex space-x-6 items-center justify-center text-xs mt-2">
-        <p class="text-amber-500">
-          <i class="fa-solid fa-circle mr-1"></i>Esperando autorización
-        </p>
-        <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Autorizado</p>
+        <p class="text-amber-500"> <i class="fa-regular fa-clock mr-1"></i>Esperando autorización </p>
+        <p class="text-green-500"><i class="fa-regular fa-circle-check mr-1"></i>Autorizado</p>
       </div>
 
       <!-- tabla -->
@@ -33,7 +29,6 @@
             <el-pagination @current-change="handlePagination" layout="prev, pager, next"
               :total="admin_additional_times.data.length" />
           </div>
-
           <!-- buttons -->
           <div>
             <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
@@ -43,49 +38,55 @@
               </template>
             </el-popconfirm>
           </div>
+          <!-- buscador -->
+          <IndexSearchBar @search="handleSearch" />
         </div>
 
-        <el-table :data="filteredTableData" max-height="450" style="width: 100%" @selection-change="handleSelectionChange"
-          @row-click="handleRowClick" ref="multipleTableRef" :row-class-name="tableRowClassName">
-          <el-table-column type="selection" width="45" />
-          <el-table-column prop="id" label="ID" width="45" />
+        <el-table :data="filteredTableData" max-height="450" style="width: 100%"
+          @selection-change="handleSelectionChange" @row-click="handleRowClick" ref="multipleTableRef"
+          :row-class-name="tableRowClassName">
+          <el-table-column type="selection" width="30" />
+          <el-table-column prop="id" label="ID" width="60" />
           <el-table-column prop="user.name" label="Creador" width="120" />
           <el-table-column prop="created_at" label="Solicitado el" width="120" />
-          <el-table-column prop="time_requested" label="Tiempo solicitado" width="100" />
-          <el-table-column prop="status" label="Estatus" width="100" />
+          <el-table-column prop="time_requested" label="Tiempo solicitado" width="140" />
+          <el-table-column prop="status" label="Estatus" width="140">
+            <template #default="scope">
+              <div class="flex">
+                <p class="mr-2 mt-px text-[10px]">
+                  <i :class="getStatusColor(scope.row)"></i>
+                </p>
+                <span>{{ scope.row.status }}</span>
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column prop="authorized_user_name" label="Autorizado por" width="130" />
           <el-table-column prop="authorized_at" label="Autorizado el" width="120" />
           <el-table-column prop="justification" label="Justificación" width="200" />
-          <el-table-column align="right" fixed="right" width="190">
-            <template #header>
-              <div class="flex space-x-2">
-                <TextInput v-model="inputSearch" type="search" class="w-full text-gray-600" placeholder="Buscar" />
-                <el-button @click="handleSearch" type="primary" plain class="mb-3"><i
-                    class="fa-solid fa-magnifying-glass"></i></el-button>
-              </div>
-            </template>
+          <el-table-column align="right">
             <template #default="scope">
               <el-dropdown trigger="click">
-                <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
+                <button @click.stop
+                  class="el-dropdown-link mr-3 justify-center items-center size-8 rounded-full text-primary hover:bg-gray2 transition-all duration-200 ease-in-out">
                   <i class="fa-solid fa-ellipsis-vertical"></i>
-                </span>
+                </button>
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item v-if="scope.row.authorized_at == 'No autorizado'" @click="edit(scope.row)"><i
                         class="fa-solid fa-pen"></i> Editar</el-dropdown-item>
                     <el-dropdown-item @click="
-                      scope.row.authorized_at == 'No autorizado'
-                        ? authorize(scope.row)
-                        : unauthorize(scope.row)
-                      "><i :class="scope.row.authorized_at != 'No autorizado'
-    ? 'fa-xmark'
-    : 'fa-check'
-    " class="fa-solid"></i>
+              scope.row.authorized_at == 'No autorizado'
+                ? authorize(scope.row)
+                : unauthorize(scope.row)
+              "><i :class="scope.row.authorized_at != 'No autorizado'
+              ? 'fa-xmark'
+              : 'fa-check'
+              " class="fa-solid"></i>
                       {{
-                        scope.row.authorized_at != "No autorizado"
-                        ? "Quitar autorización"
-                        : "Autorizar"
-                      }}</el-dropdown-item>
+              scope.row.authorized_at != "No autorizado"
+                ? "Quitar autorización"
+                : "Autorizar"
+            }}</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -200,13 +201,13 @@
 
             <div class="flex justify-start space-x-3 pt-5 pb-1">
               <PrimaryButton :disabled="form.processing || invalidDay">{{
-                editFlag == true ? "Actualizar" : "Enviar"
-              }}</PrimaryButton>
+              editFlag == true ? "Actualizar" : "Enviar"
+            }}</PrimaryButton>
               <CancelButton @click="
-              createRequestModal = false;
-              form.reset();
-              editFlag = false;
-              ">Cancelar</CancelButton>
+            createRequestModal = false;
+            form.reset();
+            editFlag = false;
+            ">Cancelar</CancelButton>
             </div>
           </div>
         </form>
@@ -226,6 +227,7 @@ import Modal from "@/Components/Modal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
+import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import axios from "axios";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -269,6 +271,7 @@ export default {
     Modal,
     InputError,
     IconInput,
+    IndexSearchBar,
   },
 
   props: {
@@ -277,6 +280,13 @@ export default {
     users: Array,
   },
   methods: {
+    getStatusColor(row) {
+      if (row.status == 'Autorizado') {
+        return 'text-green-500 fa-regular fa-circle-check';
+      } else {
+        return 'text-amber-500 fa-regular fa-clock';
+      }
+    },
     validateDay() {
       if (this.requestedPayrollsUser?.some(item => item.pivot.id === this.form.payroll_user_id)) {
         this.invalidDay = true;
@@ -284,8 +294,8 @@ export default {
         this.invalidDay = false;
       }
     },
-    handleSearch() {
-      this.search = this.inputSearch;
+    handleSearch(search) {
+      this.search = search;
     },
     store() {
       this.form.post(route("more-additional-times.store"), {
@@ -356,11 +366,7 @@ export default {
       }
     },
     tableRowClassName({ row, rowIndex }) {
-      if (row.status === "Autorizado") {
-        return "text-green-500 cursor-pointer";
-      } else {
-        return "text-amber-500 cursor-pointer";
-      }
+      return 'cursor-pointer text-xs';
     },
     handleRowClick(row) {
       if (row.status != "Autorizado") this.edit(row);
@@ -456,6 +462,10 @@ export default {
         return this.admin_additional_times.data.filter(
           (admin_additional_time) =>
             admin_additional_time.status
+              .toLowerCase()
+              .includes(this.search.toLowerCase()) ||
+            admin_additional_time.id
+              .toString()
               .toLowerCase()
               .includes(this.search.toLowerCase()) ||
             admin_additional_time.user.name
