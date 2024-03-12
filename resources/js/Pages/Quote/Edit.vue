@@ -359,6 +359,11 @@ export default {
             },
             firstProductionDaysList: [
                 'Inmediata',
+                '1 a 2 días',
+                '2 a 3 días',
+                '3 a 4 días',
+                '4 a 5 días',
+                '5 a 6 días',
                 '1 a 2 semanas',
                 '2 a 3 semanas',
                 '3 a 4 semanas',
