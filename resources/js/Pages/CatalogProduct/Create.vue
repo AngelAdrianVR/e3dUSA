@@ -119,7 +119,7 @@
                                 :value="feature"></el-option>
                         </el-select>
                     </div>
-                    <div class="grid grid-cols-2 lg:grid-cols-3 gap-10 col-span-full">
+                    <div class="grid grid-cols-2 lg:grid-cols-3 gap-2 col-span-full">
                         <InputFilePreview v-for="(file,index) in form.media" :key="index" :canDelete="index == (form.media.length - 2)"
                             @imagen="saveImage" @cleared="handleCleared(index)" class="p-2" />
                     </div>

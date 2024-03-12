@@ -229,16 +229,16 @@
       <span class="">Precio Anterior:</span>
       <span class="text-secondary ">{{ catalog_product_company_sale.catalog_product_company?.old_price }}
         {{ catalog_product_company_sale.catalog_product_company?.old_currency }}</span>
-      <span class="">Establecido el:</span>
-      <span class="text-secondary  mb-3">{{
-        catalog_product_company_sale.catalog_product_company?.old_date
-      }}</span>
+      <span>Establecido el:</span>
+      <span class="text-secondary  mb-3">
+        {{ formatDate(catalog_product_company_sale.catalog_product_company?.old_date) }}
+      </span>
 
-      <span class="">Precio Actual:</span>
+      <span>Precio Actual:</span>
       <span class="text-secondary ">{{ catalog_product_company_sale.catalog_product_company?.new_price }}
         {{ catalog_product_company_sale.catalog_product_company?.new_currency }}</span>
-      <span class="">Establecido el:</span>
-      <span class="text-secondary ">{{ catalog_product_company_sale.catalog_product_company?.new_date }}</span>
+      <span>Establecido el:</span>
+      <span class="text-secondary ">{{ formatDate(catalog_product_company_sale.catalog_product_company?.new_date) }}</span>
     </div><br>
 
     <div class="flex items-center absolute bottom-3 left-4">
@@ -539,6 +539,8 @@ import IconInput from "@/Components/MyComponents/IconInput.vue";
 import InputError from "@/Components/InputError.vue";
 import RichText from "@/Components/MyComponents/RichText.vue";
 import Checkbox from "@/Components/Checkbox.vue";
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { useForm } from "@inertiajs/vue3";
 
 export default {
@@ -602,6 +604,10 @@ export default {
     Checkbox
   },
   methods: {
+    formatDate(date) {
+            const parsedDate = new Date(date);
+            return format(parsedDate, 'dd \'de\' MMM, Y', { locale: es }); // Formato personalizado
+        },
     confirmedChangeStatus(production) {
       if (this.getNextAction(production) == 'Finalizar') {
         this.showScrapModal = true;

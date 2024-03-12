@@ -18,7 +18,6 @@ class SampleController extends Controller
     {
         // $samples = SampleResource::collection(Sample::with(['catalogProduct:id,name', 'companyBranch:id,name', 'user:id,name'])->latest()
         // ->get(['id', 'name', 'quantity', 'sent_at', 'returned_at', 'comments', 'catalog_product_id', 'company_branch_id', 'user_id']));
-
         $pre_samples = Sample::with(['catalogProduct:id,name', 'companyBranch:id,name', 'user:id,name'])->latest()
         ->get(['id', 'name', 'quantity', 'sent_at', 'returned_at', 'comments', 'catalog_product_id', 'company_branch_id', 'user_id', 'sale_order_at', 'will_back']);
         $samples = $pre_samples->map(function ($sample) {
@@ -306,12 +305,12 @@ class SampleController extends Controller
 
     public function saleOrder(Sample $sample)
     {
-
         $sample->update([
             'sale_order_at' => now(),
         ]);
-    }
 
+        return response()->json([]);
+    }
 
     public function finishSample(Sample $sample)
     {
@@ -321,7 +320,6 @@ class SampleController extends Controller
 
         return to_route('samples.index');
     }
-
 
     public function resentSample(Sample $sample)
     {

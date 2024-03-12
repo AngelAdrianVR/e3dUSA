@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Resources\PayrollUserResource;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -72,7 +73,7 @@ class Payroll extends Model
                     $payroll_user->justification_event_id = -$holiday->id;
                 } else {
                     // day not passed yet
-                    if ($current_date->greaterThan(now())) {
+                    if ($current_date->lessThan(Carbon::parse($user->employee_properties['join_date'])) || $current_date->greaterThan(now())) {
                         $payroll_user->justification_event_id = 7;
                     } else { //days passed
                         if ($is_day_off) { //day off
@@ -85,7 +86,6 @@ class Payroll extends Model
                 $processed[] = $payroll_user;
             }
         }
-
         return $processed;
     }
 }
