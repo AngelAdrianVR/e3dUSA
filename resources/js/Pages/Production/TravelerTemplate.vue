@@ -919,7 +919,7 @@ export default {
         },
         async storeCriteriaValue(stage, CriteriaIndex, value) {
             if (this.$page.props.auth.user.permissions.includes('Editar hojas viajeras')) {
-                this.travelerData[stage][CriteriaIndex].userId = 2; //this.$page.props.auth.user.id;
+                this.travelerData[stage][CriteriaIndex].userId = this.$page.props.auth.user.id;
                 this.travelerData[stage][CriteriaIndex].value = value;
                 this.travelerData[stage][CriteriaIndex].timestamp = format(new Date(), 'dd-MMM-yyyy h:mm a', { locale: es });
                 const notify = !value;
