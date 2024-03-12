@@ -406,8 +406,8 @@ onMounted(() => {
                 </div>
               </div>
 
-              <!-- Buscador general -->
-              <div class="w-full mx-5 lg:mx-0 lg:w-1/4 text-xs lg:text-sm">
+             <!-- Buscador general -->
+             <div class="w-full mx-5 lg:mx-0 lg:w-1/4 text-xs lg:text-sm">
                 <button v-if="!showSearchInput" @click="searchStart"
                   class="rounded-full size-9 flex justify-center items-center border border-[#9A9A9A]">
                   <i class="fa-solid fa-magnifying-glass text-sm text-[#9A9A9A]"></i>
@@ -420,7 +420,7 @@ onMounted(() => {
 
                   <!-- Resultados -->
                   <div v-if="showSearchResults"
-                    class="bg-white w-72 max-h-80 overflow-auto absolute top-[50px] -left-12 rounded-md py-4 z-50">
+                    class="bg-white w-80 max-h-80 overflow-auto absolute top-[50px] left-0 shadow-lg rounded-md py-4 z-50">
                     <!-- estado de carga -->
                     <div v-if="loadingSearch" class="flex justify-center items-center">
                       <i class="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
@@ -431,7 +431,7 @@ onMounted(() => {
                         <h2 class="font-bold px-4">{{ modelName }}</h2>
                         <ul>
                           <li @click="$inertia.get(route(result.model + '.show', result.id))"
-                            class="text-gray-500 hover:bg-gray-200 text-sm cursor-default px-4"
+                            class="text-gray-500 hover:bg-gray-200 text-xs px-4 cursor-pointer"
                             v-for="result in results" :key="result.id">
                             {{ result.name }} <!-- Ajusta según tu estructura de datos -->
                           </li>
@@ -469,7 +469,7 @@ onMounted(() => {
                     :title="isPaused ? '¿Reanudar tiempo?' : 'Pausar tiempo?'" @confirm="setPause">
                     <template #reference>
                       <button v-if="nextAttendance == 'Registrar salida'"
-                        class="w-8 h-8 mr-5 rounded-full border-2 border-[#0355B5] text-secondary">
+                        class="w-20 h-6 text-xs mr-5 rounded-full border-2 border-[#0355B5] text-secondary">
                         <i v-if="isPaused" class="fa-solid fa-play"></i>
                         <i v-else class="fa-solid fa-pause"></i>
                       </button>
@@ -671,62 +671,12 @@ onMounted(() => {
                   Perfil
                 </ResponsiveNavLink>
 
-                <ResponsiveNavLink v-if="$page.props.jetstream.hasApiFeatures" :href="route('api-tokens.index')"
-                  :active="route().current('api-tokens.index')">
-                  API Tokens
-                </ResponsiveNavLink>
-
                 <!-- Authentication -->
                 <form method="POST" @submit.prevent="logout">
                   <ResponsiveNavLink as="button">
                     Cerrar sesión
                   </ResponsiveNavLink>
                 </form>
-
-                <!-- Team Management -->
-                <template v-if="$page.props.jetstream.hasTeamFeatures">
-                  <div class="border-t border-gray-200" />
-
-                  <div class="block px-4 py-2 text-xs text-gray-400">
-                    Manage Team
-                  </div>
-
-                  <!-- Team Settings -->
-                  <ResponsiveNavLink :href="route('teams.show', $page.props.auth.user.current_team)
-      " :active="route().current('teams.show')">
-                    Team Settings
-                  </ResponsiveNavLink>
-
-                  <ResponsiveNavLink v-if="$page.props.jetstream.canCreateTeams" :href="route('teams.create')"
-                    :active="route().current('teams.create')">
-                    Create New Team
-                  </ResponsiveNavLink>
-
-                  <!-- Team Switcher -->
-                  <template v-if="$page.props.auth.user.all_teams.length > 1">
-                    <div class="border-t border-gray-200" />
-
-                    <div class="block px-4 py-2 text-xs text-gray-400">
-                      Switch Teams
-                    </div>
-
-                    <template v-for="team in $page.props.auth.user.all_teams" :key="team.id">
-                      <form @submit.prevent="switchToTeam(team)">
-                        <ResponsiveNavLink as="button">
-                          <div class="flex items-center">
-                            <svg v-if="team.id == $page.props.auth.user.current_team_id
-      " class="mr-2 h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none"
-                              viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <div>{{ team.name }}</div>
-                          </div>
-                        </ResponsiveNavLink>
-                      </form>
-                    </template>
-                  </template>
-                </template>
               </div>
             </div>
           </div>

@@ -39,9 +39,9 @@ class SampleResource extends JsonResource
                 if ($this->requires_modification) {
 
                     $status = ['label' => 'Muestra enviada de nuevo con modificación',
-                    'bg-color' => 'bg-indigo-500',
-                    'text-color' => 'text-indigo-600',
-                    'border-color' => 'border-indigo-600', 
+                    'bg-color' => 'bg-sky-500',
+                    'text-color' => 'text-sky-600',
+                    'border-color' => 'border-sky-600', 
                     'description' => 'Muestra enviada de nuevo con modificaciones. Espera retroalimentación para finalizar con el seguimiento',
                     'progress' => 'w-3/4'        
                     ];
@@ -62,9 +62,9 @@ class SampleResource extends JsonResource
             if ($this->requires_modification) {
 
                 $status = ['label' => 'Muestra enviada de nuevo con modificación',
-                    'bg-color' => 'bg-indigo-500',
-                    'text-color' => 'text-indigo-600',
-                    'border-color' => 'border-indigo-600', 
+                    'bg-color' => 'bg-sky-500',
+                    'text-color' => 'text-sky-600',
+                    'border-color' => 'border-sky-600', 
                     'description' => 'Muestra enviada de nuevo con modificaciones. Espera retroalimentación para finalizar con el seguimiento',
                     'progress' => 'w-3/4'        
                     ];

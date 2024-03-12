@@ -178,7 +178,7 @@ class OportunityController extends Controller
             $chmessage->id = Str::uuid();
             $chmessage->from_id = $request->seller_id;
             $chmessage->to_id = 4; //para samuel
-            $chmessage->body = 'Hola, este es un mensaje automático creado por el sistema para requerirte fotografías de algunos productos para enviar a un cliente. Envía un mensaje de respuesta para proporcionarte más detalles, gracias!';
+            $chmessage->body = 'Hola, este es un mensaje automático creado desde la oportunidad *' . $oportunity->name . '* por el sistema para requerirte fotografías de algunos productos para enviar a un cliente. Envía un mensaje de respuesta para proporcionarte más detalles, gracias!';
             $chmessage->save();
            
             //Tarea 3. Enviar cotización

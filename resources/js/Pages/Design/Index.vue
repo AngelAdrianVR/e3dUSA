@@ -17,7 +17,7 @@
             <div class="flex space-x-6 items-center justify-center text-xs mt-2">
                 <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Esperando autorización</p>
                 <p class="text-amber-700"><i class="fa-solid fa-circle mr-1"></i>Autorizado. Sin iniciar</p>
-                <p class="text-[#0355B5]"><i class="fa-solid fa-circle mr-1"></i>En proceso</p>
+                <p class="text-secondary"><i class="fa-solid fa-circle mr-1"></i>En proceso</p>
                 <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Terminado</p>
             </div>
 
@@ -31,7 +31,6 @@
                             <el-pagination @current-change="handlePagination" layout="prev, pager, next"
                                 :total="designs.data.length" />
                         </div>
-    
                         <!-- buttons -->
                         <div>
                             <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
@@ -42,34 +41,44 @@
                                 </template>
                             </el-popconfirm>
                         </div>
+                        <!-- buscador -->
+                        <IndexSearchBar @search="handleSearch" />
                     </div>
                     <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
-                        @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
-                        <el-table-column type="selection" width="45" />
+                        @selection-change="handleSelectionChange" ref="multipleTableRef"
+                        :row-class-name="tableRowClassName">
+                        <el-table-column type="selection" width="30" />
+                        <el-table-column prop="id" label="ID" width="80" />
                         <el-table-column prop="user.name" label="Solicitante" />
                         <el-table-column prop="name" label="Diseño" />
                         <el-table-column prop="design_type.name" label="Clasificación" />
                         <el-table-column prop="designer.name" label="Diseñador(a)" />
                         <el-table-column prop="created_at" label="Solicitado el" />
-                        <el-table-column prop="status[label]" label="Estatus" />
-                        <el-table-column align="right" fixed="right" width="190">
-                            <template #header>
-                                <div class="flex space-x-2">
-                                <TextInput v-model="inputSearch" type="search" @keyup.enter="handleSearch" class="w-full text-gray-600" placeholder="Buscar" />
-                                <el-button @click="handleSearch" type="primary" plain class="mb-3"><i class="fa-solid fa-magnifying-glass"></i></el-button>
-                            </div>
+                        <el-table-column prop="status[label]" label="Estatus">
+                            <template #default="scope">
+                                <div class="flex">
+                                    <p class="mr-2 mt-px text-[6px]" :class="getStatusColor(scope.row)">
+                                        <i class="fa-solid fa-circle"></i>
+                                    </p>
+                                    <span>{{ scope.row.status['label'] }}</span>
+                                </div>
                             </template>
+                        </el-table-column>
+                        <el-table-column align="right">
                             <template #default="scope">
                                 <el-dropdown trigger="click" @command="handleCommand">
-                                    <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
+                                    <button @click.stop
+                                        class="el-dropdown-link mr-3 justify-center items-center size-8 rounded-full text-primary hover:bg-gray2 transition-all duration-200 ease-in-out">
                                         <i class="fa-solid fa-ellipsis-vertical"></i>
-                                    </span>
+                                    </button>
                                     <template #dropdown>
                                         <el-dropdown-menu>
-                                            <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
+                                            <el-dropdown-item :command="'show-' + scope.row.id"><i
+                                                    class="fa-solid fa-eye"></i>
                                                 Ver</el-dropdown-item>
-                                            <el-dropdown-item v-if="(scope.row.status['label'] != 'Terminado' && scope.row.user.id == $page.props.auth.user.id) || 
-                                                ($page.props.auth.user.permissions.includes('Ordenes de diseño todas') && scope.row.status['label'] != 'Terminado')"
+                                            <el-dropdown-item
+                                                v-if="(scope.row.status['label'] != 'Terminado' && scope.row.user.id == $page.props.auth.user.id) ||
+                            ($page.props.auth.user.permissions.includes('Ordenes de diseño todas') && scope.row.status['label'] != 'Terminado')"
                                                 :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                                 Editar</el-dropdown-item>
                                         </el-dropdown-menu>
@@ -92,13 +101,11 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
 import { Link } from "@inertiajs/vue3";
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
+import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import axios from 'axios';
-
 
 export default {
     data() {
-
-
         return {
             disableMassiveActions: true,
             inputSearch: '',
@@ -114,13 +121,25 @@ export default {
         SecondaryButton,
         Link,
         TextInput,
-        NotificationCenter
+        NotificationCenter,
+        IndexSearchBar,
     },
     props: {
         designs: Array
     },
     methods: {
-        handleSearch(){
+        getStatusColor(row) {
+            if (row.status['label'] == 'Esperando Autorización') {
+                return 'cursor-pointer text-amber-500';
+            } else if (row.status['label'] == 'Autorizado. Sin iniciar') {
+                return 'cursor-pointer text-amber-700';
+            } else if (row.status['label'] == 'En proceso') {
+                return 'cursor-pointer text-[#0355B5]';
+            } else if (row.status['label'] == 'Terminado') {
+                return 'cursor-pointer text-green-500';
+            }
+        },
+        handleSearch() {
             this.search = this.inputSearch;
         },
         handleSelectionChange(val) {
@@ -183,16 +202,7 @@ export default {
             }
         },
         tableRowClassName({ row, rowIndex }) {
-
-            if (row.status['label'] == 'Esperando Autorización') {
-                 return 'cursor-pointer text-amber-500';
-            }else if(row.status['label'] == 'Autorizado. Sin iniciar'){
-                return 'cursor-pointer text-amber-700';
-            }else if(row.status['label'] == 'En proceso'){
-                return 'cursor-pointer text-[#0355B5]';
-            }else if(row.status['label'] == 'Terminado'){
-                return 'cursor-pointer text-green-500';
-            }
+            return 'cursor-pointer text-xs';
         },
         handleRowClick(row) {
             this.$inertia.get(route('designs.show', row));

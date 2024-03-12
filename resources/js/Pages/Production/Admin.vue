@@ -30,7 +30,6 @@
                             <el-pagination @current-change="handlePagination" layout="prev, pager, next"
                                 :total="productions.length" />
                         </div>
-
                         <!-- buttons -->
                         <div>
                             <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
@@ -41,25 +40,30 @@
                                 </template>
                             </el-popconfirm>
                         </div>
+                        <!-- buscador -->
+                        <IndexSearchBar @search="handleSearch" />
                     </div>
                     <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
                         @selection-change="handleSelectionChange" ref="multipleTableRef"
                         :row-class-name="tableRowClassName">
-                        <el-table-column type="selection" width="55" />
+                        <el-table-column type="selection" width="30" />
                         <el-table-column label="folio" width="100">
                             <template #default="scope">
                                 <div class="flex">
                                     <p class="mr-2">
-                                        <el-tooltip v-if="scope.row.is_sale_production" content="Orden de venta" placement="top">
+                                        <el-tooltip v-if="scope.row.is_sale_production" content="Orden de venta"
+                                            placement="top">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor" class="size-4 mt-1 text-purple-500">
+                                                stroke-width="1.5" stroke="currentColor"
+                                                class="size-4 mt-1 text-purple-500">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                     d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                                             </svg>
                                         </el-tooltip>
                                         <el-tooltip v-else content="Orden de stock" placement="top">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor" class="size-4 mt-1 text-rose-500">
+                                                stroke-width="1.5" stroke="currentColor"
+                                                class="size-4 mt-1 text-rose-500">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                     d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
                                             </svg>
@@ -76,30 +80,22 @@
                             <template #default="scope">
                                 <div class="flex">
                                     <p class="mr-2" :class="getStatusColor(scope.row)">
-                                        <i class="fa-solid fa-circle text-[10px]"></i>
+                                        <i class="fa-solid fa-circle text-[6px]"></i>
                                     </p>
-                                    <p class="flex-0 w-[80%]">{{ scope.row.status['label'] }}</p>
+                                    <p class="flex">{{ scope.row.status['label'] }}</p>
                                 </div>
                             </template>
                         </el-table-column>
                         <el-table-column prop="operators" label="Operadores" width="210" />
                         <el-table-column prop="production.percentage" label="% Avance" width="115" />
                         <el-table-column prop="promise_date" label="Fecha entrega" />
-                        <!-- <el-table-column prop="delivery_status" label="Estatus de entrega" /> -->
-                        <el-table-column align="right" fixed="right" width="190">
-                            <template #header>
-                                <div class="flex space-x-2">
-                                    <TextInput v-model="inputSearch" @keyup.enter="handleSearch" type="search"
-                                        class="w-full text-gray-600" placeholder="Buscar" />
-                                    <el-button @click="handleSearch" type="primary" plain class="mb-3"><i
-                                            class="fa-solid fa-magnifying-glass"></i></el-button>
-                                </div>
-                            </template>
+                        <el-table-column align="right">
                             <template #default="scope">
                                 <el-dropdown trigger="click" @command="handleCommand">
-                                    <span @click.stop class="el-dropdown-link mr-3 justify-center items-center p-2">
+                                    <button @click.stop
+                                        class="el-dropdown-link mr-3 justify-center items-center size-8 rounded-full text-primary hover:bg-gray2 transition-all duration-200 ease-in-out">
                                         <i class="fa-solid fa-ellipsis-vertical"></i>
-                                    </span>
+                                    </button>
                                     <template #dropdown>
                                         <el-dropdown-menu>
                                             <el-dropdown-item :command="'show-' + scope.row.id"><i
@@ -127,14 +123,13 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
+import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 
 
 export default {
     data() {
-
-
         return {
             disableMassiveActions: true,
             inputSearch: '',
@@ -151,13 +146,14 @@ export default {
         Link,
         TextInput,
         NotificationCenter,
+        IndexSearchBar,
     },
     props: {
         productions: Array
     },
     methods: {
-        handleSearch() {
-            this.search = this.inputSearch;
+        handleSearch(search) {
+            this.search = search;
         },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;

@@ -1,5 +1,6 @@
 <template>
   <div>
+    <AllPageLoading v-if="loading" />
     <AppLayoutNoHeader title="Seguimiento de muestras -ver">
       <div class="flex justify-between text-lg mx-14 mt-11">
         <span>Seguimiento de muestra</span>
@@ -104,7 +105,7 @@
               >
                 <template #reference>
                   <button class="rounded-lg bg-green-500 text-white p-2 text-sm">
-                    Generar orden de venta
+                    Venta cerrada
                   </button>
                 </template>
               </el-popconfirm>
@@ -132,7 +133,7 @@
               >
                 <template #reference>
                   <button class="rounded-lg bg-primary text-white p-2 text-sm">
-                    Finalizar seguimiento
+                    Venta no cerrada
                   </button>
                 </template>
               </el-popconfirm>
@@ -519,12 +520,14 @@
 import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+import AllPageLoading from "@/Components/MyComponents/AllPageLoading.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import Modal from "@/Components/Modal.vue";
 import InputError from "@/Components/InputError.vue";
 import { Link, useForm } from "@inertiajs/vue3";
+import axios from "axios";
 
 export default {
   data() {
@@ -534,6 +537,7 @@ export default {
 
     return {
       form,
+      loading: false,
       selectedSample: "",
       currentImage: 0,
       currentSample: null,
@@ -554,6 +558,7 @@ export default {
     InputError,
     Modal,
     Link,
+    AllPageLoading  ,
   },
   props: {
     catalog_product: Object,
@@ -585,11 +590,19 @@ export default {
         },
       });
     },
-    saleOrder() {
-      this.$inertia.put(route('samples.sale-order', this.sample.data.id));
-      this.$inertia.get(route('sales.create'), { sampleId: this.sample.data.id }); // manda el id al metodo de crear orden de venta
-      // this.$inertia.visit('/sales/create', { method: 'get' });
+    async saleOrder() {
+      this.loading = true;
+      try {
+        const response = await axios.put(route('samples.sale-order', this.sample.data.id));
+
+        if (response.status === 200) {
+          this.$inertia.get(route('sales.create'), { sampleId: this.sample.data.id }); // manda el id al metodo de crear orden de venta
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
+
     finishSample() {
       this.$inertia.put(route('samples.finish-sample', this.sample.data.id));
     },
