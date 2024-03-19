@@ -35,11 +35,11 @@
             <div v-for="product in orderedProducts" :key="product" class="grid grid-cols-3 gap-x-3 self-start text-xs border-b border-gray-400">
               <div class="col-span-2 grid grid-cols-2 gap-x-3 self-start pb-5">
                 <p>Producto</p>
-                <span>{{ product?.catalog_product_company.catalog_product.name }}</span>
+                <span>{{ product?.catalog_product_company?.catalog_product.name }}</span>
                 <p v-if="isSaleProduction">Cantidad usada de almacén de producto terminado</p>
                 <div v-if="isSaleProduction" class="flex items-center">
                   {{ product?.finished_product_used }} unidades 
-                  <div v-if="(product?.finished_product_used - (product?.quantity - product?.finished_product_used)) < product?.catalog_product_company.catalog_product.min_quantity" class="flex items-center">
+                  <div v-if="(product?.finished_product_used - (product?.quantity - product?.finished_product_used)) < product?.catalog_product_company?.catalog_product.min_quantity" class="flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3 ml-2 mr-1">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                     </svg>
@@ -61,7 +61,7 @@
                 <span>{{ product?.notes ?? '--' }}</span>
               </div>
               <figure class="pb-1">
-                <img :src="product?.catalog_product_company.catalog_product.media[0].original_url">
+                <img :src="product?.catalog_product_company?.catalog_product.media[0].original_url">
               </figure>
             </div>
           </template>
@@ -76,7 +76,7 @@
                 <li class="flex justify-between items-center">
                   <p class="text-sm">
                     <span class="text-primary">{{ index + 1 }}.</span>
-                    {{ sales.data.find(item2 => item2.id == saleId).catalogProductCompanySales.find(cpcs => cpcs.id == item.catalog_product_company_sale_id).catalog_product_company.catalog_product.name }}
+                    {{ sales.data.find(item2 => item2.id == saleId).catalogProductCompanySales.find(cpcs => cpcs.id == item?.catalog_product_company_sale_id)?.catalog_product_company?.catalog_product.name }}
                      | {{ is_automatic_assignment ? 'Asignación de operdores automática' : item.tasks?.length + ' operador(es) asignado(s)' }}
                   </p>
                   <div class="flex space-x-2 items-center">
@@ -106,12 +106,12 @@
                 <el-select v-model="production.catalog_product_company_sale_id" clearable filterable
                   placeholder="Busca en productos ordenados" no-data-text="No hay productos registrados"
                   no-match-text="No se encontraron coincidencias">
-                  <el-option v-for="item in orderedProducts" :key="item.id" :label="item.catalog_product_company.catalog_product.name"
+                  <el-option v-for="item in orderedProducts" :key="item.id" :label="item?.catalog_product_company?.catalog_product.name"
                     :value="item.id" />
                 </el-select>
               </div>
 
-              <el-divider v-if="production.catalog_product_company_sale_id" content-position="left"
+              <el-divider v-if="production?.catalog_product_company_sale_id" content-position="left"
                 class="col-span-full">Tareas</el-divider>
 
               <ol v-if="tasks.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
@@ -138,7 +138,7 @@
                 </template>
               </ol>
 
-              <div v-if="production.catalog_product_company_sale_id"
+              <div v-if="production?.catalog_product_company_sale_id"
                 class="space-y-3 md:w-[92%] mx-auto border-2 border-[#b8b7b7] rounded-lg p-5 my-3">
                 <div v-if="!is_automatic_assignment" class="flex items-center">
                   <el-tooltip content="Seleccionar a operador(es)" placement="top">
@@ -244,7 +244,7 @@
 
               <div calss="col-span-full">
                 <SecondaryButton @click="addProduction" type="button"
-                  :disabled="form.processing || !production.catalog_product_company_sale_id || !tasks.length">
+                  :disabled="form.processing || !production?.catalog_product_company_sale_id || !tasks.length">
                   {{ editProductionIndex !== null ? 'Actualizar orden' : 'Agregar orden' }}
                 </SecondaryButton>
               </div>
