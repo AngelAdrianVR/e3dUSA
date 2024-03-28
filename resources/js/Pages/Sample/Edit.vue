@@ -68,13 +68,13 @@
                   format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
                 <InputError :message="form.errors.sent_at" />
               </div>
-              <label v-if="form.catalog_product_id" class="flex items-center ml-3">
+              <!-- <label v-if="form.catalog_product_id" class="flex items-center ml-3">
                 <Checkbox class="bg-transparent" v-model:checked="form.will_back" />
                 <span
                   class="ml-2 text-xs">
                   La muestra volverá
                 </span>
-              </label>
+              </label> -->
             </div>
             <div v-if="form.will_back" class="flex items-center">
                 <el-tooltip content="Fecha tentativa de devolución *" placement="top">

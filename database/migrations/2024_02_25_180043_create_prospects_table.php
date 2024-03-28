@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('contact_email');
             $table->string('contact_phone');
             $table->string('contact_phone_extension')->nullable();
+            $table->string('contact_whatsapp')->nullable();
             $table->string('status');
             $table->unsignedSmallInteger('branches_number');
             $table->text('abstract')->nullable();

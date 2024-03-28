@@ -358,8 +358,10 @@ class ProductionController extends Controller
 
     public function print($productions)
     {
-        $ordered_products = CatalogProductCompanySale::with(['catalogProductCompany.catalogProduct.media', 'productions' => ['operator', 'user'], 'sale' => ['user', 'companyBranch']])->whereIn('id', json_decode($productions))->get();
+        $ordered_products = CatalogProductCompanySale::with(['catalogProductCompany.catalogProduct.media', 'productions' => ['operator:id,name', 'user:id,name'], 'sale' => ['user:id,name', 'companyBranch']])->whereIn('id', json_decode($productions))->get();
         $folio = 'OP-' . str_pad($ordered_products[0]->sale_id, 4, "0", STR_PAD_LEFT);
+
+        // return $ordered_products;
         return inertia('Production/PrintTemplate', compact('ordered_products', 'folio'));
     }
 
