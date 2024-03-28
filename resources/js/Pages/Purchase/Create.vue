@@ -110,7 +110,7 @@
                   </el-tooltip>
                   <el-select v-model="productSelectedId" @change="getProductSelected" clearable filterable
                     placeholder="Selecciona un producto">
-                    <el-option v-for="item in rawMaterials" :key="item.id" :label="item.name" :value="item.id" />
+                    <el-option v-for="item in rawMaterials" :key="item.id" :label="item.name + ' (' + item.part_number + ')'" :value="item.id" />
                   </el-select>
                 </div>
 
@@ -119,7 +119,7 @@
                     <el-tooltip content="Cantidad requerida del producto seleccionado" placement="top">
                       #
                     </el-tooltip>
-                  </IconInput>
+                  </IconInput>  
                   <InputError :message="form.errors.quantity" />
                 </div>
               </div>

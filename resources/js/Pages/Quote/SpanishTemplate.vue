@@ -46,7 +46,7 @@
             </thead>
             <tbody>
                 <tr v-for="(item, index) in quote.data.products" :key="index" class="bg-gray-200 text-gray-700 uppercase">
-                    <td class="px-2 py-px">{{ item.name }}</td>
+                    <td class="px-2 py-px">{{ item.name + ' (N. de parte: ' + item.part_number + ')' }}</td>
                     <td class="px-2 py-px">{{ item.pivot.notes ?? '--' }}</td>
                     <td class="px-2 py-px">{{ item.pivot.price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ quote.data.currency }}</td>
                     <td class="px-2 py-px">{{ item.pivot.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ item.measure_unit }}</td>

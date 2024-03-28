@@ -221,7 +221,7 @@
                             <el-select v-model="product.catalog_product_id" clearable filterable
                                 placeholder="Busca el producto" no-data-text="No hay productos registrados"
                                 no-match-text="No se encontraron coincidencias">
-                                <el-option v-for="item in catalog_products" :key="item.id" :label="item.name"
+                                <el-option v-for="item in catalog_products" :key="item.id" :label="item.name + ' (' + item.part_number + ')'"
                                     :value="item.id" />
                             </el-select>
                         </div>
