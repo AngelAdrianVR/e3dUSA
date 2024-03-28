@@ -18,6 +18,7 @@ class Prospect extends Model
         'contact_charge',
         'contact_phone',
         'contact_phone_extension',
+        'contact_whatsapp',
         'status',
         'branches_number',
         'abstract',
