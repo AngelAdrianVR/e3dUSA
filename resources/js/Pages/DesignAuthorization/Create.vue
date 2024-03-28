@@ -33,7 +33,7 @@
                 <!-- content -->
                 <div class="text-xs lg:grid grid-cols-2 lg:gap-x-7 lg:mt-10 lg:px-7 p-3">   
                     <!-- imagen -->
-                    <InputFilePreview @imagen="saveImage" class="scale-150 lg:ml-60 lg:mt-32" />
+                    <InputFilePreview @imagen="saveImage" class="" />
                 
                     <!-- información del diseño -->
                     <div class="grid grid-cols-2 gap-x-2 text-sm self-start mt-4 md:mt-0">
