@@ -38,25 +38,26 @@
     </el-tooltip>
 
     <div class="grid grid-cols-2 gap-x-4">
-      <figure class="bg-[#D9D9D9] w-full h-28 my-3 rounded-[10px]">
-        <!-- <el-image style="height: 100%; border-radius: 10px;"
-          :src="catalog_product_company_sale.catalog_product_company?.catalog_product?.media[0]?.original_url"
-          fit="contain">
-          <template #error>
-            <div class="flex justify-center items-center text-[#ababab]">
-              <i class="fa-solid fa-image text-6xl"></i>
-            </div>
-          </template>
-        </el-image> -->
-        <img class="object-contain h-28"
-          :src="catalog_product_company_sale.catalog_product_company?.catalog_product?.media[0]?.original_url" alt="">
-      </figure>
+      <div>
+        <figure @mouseover="showOverlay" @mouseleave="hideOverlay" class="bg-[#D9D9D9] w-full h-28 my-3 rounded-[10px] relative">
+          <img class="object-contain h-28 mx-auto" :src="catalog_product_company_sale.catalog_product_company?.catalog_product?.media[currentImage]?.original_url" alt="">
+          <div v-if="imageHovered" @click="openImage(catalog_product_company_sale.catalog_product_company?.catalog_product?.media[currentImage]?.original_url)"
+              class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
+              <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
+          </div>
+        </figure>
+        <div v-if="catalog_product_company_sale.catalog_product_company?.catalog_product?.media?.length > 1" class="my-3 flex items-center justify-center space-x-3">
+            <i @click="currentImage = index" v-for="(image, index) in catalog_product_company_sale.catalog_product_company?.catalog_product?.media?.length" :key="index" 
+            :class="index == currentImage ? 'text-black' : 'text-white'" 
+            class="fa-solid fa-circle text-[7px] cursor-pointer"></i>
+        </div>
+      </div>
 
       <div class="flex flex-col space-y-3">
         <div>
           <p class="text-primary text-left">Caracteristicas</p>
           <li
-            v-for="( feature, index ) in  catalog_product_company_sale.catalog_product_company?.catalog_product?.features "
+            v-for="( feature, index ) in  catalog_product_company_sale.catalog_product_company?.catalog_product?.features"
             :key="index" class="text-gray-800 list-disc">{{ feature }}</li>
         </div>
 
@@ -554,6 +555,8 @@ export default {
 
     return {
       form,
+      imageHovered: false, //imagen de tarjeta
+      currentImage: 0, //imagen de tarjeta
       selected: false,
       showProgressModal: false,
       showInfoModal: false,
@@ -795,7 +798,16 @@ export default {
           type: 'error'
         });
       }
-    }
+    },
+    openImage(url) {
+      window.open(url, '_blank');
+    },
+    showOverlay() {
+        this.imageHovered = true;
+    },
+    hideOverlay() {
+        this.imageHovered = false;
+    },
   },
   mounted() {
     this.fetchUsers();

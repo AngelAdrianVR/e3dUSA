@@ -67,7 +67,13 @@
         <div class="w-11/12 mx-auto my-3 grid grid-cols-3 gap-4 ">
             <template v-for="item in quote.data.products" :key="item.id">
                 <div v-if="item.pivot.show_image" class="bg-gray-200 rounded-t-xl rounded-b-md border" style="font-size: 8px;">
-                    <img class="rounded-t-xl max-h-52 mx-auto" :src="item.media[0]?.original_url">
+                    <img class="rounded-t-xl max-h-52 mx-auto" :src="item.media[currentImage]?.original_url">
+                    <!-- selector de imagen cuando son varias -->
+                    <div v-if="item.media?.length > 1" class="my-3 flex items-center justify-center space-x-3">
+                        <i @click="currentImage = index" v-for="(image, index) in item.media?.length" :key="index" 
+                        :class="index == currentImage ? 'text-black' : 'text-white'" 
+                        class="fa-solid fa-circle text-[7px] cursor-pointer"></i>
+                    </div>
                     <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
                 </div>
             </template>
@@ -194,7 +200,7 @@ import { Head } from '@inertiajs/vue3';
 export default {
     data() {
         return {
-
+            currentImage: 0
         };
     },
     components: {
