@@ -1,15 +1,12 @@
 <template>
     <Head title="Orden de producción" />
     <div v-for="(product, index) in ordered_products" :key="index" class="mx-10 grid grid-cols-4 gap-3 mb-7 border-b-2 ">
-        <figure class="rounded-[10px]">
-            <!-- <el-image style="height: 100%; border-radius: 10px;"
-                :src="product.catalog_product_company.catalog_product.media[0]?.original_url" fit="contain">
-                <template #error>
-                    <div class="flex justify-center items-center text-[#ababab]">
-                        <i class="fa-solid fa-image text-3xl"></i>
-                    </div>
-                </template>
-            </el-image> -->
+        <div class="grid grid-cols-2 gap-4" v-if="product.catalog_product_company.catalog_product.media?.length > 1">
+            <figure v-for="image in product.catalog_product_company.catalog_product.media" :key="image" class="rounded-[10px]">
+                <img class="object-cover rounded-md size-48" :src="image.original_url" alt="">
+            </figure>
+        </div>
+        <figure v-else class="rounded-[10px]">
             <img class="object-contain rounded-md" :src="product.catalog_product_company.catalog_product.media[0]?.original_url" alt="">
         </figure>
         <div class="col-span-3">
@@ -63,6 +60,10 @@
             <div class="mt-2 text-xs flex">
                 <p class="text-primary w-1/2">Firma de supervisor:</p>
                 <p class="text-primary w-1/2">Calificación otorgada:</p>
+            </div>
+            <div class="mt-2 text-xs flex">
+                <p class="text-primary w-1/2">Fecha promesa de embarque: <span class="text-black">{{ product.sale?.promise_date?.split('T')[0] }}</span></p>
+                <p class="text-primary w-1/2">Fecha de embarque:</p>
             </div>
             <p class="text-secondary font-bold text-xs mt-2"><i class="fa-solid fa-circle-exclamation"></i> Si alguien más continuará con el folio, debe tener nombre</p>
         </div>

@@ -5,6 +5,8 @@
 
         <p class="my-3 px-4">Datos</p>
         <div class="grid grid-cols-3 text-left items-center px-4">
+            <span class="text-gray-500">ID</span>
+            <span class="col-span-2 bg-green-200">{{ company_branch.id }}</span>
             <span class="text-gray-500">Método de pago</span>
             <span class="col-span-2">{{ company_branch.sat_method }}</span>
             <span class="text-gray-500 my-2">Medio de pago</span>

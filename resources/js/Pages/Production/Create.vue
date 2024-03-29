@@ -60,9 +60,16 @@
                 <p>Notas</p>
                 <span>{{ product?.notes ?? '--' }}</span>
               </div>
-              <figure class="pb-1">
-                <img :src="product?.catalog_product_company?.catalog_product.media[0].original_url">
-              </figure>
+              <div>
+                <figure class="pb-1 size-56">
+                  <img class="rounded-md mx-auto object-contain" :src="product?.catalog_product_company?.catalog_product.media[currentImage].original_url">
+                </figure>
+                <div v-if="product?.catalog_product_company?.catalog_product.media?.length > 1" class="my-3 flex items-center justify-center space-x-3">
+                  <i @click="currentImage = index" v-for="(image, index) in product?.catalog_product_company?.catalog_product.media?.length" :key="index" 
+                  :class="index == currentImage ? 'text-black' : 'text-white'" 
+                  class="fa-solid fa-circle text-[7px] cursor-pointer"></i>
+                </div>
+              </div>
             </div>
           </template>
           <!-- products ordered to generate production -->
@@ -280,6 +287,7 @@ export default {
 
     return {
       form,
+      currentImage: 0, // catalog product image
       tasks: [],
       type_revelation: null,
       saleId: null,
