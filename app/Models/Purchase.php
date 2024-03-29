@@ -21,6 +21,7 @@ class Purchase extends Model
         'emited_at',
         'recieved_at',
         'is_iva_included',
+        'show_prices',
         'user_id',
         'supplier_id',
         'products',

@@ -74,6 +74,7 @@ class PurchaseController extends Controller
             'expected_delivery_date' => 'nullable|date|after:yesterday',
             'supplier_id' => 'required',
             'is_iva_included' => 'boolean',
+            'show_prices' => 'boolean',
             'contact_id' => 'required',
             'products' => 'array|min:1',
             'bank_information' => 'required',
@@ -126,6 +127,7 @@ class PurchaseController extends Controller
             'expected_delivery_date' => 'nullable|date|after:yesterday',
             'supplier_id' => 'required',
             'is_iva_included' => 'boolean',
+            'show_prices' => 'boolean',
             'contact_id' => 'required',
             'products' => 'nullable|min:1',
             'bank_information' => 'required',
@@ -183,8 +185,6 @@ class PurchaseController extends Controller
         ]);
 
         $clone->save();
-
-
 
         return response()->json(['message' => "Órden de compra clonada: {$clone->creator}", 'newItem' => PurchaseResource::make($clone)]);
     }

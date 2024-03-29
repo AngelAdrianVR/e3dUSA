@@ -140,10 +140,8 @@
             No puedes agregar dos veces el mísmo producto
           </p>
           <div>
-            <label class="flex items-center">
-              <Checkbox v-model:checked="form.is_iva_included" class="bg-transparent" />
-              <span class="ml-2 text-xs">Calcular IVA y mostrarlo</span>
-            </label>
+            <el-checkbox v-model="form.is_iva_included" label="Calcular IVA y mostrarlo" size="small" />
+            <el-checkbox v-model="form.show_prices" label="Mostar precios" size="small" />
           </div>
           <div class="flex">
             <span
@@ -181,6 +179,7 @@ export default {
       notes: this.purchase.notes,
       expected_delivery_date: this.purchase.expected_delivery_date,
       is_iva_included: Boolean(this.purchase.is_iva_included),
+      show_prices: Boolean(this.purchase.show_prices),
       supplier_id: this.purchase.supplier_id,
       contact_id: this.purchase.contact_id,
       bank_information: this.purchase.bank_information,
