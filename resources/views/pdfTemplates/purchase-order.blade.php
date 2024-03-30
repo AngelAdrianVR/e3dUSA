@@ -93,8 +93,10 @@
                     <th>Descripción</th>
                     <th>Cantidad</th>
                     <th>Unidad</th>
-                    <th>Valor unit.</th>
-                    <th>Importe</th>
+                    @if ($purchase->show_prices)
+                        <th>Valor unit.</th>
+                        <th>Importe</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -119,33 +121,38 @@
                 @endforeach
             </tbody>
         </table>
-        <section class="footer">
-            <section style="width: 40%; margin-right: 8px; margin-left: auto; text-align: right">
-                @php
-                    $subtotal = $raw_materials
-                        ->map(function ($item) use ($purchase) {
-                            $quantity = optional(collect($purchase->products)->firstWhere('id', $item['id']))['quantity'] ?? 0;
-                            return $item['cost'] * $quantity;
-                        })
-                        ->sum();
-                @endphp
-                @if ($purchase->is_iva_included)
-                    <span>Subtotal</span>
-                    <span>{{ number_format($subtotal, 2) }}</span> <br>
-                    <span>IVA</span>
-                    <span>{{ number_format($subtotal * 0.16, 2) }}</span> <br>
-                @endif
-                <span>Total</span>
-                <span
-                    style="font-weight: bold; border-top-width: 2px; border-bottom-width: 2px; border-color: rgb(154 154 154 / var(--tw-border-opacity));">
+        @if ($purchase->show_prices)
+            <section class="footer">
+                <section style="width: 40%; margin-right: 8px; margin-left: auto; text-align: right">
+                    @php
+                        $subtotal = $raw_materials
+                            ->map(function ($item) use ($purchase) {
+                                $quantity =
+                                    optional(collect($purchase->products)->firstWhere('id', $item['id']))['quantity'] ??
+                                    0;
+                                return $item['cost'] * $quantity;
+                            })
+                            ->sum();
+                    @endphp
                     @if ($purchase->is_iva_included)
-                        {{ number_format($subtotal * 1.16, 2) }}
-                    @else
-                        {{ number_format($subtotal, 2) }}
+                        <span>Subtotal</span>
+                        <span>{{ number_format($subtotal, 2) }}</span> <br>
+                        <span>IVA</span>
+                        <span>{{ number_format($subtotal * 0.16, 2) }}</span> <br>
                     @endif
-                </span> <br>
+                    <span>Total</span>
+                    <span
+                        style="font-weight: bold; border-top-width: 2px; border-bottom-width: 2px; border-color: rgb(154 154 154 / var(--tw-border-opacity));">
+                        @if ($purchase->is_iva_included)
+                            {{ number_format($subtotal * 1.16, 2) }}
+                        @else
+                            {{ number_format($subtotal, 2) }}
+                        @endif
+                    </span> <br>
+                </section>
             </section>
-        </section>
+        @endif
+
         <!-- imagenes -->
         <section>
             <div style="margin-top: 32px; margin-bottom: 12px">

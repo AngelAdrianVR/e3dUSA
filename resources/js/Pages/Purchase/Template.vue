@@ -51,8 +51,8 @@
                         <th>Descripción</th>
                         <th>Cantidad</th>
                         <th>Unidad</th>
-                        <th>Valor unit.</th>
-                        <th>Importe</th>
+                        <th v-if="purchase.show_prices">Valor unit.</th>
+                        <th v-if="purchase.show_prices">Importe</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -82,8 +82,8 @@
 
                         </td>
                         <td>{{ item.measure_unit }}</td>
-                        <td>${{ item.cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</td>
-                        <td>${{ (item.cost * purchase.products.find(prd => prd.id ===
+                        <td v-if="purchase.show_prices">${{ item.cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</td>
+                        <td v-if="purchase.show_prices">${{ (item.cost * purchase.products.find(prd => prd.id ===
                             item.id)?.quantity).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</td>
                     </tr>
                 </tbody>
@@ -100,7 +100,7 @@
                 </div>
             </section>
         </main>
-        <footer class="mx-8 mt-8 grid grid-cols-4 gap-x-3 gap-y-1s">
+        <footer v-if="purchase.show_prices" class="mx-8 mt-8 grid grid-cols-4 gap-x-3 gap-y-1s">
             <section class="flex flex-col col-span-3">
                 <header class="bg-gray2 text-center py-1">
                     Importe con letra

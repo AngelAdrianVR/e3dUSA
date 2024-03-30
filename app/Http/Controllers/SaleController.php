@@ -156,7 +156,7 @@ class SaleController extends Controller
     public function edit(Sale $sale)
     {
         $sale = Sale::find($sale->id);
-        $catalog_products_company_sale = CatalogProductCompanySale::with('catalogProductCompany')->where('sale_id', $sale->id)->get();
+        $catalog_products_company_sale = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')->where('sale_id', $sale->id)->get();
         $media = $sale->getMedia('oce')->all();
 
         //optimizacion de datos en vista para reducir el tiempo de carga
