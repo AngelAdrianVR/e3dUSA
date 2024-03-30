@@ -58,6 +58,7 @@
                     </el-table-column>
                     <el-table-column prop="employee_properties.job_position" label="Puesto" />
                     <el-table-column prop="employee_properties.join_date" label="Fecha ingreso" width="160" />
+                    <el-table-column prop="disabled_at" label="Deshabilitado el" width="160" />
                     <el-table-column align="right">
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">

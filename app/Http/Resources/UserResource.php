@@ -26,6 +26,7 @@ class UserResource extends JsonResource
             ],
             'employee_properties' => $this->employee_properties,
             'experience' => $this->calculateExperience(),
+            'disabled_at' => $this->disabled_at?->isoFormat('DD MMMM YYYY'),
             'pivot' => PayrollUserResource::make($this->pivot),
         ];
     }

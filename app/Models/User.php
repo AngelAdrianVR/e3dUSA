@@ -29,6 +29,7 @@ class User extends Authenticatable
         'password',
         'is_active',
         'employee_properties',
+        'disabled_at',
     ];
 
     protected $hidden = [
@@ -40,6 +41,7 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'disabled_at' => 'date',
         'employee_properties' => 'array',
     ];
 

@@ -31,6 +31,7 @@ class UserController extends Controller
             return [
                 'id' => $user->id,
                 'name' => $user->name,
+                'disabled_at' => $user->disabled_at?->isoFormat('DD MMM YYYY'),
                 'is_active' => [
                     'string' => $user->is_active ? 'Activo' : 'Inactivo',
                     'bool' => boolval($user->is_active),
@@ -271,7 +272,8 @@ class UserController extends Controller
         if ($user->is_active) {
 
             $user->update([
-                'is_active' => false
+                'is_active' => false,
+                'disabled_at' => now()
             ]);
         } else {
 
