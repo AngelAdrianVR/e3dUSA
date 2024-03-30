@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!loading" class="grid grid-cols-4 md:grid-cols-3 lg:py-6 lg:px-10 mb-6 lg:mb-0 text-[10px] md:text-sm">
+  <div v-if="!loading" style=" height: 50vh;" class="grid grid-cols-4 md:grid-cols-3 lg:py-6 lg:px-10 lg:mb-0 text-[10px] md:text-sm">
     <div class="bg-transparent rounded-lg lg:mx-auto"
       :class="dontShowDetails ? 'col-span-full' : 'col-span-3 md:col-span-2 mr-auto w-5/6'">
       <div class="flex items-center justify-between">

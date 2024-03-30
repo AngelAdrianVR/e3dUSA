@@ -63,7 +63,7 @@
             </div>
             <div class="mt-2 text-xs flex">
                 <p class="text-primary w-1/2">Fecha promesa de embarque: <span class="text-black">{{ product.sale?.promise_date?.split('T')[0] }}</span></p>
-                <p class="text-primary w-1/2">Fecha de embarque:</p>
+                <p class="text-primary w-1/2">Embarcado el:</p>
             </div>
             <p class="text-secondary font-bold text-xs mt-2"><i class="fa-solid fa-circle-exclamation"></i> Si alguien más continuará con el folio, debe tener nombre</p>
         </div>
