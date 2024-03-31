@@ -115,8 +115,10 @@
                         @endphp
                         <td><span>{{ $current_product['quantity'] }}</span></td>
                         <td>{{ $item->measure_unit }}</td>
-                        <td>${{ number_format($item->cost, 2) }}</td>
-                        <td>${{ number_format($item->cost * $current_product['quantity'], 2) }}</td>
+                        @if ($purchase->show_prices)
+                            <td>${{ number_format($item->cost, 2) }}</td>
+                            <td>${{ number_format($item->cost * $current_product['quantity'], 2) }}</td>
+                        @endif
                     </tr>
                 @endforeach
             </tbody>

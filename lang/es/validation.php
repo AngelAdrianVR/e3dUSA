@@ -220,5 +220,6 @@ return [
         'contact_charge' => 'puesto del contacto',
         'branches_number' => 'número de sucursales',
         'abstract' => 'resumen',
+        'email_password' => 'contraseña de correo',
     ],
 ];

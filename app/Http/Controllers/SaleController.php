@@ -149,7 +149,6 @@ class SaleController extends Controller
             ];
         });
 
-        // return $sale;
         return inertia('Sale/Show', compact('sale', 'sales'));
     }
 
