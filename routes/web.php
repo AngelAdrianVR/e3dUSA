@@ -203,6 +203,7 @@ Route::post('sales/update-with-media/{sale}', [SaleController::class, 'updateWit
 Route::get('sales-get-unauthorized', [SaleController::class, 'getUnauthorized'])->name('sales.get-unauthorized');
 Route::get('sales-get-matches/{query}', [SaleController::class, 'getMatches'])->name('sales.get-matches');
 Route::get('sales-quality-certificate/{sale_id}', [SaleController::class, 'QualityCertificate'])->name('sales.quality-certificate');
+Route::get('sales-fetch-filtered/{filter}', [SaleController::class, 'fetchFiltered'])->name('sales.fetch-filtered');
 
 // ------- CRM(Companybranches sucursales Routes)  ---------
 Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');
@@ -371,6 +372,7 @@ Route::post('design-modifications/upload-results', [DesignModificationController
 Route::resource('design-authorizations', DesignAuthorizationController::class)->middleware('auth');
 Route::put('design-authorizations-authorize/{design_authorization}', [DesignAuthorizationController::class, 'AuthorizeDesign'])->name('design-authorizations.authorize')->middleware('auth');
 Route::post('design-authorizations/update-with-media/{design_authorization}', [DesignAuthorizationController::class, 'updateWithMedia'])->name('design-authorizations.update-with-media');
+Route::get('design-authorizations/fetch-for-company-brach/{company_branch_id}', [DesignAuthorizationController::class, 'fetchForCompanyBranch'])->name('design-authorizations.fetch-for-company-branch');
 
 
 // ------- production department routes  ---------

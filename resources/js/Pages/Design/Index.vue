@@ -21,6 +21,15 @@
                 <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Terminado</p>
             </div>
 
+            <!-- Filtro -->
+            <div class="w-44 lg:ml-32 ml-4 mt-2">
+                <el-select @change="fetchItemsFiltered" v-model="filter" class="mt-2" clearable
+                    filterable placeholder="Selecciona una opción">
+                    <el-option v-for="item in options" :key="item" :label="item"
+                        :value="item" />
+                </el-select>
+            </div>
+
             <!-- tabla -->
             <div class="relative overflow-hidden min-h-[60vh]">
                 <NotificationCenter module="design" />
@@ -29,7 +38,7 @@
                         <!-- pagination -->
                         <div>
                             <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                                :total="designs.data.length" />
+                                :total="localDesigns.length" />
                         </div>
                         <!-- buttons -->
                         <div>
@@ -107,6 +116,9 @@ import axios from 'axios';
 export default {
     data() {
         return {
+            filter: 'Mis órdenes', //filtro
+            options: ['Mis órdenes', 'Todas las órdenes'], //filtro
+            localDesigns: this.designs.data,
             disableMassiveActions: true,
             inputSearch: '',
             search: '',
@@ -117,12 +129,12 @@ export default {
         };
     },
     components: {
-        AppLayout,
-        SecondaryButton,
-        Link,
-        TextInput,
         NotificationCenter,
+        SecondaryButton,
         IndexSearchBar,
+        AppLayout,
+        TextInput,
+        Link
     },
     props: {
         designs: Array
@@ -170,7 +182,7 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.designs.data.forEach((design, index) => {
+                    this.localDesigns.forEach((design, index) => {
                         if (this.$refs.multipleTableRef.value.includes(design)) {
                             deletedIndexes.push(index);
                         }
@@ -181,7 +193,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.designs.data.splice(index, 1);
+                        this.localDesigns.splice(index, 1);
                     }
 
                 } else {
@@ -219,13 +231,27 @@ export default {
                 this.$inertia.get(route('designs.' + commandName, rowId));
             }
         },
+        //obtiene las ventas filtradas (mias y todas)
+        async fetchItemsFiltered() {
+            this.loading = true;
+            try {
+                const response = await axios.get(route('designs.fetch-filtered', this.filter));
+                if (response.status === 200) {
+                    this.localDesigns = response.data.items;
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                this.loading = false;
+            }
+        }
     },
     computed: {
         filteredTableData() {
             if (!this.search) {
-                return this.designs.data.filter((item, index) => index >= this.start && index < this.end);
+                return this.localDesigns.filter((item, index) => index >= this.start && index < this.end);
             } else {
-                return this.designs.data.filter(
+                return this.localDesigns.filter(
                     (design) =>
                         design.design.name.toLowerCase().includes(this.search.toLowerCase()) ||
                         design.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
