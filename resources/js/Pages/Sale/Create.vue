@@ -42,7 +42,7 @@
                     </div>
                 </div>
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
-                    <el-radio-group v-model="form.is_sale_production" @change="handleChangeProductionType" size="small">
+                    <el-radio-group v-model="form.is_sale_production" size="small">
                         <el-radio :label="1">Orden de venta</el-radio>
                         <el-radio :label="0">Orden de stock</el-radio>
                     </el-radio-group>
@@ -53,7 +53,7 @@
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
                         </el-tooltip>
-                        <el-select @change="getImportantNotes()" v-model="form.company_branch_id" class="mt-2" clearable
+                        <el-select @change="getImportantNotes(); getDesignAuthorizations()" v-model="form.company_branch_id" class="mt-2" clearable
                             filterable placeholder="Selecciona un cliente">
                             <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
                                 :value="item.id" />
@@ -80,7 +80,7 @@
                         <el-divider content-position="left">Logistica</el-divider>
                         <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
                             <div class="ml-7 col-span-full">
-                                <label class="text-sm ml-2 mb-px flex items-center">Fecha de entrega esperada
+                                <label class="text-sm ml-2 mb-px flex items-center">Fecha de embarque esperado
                                     <el-tooltip
                                         content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega"
                                         placement="right">
@@ -339,12 +339,17 @@
                                     #
                                 </el-tooltip>
                             </IconInput> -->
-                            <div class="flex items-center space-x-6 ml-5">
+                            <div class="flex items-center space-x-6 ml-5 w-full">
                                 <div>
                                     <label class="block text-xs">Cantidad *</label>
                                     <el-input-number @change="validateQuantity()" v-model="product.quantity" :min="0.01" />
                                 </div>
-                                <div v-if="form.is_sale_production" class="flex items-center space-x-2 mt-3">
+                                <el-select @change="console.log('Validar si el diseño concuerda con el id del producto')" v-model="design_authorization_id" class="mt-3" clearable
+                                    filterable placeholder="Formato de autorización de diseño">
+                                    <el-option v-for="item in design_authorizations" :key="item.id" :label="item.name"
+                                        :value="item.id" />
+                                </el-select>
+                                <div v-if="form.is_sale_production" class="flex items-center space-x-2 mt-3 w-1/2">
                                     <label class="flex items-center">
                                         <Checkbox v-model:checked="product.is_new_design" class="bg-transparent" />
                                         <span class="ml-2 text-xs">Diseño nuevo</span>
@@ -487,6 +492,8 @@ export default {
             alertMaxQuantity: 0,
             selectedCatalogProduct: null,
             commitedUnits: null,
+            design_authorization_id: null,
+            design_authorizations: null, //formatos de autorizaión de diseño del cliente
             shippingCompanies: [
                 'PAQUETEXPRESS',
                 'LOCAL',
@@ -571,6 +578,17 @@ export default {
         },
         getImportantNotes() {
             this.importantNotes = this.company_branches.find(item => item.id == this.form.company_branch_id)?.important_notes;
+        },
+        async getDesignAuthorizations() {
+            try {
+                const response = axios.get(route('design-authorizations.fetch-for-company-branch', this.form.company_branch_id));
+                if (response.status === 200) {
+                    console.log('hola');
+                    this.design_authorizations = response.data.items;
+                }
+            } catch (error) {
+                console.log(error);
+            }
         },
         async clearImportantNotes() {
             try {
