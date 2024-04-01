@@ -83,6 +83,19 @@
             <span>Observaciones: </span>
             <span>{{ $purchase->notes ?? '-' }}</span>
         </section>
+        <section style="margin-top: 15px">
+            @foreach ($raw_materials as $item)
+                @php
+                    $products_collection = collect($purchase->products);
+                @endphp
+                <article style="display: inline-block; width: 24%; margin-right: 4px; margin-bottom: 4px; font-size: 10px;">
+                    <p style="color: #525252; margin-top: 2px; margin-bottom: 0px">Producto: <span style="color: #0355B5">{{ $item->part_number . ' ' . $item->name }}</span></p>
+                    <p style="color: #525252; margin-top: 2px; margin-bottom: 0px">Piezas que quedarán pendientes: <span style="color: black">{{ $products_collection->where('id', $item->id)->first()['additional_stock'] ?? '-' }}</span></p>
+                    <p style="color: #525252; margin-top: 2px; margin-bottom: 0px">Piezas que viajan en avión: <span style="color: black">{{ $products_collection->where('id', $item->id)->first()['plane_stock'] ?? '-' }}</span></p>
+                    <p style="color: #525252; margin-top: 2px; margin-bottom: 0px">Piezas que viajan en barco: <span style="color: black">{{ $products_collection->where('id', $item->id)->first()['ship_stock'] ?? '-' }}</span></p>
+                </article>
+            @endforeach
+        </section>
     </header>
     <main style="margin-top: 5px">
         <table style="width: 100%">
