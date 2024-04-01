@@ -42,6 +42,14 @@
                 <span>Observaciones: </span>
                 <span class="col-span-6">{{ purchase.notes ?? '-' }}</span>
             </section>
+            <section class="mx-8 px-4 py-1 grid grid-cols-3 gap-4 mt-4">
+                <article v-for="item in raw_materials" class="px-2 border-r border-[#9a9a9a]">
+                    <p class="text-[#525252]">Producto: <span class="text-secondary">{{ item.part_number + ' ' + item.name }}</span></p>
+                    <p class="text-[#525252]">Piezas que quedarán pendientes: <span class="text-black">{{ purchase.products.find(prd => prd.id == item.id)?.additional_stock?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '-' }}</span></p>
+                    <p class="text-[#525252]">Piezas que viajan en avión: <span class="text-black">{{ purchase.products.find(prd => prd.id == item.id)?.plane_stock?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '-' }}</span></p>
+                    <p class="text-[#525252]">Piezas que viajan en barco: <span class="text-black">{{ purchase.products.find(prd => prd.id == item.id)?.ship_stock?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '-' }}</span></p>
+                </article>
+            </section>
         </header>
         <main class="mx-8 mt-8">
             <table class="w-full">
@@ -315,6 +323,11 @@ export default {
         },
     },
     methods: {
+        hasStock(item) {
+            const product = this.purchase.products.find(prd => prd.id === item.id);
+            return product && product.additional_stock !== null &&
+                    product.plane_stock !== null && product.ship_stock !== null;
+        },
         async sendEmail() {
             this.loading = true;
             try {

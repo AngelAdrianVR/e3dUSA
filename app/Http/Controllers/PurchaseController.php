@@ -52,20 +52,16 @@ class PurchaseController extends Controller
                 'created_at' => $purchase->created_at?->isoFormat('DD MMMM YYYY, h:mm A'),
             ];
         });
-        // return $purchases;        
+
         return inertia('Purchase/Index', compact('purchases'));
     }
-
 
     public function create()
     {
         $suppliers = Supplier::get(['id', 'name', 'nickname']);
 
-        // return $suppliers;  
-
         return inertia('Purchase/Create', compact('suppliers'));
     }
-
 
     public function store(Request $request)
     {
@@ -86,7 +82,7 @@ class PurchaseController extends Controller
         if ($can_authorize) {
             $purchase->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
         } else {
-            // notify to Maribel
+            // notify Maribel
             $maribel = User::find(3);
             $maribel->notify(new ApprovalRequiredNotification('orden de compra', 'purchases.index'));
         }
