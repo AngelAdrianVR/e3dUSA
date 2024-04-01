@@ -88,8 +88,8 @@
                   <el-button @click="editProduct(index)" type="primary" circle>
                     <i class="fa-sharp fa-solid fa-pen-to-square"></i>
                   </el-button>
-                  <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
-                    @confirm="deleteProduct(index)">
+                  <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                    title="¿Continuar?" @confirm="deleteProduct(index)">
                     <template #reference>
                       <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>
                     </template>
@@ -110,7 +110,8 @@
                   </el-tooltip>
                   <el-select v-model="productSelectedId" @change="getProductSelected" clearable filterable
                     placeholder="Selecciona un producto">
-                    <el-option v-for="item in rawMaterials" :key="item.id" :label="item.name + ' (' + item.part_number + ')'" :value="item.id" />
+                    <el-option v-for="item in rawMaterials" :key="item.id"
+                      :label="item.name + ' (' + item.part_number + ')'" :value="item.id" />
                   </el-select>
                 </div>
 
@@ -119,8 +120,38 @@
                     <el-tooltip content="Cantidad requerida del producto seleccionado" placement="top">
                       #
                     </el-tooltip>
-                  </IconInput>  
+                  </IconInput>
                   <InputError :message="form.errors.quantity" />
+                </div>
+                <div class="mt-2">
+                  <label class="flex items-center space-x-1 text-xs mb-1 ml-1">
+                    <span>Stock a favor</span>
+                    <el-tooltip content="Piezas pendientes en la fabrica del proveedor" placement="top">
+                      <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                        <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                      </div>
+                    </el-tooltip>
+                  </label>
+                  <el-input v-model="form.additional_stock" placeholder="Piezas pendientes (opcional)"
+                    :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="(value) => value.replace(/\D/g, '')" />
+                  <InputError :message="form.errors.additional_stock" />
+                </div>
+                <div class="grid grid-cols-2 gap-x-2 gap-y-1 mt-2">
+                  <div>
+                    <label class="flex items-center space-x-1 text-xs mb-1 ml-1">Piezas en avión</label>
+                    <el-input v-model="form.plane_stock" placeholder="Cantidad (opcional)"
+                      :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                      :parser="(value) => value.replace(/\D/g, '')" />
+                    <InputError :message="form.errors.plane_stock" />
+                  </div>
+                  <div>
+                    <label class="flex items-center space-x-1 text-xs mb-1 ml-1">Piezas en barco</label>
+                    <el-input v-model="form.ship_stock" placeholder="Cantidad (opcional)"
+                      :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                      :parser="(value) => value.replace(/\D/g, '')" />
+                    <InputError :message="form.errors.ship_stock" />
+                  </div>
                 </div>
               </div>
               <figure v-if="productSelectedObj?.media[0] != null && productSelectedId" class="rounded-md">
@@ -129,10 +160,10 @@
             </div>
             <SecondaryButton :disabled="!form.quantity" @click="addProduct" type="button">
               {{
-                editProductIndex !== null
-                ? "Actualizar producto"
-                : "Agregar producto a la órden"
-              }}
+        editProductIndex !== null
+          ? "Actualizar producto"
+          : "Agregar producto a la órden"
+      }}
             </SecondaryButton>
           </div>
           <InputError :message="form.errors.products" />
@@ -140,10 +171,8 @@
             No puedes agregar dos veces el mísmo producto
           </p>
           <div>
-            <label class="flex items-center">
-              <Checkbox v-model:checked="form.is_iva_included" class="bg-transparent" />
-              <span class="ml-2 text-xs">Calcular IVA y mostrarlo</span>
-            </label>
+            <el-checkbox @change="handleCheckShowPrices" v-model="form.show_prices" label="Mostar precios" size="small" />
+            <el-checkbox v-model="form.is_iva_included" label="Calcular IVA y mostrarlo" size="small" :disabled="!form.show_prices" />
           </div>
           <div class="flex">
             <span
@@ -181,9 +210,13 @@ export default {
       notes: null,
       expected_delivery_date: null,
       is_iva_included: false,
+      show_prices: false,
       supplier_id: null,
       contact_id: null,
       bank_information: null,
+      additional_stock: null,
+      plane_stock: null,
+      ship_stock: null, 
       products: [],
     });
 
@@ -215,6 +248,11 @@ export default {
     saveBankObj() {
       this.form.bank_information = this.currentSupplier.banks[this.bank_index];
     },
+    handleCheckShowPrices() {
+      if (!this.form.show_prices) {
+        this.form.is_iva_included = false;
+      }
+    },
     store() {
       this.form.post(route("purchases.store"), {
         onSuccess: () => {
@@ -238,6 +276,9 @@ export default {
         id: this.productSelectedObj.id,
         name: this.productSelectedObj.name,
         quantity: this.form.quantity,
+        additional_stock: this.form.additional_stock,
+        plane_stock: this.form.plane_stock,
+        ship_stock: this.form.ship_stock,
       };
 
       if (this.editProductIndex !== null) {
@@ -248,6 +289,9 @@ export default {
       }
       this.productSelectedId = null;
       this.form.quantity = null;
+      this.form.additional_stock = null;
+      this.form.plane_stock = null;
+      this.form.ship_stock = null;
     },
     deleteProduct(index) {
       this.form.products.splice(index, 1);
@@ -256,6 +300,9 @@ export default {
       const product = { ...this.form.products[index] };
       this.productSelectedId = product.id;
       this.form.quantity = product.quantity;
+      this.form.additional_stock = product.additional_stock;
+      this.form.plane_stock = product.plane_stock;
+      this.form.ship_stock = product.ship_stock;
       this.editProductIndex = index;
       this.getProductSelected();
     },

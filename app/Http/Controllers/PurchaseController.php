@@ -52,20 +52,16 @@ class PurchaseController extends Controller
                 'created_at' => $purchase->created_at?->isoFormat('DD MMMM YYYY, h:mm A'),
             ];
         });
-        // return $purchases;        
+
         return inertia('Purchase/Index', compact('purchases'));
     }
-
 
     public function create()
     {
         $suppliers = Supplier::get(['id', 'name', 'nickname']);
 
-        // return $suppliers;  
-
         return inertia('Purchase/Create', compact('suppliers'));
     }
-
 
     public function store(Request $request)
     {
@@ -74,6 +70,7 @@ class PurchaseController extends Controller
             'expected_delivery_date' => 'nullable|date|after:yesterday',
             'supplier_id' => 'required',
             'is_iva_included' => 'boolean',
+            'show_prices' => 'boolean',
             'contact_id' => 'required',
             'products' => 'array|min:1',
             'bank_information' => 'required',
@@ -85,7 +82,7 @@ class PurchaseController extends Controller
         if ($can_authorize) {
             $purchase->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
         } else {
-            // notify to Maribel
+            // notify Maribel
             $maribel = User::find(3);
             $maribel->notify(new ApprovalRequiredNotification('orden de compra', 'purchases.index'));
         }
@@ -126,6 +123,7 @@ class PurchaseController extends Controller
             'expected_delivery_date' => 'nullable|date|after:yesterday',
             'supplier_id' => 'required',
             'is_iva_included' => 'boolean',
+            'show_prices' => 'boolean',
             'contact_id' => 'required',
             'products' => 'nullable|min:1',
             'bank_information' => 'required',
@@ -183,8 +181,6 @@ class PurchaseController extends Controller
         ]);
 
         $clone->save();
-
-
 
         return response()->json(['message' => "Órden de compra clonada: {$clone->creator}", 'newItem' => PurchaseResource::make($clone)]);
     }
@@ -280,9 +276,43 @@ class PurchaseController extends Controller
         // obtener correo de proveedor
         if (app()->environment() === 'production') {
             $contact = Contact::find($request->contact_id);
+            $user = auth()->user();
+
+            if ($user->email_password) {
+                // Guardar las credenciales de correo actuales del .env
+                $previousMailConfig = [
+                    'MAIL_MAILER' => config('mail.mailer'),
+                    'MAIL_HOST' => config('mail.host'),
+                    'MAIL_PORT' => config('mail.port'),
+                    'MAIL_USERNAME' => config('mail.username'),
+                    'MAIL_PASSWORD' => config('mail.password'),
+                    'MAIL_ENCRYPTION' => config('mail.encryption'),
+                    'MAIL_FROM_ADDRESS' => config('mail.from.address'),
+                    'MAIL_FROM_NAME' => config('mail.from.name'),
+                ];
+
+                // Configurar las credenciales de correo del usuario autenticado
+                config([
+                    'mail.mailer' => 'smtp',
+                    'mail.host' => 'smtp.ionos.mx',
+                    'mail.port' => 465,
+                    'mail.username' => $user->email,
+                    'mail.password' => $user->email_password,
+                    'mail.encryption' => 'ssl',
+                    'mail.from.address' => $user->email,
+                    'mail.from.name' => $user->name,
+                ]);
+            }
+
+            // Enviar correo
             Mail::to($contact->email)
-                ->bcc([auth()->user()->emial])
+                ->bcc([$user->email])
                 ->send(new EmailSupplierTemplateMarkdownMail($request->subject, $request->content, $attach));
+
+            if ($user->email_password) {
+                // Restaurar las credenciales de correo originales del .env
+                config($previousMailConfig);
+            }
         }
 
         return response()->json([]);

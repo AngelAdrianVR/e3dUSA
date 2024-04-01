@@ -26,6 +26,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'email_password',
         'password',
         'is_active',
         'employee_properties',
@@ -87,6 +88,11 @@ class User extends Authenticatable
     public function companies()
     {
         return $this->hasMany(Company::class, 'user_id', 'id');
+    }
+    
+    public function companiesAsSeller()
+    {
+        return $this->hasMany(Company::class, 'seller_id', 'id');
     }
 
     public function catalogProductsCompany()

@@ -130,7 +130,9 @@ export default {
                             label: 'Oportunidades',
                             route: 'oportunities.index',
                             show: this.$page.props.auth.user.permissions.includes('Ver oportunidades'),
-                            notifications: false,
+                            notifications: this.$page.props.auth.user?.notifications?.some(notification => {
+                                return notification.data.module === 'opportunities';
+                            }),
                         },
                         {
                             label: 'Seguimiento integral',

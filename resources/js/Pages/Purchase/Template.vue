@@ -13,7 +13,8 @@
                     <span class="w-1/2 mr-2">OC-{{ String(purchase.id).padStart(4, "0") }}</span>
                     <el-tooltip v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de compra')"
                         content="Redactar correo" placement="top">
-                        <button @click="showModal = true" class="text-green-500"><i class="fa-solid fa-check"></i></button>
+                        <button @click="showModal = true" class="text-green-500"><i
+                                class="fa-solid fa-check"></i></button>
                     </el-tooltip>
                 </p>
                 <p class="w-48">
@@ -41,6 +42,14 @@
                 <span>Observaciones: </span>
                 <span class="col-span-6">{{ purchase.notes ?? '-' }}</span>
             </section>
+            <section class="mx-8 px-4 py-1 grid grid-cols-3 gap-4 mt-4">
+                <article v-for="item in raw_materials" class="px-2 border-r border-[#9a9a9a]">
+                    <p class="text-[#525252]">Producto: <span class="text-secondary">{{ item.part_number + ' ' + item.name }}</span></p>
+                    <p class="text-[#525252]">Piezas que quedarán pendientes: <span class="text-black">{{ purchase.products.find(prd => prd.id == item.id)?.additional_stock?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '-' }}</span></p>
+                    <p class="text-[#525252]">Piezas que viajan en avión: <span class="text-black">{{ purchase.products.find(prd => prd.id == item.id)?.plane_stock?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '-' }}</span></p>
+                    <p class="text-[#525252]">Piezas que viajan en barco: <span class="text-black">{{ purchase.products.find(prd => prd.id == item.id)?.ship_stock?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '-' }}</span></p>
+                </article>
+            </section>
         </header>
         <main class="mx-8 mt-8">
             <table class="w-full">
@@ -51,8 +60,8 @@
                         <th>Descripción</th>
                         <th>Cantidad</th>
                         <th>Unidad</th>
-                        <th>Valor unit.</th>
-                        <th>Importe</th>
+                        <th v-if="purchase.show_prices">Valor unit.</th>
+                        <th v-if="purchase.show_prices">Importe</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -82,9 +91,10 @@
 
                         </td>
                         <td>{{ item.measure_unit }}</td>
-                        <td>${{ item.cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</td>
-                        <td>${{ (item.cost * purchase.products.find(prd => prd.id ===
-                            item.id)?.quantity).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</td>
+                        <td v-if="purchase.show_prices">${{ item.cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                            }}</td>
+                        <td v-if="purchase.show_prices">${{ (item.cost * purchase.products.find(prd => prd.id ===
+            item.id)?.quantity).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -100,15 +110,15 @@
                 </div>
             </section>
         </main>
-        <footer class="mx-8 mt-8 grid grid-cols-4 gap-x-3 gap-y-1s">
+        <footer v-if="purchase.show_prices" class="mx-8 mt-8 grid grid-cols-4 gap-x-3 gap-y-1s">
             <section class="flex flex-col col-span-3">
                 <header class="bg-gray2 text-center py-1">
                     Importe con letra
                 </header>
                 <p class="text-center mt-3">
                     {{ purchase.is_iva_included
-                        ? turnNumberIntoText(getSubtotal * 1.16)
-                        : turnNumberIntoText(getSubtotal)
+            ? turnNumberIntoText(getSubtotal * 1.16)
+            : turnNumberIntoText(getSubtotal)
                     }}
                 </p>
             </section>
@@ -118,15 +128,16 @@
                 <!-- <span>Descuento</span>
                 <span>0.00</span> -->
                 <span v-if="purchase.is_iva_included">IVA</span>
-                <span v-if="purchase.is_iva_included">{{ (getSubtotal * 0.16).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,
-                    ",") }}</span>
+                <span v-if="purchase.is_iva_included">{{ (getSubtotal *
+            0.16).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,
+                ",") }}</span>
                 <span>Total</span>
                 <span class="font-bold border-y-2 border-gray1">
                     {{
-                        purchase.is_iva_included
-                        ? (getSubtotal * 1.16).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                        : getSubtotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                    }}
+            purchase.is_iva_included
+                ? (getSubtotal * 1.16).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                : getSubtotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        }}
                 </span>
             </section>
         </footer>
@@ -142,13 +153,15 @@
                     <div class="lg:grid grid-cols-2 gap-x-2 gap-y-1">
                         <div>
                             <label class="ml-2 mb-1">Proveedor</label>
-                            <p class="rounded-[3px] text-gray1 bg-[#cccccc] text-sm py-1 px-2">{{ purchase.supplier.name }}
+                            <p class="rounded-[3px] text-gray1 bg-[#cccccc] text-sm py-1 px-2">{{ purchase.supplier.name
+                                }}
                             </p>
                         </div>
                         <div>
                             <label class="ml-2 mb-1">Contacto *</label>
                             <el-select class="w-full" v-model="form.contact_id" placeholder="Seleccione"
-                                no-data-text="No hay contactos registrados" no-match-text="No se encontraron coincidencias">
+                                no-data-text="No hay contactos registrados"
+                                no-match-text="No se encontraron coincidencias">
                                 <el-option v-for="contact in purchase.supplier.contacts" :key="contact.id"
                                     :value="contact.id" :label="contact.name">
                                     <div class="flex justify-between items-center h-full">
@@ -162,7 +175,8 @@
                         <div>
                             <label class="ml-2 mb-1">Cuenta bancaria *</label>
                             <el-select class="w-full" v-model="form.bank_information" placeholder="Seleccione"
-                                no-data-text="No hay contactos registrados" no-match-text="No se encontraron coincidencias">
+                                no-data-text="No hay contactos registrados"
+                                no-match-text="No se encontraron coincidencias">
                                 <el-option v-for="(bank, index) in purchase.supplier.banks" :key="index" :value="index"
                                     :label="bank.bank_name">
                                     <div class="flex justify-between items-center h-full">
@@ -177,10 +191,42 @@
                     <div v-if="form.contact_id">
                         <h2 class="font-bold text-sm my-2">Datos del correo</h2>
                         <div>
+                            <label class="ml-2 mb-1 flex items-center space-x-1">
+                                <span>De</span>
+                                <el-tooltip placement="top">
+                                    <template #content>
+                                        <p v-if="!$page.props.auth.user.email_password">
+                                            Si quieres que el correo se emita desde <br>
+                                            tu correo empresarial o personal, dirigete a<br>
+                                            tu perfil e ingresa la contraseña de tu correo <br>
+                                            para que el sistema tenga acceso.
+                                        </p>
+                                        <p v-else>
+                                            Si el correo se sigue enviando desde <br>
+                                            notificaciones@emblemas3d.com, es porque<br>
+                                            la contraseña ingresada no es correcta. <br>
+                                            Intenta cambiarla y vuelve a intentar.
+                                        </p>
+                                    </template>
+                                    <div
+                                        class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                                        <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                    </div>
+                                </el-tooltip>
+                            </label>
+                            <p class="rounded-[3px] bg-[#cccccc] text-sm py-1 px-2">
+                                <span class="px-2 py-px bg-primarylight rounded-[2px]">
+                                    {{ $page.props.auth.user.email_password ? $page.props.auth.user.email :
+            'notificaciones@emblemas3d.com' }}
+                                </span>
+                            </p>
+                        </div>
+                        <div>
                             <label class="ml-2 mb-1">Para</label>
                             <p class="rounded-[3px] bg-[#cccccc] text-sm py-1 px-2">
                                 <span class="px-2 py-px bg-secondarylight rounded-[2px]">{{
-                                    purchase.supplier.contacts.find(item => item.id === form.contact_id)?.email }}</span>
+            purchase.supplier.contacts.find(item => item.id === form.contact_id)?.email
+        }}</span>
                             </p>
                         </div>
                         <div class="mt-1">
@@ -205,7 +251,8 @@
                 </form>
             </template>
             <template #footer>
-                <CancelButton @Click="showModal = false">Cancelar</CancelButton>
+                <CancelButton :disabled="loading"
+                    @Click="showModal = false">Cancelar</CancelButton>
                 <PrimaryButton @click="sendEmail"
                     :disabled="!form.contact_id || form.bank_information === null || !form.subject || loading">Enviar
                 </PrimaryButton>
@@ -213,7 +260,7 @@
         </DialogModal>
     </div>
 </template>
-  
+
 <script>
 import { Head, useForm } from '@inertiajs/vue3';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
@@ -276,6 +323,11 @@ export default {
         },
     },
     methods: {
+        hasStock(item) {
+            const product = this.purchase.products.find(prd => prd.id === item.id);
+            return product && product.additional_stock !== null &&
+                    product.plane_stock !== null && product.ship_stock !== null;
+        },
         async sendEmail() {
             this.loading = true;
             try {
@@ -348,5 +400,5 @@ export default {
     },
 }
 </script>
-  
+
 <style></style>

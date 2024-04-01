@@ -65,10 +65,11 @@
         <div>
           <p class="text-primary text-left">Componentes</p>
           <p v-for="( raw_material, index ) in  catalog_product_company_sale.catalog_product_company?.catalog_product?.raw_materials "
-            :key="index" class="text-secondary text-xs underline cursor-pointer uppercase">
+            :key="index" class="text-secondary text-[11px] underline cursor-pointer uppercase">
           <p @click.stop="$inertia.get(route('storages.show', comp_storage.id))"
             v-for="comp_storage in raw_material.storages" :key="comp_storage">•{{ comp_storage.storageable.name }}</p>
           </p>
+          <p v-if="catalog_product_company_sale.requires_medallion" class="text-[#37951F] bg-[#ADFEB5] px-1 py-px rounded-[3px] text-center mt-1">Requiere medallón</p>
         </div>
       </div>
     </div>

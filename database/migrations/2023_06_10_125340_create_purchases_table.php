@@ -21,6 +21,7 @@ return new class extends Migration
             $table->timestamp('emited_at')->nullable();
             $table->timestamp('recieved_at')->nullable();
             $table->boolean('is_iva_included')->default(false);
+            $table->boolean('show_prices')->default(false);
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('supplier_id')->constrained()->cascadeOnDelete();
             $table->foreignId('contact_id')->nullable()->constrained()->cascadeOnDelete();
