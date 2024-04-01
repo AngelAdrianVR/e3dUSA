@@ -80,7 +80,7 @@
                         <el-divider content-position="left">Logistica</el-divider>
                         <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
                             <div class="ml-7 col-span-full">
-                                <label class="text-sm ml-2 mb-px flex items-center">Fecha de entrega esperada
+                                <label class="text-sm ml-2 mb-px flex items-center">Fecha de embarque esperado
                                     <el-tooltip
                                         content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega"
                                         placement="right">

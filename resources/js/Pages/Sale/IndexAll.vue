@@ -158,7 +158,7 @@ export default {
     data() {
         return {
             disableMassiveActions: true,
-            filter: 'Mis órdenes', //filtro
+            filter: 'Todas las órdenes', //filtro
             options: ['Mis órdenes', 'Todas las órdenes'], //filtro
             // inputSearch: '',
             search: '',

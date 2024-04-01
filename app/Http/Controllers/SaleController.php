@@ -8,6 +8,7 @@ use App\Events\RecordEdited;
 use App\Http\Resources\SaleResource;
 use App\Models\CatalogProductCompanySale;
 use App\Models\CompanyBranch;
+use App\Models\DesignAuthorization;
 use App\Models\Oportunity;
 use App\Models\Sale;
 use App\Models\Sample;
@@ -23,8 +24,9 @@ class SaleController extends Controller
 
     public function index()
     {
-        $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->latest()->paginate(20));
+        $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->where('user_id', auth()->id())->latest()->paginate(20));
 
+        // return $sales;
         return inertia('Sale/Index', compact('sales'));
     }
 
@@ -427,4 +429,20 @@ class SaleController extends Controller
         // return $sale;
         return inertia('Sale/QualityCertificate', compact('sale'));
     }
+
+
+    public function fetchFiltered($filter)
+    {
+        if ( $filter == 'Mis órdenes') {
+            $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->where('user_id', auth()->id())->latest()->paginate(20));
+            return inertia('Sale/Index', compact('sales'));
+        } else {
+            $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->latest()->paginate(20));
+            return inertia('Sale/IndexAll', compact('sales'));
+        }
+
+    }
+
+ 
+
 }
