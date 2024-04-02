@@ -9,6 +9,7 @@
         <el-radio-group @change="resetValues()" v-model="type">
           <el-radio-button label="Producto de catálogo" value="Producto de catálogo" />
           <el-radio-button label="Materia prima" value="Materia prima" />
+          <el-radio-button label="Buscar producto" value="Buscar producto" />
         </el-radio-group>
       </div>
 
@@ -16,15 +17,22 @@
       <h2 class="text-primary lg:text-lg text-sm lg:mt-8 mt-6 font-bold">Análisis de ventas</h2>
       <div class="flex justify-between space-x-7 mt-4 lg:w-1/2">
         <div class="flex items-center space-x-4 w-2/3 lg:w-1/2">
-          <el-select @change="fetchProductSalesTop" class="lg:w-1/2" v-model="familySelected" filterable
+          <!-- selector de familia -->
+          <el-select v-if="type != 'Buscar producto'" @change="fetchProductSalesTop" class="lg:w-1/2" v-model="familySelected" filterable
             placeholder="Seleccione la familia" no-data-text="No hay opciones registradas"
             no-match-text="No se encontraron coincidencias">
             <el-option v-for="family in families" :key="family" :label="family.label" :value="family.code" />
           </el-select>
+          <!-- selector de producto de catalogo individual -->
+          <el-select v-else @change="fetchCatalogProductSales" class="lg:w-1/2" v-model="catalogProductSelected" filterable
+            placeholder="Seleccione el producto" no-data-text="No hay opciones registradas"
+            no-match-text="No se encontraron coincidencias">
+            <el-option v-for="item in catalog_products" :key="item" :label="item.name" :value="item.part_number" />
+          </el-select>
         </div>
 
         <div class="flex items-center space-x-4 w-2/3 lg:w-1/2">
-          <el-select :disabled="!familySelected" @change="fetchProductSalesTop" class="lg:w-1/2" v-model="range"
+          <el-select @change="handleFetchMethod" class="lg:w-1/2" v-model="range"
             placeholder="Seleccione el rango de tiempo" no-data-text="No hay opciones registradas"
             no-match-text="No se encontraron coincidencias">
             <el-option v-for="range in ranges" :key="range" :label="range" :value="range" />
@@ -43,19 +51,19 @@
               <th class="font-bold pb-3 text-left">
                 Producto
               </th>
-              <th v-if="type == 'Producto de catálogo'" class="font-bold pb-3 text-left">
+              <th v-if="type != 'Materia prima'" class="font-bold pb-3 text-left">
                 Precio ant.
               </th>
               <th class="font-bold pb-3 text-left">
                 Precio act.
               </th>
-              <th v-if="type == 'Producto de catálogo'" class="font-bold pb-3 text-left">
+              <th v-if="type != 'Materia prima'" class="font-bold pb-3 text-left">
                 Cliente
               </th>
               <th class="font-bold pb-3 text-left">
                 Cantidad vendida
               </th>
-              <th v-if="type == 'Producto de catálogo'" class="font-bold pb-3 text-left">
+              <th v-if="type != 'Materia prima'" class="font-bold pb-3 text-left">
                 Total venta
               </th>
               <th v-if="type == 'Materia prima'" class="font-bold pb-3 text-left">
@@ -65,21 +73,21 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="product in topProducts" :key="product" @click="fetchProductInfo(product, type == 'Producto de catálogo' ? 'sale-analitics.fetch-product-info' : 'sale-analitics.fetch-raw-material-info')"
-              class="mb-4 hover:bg-[#dfdbdba8] cursor-pointer">
+            <tr v-for="product in topProducts" :key="product" @click="fetchProductInfo(product, type == 'Materia prima' ? 'sale-analitics.fetch-raw-material-info' : 'sale-analitics.fetch-product-info')"
+              class="mb-4 hover:text-primary cursor-pointer">
               <td class="py-2 pl-2 rounded-l-full">
                 {{ product.part_number }}
               </td>
               <td class="py-2">
                 <p :title="product.name" class="truncate w-40">{{ product.name }}</p>
               </td>
-              <td v-if="type == 'Producto de catálogo'" class="py-2">
+              <td v-if="type != 'Materia prima'" class="py-2">
                 ${{ product.old_price ?? '-' }}
               </td>
               <td class="py-2">
                 ${{ product.new_price }}
               </td>
-              <td v-if="type == 'Producto de catálogo'" class="py-2">
+              <td v-if="type != 'Materia prima'" class="py-2">
                 <p :title="product.client" class="truncate w-40">{{ product.client ?? '-' }}</p>
               </td>
               <td class="py-2">
@@ -91,9 +99,7 @@
             </tr>
           </tbody>
         </table>
-        <div v-else>
-          <p class="text-sm text-center text-gray-400">No hay ventas registradas</p>
-        </div>
+        <el-empty v-else description="No hay información para mostrar" />
       </div>
       <!-- Estado de carga  -->
       <div v-else class="flex justify-center items-center lg:my-40">
@@ -113,7 +119,7 @@
             <div class="lg:grid grid-cols-2 gap-4 text-center w-full">
               <LinealChart :options="productAmountSalesMonth" title="Ventas acumuladas por mes" />
               <LinealChart :options="productMoneySalesMonth" title="Ventas en pesos mexicanos $MXN por mes" />
-              <BarChart :options="barChartOptions" title="Ventas año en curso vs anterior" />
+              <BarChart v-if="type == 'Producto de catálogo'" :options="barChartOptions" title="Ventas año en curso vs anterior" />
             </div>
           </div>
         </div>
@@ -154,6 +160,7 @@ export default {
       topProducts: null,
       familySelected: null,
       productSelected: null,
+      catalogProductSelected: null, //producto de catalogo seleccionado en "buscar producto" para ver info solo de ese producto.
       productAmountSalesMonth: {},
       barChartOptions: {},
       test: null,
@@ -218,6 +225,7 @@ export default {
   },
   props: {
     current_month_sales: Array,
+    catalog_products: Array,
     meet_ways: Array,
   },
   methods: {
@@ -286,11 +294,33 @@ export default {
       // Formatea el mes actual en español
       this.currentMonth = format(currentDate, 'MMMM', { locale: es });
     },
+    handleFetchMethod () {
+      if ( this.type == 'Buscar producto' ) {
+        this.fetchCatalogProductSales()
+      } else {
+        this.fetchProductSalesTop();
+      }
+    },
     async fetchProductSalesTop() {
       this.productSelected = null;
       this.loading = true;
       try {
         const response = await axios.get(route('sale-analitics.fetch-top-products', [this.familySelected, this.range, this.type]));
+
+        if (response.status === 200) {
+          this.topProducts = response.data.items;
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    async fetchCatalogProductSales() {
+      this.productSelected = null;
+      this.loading = true;
+      try {
+        const response = await axios.get(route('sale-analitics.fetch-catalog-product-sales', [this.catalogProductSelected, this.range]));
 
         if (response.status === 200) {
           this.topProducts = response.data.items;
@@ -349,6 +379,7 @@ export default {
       this.topProducts = null;
       this.familySelected = null;
       this.productSelected = null;
+      this.catalogProductSelected = null;
       this.range = 'Total';
     }
   },

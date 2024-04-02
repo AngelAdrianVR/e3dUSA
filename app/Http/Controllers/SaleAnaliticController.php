@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CatalogProduct;
 use App\Models\CatalogProductCompanySale;
 use App\Models\CompanyBranch;
 use App\Models\RawMaterial;
 use App\Models\Sale;
 use Carbon\Carbon;
+use Demo\Product;
 
 class SaleAnaliticController extends Controller
 {
 
     public function index()
-    {
+    {   
+        $catalog_products = CatalogProduct::all(['id','name','part_number']);
+
         $current_month_sales = Sale::with(['companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct'])->where('is_sale_production', true)
             ->whereNotNull('authorized_user_name')
             ->whereMonth('created_at', today())
@@ -22,9 +26,10 @@ class SaleAnaliticController extends Controller
             ->groupBy('meet_way')
             ->get()
             ->toArray();
-        // return $meet_ways;
 
-        return inertia('SaleAnalitic/Index', compact('current_month_sales', 'meet_ways'));
+        // return $catalog_products;
+
+        return inertia('SaleAnalitic/Index', compact('current_month_sales', 'meet_ways', 'catalog_products'));
     }
 
 
@@ -135,6 +140,50 @@ class SaleAnaliticController extends Controller
                 
                 return response()->json(['items' => $materialInfoArray]);
             }
+    }
+
+
+    public function fetchCatalogProductSales($part_number, $range)
+    {
+        $startDate = 0;
+
+        // Determina la fecha de inicio según la opción seleccionada
+        switch ($range) {
+            case 'Mensual':
+                $startDate = now()->subDays(30);
+                break;
+            case 'Bimestral':
+                $startDate = now()->subDays(60);
+                break;
+        }
+
+         // la familia la recupera como parámetro enviado desde la peticion axios en la vista index
+         $products = CatalogProductCompanySale::with(['catalogProductCompany' => ['catalogProduct.media', 'company']])
+         ->whereHas('catalogProductCompany.catalogProduct', function ($query) use ($part_number) {
+             $query->where('part_number', $part_number);
+         })
+         ->where('created_at', '>=', $startDate)
+         ->get();
+         
+         $agrouped = $products->groupBy('catalogProductCompany.catalogProduct.part_number')
+         ->map(function ($group) {
+             return [
+                 'name' => $group->first()->catalogProductCompany?->catalogProduct?->name,
+                 'part_number' => $group->first()->catalogProductCompany?->catalogProduct?->part_number,
+                 'min_stock' => $group->first()->catalogProductCompany?->catalogProduct?->min_quantity,
+                 'old_price' => $group->first()->catalogProductCompany?->old_price ?? 0,
+                 'new_price' => $group->first()->catalogProductCompany?->new_price,
+                 'quantity_sales' => $group->sum('quantity'),
+                 'total_money' => $group->sum('quantity') * $group->first()->catalogProductCompany?->new_price,
+                 'client' => $group->first()->catalogProductCompany?->company?->business_name,
+                 'media' => $group->first()->catalogProductCompany?->catalogProduct?->media[0] ?? null,
+             ];
+         })
+         ->sortByDesc('total_money');
+
+         $agroupedArray = $agrouped->toArray();
+         
+         return response()->json(['items' => $agrouped]);
     }
 
 
