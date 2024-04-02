@@ -11,7 +11,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Sale extends Model implements HasMedia
+class 
+Sale extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
 
@@ -152,5 +153,11 @@ class Sale extends Model implements HasMedia
         }
 
         return $status;
+    }
+
+    public function getProfit()
+    {
+        return 260;
+        // $this->catalogProductCompanySales->each();
     }
 }
