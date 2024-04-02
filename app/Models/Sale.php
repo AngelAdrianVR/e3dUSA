@@ -157,7 +157,7 @@ Sale extends Model implements HasMedia
 
     public function getProfit()
     {
-        return 260;
+        return 2;
         // $this->catalogProductCompanySales->each();
     }
 }

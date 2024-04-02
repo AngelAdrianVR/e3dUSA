@@ -95,7 +95,12 @@
                             <template #default="scope">
                                 <div class="flex items-center space-x-2">
                                     <div class="flex flex-col space-y-1 items-center">
-                                        <i class="fa-solid fa-flag-checkered"></i>
+                                        <div class="flex items-center space-x-1">
+                                            <i v-if="scope.row.profit >= 25 && scope.row.profit <= 34" class="fa-solid fa-triangle-exclamation text-[9px] text-[#F09102]"></i>
+                                            <i v-else class="fa-solid fa-circle-minus text-[9px] text-[#D90505]"></i>
+                                            <i v-if="scope.row.profit >= 200" class="fa-solid fa-flag-checkered"></i>
+                                            <i v-else class="fa-solid fa-flag" :style="{ color: getFlagColor(scope.row.profit) }"></i>
+                                        </div>
                                         <StarRating :rating="scope.row.profit / 100" />
                                     </div>
                                     <p class="flex-0 w-[80%]">{{ scope.row.profit }} %</p>
@@ -198,6 +203,19 @@ export default {
         company_branches: Array
     },
     methods: {
+        getFlagColor(profit) {
+            if (profit <= 24) {
+                return "#D90505";
+            } else if (profit <= 49) {
+                return "#F09102";
+            } else if (profit == 50) {
+                return "#F0D802";
+            } else if (profit <= 99) {
+                return "#0355B5";
+            } else if (profit <= 150) {
+                return "#4DCC11";
+            }
+        },
         async fetchMatches(search) {
             this.search = search;
             this.loading = true;
