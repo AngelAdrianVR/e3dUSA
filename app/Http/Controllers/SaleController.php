@@ -26,10 +26,8 @@ class SaleController extends Controller
     {
         $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->where('user_id', auth()->id())->latest()->paginate(20));
 
-        // return $sales;
         return inertia('Sale/Index', compact('sales'));
     }
-
 
     public function create()
     {
