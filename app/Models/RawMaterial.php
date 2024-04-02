@@ -37,7 +37,7 @@ class RawMaterial extends Model implements HasMedia
         'features' => 'array'
     ];
 
-    // relationships
+    // relationships---------------------------------------
 
     /**
      * Get the RawMaterial's sorage in warehose.
@@ -55,7 +55,7 @@ class RawMaterial extends Model implements HasMedia
             ])->withTimestamps();
     }
 
-    // methods
+    // methods----------------------------------------------
     public function isInCatalogProduct()
     {
         return $this->catalogProducts()->exists();

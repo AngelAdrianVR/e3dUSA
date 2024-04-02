@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CatalogProductCompanySale;
 use App\Models\CompanyBranch;
+use App\Models\RawMaterial;
 use App\Models\Sale;
 use Carbon\Carbon;
 
@@ -12,6 +13,65 @@ class SaleAnaliticController extends Controller
 
     public function index()
     {
+        // $startDate = now()->subDays(30);
+        // $sales = CatalogProductCompanySale::with(['catalogProductCompany' => ['catalogProduct.rawMaterials', 'company']])
+        //     ->whereHas('catalogProductCompany.catalogProduct', function ($query){
+        //         $query->where('part_number', 'like', 'C-EM' . '%');
+        //     })
+        //     ->where('created_at', '>=', $startDate)
+        //     ->get();
+
+        //      // Array para almacenar la cantidad total de cada materia prima utilizada
+        //     $rawMaterialsTotals = [];
+
+        //     // Iterar sobre cada venta para calcular la cantidad total de cada materia prima utilizada
+        //     foreach ($sales as $sale) {
+        //         foreach ($sale->catalogProductCompany->catalogProduct->rawMaterials as $rawMaterial) {
+        //             $quantity = $sale->quantity * $rawMaterial->pivot->quantity; // Calcular la cantidad total utilizada en esta venta
+        //             $rawMaterialId = $rawMaterial->id;
+
+        //             // Agregar la cantidad total utilizada al array o sumarla si ya existe
+        //             if (isset($rawMaterialsTotals[$rawMaterialId])) {
+        //                 $rawMaterialsTotals[$rawMaterialId] += $quantity;
+        //             } else {
+        //                 $rawMaterialsTotals[$rawMaterialId] = $quantity;
+        //             }
+        //         }
+        //     }
+
+        //     // Crear un arreglo para almacenar los objetos con la información requerida
+        //     $materialInfoArray = [];
+
+        //     // Iterar sobre cada materia prima en $rawMaterialsTotals para obtener su información
+        //     foreach ($rawMaterialsTotals as $rawMaterialId => $totalQuantity) {
+        //         $rawMaterial = RawMaterial::with('media')->find($rawMaterialId); // Suponiendo que tengas un modelo RawMaterial
+                
+        //         // Calcular el costo total
+        //         $totalCost = $totalQuantity * $rawMaterial->cost;
+
+        //         // Crear un objeto con la información deseada y agregarlo al arreglo
+        //         $materialInfoArray[] = [
+        //             'part_number' => $rawMaterial->part_number,
+        //             'name' => $rawMaterial->name,
+        //             'quantity_sales' => $totalQuantity,
+        //             'new_price' => $rawMaterial->cost,
+        //             'total_money' => $totalCost, //el nombre se le dio para que coincida con la tabla ya creada para prod. de catalo.
+        //             'media' => $rawMaterial->media[0],
+        //         ];
+        //     }
+
+        //     // Función de comparación para ordenar de mayor a menor cantidad total utilizada
+        //     usort($materialInfoArray, function ($a, $b) {
+        //         return $b['quantity_sales'] <=> $a['quantity_sales'];
+        //     });
+
+        //     // Aquí tendrás $materialInfoArray con la información requerida para cada materia prima utilizada
+        //     return $materialInfoArray;
+
+
+
+
+
         $current_month_sales = Sale::with(['companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct'])->where('is_sale_production', true)
             ->whereNotNull('authorized_user_name')
             ->whereMonth('created_at', today())
@@ -27,7 +87,9 @@ class SaleAnaliticController extends Controller
     }
 
 
-    public function fetchTopProducts($family, $range)
+    //Recupera el top 20 de productos mas vendidos, ya sea del catálogo o materia prima.
+    //family: familia de produco (llaveros, emblemas, portaplacas, etc.), range:rango de dias, type:materia prima o prod. de catalogo
+    public function fetchTopProducts($family, $range, $type)
     {
         $startDate = 0;
 
@@ -41,15 +103,17 @@ class SaleAnaliticController extends Controller
                 break;
         }
 
-        // la familia la recupera como parámetro enviado desde la peticion axios en la vista index
-        $products = CatalogProductCompanySale::with(['catalogProductCompany' => ['catalogProduct.media', 'company']])
+        if ($type == 'Producto de catálogo') { //si se hace la peticion para producto de catálogo
+
+            // la familia la recupera como parámetro enviado desde la peticion axios en la vista index
+            $products = CatalogProductCompanySale::with(['catalogProductCompany' => ['catalogProduct.media', 'company']])
             ->whereHas('catalogProductCompany.catalogProduct', function ($query) use ($family) {
                 $query->where('part_number', 'like', $family . '%');
             })
             ->where('created_at', '>=', $startDate)
             ->get();
-
-        $agrouped = $products->groupBy('catalogProductCompany.catalogProduct.part_number')
+            
+            $agrouped = $products->groupBy('catalogProductCompany.catalogProduct.part_number')
             ->map(function ($group) {
                 return [
                     'name' => $group->first()->catalogProductCompany?->catalogProduct?->name,
@@ -65,8 +129,65 @@ class SaleAnaliticController extends Controller
             })
             ->sortByDesc('total_money')
             ->take(20); // Limitar a 20 elementos
+            
+            return response()->json(['items' => $agrouped]);
 
-        return response()->json(['items' => $agrouped]);
+            //si se hace la peticion para materia prima
+        } else {
+            // la familia la recupera como parámetro enviado desde la peticion axios en la vista index
+            $sales = CatalogProductCompanySale::with(['catalogProductCompany' => ['catalogProduct.rawMaterials', 'company']])
+                ->whereHas('catalogProductCompany.catalogProduct', function ($query) use ($family){
+                    $query->where('part_number', 'like', $family . '%');
+                })
+                ->where('created_at', '>=', $startDate)
+                ->get();
+
+                // Array para almacenar la cantidad total de cada materia prima utilizada
+                $rawMaterialsTotals = [];
+
+                // Iterar sobre cada venta para calcular la cantidad total de cada materia prima utilizada
+                foreach ($sales as $sale) {
+                    foreach ($sale->catalogProductCompany->catalogProduct->rawMaterials as $rawMaterial) {
+                        $quantity = $sale->quantity * $rawMaterial->pivot->quantity; // Calcular la cantidad total utilizada en esta venta
+                        $rawMaterialId = $rawMaterial->id;
+
+                        // Agregar la cantidad total utilizada al array o sumarla si ya existe
+                        if (isset($rawMaterialsTotals[$rawMaterialId])) {
+                            $rawMaterialsTotals[$rawMaterialId] += $quantity;
+                        } else {
+                            $rawMaterialsTotals[$rawMaterialId] = $quantity;
+                        }
+                    }
+                }
+
+                // Crear un arreglo para almacenar los objetos con la información requerida
+                $materialInfoArray = [];
+
+                // Iterar sobre cada materia prima en $rawMaterialsTotals para obtener su información
+                foreach ($rawMaterialsTotals as $rawMaterialId => $totalQuantity) {
+                    $rawMaterial = RawMaterial::with('media')->find($rawMaterialId); // Suponiendo que tengas un modelo RawMaterial
+                    
+                    // Calcular el costo total
+                    $totalCost = $totalQuantity * $rawMaterial->cost;
+
+                    // Crear un objeto con la información deseada y agregarlo al arreglo
+                    $materialInfoArray[] = [
+                        'part_number' => $rawMaterial->part_number,
+                        'name' => $rawMaterial->name,
+                        'quantity_sales' => $totalQuantity,
+                        'new_price' => $rawMaterial->cost,
+                        'total_money' => $totalCost, //el nombre se le dio para que coincida con la tabla ya creada para prod. de catalo.
+                        'media' => $rawMaterial->media[0] ?? null,
+                    ];
+                }
+
+                // Función de comparación para ordenar de mayor a menor cantidad total utilizada
+                usort($materialInfoArray, function ($a, $b) {
+                    return $b['quantity_sales'] <=> $a['quantity_sales'];
+                });
+                
+                return response()->json(['items' => $materialInfoArray]);
+            }
     }
 
 

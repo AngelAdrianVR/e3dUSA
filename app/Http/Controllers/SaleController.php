@@ -77,6 +77,7 @@ class SaleController extends Controller
 
             return [
                 'id' => $company_branch->id,
+                'company_id' => $company_branch->company_id,
                 'name' => $company_branch->name,
                 'important_notes' => $company_branch->important_notes,
                 'contacts' => $contacts,
@@ -84,7 +85,7 @@ class SaleController extends Controller
             ];
         });
 
-
+        // return $company_branches;
         return inertia('Sale/Create', compact('company_branches', 'opportunityId', 'sample'));
     }
 
@@ -438,7 +439,20 @@ class SaleController extends Controller
             $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->latest()->paginate(20));
             return inertia('Sale/IndexAll', compact('sales'));
         }
+    }
 
+
+    public function checkIfHasSale($catalog_product_company_id)
+    {
+        $catalog_product_company_sale = CatalogProductCompanySale::where('catalog_product_company_id', $catalog_product_company_id)->first();
+
+        if ($catalog_product_company_sale) {
+            $has_sale = true;
+        } else {
+            $has_sale = false;
+        }
+
+        return response()->json(compact('has_sale'));
     }
 
  
