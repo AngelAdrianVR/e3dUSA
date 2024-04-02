@@ -117,8 +117,8 @@
               <img :src="productSelected.media?.original_url" class="rounded-md object-contain w-full h-28">
             </figure>
             <div class="lg:grid grid-cols-2 gap-4 text-center w-full">
-              <LinealChart :options="productAmountSalesMonth" title="Ventas acumuladas por mes" />
-              <LinealChart :options="productMoneySalesMonth" title="Ventas en pesos mexicanos $MXN por mes" />
+              <LinealChart :options="productAmountSalesMonth" :title="'Ventas por mes ( ' + productSelected.quantity_sales.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' Piezas totales )'" />
+              <LinealChart :options="productMoneySalesMonth" :title="'Monto por mes ( Monto total $' + productSelected.total_money.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' MXN )'" />
               <BarChart v-if="type == 'Producto de catálogo'" :options="barChartOptions" title="Ventas año en curso vs anterior" />
             </div>
           </div>
@@ -168,6 +168,9 @@ export default {
       ranges: [
         'Mensual',
         'Bimestral',
+        'Trimestral',
+        'Quatrimestre',
+        'Semestre',
         'Total',
       ],
       families: [

@@ -47,6 +47,15 @@ class SaleAnaliticController extends Controller
             case 'Bimestral':
                 $startDate = now()->subDays(60);
                 break;
+            case 'Trimestral':
+                $startDate = now()->subDays(90);
+                break;
+            case 'Quatrimestre':
+                $startDate = now()->subDays(120);
+                break;
+            case 'Semestral':
+                $startDate = now()->subDays(180);
+                break;
         }
 
         if ($type == 'Producto de catálogo') { //si se hace la peticion para producto de catálogo
@@ -154,6 +163,15 @@ class SaleAnaliticController extends Controller
                 break;
             case 'Bimestral':
                 $startDate = now()->subDays(60);
+                break;
+            case 'Trimestral':
+                $startDate = now()->subDays(90);
+                break;
+            case 'Quatrimestre':
+                $startDate = now()->subDays(120);
+                break;
+            case 'Semestral':
+                $startDate = now()->subDays(180);
                 break;
         }
 
