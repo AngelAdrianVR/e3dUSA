@@ -13,65 +13,6 @@ class SaleAnaliticController extends Controller
 
     public function index()
     {
-        // $startDate = now()->subDays(30);
-        // $sales = CatalogProductCompanySale::with(['catalogProductCompany' => ['catalogProduct.rawMaterials', 'company']])
-        //     ->whereHas('catalogProductCompany.catalogProduct', function ($query){
-        //         $query->where('part_number', 'like', 'C-EM' . '%');
-        //     })
-        //     ->where('created_at', '>=', $startDate)
-        //     ->get();
-
-        //      // Array para almacenar la cantidad total de cada materia prima utilizada
-        //     $rawMaterialsTotals = [];
-
-        //     // Iterar sobre cada venta para calcular la cantidad total de cada materia prima utilizada
-        //     foreach ($sales as $sale) {
-        //         foreach ($sale->catalogProductCompany->catalogProduct->rawMaterials as $rawMaterial) {
-        //             $quantity = $sale->quantity * $rawMaterial->pivot->quantity; // Calcular la cantidad total utilizada en esta venta
-        //             $rawMaterialId = $rawMaterial->id;
-
-        //             // Agregar la cantidad total utilizada al array o sumarla si ya existe
-        //             if (isset($rawMaterialsTotals[$rawMaterialId])) {
-        //                 $rawMaterialsTotals[$rawMaterialId] += $quantity;
-        //             } else {
-        //                 $rawMaterialsTotals[$rawMaterialId] = $quantity;
-        //             }
-        //         }
-        //     }
-
-        //     // Crear un arreglo para almacenar los objetos con la información requerida
-        //     $materialInfoArray = [];
-
-        //     // Iterar sobre cada materia prima en $rawMaterialsTotals para obtener su información
-        //     foreach ($rawMaterialsTotals as $rawMaterialId => $totalQuantity) {
-        //         $rawMaterial = RawMaterial::with('media')->find($rawMaterialId); // Suponiendo que tengas un modelo RawMaterial
-                
-        //         // Calcular el costo total
-        //         $totalCost = $totalQuantity * $rawMaterial->cost;
-
-        //         // Crear un objeto con la información deseada y agregarlo al arreglo
-        //         $materialInfoArray[] = [
-        //             'part_number' => $rawMaterial->part_number,
-        //             'name' => $rawMaterial->name,
-        //             'quantity_sales' => $totalQuantity,
-        //             'new_price' => $rawMaterial->cost,
-        //             'total_money' => $totalCost, //el nombre se le dio para que coincida con la tabla ya creada para prod. de catalo.
-        //             'media' => $rawMaterial->media[0],
-        //         ];
-        //     }
-
-        //     // Función de comparación para ordenar de mayor a menor cantidad total utilizada
-        //     usort($materialInfoArray, function ($a, $b) {
-        //         return $b['quantity_sales'] <=> $a['quantity_sales'];
-        //     });
-
-        //     // Aquí tendrás $materialInfoArray con la información requerida para cada materia prima utilizada
-        //     return $materialInfoArray;
-
-
-
-
-
         $current_month_sales = Sale::with(['companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct'])->where('is_sale_production', true)
             ->whereNotNull('authorized_user_name')
             ->whereMonth('created_at', today())
@@ -167,30 +108,37 @@ class SaleAnaliticController extends Controller
                 foreach ($rawMaterialsTotals as $rawMaterialId => $totalQuantity) {
                     $rawMaterial = RawMaterial::with('media')->find($rawMaterialId); // Suponiendo que tengas un modelo RawMaterial
                     
-                    // Calcular el costo total
-                    $totalCost = $totalQuantity * $rawMaterial->cost;
+                    // Verificar si el número de parte coincide con $family
+                    if (strpos($rawMaterial->part_number, substr($family, 2)) === 0) {
+                        // Calcular el costo total
+                        $totalCost = $totalQuantity * $rawMaterial->cost;
 
-                    // Crear un objeto con la información deseada y agregarlo al arreglo
-                    $materialInfoArray[] = [
-                        'part_number' => $rawMaterial->part_number,
-                        'name' => $rawMaterial->name,
-                        'quantity_sales' => $totalQuantity,
-                        'new_price' => $rawMaterial->cost,
-                        'total_money' => $totalCost, //el nombre se le dio para que coincida con la tabla ya creada para prod. de catalo.
-                        'media' => $rawMaterial->media[0] ?? null,
-                    ];
+                        // Crear un objeto con la información deseada y agregarlo al arreglo
+                        $materialInfoArray[] = [
+                            'part_number' => $rawMaterial->part_number,
+                            'name' => $rawMaterial->name,
+                            'quantity_sales' => $totalQuantity,
+                            'new_price' => $rawMaterial->cost,
+                            'total_money' => $totalCost, //el nombre se le dio para que coincida con la tabla ya creada para prod. de catalo.
+                            'media' => $rawMaterial->media[0] ?? null,
+                        ];
+                    }
                 }
 
                 // Función de comparación para ordenar de mayor a menor cantidad total utilizada
                 usort($materialInfoArray, function ($a, $b) {
                     return $b['quantity_sales'] <=> $a['quantity_sales'];
                 });
+
+                // Limitar el arreglo a 20 elementos
+                $materialInfoArray = array_slice($materialInfoArray, 0, 20);
                 
                 return response()->json(['items' => $materialInfoArray]);
             }
     }
 
 
+    //informacion de ventas cuando se selecciona un producto de catalogo
     public function fetchProductInfo($part_number)
     {
         // Obtener las ventas del producto
@@ -209,12 +157,12 @@ class SaleAnaliticController extends Controller
             $product_price = 0;
         }
 
-        // Resto del código...
+        // Agrupar ventas por fecha
         $grouped = $product->groupBy(function ($item) {
             return \Carbon\Carbon::parse($item->created_at)->format('Y-m');
         });
 
-        // Resto del código...
+        // Obtener arreglo con objetos formateados
         $sales = $grouped->map(function ($sales, $month) use ($product_price) {
             return [
                 'month' => $month,
@@ -224,6 +172,44 @@ class SaleAnaliticController extends Controller
         })->values()->sortBy('month');
 
         return response()->json(['items' => $sales, 'yearSales' => $this->getYearSales($product)]);
+    }
+
+    
+    //informacion de ventas cuando se selecciona una materia prima
+    public function fetchRawMaterialInfo($part_number)
+    {
+        // Obtener las ventas del producto
+        $sales = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct.rawMaterials')
+            ->whereHas('catalogProductCompany.catalogProduct.rawMaterials', function ($query) use ($part_number) {
+                $query->where('part_number', $part_number);
+            })
+            ->get();
+
+            
+        // Verificar si hay al menos un elemento en el array
+        if ($sales->isNotEmpty()) {
+            // Obtener el valor de new_price de la primera entrada del array
+            $product_price = $sales[0]->catalogProductCompany->catalogProduct->rawMaterials[0]->cost;
+        } else {
+            // Manejar el caso donde el array $sales está vacío
+            $product_price = 0;
+        }
+
+        // Agrupar ventas por fecha
+        $grouped = $sales->groupBy(function ($item) {
+            return \Carbon\Carbon::parse($item->created_at)->format('Y-m');
+        });
+
+        // Obtener arreglo con objetos formateados
+        $sales_agrouped = $grouped->map(function ($sales, $month) use ($product_price) {
+            return [
+                'month' => $month,
+                'total_sales' => $sales->sum('quantity'),
+                'money_sales' => $sales->sum('quantity') * $product_price,
+            ];
+        })->values()->sortBy('month');
+
+        return response()->json(['items' => $sales_agrouped, 'yearSales' => $this->getYearSales($sales)]);
     }
 
     public function getYearSales($productSales)

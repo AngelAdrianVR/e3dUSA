@@ -55,14 +55,17 @@
               <th class="font-bold pb-3 text-left">
                 Cantidad vendida
               </th>
-              <th class="font-bold pb-3 text-left">
+              <th v-if="type == 'Producto de catálogo'" class="font-bold pb-3 text-left">
                 Total venta
+              </th>
+              <th v-if="type == 'Materia prima'" class="font-bold pb-3 text-left">
+                Inversión total
               </th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="product in topProducts" :key="product" @click="fetchProductInfo(product)"
+            <tr v-for="product in topProducts" :key="product" @click="fetchProductInfo(product, type == 'Producto de catálogo' ? 'sale-analitics.fetch-product-info' : 'sale-analitics.fetch-raw-material-info')"
               class="mb-4 hover:bg-[#dfdbdba8] cursor-pointer">
               <td class="py-2 pl-2 rounded-l-full">
                 {{ product.part_number }}
@@ -298,11 +301,11 @@ export default {
         this.loading = false;
       }
     },
-    async fetchProductInfo(product) {
-      this.productSelected = product
+    async fetchProductInfo(product, routeName) {
+      this.productSelected = product;
       this.loadingCharts = true;
       try {
-        const response = await axios.get(route('sale-analitics.fetch-product-info', this.productSelected.part_number));
+        const response = await axios.get(route(routeName, this.productSelected.part_number));
 
         if (response.status === 200) {
           this.productAmountSalesMonth = {
@@ -335,7 +338,6 @@ export default {
               data: Object.values(response.data.yearSales.currentYearSales).map(item => (item/1000).toFixed(2)),
             }],
           }
-
         }
       } catch (error) {
         console.log(error);
