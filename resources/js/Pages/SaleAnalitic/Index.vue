@@ -2,7 +2,14 @@
   <AppLayoutNoHeader title="Inicio CRM">
     <div class="md:mx-9 md:my-1 m-1">
       <div class="flex justify-between mb-2">
-        <label class="text-lg">Inicio</label>
+        <label class="text-lg font-bold">Inicio</label>
+      </div>
+
+      <div class="text-center">
+        <el-radio-group @change="resetValues()" v-model="type">
+          <el-radio-button label="Producto de catálogo" value="Producto de catálogo" />
+          <el-radio-button label="Materia prima" value="Materia prima" />
+        </el-radio-group>
       </div>
 
       <!-- analisis de ventas -->
@@ -36,13 +43,13 @@
               <th class="font-bold pb-3 text-left">
                 Producto
               </th>
-              <th class="font-bold pb-3 text-left">
+              <th v-if="type == 'Producto de catálogo'" class="font-bold pb-3 text-left">
                 Precio ant.
               </th>
               <th class="font-bold pb-3 text-left">
                 Precio act.
               </th>
-              <th class="font-bold pb-3 text-left">
+              <th v-if="type == 'Producto de catálogo'" class="font-bold pb-3 text-left">
                 Cliente
               </th>
               <th class="font-bold pb-3 text-left">
@@ -63,14 +70,14 @@
               <td class="py-2">
                 <p :title="product.name" class="truncate w-40">{{ product.name }}</p>
               </td>
-              <td class="py-2">
-                ${{ product.old_price }}
+              <td v-if="type == 'Producto de catálogo'" class="py-2">
+                ${{ product.old_price ?? '-' }}
               </td>
               <td class="py-2">
                 ${{ product.new_price }}
               </td>
-              <td class="py-2">
-                <p :title="product.client" class="truncate w-40">{{ product.client }}</p>
+              <td v-if="type == 'Producto de catálogo'" class="py-2">
+                <p :title="product.client" class="truncate w-40">{{ product.client ?? '-' }}</p>
               </td>
               <td class="py-2">
                 {{ product.quantity_sales?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
@@ -82,7 +89,7 @@
           </tbody>
         </table>
         <div v-else>
-          <p class="text-sm text-center text-gray-400">No hay Ventas registradas</p>
+          <p class="text-sm text-center text-gray-400">No hay ventas registradas</p>
         </div>
       </div>
       <!-- Estado de carga  -->
@@ -137,6 +144,7 @@ import { es } from 'date-fns/locale';
 export default {
   data() {
     return {
+      type: 'Producto de catálogo',
       currentMonth: null,
       loading: false,
       loadingCharts: false,
@@ -279,7 +287,7 @@ export default {
       this.productSelected = null;
       this.loading = true;
       try {
-        const response = await axios.get(route('sale-analitics.fetch-top-products', [this.familySelected, this.range]));
+        const response = await axios.get(route('sale-analitics.fetch-top-products', [this.familySelected, this.range, this.type]));
 
         if (response.status === 200) {
           this.topProducts = response.data.items;
@@ -335,6 +343,12 @@ export default {
         this.loadingCharts = false;
       }
     },
+    resetValues() {
+      this.topProducts = null;
+      this.familySelected = null;
+      this.productSelected = null;
+      this.range = 'Total';
+    }
   },
   computed: {
     getSalesByFamily() {
