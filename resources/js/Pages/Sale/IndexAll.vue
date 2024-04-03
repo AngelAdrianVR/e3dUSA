@@ -27,13 +27,12 @@
                 <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Producción en proceso</p>
                 <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Producción terminada</p>
             </div>
-            
+
             <!-- Filtro -->
             <div class="w-44 lg:ml-32 ml-4 mt-2">
-                <el-select @change="fetchItemsFiltered" v-model="filter" class="mt-2" clearable
-                    filterable placeholder="Selecciona una opción">
-                    <el-option v-for="item in options" :key="item" :label="item"
-                        :value="item" />
+                <el-select @change="fetchItemsFiltered" v-model="filter" class="mt-2"
+                    placeholder="Selecciona una opción">
+                    <el-option v-for="item in options" :key="item" :label="item" :value="item" />
                 </el-select>
             </div>
 
@@ -92,6 +91,11 @@
                                 </div>
                             </template>
                         </el-table-column>
+                        <el-table-column v-if="$page.props.auth.user.permissions.includes('Ver utilidades')" label="Utilidad" width="140">
+                            <template #default="scope">
+                                <SaleProfit :profit="scope.row.profit" />
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="user.name" label="Creado por" />
                         <el-table-column prop="created_at" label="Creado el" />
                         <el-table-column prop="company_branch.name" label="Cliente" />
@@ -106,7 +110,7 @@
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="promise_date" label="Fecha de entrega" />
+                        <el-table-column prop="promise_date" label="Fecha de entrega" width="180" />
                         <el-table-column align="right">
                             <template #default="scope">
                                 <el-dropdown trigger="click" @command="handleCommand">
@@ -120,8 +124,8 @@
                                                     class="fa-solid fa-eye"></i>
                                                 Ver</el-dropdown-item>
                                             <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar ordenes de venta') ||
-                                                scope.row.user.id == $page.props.auth.user.id"
-                                                :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                            scope.row.user.id == $page.props.auth.user.id" :command="'edit-' + scope.row.id"><i
+                                                    class="fa-solid fa-pen"></i>
                                                 Editar</el-dropdown-item>
                                             <el-dropdown-item
                                                 v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')"
@@ -149,6 +153,7 @@ import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
+import SaleProfit from "@/Components/MyComponents/SaleProfit.vue";
 import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import Pagination from "@/Components/MyComponents/Pagination.vue";
 import { Link } from "@inertiajs/vue3";
@@ -180,12 +185,12 @@ export default {
         AppLayout,
         TextInput,
         Link,
+        SaleProfit,
     },
     props: {
         sales: Object,
         company_branches: Array
     },
-
     methods: {
         async fetchMatches(search) {
             this.search = search;

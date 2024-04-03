@@ -91,15 +91,9 @@
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column label="Utilidad" width="140">
+                        <el-table-column v-if="$page.props.auth.user.permissions.includes('Ver utilidades')" label="Utilidad" width="140">
                             <template #default="scope">
-                                <div class="flex items-center space-x-2">
-                                    <div class="flex flex-col space-y-1 items-center">
-                                        <i class="fa-solid fa-flag-checkered"></i>
-                                        <StarRating :rating="scope.row.profit / 100" />
-                                    </div>
-                                    <p class="flex-0 w-[80%]">{{ scope.row.profit }} %</p>
-                                </div>
+                                <SaleProfit :profit="scope.row.profit" />
                             </template>
                         </el-table-column>
                         <el-table-column prop="user.name" label="Creado por" />
@@ -130,7 +124,7 @@
                                                     class="fa-solid fa-eye"></i>
                                                 Ver</el-dropdown-item>
                                             <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar ordenes de venta') ||
-            scope.row.user.id == $page.props.auth.user.id" :command="'edit-' + scope.row.id"><i
+                                                    scope.row.user.id == $page.props.auth.user.id" :command="'edit-' + scope.row.id"><i
                                                     class="fa-solid fa-pen"></i>
                                                 Editar</el-dropdown-item>
                                             <el-dropdown-item
@@ -159,7 +153,7 @@ import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
-import StarRating from "@/Components/MyComponents/StarRating.vue";
+import SaleProfit from "@/Components/MyComponents/SaleProfit.vue";
 import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import Pagination from "@/Components/MyComponents/Pagination.vue";
 import { Link } from "@inertiajs/vue3";
@@ -191,7 +185,7 @@ export default {
         AppLayout,
         TextInput,
         Link,
-        StarRating,
+        SaleProfit,
     },
     props: {
         sales: Object,

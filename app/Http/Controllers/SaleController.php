@@ -454,7 +454,4 @@ class SaleController extends Controller
 
         return response()->json(compact('has_sale'));
     }
-
- 
-
 }
