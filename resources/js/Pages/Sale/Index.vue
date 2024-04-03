@@ -91,20 +91,9 @@
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column label="Utilidad" width="140">
+                        <el-table-column v-if="$page.props.auth.user.permissions.includes('Ver utilidades')" label="Utilidad" width="140">
                             <template #default="scope">
-                                <div class="flex items-center space-x-2">
-                                    <div class="flex flex-col space-y-1 items-center">
-                                        <div class="flex items-center space-x-1">
-                                            <i v-if="scope.row.profit >= 25 && scope.row.profit <= 34" class="fa-solid fa-triangle-exclamation text-[9px] text-[#F09102]"></i>
-                                            <i v-else class="fa-solid fa-circle-minus text-[9px] text-[#D90505]"></i>
-                                            <i v-if="scope.row.profit >= 200" class="fa-solid fa-flag-checkered"></i>
-                                            <i v-else class="fa-solid fa-flag" :style="{ color: getFlagColor(scope.row.profit) }"></i>
-                                        </div>
-                                        <StarRating :rating="scope.row.profit / 100" />
-                                    </div>
-                                    <p class="flex-0 w-[80%]">{{ scope.row.profit }} %</p>
-                                </div>
+                                <SaleProfit :profit="scope.row.profit" />
                             </template>
                         </el-table-column>
                         <el-table-column prop="user.name" label="Creado por" />
@@ -135,7 +124,7 @@
                                                     class="fa-solid fa-eye"></i>
                                                 Ver</el-dropdown-item>
                                             <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar ordenes de venta') ||
-            scope.row.user.id == $page.props.auth.user.id" :command="'edit-' + scope.row.id"><i
+                                                    scope.row.user.id == $page.props.auth.user.id" :command="'edit-' + scope.row.id"><i
                                                     class="fa-solid fa-pen"></i>
                                                 Editar</el-dropdown-item>
                                             <el-dropdown-item
@@ -164,7 +153,7 @@ import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
-import StarRating from "@/Components/MyComponents/StarRating.vue";
+import SaleProfit from "@/Components/MyComponents/SaleProfit.vue";
 import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import Pagination from "@/Components/MyComponents/Pagination.vue";
 import { Link } from "@inertiajs/vue3";
@@ -196,26 +185,13 @@ export default {
         AppLayout,
         TextInput,
         Link,
-        StarRating,
+        SaleProfit,
     },
     props: {
         sales: Object,
         company_branches: Array
     },
     methods: {
-        getFlagColor(profit) {
-            if (profit <= 24) {
-                return "#D90505";
-            } else if (profit <= 49) {
-                return "#F09102";
-            } else if (profit == 50) {
-                return "#F0D802";
-            } else if (profit <= 99) {
-                return "#0355B5";
-            } else if (profit <= 150) {
-                return "#4DCC11";
-            }
-        },
         async fetchMatches(search) {
             this.search = search;
             this.loading = true;

@@ -50,6 +50,11 @@
                     @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="folio" label="Folio" width="100" />
+                    <el-table-column v-if="$page.props.auth.user.permissions.includes('Ver utilidades')" label="Utilidad" width="140">
+                            <template #default="scope">
+                                <SaleProfit :profit="scope.row.profit" />
+                            </template>
+                        </el-table-column>
                     <el-table-column prop="user.name" label="Creado por" />
                     <el-table-column prop="receiver" label="Receptor" />
                     <el-table-column prop="companyBranch.name" label="Cliente / Prospecto">
@@ -112,6 +117,7 @@ import axios from 'axios';
 import Checkbox from "@/Components/Checkbox.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
+import SaleProfit from "@/Components/MyComponents/SaleProfit.vue";
 import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import { Link } from "@inertiajs/vue3";
 
@@ -124,6 +130,7 @@ export default {
         SecondaryButton,
         Link,
         IndexSearchBar,
+        SaleProfit,
     },
     data() {
         return {

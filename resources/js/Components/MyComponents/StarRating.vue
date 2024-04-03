@@ -15,7 +15,6 @@ export default {
     rating: {
       type: Number,
       required: true,
-      validator: (value) => value >= 0 && value <= 3
     }
   },
   computed: {

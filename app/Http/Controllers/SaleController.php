@@ -438,9 +438,5 @@ class SaleController extends Controller
             $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->latest()->paginate(20));
             return inertia('Sale/IndexAll', compact('sales'));
         }
-
     }
-
- 
-
 }

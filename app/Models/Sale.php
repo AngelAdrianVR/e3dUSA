@@ -166,6 +166,7 @@ Sale extends Model implements HasMedia
         // Calcular el total de la venta y el costo total
         foreach ($cpcs as $cpc) {
             $totalSale += $cpc->quantity * $cpc->catalogProductCompany->new_price;
+            // el producto de catalogo ya toma en cuenta el precio de materia prima y costos de produccion
             $totalCost += $cpc->quantity * $cpc->catalogProductCompany->catalogProduct->cost;
             $currency = $cpc->catalogProductCompany->new_currency;
         }
@@ -177,12 +178,13 @@ Sale extends Model implements HasMedia
         if ($totalCost > 0) {
             $profitPercentage = round(($profit / $totalCost) * 100);
         } else {
+            $profit = 0;
             $profitPercentage = 0;
         }
 
         return [
-            'profit_money' => $profit,
-            'profit_percentage' => $profitPercentage,
+            'money' => $profit,
+            'percentage' => $profitPercentage,
             'total_sale' => $totalSale,
             'total_cost' => $totalCost,
             'currency' => $currency
