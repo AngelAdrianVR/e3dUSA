@@ -27,13 +27,12 @@
                 <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Producción en proceso</p>
                 <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Producción terminada</p>
             </div>
-            
+
             <!-- Filtro -->
             <div class="w-44 lg:ml-32 ml-4 mt-2">
-                <el-select @change="fetchItemsFiltered" v-model="filter" class="mt-2" clearable
-                    filterable placeholder="Selecciona una opción">
-                    <el-option v-for="item in options" :key="item" :label="item"
-                        :value="item" />
+                <el-select @change="fetchItemsFiltered" v-model="filter" class="mt-2"
+                    placeholder="Selecciona una opción">
+                    <el-option v-for="item in options" :key="item" :label="item" :value="item" />
                 </el-select>
             </div>
 
@@ -92,6 +91,34 @@
                                 </div>
                             </template>
                         </el-table-column>
+                        <el-table-column label="Utilidad" width="140">
+                            <template #default="scope">
+                                <el-tooltip placement="top">
+                                    <template #content>
+                                        <p>{{ getTooltipTitle(scope.row.profit.profit_percentage) }}</p>
+                                        <p class="text-[#D27927]">Venta: <span class="text-white">{{ scope.row.profit.currency + ' ' + scope.row.profit.total_sale.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span></p>
+                                        <p class="text-[#D27927]">Costo de producción: <span class="text-white">{{ scope.row.profit.currency + ' ' + scope.row.profit.total_cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span></p>
+                                        <p class="text-[#2AD227]">Utilidad: <span class="text-white">{{ scope.row.profit.currency + ' ' + scope.row.profit.profit_money.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span></p>
+                                    </template>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="flex flex-col space-y-1 items-center">
+                                            <div class="flex items-center space-x-1">
+                                                <i v-if="scope.row.profit.profit_percentage >= 25 && scope.row.profit.profit_percentage <= 34"
+                                                    class="fa-solid fa-triangle-exclamation text-[9px] text-[#F09102]"></i>
+                                                <i v-else-if="scope.row.profit.profit_percentage < 24"
+                                                    class="fa-solid fa-circle-minus text-[9px] text-[#D90505]"></i>
+                                                <i v-if="scope.row.profit.profit_percentage >= 200"
+                                                    class="fa-solid fa-flag-checkered"></i>
+                                                <i v-else class="fa-solid fa-flag"
+                                                    :style="{ color: getFlagColor(scope.row.profit.profit_percentage) }"></i>
+                                            </div>
+                                            <StarRating :rating="scope.row.profit.profit_percentage / 100" />
+                                        </div>
+                                        <p class="flex-0 w-[80%]">{{ scope.row.profit.profit_percentage }} %</p>
+                                    </div>
+                                </el-tooltip>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="user.name" label="Creado por" />
                         <el-table-column prop="created_at" label="Creado el" />
                         <el-table-column prop="company_branch.name" label="Cliente" />
@@ -106,7 +133,7 @@
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="promise_date" label="Fecha de entrega" />
+                        <el-table-column prop="promise_date" label="Fecha de entrega" width="180" />
                         <el-table-column align="right">
                             <template #default="scope">
                                 <el-dropdown trigger="click" @command="handleCommand">
@@ -120,8 +147,8 @@
                                                     class="fa-solid fa-eye"></i>
                                                 Ver</el-dropdown-item>
                                             <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar ordenes de venta') ||
-                                                scope.row.user.id == $page.props.auth.user.id"
-                                                :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+            scope.row.user.id == $page.props.auth.user.id" :command="'edit-' + scope.row.id"><i
+                                                    class="fa-solid fa-pen"></i>
                                                 Editar</el-dropdown-item>
                                             <el-dropdown-item
                                                 v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')"
@@ -149,6 +176,7 @@ import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
+import StarRating from "@/Components/MyComponents/StarRating.vue";
 import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import Pagination from "@/Components/MyComponents/Pagination.vue";
 import { Link } from "@inertiajs/vue3";
@@ -158,7 +186,7 @@ export default {
     data() {
         return {
             disableMassiveActions: true,
-            filter: 'Todas las órdenes', //filtro
+            filter: 'Mis órdenes', //filtro
             options: ['Mis órdenes', 'Todas las órdenes'], //filtro
             // inputSearch: '',
             search: '',
@@ -180,13 +208,49 @@ export default {
         AppLayout,
         TextInput,
         Link,
+        StarRating,
     },
     props: {
         sales: Object,
         company_branches: Array
     },
-
     methods: {
+        getTooltipTitle(profit) {
+            if (profit <= 24) {
+                return "¡Alto! Supervisar volumen y hacer contrato";
+            } else if (profit <= 34) {
+                return "¡Utilidad de alto riesgo! Supervisar";
+            } else if (profit <= 49) {
+                return "Potencial sin explorar";
+            } else if (profit == 50) {
+                return "Crecimiento positivo";
+            } else if (profit <= 99) {
+                return "Margen aceptable";
+            } else if (profit == 100) {
+                return "Ganancia sólida";
+            } else if (profit <= 150) {
+                return "Plusvalía destacada";
+            } else if (profit <= 200) {
+                return "Buen rendimiento!";
+            } else if (profit < 300) {
+                return "Excelencia en ganancia!";
+            } else if (profit >= 300) {
+                return "Objetivo ejemplar!";
+            }
+        },
+        getFlagColor(profit) {
+            if (profit <= 24) {
+                return "#D90505";
+            } else if (profit <= 49) {
+                return "#F09102";
+            } else if (profit == 50) {
+                return "#F0D802";
+            } else if (profit <= 99) {
+                return "#0355B5";
+            } else if (profit <= 150) {
+                return "#4DCC11";
+            }
+        },
         async fetchMatches(search) {
             this.search = search;
             this.loading = true;

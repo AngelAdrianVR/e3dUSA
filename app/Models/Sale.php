@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class 
+class
 Sale extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
@@ -157,7 +157,35 @@ Sale extends Model implements HasMedia
 
     public function getProfit()
     {
-        return 2;
-        // $this->catalogProductCompanySales->each();
+        $cpcs = $this->catalogProductCompanySales;
+
+        $totalSale = 0;
+        $totalCost = 0;
+        $currency = '';
+
+        // Calcular el total de la venta y el costo total
+        foreach ($cpcs as $cpc) {
+            $totalSale += $cpc->quantity * $cpc->catalogProductCompany->new_price;
+            $totalCost += $cpc->quantity * $cpc->catalogProductCompany->catalogProduct->cost;
+            $currency = $cpc->catalogProductCompany->new_currency;
+        }
+
+        // Calcular la ganancia en dinero
+        $profit = $totalSale - $totalCost;
+
+        // Calcular la ganancia en porcentaje
+        if ($totalCost > 0) {
+            $profitPercentage = round(($profit / $totalCost) * 100);
+        } else {
+            $profitPercentage = 0;
+        }
+
+        return [
+            'profit_money' => $profit,
+            'profit_percentage' => $profitPercentage,
+            'total_sale' => $totalSale,
+            'total_cost' => $totalCost,
+            'currency' => $currency
+        ];
     }
 }
