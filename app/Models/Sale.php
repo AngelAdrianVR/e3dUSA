@@ -165,10 +165,10 @@ Sale extends Model implements HasMedia
 
         // Calcular el total de la venta y el costo total
         foreach ($cpcs as $cpc) {
-            $totalSale += $cpc->quantity * $cpc->catalogProductCompany->new_price;
+            $totalSale += $cpc->quantity * $cpc->catalogProductCompany?->new_price;
             // el producto de catalogo ya toma en cuenta el precio de materia prima y costos de produccion
-            $totalCost += $cpc->quantity * $cpc->catalogProductCompany->catalogProduct->cost;
-            $currency = $cpc->catalogProductCompany->new_currency;
+            $totalCost += $cpc->quantity * $cpc->catalogProductCompany?->catalogProduct?->cost;
+            $currency = $cpc->catalogProductCompany?->new_currency;
         }
 
         // Calcular la ganancia en dinero
