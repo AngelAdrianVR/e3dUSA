@@ -236,10 +236,11 @@ class UserController extends Controller
             ->where('is_paused', false)
             ->whereNotNull('started_at')
             ->whereNull('finished_at')
-            ->exists();
+            ->where('has_low_stock', false)
+            ->count();
 
         if ($productions_in_progress) {
-            return response()->json(['message' => 'Tienes órden(es) de producción en proceso. Primero debes pausarla(s)'], 422);
+            return response()->json(['message' => "Tienes $productions_in_progress órden(es) de producción en proceso. Primero debes pausarla(s)"], 422);
         } else {
             $next = $user->setAttendance();
 

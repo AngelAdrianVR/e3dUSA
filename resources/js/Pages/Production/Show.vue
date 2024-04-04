@@ -79,7 +79,7 @@
                     <span>{{ sale.data?.tracking_guide ?? '--' }}</span>
                     <span class="text-gray-500 my-1">Costo logística</span>
                     <span>$ {{ sale.data?.freight_cost }}</span>
-                    <span v-if="sale.data?.promise_date" class="text-gray-500 my-1">Fecha de entrega</span>
+                    <span v-if="sale.data?.promise_date" class="text-gray-500 my-1">Fecha de embarque esperada</span>
                     <span v-if="sale.data?.promise_date" class="text-red-600 bg-red-200 px-2 py-1">
                         {{ sale.data.promise_date }}
                     </span>
@@ -92,7 +92,7 @@
                             <span>{{ item.traking_guide }}</span>
                             <span class="text-gray-500 my-1">Costo de envío</span>
                             <span>$ {{ item.freight_cost }}</span>
-                            <span v-if="item.promise_date" class="text-gray-500 my-1">Fecha de entrega</span>
+                            <span v-if="item.promise_date" class="text-gray-500 my-1">Fecha de embarque esperada</span>
                             <span v-if="item.promise_date" class="text-red-600 bg-red-200 px-2 py-1">{{
                                 dateFormat(item.promise_date) }}</span>
                         </article>
