@@ -120,17 +120,21 @@
             <!-- <i :class="currentIndexStorage == storages.length - 1 ? 'hidden' : 'block'" @click="next"
               class="fa-solid fa-chevron-right ml-4 text-lg text-gray-600 cursor-pointer p-1 mb-2 rounded-full"></i> -->
           </div>
-          <div class="mt-8 ml-6 text-sm">
+          <div class="mt-8 ml-6 text-xs">
             <div class="flex mb-2">
-              <p class="w-1/3 text-primary">Unidades disponibles</p>
-              <p>
-                {{ (storage.data.quantity - storage.data.quantityCommited).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,
+              <p class="w-1/2 text-primary">Ubicación</p>
+              <p class="px-5">{{ storage.data.location ?? "--" }}</p>
+            </div>
+            <div class="flex mb-2">
+              <p class="w-1/2 text-primary">Unidades totales en almacén</p>
+              <p class="px-5">
+                {{ storage.data.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,
                   ",") ?? "0" }}
                 {{ storage.data.storageable.measure_unit ?? "" }}
               </p>
             </div>
             <div class="flex mb-2">
-              <p class="w-1/3 text-primary">Unidades comprometidas</p>
+              <p class="w-1/2 text-primary">Unidades comprometidas</p>
               <el-tooltip content="Dar entrada a almacén" placement="top">
                 <template #content>
                   <ul>
@@ -140,15 +144,20 @@
                   </ul>
                   <p v-if="!storage.data.salesInProcess.length">No hay ordenes de venta en proceso</p>
                 </template>
-                <p>
+                <p class="px-5">
                   {{ storage.data.quantityCommited.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0" }}
                   {{ storage.data.storageable.measure_unit ?? "" }}
+                  <i class="fa-solid fa-minus ml-3"></i>
                 </p>
               </el-tooltip>
             </div>
-            <div class="flex mb-3">
-              <p class="w-1/3 text-primary">Ubicación</p>
-              <p>{{ storage.data.location ?? "--" }}</p>
+            <div class="flex mb-2">
+              <p class="w-1/2 text-primary">Unidades disponibles para venta</p>
+              <p class="border-t border-black px-5">
+                {{ (storage.data.quantity - storage.data.quantityCommited).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,
+                  ",") ?? "0" }}
+                {{ storage.data.storageable.measure_unit ?? "" }}
+              </p>
             </div>
           </div>
         </div>
