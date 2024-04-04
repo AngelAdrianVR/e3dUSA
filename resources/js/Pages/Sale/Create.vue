@@ -295,7 +295,7 @@
                                         <i class="fa-solid fa-magnifying-glass"></i>
                                     </span>
                                 </el-tooltip>
-                                <el-select @change="fetchCatalogProductData" v-model="product.catalog_product_company_id"
+                                <el-select @change="fetchCatalogProductData(); checkIfProductHasSale()" v-model="product.catalog_product_company_id"
                                     class="w-full" no-data-text="No hay productos registrados a este cliente"
                                     placeholder="Selecciona un producto *">
                                     <el-option
@@ -348,13 +348,33 @@
                             <div class="flex items-center space-x-6 ml-5 w-full">
                                 <div>
                                     <label class="block text-xs">Cantidad *</label>
-                                    <el-input-number @change="validateQuantity()" v-model="product.quantity" :min="0.01" />
+                                    <el-input-number :disabled="loading || !product.catalog_product_company_id" @change="validateQuantity()" v-model="product.quantity" :min="0.01" />
                                 </div>
-                                <el-select @change="console.log('Validar si el diseño concuerda con el id del producto')" v-model="design_authorization_id" class="mt-3" clearable
-                                    filterable placeholder="Formato de autorización de diseño">
-                                    <el-option v-for="item in design_authorizations" :key="item.id" :label="item.name"
-                                        :value="item.id" />
-                                </el-select>
+                                <div v-if="selectedCatalogProductHasSale === false" class="w-full">
+                                    <div class="flex items-center space-x-3">
+                                        <span @click="$inertia.get(route('design-authorizations.create', {company_id: selectedCompanyId}))" class="text-xs text-primary cursor-pointer inline">Crear formato</span>
+                                        <el-tooltip placement="top">
+                                            <template #content>
+                                                <p>
+                                                    Es primera venta de este producto, <br>
+                                                    es necesario seleccionar el formato de autorización <br>
+                                                    de diseño para poder agregarlo a la orden de venta. <br>
+                                                    Si aún no tienesun formato creado, da clic en 'crear formato'.
+                                                </p>
+                                            </template>
+                                            <div
+                                                class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                                                <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                            </div>
+                                        </el-tooltip>
+                                        <span v-if="product.design_authorization_id" @click="openDesignAuthorization()" class="text-xs text-secondary cursor-pointer">Ver formato<i class="fa-regular fa-eye ml-2"></i></span>
+                                    </div>
+                                    <el-select v-model="product.design_authorization_id" clearable
+                                        filterable placeholder="Formato de autorización de diseño" no-data-text="No hay formatos autorizados">
+                                        <el-option v-for="item in design_authorizations" :key="item.id" :label="item.name"
+                                            :value="item.id" />
+                                    </el-select>
+                                </div>
                                 <div v-if="form.is_sale_production" class="flex items-center space-x-2 mt-3 w-1/2">
                                     <label class="flex items-center">
                                         <Checkbox v-model:checked="product.is_new_design" class="bg-transparent" />
@@ -390,7 +410,7 @@
                         </div>
                         <div class="col-span-full">
                             <SecondaryButton @click="addProduct"
-                                :disabled="form.processing || !product.catalog_product_company_id || !product.quantity">
+                                :disabled="form.processing || !product.catalog_product_company_id || !product.quantity || (selectedCatalogProductHasSale ? false : !product.design_authorization_id)">
                                 {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
                             </SecondaryButton>
                         </div>
@@ -489,6 +509,7 @@ export default {
             showCreateProjectModal: false,
             availableStock: null,
             product: {
+                design_authorization_id: null, //formato de autorización seleccionado
                 catalog_product_company_id: null,
                 quantity: null,
                 notes: null,
@@ -500,8 +521,9 @@ export default {
             alertMaxQuantity: 0,
             selectedCatalogProduct: null,
             commitedUnits: null,
-            design_authorization_id: null,
+            selectedCatalogProductHasSale: null, //valida si Producto seleccionado tiene al menos una venta. (bool)
             design_authorizations: null, //formatos de autorizaión de diseño del cliente
+            selectedCompanyId: null, //guarda el id de la matriz que contiene la sucursal seleccionada
             shippingCompanies: [
                 'PAQUETEXPRESS',
                 'LOCAL',
@@ -537,6 +559,10 @@ export default {
         sample: Object,
     },
     methods: {
+        openDesignAuthorization() {
+        const url = route('design-authorizations.show', this.product.design_authorization_id);
+        window.open(url, '_blank');
+        },
         addPartial() {
             const partiality = {
                 shipping_company: null,
@@ -573,6 +599,17 @@ export default {
                 });
             }
         },
+        //Check if catalog product company has sales. if dont, ask for design authorization.
+        async checkIfProductHasSale() {
+            try {
+                const response = await axios.get(route('sales.check-if-has-sale', this.product.catalog_product_company_id));
+                if ( response.status === 200 ) {
+                    this.selectedCatalogProductHasSale = response.data.has_sale;
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
         store() {
             this.form.post(route('sales.store'), {
                 onSuccess: () => {
@@ -587,12 +624,14 @@ export default {
         },
         getImportantNotes() {
             this.importantNotes = this.company_branches.find(item => item.id == this.form.company_branch_id)?.important_notes;
+
+            //obtiene el id de la matriz para pasarla como parametro en creacion de formato de autorización de diseño.
+            this.selectedCompanyId = this.company_branches.find(item => item.id == this.form.company_branch_id).company_id;
         },
         async getDesignAuthorizations() {
             try {
-                const response = axios.get(route('design-authorizations.fetch-for-company-branch', this.form.company_branch_id));
+                const response = await axios.get(route('design-authorizations.fetch-for-company-branch', this.form.company_branch_id));
                 if (response.status === 200) {
-                    console.log('hola');
                     this.design_authorizations = response.data.items;
                 }
             } catch (error) {
@@ -670,6 +709,9 @@ export default {
                 this.form.products.push(product);
             }
 
+            //quitar formato seleccionado de auto. de diseño de la lista para que no se pueda volver seleccionar 
+            // this.refreshDesignAuthorizationsList(this.product.design_authorization_id);
+
             // resetear variables
             this.resetProductForm();
             this.selectedCatalogProduct = null;
@@ -689,8 +731,16 @@ export default {
             this.product.quantity = null;
             this.product.notes = null;
             this.product.part_number = null;
+            this.product.design_authorization_id = null; //formato de autorización.
             this.product.is_new_design = false;
             this.product.requires_medallion = false;
+        },
+        //quitar formato seleccionado de auto. de diseño de la lista para que no se pueda volver seleccionar 
+        refreshDesignAuthorizationsList(designAuthorizationId) { 
+            const itemIndex = this.design_authorizations.findIndex(item => item.id == designAuthorizationId);
+            if (itemIndex != -1) {
+                this.design_authorizations.splice(itemIndex, 1);
+            }
         },
         disabledDate(time) {
             const today = new Date();
