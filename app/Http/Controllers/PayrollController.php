@@ -230,6 +230,10 @@ class PayrollController extends Controller
         $payroll = Payroll::find($request->payroll_id);
         $processed = collect($payroll->getProcessedAttendances($request->user_id));
         $user = User::find($request->user_id);
+        $t = collect($user->employee_properties['work_days']);
+        $workDays = $t->filter(function ($wd) {
+            return $wd['check_in'] !== null;
+        });
 
         // bonuses
         $bonuses = [];
@@ -241,18 +245,18 @@ class PayrollController extends Controller
                 : $current_bonus->half_time;
 
             if ($user_bonus_id === 1) { // Asistencia
-                $absent = $processed->first(fn ($item) => $item->justification_event_id === 5);
+                $absent = $processed->first(fn ($item) => $item->justification_event_id <= 5  );
                 if ($absent) {
                     $amount = 0;
                 }
             } elseif ($user_bonus_id === 2) { //Puntualidad
                 $days_late = $processed->filter(fn ($item) => $item->late)->count();
-                $absents = $processed->filter(fn ($item) => $item->justification_event_id === 5)->count();
-                $discount = $amount / 6;
+                $absents = $processed->filter(fn ($item) => $item->justification_event_id <= 5)->count();
+                $discount = $amount / $workDays->count();
                 $amount -= ($days_late + $absents) * $discount;
             } elseif ($user_bonus_id === 3) { //productividad
-                $absents = $processed->filter(fn ($item) => $item->justification_event_id === 5)->count();
-                $discount = $amount / 6;
+                $absents = $processed->filter(fn ($item) => $item->justification_event_id <= 5)->count();
+                $discount = $amount / $workDays->count();
                 $amount -= $absents * $discount;
             } elseif ($user_bonus_id === 4) { //Prima dominical
                 if (is_null($processed[2]->check_out)) {
@@ -260,8 +264,8 @@ class PayrollController extends Controller
                 }
             } elseif ($user_bonus_id === 5) { //Puntualidad jefe produccion
                 $days_late = $processed->filter(fn ($item) => $item->late)->count();
-                $absents = $processed->filter(fn ($item) => $item->justification_event_id === 5)->count();
-                $discount = $amount / 6;
+                $absents = $processed->filter(fn ($item) => $item->justification_event_id <= 5)->count();
+                $discount = $amount / $workDays->count();
                 $amount -= ($days_late + $absents) * $discount;
             }
 
