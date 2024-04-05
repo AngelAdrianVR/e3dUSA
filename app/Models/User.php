@@ -166,6 +166,7 @@ class User extends Authenticatable
         ->where('is_paused', true)
         ->whereNotNull('started_at')
         ->whereNull('finished_at')
+        ->where('has_low_stock', false)
         ->get()->count();
 
         return $pendent_productions;
