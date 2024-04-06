@@ -18,14 +18,14 @@
       <div class="flex justify-between space-x-7 mt-4 lg:w-1/2">
         <div class="flex items-center space-x-4 w-2/3 lg:w-1/2">
           <!-- selector de familia -->
-          <el-select v-if="type != 'Buscar producto'" @change="fetchProductSalesTop" class="lg:w-1/2" v-model="familySelected" filterable
-            placeholder="Seleccione la familia" no-data-text="No hay opciones registradas"
-            no-match-text="No se encontraron coincidencias">
+          <el-select v-if="type != 'Buscar producto'" @change="fetchProductSalesTop" class="lg:w-1/2"
+            v-model="familySelected" filterable placeholder="Seleccione la familia"
+            no-data-text="No hay opciones registradas" no-match-text="No se encontraron coincidencias">
             <el-option v-for="family in families" :key="family" :label="family.label" :value="family.code" />
           </el-select>
           <!-- selector de producto de catalogo individual -->
-          <el-select v-else @change="fetchCatalogProductSales" class="lg:w-1/2" v-model="catalogProductSelected" filterable
-            placeholder="Seleccione el producto" no-data-text="No hay opciones registradas"
+          <el-select v-else @change="fetchCatalogProductSales" class="lg:w-1/2" v-model="catalogProductSelected"
+            filterable placeholder="Seleccione el producto" no-data-text="No hay opciones registradas"
             no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in catalog_products" :key="item" :label="item.name" :value="item.part_number" />
           </el-select>
@@ -73,7 +73,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="product in topProducts" :key="product" @click="fetchProductInfo(product, type == 'Materia prima' ? 'sale-analitics.fetch-raw-material-info' : 'sale-analitics.fetch-product-info')"
+            <tr v-for="product in topProducts" :key="product"
+              @click="fetchProductInfo(product, type == 'Materia prima' ? 'sale-analitics.fetch-raw-material-info' : 'sale-analitics.fetch-product-info')"
               class="mb-4 hover:text-primary cursor-pointer">
               <td class="py-2 pl-2 rounded-l-full">
                 {{ product.part_number }}
@@ -117,9 +118,12 @@
               <img :src="productSelected.media?.original_url" class="rounded-md object-contain w-full h-28">
             </figure>
             <div class="lg:grid grid-cols-2 gap-4 text-center w-full">
-              <LinealChart :options="productAmountSalesMonth" :title="'Ventas por mes ( ' + productSelected.quantity_sales.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' Piezas totales )'" />
-              <LinealChart :options="productMoneySalesMonth" :title="'Monto por mes ( Monto total $' + productSelected.total_money.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' MXN )'" />
-              <BarChart v-if="type == 'Producto de catálogo'" :options="barChartOptions" title="Ventas año en curso vs anterior" />
+              <LinealChart :options="productAmountSalesMonth"
+                :title="'Ventas por mes ( ' + productSelected.quantity_sales.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' Piezas totales )'" />
+              <LinealChart :options="productMoneySalesMonth"
+                :title="'Monto por mes ( Monto total $' + productSelected.total_money.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' MXN )'" />
+              <BarChart v-if="type == 'Producto de catálogo'" :options="barChartOptions"
+                title="Ventas año en curso vs anterior" />
             </div>
           </div>
         </div>
@@ -131,9 +135,14 @@
 
       <!-- Estadisticas -->
       <h2 class="text-primary lg:text-lg text-sm lg:mt-20 mt-6 font-bold">Estadísticas</h2>
-      <div class="lg:grid grid-cols-1 gap-10 mt-4 space-y-4 lg:space-y-0">
-        <PieChart v-for="(item, index) in pieChartOptions" :key="index" :options="item.data" :title="item.title"
-          :icon="item.icon" />
+      <el-date-picker @change="fetchEstatisticsData" v-model="estatisticsMonth" type="month" placeholder="Elige el mes y año" format="MM-YYYY"
+        value-format="YYYY-MM-D" class="mt-2" />
+      <div>
+        <Loading v-if="loadingEstatistics" class="mt-24 mb-36" />
+        <div v-else class="lg:grid grid-cols-1 gap-10 mt-4 space-y-4 lg:space-y-0">
+          <PieChart v-for="(item, index) in pieChartOptions" :key="index" :options="item.data" :title="item.title"
+            :icon="item.icon" />
+        </div>
       </div>
     </div>
   </AppLayoutNoHeader>
@@ -145,6 +154,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import LinealChart from "@/Components/MyComponents/LinealChart.vue";
 import ColumWithMakersChart from "@/Components/MyComponents/ColumWithMakersChart.vue";
 import BarChart from "@/Components/MyComponents/BarChart.vue";
+import Loading from "@/Components/MyComponents/Loading.vue";
 import axios from 'axios';
 import PieChart from '@/Components/MyComponents/PieChart.vue';
 import { format } from 'date-fns';
@@ -154,9 +164,12 @@ export default {
   data() {
     return {
       type: 'Producto de catálogo',
-      currentMonth: null,
+      estatisticsMonth: format(new Date(), 'yyyy-MM-dd'),
+      sales: [],
+      // currentMonth: null,
       loading: false,
       loadingCharts: false,
+      loadingEstatistics: false,
       topProducts: null,
       familySelected: null,
       productSelected: null,
@@ -225,9 +238,10 @@ export default {
     InputLabel,
     PieChart,
     BarChart,
+    Loading,
   },
   props: {
-    current_month_sales: Array,
+    // current_month_sales: Array,
     catalog_products: Array,
     meet_ways: Array,
   },
@@ -236,45 +250,50 @@ export default {
       this.meet_ways[0]['concept'] = 'No especificado';
       this.pieChartOptions = [
         {
-          title: 'Ventas de emblemas ' + this.currentMonth,
+          title: 'Ventas de emblemas ' + this.formatEstatisticsMonth(),
           icon: '',
           data: {
+            unit: ' $MXN',
             colors: ['#31CB23', '#D47914', '#D90537', '#888888', '#0355B5', '#0397B5', '#A41314'],
             labels: this.getSalesByFamily['EM'].map(item => item[0]),
             series: this.getSalesByFamily['EM'].map(item => item[1]),
           }
         },
         {
-          title: 'Ventas de llaveros ' + this.currentMonth,
+          title: 'Ventas de llaveros ' + this.formatEstatisticsMonth(),
           icon: '',
           data: {
+            unit: ' $MXN',
             colors: ['#31CB23', '#D47914', '#D90537', '#888888', '#0355B5', '#0397B5', '#A41314'],
             labels: this.getSalesByFamily['LL'].map(item => item[0]),
             series: this.getSalesByFamily['LL'].map(item => item[1]),
           }
         },
         {
-          title: 'Ventas de porta placas abs y metal ' + this.currentMonth,
+          title: 'Ventas de porta placas abs y metal ' + this.formatEstatisticsMonth(),
           icon: '',
           data: {
+            unit: ' $MXN',
             colors: ['#31CB23', '#D47914', '#D90537', '#888888', '#0355B5', '#0397B5', '#A41314'],
             labels: this.getSalesByFamily['PP'].map(item => item[0]),
             series: this.getSalesByFamily['PP'].map(item => item[1]),
           }
         },
         {
-          title: 'Ventas de estireno ' + this.currentMonth,
+          title: 'Ventas de estireno ' + this.formatEstatisticsMonth(),
           icon: '',
           data: {
+            unit: ' $MXN',
             colors: ['#31CB23', '#D47914', '#D90537', '#888888', '#0355B5', '#0397B5', '#A41314'],
             labels: this.getSalesByFamily['PE'].map(item => item[0]),
             series: this.getSalesByFamily['PE'].map(item => item[1]),
           }
         },
         {
-          title: 'Ventas de tapetes ' + this.currentMonth,
+          title: 'Ventas de tapetes ' + this.formatEstatisticsMonth(),
           icon: '',
           data: {
+            unit: ' $MXN',
             colors: ['#31CB23', '#D47914', '#D90537', '#888888', '#0355B5', '#0397B5', '#A41314'],
             labels: this.getSalesByFamily['TP'].map(item => item[0]),
             series: this.getSalesByFamily['TP'].map(item => item[1]),
@@ -284,6 +303,7 @@ export default {
           title: 'Cómo nos conocieron los clientes',
           icon: '<i class="fa-solid fa-user-check ml-2"></i>',
           data: {
+            unit: ' clientes',
             colors: ['#31CB23', '#D47914', '#D90537', '#888888', '#0355B5', '#0397B5', '#A41314'],
             labels: this.meet_ways.map(item => item['concept']),
             series: this.meet_ways.map(item => item['total']),
@@ -291,17 +311,30 @@ export default {
         },
       ];
     },
-    getCurrentMonth() {
-      // Obtiene la fecha actual
-      const currentDate = new Date();
+    formatEstatisticsMonth() {
       // Formatea el mes actual en español
-      this.currentMonth = format(currentDate, 'MMMM', { locale: es });
+      return format(new Date(this.estatisticsMonth), 'MMMM, Y', { locale: es });
     },
-    handleFetchMethod () {
-      if ( this.type == 'Buscar producto' ) {
+    handleFetchMethod() {
+      if (this.type == 'Buscar producto') {
         this.fetchCatalogProductSales()
       } else {
         this.fetchProductSalesTop();
+      }
+    },
+    async fetchEstatisticsData() {
+      this.loadingEstatistics = true;
+      try {
+        const response = await axios.get(route('sale-analitics.get-estatistics-data', this.estatisticsMonth));
+
+        if (response.status === 200) {
+          this.sales = response.data.items;
+          this.setPieChartOptions();
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.loadingEstatistics = false;
       }
     },
     async fetchProductSalesTop() {
@@ -364,11 +397,11 @@ export default {
             categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
             series: [{
               name: 'Año anterior',
-              data: Object.values(response.data.yearSales.lastYearSales).map(item => (item/1000).toFixed(2)),
+              data: Object.values(response.data.yearSales.lastYearSales).map(item => (item / 1000).toFixed(2)),
             },
             {
               name: 'Año en curso',
-              data: Object.values(response.data.yearSales.currentYearSales).map(item => (item/1000).toFixed(2)),
+              data: Object.values(response.data.yearSales.currentYearSales).map(item => (item / 1000).toFixed(2)),
             }],
           }
         }
@@ -397,7 +430,7 @@ export default {
       };
 
       // Filtrar las ventas que cumplen con los criterios
-      const filteredSales = this.current_month_sales.filter(sale => {
+      const filteredSales = this.sales.filter(sale => {
         return (
           sale.catalog_product_company_sales &&
           sale.catalog_product_company_sales.length > 0 &&
@@ -424,10 +457,12 @@ export default {
 
         const countByFamily = sales.reduce((count, sale) => {
           sale.catalog_product_company_sales.forEach(productSale => {
-            const family = productSale.catalog_product_company.catalog_product.part_number.split('-')[1];
+            const family = productSale.catalog_product_company?.catalog_product.part_number.split('-')[1];
 
             if (family in resultArrays) {
-              count[family] = (count[family] || 0) + productSale.quantity;
+              // convertir a pesos aquellas ventas en dolares ($17.2 en promedio)
+              const factor = productSale.catalog_product_company.new_currency == '$MXN' ? 1 : 17.2;
+              count[family] = (count[family] || 0) + productSale.quantity * productSale.catalog_product_company.new_price * factor;
             }
           });
 
@@ -455,8 +490,8 @@ export default {
       return resultArrays;
     },
   },
-  mounted() {
-    this.getCurrentMonth();
+  async mounted() {
+    await this.fetchEstatisticsData();
     this.setPieChartOptions();
   },
 };
