@@ -166,7 +166,6 @@ export default {
       type: 'Producto de catálogo',
       estatisticsMonth: format(new Date(), 'yyyy-MM-dd'),
       sales: [],
-      // currentMonth: null,
       loading: false,
       loadingCharts: false,
       loadingEstatistics: false,
@@ -241,7 +240,6 @@ export default {
     Loading,
   },
   props: {
-    // current_month_sales: Array,
     catalog_products: Array,
     meet_ways: Array,
   },

@@ -16,17 +16,12 @@ class SaleAnaliticController extends Controller
     {
         $catalog_products = CatalogProduct::all(['id', 'name', 'part_number']);
 
-        $current_month_sales = Sale::with(['companyBranch', 'catalogProductCompanySales.catalogProductCompany.catalogProduct'])->where('is_sale_production', true)
-            ->whereNotNull('authorized_user_name')
-            ->whereMonth('created_at', today())
-            ->get();
-
         $meet_ways = CompanyBranch::selectRaw('meet_way as concept, count(*) as total')
             ->groupBy('meet_way')
             ->get()
             ->toArray();
 
-        return inertia('SaleAnalitic/Index', compact('current_month_sales', 'meet_ways', 'catalog_products'));
+        return inertia('SaleAnalitic/Index', compact('current_month_sales', 'meet_ways'));
     }
 
 

@@ -442,6 +442,7 @@ export default {
             order_via: this.sale.order_via,
             tracking_guide: this.sale.tracking_guide,
             notes: this.sale.notes,
+            promise_date: this.sale.promise_date,
             is_high_priority: Boolean(this.sale.is_high_priority),
             products: [],
             media: null,

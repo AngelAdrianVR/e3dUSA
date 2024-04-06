@@ -89,7 +89,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Company::class, 'user_id', 'id');
     }
-    
+
     public function companiesAsSeller()
     {
         return $this->hasMany(Company::class, 'seller_id', 'id');
@@ -159,15 +159,15 @@ class User extends Authenticatable
 
         return false;
     }
-    
+
     public function getPendentProductions()
     {
         $pendent_productions = $this->productions()
-        ->where('is_paused', true)
-        ->whereNotNull('started_at')
-        ->whereNull('finished_at')
-        ->where('has_low_stock', false)
-        ->get()->count();
+            ->where('is_paused', true)
+            ->whereNotNull('started_at')
+            ->whereNull('finished_at')
+            ->where('has_low_stock', false)
+            ->get()->count();
 
         return $pendent_productions;
     }
@@ -367,5 +367,22 @@ class User extends Authenticatable
             // Si no se encuentra la fecha de ingreso, puedes manejarlo de la manera que desees, como establecer un valor predeterminado.
             return 'Super admin';
         }
+    }
+
+    public function getLateProductions($startDate)
+    {
+        $limitDate = $startDate->copy()->addDays(7); // Fecha límite una semana después
+
+        return $this->productions->filter(function ($production) use ($startDate, $limitDate) {
+            $promiseDate = optional($production->catalogProductCompanySale->sale)->promise_date;
+
+            return $production->created_at >= $startDate &&
+                $production->created_at <= $limitDate &&
+                $promiseDate !== null &&
+                (
+                    ($production->finished_at === null && $promiseDate < $limitDate) ||
+                    ($production->finished_at !== null && $production->finished_at > $promiseDate->addDay())
+                );
+        });
     }
 }
