@@ -129,7 +129,7 @@
         </div>
       </div>
 
-      <!-- Estadistics -->
+      <!-- Estadisticas -->
       <h2 class="text-primary lg:text-lg text-sm lg:mt-20 mt-6 font-bold">Estadísticas</h2>
       <div class="lg:grid grid-cols-1 gap-10 mt-4 space-y-4 lg:space-y-0">
         <PieChart v-for="(item, index) in pieChartOptions" :key="index" :options="item.data" :title="item.title"

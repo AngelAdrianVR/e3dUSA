@@ -27,8 +27,6 @@ class SaleAnaliticController extends Controller
             ->get()
             ->toArray();
 
-        // return $catalog_products;
-
         return inertia('SaleAnalitic/Index', compact('current_month_sales', 'meet_ways', 'catalog_products'));
     }
 
