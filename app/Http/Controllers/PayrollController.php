@@ -239,6 +239,7 @@ class PayrollController extends Controller
         $bonuses = [];
         $user_bonuses = $user->employee_properties['bonuses'];
         foreach ($user_bonuses as $user_bonus_id) {
+            $additionals = null;
             $current_bonus = Bonus::find($user_bonus_id);
             $amount = $user->employee_properties['hours_per_week'] >= 48
                 ? $current_bonus->full_time
@@ -255,9 +256,12 @@ class PayrollController extends Controller
                 $discount = $amount / $workDays->count();
                 $amount -= ($days_late + $absents) * $discount;
             } elseif ($user_bonus_id === 3) { //productividad
+                $late_productions = $user->getLateProductions($payroll->start_date)->count();
                 $absents = $processed->filter(fn ($item) => $item->justification_event_id <= 5)->count();
                 $discount = $amount / $workDays->count();
                 $amount -= $absents * $discount;
+                $amount -= $late_productions * 50;
+                $additionals = $late_productions ? '-$' . $late_productions * 50 . ' producciones atrasadas' : null;
             } elseif ($user_bonus_id === 4) { //Prima dominical
                 if (is_null($processed[2]->check_out)) {
                     $amount = 0;
@@ -268,10 +272,11 @@ class PayrollController extends Controller
                 $discount = $amount / $workDays->count();
                 $amount -= ($days_late + $absents) * $discount;
             }
+            // evitar negativos
+            if ($amount < 0) $amount = 0;
 
-            $bonuses[] = ['name' => $current_bonus->name, 'amount' => ['number_format' => number_format($amount, 2), 'raw' => $amount]];
+            $bonuses[] = ['name' => $current_bonus->name, 'amount' => ['number_format' => number_format($amount, 2), 'raw' => $amount], 'additionals' => $additionals];
         }
-
 
         return response()->json(['item' => $bonuses]);
     }

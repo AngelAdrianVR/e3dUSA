@@ -1,5 +1,5 @@
 <template>
-    <payrollTemplate v-for="(user_id, index) in users_id_to_show" :key="index"
+    <payrollTemplate :toPrint="true" v-for="(user_id, index) in users_id_to_show" :key="index"
         :user="users.find(item => item.id == user_id)" :payrollId="payroll_id" />
 </template>
   

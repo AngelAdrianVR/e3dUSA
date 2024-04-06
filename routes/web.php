@@ -464,6 +464,7 @@ Route::get('sale-analitics-fetch-top-products/{family}/{range}/{type}', [SaleAna
 Route::get('sale-analitics-fetch-product-info/{part_number}', [SaleAnaliticController::class, 'fetchProductInfo'])->name('sale-analitics.fetch-product-info')->middleware('auth');
 Route::get('sale-analitics-fetch-raw-material-info/{part_number}', [SaleAnaliticController::class, 'fetchRawMaterialInfo'])->name('sale-analitics.fetch-raw-material-info')->middleware('auth');
 Route::get('sale-analitics-fetch-catalog-product-sales/{part_number}/{range}', [SaleAnaliticController::class, 'fetchCatalogProductSales'])->name('sale-analitics.fetch-catalog-product-sales')->middleware('auth');
+Route::get('sale-analitics-get-estatistics-data/{date}', [SaleAnaliticController::class, 'getEstatisticsData'])->name('sale-analitics.get-estatistics-data')->middleware('auth');
 
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
