@@ -42,7 +42,7 @@
                     </div>
                 </div>
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
-                    <el-radio-group v-model="form.is_sale_production" @change="handleChangeProductionType" size="small">
+                    <el-radio-group v-model="form.is_sale_production" size="small">
                         <el-radio :label="1">Orden de venta</el-radio>
                         <el-radio :label="0">Orden de stock</el-radio>
                     </el-radio-group>
@@ -53,7 +53,7 @@
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
                         </el-tooltip>
-                        <el-select @change="getImportantNotes()" v-model="form.company_branch_id" class="mt-2" clearable
+                        <el-select @change="getImportantNotes(); getDesignAuthorizations()" v-model="form.company_branch_id" class="mt-2" clearable
                             filterable placeholder="Selecciona un cliente">
                             <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
                                 :value="item.id" />
@@ -80,7 +80,7 @@
                         <el-divider content-position="left">Logistica</el-divider>
                         <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
                             <div class="ml-7 col-span-full">
-                                <label class="text-sm ml-2 mb-px flex items-center">Fecha de entrega esperada
+                                <label class="text-sm ml-2 mb-px flex items-center">Fecha de embarque esperado
                                     <el-tooltip
                                         content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega"
                                         placement="right">
@@ -286,21 +286,27 @@
                     </ol>
                     <div v-if="form.company_branch_id"
                         class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-3 rounded-lg border-2 border-[#b8b7b7] px-5 py-3 col-span-full space-y-1 my-7">
-                        <div class="flex items-center col-span-2">
-                            <el-tooltip content="Producto: Seleccione entre los productos registrados para este cliente"
-                                placement="top">
-                                <span
-                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
-                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                </span>
-                            </el-tooltip>
-                            <el-select @change="fetchCatalogProductData" v-model="product.catalog_product_company_id"
-                                class="w-full" no-data-text="No hay productos registrados a este cliente"
-                                placeholder="Selecciona un producto *">
-                                <el-option
-                                    v-for="item in company_branches.find(cb => cb.id == form.company_branch_id)?.catalog_products"
-                                    :key="item.pivot.id" :label="item.name" :value="item.pivot.id" />
-                            </el-select>
+                        <div class="col-span-2">
+                            <div class="flex items-center">
+                                <el-tooltip content="Producto: Seleccione entre los productos registrados para este cliente"
+                                    placement="top">
+                                    <span
+                                        class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                    </span>
+                                </el-tooltip>
+                                <el-select @change="fetchCatalogProductData(); checkIfProductHasSale()" v-model="product.catalog_product_company_id"
+                                    class="w-full" no-data-text="No hay productos registrados a este cliente"
+                                    placeholder="Selecciona un producto *">
+                                    <el-option
+                                        v-for="item in company_branches.find(cb => cb.id == form.company_branch_id)?.catalog_products"
+                                        :key="item.pivot.id" :label="item.name" :value="item.pivot.id" />
+                                </el-select>
+                            </div>
+                            <label v-if="product.part_number?.split('-')[1] == 'LL'" class="mt-1 inline">
+                                <Checkbox v-model:checked="product.requires_medallion" class="bg-transparent" />
+                                <span class="ml-2 text-xs">Requiere medallón</span>
+                            </label>
                         </div>
                         <div v-if="loading" class="rounded-md bg-[#CCCCCC] text-xs text-gray-500 text-center p-4">
                             cargando imagen...
@@ -339,12 +345,37 @@
                                     #
                                 </el-tooltip>
                             </IconInput> -->
-                            <div class="flex items-center space-x-6 ml-5">
+                            <div class="flex items-center space-x-6 ml-5 w-full">
                                 <div>
                                     <label class="block text-xs">Cantidad *</label>
-                                    <el-input-number @change="validateQuantity()" v-model="product.quantity" :min="0.01" />
+                                    <el-input-number :disabled="loading || !product.catalog_product_company_id" @change="validateQuantity()" v-model="product.quantity" :min="0.01" />
                                 </div>
-                                <div v-if="form.is_sale_production" class="flex items-center space-x-2 mt-3">
+                                <div v-if="selectedCatalogProductHasSale === false" class="w-full">
+                                    <div class="flex items-center space-x-3">
+                                        <span @click="$inertia.get(route('design-authorizations.create', {company_id: selectedCompanyId}))" class="text-xs text-primary cursor-pointer inline">Crear formato</span>
+                                        <el-tooltip placement="top">
+                                            <template #content>
+                                                <p>
+                                                    Es primera venta de este producto, <br>
+                                                    es necesario seleccionar el formato de autorización <br>
+                                                    de diseño para poder agregarlo a la orden de venta. <br>
+                                                    Si aún no tienesun formato creado, da clic en 'crear formato'.
+                                                </p>
+                                            </template>
+                                            <div
+                                                class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                                                <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                            </div>
+                                        </el-tooltip>
+                                        <span v-if="product.design_authorization_id" @click="openDesignAuthorization()" class="text-xs text-secondary cursor-pointer">Ver formato<i class="fa-regular fa-eye ml-2"></i></span>
+                                    </div>
+                                    <el-select v-model="product.design_authorization_id" clearable
+                                        filterable placeholder="Formato de autorización de diseño" no-data-text="No hay formatos autorizados">
+                                        <el-option v-for="item in design_authorizations" :key="item.id" :label="item.name"
+                                            :value="item.id" />
+                                    </el-select>
+                                </div>
+                                <div v-if="form.is_sale_production" class="flex items-center space-x-2 mt-3 w-1/2">
                                     <label class="flex items-center">
                                         <Checkbox v-model:checked="product.is_new_design" class="bg-transparent" />
                                         <span class="ml-2 text-xs">Diseño nuevo</span>
@@ -379,7 +410,7 @@
                         </div>
                         <div class="col-span-full">
                             <SecondaryButton @click="addProduct"
-                                :disabled="form.processing || !product.catalog_product_company_id || !product.quantity">
+                                :disabled="form.processing || !product.catalog_product_company_id || !product.quantity || (selectedCatalogProductHasSale ? false : !product.design_authorization_id)">
                                 {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
                             </SecondaryButton>
                         </div>
@@ -478,15 +509,21 @@ export default {
             showCreateProjectModal: false,
             availableStock: null,
             product: {
+                design_authorization_id: null, //formato de autorización seleccionado
                 catalog_product_company_id: null,
                 quantity: null,
                 notes: null,
+                part_number: null,
                 is_new_design: false,
+                requires_medallion: false,
             },
             editIndex: null,
             alertMaxQuantity: 0,
             selectedCatalogProduct: null,
             commitedUnits: null,
+            selectedCatalogProductHasSale: null, //valida si Producto seleccionado tiene al menos una venta. (bool)
+            design_authorizations: null, //formatos de autorizaión de diseño del cliente
+            selectedCompanyId: null, //guarda el id de la matriz que contiene la sucursal seleccionada
             shippingCompanies: [
                 'PAQUETEXPRESS',
                 'LOCAL',
@@ -522,6 +559,10 @@ export default {
         sample: Object,
     },
     methods: {
+        openDesignAuthorization() {
+        const url = route('design-authorizations.show', this.product.design_authorization_id);
+        window.open(url, '_blank');
+        },
         addPartial() {
             const partiality = {
                 shipping_company: null,
@@ -545,6 +586,7 @@ export default {
                 if (response.status === 200) {
                     this.commitedUnits = response.data.commited_units;
                     this.selectedCatalogProduct = response.data.item;
+                    this.product.part_number = this.selectedCatalogProduct.part_number;
                     this.availableStock = response.data.stock;
                     this.loading = false;
                 }
@@ -555,6 +597,17 @@ export default {
                     message: 'No se pudo obtener la imagen del producto seleccionado debido a inconvenientes con el servidor. Inteéntalo más tarde',
                     type: 'error'
                 });
+            }
+        },
+        //Check if catalog product company has sales. if dont, ask for design authorization.
+        async checkIfProductHasSale() {
+            try {
+                const response = await axios.get(route('sales.check-if-has-sale', this.product.catalog_product_company_id));
+                if ( response.status === 200 ) {
+                    this.selectedCatalogProductHasSale = response.data.has_sale;
+                }
+            } catch (error) {
+                console.log(error);
             }
         },
         store() {
@@ -571,6 +624,19 @@ export default {
         },
         getImportantNotes() {
             this.importantNotes = this.company_branches.find(item => item.id == this.form.company_branch_id)?.important_notes;
+
+            //obtiene el id de la matriz para pasarla como parametro en creacion de formato de autorización de diseño.
+            this.selectedCompanyId = this.company_branches.find(item => item.id == this.form.company_branch_id).company_id;
+        },
+        async getDesignAuthorizations() {
+            try {
+                const response = await axios.get(route('design-authorizations.fetch-for-company-branch', this.form.company_branch_id));
+                if (response.status === 200) {
+                    this.design_authorizations = response.data.items;
+                }
+            } catch (error) {
+                console.log(error);
+            }
         },
         async clearImportantNotes() {
             try {
@@ -643,6 +709,9 @@ export default {
                 this.form.products.push(product);
             }
 
+            //quitar formato seleccionado de auto. de diseño de la lista para que no se pueda volver seleccionar 
+            // this.refreshDesignAuthorizationsList(this.product.design_authorization_id);
+
             // resetear variables
             this.resetProductForm();
             this.selectedCatalogProduct = null;
@@ -661,7 +730,17 @@ export default {
             this.product.catalog_product_company_id = null;
             this.product.quantity = null;
             this.product.notes = null;
+            this.product.part_number = null;
+            this.product.design_authorization_id = null; //formato de autorización.
             this.product.is_new_design = false;
+            this.product.requires_medallion = false;
+        },
+        //quitar formato seleccionado de auto. de diseño de la lista para que no se pueda volver seleccionar 
+        refreshDesignAuthorizationsList(designAuthorizationId) { 
+            const itemIndex = this.design_authorizations.findIndex(item => item.id == designAuthorizationId);
+            if (itemIndex != -1) {
+                this.design_authorizations.splice(itemIndex, 1);
+            }
         },
         disabledDate(time) {
             const today = new Date();

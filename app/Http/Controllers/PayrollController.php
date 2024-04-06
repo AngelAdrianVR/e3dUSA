@@ -230,44 +230,53 @@ class PayrollController extends Controller
         $payroll = Payroll::find($request->payroll_id);
         $processed = collect($payroll->getProcessedAttendances($request->user_id));
         $user = User::find($request->user_id);
+        $t = collect($user->employee_properties['work_days']);
+        $workDays = $t->filter(function ($wd) {
+            return $wd['check_in'] !== null;
+        });
 
         // bonuses
         $bonuses = [];
         $user_bonuses = $user->employee_properties['bonuses'];
         foreach ($user_bonuses as $user_bonus_id) {
+            $additionals = null;
             $current_bonus = Bonus::find($user_bonus_id);
             $amount = $user->employee_properties['hours_per_week'] >= 48
                 ? $current_bonus->full_time
                 : $current_bonus->half_time;
 
             if ($user_bonus_id === 1) { // Asistencia
-                $absent = $processed->first(fn ($item) => $item->justification_event_id === 5);
+                $absent = $processed->first(fn ($item) => $item->justification_event_id <= 5  );
                 if ($absent) {
                     $amount = 0;
                 }
             } elseif ($user_bonus_id === 2) { //Puntualidad
                 $days_late = $processed->filter(fn ($item) => $item->late)->count();
-                $absents = $processed->filter(fn ($item) => $item->justification_event_id === 5)->count();
-                $discount = $amount / 6;
+                $absents = $processed->filter(fn ($item) => $item->justification_event_id <= 5)->count();
+                $discount = $amount / $workDays->count();
                 $amount -= ($days_late + $absents) * $discount;
             } elseif ($user_bonus_id === 3) { //productividad
-                $absents = $processed->filter(fn ($item) => $item->justification_event_id === 5)->count();
-                $discount = $amount / 6;
+                $late_productions = $user->getLateProductions($payroll->start_date)->count();
+                $absents = $processed->filter(fn ($item) => $item->justification_event_id <= 5)->count();
+                $discount = $amount / $workDays->count();
                 $amount -= $absents * $discount;
+                $amount -= $late_productions * 50;
+                $additionals = $late_productions ? '-$' . $late_productions * 50 . ' producciones atrasadas' : null;
             } elseif ($user_bonus_id === 4) { //Prima dominical
                 if (is_null($processed[2]->check_out)) {
                     $amount = 0;
                 }
             } elseif ($user_bonus_id === 5) { //Puntualidad jefe produccion
                 $days_late = $processed->filter(fn ($item) => $item->late)->count();
-                $absents = $processed->filter(fn ($item) => $item->justification_event_id === 5)->count();
-                $discount = $amount / 6;
+                $absents = $processed->filter(fn ($item) => $item->justification_event_id <= 5)->count();
+                $discount = $amount / $workDays->count();
                 $amount -= ($days_late + $absents) * $discount;
             }
+            // evitar negativos
+            if ($amount < 0) $amount = 0;
 
-            $bonuses[] = ['name' => $current_bonus->name, 'amount' => ['number_format' => number_format($amount, 2), 'raw' => $amount]];
+            $bonuses[] = ['name' => $current_bonus->name, 'amount' => ['number_format' => number_format($amount, 2), 'raw' => $amount], 'additionals' => $additionals];
         }
-
 
         return response()->json(['item' => $bonuses]);
     }

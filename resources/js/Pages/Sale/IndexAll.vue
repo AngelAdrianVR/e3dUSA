@@ -124,7 +124,7 @@
                                                     class="fa-solid fa-eye"></i>
                                                 Ver</el-dropdown-item>
                                             <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar ordenes de venta') ||
-                                                    scope.row.user.id == $page.props.auth.user.id" :command="'edit-' + scope.row.id"><i
+                                            scope.row.user.id == $page.props.auth.user.id" :command="'edit-' + scope.row.id"><i
                                                     class="fa-solid fa-pen"></i>
                                                 Editar</el-dropdown-item>
                                             <el-dropdown-item
@@ -163,7 +163,7 @@ export default {
     data() {
         return {
             disableMassiveActions: true,
-            filter: 'Mis órdenes', //filtro
+            filter: 'Todas las órdenes', //filtro
             options: ['Mis órdenes', 'Todas las órdenes'], //filtro
             // inputSearch: '',
             search: '',

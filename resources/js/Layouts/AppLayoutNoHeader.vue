@@ -998,7 +998,7 @@ onMounted(() => {
   <!-- Password modal -->
   <DialogModal :show="openPasswordModal" @close="openPasswordModal = false">
     <template #title>
-      Contraseña de supervisor
+      Contraseña de supervisor. Tienes {{$page.props.auth.user.has_pendent_production}} orden(es) pausadas.
     </template>
     <template #content>
       <p class="text-center text-sm my-4">Para garantizar la precisión en nuestros registros de producción, se solicita

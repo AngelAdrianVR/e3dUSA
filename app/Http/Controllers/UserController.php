@@ -31,6 +31,7 @@ class UserController extends Controller
             return [
                 'id' => $user->id,
                 'name' => $user->name,
+                'disabled_at' => $user->disabled_at?->isoFormat('DD MMM YYYY'),
                 'is_active' => [
                     'string' => $user->is_active ? 'Activo' : 'Inactivo',
                     'bool' => boolval($user->is_active),
@@ -235,10 +236,10 @@ class UserController extends Controller
             ->where('is_paused', false)
             ->whereNotNull('started_at')
             ->whereNull('finished_at')
-            ->exists();
+            ->count();
 
         if ($productions_in_progress) {
-            return response()->json(['message' => 'Tienes órden(es) de producción en proceso. Primero debes pausarla(s)'], 422);
+            return response()->json(['message' => "Tienes $productions_in_progress órden(es) de producción en proceso. Primero debes pausarla(s)", 'productions' => $productions_in_progress], 422);
         } else {
             $next = $user->setAttendance();
 
@@ -271,7 +272,8 @@ class UserController extends Controller
         if ($user->is_active) {
 
             $user->update([
-                'is_active' => false
+                'is_active' => false,
+                'disabled_at' => now()
             ]);
         } else {
 

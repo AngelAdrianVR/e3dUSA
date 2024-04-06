@@ -5,6 +5,9 @@
 
         <div v-if="options.series.length" id="chart">
             <apexchart type="pie" width="700" :options="chartOptions" :series="series"></apexchart>
+            <div class="flex justify-end mx-6 absolute bottom-3 left-1">
+                <b>Total: {{ options.series.reduce((total, val) => total + val, 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') }}{{ options.unit }}</b>
+            </div>
         </div>
         <p v-else class="text-xs text-center mt-10">No hay datos para  mostrar</p>
     </div>

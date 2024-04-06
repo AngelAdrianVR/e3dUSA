@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('email_password')->nullable();
             $table->boolean('is_active')->default(true);
             $table->json('employee_properties')->nullable();
             $table->timestamp('email_verified_at')->nullable();
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();
+            $table->timestamp('disabled_at')->nullable();
             $table->timestamps();
         });
     }

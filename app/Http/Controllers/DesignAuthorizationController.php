@@ -153,4 +153,12 @@ class DesignAuthorizationController extends Controller
         return response()->json(['authorized_at' => $design_authorization->authorized_at]);
     }
 
+
+    public function fetchForCompanyBranch($company_branch_id)
+    {
+        $design_authorizations = DesignAuthorization::where('company_branch_id', $company_branch_id)->where('design_accepted', 1)->get(['id', 'name']);
+
+        return response()->json(['items' =>  $design_authorizations]);
+    }
+
 }

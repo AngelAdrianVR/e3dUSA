@@ -179,7 +179,7 @@ class SampleController extends Controller
 
         event(new RecordCreated($sample));
 
-        return to_route('samples.index');
+        return to_route('samples.show', $sample->id);
     }
 
     
@@ -228,7 +228,7 @@ class SampleController extends Controller
             'quantity' => 'required|numeric',
             'will_back' => 'boolean',
             'devolution_date' => $request->will_back ? 'required|date' : 'nullable|date',
-            'sent_at' => 'required|date|before:tomorrow',
+            'sent_at' => 'required|date',
             'comments' => 'nullable|string',
             'catalog_product_id' => 'nullable',
             'company_branch_id' => 'required',
@@ -240,7 +240,7 @@ class SampleController extends Controller
 
         event(new RecordEdited($sample));
 
-        return to_route('samples.index');
+        return to_route('samples.show', $sample->id);
     }
 
     public function updateWithMedia(Request $request, Sample $sample)
@@ -248,7 +248,7 @@ class SampleController extends Controller
         $request->validate([
             'name' => 'required|string',
             'quantity' => 'required|numeric',
-            'sent_at' => 'required|date|before:tomorrow',
+            'sent_at' => 'required|date',
             'comments' => 'nullable|string',
             'catalog_product_id' => 'nullable',
             'company_branch_id' => 'required',
@@ -265,7 +265,7 @@ class SampleController extends Controller
         event(new RecordEdited($sample));
 
 
-        return to_route('samples.index');
+        return to_route('samples.show', $sample->id);
 
     }
 

@@ -21,6 +21,15 @@
                 <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Terminado</p>
             </div>
 
+            <!-- Filtro -->
+            <div class="w-44 lg:ml-32 ml-4 mt-2">
+                <el-select @change="fetchItemsFiltered" v-model="filter" class="mt-2" clearable
+                    filterable placeholder="Selecciona una opción">
+                    <el-option v-for="item in options" :key="item" :label="item"
+                        :value="item" />
+                </el-select>
+            </div>
+
             <!-- tabla -->
             <div class="relative overflow-hidden min-h-[60vh]">
                 <NotificationCenter module="design" />
@@ -112,6 +121,8 @@ import axios from 'axios';
 export default {
     data() {
         return {
+            filter: 'Mis órdenes', //filtro
+            options: ['Mis órdenes', 'Todas las órdenes'], //filtro
             disableMassiveActions: true,
             inputSearch: '',
             search: '',
@@ -122,12 +133,12 @@ export default {
         };
     },
     components: {
-        AppLayout,
-        SecondaryButton,
-        Link,
-        TextInput,
         NotificationCenter,
+        SecondaryButton,
         IndexSearchBar,
+        AppLayout,
+        TextInput,
+        Link
     },
     props: {
         designs: Array

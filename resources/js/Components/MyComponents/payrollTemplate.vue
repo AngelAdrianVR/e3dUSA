@@ -1,5 +1,6 @@
 <template>
-  <div v-if="!loading" class="grid grid-cols-4 md:grid-cols-3 lg:py-6 lg:px-10 mb-6 lg:mb-0 text-[10px] md:text-sm">
+  <Head v-if="toPrint" :title="'Nominas ' + payroll?.week" />
+  <div v-if="!loading" :class="toPrint ? 'h-[50vh]' : null" class="grid grid-cols-4 md:grid-cols-3 lg:py-6 lg:px-10 lg:mb-0 text-[10px] md:text-sm">
     <div class="bg-transparent rounded-lg lg:mx-auto"
       :class="dontShowDetails ? 'col-span-full' : 'col-span-3 md:col-span-2 mr-auto w-5/6'">
       <div class="flex items-center justify-between">
@@ -143,7 +144,10 @@
         <p v-for="(bonus, index) in bonuses" :key="index" class="grid grid-cols-3 gap-x-1">
           <span>{{ bonus.name }}</span>
           <span class="text-center"></span>
-          <span>${{ bonus.amount.number_format }}</span>
+          <span class="leading-tight">
+            ${{ bonus.amount.number_format }}
+            <p v-if="bonus.additionals" class="text-red-600 text-[7px]">{{ bonus.additionals }}</p>
+          </span>
         </p>
         <p v-for="(discount, index) in discounts" :key="index" class="grid grid-cols-3 gap-x-1 text-red-500">
           <span>{{ discount.name }}</span>
@@ -178,6 +182,7 @@
 </template>
 
 <script>
+import { Head } from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import Dropdown from "@/Components/Dropdown.vue";
@@ -204,6 +209,10 @@ export default {
     dontShowDetails: {
       type: Boolean,
       default: false,
+    },
+    toPrint: {
+      type: Boolean,
+      default: false,
     }
   },
   components: {
@@ -211,6 +220,7 @@ export default {
     CancelButton,
     Dropdown,
     DropdownLink,
+    Head,
   },
   methods: {
     fetchData() {

@@ -73,14 +73,16 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+// Route::get('/', function () {
+//     return Inertia::render('Welcome', [
+//         'canLogin' => Route::has('login'),
+//         'canRegister' => Route::has('register'),
+//         'laravelVersion' => Application::VERSION,
+//         'phpVersion' => PHP_VERSION,
+//     ]);
+// });
+
+Route::redirect('/', 'login');
 
 Route::middleware([
     'auth:sanctum',
@@ -203,6 +205,8 @@ Route::post('sales/update-with-media/{sale}', [SaleController::class, 'updateWit
 Route::get('sales-get-unauthorized', [SaleController::class, 'getUnauthorized'])->name('sales.get-unauthorized');
 Route::get('sales-get-matches/{query}', [SaleController::class, 'getMatches'])->name('sales.get-matches');
 Route::get('sales-quality-certificate/{sale_id}', [SaleController::class, 'QualityCertificate'])->name('sales.quality-certificate');
+Route::get('sales-fetch-filtered/{filter}', [SaleController::class, 'fetchFiltered'])->name('sales.fetch-filtered');
+Route::get('sales-check-if-has-sale/{catalog_prroduct_company_id}', [SaleController::class, 'checkIfHasSale'])->name('sales.check-if-has-sale');
 
 // ------- CRM(Companybranches sucursales Routes)  ---------
 Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');
@@ -371,6 +375,7 @@ Route::post('design-modifications/upload-results', [DesignModificationController
 Route::resource('design-authorizations', DesignAuthorizationController::class)->middleware('auth');
 Route::put('design-authorizations-authorize/{design_authorization}', [DesignAuthorizationController::class, 'AuthorizeDesign'])->name('design-authorizations.authorize')->middleware('auth');
 Route::post('design-authorizations/update-with-media/{design_authorization}', [DesignAuthorizationController::class, 'updateWithMedia'])->name('design-authorizations.update-with-media');
+Route::get('design-authorizations/fetch-for-company-brach/{company_branch_id}', [DesignAuthorizationController::class, 'fetchForCompanyBranch'])->name('design-authorizations.fetch-for-company-branch');
 
 
 // ------- production department routes  ---------
@@ -455,8 +460,11 @@ Route::post('customer-meetings/get-soon-dates', [CustomerMeetingController::clas
 
 //------------------ sale analisis routes ----------------
 Route::resource('sale-analitics', SaleAnaliticController::class)->middleware('auth');
-Route::get('sale-analitics-fetch-top-products/{family}/{range}', [SaleAnaliticController::class, 'fetchTopProducts'])->name('sale-analitics.fetch-top-products')->middleware('auth');
+Route::get('sale-analitics-fetch-top-products/{family}/{range}/{type}', [SaleAnaliticController::class, 'fetchTopProducts'])->name('sale-analitics.fetch-top-products')->middleware('auth');
 Route::get('sale-analitics-fetch-product-info/{part_number}', [SaleAnaliticController::class, 'fetchProductInfo'])->name('sale-analitics.fetch-product-info')->middleware('auth');
+Route::get('sale-analitics-fetch-raw-material-info/{part_number}', [SaleAnaliticController::class, 'fetchRawMaterialInfo'])->name('sale-analitics.fetch-raw-material-info')->middleware('auth');
+Route::get('sale-analitics-fetch-catalog-product-sales/{part_number}/{range}', [SaleAnaliticController::class, 'fetchCatalogProductSales'])->name('sale-analitics.fetch-catalog-product-sales')->middleware('auth');
+Route::get('sale-analitics-get-estatistics-data/{date}', [SaleAnaliticController::class, 'getEstatisticsData'])->name('sale-analitics.get-estatistics-data')->middleware('auth');
 
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');

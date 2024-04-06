@@ -80,7 +80,7 @@
                         <el-divider content-position="left">Logistica</el-divider>
                         <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
                             <div class="ml-7 col-span-full">
-                                <label class="text-sm ml-2 mb-px flex items-center">Fecha de entrega esperada
+                                <label class="text-sm ml-2 mb-px flex items-center">Fecha de embarque esperado
                                     <el-tooltip
                                         content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega"
                                         placement="right">
@@ -279,21 +279,27 @@
                     </ol>
                     <div v-if="form.company_branch_id"
                         class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-3 rounded-lg border-2 border-[#b8b7b7] px-5 py-3 col-span-full space-y-1 my-7">
-                        <div class="flex items-center col-span-2">
-                            <el-tooltip content="Producto: Seleccione entre los productos registrados para este cliente"
-                                placement="top">
-                                <span
-                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
-                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                </span>
-                            </el-tooltip>
-                            <el-select @change="fetchCatalogProductData" v-model="product.catalog_product_company_id"
-                                class="w-full" no-data-text="No hay productos registrados a este cliente"
-                                placeholder="Selecciona un producto *">
-                                <el-option
-                                    v-for="item in company_branches.find(cb => cb.id == form.company_branch_id)?.catalog_products"
-                                    :key="item.pivot.id" :label="item.name" :value="item.pivot.id" />
-                            </el-select>
+                        <div class="col-span-2">
+                            <div class="flex items-center">
+                                <el-tooltip content="Producto: Seleccione entre los productos registrados para este cliente"
+                                    placement="top">
+                                    <span
+                                        class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                    </span>
+                                </el-tooltip>
+                                <el-select @change="fetchCatalogProductData" v-model="product.catalog_product_company_id"
+                                    class="w-full" no-data-text="No hay productos registrados a este cliente"
+                                    placeholder="Selecciona un producto *">
+                                    <el-option
+                                        v-for="item in company_branches.find(cb => cb.id == form.company_branch_id)?.catalog_products"
+                                        :key="item.pivot.id" :label="item.name" :value="item.pivot.id" />
+                                </el-select>
+                            </div>
+                            <label v-if="product.part_number?.split('-')[1] == 'LL'" class="mt-1 inline">
+                                <Checkbox v-model:checked="product.requires_medallion" class="bg-transparent" />
+                                <span class="ml-2 text-xs">Requiere medallón</span>
+                            </label>
                         </div>
                         <div v-if="loading" class="rounded-md bg-[#CCCCCC] text-xs text-gray-500 text-center p-4">
                             cargando imagen...
@@ -436,6 +442,7 @@ export default {
             order_via: this.sale.order_via,
             tracking_guide: this.sale.tracking_guide,
             notes: this.sale.notes,
+            promise_date: this.sale.promise_date,
             is_high_priority: Boolean(this.sale.is_high_priority),
             products: [],
             media: null,
@@ -456,7 +463,9 @@ export default {
                 catalog_product_company_id: null,
                 quantity: null,
                 notes: null,
+                part_number: null,
                 is_new_design: false,
+                requires_medallion: false,
             },
             editIndex: null,
             alertMaxQuantity: 0,
@@ -523,6 +532,7 @@ export default {
                 if (response.status === 200) {
                     this.commitedUnits = response.data.commited_units;
                     this.selectedCatalogProduct = response.data.item;
+                    this.product.part_number = this.selectedCatalogProduct.part_number;
                     this.availableStock = response.data.stock;
                     this.loading = false;
                 }
@@ -647,7 +657,9 @@ export default {
             this.product.catalog_product_company_id = null;
             this.product.quantity = null;
             this.product.notes = null;
+            this.product.part_number = null;
             this.product.is_new_design = false;
+            this.product.requires_medallion = false;
         },
         disabledDate(time) {
             const today = new Date();
@@ -662,7 +674,9 @@ export default {
                 catalog_product_company_id: element.catalog_product_company_id,
                 quantity: element.quantity,
                 notes: element.notes,
+                part_number: element.catalog_product_company.catalog_product.part_number,
                 is_new_design: Boolean(element.is_new_design),
+                requires_medallion: Boolean(element.requires_medallion),
             }
 
             this.form.products.push(product);

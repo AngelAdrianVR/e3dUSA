@@ -8,6 +8,7 @@ use App\Events\RecordEdited;
 use App\Http\Resources\SaleResource;
 use App\Models\CatalogProductCompanySale;
 use App\Models\CompanyBranch;
+use App\Models\DesignAuthorization;
 use App\Models\Oportunity;
 use App\Models\Sale;
 use App\Models\Sample;
@@ -23,11 +24,10 @@ class SaleController extends Controller
 
     public function index()
     {
-        $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->latest()->paginate(20));
+        $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->where('user_id', auth()->id())->latest()->paginate(20));
 
         return inertia('Sale/Index', compact('sales'));
     }
-
 
     public function create()
     {
@@ -77,6 +77,7 @@ class SaleController extends Controller
 
             return [
                 'id' => $company_branch->id,
+                'company_id' => $company_branch->company_id,
                 'name' => $company_branch->name,
                 'important_notes' => $company_branch->important_notes,
                 'contacts' => $contacts,
@@ -84,7 +85,7 @@ class SaleController extends Controller
             ];
         });
 
-
+        // return $company_branches;
         return inertia('Sale/Create', compact('company_branches', 'opportunityId', 'sample'));
     }
 
@@ -149,14 +150,13 @@ class SaleController extends Controller
             ];
         });
 
-        // return $sale;
         return inertia('Sale/Show', compact('sale', 'sales'));
     }
 
     public function edit(Sale $sale)
     {
         $sale = Sale::find($sale->id);
-        $catalog_products_company_sale = CatalogProductCompanySale::with('catalogProductCompany')->where('sale_id', $sale->id)->get();
+        $catalog_products_company_sale = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')->where('sale_id', $sale->id)->get();
         $media = $sale->getMedia('oce')->all();
 
         //optimizacion de datos en vista para reducir el tiempo de carga
@@ -427,5 +427,31 @@ class SaleController extends Controller
 
         // return $sale;
         return inertia('Sale/QualityCertificate', compact('sale'));
+    }
+
+
+    public function fetchFiltered($filter)
+    {
+        if ( $filter == 'Mis órdenes') {
+            $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->where('user_id', auth()->id())->latest()->paginate(20));
+            return inertia('Sale/Index', compact('sales'));
+        } else {
+            $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->latest()->paginate(20));
+            return inertia('Sale/IndexAll', compact('sales'));
+        }
+    }
+
+
+    public function checkIfHasSale($catalog_product_company_id)
+    {
+        $catalog_product_company_sale = CatalogProductCompanySale::where('catalog_product_company_id', $catalog_product_company_id)->first();
+
+        if ($catalog_product_company_sale) {
+            $has_sale = true;
+        } else {
+            $has_sale = false;
+        }
+
+        return response()->json(compact('has_sale'));
     }
 }

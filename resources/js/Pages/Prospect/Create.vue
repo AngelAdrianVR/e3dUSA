@@ -87,6 +87,16 @@
             <InputError :message="form.errors.status" />
           </div>
           <div>
+            <div class="flex items-center space-x-5">
+              <label class="text-sm ml-2">Whatsapp</label>
+              <label @click="getWhatsapp" class="text-xs ml-2 hover:underline text-primary cursor-pointer">Es el mismo número de teléfono</label>
+            </div>
+              <el-input v-model="form.contact_whatsapp" placeholder="Escribe el whatsapp"
+                :formatter="(value) => `${value}`.replace(/(\d{2})(\d{4})(\d{4})/, '$1 $2 $3')"
+                :parser="(value) => value.replace(/\D/g, '')" maxlength="10" clearable />
+              <InputError :message="form.errors.contact_whatsapp" />
+          </div>
+          <div>
             <label class="text-sm ml-2">Número de sucursales</label>
             <el-input v-model="form.branches_number" placeholder="Escribe el numero de sucursales "
               :formatter="(value) => `${value}`.replace(/(\d{2})(\d{4})(\d{4})/, '$1 $2 $3')"
@@ -145,6 +155,7 @@ export default {
       contact_email: null,
       contact_phone: null,
       contact_phone_extension: null,
+      contact_whatsapp: null,
       status: 'Contacto inicial',
       branches_number: null,
       abstract: null,
@@ -241,6 +252,9 @@ export default {
         },
       });
     },
+    getWhatsapp() {
+      this.form.contact_whatsapp = this.form.contact_phone;
+    }
   },
   mounted() {
 
