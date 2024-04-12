@@ -350,7 +350,8 @@
                                     <label class="block text-xs">Cantidad *</label>
                                     <el-input-number :disabled="loading || !product.catalog_product_company_id" @change="validateQuantity()" v-model="product.quantity" :min="0.01" />
                                 </div>
-                                <div v-if="selectedCatalogProductHasSale === false" class="w-full">
+                                <!-- Descomentar cuando se implenmente lo de formato de autorizacion  -->
+                                <!-- <div v-if="selectedCatalogProductHasSale === false" class="w-full">
                                     <div class="flex items-center space-x-3">
                                         <span @click="$inertia.get(route('design-authorizations.create', {company_id: selectedCompanyId}))" class="text-xs text-primary cursor-pointer inline">Crear formato</span>
                                         <el-tooltip placement="top">
@@ -374,7 +375,7 @@
                                         <el-option v-for="item in design_authorizations" :key="item.id" :label="item.name"
                                             :value="item.id" />
                                     </el-select>
-                                </div>
+                                </div> -->
                                 <div v-if="form.is_sale_production" class="flex items-center space-x-2 mt-3 w-1/2">
                                     <label class="flex items-center">
                                         <Checkbox v-model:checked="product.is_new_design" class="bg-transparent" />
@@ -410,9 +411,13 @@
                         </div>
                         <div class="col-span-full">
                             <SecondaryButton @click="addProduct"
-                                :disabled="form.processing || !product.catalog_product_company_id || !product.quantity || (selectedCatalogProductHasSale ? false : !product.design_authorization_id)">
+                                :disabled="form.processing || !product.catalog_product_company_id || !product.quantity">
                                 {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
                             </SecondaryButton>
+                            <!-- <SecondaryButton @click="addProduct" descomentar cuando se implemente lo del formato de autorizacion
+                                :disabled="form.processing || !product.catalog_product_company_id || !product.quantity || (selectedCatalogProductHasSale ? false : !product.design_authorization_id) ">
+                                {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
+                            </SecondaryButton> -->
                         </div>
                     </div>
                     <div class="mt-7 mx-3 md:text-right">
