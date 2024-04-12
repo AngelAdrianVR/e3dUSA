@@ -8,6 +8,7 @@ use App\Events\RecordEdited;
 use App\Http\Resources\CatalogProductResource;
 use App\Models\CatalogProduct;
 use App\Models\CatalogProductCompany;
+use App\Models\Payroll;
 use App\Models\ProductionCost;
 use App\Models\RawMaterial;
 use Carbon\Carbon;
@@ -19,6 +20,7 @@ class CatalogProductController extends Controller
 
     public function index()
     {
+        // return auth()->user()->getLateProductions(Payroll::getCurrent()->start_date);
         // $catalog_products = CatalogProductResource::collection(CatalogProduct::latest()->get());
         // return $catalog_products;
         // return inertia('CatalogProduct/Index', compact('catalog_products'));

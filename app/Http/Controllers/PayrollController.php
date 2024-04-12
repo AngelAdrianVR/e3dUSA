@@ -246,18 +246,18 @@ class PayrollController extends Controller
                 : $current_bonus->half_time;
 
             if ($user_bonus_id === 1) { // Asistencia
-                $absent = $processed->first(fn ($item) => $item->justification_event_id <= 5  );
+                $absent = $processed->first(fn ($item) => $item->justification_event_id > 0 && $item->justification_event_id <= 5  );
                 if ($absent) {
                     $amount = 0;
                 }
             } elseif ($user_bonus_id === 2) { //Puntualidad
                 $days_late = $processed->filter(fn ($item) => $item->late)->count();
-                $absents = $processed->filter(fn ($item) => $item->justification_event_id <= 5)->count();
+                $absents = $processed->filter(fn ($item) => $item->justification_event_id > 0 && $item->justification_event_id <= 5)->count();
                 $discount = $amount / $workDays->count();
                 $amount -= ($days_late + $absents) * $discount;
             } elseif ($user_bonus_id === 3) { //productividad
                 $late_productions = $user->getLateProductions($payroll->start_date)->count();
-                $absents = $processed->filter(fn ($item) => $item->justification_event_id <= 5)->count();
+                $absents = $processed->filter(fn ($item) => $item->justification_event_id > 0 && $item->justification_event_id <= 5)->count();
                 $discount = $amount / $workDays->count();
                 $amount -= $absents * $discount;
                 $amount -= $late_productions * 50;

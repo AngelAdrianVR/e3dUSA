@@ -373,6 +373,7 @@ class User extends Authenticatable
     {
         $limitDate = $startDate->copy()->addDays(7); // Fecha límite una semana después
 
+        return collect([]);
         return $this->productions->filter(function ($production) use ($startDate, $limitDate) {
             $promiseDate = optional($production->catalogProductCompanySale->sale)->promise_date;
 
@@ -385,4 +386,26 @@ class User extends Authenticatable
                 );
         });
     }
+
+    // public function getLateProductions($startDate)
+    // {
+    //     $limitDate = $startDate->copy()->addDays(7); // Fecha límite una semana después
+
+    //     $filteredProductions = $this->productions->filter(function ($production) use ($startDate, $limitDate) {
+    //         $promiseDate = optional($production->catalogProductCompanySale->sale)->promise_date;
+
+    //         return $production->created_at >= $startDate &&
+    //             $production->created_at <= $limitDate &&
+    //             $promiseDate !== null &&
+    //             (
+    //                 ($production->finished_at === null && $promiseDate < $limitDate) ||
+    //                 ($production->finished_at !== null && $production->finished_at > $promiseDate->addDay())
+    //             );
+    //     });
+
+    //     // Ordenar los resultados por el campo 'created_at'
+    //     $sortedProductions = $filteredProductions->sortBy('created_at');
+
+    //     return $sortedProductions;
+    // }
 }
