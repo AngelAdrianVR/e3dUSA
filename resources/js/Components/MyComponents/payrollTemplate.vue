@@ -134,12 +134,12 @@
         <p v-if="getVacations().length" class="grid grid-cols-3 gap-x-1">
           <span>Vacaciones</span>
           <span class="text-center">{{ getVacations().length }}</span>
-          <span>${{ getVacationsAmount() }}</span>
+          <span>${{ getVacationsAmount().toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
         </p>
         <p v-if="getVacations().length" class="grid grid-cols-3 gap-x-1">
           <span>Prima vacacional</span>
           <span class="text-center"></span>
-          <span>${{ getVacationsAmount() * 0.25 }}</span>
+          <span>${{ (getVacationsAmount() * 0.25).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
         </p>
         <p v-for="(bonus, index) in bonuses" :key="index" class="grid grid-cols-3 gap-x-1">
           <span>{{ bonus.name }}</span>

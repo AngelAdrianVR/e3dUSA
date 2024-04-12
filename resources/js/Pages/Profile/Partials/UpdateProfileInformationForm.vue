@@ -143,7 +143,7 @@ const clearPhotoFileInput = () => {
                                         Llena este campo si quieres que los correos <br>
                                         que envíes desde cualquier modulo de este sistema <br>
                                         sean desde tu correo empresarial o personal. <br>
-                                        No te preocupes por la provacidad de tu cuenta, ya que <br>
+                                        No te preocupes por la privacidad de tu cuenta, ya que <br>
                                         todas las contraseñas son encriptadas.
                                     </p>
                                 </template>
