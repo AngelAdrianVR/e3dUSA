@@ -42,7 +42,6 @@
 	width: 3px;
 	height: 6px;
 	background: transparent;
-    height: 5px; /* Ajusta según tus preferencias */
 }
 
 *::-webkit-scrollbar-thumb {

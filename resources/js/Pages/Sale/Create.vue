@@ -359,7 +359,7 @@
                                                     Es primera venta de este producto, <br>
                                                     es necesario seleccionar el formato de autorización <br>
                                                     de diseño para poder agregarlo a la orden de venta. <br>
-                                                    Si aún no tienesun formato creado, da clic en 'crear formato'.
+                                                    Si aún no tienes un formato creado, da clic en 'crear formato'.
                                                 </p>
                                             </template>
                                             <div
