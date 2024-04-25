@@ -406,8 +406,8 @@ onMounted(() => {
                 </div>
               </div>
 
-             <!-- Buscador general -->
-             <div class="w-full mx-5 lg:mx-0 lg:w-1/4 text-xs lg:text-sm">
+              <!-- Buscador general -->
+              <div class="w-full mx-5 lg:mx-0 lg:w-1/4 text-xs lg:text-sm">
                 <button v-if="!showSearchInput" @click="searchStart"
                   class="rounded-full size-9 flex justify-center items-center border border-[#9A9A9A]">
                   <i class="fa-solid fa-magnifying-glass text-sm text-[#9A9A9A]"></i>
@@ -455,17 +455,17 @@ onMounted(() => {
                     <i :class="greeting.class"></i>
                     {{ greeting.text }}
                     <strong>{{
-      $page.props.auth.user.name.split(" ")[0]
-    }}</strong>
+                      $page.props.auth.user.name.split(" ")[0]
+                      }}</strong>
                   </p>
 
                   <!-- pause work time -->
                   <el-popconfirm v-if="$page.props.isKiosk && isPaused !== null &&
-      nextAttendance &&
-      $page.props.auth.user.permissions.includes(
-        'Registrar asistencia'
-      )
-      " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                    nextAttendance &&
+                    $page.props.auth.user.permissions.includes(
+                      'Registrar asistencia'
+                    )
+                  " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
                     :title="isPaused ? '¿Reanudar tiempo?' : 'Pausar tiempo?'" @confirm="setPause">
                     <template #reference>
                       <button v-if="nextAttendance == 'Registrar salida'"
@@ -476,11 +476,11 @@ onMounted(() => {
                     </template>
                   </el-popconfirm>
 
-                  <div class="w-1/3" v-if="$page.props.isKiosk &&
-      nextAttendance &&
-      $page.props.auth.user.permissions.includes(
-        'Registrar asistencia'
-      ) && !isPaused">
+                  <div class="w-2/3" v-if="$page.props.isKiosk &&
+                    nextAttendance &&
+                    $page.props.auth.user.permissions.includes(
+                      'Registrar asistencia'
+                    ) && !isPaused">
                     <div v-if="nextAttendance == 'Registrar salida' && $page.props.auth.user.has_pendent_production">
                       <SecondaryButton @click="openPasswordModal = true" v-if="nextAttendance != 'Dia terminado'"
                         class="mr-14">
@@ -490,21 +490,23 @@ onMounted(() => {
                         {{ nextAttendance }}
                       </span>
                     </div>
-                    <el-popconfirm v-else confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
-                      title="¿Continuar?" @confirm="setAttendance">
-                      <template #reference>
-                        <SecondaryButton v-if="nextAttendance != 'Dia terminado'" class="mr-14">
-                          {{ nextAttendance }}
-                        </SecondaryButton>
-                        <span v-else class="bg-[#75b3f9] text-[#0355B5] mr-14 rounded-md px-3 py-1">
-                          {{ nextAttendance }}
-                        </span>
-                      </template>
-                    </el-popconfirm>
+                    <div v-else>
+                      <el-popconfirm v-if="nextAttendance != 'Dia terminado'" confirm-button-text="Si"
+                        cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?" @confirm="setAttendance">
+                        <template #reference>
+                          <SecondaryButton class="mr-14">
+                            {{ nextAttendance }}
+                          </SecondaryButton>
+                        </template>
+                      </el-popconfirm>
+                      <span v-else class="w-full bg-[#75b3f9] text-[#0355B5] text-xs px-1 mr-14 rounded-md py-1">
+                        {{ nextAttendance }}
+                      </span>
+                    </div>
                   </div>
 
                   <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear kiosco')
-      " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
+                  " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
                     @confirm="createKiosk">
                     <template #reference>
                       <el-tooltip v-if="$page.props.isKiosk || temporalFlag"
@@ -528,9 +530,8 @@ onMounted(() => {
                         </Link>
                       </el-tooltip>
                       <div v-if="$page.props.auth.user?.notifications?.some(notification => {
-      return notification.data.module === 'calendar';
-    })"
-                        class="bg-primary w-[10px] h-[10px] border border-white rounded-full absolute -top-1 -right-2">
+                        return notification.data.module === 'calendar';
+                      })" class="bg-primary w-[10px] h-[10px] border border-white rounded-full absolute -top-1 -right-2">
                       </div>
                     </div>
 
@@ -574,10 +575,10 @@ onMounted(() => {
                         <template #content>
                           <!-- Account Management -->
                           <div class="block px-4 py-2 text-xs rounded-md" :class="{
-      'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
-      'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
-      'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
-    }">
+                            'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
+                            'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
+                            'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
+                          }">
                             Nivel {{ $page.props.auth.user.experience }}
                           </div>
                           <div class="block px-4 py-2 text-xs text-gray-400">
@@ -617,17 +618,17 @@ onMounted(() => {
                   <button
                     class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
                     @click="
-      showingNavigationDropdown = !showingNavigationDropdown
-      ">
+                      showingNavigationDropdown = !showingNavigationDropdown
+                      ">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                       <path :class="{
-      hidden: showingNavigationDropdown,
-      'inline-flex': !showingNavigationDropdown,
-    }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        hidden: showingNavigationDropdown,
+                        'inline-flex': !showingNavigationDropdown,
+                      }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                       <path :class="{
-      hidden: !showingNavigationDropdown,
-      'inline-flex': showingNavigationDropdown,
-    }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        hidden: !showingNavigationDropdown,
+                        'inline-flex': showingNavigationDropdown,
+                      }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
@@ -636,19 +637,18 @@ onMounted(() => {
           </div>
           <!-- Responsive Navigation Menu -->
           <div :class="{
-      block: showingNavigationDropdown,
-      hidden: !showingNavigationDropdown,
-    }"
-            class="sm:hidden bg-[#d9d9d9] w-4/6 absolute right-0 top-14 z-40 max-h-[90%] overflow-y-scroll overflow-x-hidden shadow-lg border border-[#cccccc] pt-4">
+            block: showingNavigationDropdown,
+            hidden: !showingNavigationDropdown,
+          }" class="sm:hidden bg-[#d9d9d9] w-4/6 absolute right-0 top-14 z-40 max-h-[90%] overflow-y-scroll overflow-x-hidden shadow-lg border border-[#cccccc] pt-4">
             <MobileSideNav />
 
             <!-- Responsive Settings Options -->
             <div class="pt-4 pb-1 border-t border-gray-200">
               <div class="block px-4 py-1 text-xs" :class="{
-      'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
-      'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
-      'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
-    }">
+                'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
+                'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
+                'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
+              }">
                 Nivel {{ $page.props.auth.user.experience }}
               </div>
               <div class="flex items-center px-4">
@@ -700,9 +700,9 @@ onMounted(() => {
         <h2 v-if="is_product" class="font-bold text-center mr-2">Movimientos y detalles de producto</h2>
         <h2 v-else class="font-bold text-center mr-2">Búsqueda de maquinaria</h2>
         <div @click="
-      qrScan = false;
-    form.reset();
-    " class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
+          qrScan = false;
+        form.reset();
+        " class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
           <i class="fa-solid fa-xmark"></i>
         </div>
       </div>
@@ -711,13 +711,13 @@ onMounted(() => {
         <div style="margin-top: 20px">
           <el-radio-group v-model="form.scanType">
             <el-radio-button v-if="$page.props.auth.user.permissions.includes('Crear entradas')
-      " label="Entrada" />
+            " label="Entrada" />
             <el-radio-button v-if="$page.props.auth.user.permissions.includes('Crear salidas')" label="Salida" />
             <el-radio-button label="Buscar materia prima" />
             <el-radio-button v-if="$page.props.auth.user.permissions.includes(
-      'QR producto de catalogo'
-    )
-      " label="Producto de catalogo" />
+              'QR producto de catalogo'
+            )
+            " label="Producto de catalogo" />
           </el-radio-group>
         </div>
 
@@ -770,18 +770,18 @@ onMounted(() => {
               <li>
                 <label class="text-primary">Stock: </label>
                 {{
-      productFound.quantity
-        .toFixed(2)
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-    }}
+                  productFound.quantity
+                    .toFixed(2)
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }}
                 {{ productFound.storageable?.measure_unit }}
               </li>
               <li>
                 <label class="text-primary">costo: </label> ${{
-      productFound.storageable?.cost
-        .toFixed(2)
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-    }}
+                  productFound.storageable?.cost
+                    .toFixed(2)
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }}
               </li>
             </ul>
             <Link class="text-center mt-5" :href="route('storages.show', productFound.id)">
@@ -830,8 +830,8 @@ onMounted(() => {
               </li>
               <li>
                 <label class="text-primary">costo: </label> ${{
-      catalogProductFound.cost.number_format
-    }}
+                  catalogProductFound.cost.number_format
+                }}
               </li>
             </ul>
             <Link class="text-center my-5" :href="route('catalog-products.show', catalogProductFound.id)">
@@ -847,17 +847,17 @@ onMounted(() => {
               <div v-for="company_info in catalogProductFound.companies" :key="company_info"
                 class="p-3 flex flex-col border rounde-lg">
                 <p class="text-secondary font-bold">Razon social: <span class="text-gray-600 font-thin">{{
-      company_info.business_name }}</span></p>
+                  company_info.business_name }}</span></p>
                 <p class="text-secondary font-bold">Precio anterior: <span class="text-gray-600 font-thin">{{
-      company_info.pivot.old_price }} {{ company_info.pivot.new_currency
+                  company_info.pivot.old_price }} {{ company_info.pivot.new_currency
                     }}</span></p>
                 <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{
-      company_info.pivot.old_date }}</span></p>
+                  company_info.pivot.old_date }}</span></p>
                 <p class="text-secondary font-bold">Precio actual: <span class="text-gray-600 font-thin">{{
-      company_info.pivot.new_price }} {{ company_info.pivot.new_currency
+                  company_info.pivot.new_price }} {{ company_info.pivot.new_currency
                     }}</span></p>
                 <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{
-      company_info.pivot.new_date }}</span></p>
+                  company_info.pivot.new_date }}</span></p>
                 <p class="text-secondary font-bold">Último ajuste de precio hace:
                   <span class="text-gray-600 font-thin">{{ timeSinceNewPrice(company_info) }}</span>
                 </p>
@@ -874,9 +874,9 @@ onMounted(() => {
             <i class="fa-solid fa-arrow-right-long ml-2 mt-1"></i></button>
           <div class="flex justify-end space-x-3 pt-5 pb-1">
             <CancelButton @click="
-      qrScan = false;
-    form.reset();
-    ">Cancelar</CancelButton>
+              qrScan = false;
+            form.reset();
+            ">Cancelar</CancelButton>
             <PrimaryButton :disabled="form.processing">Buscar</PrimaryButton>
           </div>
         </div>
@@ -956,10 +956,10 @@ onMounted(() => {
               </li>
               <li>
                 <label class="text-primary">costo: </label> ${{
-      machineFound.cost
-        .toFixed(2)
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-    }}
+                  machineFound.cost
+                    .toFixed(2)
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }}
               </li>
               <li>
                 <label class="text-primary mt-2">Archivos: </label>
@@ -983,9 +983,9 @@ onMounted(() => {
               class="fa-solid fa-arrow-left-long mr-2 mt-1"></i> Escanear productos</button>
           <div class="flex justify-end space-x-3 pt-5 pb-1">
             <CancelButton @click="
-      qrScan = false;
-    form.reset();
-    ">Cancelar</CancelButton>
+              qrScan = false;
+            form.reset();
+            ">Cancelar</CancelButton>
             <PrimaryButton :disabled="form.processing">Buscar</PrimaryButton>
           </div>
         </div>
@@ -998,7 +998,7 @@ onMounted(() => {
   <!-- Password modal -->
   <DialogModal :show="openPasswordModal" @close="openPasswordModal = false">
     <template #title>
-      Contraseña de supervisor. Tienes {{$page.props.auth.user.has_pendent_production}} orden(es) pausadas.
+      Contraseña de supervisor. Tienes {{ $page.props.auth.user.has_pendent_production }} orden(es) pausadas.
     </template>
     <template #content>
       <p class="text-center text-sm my-4">Para garantizar la precisión en nuestros registros de producción, se solicita

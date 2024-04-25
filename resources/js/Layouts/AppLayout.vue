@@ -477,11 +477,11 @@ onMounted(() => {
                     </template>
                   </el-popconfirm>
 
-                  <div class="w-1/3" v-if="$page.props.isKiosk &&
-      nextAttendance &&
-      $page.props.auth.user.permissions.includes(
-        'Registrar asistencia'
-      ) && !isPaused">
+                  <div class="w-2/3" v-if="$page.props.isKiosk &&
+                    nextAttendance &&
+                    $page.props.auth.user.permissions.includes(
+                      'Registrar asistencia'
+                    ) && !isPaused">
                     <div v-if="nextAttendance == 'Registrar salida' && $page.props.auth.user.has_pendent_production">
                       <SecondaryButton @click="openPasswordModal = true" v-if="nextAttendance != 'Dia terminado'"
                         class="mr-14">
@@ -491,17 +491,19 @@ onMounted(() => {
                         {{ nextAttendance }}
                       </span>
                     </div>
-                    <el-popconfirm v-else confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
-                      title="¿Continuar?" @confirm="setAttendance">
-                      <template #reference>
-                        <SecondaryButton v-if="nextAttendance != 'Dia terminado'" class="mr-14">
-                          {{ nextAttendance }}
-                        </SecondaryButton>
-                        <span v-else class="bg-[#75b3f9] text-[#0355B5] mr-14 rounded-md px-3 py-1">
-                          {{ nextAttendance }}
-                        </span>
-                      </template>
-                    </el-popconfirm>
+                    <div v-else>
+                      <el-popconfirm v-if="nextAttendance != 'Dia terminado'" confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                        title="¿Continuar?" @confirm="setAttendance">
+                        <template #reference>
+                          <SecondaryButton class="mr-14">
+                            {{ nextAttendance }}
+                          </SecondaryButton>
+                        </template>
+                      </el-popconfirm>
+                      <span v-else class="w-full bg-[#75b3f9] text-[#0355B5] text-xs px-1 mr-14 rounded-md py-1">
+                        {{ nextAttendance }}
+                      </span>
+                    </div>
                   </div>
 
                   <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear kiosco')
@@ -738,7 +740,7 @@ onMounted(() => {
             <slot name="header" />
           </div>
         </header>
-        <div class="overflow-y-auto h-[calc(100vh-7rem)] bg-[#F2F2F2]">
+        <div class="overflow-y-auto h-[calc(100vh-6.2rem)] bg-[#F2F2F2]">
           <slot />
         </div>
       </main>
