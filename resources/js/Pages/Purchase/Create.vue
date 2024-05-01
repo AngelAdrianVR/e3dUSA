@@ -14,6 +14,12 @@
       <!-- Form -->
       <form @submit.prevent="store">
         <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4">
+          <div>
+            <el-radio-group v-model="form.is_spanish_template" size="small">
+                <el-radio :label="1">Plantilla en español</el-radio>
+                <el-radio :label="0">Plantilla en inglés</el-radio>
+            </el-radio-group>
+          </div>
           <div class="flex items-center">
             <el-tooltip content="Selecciona un provedor" placement="top">
               <span
@@ -208,6 +214,7 @@ export default {
   data() {
     const form = useForm({
       notes: null,
+      is_spanish_template: true,
       expected_delivery_date: null,
       is_iva_included: false,
       show_prices: false,

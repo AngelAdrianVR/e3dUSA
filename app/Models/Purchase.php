@@ -16,6 +16,7 @@ class Purchase extends Model
         'status',
         'notes',
         'authorized_user_name',
+        'is_spanish_template',
         'authorized_at',
         'expected_delivery_date',
         'emited_at',

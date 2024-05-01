@@ -5,7 +5,8 @@
         <header class="mt-10">
             <div class="flex items-center justify-between ml-8">
                 <ApplicationLogo class="w-[30%]" />
-                <p class="bg-gray2 py-px font-bold text-center px-20">Orden de compra</p>
+                <p v-if="purchase.is_spanish_template" class="bg-gray2 py-px font-bold text-center px-20">Orden de compra</p>
+                <p v-else class="bg-gray2 py-px font-bold text-center px-20">Purchase order</p>
             </div>
             <div class="flex flex-col items-end mr-8">
                 <p class="w-48">
@@ -18,7 +19,8 @@
                     </el-tooltip>
                 </p>
                 <p class="w-48">
-                    <span class="mr-6 w-1/2">Fecha:</span>
+                    <span v-if="purchase.is_spanish_template" class="mr-6 w-1/2">Fecha:</span>
+                    <span v-else class="mr-6 w-1/2">Date:</span>
                     <span class="w-1/2">{{ formatDate((purchase.created_at)) }}</span>
                 </p>
             </div>
@@ -29,25 +31,30 @@
                 <span>33 38338209</span>
             </section>
             <section class="mx-8 px-4 py-1 grid grid-cols-7 gap-1 mt-4">
-                <span>Proveedor:</span>
+                <span v-if="purchase.is_spanish_template">Proveedor:</span>
+                <span v-else>Supplier:</span>
                 <span class="col-span-6">{{ purchase.supplier.name }}</span>
-                <span>Domicilio:</span>
+                <span v-if="purchase.is_spanish_template">Domicilio:</span>
+                <span v-else>Address:</span>
                 <span class="col-span-6">{{ purchase.supplier.address }}</span>
-                <span>Telefono:</span>
+                <span v-if="purchase.is_spanish_template">Telefono:</span>
+                <span v-else>Phone:</span>
                 <span class="col-span-6">{{ purchase.supplier.phone }}</span>
-                <span>Cuenta bancaria:</span>
+                <span v-if="purchase.is_spanish_template">Cuenta bancaria:</span>
+                <span v-else>Bank account:</span>
                 <span class="col-span-6">
                     {{ getBankInfo }}
                 </span>
-                <span>Observaciones: </span>
+                <span v-if="purchase.is_spanish_template">Observaciones: </span>
+                <span v-else>Notes: </span>
                 <span class="col-span-6">{{ purchase.notes ?? '-' }}</span>
             </section>
             <section class="mx-8 px-4 py-1 grid grid-cols-4 gap-4 mt-4">
                 <article v-for="item in raw_materials" class="px-2">
-                    <p class="text-[#525252]">Producto: <span class="text-secondary">{{ item.part_number + ' ' + item.name }}</span></p>
-                    <p class="text-[#525252]">Piezas que quedarán pendientes: <span class="text-black">{{ purchase.products.find(prd => prd.id == item.id)?.additional_stock?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '-' }}</span></p>
-                    <p class="text-[#525252]">Piezas que viajan en avión: <span class="text-black">{{ purchase.products.find(prd => prd.id == item.id)?.plane_stock?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '-' }}</span></p>
-                    <p class="text-[#525252]">Piezas que viajan en barco: <span class="text-black">{{ purchase.products.find(prd => prd.id == item.id)?.ship_stock?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '-' }}</span></p>
+                    <p class="text-[#525252]">{{ purchase.is_spanish_template ? 'Producto:' : 'Product:'}} <span class="text-secondary">{{ item.part_number + ' ' + item.name }}</span></p>
+                    <p class="text-[#525252]">{{ purchase.is_spanish_template ? 'Piezas que quedarán pendientes:' : 'pieces that remain pending:'}} <span class="text-black">{{ purchase.products.find(prd => prd.id == item.id)?.additional_stock?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '-' }}</span></p>
+                    <p class="text-[#525252]">{{ purchase.is_spanish_template ? 'Piezas que viajan en avión:' : 'pieces that travel by plane:'}} <span class="text-black">{{ purchase.products.find(prd => prd.id == item.id)?.plane_stock?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '-' }}</span></p>
+                    <p class="text-[#525252]">{{ purchase.is_spanish_template ? 'Piezas que viajan en barco:' : 'pieces that travel by boat:'}} <span class="text-black">{{ purchase.products.find(prd => prd.id == item.id)?.ship_stock?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '-' }}</span></p>
                 </article>
             </section>
         </header>
@@ -55,13 +62,13 @@
             <table class="w-full">
                 <thead>
                     <tr class="*:bg-gray2 *:px-4 *:py-3 *:border *:border-gray1 text-left">
-                        <th>Número de parte</th>
-                        <th>Nombre</th>
-                        <th>Descripción</th>
-                        <th>Cantidad</th>
-                        <th>Unidad</th>
-                        <th v-if="purchase.show_prices">Valor unit.</th>
-                        <th v-if="purchase.show_prices">Importe</th>
+                        <th>{{ purchase.is_spanish_template ? 'Número de parte' : 'Part number'}}</th>
+                        <th>{{ purchase.is_spanish_template ? 'Nombre' : 'Name'}}</th>
+                        <th>{{ purchase.is_spanish_template ? 'Descripción' : 'Description'}}</th>
+                        <th>{{ purchase.is_spanish_template ? 'Cantidad' : 'Quantity'}}</th>
+                        <th>{{ purchase.is_spanish_template ? 'Unidad' : 'measure unity'}}</th>
+                        <th v-if="purchase.show_prices">{{ purchase.is_spanish_template ? 'Valor unit.' : 'Unit price'}}</th>
+                        <th v-if="purchase.show_prices">{{ purchase.is_spanish_template ? 'Importe' : 'Total'}}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -112,9 +119,8 @@
         </main>
         <footer v-if="purchase.show_prices" class="mx-8 mt-8 grid grid-cols-4 gap-x-3 gap-y-1s">
             <section class="flex flex-col col-span-3">
-                <header class="bg-gray2 text-center py-1">
-                    Importe con letra
-                </header>
+                <header v-if="purchase.is_spanish_template" class="bg-gray2 text-center py-1">Importe con letra</header>
+                <header v-else class="bg-gray2 text-center py-1">Amount with lyrics</header>
                 <p class="text-center mt-3">
                     {{ purchase.is_iva_included
             ? turnNumberIntoText(getSubtotal * 1.16)
@@ -124,16 +130,16 @@
             </section>
             <section class="grid grid-cols-2 gap-x-4 gap-y-2">
                 <span>Subtotal</span>
-                <span>{{ getSubtotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
+                <span>$ {{ getSubtotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
                 <!-- <span>Descuento</span>
                 <span>0.00</span> -->
                 <span v-if="purchase.is_iva_included">IVA</span>
-                <span v-if="purchase.is_iva_included">{{ (getSubtotal *
+                <span v-if="purchase.is_iva_included">$ {{ (getSubtotal *
             0.16).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,
                 ",") }}</span>
                 <span>Total</span>
                 <span class="font-bold border-y-2 border-gray1">
-                    {{
+                    $ {{
             purchase.is_iva_included
                 ? (getSubtotal * 1.16).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                 : getSubtotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
