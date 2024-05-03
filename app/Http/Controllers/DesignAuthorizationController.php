@@ -132,7 +132,7 @@ class DesignAuthorizationController extends Controller
             $design_authorization->addMediaFromRequest('image')->toMediaCollection('image');
         }
 
-        event(new RecordEdited($design_authorization));
+        // event(new RecordEdited($design_authorization));
 
         return to_route('design-authorizations.show', ['design_authorization' => $design_authorization->id ]);
     }
