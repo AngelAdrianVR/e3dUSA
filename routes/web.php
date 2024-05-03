@@ -504,10 +504,3 @@ Route::get('mail-test', function () {
 
     return "Correo de prueba enviado a $destinatario.";
 });
-
-
-
-
-// Route::get('/sorry-miss-u', function () {
-//     return inertia('Cin/so');
-// });

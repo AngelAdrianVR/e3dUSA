@@ -273,11 +273,19 @@ const setAttendance = async () => {
   try {
     const response = await axios.get(route("users.set-attendance"));
     if (response.status === 200) {
-      nextAttendance.value = response.data.next;
-      ElNotification.success({
-        title: "Éxito",
-        message: "Registro correcto",
-      });
+      // evitar registro multiple por muchos clicks
+      if (nextAttendance.value != response.data.next) {
+        nextAttendance.value = response.data.next;
+        ElNotification.success({
+          title: "Éxito",
+          message: "Registro correcto",
+        });
+      } else {
+        ElNotification.info({
+          title: "Debes de esperar por lo menos 1 minuto para registrar salida",
+          message: "",
+        });
+      }
     }
   } catch (error) {
     console.error(error);

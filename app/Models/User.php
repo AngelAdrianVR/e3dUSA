@@ -222,10 +222,16 @@ class User extends Authenticatable
             ]);
             $next = 'Registrar salida';
         } elseif (is_null($today_attendance->check_out)) {
-            $today_attendance->update([
-                'check_out' => $now_time,
-            ]);
-            $next = 'Dia terminado';
+            // registrar salida solo si ha pasado al menos 1 minuto del registro de entrada para evitar registrar 2 veces
+            // $carbon_check_in = Carbon::parse($today_attendance->check_in);
+            if ($today_attendance->check_in->diffInMinutes(now()) > 1) {
+                $today_attendance->update([
+                    'check_out' => $now_time,
+                ]);
+                $next = 'Dia terminado';
+            } else {
+                $next = 'Registrar salida';
+            }
         }
 
         return $next;
