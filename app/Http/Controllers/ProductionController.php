@@ -29,7 +29,6 @@ class ProductionController extends Controller
     public function index()
     {
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de produccion todas')) {
-            // $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch')->whereHas('productions')->latest()->get());
             //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
             $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch', 'productions.operator')->whereHas('productions')->latest()->get();
             $productions = $pre_productions->map(function ($production) {
@@ -66,28 +65,21 @@ class ProductionController extends Controller
                 }
                 //Guarda en un array "productionNames" los nombres de los operadores de esa orden de produccion
                 $productionNames = [];
+                $productNames = [];
                 foreach ($production->productions as $productionItem) {
                     $productionNames[] = $productionItem['operator']['name'];
+
+                    //Guarda en un array "productNames" los nombres de los productos de la orden
+                    if (isset($productionItem->catalogProductCompanySale?->catalogProductCompany?->catalogProduct)) {
+                        $productName = $productionItem->catalogProductCompanySale?->catalogProductCompany?->catalogProduct->name;
+                        $productNames[] = $productName;
+                    }
                 }
                 $uniqueProductionNames = array_unique($productionNames);
                 $operators = implode(', ', $uniqueProductionNames);
 
-                //Guarda en un array "productNames" los nombres de los productos de la orden
-                // $productNames = [];
-                // foreach ($production->productions as $product) {
-                //     if (
-                //         isset($product['catalog_product_company_sale']) &&
-                //         isset($product['catalog_product_company_sale']['catalog_product_company']) &&
-                //         isset($product['catalog_product_company_sale']['catalog_product_company']['catalog_product'])
-                //     ) {
-                //         $productName = $product['catalog_product_company_sale']['catalog_product_company']['catalog_product']['name'];
-                //         $productNames[] = $productName;
-                //     }
-
-                // }
-
-                // $uniqueProductNames = array_unique($productNames);
-                // $products = implode(', ', $uniqueProductNames);
+                $uniqueProductNames = array_unique($productNames);
+                $products = implode(', ', $uniqueProductNames);
 
                 //Calulo del porcentage de avance de producción.
                 // Contador para llevar el registro de cuántas producciones tienen fecha en "finished_at"
@@ -135,7 +127,7 @@ class ProductionController extends Controller
                         'id' => $production->companyBranch->id,
                         'name' => $production->companyBranch->name
                     ],
-                    // 'products' => $production->productions, no me arroja ningun nombre
+                    'products' => $products, //no me arroja ningun nombre
                     'production' => [
                         'percentage' => $percentage . '%',
                         'productions_quantity' => count($production->productions)
@@ -410,7 +402,7 @@ class ProductionController extends Controller
                         ]);
                     }
                 }
-                
+
                 // agregar a almacen de producto terminado si es orden de stock
                 if (!$production->catalogProductCompanySale->sale->is_sale_production) {
                     $catalog_product = $cpcs->catalogProductCompany->catalogProduct;
@@ -418,7 +410,7 @@ class ProductionController extends Controller
                     $existingStorage = $catalog_product->storages()
                         ->where('type', 'producto-terminado')
                         ->first();
-    
+
                     if ($existingStorage) {
                         // Si existe, incrementar la cantidad existente
                         $existingStorage->increment('quantity', $cpcs->quantity);
@@ -430,8 +422,8 @@ class ProductionController extends Controller
                             'type' => 'producto-terminado',
                         ]);
                         $existingStorage = $catalog_product->storages()
-                        ->where('type', 'producto-terminado')
-                        ->first();
+                            ->where('type', 'producto-terminado')
+                            ->first();
                     }
                     StockMovementHistory::Create([
                         'storage_id' => $existingStorage->id,
@@ -464,9 +456,9 @@ class ProductionController extends Controller
                 )
             );
 
-            $message = $production->catalogProductCompanySale->sale->is_sale_production 
-            ? 'Se ha registrado el final'
-            : 'Se ha guardado automáticamente la cantidad en almacén de producto terminado.';
+            $message = $production->catalogProductCompanySale->sale->is_sale_production
+                ? 'Se ha registrado el final'
+                : 'Se ha guardado automáticamente la cantidad en almacén de producto terminado.';
             $production = Production::with(['operator', 'user'])->find($production->id);
         } else {
             $production = null;

@@ -29,10 +29,10 @@
                 <NotificationCenter module="samples" />
                 <div class="flex justify-between">
                     <!-- pagination -->
-                    <div>
+                    <!-- <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
                             :total="samples.length" />
-                    </div>
+                    </div> -->
                     <!-- buttons -->
                     <div>
                         <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar muestra')"

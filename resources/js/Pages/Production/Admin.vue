@@ -87,6 +87,7 @@
                             </template>
                         </el-table-column>
                         <el-table-column prop="operators" label="Operadores" width="210" />
+                        <el-table-column prop="products" label="Productos" width="210" />
                         <el-table-column prop="production.percentage" label="% Avance" width="115" />
                         <el-table-column prop="promise_date" label="Fecha entrega" />
                         <el-table-column align="right">
