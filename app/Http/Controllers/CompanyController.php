@@ -80,6 +80,8 @@ class CompanyController extends Controller
 
         $company = Company::create($request->except(['company_branches', 'products'] + ['user_id' => auth()->id()]));
         foreach ($request->company_branches as $branch) {
+            // valor por defecto a dias para reactivar cliente para evitar error de base de datos si lo dejan nulo
+            $branch['days_to_reactivate'] = $branch['days_to_reactivate'] ?? 30; 
             $branch['company_id'] = $company->id;
             $compay_branch = CompanyBranch::create($branch);
             foreach ($branch['contacts'] as $contact) {

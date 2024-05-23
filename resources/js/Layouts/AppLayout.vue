@@ -953,7 +953,7 @@ onMounted(() => {
             máquinas
             <i class="fa-solid fa-arrow-right-long ml-2 mt-1"></i></button>
           <div class="flex justify-end space-x-3 pt-5 pb-1">
-            <CancelButton @click="
+            <CancelButton type="button" @click="
               qrScan = false;
             form.reset();
             ">Cancelar</CancelButton>
@@ -1062,7 +1062,7 @@ onMounted(() => {
           <button @click="QRScan()" class="text-primary text-sm flex items-center"><i
               class="fa-solid fa-arrow-left-long mr-2 mt-1"></i> Escanear productos</button>
           <div class="flex justify-end space-x-3 pt-5 pb-1">
-            <CancelButton @click="
+            <CancelButton type="button" @click="
               qrScan = false;
             form.reset();
             ">Cancelar</CancelButton>
