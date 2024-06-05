@@ -21,7 +21,6 @@ use Nette\Utils\Strings;
 
 class SaleController extends Controller
 {
-
     public function index()
     {
         $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->where('user_id', auth()->id())->latest()->paginate(20));
@@ -85,7 +84,6 @@ class SaleController extends Controller
             ];
         });
 
-        // return $company_branches;
         return inertia('Sale/Create', compact('company_branches', 'opportunityId', 'sample'));
     }
 
@@ -425,7 +423,6 @@ class SaleController extends Controller
     {
         $sale = SaleResource::make(Sale::with(['user:id,name', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator:id,name', 'comments.user'], 'productions' => ['user:id,name', 'operator:id,name']])->find($sale_id));
 
-        // return $sale;
         return inertia('Sale/QualityCertificate', compact('sale'));
     }
 

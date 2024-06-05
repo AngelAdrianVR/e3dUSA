@@ -1,4 +1,5 @@
 <template>
+
     <Head :title="quote.data.folio" />
     <!-- logo -->
     <div class="text-center">
@@ -10,16 +11,27 @@
 
         <!-- header -->
         <div>
-             <p class="flex items-center justify-end ml-auto font-bold mr-6 text-xs text-gray-700">
+            <p class="flex items-center justify-end ml-auto font-bold mr-6 text-xs text-gray-700">
                 San Antonio TX {{ quote.data.created_at }}
-                <i
-                  @click="authorize"
-                  :title="quote.data.authorized_at ? 'Cotización autorizada' : 'Autorizar cotización'" 
-                  v-if="$page.props.auth.user.permissions.includes('Autorizar cotizaciones')" 
-                  class="fa-solid fa-check ml-3" 
-                  :class="quote.data.authorized_at ? 'text-green-500' : 'hover:text-green-500 cursor-pointer'">
+                <i v-show="showAdditionalElements" @click="authorize"
+                    :title="quote.data.authorized_at ? 'Cotización autorizada' : 'Autorizar cotización'"
+                    v-if="$page.props.auth.user.permissions.includes('Autorizar cotizaciones')"
+                    class="fa-solid fa-check ml-3"
+                    :class="quote.data.authorized_at ? 'text-green-500' : 'hover:text-green-500 cursor-pointer'">
                 </i>
             </p>
+            <!-- botones para cambiar de cot -->
+            <div v-show="showAdditionalElements" class="flex items-center justify-center space-x-8 mt-5">
+                <button @click="$inertia.visit(route('quotes.show', prev_quote))"
+                    class="bg-gray-300 text-gray-800 size-5 text-[9px] rounded-full">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <span class="text-xs">{{ quote.data.folio }}</span>
+                <button @click="$inertia.visit(route('quotes.show', next_quote))"
+                    class="bg-gray-300 text-gray-800 size-5 text-[9px] rounded-full">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
             <p class="w-11/12 text-lg mx-auto font-bold text-gray-700">
                 {{ quote.data.companyBranch?.name ?? quote.data.prospect.name }}
             </p>
@@ -45,12 +57,17 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(item, index) in quote.data.products" :key="index" class="bg-gray-200 text-gray-700 uppercase">
+                <tr v-for="(item, index) in quote.data.products" :key="index"
+                    class="bg-gray-200 text-gray-700 uppercase">
                     <td class="px-2 py-px">{{ item.name + ' (N. de parte: ' + item.part_number + ')' }}</td>
                     <td class="px-2 py-px">{{ item.pivot.notes ?? '--' }}</td>
-                    <td class="px-2 py-px">{{ item.pivot.price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ quote.data.currency }}</td>
-                    <td class="px-2 py-px">{{ item.pivot.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ item.measure_unit }}</td>
-                    <td class="px-2 py-px text-right">{{ (item.pivot.quantity * item.pivot.price).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ quote.data.currency }}</td>
+                    <td class="px-2 py-px">{{ item.pivot.price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
+                        quote.data.currency }}</td>
+                    <td class="px-2 py-px">{{ item.pivot.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
+                        item.measure_unit }}</td>
+                    <td class="px-2 py-px text-right">{{ (item.pivot.quantity *
+                        item.pivot.price).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ quote.data.currency }}
+                    </td>
                 </tr>
             </tbody>
             <!-- <tfoot>
@@ -65,13 +82,15 @@
         <!-- Images -->
         <div class="w-11/12 mx-auto my-3 grid grid-cols-3 gap-4 ">
             <template v-for="(item, productIndex) in quote.data.products" :key="item.id">
-                <div v-if="item.pivot.show_image" class="bg-gray-200 rounded-t-xl rounded-b-md border" style="font-size: 8px;">
-                    <img class="rounded-t-xl max-h-52 mx-auto" :src="item.media[currentImages[productIndex]]?.original_url">
+                <div v-if="item.pivot.show_image" class="bg-gray-200 rounded-t-xl rounded-b-md border"
+                    style="font-size: 8px;">
+                    <img class="rounded-t-xl max-h-52 mx-auto"
+                        :src="item.media[currentImages[productIndex]]?.original_url">
                     <!-- selector de imagen cuando son varias -->
                     <div v-if="item.media?.length > 1" class="my-3 flex items-center justify-center space-x-3">
-                        <i @click="currentImages[productIndex] = index" v-for="(image, index) in item.media?.length" :key="index" 
-                        :class="index == currentImages[productIndex] ? 'text-black' : 'text-white'" 
-                        class="fa-solid fa-circle text-[7px] cursor-pointer"></i>
+                        <i @click="currentImages[productIndex] = index" v-for="(image, index) in item.media?.length"
+                            :key="index" :class="index == currentImages[productIndex] ? 'text-black' : 'text-white'"
+                            class="fa-solid fa-circle text-[7px] cursor-pointer"></i>
                     </div>
                     <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
                 </div>
@@ -102,14 +121,19 @@
             <ol class="list-decimal mx-2 mb-2">
                 <li v-if="quote.data.notes !== '--'" class="font-bold text-blue-500">{{ quote.data.notes }}</li>
                 <li>PRICES WITHOUT TAXES</li>
-                <li>TOOLING COSTS: <span class="font-bold text-blue-500" :class="quote.data.tooling_cost_stroked ? 'line-through' : ''">{{ quote.data.tooling_cost }} {{ quote.data.tooling_currency }}</span></li>
-                <li>DELIVERY TIME FOR THE FIRST PRODUCTION <span class="font-bold text-blue-500">{{ quote.data.first_production_days }}</span>.
+                <li>TOOLING COSTS: <span class="font-bold text-blue-500"
+                        :class="quote.data.tooling_cost_stroked ? 'line-through' : ''">{{ quote.data.tooling_cost }} {{
+                            quote.data.tooling_currency }}</span></li>
+                <li>DELIVERY TIME FOR THE FIRST PRODUCTION <span class="font-bold text-blue-500">{{
+                    quote.data.first_production_days }}</span>.
                     TIME RUNS ONCE PAYING 100% OF THE TOOLING AND THE 50% OF THE
                     PRODUCTS.</li>
                 <li>FREIGHTS AND CARRIAGES ARE PAID BY CUSTOMER: <span class="font-bold text-blue-500">{{
-                    quote.data.freight_cost }} {{ !isNaN(quote.data.freight_cost) ? quote.data.currency : '' }}</span></li>
+                    quote.data.freight_cost }} {{ !isNaN(quote.data.freight_cost) ? quote.data.currency : ''
+                        }}</span></li>
                 <li>PRICES IN <span class="font-bold text-blue-500">{{ quote.data.currency }}</span></li>
-                <li>QUOTE VALID FOR 21 DAYS. PRODUCT IS SUBJECT TO FINAL DESIGN REVIEW, TESTING AND SUBSEQUENT APPROVAL</li>
+                <li>QUOTE VALID FOR 21 DAYS. PRODUCT IS SUBJECT TO FINAL DESIGN REVIEW, TESTING AND SUBSEQUENT APPROVAL
+                </li>
             </ol>
             PAYMENTS.- BY BANK TRANSFER OR DEPOSIT TO MARIBEL@EMBLEMAS3D.COM O ASISTENTE.DIRECTOR@EMBLEMAS3D.COM CASH
             PAYMENTS ARE NOT ACCEPTED, ALL CHECKS MUST USE THE NAME OF: EMBLEMS 3D USA SA DE CV. AND STAMP FOR
@@ -139,10 +163,12 @@
             </div>
             <div>
                 Authorized by:
-                <span v-if="quote.data.authorized_user_name" class="text-green-600">{{ quote.data.authorized_user_name }}</span>
+                <span v-if="quote.data.authorized_user_name" class="text-green-600">{{ quote.data.authorized_user_name
+                    }}</span>
                 <!-- No authorized Banner -->
                 <span v-else class="text-amber-500">No authorized</span>
-                <div v-if="!quote.data.authorized_user_name" class="absolute left-28 top-1/3 text-red-700 text-5xl border-4 border-red-700 p-6">
+                <div v-if="!quote.data.authorized_user_name"
+                    class="absolute left-28 top-1/3 text-red-700 text-5xl border-4 border-red-700 p-6">
                     <i class="fas fa-exclamation"></i>
                     <span class="ml-2">NO AUTHORIZED</span>
                 </div>
@@ -163,7 +189,8 @@
                     <i class="fas fa-phone-alt"></i> 210-858-9881
                 </div>
                 <div>
-                    <i class="fas fa-globe"></i> www.emblemas<b class="text-sky-600">3</b><b class="text-red-600">d</b>.com
+                    <i class="fas fa-globe"></i> www.emblemas<b class="text-sky-600">3</b><b
+                        class="text-red-600">d</b>.com
                     <br>
                     <i class="fas fa-envelope"></i> j.sherman@emblemas<b class="text-sky-600">3</b><b
                         class="text-red-600">d</b>.com
@@ -195,6 +222,7 @@ import axios from 'axios';
 export default {
     data() {
         return {
+            showAdditionalElements: true,
             currentImages: [], // Array to store current image index for each product
         };
     },
@@ -203,13 +231,24 @@ export default {
         Head,
     },
     props: {
-        quote: Object
+        quote: Object,
+        next_quote: Number,
+        prev_quote: Number,
     },
-     methods:{
-         async authorize() {
-            if (!this.quote.data.authorized_at)  {
-                    try {
-                        const response = await axios.put(route('quotes.authorize', this.quote.data.id));
+    methods: {
+        handleBeforePrint() {
+            this.showAdditionalElements = false;
+        },
+        handleAfterPrint() {
+            this.showAdditionalElements = true;
+        },
+        print() {
+            window.print();
+        },
+        async authorize() {
+            if (!this.quote.data.authorized_at) {
+                try {
+                    const response = await axios.put(route('quotes.authorize', this.quote.data.id));
 
                     if (response.status == 200) {
                         this.$notify({
@@ -224,17 +263,17 @@ export default {
                             type: 'error'
                         });
                     }
-                    } catch (err) {
-                        this.$notify({
-                            title: 'Algo salió mal',
-                            message: err.message,
-                            type: 'error'
-                        });
-                        console.log(err);
-                    } finally {
-                        this.$inertia.get(route('quotes.index'));
-                    }
+                } catch (err) {
+                    this.$notify({
+                        title: 'Algo salió mal',
+                        message: err.message,
+                        type: 'error'
+                    });
+                    console.log(err);
+                } finally {
+                    this.$inertia.get(route('quotes.index'));
                 }
+            }
         },
         // Método para procesar la URL de la imagen
         procesarUrlImagen(originalUrl) {
@@ -243,9 +282,17 @@ export default {
             return nuevaUrl;
         },
         created() {
-    // Initialize currentImages array with default values for each product
-    this.currentImages = this.quote.data.products.map(() => 0);
+            // Initialize currentImages array with default values for each product
+            this.currentImages = this.quote.data.products.map(() => 0);
+        },
     },
-     }
+    mounted() {
+        window.addEventListener('beforeprint', this.handleBeforePrint);
+        window.addEventListener('afterprint', this.handleAfterPrint);
+    },
+    beforeDestroy() {
+        window.removeEventListener('beforeprint', this.handleBeforePrint);
+        window.removeEventListener('afterprint', this.handleAfterPrint);
+    }
 }
 </script>

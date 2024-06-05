@@ -112,12 +112,36 @@ class QuoteController extends Controller
 
     public function show(Quote $quote)
     {
+        // Obtener todas las cotizaciones ordenadas por ID
+        $quotes = Quote::orderBy('id')->get();
+
+        // Encontrar la posición de la cotización actual en la lista
+        $currentIndex = $quotes->search(function ($q) use ($quote) {
+            return $q->id == $quote->id;
+        });
+
+        // Obtener el ID de la siguiente cotización, manejando el caso en el que estamos en la última cotización
+        $nextQuote = $quotes->get(($currentIndex + 1) % $quotes->count());
+
+        // Obtener el ID de la cotización anterior, manejando el caso en el que estamos en la primera cotización
+        $prevQuote = $quotes->get(($currentIndex - 1 + $quotes->count()) % $quotes->count());
+
+        // Preparar los recursos de la cotización actual
         $quote = QuoteResource::make(Quote::with(['catalogProducts', 'prospect'])->findOrFail($quote->id));
 
-        if ($quote->is_spanish_template)
-            return inertia('Quote/SpanishTemplate', compact('quote'));
-        else
-            return inertia('Quote/EnglishTemplate', compact('quote'));
+        if ($quote->is_spanish_template) {
+            return inertia('Quote/SpanishTemplate', [
+                'quote' => $quote,
+                'next_quote' => $nextQuote->id,
+                'prev_quote' => $prevQuote->id,
+            ]);
+        } else {
+            return inertia('Quote/EnglishTemplate', [
+                'quote' => $quote,
+                'next_quote' => $nextQuote->id,
+                'prev_quote' => $prevQuote->id,
+            ]);
+        }
     }
 
     public function edit(Quote $quote)

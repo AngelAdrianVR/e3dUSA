@@ -29,11 +29,19 @@
             </div>
 
             <!-- Filtro -->
-            <div class="w-44 lg:ml-32 ml-4 mt-2">
-                <el-select @change="fetchItemsFiltered" v-model="filter" class="mt-2"
-                    placeholder="Selecciona una opción">
-                    <el-option v-for="item in options" :key="item" :label="item" :value="item" />
-                </el-select>
+            <div class="flex items-center space-x-5 lg:mx-28 mx-4 mt-5">
+                <div class="w-1/4 flex flex-col">
+                    <label class="text-sm ml-2 mb-1">Filtro por propietario</label>
+                    <el-select @change="fetchItemsFiltered" v-model="filter" class="!w-full"
+                        placeholder="Selecciona una opción">
+                        <el-option v-for="item in options" :key="item" :label="item" :value="item" />
+                    </el-select>
+                </div>
+                <div class="w-1/3 flex flex-col">
+                    <label class="text-sm ml-2 mb-1">Filtro por estatus</label>
+                    <el-cascader @change="applyStatusFilter()" v-model="statusfilter" :options="cascaderOptions"
+                        :props="cascaderProps" collapse-tags class="!w-full" />
+                </div>
             </div>
 
             <div class="relative overflow-hidden min-h-[60vh]">
@@ -61,7 +69,7 @@
                         <IndexSearchBar @search="fetchMatches" />
                     </div>
 
-                    <el-table :data="sales.data" @row-click="handleRowClick" max-height="670" style="width: 100%"
+                    <el-table :data="filteredSales" @row-click="handleRowClick" max-height="670" style="width: 100%"
                         @selection-change="handleSelectionChange" ref="multipleTableRef"
                         :row-class-name="tableRowClassName">
                         <el-table-column type="selection" width="30" />
@@ -91,7 +99,8 @@
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column v-if="$page.props.auth.user.permissions.includes('Ver utilidades')" label="Utilidad" width="140">
+                        <el-table-column v-if="$page.props.auth.user.permissions.includes('Ver utilidades')"
+                            label="Utilidad" width="140">
                             <template #default="scope">
                                 <SaleProfit :profit="scope.row.profit" />
                             </template>
@@ -124,8 +133,8 @@
                                                     class="fa-solid fa-eye"></i>
                                                 Ver</el-dropdown-item>
                                             <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar ordenes de venta') ||
-                                                    scope.row.user.id == $page.props.auth.user.id" :command="'edit-' + scope.row.id"><i
-                                                    class="fa-solid fa-pen"></i>
+                                                scope.row.user.id == $page.props.auth.user.id"
+                                                :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                                 Editar</el-dropdown-item>
                                             <el-dropdown-item
                                                 v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')"
@@ -163,8 +172,34 @@ export default {
     data() {
         return {
             disableMassiveActions: true,
-            filter: 'Mis órdenes', //filtro
-            options: ['Mis órdenes', 'Todas las órdenes'], //filtro
+            // filtro
+            cascaderProps: { multiple: true },
+            filter: 'Mis órdenes',
+            statusfilter: [["Esperando autorización"], ["Autorizado sin orden de producción"], ["Producción sin iniciar"], ["Producción en proceso"]],
+            cascaderOptions: [
+                {
+                    value: 'Esperando autorización',
+                    label: 'Esperando autorización',
+                },
+                {
+                    value: 'Autorizado sin orden de producción',
+                    label: 'Autorizado sin orden de producción',
+                },
+                {
+                    value: 'Producción sin iniciar',
+                    label: 'Producción sin iniciar',
+                },
+                {
+                    value: 'Producción en proceso',
+                    label: 'Producción en proceso',
+                },
+                {
+                    value: 'Producción terminada',
+                    label: 'Producción terminada',
+                },
+            ],
+            options: ['Mis órdenes', 'Todas las órdenes'],
+            filteredSales: [],
             // inputSearch: '',
             search: '',
             loading: false,
@@ -192,6 +227,69 @@ export default {
         company_branches: Array
     },
     methods: {
+        applyStatusFilter() {
+            // Convertir el array de arrays a un array plano de strings
+            const flatSelectedStatuses = this.statusfilter.flat();
+
+            // Filtrar las ventas basadas en los estados seleccionados
+            this.filteredSales = this.sales.data.filter(sale =>
+                flatSelectedStatuses.includes(sale.status.label)
+            );
+        },
+        tableRowClassName({ row, rowIndex }) {
+            return 'cursor-pointer text-xs';
+        },
+        getStatusColor(row) {
+            if (row.status['label'] == 'Esperando autorización') {
+                return 'text-red-500';
+            } else if (row.status['label'] == 'Producción sin iniciar') {
+                return 'text-amber-500';
+            } else if (row.status['label'] == 'Producción en proceso') {
+                return 'text-blue-500';
+            } else if (row.status['label'] == 'Producción terminada') {
+                return 'text-green-500';
+            } else if (row.status['label'] == 'Autorizado sin orden de producción') {
+                return 'text-gray-500';
+            }
+        },
+        handleRowClick(row) {
+            this.$inertia.get(route('sales.show', row));
+        },
+        handleCommand(command) {
+            const commandName = command.split('-')[0];
+            const rowId = command.split('-')[1];
+
+            if (commandName == 'clone') {
+                this.clone(rowId);
+            } else if (commandName == 'make_so') {
+                console.log('SO');
+            } else {
+                this.$inertia.get(route('sales.' + commandName, rowId));
+            }
+        },
+        fetchItemsFiltered() {
+            this.$inertia.get(route('sales.fetch-filtered', this.filter));
+        },
+        removeLeftZeros() {
+            // Verificar si el valor ingresado es un número
+            const isNumber = /^\d+$/.test(this.search);
+
+            if (isNumber) {
+                // Eliminar ceros a la izquierda
+                return parseInt(this.search, 10).toString();
+            }
+
+            return this.search;
+        },
+        handleSelectionChange(val) {
+            this.$refs.multipleTableRef.value = val;
+
+            if (!this.$refs.multipleTableRef.value.length) {
+                this.disableMassiveActions = true;
+            } else {
+                this.disableMassiveActions = false;
+            }
+        },
         async fetchMatches(search) {
             this.search = search;
             this.loading = true;
@@ -212,24 +310,36 @@ export default {
                 this.loading = false;
             }
         },
-        removeLeftZeros() {
-            // Verificar si el valor ingresado es un número
-            const isNumber = /^\d+$/.test(this.search);
+        async clone(sale_id) {
+            try {
+                const response = await axios.post(route('sales.clone', {
+                    sale_id: sale_id
+                }));
 
-            if (isNumber) {
-                // Eliminar ceros a la izquierda
-                return parseInt(this.search, 10).toString();
-            }
+                if (response.status == 200) {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
 
-            return this.search;
-        },
-        handleSelectionChange(val) {
-            this.$refs.multipleTableRef.value = val;
+                    this.sales.data.unshift(response.data.newItem);
 
-            if (!this.$refs.multipleTableRef.value.length) {
-                this.disableMassiveActions = true;
-            } else {
-                this.disableMassiveActions = false;
+                } else {
+                    this.$notify({
+                        title: 'Algo salió mal',
+                        message: response.data.message,
+                        type: 'error'
+                    });
+                }
+
+            } catch (err) {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
+                console.log(err);
             }
         },
         async deleteSelections() {
@@ -285,72 +395,6 @@ export default {
                 console.log(err);
             }
         },
-        tableRowClassName({ row, rowIndex }) {
-            return 'cursor-pointer text-xs';
-        },
-        getStatusColor(row) {
-            if (row.status['label'] == 'Esperando autorización') {
-                return 'text-red-500';
-            } else if (row.status['label'] == 'Producción sin iniciar') {
-                return 'text-amber-500';
-            } else if (row.status['label'] == 'Producción en proceso') {
-                return 'text-blue-500';
-            } else if (row.status['label'] == 'Producción terminada') {
-                return 'text-green-500';
-            } else if (row.status['label'] == 'Autorizado sin orden de producción') {
-                return 'text-gray-500';
-            }
-        },
-        handleRowClick(row) {
-            this.$inertia.get(route('sales.show', row));
-        },
-        async clone(sale_id) {
-            try {
-                const response = await axios.post(route('sales.clone', {
-                    sale_id: sale_id
-                }));
-
-                if (response.status == 200) {
-                    this.$notify({
-                        title: 'Éxito',
-                        message: response.data.message,
-                        type: 'success'
-                    });
-
-                    this.sales.data.unshift(response.data.newItem);
-
-                } else {
-                    this.$notify({
-                        title: 'Algo salió mal',
-                        message: response.data.message,
-                        type: 'error'
-                    });
-                }
-
-            } catch (err) {
-                this.$notify({
-                    title: 'Algo salió mal',
-                    message: err.message,
-                    type: 'error'
-                });
-                console.log(err);
-            }
-        },
-        handleCommand(command) {
-            const commandName = command.split('-')[0];
-            const rowId = command.split('-')[1];
-
-            if (commandName == 'clone') {
-                this.clone(rowId);
-            } else if (commandName == 'make_so') {
-                console.log('SO');
-            } else {
-                this.$inertia.get(route('sales.' + commandName, rowId));
-            }
-        },
-        fetchItemsFiltered() {
-            this.$inertia.get(route('sales.fetch-filtered', this.filter));
-        }
     },
 };
 </script>

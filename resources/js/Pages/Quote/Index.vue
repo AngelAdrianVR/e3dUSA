@@ -47,14 +47,16 @@
                     <IndexSearchBar @search="handleSearch" />
                 </div>
                 <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
-                    @selection-change="handleSelectionChange" ref="multipleTableRef" :row-class-name="tableRowClassName">
+                    @selection-change="handleSelectionChange" ref="multipleTableRef"
+                    :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="folio" label="Folio" width="100" />
-                    <el-table-column v-if="$page.props.auth.user.permissions.includes('Ver utilidades')" label="Utilidad" width="140">
-                            <template #default="scope">
-                                <SaleProfit :profit="scope.row.profit" />
-                            </template>
-                        </el-table-column>
+                    <el-table-column v-if="$page.props.auth.user.permissions.includes('Ver utilidades')"
+                        label="Utilidad" width="140">
+                        <template #default="scope">
+                            <SaleProfit :profit="scope.row.profit" />
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="user.name" label="Creado por" />
                     <el-table-column prop="receiver" label="Receptor" />
                     <el-table-column prop="companyBranch.name" label="Cliente / Prospecto">
@@ -79,7 +81,8 @@
                                 </button>
                                 <template #dropdown>
                                     <el-dropdown-menu>
-                                        <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
+                                        <el-dropdown-item :command="'show-' + scope.row.id"><i
+                                                class="fa-solid fa-eye"></i>
                                             Ver</el-dropdown-item>
                                         <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar cotizaciones')
                                             || scope.row.user.id == $page.props.auth.user.id"
@@ -212,9 +215,9 @@ export default {
                 console.log(err);
             }
         },
-
         handleRowClick(row) {
-            this.$inertia.get(route('quotes.show', row));
+            const url = this.route('quotes.show', row);
+            window.open(url, '_blank');
         },
         tableRowClassName({ row, rowIndex }) {
             return 'cursor-pointer text-xs';
