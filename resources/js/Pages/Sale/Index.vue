@@ -301,7 +301,7 @@ export default {
                     const response = await axios.get(route('sales.get-matches', { query: processed }));
 
                     if (response.status === 200) {
-                        this.sales.data = response.data.items;
+                        this.filteredSales = response.data.items;
                     }
                 }
             } catch (error) {
