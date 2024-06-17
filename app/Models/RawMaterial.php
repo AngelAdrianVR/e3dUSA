@@ -94,7 +94,7 @@ class RawMaterial extends Model implements HasMedia
             $statusLabel = $sale->getStatus()['label'];
             if ($statusLabel != 'Producción terminada') {
                 $product = $sale->catalogProductCompanySales->first(function ($cpcs) {
-                    return $cpcs->catalogProductCompany->catalogProduct->rawMaterials->contains('id', $this->id);
+                    return $cpcs->catalogProductCompany?->catalogProduct->rawMaterials->contains('id', $this->id);
                 });
 
                 // Obtener la relación rawMaterials del elemento encontrado

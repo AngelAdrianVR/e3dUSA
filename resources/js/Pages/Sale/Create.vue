@@ -421,7 +421,7 @@
                         </div>
                     </div>
                     <div class="mt-7 mx-3 md:text-right">
-                        <PrimaryButton :disabled="form.processing"> Crear órden de venta </PrimaryButton>
+                        <PrimaryButton :disabled="form.processing || !form.products.length"> Crear órden de venta </PrimaryButton>
                     </div>
                 </div>
             </form>
