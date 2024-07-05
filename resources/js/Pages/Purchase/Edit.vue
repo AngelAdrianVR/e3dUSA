@@ -63,6 +63,21 @@
           </div>
           <InputError :message="form.errors.contact_id" />
 
+          <div class="flex items-center pb-3">
+            <el-tooltip content="Moneda" placement="top">
+              <span
+                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md ">
+                <i class="fa-solid fa-dollar-sign mr-2"></i>
+              </span>
+            </el-tooltip>
+            <el-select v-model="form.currency" placeholder="Moneda *" :fit-input-width="true">
+              <el-option v-for="item in currencies" :key="item.value" :label="item.label" :value="item.value">
+                <span style="float: left">{{ item.label }}</span>
+                <span style="float: right; color: #cccccc; font-size: 13px">{{ item.value }}</span>
+              </el-option>
+            </el-select>
+          </div>
+
           <!-- --------------- Order info ----------------------------- -->
           <el-divider content-position="left">Datos de la órden</el-divider>
           <div class="pb-4 pt-3">
@@ -223,6 +238,7 @@ export default {
       additional_stock: this.purchase.additional_stock,
       plane_stock: this.purchase.plane_stock,
       ship_stock: this.purchase.ship_stock,
+      currency: this.purchase.ship_stock, 
       products: this.purchase.products,
     });
 
@@ -235,6 +251,10 @@ export default {
       editProductIndex: null,
       productValidation: false,
       rawMaterials: [],
+      currencies: [
+        { value: "$MXN", label: "MXN" },
+        { value: "$USD", label: "USD" },
+      ],
     };
   },
   components: {

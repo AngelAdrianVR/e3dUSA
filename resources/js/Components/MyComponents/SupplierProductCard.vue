@@ -11,11 +11,11 @@
             <p class="text-gray1">Cantidad mínima de pedido:</p>
             <p>{{ product.min_quantity_purchase }}</p>
             <p class="text-gray1">Precio unitario:</p>
-            <p>${{ product.cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</p>
+            <p>${{ product.cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ product.currency }}</p>
             <p class="text-gray1" v-if="product.quantity">Cantidad comprada:</p>
             <p v-if="product.quantity">{{ product.quantity ?? '--' }}</p>
             <p class="text-gray1" v-if="product.quantity">Costo total de compra</p>
-            <p v-if="product.quantity">${{ (product.quantity * product.cost).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</p>
+            <p v-if="product.quantity">${{ (product.quantity * product.cost).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ product.currency }}</p>
             <p class="text-gray1">Notas del producto:</p>
             <p>{{ product.notes ?? '--' }}</p>
         </div>

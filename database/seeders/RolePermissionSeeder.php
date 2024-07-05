@@ -191,6 +191,7 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Ordenes de produccion todas', 'category' => 'Produccion']);
         Permission::create(['name' => 'Autorizar ordenes de produccion', 'category' => 'Produccion']);
         Permission::create(['name' => 'Ordenes de produccion personal', 'category' => 'Produccion']);
+        Permission::create(['name' => 'Cambiar estatus a produccion', 'category' => 'Produccion']);
         Permission::create(['name' => 'Ver costos de produccion', 'category' => 'Produccion']);
         Permission::create(['name' => 'Crear costos de produccion', 'category' => 'Produccion']);
         Permission::create(['name' => 'Editar costos de produccion', 'category' => 'Produccion']);

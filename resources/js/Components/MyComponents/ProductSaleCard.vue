@@ -147,19 +147,21 @@
           ">-{{ production.operator.name }} {{ production.is_paused ? ' (pausado)' : '' }}
         </span>
       <div class="flex items-center space-x-1">
+        <!-- Boton de pausa y play de producción -->
         <el-tooltip v-if="getNextAction(production) == 'Finalizar'"
           :content="production.is_paused ? 'Reanudar producción' : 'Pausar producción'" placement="top">
-          <button @click="pauseProduction(production)" v-if="production.operator_id == $page.props.auth.user.id"
+          <button @click="pauseProduction(production)" v-if="production.operator_id == $page.props.auth.user.id || $page.props.auth.user.permissions.includes('Cambiar estatus a produccion')"
             class="bg-secondary size-4 rounded-full text-[7px] text-white disabled:opacity-25 disabled:cursor-not-allowed">
             <i v-if="production.is_paused" class="fa-solid fa-play"></i>
             <i v-else class="fa-solid fa-pause"></i>
           </button>
         </el-tooltip>
+        <!-- Boton de finalizar y comenzar producción -->
         <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
           :title="getNextAction(production) == 'Finalizar' ? 'Finalizar producción' : 'Iniciar producción'"
           @confirm="confirmedChangeStatus(production)">
           <template #reference>
-            <button v-if="production.operator_id == $page.props.auth.user.id"
+            <button v-if="production.operator_id == $page.props.auth.user.id || $page.props.auth.user.permissions.includes('Cambiar estatus a produccion')" 
               :disabled="getNextAction(production) == 'Finalizado'"
               class="bg-primary size-4 rounded-full text-[7px] text-white disabled:opacity-25 disabled:cursor-not-allowed">
               <i v-if="getNextAction(production) == 'Finalizar'" class="fa-solid fa-stop"></i>
@@ -264,12 +266,12 @@
             class="fa-solid fa-play"></i>
           <i v-else class="fa-solid fa-pause"></i>
         </button>
-      </el-tooltip> -->
-      <!-- <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
+      </el-tooltip>
+      <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
         @confirm="getNextAction() == 'Finalizar' ? showScrapModal = true : changeTaskStatus()">
         <template #reference>
           <button
-            v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id)"
+            v-if="catalog_product_company_sale.productions.some(item => item.operator_id == $page.props.auth.user.id) || true"
             :disabled="getNextAction() == 'Finalizado'"
             class="bg-primary px-2 rounded-md text-white disabled:opacity-25 disabled:cursor-not-allowed">
             {{ getNextAction() }}

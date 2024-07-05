@@ -447,15 +447,19 @@ class ProductionController extends Controller
 
             // notificar a jefe de producción
             $user = User::where('employee_properties->job_position', 'Jefe de producción')->first();
-            $user->notify(
-                new ProductionCompletedNotification(
-                    $production->catalogProductCompanySale->catalogProductCompany->catalogProduct->name,
-                    'OP-' . str_pad($production->catalogProductCompanySale->sale->id, 4, "0", STR_PAD_LEFT),
-                    "",
-                    'production'
-                )
-            );
-
+            
+            //si se encuentra jefe de producción se hace la notificación, si no se encuentra no se manda
+            if ( $user ) {
+                $user->notify(
+                    new ProductionCompletedNotification(
+                        $production->catalogProductCompanySale->catalogProductCompany->catalogProduct->name,
+                        'OP-' . str_pad($production->catalogProductCompanySale->sale->id, 4, "0", STR_PAD_LEFT),
+                        "",
+                        'production'
+                    )
+                );
+            }
+                    
             $message = $production->catalogProductCompanySale->sale->is_sale_production
                 ? 'Se ha registrado el final'
                 : 'Se ha guardado automáticamente la cantidad en almacén de producto terminado.';

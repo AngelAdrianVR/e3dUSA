@@ -408,6 +408,7 @@ export default {
     },
     props: {
         catalog_products: Array,
+        raw_materials: Array,
         company_branches: Array,
         opportunity: Object,
         prospects: Array,

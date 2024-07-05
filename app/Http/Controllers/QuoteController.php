@@ -14,6 +14,7 @@ use App\Models\CompanyBranch;
 use App\Models\Oportunity;
 use App\Models\Prospect;
 use App\Models\Quote;
+use App\Models\RawMaterial;
 use App\Models\Sale;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
@@ -56,16 +57,17 @@ class QuoteController extends Controller
 
     public function create()
     {
-        $catalog_products = CatalogProduct::all();
+        $catalog_products = CatalogProduct::all(['id', 'name', 'part_number']);
+        $raw_materials = RawMaterial::all(['id', 'name', 'part_number']);
         $company_branches = CompanyBranch::get(['id', 'name']);
         $prospects = Prospect::get(['id', 'name', 'contact_name', 'contact_charge']);
 
         // si se accede a crear cotización desde oportunidad. Recupera la oportunidad y la manda para llenar el formulario.
         $opportunity = Oportunity::find(request('opportunityId'));
 
-        // return $opportunity;
+        // return $raw_materials;
 
-        return inertia('Quote/Create', compact('catalog_products', 'company_branches', 'opportunity', 'prospects'));
+        return inertia('Quote/Create', compact('catalog_products', 'company_branches', 'opportunity', 'prospects', 'raw_materials'));
     }
 
     public function store(Request $request)
