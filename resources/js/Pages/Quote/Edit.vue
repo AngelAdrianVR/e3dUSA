@@ -189,10 +189,18 @@
                         <ol v-if="form.products.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
                             <template v-for="(item, index) in form.products" :key="index">
                                 <li class="flex justify-between items-center">
-                                    <p class="text-sm">
+                                    <!-- Si es producto de catalogo lo busca en esos productos -->
+                                    <p v-if="item.isCatalogProduct" class="text-sm">
                                         <span class="text-primary">{{ index + 1 }}.</span>
-                                        {{ catalog_products.find(prd => prd.id === item.catalog_product_id)?.name }}
-                                        (x{{ item.quantity }} unidades)
+                                        {{ catalog_products.find(prd => prd.id === item.id)?.name }}
+                                        (x{{ item.quantity }} unidades)  <span class="text-gray1">-> Producto de catálogo</span>
+                                    </p>
+
+                                    <!-- Si es materia prima lo busca en materias primas -->
+                                    <p v-else class="text-sm">
+                                        <span class="text-primary">{{ index + 1 }}.</span>
+                                        {{ raw_materials.find(prd => prd.id === item.id)?.name }}
+                                        (x{{ item.quantity }} unidades) <span class="text-gray1">-> Materia prima </span>
                                     </p>
                                     <div class="flex space-x-2 items-center">
                                         <el-tag v-if="editIndex == index">En edición</el-tag>
@@ -211,20 +219,40 @@
                             </template>
                         </ol>
 
-                        <div class="flex items-center mt-2">
+                         <!-- Seleccion de tipo de producto -->
+                        <el-radio-group class="col-span-full mt-5" v-model="productType" size="small">
+                            <el-radio-button label="Producto de catálogo" value="Producto de catálogo" />
+                            <el-radio-button label="Materia prima" value="Materia prima" />
+                        </el-radio-group>
+
+                        <div v-if="productType === 'Producto de catálogo'" class="flex items-center mt-2">
                             <el-tooltip content="Producto de catálogo" placement="top">
                                 <span
                                     class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
                                     <i class="fa-solid fa-magnifying-glass"></i>
                                 </span>
                             </el-tooltip>
-                            <el-select v-model="product.catalog_product_id" clearable filterable
-                                placeholder="Busca el producto" no-data-text="No hay productos registrados"
-                                no-match-text="No se encontraron coincidencias">
+                            <el-select v-model="product.id" clearable filterable placeholder="Busca el producto de catálogo"
+                                no-data-text="No hay productos registrados" no-match-text="No se encontraron coincidencias">
                                 <el-option v-for="item in catalog_products" :key="item.id" :label="item.name + ' (' + item.part_number + ')'"
                                     :value="item.id" />
                             </el-select>
                         </div>
+
+                        <div v-else class="flex items-center mt-2">
+                            <el-tooltip content="Materia prima" placement="top">
+                                <span
+                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </span>
+                            </el-tooltip>
+                            <el-select v-model="product.id" clearable filterable placeholder="Busca el producto sin componentes"
+                                no-data-text="No hay productos registrados" no-match-text="No se encontraron coincidencias">
+                                <el-option v-for="item in raw_materials" :key="item.id" :label="item.name + ' (' + item.part_number + ')'"
+                                    :value="item.id" />
+                            </el-select>
+                        </div>
+
                         <div class="flex items-center">
                             <el-tooltip content="¿Mostrar imagen en cotización?" placement="top">
                                 <span
@@ -269,7 +297,7 @@
                         <div>
                             <div>
                                 <SecondaryButton @click="addProduct" type="button"
-                                    :disabled="!product.catalog_product_id || !product.quantity || !product.price || form.processing">
+                                    :disabled="!product.id || !product.quantity || !product.price || form.processing">
                                     {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
                                 </SecondaryButton>
                             </div>
@@ -346,14 +374,16 @@ export default {
         return {
             form,
             editIndex: null,
+            productType: "Producto de catálogo",
             importantNotes: null,
             showImportantNotesModal: false,
             importantNotesToStore: null,
             isEditImportantNotes: false,
             product: {
-                catalog_product_id: null,
+                id: null,
                 quantity: null,
                 price: null,
+                isCatalogProduct: null,
                 show_image: true,
                 notes: null,
             },
@@ -409,6 +439,7 @@ export default {
     },
     props: {
         catalog_products: Array,
+        raw_materials: Array,
         company_branches: Array,
         quote: Object,
         prospects: Array,
@@ -484,6 +515,13 @@ export default {
         addProduct() {
             const product = { ...this.product };
 
+            //agrega una bandera para saber si es producto de catalogo o materia prima
+            if ( this.productType === 'Producto de catálogo' ) {
+                product.isCatalogProduct = true;
+            } else {
+                product.isCatalogProduct = false;
+            }
+
             if (this.editIndex !== null) {
                 this.form.products[this.editIndex] = product;
                 this.editIndex = null;
@@ -502,7 +540,7 @@ export default {
             this.editIndex = index;
         },
         resetProductForm() {
-            this.product.catalog_product_id = null;
+            this.product.id = null;
             this.product.quantity = null;
             this.product.notes = null;
             this.product.price = null;
@@ -510,10 +548,26 @@ export default {
         }
     },
     mounted() {
+        //Carga al formulario los productos de catalogo de la cotizacion
         this.quote.catalog_products.forEach(element => {
             const product = {
-                catalog_product_id: element.pivot.catalog_product_id,
+                id: element.pivot.catalog_product_id,
                 quantity: element.pivot.quantity,
+                isCatalogProduct: true,
+                notes: element.pivot.notes,
+                price: element.pivot.price,
+                show_image: Boolean(element.pivot.show_image),
+            }
+
+            this.form.products.push(product);
+        });
+
+        //Carga al formulario las materias primas de la cotizacion
+        this.quote.raw_materials.forEach(element => {
+            const product = {
+                id: element.pivot.raw_material_id,
+                quantity: element.pivot.quantity,
+                isCatalogProduct: false,
                 notes: element.pivot.notes,
                 price: element.pivot.price,
                 show_image: Boolean(element.pivot.show_image),

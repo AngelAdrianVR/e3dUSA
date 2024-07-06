@@ -71,6 +71,17 @@ class Quote extends Model implements HasMedia
             ])->withTimestamps();
     }
 
+    public function rawMaterials(): BelongsToMany
+    {
+        return $this->belongsToMany(RawMaterial::class)
+            ->withPivot([
+                'quantity',
+                'price',
+                'show_image',
+                'notes',
+            ])->withTimestamps();
+    }
+
     public function getProfit()
     {
         $products = $this->catalogProducts;

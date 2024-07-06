@@ -28,6 +28,7 @@ class PurchaseResource extends JsonResource
             'folio' => 'OC-' . str_pad($this->id, 4, "0", STR_PAD_LEFT),
             'id' => $this->id,
             'status' =>  $status,
+            'currency' =>  $this->currency,
             'notes' => $this->notes ?? '--',
             'authorized_user_name' => $this->authorized_user_name ?? 'No autorizado',
             'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:mm A') ?? 'No autorizado',

@@ -74,6 +74,7 @@ class PurchaseController extends Controller
             'show_prices' => 'boolean',
             'contact_id' => 'required',
             'products' => 'array|min:1',
+            'currency' => 'required|string',
             'bank_information' => 'required',
         ]);
 
@@ -104,7 +105,7 @@ class PurchaseController extends Controller
                 'folio' => 'OC-' . str_pad($purchase->id, 4, "0", STR_PAD_LEFT),
             ];
         });
-
+        
         return inertia('Purchase/Show', compact('purchase', 'purchases'));
     }
 
@@ -127,6 +128,7 @@ class PurchaseController extends Controller
             'is_spanish_template' => 'boolean',
             'show_prices' => 'boolean',
             'contact_id' => 'required',
+            'currency' => 'required|string',
             'products' => 'nullable|min:1',
             'bank_information' => 'required',
         ]);

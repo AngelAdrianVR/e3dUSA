@@ -15,6 +15,7 @@ class Purchase extends Model
     protected $fillable = [
         'status',
         'notes',
+        'currency',
         'authorized_user_name',
         'is_spanish_template',
         'authorized_at',

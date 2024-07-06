@@ -127,6 +127,8 @@
           <span>{{ purchase.data.emited_at }}</span>
           <span class="text-gray-500 my-2">Fecha de recibido</span>
           <span>{{ purchase.data.recieved_at }}</span>
+          <span class="text-gray-500 my-2">Moneda</span>
+          <span>{{ purchase.data.currency ?? '-' }}</span>
           <span class="text-gray-500 my-2">Notas</span>
           <span>{{ purchase.data.notes }}</span>
         </div>
@@ -282,13 +284,13 @@ export default {
           }));
 
           if (response.status === 200) {
-            console.log(response.data.items);
             this.rawMaterials = response.data.items;
             //Agrega a los productos la cantidad comprada
             this.rawMaterials = this.rawMaterials.map((item, index) => {
               return {
                 ...item,
                 quantity: this.purchase.data.products[index].quantity,
+                currency: this.purchase.data.currency,
               };
             });
           }

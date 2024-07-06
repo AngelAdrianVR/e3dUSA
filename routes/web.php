@@ -380,6 +380,7 @@ Route::get('design-authorizations/fetch-for-company-brach/{company_branch_id}', 
 
 // ------- production department routes  ---------
 Route::resource('productions', ProductionController::class)->middleware('auth');
+Route::get('productions-admin-index', [ProductionController::class, 'adminIndex'])->name('productions.admin-index');
 Route::post('productions/massive-delete', [ProductionController::class, 'massiveDelete'])->name('productions.massive-delete');
 Route::get('productions/print/{productions}', [ProductionController::class, 'print'])->name('productions.print');
 Route::put('productions/change-status/{production}', [ProductionController::class, 'changeStatus'])->name('productions.change-status');

@@ -26,129 +26,141 @@ use Spatie\Permission\Models\Permission;
 
 class ProductionController extends Controller
 {
+    //Index que contiene producciones solo del usuario autenticado
     public function index()
     {
-        if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de produccion todas')) {
-            //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
-            $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch', 'productions.operator')->whereHas('productions')->latest()->get();
-            $productions = $pre_productions->map(function ($production) {
-                $hasStarted = $production->productions?->whereNotNull('started_at')->count();
-                $hasNotFinished = $production->productions?->whereNull('finished_at')->count();
+        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
+        $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch', 'productions.operator')->whereHas('productions', function ($query) {
+            $query->where('productions.operator_id', auth()->id());
+        })->latest()->get();
 
-                if ($production->authorized_at == null) {
-                    $status = [
-                        'label' => 'Esperando autorización',
-                        'text-color' => 'text-amber-500',
-                    ];
-                } elseif ($production->productions) {
-                    if (!$hasStarted) {
-                        $status = [
-                            'label' => 'Producción sin iniciar',
-                            'text-color' => 'text-gray-500',
-                        ];
-                    } elseif ($hasStarted && $hasNotFinished) {
-                        $status = [
-                            'label' => 'Producción en proceso',
-                            'text-color' => 'text-blue-500',
-                        ];
-                    } else {
-                        $status = [
-                            'label' => 'Producción terminada',
-                            'text-color' => 'text-green-500',
-                        ];
-                    }
-                } else {
-                    $status = [
-                        'label' => 'Autorizado sin orden de producción',
-                        'text-color' => 'text-amber-500',
-                    ];
-                }
-                //Guarda en un array "productionNames" los nombres de los operadores de esa orden de produccion
-                $productionNames = [];
-                $productNames = [];
-                foreach ($production->productions as $productionItem) {
-                    $productionNames[] = $productionItem['operator']['name'];
+        $productions = $this->processDataIndex($pre_productions);
 
-                    //Guarda en un array "productNames" los nombres de los productos de la orden
-                    if (isset($productionItem->catalogProductCompanySale?->catalogProductCompany?->catalogProduct)) {
-                        $productName = $productionItem->catalogProductCompanySale?->catalogProductCompany?->catalogProduct->name;
-                        $productNames[] = $productName;
-                    }
-                }
-                $uniqueProductionNames = array_unique($productionNames);
-                $operators = implode(', ', $uniqueProductionNames);
+        return inertia('Production/Admin', compact('productions'));
+    }
+    
+    //Index que contiene todos los registros de produccion
+    public function adminIndex()
+    {
+        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
+        $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch', 'productions.operator')->whereHas('productions')->latest()->get();
 
-                $uniqueProductNames = array_unique($productNames);
-                $products = implode(', ', $uniqueProductNames);
+        $productions = $this->processDataIndex($pre_productions);
 
-                //Calulo del porcentage de avance de producción.
-                // Contador para llevar el registro de cuántas producciones tienen fecha en "finished_at"
-                $finishedCount = 0;
-                foreach ($production->productions as $productionItem) {
-                    if ($productionItem->finished_at != null) {
-                        $finishedCount++;
-                    }
-                }
+        return inertia('Production/Admin', compact('productions'));
+    }
 
-                // Calcular el porcentaje --------------------------------------------------------
-                //-------------------------------------------------------------------------------
-                $percentage = $finishedCount > 0 ? (100 / count($production->productions)) * $finishedCount : 0;
+    public function processDataIndex($pre_productions)
+    {
+        $productions = $pre_productions->map(function ($production) {
+            $hasStarted = $production->productions?->whereNotNull('started_at')->count();
+            $hasNotFinished = $production->productions?->whereNull('finished_at')->count();
 
-
-                // Estatus de fecha de entrega --------------------------------------------------------
-                //-------------------------------------------------------------------------------------
-                $delivery_status = '--'; //inicializo el estatus en caso de no haber fecha
-                $threeDaysBefore = now()->addDays(3); // Verificar si la fecha está a 3 días o más de distancia 
-
-
-                if ($status['label'] !== 'Producción terminada') {
-
-                    if ($production->promise_date?->greaterThanOrEqualTo($threeDaysBefore)) {
-                        $delivery_status = 'Fecha cercana';
-                    } else if ($production->promise_date > now()) {
-                        $delivery_status = 'A tiempo';
-                    } else if ($production->promise_date < now()) {
-                        $delivery_status = 'Fuera de tiempo';
-                    }
-                } else {
-                    $delivery_status = 'Entregado';
-                }
-
-                return [
-                    'id' => $production->id,
-                    'folio' => 'OP-' . str_pad($production->id, 4, "0", STR_PAD_LEFT),
-                    'user' => [
-                        'id' => $production->user->id,
-                        'name' => $production->user->name
-                    ],
-                    'status' => $status,
-                    'operators' => $operators, //nombres de operadores asignados
-                    'company_branch' => [
-                        'id' => $production->companyBranch->id,
-                        'name' => $production->companyBranch->name
-                    ],
-                    'products' => $products, //no me arroja ningun nombre
-                    'production' => [
-                        'percentage' => $percentage . '%',
-                        'productions_quantity' => count($production->productions)
-                    ],
-                    'promise_date' => $production->promise_date?->isoFormat('DD MMMM YYYY') ?? '--',
-                    // 'delivery_status' => $delivery_status,
-                    'created_at' => $production->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
-                    'is_sale_production' => $production->is_sale_production,
+            if ($production->authorized_at == null) {
+                $status = [
+                    'label' => 'Esperando autorización',
+                    'text-color' => 'text-amber-500',
                 ];
-            });
+            } elseif ($production->productions) {
+                if (!$hasStarted) {
+                    $status = [
+                        'label' => 'Producción sin iniciar',
+                        'text-color' => 'text-gray-500',
+                    ];
+                } elseif ($hasStarted && $hasNotFinished) {
+                    $status = [
+                        'label' => 'Producción en proceso',
+                        'text-color' => 'text-blue-500',
+                    ];
+                } else {
+                    $status = [
+                        'label' => 'Producción terminada',
+                        'text-color' => 'text-green-500',
+                    ];
+                }
+            } else {
+                $status = [
+                    'label' => 'Autorizado sin orden de producción',
+                    'text-color' => 'text-amber-500',
+                ];
+            }
+            //Guarda en un array "productionNames" los nombres de los operadores de esa orden de produccion
+            $productionNames = [];
+            $productNames = [];
+            foreach ($production->productions as $productionItem) {
+                $productionNames[] = $productionItem['operator']['name'];
 
-            return inertia('Production/Admin', compact('productions'));
-        } elseif (auth()->user()->can('Ordenes de produccion personal')) {
-            $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch')->whereHas('productions')->where('user_id', auth()->id())->latest()->get());
-            return inertia('Production/Index', compact('productions'));
-        } else {
-            $productions = SaleResource::collection(Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch')->whereHas('productions', function ($query) {
-                $query->where('productions.operator_id', auth()->id());
-            })->latest()->get());
-            return inertia('Production/Operator', compact('productions'));
-        }
+                //Guarda en un array "productNames" los nombres de los productos de la orden
+                if (isset($productionItem->catalogProductCompanySale?->catalogProductCompany?->catalogProduct)) {
+                    $productName = $productionItem->catalogProductCompanySale?->catalogProductCompany?->catalogProduct->name;
+                    $productNames[] = $productName;
+                }
+            }
+            $uniqueProductionNames = array_unique($productionNames);
+            $operators = implode(', ', $uniqueProductionNames);
+
+            $uniqueProductNames = array_unique($productNames);
+            $products = implode(', ', $uniqueProductNames);
+
+            //Calulo del porcentage de avance de producción.
+            // Contador para llevar el registro de cuántas producciones tienen fecha en "finished_at"
+            $finishedCount = 0;
+            foreach ($production->productions as $productionItem) {
+                if ($productionItem->finished_at != null) {
+                    $finishedCount++;
+                }
+            }
+
+            // Calcular el porcentaje --------------------------------------------------------
+            //-------------------------------------------------------------------------------
+            $percentage = $finishedCount > 0 ? (100 / count($production->productions)) * $finishedCount : 0;
+
+
+            // Estatus de fecha de entrega --------------------------------------------------------
+            //-------------------------------------------------------------------------------------
+            $delivery_status = '--'; //inicializo el estatus en caso de no haber fecha
+            $threeDaysBefore = now()->addDays(3); // Verificar si la fecha está a 3 días o más de distancia 
+
+
+            if ($status['label'] !== 'Producción terminada') {
+
+                if ($production->promise_date?->greaterThanOrEqualTo($threeDaysBefore)) {
+                    $delivery_status = 'Fecha cercana';
+                } else if ($production->promise_date > now()) {
+                    $delivery_status = 'A tiempo';
+                } else if ($production->promise_date < now()) {
+                    $delivery_status = 'Fuera de tiempo';
+                }
+            } else {
+                $delivery_status = 'Entregado';
+            }
+
+            return [
+                'id' => $production->id,
+                'folio' => 'OP-' . str_pad($production->id, 4, "0", STR_PAD_LEFT),
+                'user' => [
+                    'id' => $production->user->id,
+                    'name' => $production->user->name
+                ],
+                'status' => $status,
+                'operators' => $operators, //nombres de operadores asignados
+                'company_branch' => [
+                    'id' => $production->companyBranch->id,
+                    'name' => $production->companyBranch->name
+                ],
+                'products' => $products, //no me arroja ningun nombre
+                'production' => [
+                    'percentage' => $percentage . '%',
+                    'productions_quantity' => count($production->productions)
+                ],
+                'promise_date' => $production->promise_date?->isoFormat('DD MMMM YYYY') ?? '--',
+                // 'delivery_status' => $delivery_status,
+                'created_at' => $production->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+                'is_sale_production' => $production->is_sale_production,
+            ];
+        });
+
+        return $productions;
     }
 
     public function create()
@@ -230,8 +242,6 @@ class ProductionController extends Controller
             ];
         });
         $qualities = QualityResource::collection(Quality::with('supervisor:id,name')->where('production_id', $sale->id)->get());
-
-        // return $qualities;
 
         return inertia('Production/Show', compact('sale', 'sales', 'qualities'));
     }
@@ -447,15 +457,19 @@ class ProductionController extends Controller
 
             // notificar a jefe de producción
             $user = User::where('employee_properties->job_position', 'Jefe de producción')->first();
-            $user->notify(
-                new ProductionCompletedNotification(
-                    $production->catalogProductCompanySale->catalogProductCompany->catalogProduct->name,
-                    'OP-' . str_pad($production->catalogProductCompanySale->sale->id, 4, "0", STR_PAD_LEFT),
-                    "",
-                    'production'
-                )
-            );
-
+            
+            //si se encuentra jefe de producción se hace la notificación, si no se encuentra no se manda
+            if ( $user ) {
+                $user->notify(
+                    new ProductionCompletedNotification(
+                        $production->catalogProductCompanySale->catalogProductCompany->catalogProduct->name,
+                        'OP-' . str_pad($production->catalogProductCompanySale->sale->id, 4, "0", STR_PAD_LEFT),
+                        "",
+                        'production'
+                    )
+                );
+            }
+                    
             $message = $production->catalogProductCompanySale->sale->is_sale_production
                 ? 'Se ha registrado el final'
                 : 'Se ha guardado automáticamente la cantidad en almacén de producto terminado.';

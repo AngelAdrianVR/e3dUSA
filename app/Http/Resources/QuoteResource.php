@@ -74,7 +74,8 @@ class QuoteResource extends JsonResource
                 'email' => $this->user->email,
             ],
             'sale' => $this->sale,
-            'products' => CatalogProductResource::collection($this->whenLoaded('catalogProducts')),
+            'catalog_products' => CatalogProductResource::collection($this->whenLoaded('catalogProducts')),
+            'raw_materials' => RawMaterialResource::collection($this->whenLoaded('rawMaterials')),
             'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'total' => [
                'raw' => $total_without_taxes,
