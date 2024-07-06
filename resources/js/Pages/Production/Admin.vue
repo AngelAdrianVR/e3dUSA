@@ -20,6 +20,18 @@
                 <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Producción en proceso</p>
                 <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Producción terminada</p>
             </div>
+
+            <!-- Filtro por propietario -->
+            <div class="flex items-center space-x-5 lg:mx-28 mx-4 mt-5">
+                <div class="w-1/4 flex flex-col">
+                    <label class="text-sm ml-2 mb-1">Filtro por propietario</label>
+                    <el-select @change="fetchItemsFiltered" v-model="filter" class="!w-full"
+                        placeholder="Selecciona una opción">
+                        <el-option v-for="item in options" :key="item" :label="item" :value="item" />
+                    </el-select>
+                </div>
+            </div>
+
             <!-- tabla -->
             <div class="relative overflow-hidden min-h-[60vh]">
                 <NotificationCenter module="production" />
@@ -139,20 +151,31 @@ export default {
             itemsPerPage: 10,
             start: 0,
             end: 10,
+
+            //filtro
+            filter: 'Mis órdenes',
+            options: ['Mis órdenes', 'Todas las órdenes'], //opciones de filtro
         };
     },
     components: {
         AppLayout,
-        SecondaryButton,
-        Link,
-        TextInput,
         NotificationCenter,
+        SecondaryButton,
         IndexSearchBar,
+        TextInput,
+        Link,
     },
     props: {
         productions: Array
     },
     methods: {
+         fetchItemsFiltered() {
+            if ( this.filter === 'Mis órdenes' ) {
+                this.$inertia.get(route('productions.index'));
+            } else {
+                this.$inertia.get(route('productions.admin-index'));
+            }
+        },
         handleSearch(search) {
             this.search = search;
         },

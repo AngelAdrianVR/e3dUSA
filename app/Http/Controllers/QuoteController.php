@@ -104,7 +104,12 @@ class QuoteController extends Controller
                 "show_image" => $product['show_image'],
                 "notes" => $product['notes'],
             ];
-            $quote->catalogProducts()->attach($product['id'], $quoted_product);
+
+            if ( $product['isCatalogProduct'] ) {
+                $quote->catalogProducts()->attach($product['id'], $quoted_product);
+            } else {
+                $quote->rawMaterials()->attach($product['id'], $quoted_product);
+            }
         }
 
         event(new RecordCreated($quote));
@@ -129,7 +134,7 @@ class QuoteController extends Controller
         $prevQuote = $quotes->get(($currentIndex - 1 + $quotes->count()) % $quotes->count());
 
         // Preparar los recursos de la cotización actual
-        $quote = QuoteResource::make(Quote::with(['catalogProducts', 'prospect'])->findOrFail($quote->id));
+        $quote = QuoteResource::make(Quote::with(['catalogProducts', 'rawMaterials', 'prospect'])->findOrFail($quote->id));
 
         if ($quote->is_spanish_template) {
             return inertia('Quote/SpanishTemplate', [
@@ -148,12 +153,13 @@ class QuoteController extends Controller
 
     public function edit(Quote $quote)
     {
-        $quote = $quote->load('catalogProducts');
-        $catalog_products = CatalogProduct::all();
+        $quote = $quote->load('catalogProducts', 'rawMaterials');
+        $catalog_products = CatalogProduct::all(['id', 'name', 'part_number']);
+        $raw_materials = RawMaterial::all(['id', 'name', 'part_number']);
         $company_branches = CompanyBranch::all(['id', 'name']);
         $prospects = Prospect::get(['id', 'name', 'contact_name', 'contact_charge']);
 
-        return inertia('Quote/Edit', compact('catalog_products', 'company_branches', 'quote', 'prospects'));
+        return inertia('Quote/Edit', compact('catalog_products', 'raw_materials', 'company_branches', 'quote', 'prospects'));
     }
 
     public function update(Request $request, Quote $quote)
@@ -173,9 +179,22 @@ class QuoteController extends Controller
 
         $quote->update($request->except('products'));
         $quote->catalogProducts()->detach();
+        $quote->rawMaterials()->detach();
 
         foreach ($request->products as $product) {
-            $quote->catalogProducts()->attach($product['catalog_product_id'], $product);
+
+            $quoted_product = [
+                "quantity" => $product['quantity'],
+                "price" => $product['price'],
+                "show_image" => $product['show_image'],
+                "notes" => $product['notes'],
+            ];
+
+            if ( $product['isCatalogProduct'] ) {
+                $quote->catalogProducts()->attach($product['id'], $quoted_product);
+            } else {
+                $quote->rawMaterials()->attach($product['id'], $quoted_product);
+            }
         }
 
         event(new RecordEdited($quote));

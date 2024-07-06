@@ -55,6 +55,17 @@ class RawMaterial extends Model implements HasMedia
             ])->withTimestamps();
     }
 
+    public function quotes(): BelongsToMany
+    {
+      return $this->belongsToMany(Quote::class)
+            ->withPivot([
+                'quantity',
+                'price',
+                'show_image',
+                'notes',
+            ])->withTimestamps();
+    }
+
     // methods----------------------------------------------
     public function isInCatalogProduct()
     {

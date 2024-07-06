@@ -56,8 +56,25 @@
                     <th class="px-2 py-1">Total without taxes</th>
                 </tr>
             </thead>
+            <!-- Información de los productos de catalogo cotizados -->
             <tbody>
-                <tr v-for="(item, index) in quote.data.products" :key="index"
+                <tr v-for="(item, index) in quote.data.catalog_products" :key="index"
+                    class="bg-gray-200 text-gray-700 uppercase">
+                    <td class="px-2 py-px">{{ item.name + ' (N. de parte: ' + item.part_number + ')' }}</td>
+                    <td class="px-2 py-px">{{ item.pivot.notes ?? '--' }}</td>
+                    <td class="px-2 py-px">{{ item.pivot.price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
+                        quote.data.currency }}</td>
+                    <td class="px-2 py-px">{{ item.pivot.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
+                        item.measure_unit }}</td>
+                    <td class="px-2 py-px text-right">{{ (item.pivot.quantity *
+                        item.pivot.price).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{ quote.data.currency }}
+                    </td>
+                </tr>
+            </tbody>
+
+            <!-- Información de las materias primas cotizadas -->
+            <tbody>
+                <tr v-for="(item, index) in quote.data.raw_materials" :key="index"
                     class="bg-gray-200 text-gray-700 uppercase">
                     <td class="px-2 py-px">{{ item.name + ' (N. de parte: ' + item.part_number + ')' }}</td>
                     <td class="px-2 py-px">{{ item.pivot.notes ?? '--' }}</td>
@@ -81,15 +98,32 @@
 
         <!-- Images -->
         <div class="w-11/12 mx-auto my-3 grid grid-cols-3 gap-4 ">
-            <template v-for="(item, productIndex) in quote.data.products" :key="item.id">
+            <!-- Images de los productos de catalogo -->
+            <template v-for="(item, productIndex) in quote.data.catalog_products" :key="item.id">
                 <div v-if="item.pivot.show_image" class="bg-gray-200 rounded-t-xl rounded-b-md border"
                     style="font-size: 8px;">
                     <img class="rounded-t-xl max-h-52 mx-auto"
-                        :src="item.media[currentImages[productIndex]]?.original_url">
+                        :src="item.media[currentCatalogProductImages[productIndex]]?.original_url">
                     <!-- selector de imagen cuando son varias -->
                     <div v-if="item.media?.length > 1" class="my-3 flex items-center justify-center space-x-3">
-                        <i @click="currentImages[productIndex] = index" v-for="(image, index) in item.media?.length"
-                            :key="index" :class="index == currentImages[productIndex] ? 'text-black' : 'text-white'"
+                        <i @click="currentCatalogProductImages[productIndex] = index" v-for="(image, index) in item.media?.length"
+                            :key="index" :class="index == currentCatalogProductImages[productIndex] ? 'text-black' : 'text-white'"
+                            class="fa-solid fa-circle text-[7px] cursor-pointer"></i>
+                    </div>
+                    <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
+                </div>
+            </template>
+
+            <!-- Images de las materias primas -->
+            <template v-for="(item, productIndex) in quote.data.raw_materials" :key="item.id">
+                <div v-if="item.pivot.show_image" class="bg-gray-200 rounded-t-xl rounded-b-md border"
+                    style="font-size: 8px;">
+                    <img class="rounded-t-xl max-h-52 mx-auto"
+                        :src="item.media[currentRawMaterialImages[productIndex]]?.original_url">
+                    <!-- selector de imagen cuando son varias -->
+                    <div v-if="item.media?.length > 1" class="my-3 flex items-center justify-center space-x-3">
+                        <i @click="currentRawMaterialImages[productIndex] = index" v-for="(image, index) in item.media?.length"
+                            :key="index" :class="index == currentRawMaterialImages[productIndex] ? 'text-black' : 'text-white'"
                             class="fa-solid fa-circle text-[7px] cursor-pointer"></i>
                     </div>
                     <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
@@ -223,7 +257,8 @@ export default {
     data() {
         return {
             showAdditionalElements: true,
-            currentImages: [], // Array to store current image index for each product
+            currentCatalogProductImages: [], // Array to store current image index for each product
+            currentRawMaterialImages: [], // Array to store current image index for each product
         };
     },
     components: {
@@ -282,8 +317,11 @@ export default {
             return nuevaUrl;
         },
         created() {
-            // Initialize currentImages array with default values for each product
-            this.currentImages = this.quote.data.products.map(() => 0);
+            // Initialize currentImages array with default values for each product (productos de catalogo)
+            this.currentCatalogProductImages = this.quote.data.catalog_products.map(() => 0);
+
+            // Initialize currentImages array with default values for each product (materias primas)
+            this.currentRawMaterialImages = this.quote.data.catalog_products.map(() => 0);
         },
     },
     mounted() {

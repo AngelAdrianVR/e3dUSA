@@ -29,6 +29,7 @@ class RawMaterialResource extends JsonResource
             'min_quantity' => $this->min_quantity,
             'max_quantity' => $this->max_quantity,
             'cost' => $this->cost,
+            'pivot' => $this->pivot,
             'features' => $this->features,
             'storages' => $this->whenLoaded('storages'),
             'isInCatalogProduct' => $this->isInCatalogProduct(),
