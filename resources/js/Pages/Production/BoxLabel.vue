@@ -105,7 +105,7 @@
                         <p>33 62 76 52 09</p>
                     </div>
                 </article>
-                <figure>
+                <figure v-if="data.is_fragil">
                     <img class="h-full w-48" src="@/../../public/images/fragil_image.png" alt="Logo">
                 </figure>
             </section>
@@ -152,7 +152,7 @@ methods:{
             if (document.readyState === 'interactive' || document.readyState === 'complete') {
                 window.stop();
             }
-        }, 1000);
+        }, 3000);
     }
 },
 mounted() {
