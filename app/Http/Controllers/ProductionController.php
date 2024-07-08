@@ -243,6 +243,7 @@ class ProductionController extends Controller
         });
         $qualities = QualityResource::collection(Quality::with('supervisor:id,name')->where('production_id', $sale->id)->get());
 
+        // return $sale;
         return inertia('Production/Show', compact('sale', 'sales', 'qualities'));
     }
 
@@ -557,5 +558,10 @@ class ProductionController extends Controller
     public function showTravelerTemplate(CatalogProductCompanySale $cpcs)
     {
         return inertia('Production/TravelerTemplate', compact('cpcs'));
+    }
+    
+    public function generateBoxLabel(Request $request)
+    {
+        return inertia('Production/BoxLabel', ['data' => $request->data]);
     }
 }
