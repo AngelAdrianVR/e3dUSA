@@ -300,7 +300,7 @@ class RawMaterialController extends Controller
         $ids_array = explode(',', $raw_materials_ids);
 
         foreach ($ids_array as $raw_material_id) {
-            $raw_material = RawMaterial::with('media')->find($raw_material_id);
+            $raw_material = RawMaterial::with('media', 'storages')->find($raw_material_id);
 
             if ($raw_material) {
                 $raw_materials[] = $raw_material;

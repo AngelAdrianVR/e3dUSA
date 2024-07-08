@@ -136,6 +136,9 @@
                       :label="item.name + ' (' + item.part_number + ')'" :value="item.id" />
                   </el-select>
                 </div>
+                <p v-if="productSelectedObj" class="text-sm ml-5">
+                  Stock actual: {{ productSelectedObj?.storages[0].quantity }} unidades
+                </p>
 
                 <div class="mt-2">
                   <IconInput v-model="form.quantity" inputPlaceholder="Cantidad *" inputType="number" inputStep="0.01">
