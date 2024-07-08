@@ -46,6 +46,7 @@ class PurchaseController extends Controller
                 'user' => $purchase->user->name,
                 'authorized_user_name' => $purchase->authorized_user_name ?? 'No autorizado',
                 'status' => $status,
+                'products' => $purchase->products,
                 'emited_at' => $purchase->emited_at?->isoFormat('DD MMM, YYYY h:mm A') ?? 'Pedido no realizado',
                 'recieved_at' => $purchase->recieved_at?->isoFormat('YYYY MMM DD') ?? 'No recibido',
                 'supplier_name' => $purchase->supplier?->name,

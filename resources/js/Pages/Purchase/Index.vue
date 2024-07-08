@@ -61,6 +61,13 @@
               </div>
             </template>
           </el-table-column>
+          <el-table-column label="Productos">
+            <template #default="scope">
+              <p>
+                {{ scope.row.products.map(item => item.name).join(', ') }}
+              </p>
+            </template>
+          </el-table-column>
           <el-table-column prop="emited_at" label="Pedido el" />
           <el-table-column prop="recieved_at" label="Recibido el" />
           <el-table-column prop="supplier_name" label="Proveedor" />
@@ -76,7 +83,7 @@
                     <el-dropdown-item :command="'show-' + scope.row.id"><i class="fa-solid fa-eye"></i>
                       Ver</el-dropdown-item>
                     <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Editar ordenes de compra') ||
-              scope.row.user.id == $page.props.auth.user.id" :command="'edit-' + scope.row.id"><i
+                      scope.row.user.id == $page.props.auth.user.id" :command="'edit-' + scope.row.id"><i
                         class="fa-solid fa-pen"></i>
                       Editar</el-dropdown-item>
                     <el-dropdown-item v-if="$page.props.auth.user.permissions.includes('Crear ordenes de compra')"
@@ -301,6 +308,7 @@ export default {
         return this.purchases.filter(
           (purchase) =>
             purchase.user?.toLowerCase().includes(this.search.toLowerCase()) ||
+            purchase.products.map(prd => prd.name).join(', ')?.toLowerCase().includes(this.search.toLowerCase()) ||
             purchase.status?.toLowerCase().includes(this.search.toLowerCase()) ||
             purchase.folio?.toLowerCase().includes(this.search.toLowerCase()) ||
             purchase.created_at?.toLowerCase().includes(this.search.toLowerCase()) ||
