@@ -388,6 +388,7 @@ Route::put('productions/change-stock-status/{production}', [ProductionController
 Route::put('productions/continue-production/{production}', [ProductionController::class, 'continueProduction'])->name('productions.continue-production');
 Route::post('productions-{cpcs}-comment', [ProductionController::class, 'comment'])->name('productions.comment')->middleware('auth');
 Route::get('productions-{cpcs}-show-traveler', [ProductionController::class, 'showTravelerTemplate'])->name('productions.show-traveler-template')->middleware('auth');
+Route::post('productions-generate-box-label', [ProductionController::class, 'generateBoxLabel'])->name('productions.generate-box-label')->middleware('auth');
 
 // ------- Quality department routes  ---------
 Route::resource('qualities', QualityController::class)->middleware('auth');
