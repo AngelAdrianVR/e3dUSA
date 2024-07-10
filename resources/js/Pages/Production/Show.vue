@@ -290,10 +290,10 @@ export default {
         const labelForm = useForm({
             client: this.sale.data.company_branch.company.business_name,
             company_branch: this.sale.data.company_branch.name,
-            contact: this.sale.data.contact.name,
+            contact: this.sale.data.contact?.name,
             company_branch_address: this.sale.data.company_branch.address,
             post_code: this.sale.data.company_branch.post_code,
-            contact_phone: this.sale.data.contact.phone,
+            contact_phone: this.sale.data.contact?.phone,
             ov: this.sale.data.folio,
             folio: null,
             guide: null,
