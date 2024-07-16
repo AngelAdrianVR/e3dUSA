@@ -22,6 +22,7 @@ return new class extends Migration
             $table->text('design_data')->nullable();
             $table->text('specifications')->nullable();
             $table->string('pantones')->nullable();
+            $table->boolean('has_priority')->default(false);
             $table->unsignedBigInteger('designer_id');
             $table->foreign('designer_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreignId('design_type_id')->constrained()->cascadeOnDelete();

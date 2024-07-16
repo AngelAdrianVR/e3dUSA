@@ -71,6 +71,11 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="authorized_user_name" label="Autorizado por" />
+                    <el-table-column label="Productos" width="210">
+                        <template v-slot="scope">
+                            <span>{{ scope.row.catalog_products.map(product => product.name).join(', ') }}</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="created_at" label="Creado el" width="180" />
                     <el-table-column align="right">
                         <template #default="scope">
@@ -337,7 +342,8 @@ export default {
                         quote.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
                         quote.receiver.toLowerCase().includes(this.search.toLowerCase()) ||
                         quote.companyBranch.name?.toLowerCase().includes(this.search.toLowerCase()) ||
-                        quote.prospect.name?.toLowerCase().includes(this.search.toLowerCase())
+                        quote.prospect.name?.toLowerCase().includes(this.search.toLowerCase()) ||
+                        quote.catalog_products.some(product => product.name.toLowerCase().includes(this.search.toLowerCase()))
                 );
             }
         }

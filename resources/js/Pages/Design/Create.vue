@@ -182,6 +182,12 @@
               <InputError :message="form.errors.pantones" />
             </div>
 
+            <label class="flex items-center w-1/3">
+              <Checkbox v-model:checked="form.has_priority" name="priority"
+                class="bg-transparent" />
+              <span class="ml-2 text-sm text-[#555555]">Prioridad alta</span>
+            </label>
+
             <div class="flex ml-3 col-span-2">
               <el-tooltip
                 content="Requerimientos/Especificaiones"
@@ -267,6 +273,7 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import Checkbox from "@/Components/Checkbox.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import InputError from "@/Components/InputError.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
@@ -285,6 +292,7 @@ export default {
       dimensions: null,
       measure_unit: null,
       pantones: null,
+      has_priority: false,
       specifications: null,
       media_plano: null,
       media_logo: null,
@@ -301,6 +309,7 @@ export default {
     PrimaryButton,
     InputError,
     IconInput,
+    Checkbox,
     Back,
     Link
   },
