@@ -59,7 +59,14 @@
                         <el-table-column type="selection" width="30" />
                         <el-table-column prop="id" label="ID" width="80" />
                         <el-table-column prop="user.name" label="Solicitante" />
-                        <el-table-column prop="design" label="Diseño" />
+                        <el-table-column label="Diseño" width="210">
+                            <template v-slot="scope">
+                                <el-tooltip v-if="scope.row.has_priority" content="Prioridad alta" placement="top">
+                                    <span><i class="fa-solid fa-triangle-exclamation text-primary mr-1"></i>{{ scope.row.design }}</span>
+                                </el-tooltip>
+                                <span v-else>{{ scope.row.design }}</span>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="design_type.name" label="Clasificación" />
                         <el-table-column prop="designer.name" label="Diseñador(a)" />
                         <el-table-column prop="created_at" label="Solicitado el" />

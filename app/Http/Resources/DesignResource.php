@@ -47,6 +47,7 @@ class DesignResource extends JsonResource
             'design_data' => $this->design_data,
             'specifications' => $this->specifications,
             'pantones' => $this->pantones ?? 'N/A',
+            'has_priority' => $this->has_priority,
             'design_type' => $this->whenLoaded('designType'),
             'designer' => $this->whenLoaded('designer'),
             'user' => $this->whenLoaded('user'),

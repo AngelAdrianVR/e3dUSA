@@ -62,6 +62,7 @@ class DesignController extends Controller
                         'name' => $design->designer->name
                     ],
                     'design' => $design->name,
+                    'has_priority' => $design->has_priority,
                     'design_type' => $design->designType,
                     'status' => $status,
                     'created_at' => $design->created_at?->isoFormat('DD MMM, YYYY h:mm A'),

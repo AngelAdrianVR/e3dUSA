@@ -25,9 +25,9 @@ use Illuminate\Http\Request;
 class QuoteController extends Controller
 {
     public function index()
-    {
+    {        
         //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
-        $pre_quotes = Quote::latest()->get();
+        $pre_quotes = Quote::with('catalogProducts:id,name')->latest()->get();
         $quotes = $pre_quotes->map(function ($quote) {
             return [
                 'id' => $quote->id,
@@ -45,6 +45,12 @@ class QuoteController extends Controller
                     'id' => $quote->prospect?->id,
                     'name' => $quote->prospect?->name
                 ],
+                'catalog_products' => $quote->catalogProducts->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name
+                ];
+            }),
                 'authorized_user_name' => $quote->authorized_user_name ?? '--',
                 'authorized_at' => $quote->authorized_at,
                 'created_at' => $quote->created_at?->isoFormat('DD MMM, YYYY h:mm A'),

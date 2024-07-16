@@ -102,8 +102,10 @@
             ' ' +
             design.data.status['border-color']
             ">{{ design.data.status["label"] }}</span>
-          <span class="text-gray-500 my-2">Archivos de resultados</span>
-          <div class="flex flex-col">
+          <span v-if="design.data.has_priority" class="text-gray-500 my-2">Prioridad</span>
+          <span v-if="design.data.has_priority" class="text-primary"><i class="fa-solid fa-triangle-exclamation mr-2"></i>{{ 'Alta' }}</span>
+          <span v-if="design.data.media.length" class="text-gray-500 my-2">Archivos de resultados</span>
+          <div v-if="design.data.media.length" class="flex flex-col">
             <a class="hover:underline text-primary hover:text-secondary" v-for="file in design.data.media"
               :key="file.id" :href="file.original_url" target="_blank">{{ file.file_name }}</a>
           </div>
