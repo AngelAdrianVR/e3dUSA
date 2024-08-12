@@ -21,11 +21,13 @@
             </p>
             <!-- botones para cambiar de cot -->
             <div v-show="showAdditionalElements" class="flex items-center justify-center space-x-8 mt-5">
-                <button @click="$inertia.visit(route('quotes.show', prev_quote))" class="bg-gray-300 text-gray-800 size-5 text-[9px] rounded-full">
+                <button @click="$inertia.visit(route('quotes.show', prev_quote))"
+                    class="bg-gray-300 text-gray-800 size-5 text-[9px] rounded-full">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
                 <span class="text-xs">{{ quote.data.folio }}</span>
-                <button @click="$inertia.visit(route('quotes.show', next_quote))" class="bg-gray-300 text-gray-800 size-5 text-[9px] rounded-full">
+                <button @click="$inertia.visit(route('quotes.show', next_quote))"
+                    class="bg-gray-300 text-gray-800 size-5 text-[9px] rounded-full">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
@@ -49,7 +51,13 @@
                     <th class="px-2 py-1">Concepto</th>
                     <th class="px-2 py-1">Notas</th>
                     <th class="px-2 py-1">$ unitario</th>
-                    <th class="px-2 py-1">Unidades</th>
+                    <th class="px-2 py-1">
+                        {{ !labelChanged ? 'Unidades' : 'MOQ' }}
+                        <button v-show="showAdditionalElements" @click="labelChanged = !labelChanged"
+                        class="rounded-full size-4 bg-black text-white">
+                            <i class="fa-solid fa-shuffle"></i>
+                        </button>
+                    </th>
                     <th class="px-2 py-1 text-right">Total sin IVA</th>
                 </tr>
             </thead>
@@ -102,8 +110,9 @@
                         :src="item.media[currentCatalogProductImages[productIndex]]?.original_url">
                     <!-- selector de imagen cuando son varias -->
                     <div v-if="item.media?.length > 1" class="my-3 flex items-center justify-center space-x-3">
-                        <i @click="currentCatalogProductImages[productIndex] = index" v-for="(image, index) in item.media?.length"
-                            :key="index" :class="index == currentCatalogProductImages[productIndex] ? 'text-black' : 'text-white'"
+                        <i @click="currentCatalogProductImages[productIndex] = index"
+                            v-for="(image, index) in item.media?.length" :key="index"
+                            :class="index == currentCatalogProductImages[productIndex] ? 'text-black' : 'text-white'"
                             class="fa-solid fa-circle text-[7px] cursor-pointer"></i>
                     </div>
                     <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
@@ -118,8 +127,9 @@
                         :src="item.media[currentRawMaterialImages[productIndex]]?.original_url">
                     <!-- selector de imagen cuando son varias -->
                     <div v-if="item.media?.length > 1" class="my-3 flex items-center justify-center space-x-3">
-                        <i @click="currentRawMaterialImages[productIndex] = index" v-for="(image, index) in item.media?.length"
-                            :key="index" :class="index == currentRawMaterialImages[productIndex] ? 'text-black' : 'text-white'"
+                        <i @click="currentRawMaterialImages[productIndex] = index"
+                            v-for="(image, index) in item.media?.length" :key="index"
+                            :class="index == currentRawMaterialImages[productIndex] ? 'text-black' : 'text-white'"
                             class="fa-solid fa-circle text-[7px] cursor-pointer"></i>
                     </div>
                     <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
@@ -256,6 +266,7 @@ export default {
             showAdditionalElements: true,
             currentCatalogProductImages: [], // Array to store current image index for each product
             currentRawMaterialImages: [], // Array to store current image index for each product
+            labelChanged: false,
         };
     },
     components: {

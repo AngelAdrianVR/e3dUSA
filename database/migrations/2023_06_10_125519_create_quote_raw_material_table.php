@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('raw_material_quotes', function (Blueprint $table) {
+        Schema::create('quote_raw_material', function (Blueprint $table) {
             $table->id();
             $table->unsignedFloat('quantity');
             $table->float('price');

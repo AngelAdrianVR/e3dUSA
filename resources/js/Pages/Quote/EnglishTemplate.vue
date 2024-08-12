@@ -52,7 +52,13 @@
                     <th class="px-2 py-1">Concept</th>
                     <th class="px-2 py-1">Notes</th>
                     <th class="px-2 py-1">$ per unit</th>
-                    <th class="px-2 py-1">Units</th>
+                    <th class="px-2 py-1">
+                        {{ !labelChanged ? 'Units' : 'MOQ' }}
+                        <button v-show="showAdditionalElements" @click="labelChanged = !labelChanged"
+                            class="rounded-full size-4 bg-black text-white">
+                            <i class="fa-solid fa-shuffle"></i>
+                        </button>
+                    </th>
                     <th class="px-2 py-1">Total without taxes</th>
                 </tr>
             </thead>
@@ -106,8 +112,9 @@
                         :src="item.media[currentCatalogProductImages[productIndex]]?.original_url">
                     <!-- selector de imagen cuando son varias -->
                     <div v-if="item.media?.length > 1" class="my-3 flex items-center justify-center space-x-3">
-                        <i @click="currentCatalogProductImages[productIndex] = index" v-for="(image, index) in item.media?.length"
-                            :key="index" :class="index == currentCatalogProductImages[productIndex] ? 'text-black' : 'text-white'"
+                        <i @click="currentCatalogProductImages[productIndex] = index"
+                            v-for="(image, index) in item.media?.length" :key="index"
+                            :class="index == currentCatalogProductImages[productIndex] ? 'text-black' : 'text-white'"
                             class="fa-solid fa-circle text-[7px] cursor-pointer"></i>
                     </div>
                     <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
@@ -122,8 +129,9 @@
                         :src="item.media[currentRawMaterialImages[productIndex]]?.original_url">
                     <!-- selector de imagen cuando son varias -->
                     <div v-if="item.media?.length > 1" class="my-3 flex items-center justify-center space-x-3">
-                        <i @click="currentRawMaterialImages[productIndex] = index" v-for="(image, index) in item.media?.length"
-                            :key="index" :class="index == currentRawMaterialImages[productIndex] ? 'text-black' : 'text-white'"
+                        <i @click="currentRawMaterialImages[productIndex] = index"
+                            v-for="(image, index) in item.media?.length" :key="index"
+                            :class="index == currentRawMaterialImages[productIndex] ? 'text-black' : 'text-white'"
                             class="fa-solid fa-circle text-[7px] cursor-pointer"></i>
                     </div>
                     <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
@@ -259,6 +267,7 @@ export default {
             showAdditionalElements: true,
             currentCatalogProductImages: [], // Array to store current image index for each product
             currentRawMaterialImages: [], // Array to store current image index for each product
+            labelChanged: false,
         };
     },
     components: {
