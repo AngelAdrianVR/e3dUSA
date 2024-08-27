@@ -268,7 +268,7 @@ class PayrollController extends Controller
                 }
             } elseif ($user_bonus_id === 5) { //Puntualidad jefe produccion
                 $days_late = $processed->filter(fn ($item) => $item->late)->count();
-                $absents = $processed->filter(fn ($item) => $item->justification_event_id <= 5)->count();
+                $absents = $processed->filter(fn ($item) => $item->justification_event_id > 0 && $item->justification_event_id <= 5)->count();
                 $discount = $amount / $workDays->count();
                 $amount -= ($days_late + $absents) * $discount;
             }
