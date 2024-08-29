@@ -44,7 +44,7 @@
 
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg px-9 py-5 shadow-md">
                     <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
-                        <div class="col-span-2 flex justify-between">
+                        <div class="col-span-2 flex justify-between mb-7">
                             <el-radio-group v-model="form.is_spanish_template" size="small">
                                 <el-radio :label="1">Plantilla en español</el-radio>
                                 <el-radio :label="0">Plantilla en inglés</el-radio>
@@ -94,12 +94,21 @@
                                     <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
                                         :value="item.id" />
                                 </el-select>
-                                <el-select v-else v-model="form.prospect_id" @change="handleSelectProspect()" clearable
-                                    filterable placeholder="Busca el prospecto" no-data-text="No hay prospectos registrados"
-                                    no-match-text="No se encontraron coincidencias">
-                                    <el-option v-for="item in prospects" :key="item.id" :label="item.name"
-                                        :value="item.id" />
-                                </el-select>
+
+                                <div v-else class="w-full flex items-center space-x-3">
+                                    <el-select  v-model="form.prospect_id" @change="handleSelectProspect()" clearable
+                                        filterable placeholder="Busca el prospecto" no-data-text="No hay prospectos registrados"
+                                        no-match-text="No se encontraron coincidencias">
+                                        <el-option v-for="item in prospects" :key="item.id" :label="item.name"
+                                            :value="item.id" />
+                                    </el-select>
+                                    <el-tooltip content="Creación rápida de prospecto" placement="top">
+                                        <i
+                                            @click="showProspectFormModal = true"
+                                            class="fa-solid fa-circle-plus text-primary mr-2 text-lg cursor-pointer"
+                                        ></i>
+                                    </el-tooltip>
+                                </div>
                             </div>
                             <InputError :message="form.errors.company_branch_id" />
                             <InputError :message="form.errors.prospect_id" />
@@ -336,6 +345,86 @@
                     <CancelButton @click="showImportantNotesModal = false">Cancelar</CancelButton>
                 </template>
             </DialogModal>
+
+            <!-- prospect form -->
+            <DialogModal :show="showProspectFormModal" @close="showProspectFormModal = false">
+                <template #title>Creación rápida de nuevo prospecto </template>
+                <template #content>
+                <form class="grid grid-cols-2 gap-3 mt-5">
+                    <div>
+                    <InputLabel value="Nombre de la empresa*" class="ml-3 mb-1" />
+                    <el-input
+                        v-model="prospectForm.name"
+                        placeholder="Escribe el nombre de la empresa"
+                        :maxlength="100"
+                        clearable
+                    />
+                    <InputError :message="prospectForm.errors.name" />
+                    </div>
+                    <div>
+                    <InputLabel value="Nombre del contacto*" class="ml-3 mb-1" />
+                    <el-input
+                        v-model="prospectForm.contact_name"
+                        placeholder="Escribe el nombre del contacto"
+                        :maxlength="100"
+                        clearable
+                    />
+                    <InputError :message="prospectForm.errors.contact_name" />
+                    </div>
+                    <div>
+                    <InputLabel value="Puesto*" class="ml-3 mb-1" />
+                    <el-input
+                        v-model="prospectForm.contact_charge"
+                        placeholder="Ej. Supervisor"
+                        :maxlength="100"
+                        clearable
+                    />
+                    <InputError :message="prospectForm.errors.contact_charge" />
+                    </div>
+                    <div>
+                    <InputLabel value="Correo electrónico*" class="ml-3 mb-1" />
+                    <el-input
+                        v-model="prospectForm.contact_email"
+                        placeholder="Escribe el correo electrónico del contacto"
+                        :maxlength="100"
+                        required
+                        clearable
+                    />
+                    <InputError :message="prospectForm.errors.contact_email" />
+                    </div>
+                    <div>
+                    <InputLabel value="Teléfono" class="ml-3 mb-1" />
+                    <el-input
+                        v-model="prospectForm.contact_phone"
+                        :formatter="
+                        (value) => `${value}`.replace(/(\d{2})(\d{4})(\d{4})/, '$1 $2 $3')
+                        "
+                        :parser="(value) => value.replace(/\D/g, '')"
+                        maxlength="10"
+                        clearable
+                        placeholder="Escribe el número de teléfono del contacto"
+                    />
+                    <InputError :message="prospectForm.errors.contact_phone" />
+                    </div>
+                </form>
+                </template>
+                <template #footer>
+                <div class="flex items-center space-x-2">
+                    <CancelButton
+                    @click="showProspectFormModal = false"
+                    :disabled="prospectForm.processing"
+                    >Cancelar
+                    </CancelButton>
+                    <PrimaryButton @click="storeProspect()" :disabled="prospectForm.processing">
+                    <i
+                        v-if="prospectForm.processing"
+                        class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"
+                    ></i>
+                    Crear
+                    </PrimaryButton>
+                </div>
+                </template>
+            </DialogModal>
         </AppLayout>
     </div>
 </template>
@@ -370,14 +459,28 @@ export default {
             prospect_id: null,
             products: [],
         });
+
+        const prospectForm = useForm({
+            name: null,
+            contact_name: null,
+            contact_charge: null,
+            contact_email: null,
+            contact_phone: null,
+            status: "Contacto inicial",
+            quick_creation: true,
+            abstract: "Agregado en creación rápida en formulario de creación de cotización",
+        });
+        
         return {
             form,
+            prospectForm,
             productType: "Producto de catálogo",
             importantNotes: null,
             showImportantNotesModal: false,
             importantNotesToStore: null,
             isEditImportantNotes: false,
             editIndex: null,
+            showProspectFormModal: false,
             product: {
                 id: null,
                 quantity: null,
@@ -467,6 +570,20 @@ export default {
 
                     this.form.reset();
                 }
+            });
+        },
+        storeProspect() {
+            this.prospectForm.post(route("prospects.store"), {
+                onSuccess: () => {
+                this.$notify({
+                    title: "Éxito",
+                    message: "Nueva prospecto registrado",
+                    type: "success",
+                });
+
+                this.showProspectFormModal = false;
+                this.prospectForm.reset();
+                },
             });
         },
         getImportantNotes() {

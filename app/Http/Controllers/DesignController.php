@@ -10,6 +10,7 @@ use App\Models\Company;
 use App\Models\CompanyBranch;
 use App\Models\Design;
 use App\Models\DesignType;
+use App\Models\Prospect;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
 use App\Notifications\DesignCompletedNotification;
@@ -83,10 +84,10 @@ class DesignController extends Controller
     {
         $designers = User::where('is_active', 1)->where('employee_properties->department', 'Diseño')->get();
         $design_types = DesignType::all();
-        $companies = Company::all();
-        $company_branches = CompanyBranch::with('contacts')->latest()->get();
+        $company_branches = CompanyBranch::with('contacts:id,contactable_id,contactable_type,name')->latest()->get(['id','name']);
+        $prospects = Prospect::all(['id', 'name', 'contact_name']);
 
-        return inertia('Design/Create', compact('designers', 'design_types', 'companies', 'company_branches'));
+        return inertia('Design/Create', compact('designers', 'design_types', 'company_branches', 'prospects'));
     }
 
     public function store(Request $request)
@@ -171,6 +172,8 @@ class DesignController extends Controller
     {
         $designers = User::where('is_active', 1)->where('employee_properties->department', 'Diseño')->get();
         $design_types = DesignType::all();
+        $company_branches = CompanyBranch::with('contacts:id,contactable_id,contactable_type,name')->latest()->get(['id','name']);
+        $prospects = Prospect::all(['id', 'name', 'contact_name']);
         $companies = Company::all();
 
         return inertia('Design/Edit', compact('design', 'designers', 'design_types', 'companies'));
