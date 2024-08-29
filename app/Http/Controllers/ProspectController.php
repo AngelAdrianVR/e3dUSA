@@ -40,14 +40,16 @@ class ProspectController extends Controller
             'contact_phone_extension' => 'nullable|string|max:5',
             'contact_whatsapp' => 'nullable|string',
             'status' => 'required|string|max:255',
-            'branches_number' => 'required|numeric|min:1',
+            'branches_number' => 'nullable|numeric|min:1',
             'abstract' => 'required|string|max:800',
             'seller_id' => 'nullable|numeric|min:1',
         ]);
 
         $prospect = Prospect::create($validated + ['user_id' => auth()->id()]);
 
-        return to_route('prospects.show', $prospect);
+        if ( !$request->quick_creation ) {
+            return to_route('prospects.show', $prospect);
+        }
     }
 
     public function show(Prospect $prospect)
@@ -81,7 +83,7 @@ class ProspectController extends Controller
             'contact_phone_extension' => 'nullable|string|max:5',
             'contact_whatsapp' => 'nullable|string',
             'status' => 'required|string|max:255',
-            'branches_number' => 'required|numeric|min:1',
+            'branches_number' => 'nullable|numeric|min:1',
             'abstract' => 'required|string|max:800',
             'seller_id' => 'nullable|numeric|min:1',
         ]);
