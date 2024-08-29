@@ -438,6 +438,7 @@ import DialogModal from "@/Components/DialogModal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import IconInput from "@/Components/MyComponents/IconInput.vue";
 import Back from "@/Components/MyComponents/Back.vue";
+import InputLabel from "@/Components/InputLabel.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import axios from "axios";
 
@@ -470,7 +471,7 @@ export default {
             quick_creation: true,
             abstract: "Agregado en creación rápida en formulario de creación de cotización",
         });
-        
+
         return {
             form,
             prospectForm,
@@ -534,6 +535,7 @@ export default {
         PrimaryButton,
         SecondaryButton,
         InputError,
+        InputLabel,
         IconInput,
         CancelButton,
         DialogModal,
