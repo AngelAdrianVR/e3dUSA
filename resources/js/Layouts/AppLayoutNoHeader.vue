@@ -441,7 +441,7 @@ onMounted(() => {
                           <li @click="$inertia.get(route(result.model + '.show', result.id))"
                             class="text-gray-500 hover:bg-gray-200 text-xs px-4 cursor-pointer"
                             v-for="result in results" :key="result.id">
-                            {{ result.name }} <!-- Ajusta según tu estructura de datos -->
+                            {{ result.name }} (ID: {{ result.id }}) <!-- Ajusta según tu estructura de datos -->
                           </li>
                         </ul>
                       </div>

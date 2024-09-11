@@ -19,7 +19,6 @@ use Illuminate\Http\Request;
 
 class DesignController extends Controller
 {
-
     public function index()
     {
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de diseño todas')) {
@@ -84,7 +83,7 @@ class DesignController extends Controller
     {
         $designers = User::where('is_active', 1)->where('employee_properties->department', 'Diseño')->get();
         $design_types = DesignType::all();
-        $company_branches = CompanyBranch::with('contacts:id,contactable_id,contactable_type,name')->latest()->get(['id','name']);
+        $company_branches = CompanyBranch::with('contacts:id,contactable_id,contactable_type,name')->latest()->get(['id', 'name']);
         $prospects = Prospect::all(['id', 'name', 'contact_name']);
 
         return inertia('Design/Create', compact('designers', 'design_types', 'company_branches', 'prospects'));
@@ -156,7 +155,7 @@ class DesignController extends Controller
             });
             return inertia('Design/Show', compact('design', 'designs'));
         } else {
-            $design = DesignResource::make(Design::with('user', 'designer', 'designType', 'modifications.media')->where('designer_id', auth()->id())->find($design_id));
+            $design = DesignResource::make(Design::with('user', 'designer', 'designType', 'modifications.media')->find($design_id));
             $pre_designs = DesignResource::collection(Design::where('designer_id', auth()->id())->latest()->get());
             $designs = $pre_designs->map(function ($design) {
                 return [
@@ -172,7 +171,7 @@ class DesignController extends Controller
     {
         $designers = User::where('is_active', 1)->where('employee_properties->department', 'Diseño')->get();
         $design_types = DesignType::all();
-        $company_branches = CompanyBranch::with('contacts:id,contactable_id,contactable_type,name')->latest()->get(['id','name']);
+        $company_branches = CompanyBranch::with('contacts:id,contactable_id,contactable_type,name')->latest()->get(['id', 'name']);
         $prospects = Prospect::all(['id', 'name', 'contact_name']);
         $companies = Company::all();
 
@@ -278,7 +277,7 @@ class DesignController extends Controller
     public function finishOrder(Request $request)
     {
         $design = Design::find($request->design_id);
-        $design->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection('results'));
+        $design->addAllMediaFromRequest()->each(fn($file) => $file->toMediaCollection('results'));
         $design->update([
             'finished_at' => now()
         ]);
@@ -302,5 +301,16 @@ class DesignController extends Controller
         $design->user->notify(new RequestApprovedNotification('Diseño', $design->name, "", 'design'));
 
         return response()->json(['item' => DesignResource::make($design)]);
+    }
+
+    public function fetchFiltered($filter)
+    {
+        if ($filter == 'Mis órdenes') {
+            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->whereNotNull('authorized_at')->where('designer_id', auth()->id())->latest()->get());
+        } else {
+            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->where('user_id', auth()->id())->latest()->get());
+        }
+        
+        return response()->json($designs);
     }
 }

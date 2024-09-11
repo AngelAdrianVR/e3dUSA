@@ -22,13 +22,13 @@
             </div>
 
             <!-- Filtro -->
-            <div class="w-44 lg:ml-32 ml-4 mt-2">
+            <!-- <div class="w-44 lg:ml-32 ml-4 mt-2">
                 <el-select @change="fetchItemsFiltered" v-model="filter" class="mt-2" clearable
                     filterable placeholder="Selecciona una opción">
                     <el-option v-for="item in options" :key="item" :label="item"
                         :value="item" />
                 </el-select>
-            </div>
+            </div> -->
 
             <!-- tabla -->
             <div class="relative overflow-hidden min-h-[60vh]">
@@ -106,8 +106,6 @@
                     </el-table>
                 </div>
             </div>
-            <!-- tabla -->
-
         </AppLayout>
     </div>
 </template>
@@ -145,7 +143,7 @@ export default {
         Link
     },
     props: {
-        designs: Array
+        designs: Object
     },
     methods: {
         getStatusColor(row) {
@@ -159,8 +157,8 @@ export default {
                 return 'cursor-pointer text-green-500';
             }
         },
-        handleSearch() {
-            this.search = this.inputSearch;
+        handleSearch(search) {
+            this.search = search;
         },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
@@ -261,7 +259,8 @@ export default {
             } else {
                 return this.localDesigns.filter(
                     (design) =>
-                        design.design.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                        design.id.toString().toLowerCase().includes(this.search.toLowerCase()) ||
+                        design.name.toLowerCase().includes(this.search.toLowerCase()) ||
                         design.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
                         design.designer.name.toLowerCase().includes(this.search.toLowerCase()) ||
                         design.user.name.toLowerCase().includes(this.search.toLowerCase())

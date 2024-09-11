@@ -20,12 +20,15 @@ class SearchController extends Controller
 {
     public function index(Request $request)
     {
+        $numOfitems = 45;
         $query = $request->input('query');
 
         // Búsqueda en el modelo User  -------------------
         $users = User::where('name', 'like', "%$query%")
-                     ->get(['id', 'name'])
-                     ->take(5);
+            ->orWhere('id', 'like', "$query%")
+            ->latest('id')
+            ->get(['id', 'name'])
+            ->take($numOfitems);
 
         $users = $users->map(function ($user) {
             return [
@@ -38,50 +41,58 @@ class SearchController extends Controller
 
         // Búsqueda en el modelo catalogProduct ----------------------------
         $catalog_products = CatalogProduct::where('name', 'like', "%$query%")
-                     ->get(['id', 'name'])
-                     ->take(5);
+            ->orWhere('id', 'like', "$query%")
+            ->latest('id')
+            ->get(['id', 'name'])
+            ->take($numOfitems);
 
         $catalog_products = $catalog_products->map(function ($catalog_product) {
-        return [
-            'id' => $catalog_product->id,
-            'name' => $catalog_product->name,
-            'model' => 'catalog-products',
-        ];
+            return [
+                'id' => $catalog_product->id,
+                'name' => $catalog_product->name,
+                'model' => 'catalog-products',
+            ];
         });
         // ---------------------------------------------------------------
 
         // Búsqueda en el modelo raw-materials
         $raw_materials = RawMaterial::where('name', 'like', "%$query%")
-                     ->get(['id', 'name'])
-                     ->take(5);
+            ->orWhere('id', 'like', "$query%")
+            ->latest('id')
+            ->get(['id', 'name'])
+            ->take($numOfitems);
 
         $raw_materials = $raw_materials->map(function ($raw_material) {
-        return [
-            'id' => $raw_material->id,
-            'name' => $raw_material->name,
-            'model' => 'storages',
-        ];
+            return [
+                'id' => $raw_material->id,
+                'name' => $raw_material->name,
+                'model' => 'storages',
+            ];
         });
         // ---------------------------------------------------------------
 
         // Búsqueda en el modelo company branch
         $company_branches = CompanyBranch::where('name', 'like', "%$query%")
-                          ->get(['id', 'name', 'company_id'])
-                          ->take(5);
+            ->orWhere('id', 'like', "$query%")
+            ->latest('id')
+            ->get(['id', 'name', 'company_id'])
+            ->take($numOfitems);
 
         $company_branches = $company_branches->map(function ($company_branch) {
-        return [
-            'id' => $company_branch->company_id,
-            'name' => $company_branch->name,
-            'model' => 'companies',
-        ];
+            return [
+                'id' => $company_branch->company_id,
+                'name' => $company_branch->name,
+                'model' => 'companies',
+            ];
         });
         // ---------------------------------------------------------------
 
         // Búsqueda en el modelo design
         $designs = Design::where('name', 'like', "%$query%")
-                        ->get(['id', 'name'])
-                        ->take(5);
+            ->orWhere('id', 'like', "$query%")
+            ->latest('id')
+            ->get(['id', 'name'])
+            ->take($numOfitems);
 
         $designs = $designs->map(function ($design) {
             return [
@@ -89,13 +100,15 @@ class SearchController extends Controller
                 'name' => $design->name,
                 'model' => 'designs',
             ];
-            });
-            // ---------------------------------------------------------------
+        });
+        // ---------------------------------------------------------------
 
         // Búsqueda en el modelo machine
         $machines = Machine::where('name', 'like', "%$query%")
-                        ->get(['id', 'name'])
-                        ->take(5);
+            ->orWhere('id', 'like', "$query%")
+            ->latest('id')
+            ->get(['id', 'name'])
+            ->take($numOfitems);
 
         $machines = $machines->map(function ($machine) {
             return [
@@ -103,13 +116,15 @@ class SearchController extends Controller
                 'name' => $machine->name,
                 'model' => 'machines',
             ];
-            });
-            // ---------------------------------------------------------------
+        });
+        // ---------------------------------------------------------------
 
         // Búsqueda en el modelo opportunit
         $opportunities = Oportunity::where('name', 'like', "%$query%")
-                        ->get(['id', 'name'])
-                        ->take(5);
+            ->orWhere('id', 'like', "$query%")
+            ->latest('id')
+            ->get(['id', 'name'])
+            ->take($numOfitems);
 
         $opportunities = $opportunities->map(function ($opportunity) {
             return [
@@ -117,13 +132,15 @@ class SearchController extends Controller
                 'name' => $opportunity->name,
                 'model' => 'oportunities',
             ];
-            });
-            // ---------------------------------------------------------------
+        });
+        // ---------------------------------------------------------------
 
         // Búsqueda en el modelo prospect
         $prospects = Prospect::where('name', 'like', "%$query%")
-                        ->get(['id', 'name'])
-                        ->take(5);
+            ->orWhere('id', 'like', "$query%")
+            ->latest('id')
+            ->get(['id', 'name'])
+            ->take($numOfitems);
 
         $prospects = $prospects->map(function ($prospect) {
             return [
@@ -131,13 +148,15 @@ class SearchController extends Controller
                 'name' => $prospect->name,
                 'model' => 'prospects',
             ];
-            });
-            // ---------------------------------------------------------------
+        });
+        // ---------------------------------------------------------------
 
         // Búsqueda en el modelo sample
         $samples = Sample::where('name', 'like', "%$query%")
-                        ->get(['id', 'name'])
-                        ->take(5);
+            ->orWhere('id', 'like', "$query%")
+            ->latest('id')
+            ->get(['id', 'name'])
+            ->take($numOfitems);
 
         $samples = $samples->map(function ($sample) {
             return [
@@ -145,13 +164,15 @@ class SearchController extends Controller
                 'name' => $sample->name,
                 'model' => 'samples',
             ];
-            });
-            // ---------------------------------------------------------------
+        });
+        // ---------------------------------------------------------------
 
         // Búsqueda en el modelo sparePart
         $spareParts = SparePart::where('name', 'like', "%$query%")
-                        ->get(['id', 'name', 'machine_id'])
-                        ->take(5);
+            ->orWhere('id', 'like', "$query%")
+            ->latest('id')
+            ->get(['id', 'name', 'machine_id'])
+            ->take($numOfitems);
 
         $spareParts = $spareParts->map(function ($sparePart) {
             return [
@@ -159,13 +180,15 @@ class SearchController extends Controller
                 'name' => $sparePart->name,
                 'model' => 'machines',
             ];
-            });
-            // ---------------------------------------------------------------
+        });
+        // ---------------------------------------------------------------
 
         // Búsqueda en el modelo supplier
         $suppliers = Supplier::where('name', 'like', "%$query%")
-                        ->get(['id', 'name'])
-                        ->take(5);
+            ->orWhere('id', 'like', "$query%")
+            ->latest('id')
+            ->get(['id', 'name'])
+            ->take($numOfitems);
 
         $suppliers = $suppliers->map(function ($supplier) {
             return [
@@ -173,8 +196,8 @@ class SearchController extends Controller
                 'name' => $supplier->name,
                 'model' => 'suppliers',
             ];
-            });
-            // ---------------------------------------------------------------
+        });
+        // ---------------------------------------------------------------
 
         // Combina los resultados en un array
         $results = [
@@ -190,8 +213,6 @@ class SearchController extends Controller
             'Refacciones' => $spareParts,
             'Proveedores' => $suppliers,
         ];
-
-        // return $results;
 
         return response()->json(['results' => $results]);
     }
