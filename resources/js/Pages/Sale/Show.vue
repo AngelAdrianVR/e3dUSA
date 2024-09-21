@@ -184,6 +184,20 @@
             " class="rounded-full border text-center">{{ sale.data.status["label"] }}</span>
           <span class="text-gray-500 my-1">Notas</span>
           <span>{{ sale.data.notes }}</span>
+
+          <p class="text-secondary col-span-2 mb-2 mt-5">Archivos adjuntos (OCE)</p>
+
+          <div v-if="sale.data?.media?.length">
+            <li v-for="file in sale.data?.media" :key="file"
+              class="flex items-center justify-between col-span-full">
+              <a :href="file.original_url" target="_blank" class="flex items-center">
+                <i :class="getFileTypeIcon(file.file_name)"></i>
+                <span class="ml-2">{{ file.file_name }}</span>
+              </a>
+            </li>
+          </div>
+          <p class="text-sm text-gray-400" v-else><i class="fa-regular fa-file-excel mr-3"></i>No hay archivos adjuntos</p>
+
         </div>
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
           <p class="text-secondary col-span-2 mb-2">Datos del cliente</p>
@@ -307,6 +321,21 @@ export default {
       const formattedDate = format(new Date(date), 'dd MMMM yyyy', { locale: es });
 
       return formattedDate;
+    },
+    getFileTypeIcon(fileName) {
+      // Asocia extensiones de archivo a iconos
+      const fileExtension = fileName.split('.').pop().toLowerCase();
+      switch (fileExtension) {
+        case 'pdf':
+          return 'fa-regular fa-file-pdf text-red-700';
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+        case 'gif':
+          return 'fa-regular fa-image text-blue-300';
+        default:
+          return 'fa-regular fa-file-lines';
+      }
     },
     async deleteItem() {
       try {
