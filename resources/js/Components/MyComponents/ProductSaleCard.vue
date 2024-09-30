@@ -26,7 +26,7 @@
     </div>
 
     <!-- card -->
-    <p class="text-center font-bold mt-4 text-sm">
+    <p class="text-center font-bold mt-4 text-sm h-12">
       {{ catalog_product_company_sale.catalog_product_company?.catalog_product?.name }}
     </p>
     <span class="font-bold absolute right-5 top-2">{{
@@ -69,7 +69,8 @@
           <p @click.stop="$inertia.get(route('storages.show', comp_storage.id))"
             v-for="comp_storage in raw_material.storages" :key="comp_storage">•{{ comp_storage.storageable.name }}</p>
           </p>
-          <p v-if="catalog_product_company_sale.requires_medallion" class="text-[#37951F] bg-[#ADFEB5] px-1 py-px rounded-[3px] text-center mt-1">Requiere medallón</p>
+          <el-tag class="mt-2" type="success" v-if="catalog_product_company_sale.requires_medallion">Requiere medallón</el-tag>
+          <!-- <p v-if="catalog_product_company_sale.requires_medallion" class="text-[#37951F] bg-[#ADFEB5] px-1 rounded-[3px] text-center mt-1">Requiere medallón</p> -->
         </div>
       </div>
     </div>
@@ -229,9 +230,16 @@
         {{ catalog_product_company_sale.comments?.length }} <i class="fa-regular fa-comment"></i>
       </button>
     </div>
+
+    <!-- Notas del producto -->
+    <div class="bg-[#d9d9d9] rounded-lg p-2 my-3 border border-red-600">
+      <p class="font-bold">Notas: <span class="font-thin">{{ catalog_product_company_sale.notes ?? '-' }}</span></p>
+    </div>
+
+    <!-- Historial de precios -->
     <div class="bg-[#d9d9d9] rounded-lg p-2 grid grid-cols-2 my-3">
       <span class="">Precio Anterior:</span>
-      <span class="text-secondary ">{{ catalog_product_company_sale.catalog_product_company?.old_price }}
+      <span class="text-secondary ">{{ catalog_product_company_sale.catalog_product_company?.old_price ?? 'N/A' }}
         {{ catalog_product_company_sale.catalog_product_company?.old_currency }}</span>
       <span>Establecido el:</span>
       <span class="text-secondary  mb-3">
