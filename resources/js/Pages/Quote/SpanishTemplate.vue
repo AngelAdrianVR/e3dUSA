@@ -32,7 +32,7 @@
                 </button>
             </div>
             <p class="w-11/12 text-lg mx-auto font-bold text-gray-700">
-                {{ quote.data.companyBranch?.name ?? quote.data.prospect.name }}
+                {{ quote.data.companyBranch?.name ?? quote.data.prospect?.name }}
             </p>
             <p class="w-11/12 mx-auto font-bold mt-2 text-gray-700">
                 Estimado(a) {{ quote.data.receiver }} - {{ quote.data.department }}
