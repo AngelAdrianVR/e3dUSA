@@ -145,7 +145,7 @@ class DesignController extends Controller
             // return $design;
             return inertia('Design/Show', compact('design', 'designs'));
         } elseif (auth()->user()->can('Ordenes de diseño personal')) {
-            $design = DesignResource::make(Design::with('user', 'designer', 'designType', 'modifications.media')->where('user_id', auth()->id())->find($design_id));
+            $design = DesignResource::make(Design::with('user', 'designer', 'designType', 'modifications.media')->find($design_id));
             $pre_designs = DesignResource::collection(Design::where('designer_id', auth()->id())->latest()->get());
             $designs = $pre_designs->map(function ($design) {
                 return [
