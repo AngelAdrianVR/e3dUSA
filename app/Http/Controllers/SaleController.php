@@ -8,16 +8,12 @@ use App\Events\RecordEdited;
 use App\Http\Resources\SaleResource;
 use App\Models\CatalogProductCompanySale;
 use App\Models\CompanyBranch;
-use App\Models\DesignAuthorization;
 use App\Models\Oportunity;
 use App\Models\Sale;
 use App\Models\Sample;
-use App\Models\StockMovementHistory;
-use App\Models\Storage;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
 use Illuminate\Http\Request;
-use Nette\Utils\Strings;
 
 class SaleController extends Controller
 {
@@ -138,15 +134,9 @@ class SaleController extends Controller
 
     public function show($sale_id)
     {
+        // $sale = Sale::find($sale_id, ['id', 'is_sale_production', 'authorized_at', 'user_id']);
         $sale = SaleResource::make(Sale::with(['user:id,name', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator:id,name', 'comments.user'], 'productions' => ['user:id,name', 'operator:id,name']])->find($sale_id));
-        $pre_sales = Sale::latest()->get();
-        $sales = $pre_sales->map(function ($sale) {
-            $prefix = $sale->is_sale_production ? 'OV-' : 'OS-';
-            return [
-                'id' => $sale->id,
-                'folio' => $prefix . str_pad($sale->id, 4, "0", STR_PAD_LEFT),
-            ];
-        });
+        $sales = Sale::latest()->get(['id']);
 
         return inertia('Sale/Show', compact('sale', 'sales'));
     }
