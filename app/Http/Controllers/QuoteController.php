@@ -71,8 +71,6 @@ class QuoteController extends Controller
         // si se accede a crear cotización desde oportunidad. Recupera la oportunidad y la manda para llenar el formulario.
         $opportunity = Oportunity::find(request('opportunityId'));
 
-        // return $raw_materials;
-
         return inertia('Quote/Create', compact('catalog_products', 'company_branches', 'opportunity', 'prospects', 'raw_materials'));
     }
 
@@ -108,6 +106,7 @@ class QuoteController extends Controller
                 "quantity" => $product['quantity'],
                 "price" => $product['price'],
                 "show_image" => $product['show_image'],
+                "requires_med" => $product['requires_med'],
                 "notes" => $product['notes'],
             ];
 
@@ -275,6 +274,7 @@ class QuoteController extends Controller
             'authorized_user_name' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? auth()->user()->name : null,
             'authorized_at' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? now() : null,
             'user_id' => auth()->id(),
+            'notes' => $quote->notes,
             'company_branch_id' => $quote->company_branch_id,
         ]);
 
@@ -299,6 +299,7 @@ class QuoteController extends Controller
                 'catalog_product_company_id' => $catalog_product_company->pivot->id,
                 'sale_id' => $sale->id,
                 'quantity' => $product->pivot->quantity,
+                'requires_medallion' => $product->pivot->requires_med,
                 'notes' => $product->pivot->notes,
             ]);
         }
