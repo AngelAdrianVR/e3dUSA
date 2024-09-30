@@ -232,7 +232,7 @@
     </div>
 
     <!-- Notas del producto -->
-    <div class="bg-[#d9d9d9] rounded-lg p-2 my-3 border border-red-600">
+    <div class="bg-[#d9d9d9] rounded-lg p-2 my-3">
       <p class="font-bold">Notas: <span class="font-thin">{{ catalog_product_company_sale.notes ?? '-' }}</span></p>
     </div>
 
