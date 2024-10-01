@@ -32,7 +32,6 @@ class SupplierController extends Controller
         });
 
         // return $suppliers;
-
         return inertia('Supplier/Index', compact('suppliers'));
     }
 
@@ -40,8 +39,6 @@ class SupplierController extends Controller
     public function create()
     {
         $raw_materials = RawMaterial::get(['id', 'name', 'cost']);
-
-        // return $raw_materials;
 
         return inertia('Supplier/Create', compact('raw_materials'));
     }
@@ -87,15 +84,7 @@ class SupplierController extends Controller
     public function show($supplier_id)
     {
         $supplier = SupplierResource::make(Supplier::with('contacts')->find($supplier_id));
-        $pre_suppliers = Supplier::latest()->get();
-        $suppliers = $pre_suppliers->map(function ($supplier) {
-            return [
-                'id' => $supplier->id,
-                'name' => $supplier->name,
-            ];
-        });
-
-        // return $supplier;
+        $suppliers = Supplier::latest()->get(['id', 'name']);
 
         return inertia('Supplier/Show', compact('supplier', 'suppliers'));
     }
@@ -106,7 +95,6 @@ class SupplierController extends Controller
         $supplier = Supplier::with('contacts')->find($supplier_id);
         $raw_materials = RawMaterial::get(['id', 'name', 'cost']);
 
-        // return $supplier;
         return inertia('Supplier/Edit', compact('supplier', 'raw_materials'));
     }
 

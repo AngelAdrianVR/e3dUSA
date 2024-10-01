@@ -13,7 +13,7 @@
       <!-- Form -->
       <form @submit.prevent="update" class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md">
         <h1 class="my-4 font-bold">Editar prospecto</h1>
-        <div class="grid grid-cols-2 gap-x-3">
+        <div class="grid grid-cols-2 gap-3">
           <div class="self-end">
             <label class="flex items-center text-sm ml-2 space-x-2">
               <span>Nombre de la empresa *</span>
