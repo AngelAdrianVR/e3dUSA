@@ -67,6 +67,7 @@ class Quote extends Model implements HasMedia
                 'quantity',
                 'price',
                 'show_image',
+                'requires_med',
                 'notes',
             ])->withTimestamps();
     }
