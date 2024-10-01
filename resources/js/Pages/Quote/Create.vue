@@ -42,7 +42,7 @@
                     </div>
                 </div>
 
-                <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg px-9 py-5 shadow-md">
+                <div class="md:w-full lg:w-1/2 md:mx-auto mx-7 my-5 bg-[#D9D9D9] rounded-lg px-9 py-5 shadow-md">
                     <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
                         <div class="col-span-2 flex justify-between mb-7">
                             <el-radio-group v-model="form.is_spanish_template" size="small">
@@ -245,7 +245,7 @@
                             </el-tooltip>
                             <el-select v-model="product.id" clearable filterable placeholder="Busca el producto de catálogo"
                                 no-data-text="No hay productos registrados" no-match-text="No se encontraron coincidencias">
-                                <el-option v-for="item in catalog_products" :key="item.id" :label="item.name + ' (' + item.part_number + ')'"
+                                <el-option @click="handleSelectedProduct(item)" v-for="item in catalog_products" :key="item.id" :label="item.name + ' (' + item.part_number + ')'"
                                     :value="item.id" />
                             </el-select>
                         </div>
@@ -262,18 +262,26 @@
                                     :value="item.id" />
                             </el-select>
                         </div>
-                        <div class="flex items-center">
-                            <el-tooltip content="¿Mostrar imagen en cotización?" placement="top">
-                                <span
-                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                                    <i class="fa-solid fa-eye"></i>
-                                </span>
-                            </el-tooltip>
-                            <el-switch v-model="product.show_image" inline-prompt size="large"
-                                style="--el-switch-on-color: #0355B5; --el-switch-off-color: #CCCCCC"
-                                active-text="Mostrar imagen en cotización"
-                                inactive-text="No mostrar imagen en cotización" />
+                        <div class="flex items-center space-x-4">
+                            <label v-if="isKeyChain" class="flex items-center text-gray-600">
+                                <input @change="handleRequiredMed(product.requires_med)" type="checkbox" v-model="product.requires_med"
+                                    class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
+                                <span class="ml-2 text-sm">Requiere medallón</span>
+                            </label>
+                            <div class="flex items-center">
+                                <el-tooltip content="¿Mostrar imagen en cotización?" placement="top">
+                                    <span
+                                        class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </span>
+                                </el-tooltip>
+                                <el-switch v-model="product.show_image" inline-prompt size="large"
+                                    style="--el-switch-on-color: #0355B5; --el-switch-off-color: #CCCCCC"
+                                    active-text="Mostrar imagen en cotización"
+                                    inactive-text="No mostrar imagen en cotización" />
+                            </div>
                         </div>
+                        
                         <div>
                             <IconInput v-model="product.quantity" inputPlaceholder="Cantidad a cotizar *" inputType="number"
                                 inputStep="0.01">
@@ -475,6 +483,7 @@ export default {
         return {
             form,
             prospectForm,
+            isKeyChain: false, //bandera para saber si es llavero y activar el check de requiere medallon
             productType: "Producto de catálogo",
             importantNotes: null,
             showImportantNotesModal: false,
@@ -488,6 +497,7 @@ export default {
                 price: null,
                 isCatalogProduct: null,
                 show_image: true,
+                requires_med: false, //bandera para guardar si el llavero requiero medallon
                 notes: null,
             },
             firstProductionDaysList: [
@@ -560,6 +570,20 @@ export default {
             this.form.prospect_id = null;
             this.form.receiver = null;
             this.form.department = null;
+        },
+        handleSelectedProduct(product) {
+            if ( product.part_number.includes("LL") ) {
+                this.isKeyChain = true;
+            } else {
+                this.isKeyChain = false;
+            }
+        },
+        handleRequiredMed(requires_med) {
+            if ( requires_med ){
+                this.product.notes = 'Incluye medallón'
+            } else {
+                this.product.notes = null;
+            }
         },
         store() {
             this.form.post(route('quotes.store'), {
@@ -658,6 +682,14 @@ export default {
         editProduct(index) {
             const product = { ...this.form.products[index] };
             this.product = product;
+
+            //revisa si el producto es llavero para mostrar el check de requiere medallon.
+            const product_part_number = this.catalog_products.find(item => item.id === this.product.id)?.part_number;
+            if ( product_part_number.includes("LL") ) {
+                this.isKeyChain = true;
+            } else {
+                this.isKeyChain = false;
+            }
             this.editIndex = index;
         },
         resetProductForm() {

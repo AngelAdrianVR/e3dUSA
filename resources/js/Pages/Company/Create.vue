@@ -707,7 +707,6 @@ export default {
   },
   props: {
     catalog_products: Array,
-    raw_materials: Array,
     sellers: Array,
   },
   methods: {

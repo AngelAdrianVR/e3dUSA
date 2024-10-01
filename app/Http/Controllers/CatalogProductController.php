@@ -20,26 +20,8 @@ class CatalogProductController extends Controller
 
     public function index()
     {
-        // return auth()->user()->getLateProductions(Payroll::getCurrent()->start_date);
-        // $catalog_products = CatalogProductResource::collection(CatalogProduct::latest()->get());
-        // return $catalog_products;
-        // return inertia('CatalogProduct/Index', compact('catalog_products'));
+        $catalog_products = CatalogProduct::latest()->get(['id', 'part_number', 'name', 'cost', 'description']);
 
-        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
-        $pre_catalog_products = CatalogProduct::latest()->get();
-        $catalog_products = $pre_catalog_products->map(function ($catalog_product) {
-            return [
-                'id' => $catalog_product->id,
-                'part_number' => $catalog_product->part_number,
-                'name' => strtoupper($catalog_product->name),
-                'cost' => [
-                'raw' => $catalog_product->cost,
-                'number_format' => number_format($catalog_product->cost, 2) . ' ' . '$MXN'
-                ],
-                'description' => $catalog_product->description ?? '--',
-                   ];
-               });
-        // return $catalog_products;
         return inertia('CatalogProduct/Index', compact('catalog_products'));
     }
 
@@ -53,8 +35,6 @@ class CatalogProductController extends Controller
         $last = CatalogProduct::latest()->first();
         $next_id = $last ? $last->id + 1 : 1;
         $consecutive = str_pad($next_id, 4, "0", STR_PAD_LEFT);
-
-        // return $raw_materials;
 
         return inertia('CatalogProduct/Create', compact('raw_materials', 'production_costs', 'consecutive'));
     }
@@ -108,10 +88,10 @@ class CatalogProductController extends Controller
 
     public function show($catalog_product_id)
     {
-        $catalog_product = CatalogProductResource::make(CatalogProduct::with('rawMaterials.storages.storageable', 'storages')->find($catalog_product_id));
+        $catalog_product = CatalogProductResource::make(CatalogProduct::with(['rawMaterials:id,name,part_number' 
+            => ['storages:id,storageable_type,storageable_id' => ['storageable:id,name']], 'storages'])->find($catalog_product_id));
         $catalog_products = CatalogProduct::latest()->get(['id', 'name']);
         
-        // return $catalog_product;
         return inertia('CatalogProduct/Show', compact('catalog_products', 'catalog_product'));
     }
 
@@ -120,7 +100,7 @@ class CatalogProductController extends Controller
     {
         $catalog_product = CatalogProduct::with('rawMaterials')->find($catalog_product->id);
         $production_costs = ProductionCost::all();
-        $raw_materials = RawMaterial::all();
+        $raw_materials = RawMaterial::all(['id', 'name']);
         $media = $catalog_product->getFirstMedia();
 
         return inertia('CatalogProduct/Edit', compact('catalog_product', 'production_costs', 'raw_materials', 'media'));

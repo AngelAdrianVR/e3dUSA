@@ -5,15 +5,12 @@ namespace App\Http\Controllers;
 use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
-use App\Http\Resources\CatalogProductCompanyResource;
 use App\Http\Resources\CompanyResource;
 use App\Models\CatalogProduct;
 use App\Models\CatalogProductCompany;
 use App\Models\Company;
 use App\Models\CompanyBranch;
-use App\Models\CompanyProduct;
 use App\Models\Contact;
-use App\Models\Production;
 use App\Models\RawMaterial;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -24,24 +21,9 @@ class CompanyController extends Controller
 
     public function index()
     {
-        /// Optimización para rapidez. No carga todos los datos, solo los necesarios para hacer la búsqueda y mostrar la tabla en index
-        $companies = Company::with(['companyBranches', 'seller'])->latest()->get();
-
-        $pre_companies = CompanyResource::collection($companies);
-        $companies = $pre_companies->map(function ($company) {
-            $companyBranchNames = $company->companyBranches->pluck('name')->toArray();
-            return [
-                'id' => $company->id,
-                'business_name' => $company->business_name,
-                'phone' => $company->phone,
-                'rfc' => $company->rfc,
-                'post_code' => $company->post_code,
-                'company_branches_names' => implode(', ', $companyBranchNames),
-                'fiscal_address' => $company->fiscal_address,
-                'seller_name' => User::find($company->seller_id)?->name,
-                'seller_id' => $company->seller_id,
-            ];
-        });
+        $companies = CompanyResource::collection(Company::with(['companyBranches', 'seller:id,name'])
+            ->latest()
+            ->get(['id','business_name','phone','rfc','post_code', 'fiscal_address','seller_id']));
 
         return inertia('Company/Index', compact('companies'));
     }
@@ -49,8 +31,7 @@ class CompanyController extends Controller
 
     public function create()
     {
-        $catalog_products = CatalogProduct::all();
-        $raw_materials = RawMaterial::all();
+        $catalog_products = CatalogProduct::all(['id', 'name']);
         $sellers = User::where('is_active', true)
             ->where(function ($query) {
                 $query->whereIn('id', [2, 3])
@@ -59,8 +40,8 @@ class CompanyController extends Controller
                     });
             })
             ->get(['id', 'name', 'profile_photo_path']);
-
-        return inertia('Company/Create', compact('catalog_products', 'raw_materials', 'sellers'));
+        
+        return inertia('Company/Create', compact('catalog_products', 'sellers'));
     }
 
 
@@ -122,8 +103,7 @@ class CompanyController extends Controller
     public function edit(Company $company)
     {
         $company = Company::with('catalogProducts', 'companyBranches.contacts')->find($company->id);
-        $catalog_products = CatalogProduct::all();
-        $raw_materials = RawMaterial::all();
+        $catalog_products = CatalogProduct::all(['id', 'name']);
         $sellers = User::where('is_active', true)
             ->where(function ($query) {
                 $query->whereIn('id', [2, 3])
@@ -133,7 +113,7 @@ class CompanyController extends Controller
             })
             ->get(['id', 'name', 'profile_photo_path']);
 
-        return inertia('Company/Edit', compact('company', 'catalog_products', 'raw_materials', 'sellers'));
+        return inertia('Company/Edit', compact('company', 'catalog_products', 'sellers'));
     }
 
 

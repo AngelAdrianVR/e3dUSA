@@ -7,9 +7,7 @@ use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\QuoteResource;
 use App\Models\CatalogProduct;
-use App\Models\CatalogProductCompany;
 use App\Models\CatalogProductCompanySale;
-use App\Models\Company;
 use App\Models\CompanyBranch;
 use App\Models\Oportunity;
 use App\Models\Prospect;
@@ -26,38 +24,38 @@ class QuoteController extends Controller
 {
     public function index()
     {        
-        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
-        $pre_quotes = Quote::with('catalogProducts:id,name')->latest()->get();
-        $quotes = $pre_quotes->map(function ($quote) {
-            return [
-                'id' => $quote->id,
-                'folio' => 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT),
-                'user' => [
-                    'id' => $quote->user->id,
-                    'name' => $quote->user->name
-                ],
-                'receiver' => $quote->receiver,
-                'companyBranch' => [
-                    'id' => $quote->companyBranch?->id,
-                    'name' => $quote->companyBranch?->name
-                ],
-                'prospect' => [
-                    'id' => $quote->prospect?->id,
-                    'name' => $quote->prospect?->name
-                ],
-                'catalog_products' => $quote->catalogProducts->map(function ($product) {
+        $quotes = Quote::with(['catalogProducts:id,name', 'user:id,name'])
+            ->latest()
+            ->get(['id', 'receiver', 'user_id', 'prospect_id', 'company_branch_id', 'authorized_user_name', 'created_at'])
+            ->map(function ($quote) {
                 return [
-                    'id' => $product->id,
-                    'name' => $product->name
+                    'id' => $quote->id,
+                    'folio' => 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT),
+                    'user' => [
+                        'id' => $quote->user->id,
+                        'name' => $quote->user->name
+                    ],
+                    'receiver' => $quote->receiver,
+                    'companyBranch' => [
+                        'id' => $quote->companyBranch?->id,
+                        'name' => $quote->companyBranch?->name
+                    ],
+                    'prospect' => [
+                        'id' => $quote->prospect?->id,
+                        'name' => $quote->prospect?->name
+                    ],
+                    'catalog_products' => $quote->catalogProducts->map(function ($product) {
+                        return [
+                            'id' => $product->id,
+                            'name' => $product->name
+                        ];
+                    }),
+                    'authorized_user_name' => $quote->authorized_user_name ?? '--',
+                    'authorized_at' => $quote->authorized_at,
+                    'created_at' => $quote->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+                    'profit' => $quote->getProfit(),
                 ];
-            }),
-                'authorized_user_name' => $quote->authorized_user_name ?? '--',
-                'authorized_at' => $quote->authorized_at,
-                'created_at' => $quote->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
-                'profit' => $quote->getProfit(),
-            ];
-        });
-
+            });
         return inertia('Quote/Index', compact('quotes'));
     }
 
@@ -70,8 +68,6 @@ class QuoteController extends Controller
 
         // si se accede a crear cotización desde oportunidad. Recupera la oportunidad y la manda para llenar el formulario.
         $opportunity = Oportunity::find(request('opportunityId'));
-
-        // return $raw_materials;
 
         return inertia('Quote/Create', compact('catalog_products', 'company_branches', 'opportunity', 'prospects', 'raw_materials'));
     }
@@ -108,6 +104,7 @@ class QuoteController extends Controller
                 "quantity" => $product['quantity'],
                 "price" => $product['price'],
                 "show_image" => $product['show_image'],
+                "requires_med" => $product['requires_med'],
                 "notes" => $product['notes'],
             ];
 
@@ -275,6 +272,7 @@ class QuoteController extends Controller
             'authorized_user_name' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? auth()->user()->name : null,
             'authorized_at' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? now() : null,
             'user_id' => auth()->id(),
+            'notes' => $quote->notes,
             'company_branch_id' => $quote->company_branch_id,
         ]);
 
@@ -299,6 +297,7 @@ class QuoteController extends Controller
                 'catalog_product_company_id' => $catalog_product_company->pivot->id,
                 'sale_id' => $sale->id,
                 'quantity' => $product->pivot->quantity,
+                'requires_medallion' => $product->pivot->requires_med,
                 'notes' => $product->pivot->notes,
             ]);
         }
