@@ -28,6 +28,9 @@
 
                 <div class="flex justify-between">
                     <!-- pagination -->
+                    <!-- <div v-if="!search" class="overflow-auto mb-2">
+                        <Pagination :pagination="sales" class="py-2" />
+                    </div> -->
                     <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
                             :total="quotes.length" />

@@ -29,8 +29,8 @@
             $page.props.auth.user.permissions.includes('Agendar citas en seguimiento integral')"
           >
             <template #trigger>
-              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
-                Más <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
+              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center justify-center text-sm">
+                  Más <i class="fa-solid fa-chevron-down text-[10px] ml-2 pb-[2px]"></i>
               </button>
             </template>
             <template #content>
