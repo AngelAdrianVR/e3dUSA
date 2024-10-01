@@ -1,11 +1,17 @@
 <template>
     <div class="w-full">
-        <input type="file" ref="fileInput" style="display: none" @change="handleFileInputChange" :multiple="multiple" :accept="getAcceptedFormat()" />
-        <button type="button" @click="openFileBrowser">
-            <p class="flex items-center space-x-2 text-sm text-primary cursor-pointer flex-shrink-0 flex-grow-0">
-                <i class="fa-solid fa-plus"></i>
-                <span>Adjuntar {{ multiple ? 'archivos' : 'archivo' }}</span>
-                <i class="fa-solid fa-paperclip"></i>
+        <input type="file" ref="fileInput" style="display: none" @change="handleFileInputChange" :multiple="multiple"
+            :accept="getAcceptedFormat()" />
+        <button type="button" @click="openFileBrowser" class="w-full px-3 py-[5px] rounded-md bg-[#CCCCCC]">
+            <p class="flex items-center justify-between text-sm text-[#9A9A9A]">
+                <span>Clic para seleccionar {{ multiple ? 'los archivos' : 'el archivo' }}</span>
+                <span class="text-primary w-10 h-7 flex items-center justify-center border-2 border-primary rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.4"
+                        stroke="currentColor" class="size-[22px]">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z" />
+                    </svg>
+                </span>
             </p>
         </button>
 
@@ -22,7 +28,7 @@
         </div>
     </div>
 </template>
-  
+
 <script>
 export default {
     data() {
@@ -90,4 +96,3 @@ export default {
     },
 };
 </script>
-  

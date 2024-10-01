@@ -11,7 +11,7 @@ class Maintenance extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
 
-    const PREVENTIVE = 0, CORRECTIVE = 1;
+    const PREVENTIVE = 0, CORRECTIVE = 1, CLEANING = 2;
 
     protected $fillable = [
         'problems',
@@ -20,6 +20,11 @@ class Maintenance extends Model implements HasMedia
         'maintenance_type_id',
         'responsible',
         'machine_id',
+        'start_date',
+    ];
+
+    protected $casts = [
+        'start_date' => 'date',
     ];
 
     // relationships
