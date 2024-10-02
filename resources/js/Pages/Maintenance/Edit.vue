@@ -73,7 +73,7 @@
           </div>
           <div v-if="form.maintenance_type != 'Limpieza'" class="col-span-full">
             <InputLabel value="Imágenes de evidencia" />
-            <FileUploader @files-selected="this.form.media = $event.target.files[0]" acceptedFormat="imagen"
+            <FileUploader @files-selected="this.form.media = $event" acceptedFormat="imagen"
               :multiple="false" />
             <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
               SVG, PNG, JPG o GIF (MAX. 4 MB).
@@ -81,7 +81,7 @@
           </div>
           <div class="pt-8 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing">
-              Registrar
+              Guardar cambios
             </PrimaryButton>
           </div>
         </div>
@@ -122,6 +122,11 @@ export default {
         'Inspección general',
       ],
       actions: [],
+      maintenanceTypes: [
+        'Preventivo',
+        'Correctivo',
+        'Limpieza',
+      ]
     };
   },
   components: {
@@ -164,11 +169,11 @@ export default {
       }
     },
     setMaintenanceType() {
-      if (this.maintenance.maintenance_type_id == '1') {
+      if (this.maintenance.maintenance_type_id == '0') {
         this.form.maintenance_type = 'Preventivo';
-      } else if (this.maintenance.maintenance_type_id == '2') {
+      } else if (this.maintenance.maintenance_type_id == '1') {
         this.form.maintenance_type = 'Correctivo';
-      } else if (this.maintenance.maintenance_type_id == '3') {
+      } else if (this.maintenance.maintenance_type_id == '2') {
         this.form.maintenance_type = 'Limpieza';
       }
     },

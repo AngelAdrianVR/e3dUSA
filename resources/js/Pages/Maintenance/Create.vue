@@ -73,7 +73,7 @@
           </div>
           <div v-if="form.maintenance_type != 'Limpieza'" class="col-span-full">
             <InputLabel value="Imágenes de evidencia" />
-            <FileUploader @files-selected="this.form.media = $event.target.files[0]" acceptedFormat="imagen"
+            <FileUploader @files-selected="this.form.media = $event" acceptedFormat="imagen"
               :multiple="false" />
             <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
               SVG, PNG, JPG o GIF (MAX. 4 MB).

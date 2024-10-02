@@ -54,7 +54,6 @@ class MachineController extends Controller
 
         // return $machines;
         return inertia('Machine/Show', compact('machine', 'machines'));
-        
     }
 
     public function edit(Machine $machine)

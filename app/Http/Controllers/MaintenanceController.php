@@ -37,11 +37,11 @@ class MaintenanceController extends Controller
         ]);
 
         if ($request->maintenance_type == 'Preventivo') {
-            $maintenance_type_id = 1;
+            $maintenance_type_id = '0';
         } else if ($request->maintenance_type == 'Correctivo') {
-            $maintenance_type_id = 2;
+            $maintenance_type_id = '1';
         } else if ($request->maintenance_type == 'Limpieza') {
-            $maintenance_type_id = 3;
+            $maintenance_type_id = '2';
         }
 
         $maintenance = Maintenance::create($request->all() + compact('maintenance_type_id'));
@@ -78,16 +78,18 @@ class MaintenanceController extends Controller
             'cost' => 'required|numeric|min:0',
             'responsible' => 'required|string',
             'machine_id' => 'required|numeric',
+            'start_date' => 'required|date',
         ]);
 
-        $maintenance->update($request->except('maintenance_type_id') + [
-            'maintenance_type_id' => $request->maintenance_type == 'Preventivo' ? '0' : '1',
-        ]);
+        if ($request->maintenance_type == 'Preventivo') {
+            $maintenance_type_id = '0';
+        } else if ($request->maintenance_type == 'Correctivo') {
+            $maintenance_type_id = '1';
+        } else if ($request->maintenance_type == 'Limpieza') {
+            $maintenance_type_id = '2';
+        }
 
-        // update image
-        $maintenance->clearMediaCollection();
-        $maintenance->addMediaFromRequest('media')->toMediaCollection();
-        $maintenance->save();
+        $maintenance->update($request->all() + compact('maintenance_type_id'));
 
         event(new RecordEdited($maintenance));
 
@@ -103,9 +105,19 @@ class MaintenanceController extends Controller
             'cost' => 'required|numeric|min:0',
             'responsible' => 'required|string',
             'machine_id' => 'required|numeric',
+            'start_date' => 'required|date',
         ]);
 
-        $maintenance->update($request->all());
+        if ($request->maintenance_type == 'Preventivo') {
+            $maintenance_type_id = '0';
+        } else if ($request->maintenance_type == 'Correctivo') {
+            $maintenance_type_id = '1';
+        } else if ($request->maintenance_type == 'Limpieza') {
+            $maintenance_type_id = '2';
+        }
+
+        $maintenance->update($request->all() + compact('maintenance_type_id'));
+
         // update image
         $maintenance->clearMediaCollection();
         $maintenance->addAllMediaFromRequest()->each(fn($file) => $file->toMediaCollection());
@@ -114,7 +126,6 @@ class MaintenanceController extends Controller
 
         return redirect()->route('machines.show', ['machine' => $request->machine_id]);
     }
-
 
     public function destroy(Maintenance $maintenance)
     {
