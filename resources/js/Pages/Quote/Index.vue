@@ -1,4 +1,11 @@
 <template>
+    <div v-if="loading"
+        class="absolute z-30 left-0 top-0 inset-0 bg-black opacity-50 flex items-center justify-center">
+    </div>
+    <div v-if="loading"
+        class="absolute z-40 top-1/2 left-[35%] lg:left-1/2 w-32 h-32 rounded-lg bg-white flex items-center justify-center">
+        <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
+    </div>
     <AppLayout title="Cotizaciones">
         <template #header>
             <div class="flex justify-between">
@@ -28,13 +35,10 @@
 
                 <div class="flex justify-between">
                     <!-- pagination -->
-                    <!-- <div v-if="!search" class="overflow-auto mb-2">
-                        <Pagination :pagination="sales" class="py-2" />
-                    </div> -->
-                    <div>
-                        <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                            :total="quotes.length" />
+                    <div v-if="!search" class="overflow-auto mb-2">
+                        <PaginationWithNoMeta :pagination="quotes" class="py-2" />
                     </div>
+
                     <!-- buttons -->
                     <div>
                         <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar cotizaciones')"
@@ -46,10 +50,11 @@
                             </template>
                         </el-popconfirm>
                     </div>
+                    
                     <!-- buscador -->
                     <IndexSearchBar @search="handleSearch" />
                 </div>
-                <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
+                <el-table :data="filteredQuotes" @row-click="handleRowClick" max-height="670" style="width: 100%"
                     @selection-change="handleSelectionChange" ref="multipleTableRef"
                     :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
@@ -123,35 +128,40 @@
 <script>
 
 import AppLayout from '@/Layouts/AppLayout.vue';
+import PaginationWithNoMeta from "@/Components/MyComponents/PaginationWithNoMeta.vue";
 import TextInput from '@/Components/TextInput.vue';
-import axios from 'axios';
 import Checkbox from "@/Components/Checkbox.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 import SaleProfit from "@/Components/MyComponents/SaleProfit.vue";
 import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import { Link } from "@inertiajs/vue3";
+import axios from 'axios';
 
 export default {
     components: {
+        PaginationWithNoMeta,
+        NotificationCenter,
+        SecondaryButton,
+        IndexSearchBar,
+        SaleProfit,
         AppLayout,
         TextInput,
         Checkbox,
-        NotificationCenter,
-        SecondaryButton,
         Link,
-        IndexSearchBar,
-        SaleProfit,
     },
     data() {
         return {
             disableMassiveActions: true,
             inputSearch: '',
             search: '',
+            loading: false,
+            pagination: null,
+            filteredQuotes: this.quotes.data,
             // pagination
-            itemsPerPage: 10,
-            start: 0,
-            end: 10,
+            // itemsPerPage: 10,
+            // start: 0,
+            // end: 10,
         };
     },
     props: {
@@ -161,8 +171,24 @@ export default {
         },
     },
     methods: {
-        handleSearch(search) {
+        async handleSearch(search) {
             this.search = search;
+            this.loading = true;
+            try {
+                if (!this.search) {
+                    this.filteredQuotes = this.quotes.data;
+                } else {
+                    const response = await axios.post(route('quotes.get-matches', { query: this.search }));
+
+                    if (response.status === 200) {
+                        this.filteredQuotes = response.data.items;
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                this.loading = false;
+            }
         },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
@@ -192,7 +218,7 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.quotes.forEach((quote, index) => {
+                    this.quotes.data.forEach((quote, index) => {
                         if (this.$refs.multipleTableRef.value.includes(quote)) {
                             deletedIndexes.push(index);
                         }
@@ -203,7 +229,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.quotes.splice(index, 1);
+                        this.quotes.data.splice(index, 1);
                     }
 
                 } else {
@@ -243,7 +269,7 @@ export default {
                         type: 'success'
                     });
 
-                    this.quotes.unshift(response.data.newItem);
+                    this.quotes.data.unshift(response.data.newItem);
 
                 } else {
                     this.$notify({
@@ -295,9 +321,9 @@ export default {
                 const response = await axios.put(route('quotes.authorize', quote_id));
 
                 if (response.status == 200) {
-                    const index = this.quotes.findIndex(item => item.id == quote_id);
-                    this.quotes[index].authorized_at = response.data.item.authorized_at;
-                    this.quotes[index].authorized_user_name = response.data.item.authorized_user_name;
+                    const index = this.quotes.data.findIndex(item => item.id == quote_id);
+                    this.quotes.data[index].authorized_at = response.data.item.authorized_at;
+                    this.quotes.data[index].authorized_user_name = response.data.item.authorized_user_name;
                     this.$notify({
                         title: 'Éxito',
                         message: response.data.message,
@@ -334,22 +360,22 @@ export default {
             }
         },
     },
-    computed: {
-        filteredTableData() {
-            if (!this.search) {
-                return this.quotes.filter((item, index) => index >= this.start && index < this.end);
-            } else {
-                return this.quotes.filter(
-                    (quote) =>
-                        quote.folio.toLowerCase().includes(this.search.toLowerCase()) ||
-                        quote.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                        quote.receiver.toLowerCase().includes(this.search.toLowerCase()) ||
-                        quote.companyBranch.name?.toLowerCase().includes(this.search.toLowerCase()) ||
-                        quote.prospect.name?.toLowerCase().includes(this.search.toLowerCase()) ||
-                        quote.catalog_products.some(product => product.name.toLowerCase().includes(this.search.toLowerCase()))
-                );
-            }
-        }
-    },
+    // computed: {
+    //     filteredTableData() {
+    //         if (!this.search) {
+    //             return this.quotes.filter((item, index) => index >= this.start && index < this.end);
+    //         } else {
+    //             return this.quotes.filter(
+    //                 (quote) =>
+    //                     quote.folio.toLowerCase().includes(this.search.toLowerCase()) ||
+    //                     quote.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
+    //                     quote.receiver.toLowerCase().includes(this.search.toLowerCase()) ||
+    //                     quote.companyBranch.name?.toLowerCase().includes(this.search.toLowerCase()) ||
+    //                     quote.prospect.name?.toLowerCase().includes(this.search.toLowerCase()) ||
+    //                     quote.catalog_products.some(product => product.name.toLowerCase().includes(this.search.toLowerCase()))
+    //             );
+    //         }
+    //     }
+    // },
 }
 </script>
