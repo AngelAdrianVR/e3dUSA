@@ -31,8 +31,6 @@ class QualityController extends Controller
             ];
         });
 
-    // return $qualities;
-
         return inertia('Quality/Index', compact('qualities'));
     }
 
@@ -103,7 +101,7 @@ class QualityController extends Controller
                 'folio' => 'OP-' . str_pad($quality->production_id, 4, "0", STR_PAD_LEFT),
             ];
         });
-        // return $quality;
+        
         return inertia('Quality/Show', compact('quality', 'qualities'));
     }
 

@@ -32,7 +32,8 @@ class ProductionController extends Controller
         //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
         $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch', 'productions.operator')->whereHas('productions', function ($query) {
             $query->where('productions.operator_id', auth()->id());
-        })->latest()->get();
+        })->latest()
+            ->paginate(50);
 
         $productions = $this->processDataIndex($pre_productions);
 
@@ -42,17 +43,21 @@ class ProductionController extends Controller
     //Index que contiene todos los registros de produccion
     public function adminIndex()
     {
-        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
-        $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch', 'productions.operator')->whereHas('productions')->latest()->get();
+        // Pagina 20 items por página
+        $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch', 'productions.operator')
+            ->whereHas('productions')
+            ->latest()
+            ->paginate(20); // Paginar 20 por página
 
         $productions = $this->processDataIndex($pre_productions);
 
+        // return $productions;
         return inertia('Production/Admin', compact('productions'));
     }
 
     public function processDataIndex($pre_productions)
     {
-        $productions = $pre_productions->map(function ($production) {
+        $productions = $pre_productions->through(function ($production) {
             $hasStarted = $production->productions?->whereNotNull('started_at')->count();
             $hasNotFinished = $production->productions?->whereNull('finished_at')->count();
 
@@ -233,17 +238,9 @@ class ProductionController extends Controller
     public function show($sale_id)
     {
         $sale = SaleResource::make(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'catalogProductCompany.catalogProduct.rawMaterials.storages.storageable', 'productions' => ['operator', 'progress'], 'comments.user'], 'productions' => ['user', 'operator', 'progress']])->find($sale_id));
-        $pre_sales = Sale::whereHas('productions')->latest()->get();
-        $sales = $pre_sales->map(function ($sale) {
-            return [
-                'id' => $sale->id,
-                'folio' => 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT),
-                'company_name' => $sale->companyBranch?->name,
-            ];
-        });
+        $sales = Sale::with('companyBranch:id,name')->latest()->get(['id', 'company_branch_id']);
         $qualities = QualityResource::collection(Quality::with('supervisor:id,name')->where('production_id', $sale->id)->get());
 
-        // return $sale;
         return inertia('Production/Show', compact('sale', 'sales', 'qualities'));
     }
 
@@ -563,5 +560,25 @@ class ProductionController extends Controller
     public function generateBoxLabel(Request $request)
     {
         return inertia('Production/BoxLabel', ['data' => $request->data]);
+    }
+
+    public function getMatches(Request $request)
+    {
+        $query = $request->input('query');
+        
+        // Realiza la búsqueda
+        $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch', 'productions.operator')
+        ->whereHas('productions')
+        ->where('id', 'like', "%{$query}%")
+        ->orWhereHas('user', function ($q) use ($query) {
+            $q->where('name', 'like', "%{$query}%");
+        })
+        ->latest()
+        ->paginate(50);
+        
+        $productions = $this->processDataIndex($pre_productions);
+
+        // Devuelve las cotizaciones encontradas
+        return response()->json(['items' => $productions], 200);
     }
 }
