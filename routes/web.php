@@ -423,6 +423,7 @@ Route::get('/raw-material-info', [PdfController::class, 'RawMaterialInfo'])->nam
 Route::resource('maintenances', MaintenanceController::class)->except('create')->middleware('auth');
 Route::get('maintenances/create/{selectedMachine}', [MaintenanceController::class, 'create'])->name('maintenances.create')->middleware('auth');
 Route::post('maintenances/update-with-media/{maintenance}', [MaintenanceController::class, 'updateWithMedia'])->name('maintenances.update-with-media')->middleware('auth');
+Route::put('maintenances/validate/{maintenance}', [MaintenanceController::class, 'validateWork'])->name('maintenances.validate')->middleware('auth');
 
 
 // ------- tutorials & manuals routes  -------------

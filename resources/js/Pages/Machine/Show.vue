@@ -193,7 +193,7 @@
                             d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                         </svg>
                       </el-tooltip>
-                      <el-tooltip v-else :content="`Validado el ${selectedMaintenance.validated_at}`" placement="top">
+                      <el-tooltip v-else :content="`Validado el ${maintenance.validated_at}`" placement="top">
                         <i class="fa-solid fa-check text-[#0FA430]"></i>
                       </el-tooltip>
                       <span>{{ maintenanceTypes[maintenance?.maintenance_type_id] }}</span>
@@ -296,7 +296,13 @@
         <template #title>
           <h1 class="font-bold flex items-center justify-between mt-3">
             <span>Registro de mantenimiento</span>
-            <PrimaryButton @click="$inertia.visit(route('maintenances.edit', selectedMaintenance))">Editar
+            <PrimaryButton
+              v-if="this.$page.props.auth.user.permissions.includes('Validar mantenimiento de maquinas') && !selectedMaintenance?.validated_at"
+              @click="validateMaintenance" :disabled="form.processing">
+              Validar mantenimiento
+            </PrimaryButton>
+            <PrimaryButton v-else @click="$inertia.visit(route('maintenances.edit', selectedMaintenance))">
+              Editar
             </PrimaryButton>
           </h1>
         </template>
@@ -330,7 +336,7 @@
                   <span>-</span>
                 </div>
                 <div v-else class="flex items-center space-x-2">
-                  <el-tooltip :content="`Validado el ${selectedMaintenance.validated_at}`" placement="top">
+                  <el-tooltip :content="`Validado el ${selectedMaintenance?.validated_at}`" placement="top">
                     <i class="fa-solid fa-check text-[#0FA430]"></i>
                   </el-tooltip>
                   <span>{{ selectedMaintenance.validated_by }}</span>
@@ -516,19 +522,16 @@ export default {
       }
       window.location.reload();
     },
-
     openMaintenanceModal(maintenance, index) {
       this.selectedMaintenance = maintenance;
       this.maintenanceModal = true;
       this.maintenanceIndex = index + 1;
     },
-
     openSparePartModal(spare_part, index) {
       this.selectedSparePart = spare_part;
       this.sparePartModal = true;
       this.sparePartIndex = index + 1;
     },
-
     showOverlay() {
       this.imageHovered = true;
     },
@@ -556,6 +559,55 @@ export default {
         },
       });
     },
+    previus() {
+      this.currentIndexMachine -= 1;
+      this.currentMachine = this.machines.data[this.currentIndexMachine];
+      this.selectedMachine = this.currentMachine.id;
+    },
+    next() {
+      this.currentIndexMachine += 1;
+      this.currentMachine = this.machines.data[this.currentIndexMachine];
+      this.selectedMachine = this.currentMachine.id;
+    },
+    validateMaintenance(){
+      this.form.put(route('maintenances.validate', this.selectedMaintenance.id), {
+        onSuccess: () => {
+          this.$notify({
+            title: "Mantenimiento validado",
+            type: "success"
+          });
+          this.selectedMaintenance.validated_at = new Date().toISOString();
+          this.selectedMaintenance.validated_by = this.$page.props.auth.user.name;
+        },
+        onError: error => {
+          console.log(error)
+        }
+      })
+    },
+    // async validateMaintenance() {
+    //   try {
+    //     const response = await axios.post(route("maintenances.validate", {
+    //         catalog_product_id: this.currentMachine?.id,
+    //       })
+    //     );
+
+    //     if (response.status === 200) {
+    //       this.$notify({
+    //         title: "Mantenimiento validado",
+    //         type: "success",
+    //       });
+    //       this.selectedMaintenance.validated_by = response.data.newItem.id;
+    //       this.currentMachine = response.data.newItem;
+    //     }
+    //   } catch (err) {
+    //     this.$notify({
+    //       title: "Algo salió mal",
+    //       message: err.message,
+    //       type: "error",
+    //     });
+    //     console.log(err);
+    //   }
+    // },
     async clone() {
       try {
         const response = await axios.post(
@@ -570,7 +622,6 @@ export default {
             message: response.data.message,
             type: "success",
           });
-          console.log(response.data.newItem);
           this.machines.data.push(response.data.newItem);
           this.selectedMachine = response.data.newItem.id;
           this.currentMachine = response.data.newItem;
@@ -627,16 +678,6 @@ export default {
       } finally {
         this.showConfirmModal = false;
       }
-    },
-    previus() {
-      this.currentIndexMachine -= 1;
-      this.currentMachine = this.machines.data[this.currentIndexMachine];
-      this.selectedMachine = this.currentMachine.id;
-    },
-    next() {
-      this.currentIndexMachine += 1;
-      this.currentMachine = this.machines.data[this.currentIndexMachine];
-      this.selectedMachine = this.currentMachine.id;
     },
   },
   watch: {

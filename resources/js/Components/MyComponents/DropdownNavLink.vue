@@ -11,7 +11,7 @@ defineProps({
 const hovering = ref(false);
 
 const iconClass = computed(() => {
-  return 'fa-solid fa-circle text-' + (hovering.value ? 'white' : 'primary') + ' text-[5px]';
+  return 'fa-solid fa-circle fa-flip text-' + (hovering.value ? 'white' : 'primary') + ' text-[7px]';
 });
 
 </script>

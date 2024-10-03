@@ -145,4 +145,12 @@ class MaintenanceController extends Controller
 
         event(new RecordDeleted($maintenance));
     }
+   
+    public function validateWork(Maintenance $maintenance)
+    {
+        $maintenance->update([
+            'validated_by' => auth()->user()->name,
+            'validated_at' => now(),
+        ]);
+    }
 }
