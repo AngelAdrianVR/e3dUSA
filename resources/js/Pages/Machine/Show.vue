@@ -16,8 +16,8 @@
           </el-select>
         </div>
         <div class="flex items-center space-x-2">
-          <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar maquinas') && currentMachine" content="Editar"
-            placement="top">
+          <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar maquinas') && currentMachine"
+            content="Editar" placement="top">
             <Link :href="route('machines.edit', selectedMachine)">
             <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
               <i class="fa-solid fa-pen text-sm"></i>
@@ -62,24 +62,26 @@
             {{ currentMachine?.name }}
           </h2>
           <div class="flex items-center justify-center">
-          <i :class="currentIndexMachine == 0 ? 'hidden' : 'block'" @click="previus" class="fa-solid fa-chevron-left mr-4 text-lg text-gray-600 cursor-pointer p-1 rounded-full"></i>
-          <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
-            :class="currentMachine?.media?.length ? 'bg-transparent' : 'bg-[#D9D9D9]'"
-            class="w-full h-60 rounded-lg relative flex items-center justify-center">
-            <!-- <el-image style="height: 100%; " :src="currentMachine?.media[0]?.original_url" fit="fit">
+            <i :class="currentIndexMachine == 0 ? 'hidden' : 'block'" @click="previus"
+              class="fa-solid fa-chevron-left mr-4 text-lg text-gray-600 cursor-pointer p-1 rounded-full"></i>
+            <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
+              :class="currentMachine?.media?.length ? 'bg-transparent' : 'bg-[#D9D9D9]'"
+              class="w-full h-60 rounded-lg relative flex items-center justify-center">
+              <!-- <el-image style="height: 100%; " :src="currentMachine?.media[0]?.original_url" fit="fit">
               <template #error>
                 <div class="flex justify-center items-center text-[#ababab]">
                   <i class="fa-solid fa-image text-6xl"></i>
                 </div>
               </template>
             </el-image> -->
-            <img class="object-contain h-60" :src="currentMachine?.media[0]?.original_url" alt="">
-            <div v-if="imageHovered" @click="openImage(currentMachine?.media[0]?.original_url)"
-              class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
-              <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
-            </div>
-          </figure>
-           <i :class="currentIndexMachine == machines.data.length - 1 ? 'hidden' : 'block'" @click="next" class="fa-solid fa-chevron-right ml-4 text-lg text-gray-600 cursor-pointer p-1 mb-2 rounded-full"></i>
+              <img class="object-contain h-60" :src="currentMachine?.media[0]?.original_url" alt="">
+              <div v-if="imageHovered" @click="openImage(currentMachine?.media[0]?.original_url)"
+                class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
+                <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
+              </div>
+            </figure>
+            <i :class="currentIndexMachine == machines.data.length - 1 ? 'hidden' : 'block'" @click="next"
+              class="fa-solid fa-chevron-right ml-4 text-lg text-gray-600 cursor-pointer p-1 mb-2 rounded-full"></i>
           </div>
         </div>
 
@@ -156,9 +158,10 @@
                 </a>
               </li>
             </div>
-            <p class="text-sm text-gray-400" v-else><i class="fa-regular fa-file-excel mr-3"></i>No hay archivos adjuntos</p>
+            <p class="text-sm text-gray-400" v-else><i class="fa-regular fa-file-excel mr-3"></i>No hay archivos
+              adjuntos</p>
             <div class="flex flex-col">
-          </div>  
+            </div>
           </div>
           <!-- --------------------- Tab 1 Información general ends------------------ -->
 
@@ -169,7 +172,7 @@
                 <tr>
                   <th class="pr-4">#</th>
                   <th class="px-4">Tipo de mantenimiento</th>
-                  <th class="px-4">Fecha</th>
+                  <th class="px-4">Relizado el</th>
                   <th class="px-4">Costo</th>
                   <th class="px-4">Realizó</th>
                   <th></th>
@@ -181,19 +184,32 @@
                   <td @click="openMaintenanceModal(maintenance, index)" class="text-left pb-3">
                     {{ index + 1 }}
                   </td>
-                  <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
-                    {{ maintenance?.maintenance_type_id }}
+                  <td @click="openMaintenanceModal(maintenance, index)" class="px-4 pb-3">
+                    <div v-if="maintenance.maintenance_type_id == 2" class="flex items-center space-x-2">
+                      <el-tooltip v-if="!maintenance.validated_by" content="Esperando validación" placement="top">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+                          stroke="currentColor" class="size-4 text-[#BE6E04]">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                      </el-tooltip>
+                      <el-tooltip v-else :content="`Validado el ${selectedMaintenance.validated_at}`" placement="top">
+                        <i class="fa-solid fa-check text-[#0FA430]"></i>
+                      </el-tooltip>
+                      <span>{{ maintenanceTypes[maintenance?.maintenance_type_id] }}</span>
+                    </div>
+                    <span v-else>{{ maintenanceTypes[maintenance?.maintenance_type_id] }}</span>
                   </td>
-                  <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
-                    {{ maintenance?.created_at }}
+                  <td @click="openMaintenanceModal(maintenance, index)" class="px-4 pb-3">
+                    {{ maintenance?.start_date }}
                   </td>
-                  <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
+                  <td @click="openMaintenanceModal(maintenance, index)" class="px-4 pb-3">
                     ${{ maintenance?.cost }}
                   </td>
-                  <td @click="openMaintenanceModal(maintenance, index)" class="text-center pb-3">
+                  <td @click="openMaintenanceModal(maintenance, index)" class="px-4 pb-3">
                     {{ maintenance?.responsible }}
                   </td>
-                  <td class="text-center pb-3">
+                  <td class="px-4 pb-3">
                     <div>
                       <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#FFFFFF"
                         title="¿Continuar?" @confirm="deleteRow(maintenance)">
@@ -275,149 +291,104 @@
         </template>
       </ConfirmationModal>
 
-      <!-- -------------- maintenanceModal starts----------------------- -->
-      <Modal :show="maintenanceModal || sparePartModal" @close="maintenanceModal = false, sparePartModal = false">
-        <div class="mx-7 my-4 space-y-4 relative">
-          <section v-if="maintenanceModal">
-            <div class="flex justify-center mb-4">
-              <h2 class="font-bold text-center mr-2">
-                {{ currentMachine?.name }}
-              </h2>
-              <div @click="maintenanceModal = false"
-                class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
-                <i class="fa-solid fa-xmark"></i>
-              </div>
-              <span class="text-[#9A9A9A] absolute left-0 top-0">
-                # {{ maintenanceIndex }}</span>
-            </div>
-
-            <div class="grid grid-cols-2">
-              <div class="flex flex-col pb-7">
-                <p class="text-primary">Tipo de mantenimiento</p>
-                <p class="text-[#9A9A9A]">
-                  {{ selectedMaintenance.maintenance_type_id }}
-                </p>
-              </div>
-              <div class="flex flex-col pb-7">
-                <div class="flex">
-                  <p class="text-primary">Fecha</p>
-                  <el-tooltip content="Fecha en que se realizó el mantenimiento" placement="top">
-                    <i class="fa-solid fa-question text-[9px] h-3 w-3 bg-primary-gray rounded-full text-center"></i>
+      <!-- Mantenimientos -->
+      <DialogModal :show="maintenanceModal" @close="maintenanceModal = false">
+        <template #title>
+          <h1 class="font-bold flex items-center justify-between mt-3">
+            <span>Registro de mantenimiento</span>
+            <PrimaryButton @click="$inertia.visit(route('maintenances.edit', selectedMaintenance))">Editar
+            </PrimaryButton>
+          </h1>
+        </template>
+        <template #content>
+          <section class="mt-3">
+            <div class="grid grid-cols-3 gap-2">
+              <p class="text-[#373737]">Máquina:</p>
+              <p class="text-black col-span-2">{{ currentMachine.name }}</p>
+              <p class="text-[#373737]">No. Mantenimiento:</p>
+              <p class="text-black col-span-2">{{ maintenanceIndex }}</p>
+              <p class="text-[#373737]">Tipo de mantenimiento:</p>
+              <p class="text-black col-span-2"> {{ maintenanceTypes[selectedMaintenance.maintenance_type_id] }}</p>
+              <p class="text-[#373737]">Fecha:</p>
+              <p class="text-black col-span-2"> {{ selectedMaintenance.start_date }}</p>
+              <p class="text-[#373737]">Costo:</p>
+              <p class="text-black col-span-2"> ${{ selectedMaintenance.cost }}</p>
+              <p class="text-[#373737]">Realizado por:</p>
+              <p class="text-black col-span-2">{{ selectedMaintenance.responsible }}</p>
+              <p class="text-[#373737]">Descripción de acciones:</p>
+              <p class="text-black col-span-2">{{ selectedMaintenance.actions }}</p>
+              <p class="text-[#373737]">Validado por:</p>
+              <div v-if="selectedMaintenance.maintenance_type_id == 2" class="text-black col-span-2">
+                <div v-if="!selectedMaintenance.validated_by" class="flex items-center space-x-2">
+                  <el-tooltip content="Esperando validación" placement="top">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+                      stroke="currentColor" class="size-4 text-[#BE6E04]">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
                   </el-tooltip>
+                  <span>-</span>
                 </div>
-                <p class="text-[#9A9A9A]">
-                  {{ selectedMaintenance.created_at }}
-                </p>
-              </div>
-              <div class="flex flex-col pb-7">
-                <p class="text-primary">Costo (MXN)</p>
-                <p class="text-[#9A9A9A]">${{ selectedMaintenance.cost }}</p>
-              </div>
-              <div class="flex flex-col pb-7">
-                <div class="flex">
-                  <p class="text-primary">Realizó</p>
-                  <el-tooltip content="Persona o empresa que realizó el mantenimiento" placement="top">
-                    <i class="fa-solid fa-question text-[9px] h-3 w-3 bg-primary-gray rounded-full text-center"></i>
+                <div v-else class="flex items-center space-x-2">
+                  <el-tooltip :content="`Validado el ${selectedMaintenance.validated_at}`" placement="top">
+                    <i class="fa-solid fa-check text-[#0FA430]"></i>
                   </el-tooltip>
+                  <span>{{ selectedMaintenance.validated_by }}</span>
                 </div>
-                <p class="text-[#9A9A9A]">
-                  {{ selectedMaintenance.responsible }}
-                </p>
               </div>
-            </div>
-
-            <div class="grid grid-cols-3">
-              <p class="text-primary">Descripción</p>
-              <p class="text-[#9A9A9A] col-span-2 mb-7">
-                {{ selectedMaintenance.actions }}
-              </p>
-
-              <p class="text-primary">Evidencia</p>
-              <div v-for="(media, index) in selectedMaintenance.media" :key="index" class="text-secondary hover:underline col-span-2 inline-flex  space-y-1">
-                <a :href="media.original_url" target="_blank" rel="noopener noreferrer">
-                
-                <img :src="media.original_url" alt="">
-              </a>
-              </div>
+              <p v-if="selectedMaintenance.maintenance_type_id != 2" class="text-[#373737]">Evidencia:</p>
+              <template v-if="selectedMaintenance.maintenance_type_id != 2">
+                <div v-for="(media, index) in selectedMaintenance.media" :key="index"
+                  class="text-secondary hover:underline inline-flex space-y-1">
+                  <a :href="media.original_url" target="_blank" rel="noopener noreferrer">
+                    <img :src="media.original_url">
+                  </a>
+                </div>
+              </template>
             </div>
           </section>
-          <!-- -------------- maintenanceModal ends----------------------- -->
+        </template>
+      </DialogModal>
 
-          <!-- --------------------------- sparepartmodal starts ------------------------------------ -->
-          <section v-if="sparePartModal">
-            <div class="flex justify-center mb-7">
-              <h2 class="font-bold text-center mr-2">
-                {{ currentMachine?.name }}
-              </h2>
-              <div @click="sparePartModal = false"
-                class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
-                <i class="fa-solid fa-xmark"></i>
-              </div>
-              <span class="text-[#9A9A9A] absolute left-0 top-0">
-                # {{ maintenanceIndex }}</span>
-            </div>
-
-            <div class="grid grid-cols-2">
-              <div class="flex flex-col mb-7">
-                <p class="text-primary">Refacción</p>
-                <p class="text-[#9A9A9A]">
-                  {{ selectedSparePart.name }}
-                </p>
-              </div>
-              <div class="flex flex-col mb-7">
-                <p class="text-primary">Adquirida el</p>
-                <p class="text-[#9A9A9A]">
-                  {{ selectedSparePart.created_at }}
-                </p>
-              </div>
-              <div class="flex flex-col mb-7">
-                <p class="text-primary">Costo unitario (MXN)</p>
-                <p class="text-[#9A9A9A]">${{ selectedSparePart.cost }}</p>
-              </div>
-              <div class="flex flex-col mb-7">
-                <p class="text-primary">Cantidad</p>
-                <p class="text-[#9A9A9A]">
-                  {{ selectedSparePart.quantity }}
-                </p>
-              </div>
-              <div class="flex flex-col mb-7">
-                <p class="text-primary">Proveedor</p>
-                <p class="text-[#9A9A9A]">
-                  {{ selectedSparePart.supplier }}
-                </p>
-              </div>
-              <div class="flex flex-col mb-7">
-                <p class="text-primary">Ubicación</p>
-                <p class="text-[#9A9A9A]">
-                  {{ selectedSparePart.location }}
-                </p>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-3">
-              <p class="text-primary">Descripción</p>
-              <p class="text-[#9A9A9A] col-span-2 mb-7">
-                {{ selectedSparePart.description }}
-              </p>
-
-              <p class="text-primary">Evidencia</p>
-              <div v-for="(media, index) in selectedSparePart.media" :key="index" class="text-secondary hover:underline col-span-2 inline-flex space-y-1">
+      <!-- Refacciones -->
+      <DialogModal :show="sparePartModal" @close="sparePartModal = false">
+        <template #title>
+          <h1 class="font-bold flex items-center justify-between mt-3">
+            <span>Registro de refacción</span>
+            <PrimaryButton @click="$inertia.visit(route('spare-parts.edit', selectedSparePart))">Editar
+            </PrimaryButton>
+          </h1>
+        </template>
+        <template #content>
+          <section class="mt-3">
+            <div class="grid grid-cols-3 gap-2">
+              <p class="text-[#373737]">Máquina:</p>
+              <p class="text-black col-span-2">{{ currentMachine.name }}</p>
+              <p class="text-[#373737]">Refacción:</p>
+              <p class="text-black col-span-2"> {{ selectedSparePart.name }}</p>
+              <p class="text-[#373737]">Adquirida el:</p>
+              <p class="text-black col-span-2"> {{ selectedSparePart.created_at }}</p>
+              <p class="text-[#373737]">Costo unitario $MXN:</p>
+              <p class="text-black col-span-2"> ${{ selectedSparePart.cost }}</p>
+              <p class="text-[#373737]">Cantidad:</p>
+              <p class="text-black col-span-2">{{ selectedSparePart.quantity }}</p>
+              <p class="text-[#373737]">Proveedor:</p>
+              <p class="text-black col-span-2">{{ selectedSparePart.supplier }}</p>
+              <p class="text-[#373737]">Ubicación:</p>
+              <p class="text-black col-span-2">{{ selectedSparePart.location }}</p>
+              <p class="text-[#373737]">Descripción:</p>
+              <p class="text-black col-span-2">{{ selectedSparePart.actions }}</p>
+              <p class="text-[#373737]">Evidencia:</p>
+              <div v-for="(media, index) in selectedSparePart.media" :key="index"
+                class="text-secondary hover:underline inline-flex space-y-1">
                 <a :href="media.original_url" target="_blank" rel="noopener noreferrer">
-                <img :src="media.original_url" alt="">
+                  <img :src="media.original_url">
                 </a>
               </div>
             </div>
           </section>
-          <!-- --------------------------- sparepartmodal ends ------------------------------------ -->
-
-          <div class="flex justify-end space-x-3 pt-5 pb-1">
-            <Link
-              :href="maintenanceModal ? route('maintenances.edit', selectedMaintenance) : route('spare-parts.edit', selectedSparePart)">
-            <PrimaryButton>Editar</PrimaryButton>
-            </Link>
-          </div>
-        </div>
-      </Modal>
+        </template>
+      </DialogModal>
 
       <DialogModal :show="uploadFilesModal" @close="uploadFilesModal = false">
         <template #title>
@@ -427,42 +398,31 @@
           <div>
             <form @submit.prevent="uploadFiles" ref="myUploadFilesForm">
               <div class="col-span-full">
-            <div class="flex items-center">
-              <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9"
-              >
-                <el-tooltip content="Archivos de la máquina (Manales, instructivos, etc)" placement="left">
-                  <i class="fa-solid fa-object-group"></i>
-                </el-tooltip>
-              </span>
-              <input
-                @input="form.media = $event.target.files"
-                class="input h-12 rounded-lg file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white file:cursor-pointer hover:file:bg-red-600"
-                aria-describedby="file_input_help"
-                id="file_input"
-                type="file"
-                multiple
-              />
-            </div>
-            <p
-              class="mt-1 text-xs text-right text-gray-500"
-              id="file_input_help"
-            >
-              PDF, SVG, PNG, JPG o GIF (MAX. 4 MB).
-            </p>
-          </div>
+                <div class="flex items-center">
+                  <span
+                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
+                    <el-tooltip content="Archivos de la máquina (Manales, instructivos, etc)" placement="left">
+                      <i class="fa-solid fa-object-group"></i>
+                    </el-tooltip>
+                  </span>
+                  <input @input="form.media = $event.target.files"
+                    class="input h-12 rounded-lg file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white file:cursor-pointer hover:file:bg-red-600"
+                    aria-describedby="file_input_help" id="file_input" type="file" multiple />
+                </div>
+                <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
+                  PDF, SVG, PNG, JPG o GIF (MAX. 4 MB).
+                </p>
+              </div>
             </form>
           </div>
         </template>
         <template #footer>
-          <CancelButton @click="uploadFilesModal = false; form.reset()"
-            :disabled="form.processing">Cancelar</CancelButton>
+          <CancelButton @click="uploadFilesModal = false; form.reset()" :disabled="form.processing">Cancelar
+          </CancelButton>
           <PrimaryButton @click="submitUploadFilesForm" :disabled="form.processing">Subir archivos
           </PrimaryButton>
         </template>
       </DialogModal>
-
-
     </AppLayoutNoHeader>
   </div>
 </template>
@@ -498,6 +458,11 @@ export default {
       selectedSparePart: null,
       currentIndexMachine: null,
       tabs: 1,
+      maintenanceTypes: [
+        'Preventivo',
+        'Correctivo',
+        'Limpieza',
+      ]
     };
   },
   components: {
@@ -576,7 +541,7 @@ export default {
     submitUploadFilesForm() {
       this.$refs.myUploadFilesForm.dispatchEvent(new Event('submit', { cancelable: true }));
     },
-    uploadFiles(){
+    uploadFiles() {
       this.form.post(route("machines.upload-files", this.selectedMachine), {
         _method: 'put',
         onSuccess: () => {
@@ -663,12 +628,12 @@ export default {
         this.showConfirmModal = false;
       }
     },
-    previus(){
+    previus() {
       this.currentIndexMachine -= 1;
       this.currentMachine = this.machines.data[this.currentIndexMachine];
       this.selectedMachine = this.currentMachine.id;
-      },
-    next(){
+    },
+    next() {
       this.currentIndexMachine += 1;
       this.currentMachine = this.machines.data[this.currentIndexMachine];
       this.selectedMachine = this.currentMachine.id;
@@ -683,7 +648,7 @@ export default {
   },
   mounted() {
     this.selectedMachine = this.machine.id;
-  this.currentIndexMachine = this.machines.data.findIndex((obj) => obj.id == this.selectedMachine);
+    this.currentIndexMachine = this.machines.data.findIndex((obj) => obj.id == this.selectedMachine);
   },
 };
 </script>
