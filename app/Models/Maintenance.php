@@ -21,10 +21,13 @@ class Maintenance extends Model implements HasMedia
         'responsible',
         'machine_id',
         'start_date',
+        'validated_by',
+        'validated_at',
     ];
-
+    
     protected $casts = [
         'start_date' => 'date',
+        'validated_at' => 'datetime',
     ];
 
     // relationships

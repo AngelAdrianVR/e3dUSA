@@ -23,7 +23,9 @@ class MaintenanceResource extends JsonResource
             'responsible' => $this->responsible,
             'media' => $this->getMedia()->all(),
             'machine_id' => $this->machine_id,
+            'validated_by' => $this->validated_by,
             'start_date' => $this->start_date?->isoFormat('DD MMM, YYYY'),
+            'validated_at' => $this->validated_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'updated_at' => $this->updated_at?->isoFormat('DD MMM, YYYY h:mm A'),
         ];

@@ -7,6 +7,8 @@ use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Models\Machine;
 use App\Models\Maintenance;
+use App\Models\User;
+use App\Notifications\ValidationRequiredNotification;
 use Illuminate\Http\Request;
 
 class MaintenanceController extends Controller
@@ -42,6 +44,17 @@ class MaintenanceController extends Controller
             $maintenance_type_id = '1';
         } else if ($request->maintenance_type == 'Limpieza') {
             $maintenance_type_id = '2';
+
+            // notificar a maribel para que valide limpieza
+            $machine = Machine::find($request->machine_id);
+            $maribel = User::find(3);
+            $maribel->notify(
+                new ValidationRequiredNotification(
+                    'trabajo de limpieza de máquina',
+                    route('machines.show', $request->machine_id),
+                    $machine->name
+                )
+            );
         }
 
         $maintenance = Maintenance::create($request->all() + compact('maintenance_type_id'));
@@ -52,7 +65,6 @@ class MaintenanceController extends Controller
 
         return redirect()->route('machines.show', ['machine' => $request->machine_id]);
     }
-
 
     public function show(Maintenance $maintenance)
     {

@@ -73,15 +73,15 @@
           </div>
           <div v-if="form.maintenance_type != 'Limpieza'" class="col-span-full">
             <InputLabel value="Imágenes de evidencia" />
-            <FileUploader @files-selected="this.form.media = $event" acceptedFormat="imagen"
-              :multiple="false" />
+            <FileUploader @files-selected="this.form.media = $event" acceptedFormat="imagen" :multiple="false" />
             <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
               SVG, PNG, JPG o GIF (MAX. 4 MB).
             </p>
           </div>
+          <p class="text-[#373737]">Código de registro REG-MT-05</p>
           <div class="pt-8 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing">
-              Registrar
+              {{ form.maintenance_type == 'Limpieza' ? 'Enviar a validación' : 'Registrar' }}
             </PrimaryButton>
           </div>
         </div>
@@ -145,7 +145,7 @@ export default {
       })).post(route("maintenances.store"), {
         onSuccess: () => {
           this.$notify({
-            title: "Éxito",
+            title: "Correcto",
             message: "Mantenimiento registrado",
             type: "success",
           });
