@@ -9,18 +9,26 @@ use App\Models\Sample;
 use App\Http\Resources\SampleResource;
 use App\Models\CatalogProduct;
 use App\Models\CompanyBranch;
+use App\Notifications\RequestApprovedNotification;
 use Illuminate\Http\Request;
 
 class SampleController extends Controller
 {
     
     public function index()
-    {
-        // $samples = SampleResource::collection(Sample::with(['catalogProduct:id,name', 'companyBranch:id,name', 'user:id,name'])->latest()
-        // ->get(['id', 'name', 'quantity', 'sent_at', 'returned_at', 'comments', 'catalog_product_id', 'company_branch_id', 'user_id']));
+    {        
         $pre_samples = Sample::with(['catalogProduct:id,name', 'companyBranch:id,name', 'user:id,name'])->latest()
-        ->get(['id', 'name', 'quantity', 'sent_at', 'returned_at', 'comments', 'catalog_product_id', 'company_branch_id', 'user_id', 'sale_order_at', 'will_back']);
-        $samples = $pre_samples->map(function ($sample) {
+        ->paginate(20, ['id', 'name', 'quantity', 'sent_at', 'returned_at', 'comments', 'catalog_product_id', 'company_branch_id', 'user_id', 'sale_order_at', 'will_back', 'authorized_at']);
+
+        //procesamiento de la informacion para darle formato a los atributos
+        $samples = $this->processDataIndex($pre_samples);
+        // return $samples;
+        return inertia('Sample/Index', compact('samples'));
+    }
+
+    public function processDataIndex($pre_samples)
+    {
+        $samples = $pre_samples->through(function ($sample) {
 
             if ($sample->will_back) {
 
@@ -111,6 +119,7 @@ class SampleController extends Controller
                 'quantity' => $sample->quantity,
                 'sent_at' => $sample->sent_at?->isoFormat('DD MMM YYYY'),
                 'returned_at' => $sample->returned_at?->isoFormat('DD MMM YYYY'),
+                'authorized_at' => $sample->authorized_at?->isoFormat('DD MMM YYYY'),
                 'comments' => $sample->comments,
                 'catalog_product' => $sample->catalogProduct,
                 'company_branch' => $sample->companyBranch,
@@ -119,11 +128,9 @@ class SampleController extends Controller
             ];
         });
 
-        // return $samples;
-        return inertia('Sample/Index', compact('samples'));
+        return $samples;
     }
-
-    
+ 
     public function create()
     {
         $catalog_products = CatalogProduct::latest()->get(['id', 'name']);
@@ -329,5 +336,38 @@ class SampleController extends Controller
         ]);
 
         return to_route('samples.index');
+    }
+
+    public function authorizeSample(Sample $sample)
+    {
+        $sample->update([
+            'authorized_at' => now(),
+            'authorized_user_name' => auth()->user()->name,
+        ]);
+
+        // notify to requester user
+        $sample->user->notify(new RequestApprovedNotification('Muestra', $sample->id, "Cliente {$sample->companyBranch->name}", 'sample'));
+
+        return response()->json(['message' => 'Cotizacion autorizadda', 'authorized_at' => $sample->authorized_at?->isoFormat('DD MMM YYYY')]); //en caso de actualizar en la misma vista descomentar
+        // return to_route('samples.index'); // en caso de mandar al index, descomentar.
+    }
+
+    public function getMatches(Request $request)
+    {
+        $query = $request->input('query');
+
+        $pre_samples = Sample::where('id', 'like', "%{$query}%")
+            ->orWhereHas('companyBranch', function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%");
+            })
+            ->orWhereHas('user', function ($q) use ($query) {
+                    $q->where('name', 'like', "%{$query}%");
+            })
+            ->with(['catalogProduct:id,name', 'companyBranch:id,name', 'user:id,name'])->latest()
+            ->paginate(50, ['id', 'name', 'quantity', 'sent_at', 'returned_at', 'comments', 'catalog_product_id', 'company_branch_id', 'user_id', 'sale_order_at', 'will_back']);
+
+        $samples = $this->processDataIndex($pre_samples);
+
+        return response()->json(['items' => $samples], 200);
     }
 }

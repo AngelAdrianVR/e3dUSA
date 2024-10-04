@@ -359,6 +359,8 @@ Route::put('samples/sale-order-sample/{sample}', [SampleController::class, 'sale
 Route::put('samples/finish-sample/{sample}', [SampleController::class, 'finishSample'])->name('samples.finish-sample');
 Route::put('samples/resent-sample/{sample}', [SampleController::class, 'resentSample'])->name('samples.resent-sample');
 Route::post('samples/update-with-media/{sample}', [SampleController::class, 'updateWithMedia'])->name('samples.update-with-media')->middleware('auth');
+Route::put('samples/authorize/{sample}', [SampleController::class, 'authorizeSample'])->name('samples.authorize');
+Route::post('samples/get-matches', [SampleController::class, 'getMatches'])->name('samples.get-matches');
 
 // ------- Design department routes  ---------
 Route::resource('designs', DesignController::class)->middleware('auth');

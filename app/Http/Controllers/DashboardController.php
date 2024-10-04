@@ -15,6 +15,7 @@ use App\Models\Purchase;
 use App\Models\Quality;
 use App\Models\Quote;
 use App\Models\Sale;
+use App\Models\Sample;
 use App\Models\Storage;
 use App\Models\User;
 
@@ -40,6 +41,7 @@ class DashboardController extends Controller
         $counts[] = Design::whereNull('started_at')->get()->count();
         $counts[] = Sale::whereDoesntHave('productions')->get()->count();
         $counts[] = AdditionalTimeRequest::whereNull('authorized_at')->get()->count();
+        $counts[] = Sample::whereNull('authorized_at')->get()->count();
         $current_user_sales_without_production = SaleResource::collection(Sale::where('user_id', auth()->id())->whereDoesntHave('productions')->get());
 
         // production performance
@@ -76,7 +78,6 @@ class DashboardController extends Controller
         $extra_time_request = ExtraTimeRequest::whereDate('date', '>=', today())->where('operator_id', auth()->id())->latest()->first();
 
         // return $collaborators_production_performance;
-
         return inertia('Dashboard/Index', compact(
             'meetings',
             'counts',
