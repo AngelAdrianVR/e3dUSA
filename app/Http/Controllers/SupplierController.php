@@ -35,14 +35,12 @@ class SupplierController extends Controller
         return inertia('Supplier/Index', compact('suppliers'));
     }
 
-
     public function create()
     {
         $raw_materials = RawMaterial::get(['id', 'name', 'cost']);
 
         return inertia('Supplier/Create', compact('raw_materials'));
     }
-
 
     public function store(Request $request)
     {
@@ -80,7 +78,6 @@ class SupplierController extends Controller
         return to_route('suppliers.index');
     }
 
-
     public function show($supplier_id)
     {
         $supplier = SupplierResource::make(Supplier::with('contacts')->find($supplier_id));
@@ -89,7 +86,6 @@ class SupplierController extends Controller
         return inertia('Supplier/Show', compact('supplier', 'suppliers'));
     }
 
-
     public function edit($supplier_id)
     {
         $supplier = Supplier::with('contacts')->find($supplier_id);
@@ -97,7 +93,6 @@ class SupplierController extends Controller
 
         return inertia('Supplier/Edit', compact('supplier', 'raw_materials'));
     }
-
 
     public function update(Request $request, Supplier $supplier)
     {
@@ -164,7 +159,6 @@ class SupplierController extends Controller
         return to_route('suppliers.index');
     }
 
-
     public function destroy(Supplier $supplier)
     {
         $supplier_name = $supplier->name;
@@ -177,7 +171,6 @@ class SupplierController extends Controller
 
     public function massiveDelete(Request $request)
     {
-
         foreach ($request->suppliers as $supplier) {
             $supplier = Supplier::find($supplier['id']);
             $supplier?->delete();
@@ -188,12 +181,17 @@ class SupplierController extends Controller
         return response()->json(['message' => 'proveedor(es) eliminado(s)']);
     }
 
-
     public function fetchSupplier($supplier_id)
     {
-
         $supplier = Supplier::with('contacts')->find($supplier_id);
 
         return response()->json(['item' => $supplier]);
+    }
+
+    public function getOrders(Supplier $supplier)
+    {
+        $orders = $supplier->orders->load(['user']);
+
+        return response()->json(['items' => $orders]);
     }
 }

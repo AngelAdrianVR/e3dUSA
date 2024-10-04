@@ -175,6 +175,7 @@ export default {
         this.form.maintenance_type = 'Correctivo';
       } else if (this.maintenance.maintenance_type_id == '2') {
         this.form.maintenance_type = 'Limpieza';
+        this.actions = this.maintenance.actions.split(', ');
       }
     },
   },

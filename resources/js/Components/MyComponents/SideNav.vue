@@ -18,8 +18,7 @@
                                 <span class="leading-none font-normal text-center">
                                     {{ menu.label }}
                                 </span>
-                                <div v-if="menu.notifications"
-                                    class="bg-primary w-[5px] h-[5px] rounded-full absolute top-3 right-7"></div>
+                                <i v-if="menu.notifications" class="fa-solid fa-circle fa-flip text-primary text-[10px] absolute top-3 right-7"></i>
                             </template>
                             <template #content>
                                 <template v-for="option in menu.options" :key="option">

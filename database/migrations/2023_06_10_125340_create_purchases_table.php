@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
-            $table->unsignedTinyInteger('status')->default(0); //0: pendiente 1:Despachado/finalizado/recibido
+            $table->unsignedTinyInteger('status')->default(0); //0:pendiente 1:Despachado 2:finalizado 3:recibido
             $table->text('notes')->nullable();
             $table->string('authorized_user_name')->nullable();
             $table->timestamp('authorized_at')->nullable();
@@ -28,6 +28,7 @@ return new class extends Migration
             $table->foreignId('contact_id')->nullable()->constrained()->cascadeOnDelete();
             $table->json('products')->nullable();
             $table->json('bank_information')->nullable();
+            $table->json('rating')->nullable();
             $table->timestamps();
         });
     }
