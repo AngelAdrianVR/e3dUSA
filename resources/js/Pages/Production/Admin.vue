@@ -49,10 +49,6 @@
                         <div v-if="!search" class="overflow-auto mb-2">
                             <PaginationWithNoMeta :pagination="pagination" class="py-2" />
                         </div>
-                        <!-- <div>
-                            <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                                :total="productions.length" />
-                        </div> -->
 
                         <!-- buttons -->
                         <div>
@@ -307,21 +303,5 @@ export default {
             }
         },
     },
-    // computed: {
-    //     filteredTableData() {
-    //         if (!this.search) {
-    //             return this.productions.filter((item, index) => index >= this.start && index < this.end);
-    //         } else {
-    //             return this.productions.filter(
-    //                 (production) =>
-    //                     production.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
-    //                     production.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
-    //                     production.company_branch.name.toLowerCase().includes(this.search.toLowerCase()) ||
-    //                     production.operators.toLowerCase().includes(this.search.toLowerCase()) ||
-    //                     production.folio.toLowerCase().includes(this.search.toLowerCase())
-    //             )
-    //         }
-    //     }
-    // },
 };
 </script>

@@ -33,7 +33,7 @@ class ProductionController extends Controller
         $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch', 'productions.operator')->whereHas('productions', function ($query) {
             $query->where('productions.operator_id', auth()->id());
         })->latest()
-            ->paginate(50);
+            ->paginate(70);
 
         $productions = $this->processDataIndex($pre_productions);
 
@@ -51,7 +51,6 @@ class ProductionController extends Controller
 
         $productions = $this->processDataIndex($pre_productions);
 
-        // return $productions;
         return inertia('Production/Admin', compact('productions'));
     }
 
@@ -574,11 +573,10 @@ class ProductionController extends Controller
             $q->where('name', 'like', "%{$query}%");
         })
         ->latest()
-        ->paginate(50);
+        ->paginate(100);
         
         $productions = $this->processDataIndex($pre_productions);
 
-        // Devuelve las cotizaciones encontradas
         return response()->json(['items' => $productions], 200);
     }
 }

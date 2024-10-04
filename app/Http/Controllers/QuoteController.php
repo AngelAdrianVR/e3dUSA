@@ -331,7 +331,10 @@ class QuoteController extends Controller
         $pre_quotes = Quote::where('id', 'like', "%{$query}%")
         ->orWhereHas('user', function ($q) use ($query) {
             $q->where('name', 'like', "%{$query}%");
+        })->orWhereHas('companyBranch', function ($q) use ($query) {
+            $q->where('name', 'like', "%{$query}%");
         })
+        ->orWhere('receiver', 'like', "%{$query}%")
         ->with(['user:id,name', 'catalogProducts:id,name'])
         ->get();
 
