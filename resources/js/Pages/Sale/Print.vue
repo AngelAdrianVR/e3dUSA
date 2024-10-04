@@ -16,7 +16,10 @@
         <div class="col-span-3">
             <div class="flex justify-between font-bold uppercase text-lg">
                 <h2>{{ product.catalog_product_company.catalog_product.name }}</h2>
-                <span>{{ product.catalog_product_company.catalog_product.part_number }}</span>
+                <div>
+                    <p>{{ product.catalog_product_company.catalog_product.part_number }}</p>
+                    <p>DA{{ product.catalog_product_company.new_price.toString().replace('.', '-') }}GT</p>
+                </div>
             </div>
             <!-- <div class="mt-2 text-base flex justify-between">
                 <p class="text-primary">OCE: <span class="text-black ml-3">{{ product.sale.oce ?? 'No especificado' }}</span></p>
