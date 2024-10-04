@@ -22,7 +22,6 @@ use Illuminate\Support\Facades\Storage;
 
 class PurchaseController extends Controller
 {
-
     public function index()
     {
         // $purchases = PurchaseResource::collection(Purchase::with('contact', 'supplier', 'user')->latest()->get());
@@ -159,7 +158,7 @@ class PurchaseController extends Controller
     public function markOrderRecieved(Purchase $currentPurchase)
     {
         $currentPurchase->recieved_at = now();
-        $currentPurchase->status = 3; //3. Rebibido
+        $currentPurchase->status = 3; //3. Recibido
         $currentPurchase->save();
 
         return to_route('purchases.index');
@@ -236,6 +235,23 @@ class PurchaseController extends Controller
         $purchase->update(['products' => $products]);
 
         return response()->json([]);
+    }
+    
+    public function storeRating(Purchase $purchase, Request $request)
+    {
+        // guardar la evaluacion
+        $rating = [];
+        $rating["created_by"] = auth()->user()->name;
+        $rating["created_at"] = now()->toDateTimeString();
+        $rating["questions"] = $this->getProcessedQuestions($request->all());
+        $purchase->rating = $rating;
+
+        // marcar como recibio
+        $purchase->recieved_at = now();
+        $purchase->status = 3;
+        $purchase->save();
+
+        // return response()->json([]);
     }
 
     public function sendEmail(Purchase $purchase, Request $request)
@@ -322,4 +338,71 @@ class PurchaseController extends Controller
 
         return response()->json([]);
     }
+
+    private function getProcessedQuestions($answers)
+    {
+        $result = [];
+    
+        // Pregunta 1
+        $lateDays = (int) $answers['q1_days'];
+        if ($lateDays == 0) {
+            $points = 40;
+        } elseif ($lateDays == 1) {
+            $points = 30;
+        } elseif ($lateDays >= 2 && $lateDays <= 3) {
+            $points = 20;
+        } elseif ($lateDays >= 4 && $lateDays <= 5) {
+            $points = 10;
+        } else {
+            $points = 0; // 6 o más días, 0 punts
+        }
+        $result[] = ['answer' => $answers['q1'], 'points' => $points];
+    
+        // Pregunta 2
+        if ($answers['q2'] === 'Sí, cumplió con todo') {
+            $points = 15;
+        } elseif ($answers['q2'] === 'No, no se cumplieron las especificaciones') {
+            $points = 0;
+        }
+        $result[] = ['answer' => $answers['q2'], 'points' => $points];
+    
+        // Pregunta 3
+        if (is_null($answers['q3_2']) || $answers['q3_2'] === 'Atención inmediata') {
+            $points = 15;
+        } elseif ($answers['q3_2'] === 'No brindó soporte') {
+            $points = 0;
+        } elseif ($answers['q3_1'] === 'Soporte por defecto del producto' && $answers['q3_2'] === 'Atención tardía (2 o más días para atender)') {
+            $points = 5;
+        } elseif ($answers['q3_1'] === 'Soporte de acuerdo al desarrollo del material' && $answers['q3_2'] === 'Atención tardía (2 o más días para atender)') {
+            $points = 10;
+        }
+        $result[] = ['answer' => $answers['q3_1'], 'points' => $points];
+    
+        // Pregunta 4
+        if ($answers['q4'] === 'No se presentó ninguna urgencia') {
+            $points = 15;
+        } elseif ($answers['q4'] === '1 día de atraso') {
+            $points = 10;
+        } elseif ($answers['q4'] === '2 a 3 días de atraso') {
+            $points = 7.5;
+        } elseif ($answers['q4'] === '4 a 5 días de atraso') {
+            $points = 5;
+        } elseif ($answers['q4'] === 'Más de 6 días de atraso') {
+            $points = 0;
+        }
+        $result[] = ['answer' => $answers['q4'], 'points' => $points];
+    
+        // Pregunta 5
+        if ($answers['q5'] === '0 avisos de rechazo') {
+            $points = 15;
+        } elseif ($answers['q5'] === '1 aviso de rechazo') {
+            $points = 10;
+        } elseif ($answers['q5'] === '2 o más avisos de rechazo') {
+            $points = 0;
+        }
+        $result[] = ['answer' => $answers['q5'], 'points' => $points];
+    
+        return $result;
+    }
+    
 }

@@ -223,6 +223,7 @@ Route::get('supplier-get-orders/{supplier}', [SupplierController::class, 'getOrd
 
 // ------- Compras(purchases Routes)  ---------
 Route::resource('purchases', PurchaseController::class)->middleware('auth');
+Route::get('purchases-show-template/{purchase_id}', [PurchaseController::class, 'showTemplate'])->name('purchases.show-template')->middleware('auth');
 Route::post('purchases/massive-delete', [PurchaseController::class, 'massiveDelete'])->name('purchases.massive-delete');
 Route::post('purchases/clone', [PurchaseController::class, 'clone'])->name('purchases.clone');
 Route::post('purchases/send-email/{purchase}', [PurchaseController::class, 'sendEmail'])->name('purchases.send-email');
@@ -230,7 +231,7 @@ Route::put('purchases/mark-order-done/{currentPurchase}', [PurchaseController::c
 Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseController::class, 'markOrderRecieved'])->name('purchases.recieved');
 Route::put('purchases/authorize/{purchase}', [PurchaseController::class, 'authorizePurchase'])->name('purchases.authorize');
 Route::put('purchases/update-quantity/{purchase}', [PurchaseController::class, 'updateQuantity'])->name('purchases.update-quantity');
-Route::get('purchases-show-template/{purchase_id}', [PurchaseController::class, 'showTemplate'])->name('purchases.show-template')->middleware('auth');
+Route::put('purchases/store-rating/{purchase}', [PurchaseController::class, 'storeRating'])->name('purchases.store-rating');
 // Route::get('develop-template', [PurchaseController::class, 'developTemplate'])->name('develop.template');
 
 //-------------- Projects routes ------------------
