@@ -162,7 +162,7 @@
 
             <div v-if="tabs == 2" class="p-7">
                 <div class="mb-5">
-                    <el-dropdown @click="$inertia.get(route('productions.print', JSON.stringify(orderedProductsSelected)))" split-button type="primary" 
+                    <el-dropdown @click="openPrintPage" split-button type="primary" 
                                 :disabled="!orderedProductsSelected.length">
                     Imprimir
                     <template #dropdown>
@@ -171,11 +171,6 @@
                         </el-dropdown-menu>
                     </template>
                     </el-dropdown>
-                    <!-- <PrimaryButton
-                        @click="$inertia.get(route('productions.print', JSON.stringify(orderedProductsSelected)))"
-                        class="rounded-[10px]" :disabled="!orderedProductsSelected.length">
-                        Imprimir
-                    </PrimaryButton> -->
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-7">
@@ -344,6 +339,10 @@ export default {
         Link
     },
     methods: {
+        openPrintPage() {
+            const url = route('productions.print', JSON.stringify(this.orderedProductsSelected));
+            window.open(url, '_blank');
+        },
         createBoxLabel() {
             this.$inertia.post(route('productions.generate-box-label'), { data: this.labelForm });
         },
