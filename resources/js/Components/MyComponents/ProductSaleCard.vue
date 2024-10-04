@@ -1,6 +1,9 @@
 <template>
-  <div class="rounded-xl px-7 py-3 relative text-xs shadow-lg bg-[#cccccc]"
-    :class="isHighPriority ? 'border-[3px] border-primary' : null">
+  <div class="rounded-xl px-7 py-3 relative text-xs shadow-lg bg-[#cccccc] border border-transparent"
+    :class="{
+        '!border-primary': isHighPriority,
+        '!border-primary': selected
+    }">
     <!-- low stock message -->
     <div v-if="catalog_product_company_sale.productions.some(item => item.has_low_stock)"
       class="z-20 rounded-md absolute border-2 border-gray-100 bg-[#FDB9C9] py-2 text-primary px-2 -top-3 -right-5 flex items-center justify-center">
@@ -15,7 +18,7 @@
     </div>
     <!-- is new design message -->
     <div v-if="catalog_product_company_sale.is_new_design"
-      class="z-20 rounded-[3px] absolute font-bold text-sm bg-primarylight text-primary py-1 px-2 -top-10 -right-4 flex items-center justify-center">
+      class="z-20 rounded-[3px] absolute font-bold text-sm bg-blue-100 text-blue-500 py-1 px-2 -top-10 -right-4 flex items-center justify-center">
       Diseño nuevo
     </div>
     <!-- selection circle -->

@@ -30,6 +30,7 @@
             />
           </el-select>
         </div>
+        
         <div class="flex items-center space-x-2">
           <el-tooltip
             v-if="$page.props.auth.user.permissions.includes('Editar muestra')"
@@ -54,7 +55,8 @@
           >
             <button
               @click="returnedSampleModal = true"
-              class="rounded-lg bg-primary text-white p-2 text-sm"
+              :disabled="!currentSample.authorized_at"
+              class="rounded-lg bg-primary text-white p-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Marcar como devuelta
             </button>
@@ -177,6 +179,7 @@
           </Dropdown>
         </div>
       </div>
+      <p v-if="!currentSample.authorized_at" class="text-red-600 font-bold my-2 py-1 text-center bg-red-200">MUESTRA NO AUTORIZADA</p>
       <div class="lg:grid grid-cols-3 mt-12 border-b-2">
         <div class="px-14">
           <h2 class="text-xl font-bold text-center mb-6">

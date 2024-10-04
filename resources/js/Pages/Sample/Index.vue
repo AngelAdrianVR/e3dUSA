@@ -1,5 +1,13 @@
 <template>
     <div>
+        <div v-if="loading"
+            class="absolute z-30 left-0 top-0 inset-0 bg-black opacity-50 flex items-center justify-center">
+        </div>
+        <div v-if="loading"
+            class="absolute z-40 top-1/2 left-[35%] lg:left-1/2 w-32 h-32 rounded-lg bg-white flex items-center justify-center">
+            <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
+        </div>
+
         <AppLayout title="Seguimiento de muestras">
             <template #header>
                 <div class="flex justify-between">
@@ -29,11 +37,10 @@
                 <NotificationCenter module="samples" />
                 <div class="flex justify-between">
                     <!-- pagination -->
-                    <!-- <div>
-                        <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                            :total="samples.length" />
-                    </div> -->
-                    <!-- buttons -->
+                    <div v-if="!search" class="overflow-auto mb-2">
+                        <PaginationWithNoMeta :pagination="pagination" class="py-2" />
+                    </div>
+
                     <div>
                         <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar muestra')"
                             confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
@@ -47,7 +54,7 @@
                     <!-- buscador -->
                     <IndexSearchBar @search="handleSearch" />
                 </div>
-                <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
+                <el-table :data="filteredSamples" @row-click="handleRowClick" max-height="670" style="width: 100%"
                     @selection-change="handleSelectionChange" ref="multipleTableRef"
                     :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="30" />
@@ -72,7 +79,12 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="sent_at" label="Enviado el" />
-                    <el-table-column prop="returned_at" label="devuelto el" />
+                    <el-table-column prop="returned_at" label="Devuelto el" />
+                    <el-table-column prop="authorized_at" label="Autorizado el">
+                         <template #default="scope">
+                            <span :class="{'text-red-500': !scope.row.authorized_at}">{{ scope.row.authorized_at ?? 'No autorizado' }}</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="comments" label="Comentarios" />
                     <el-table-column align="right">
                         <template #default="scope">
@@ -96,6 +108,14 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                             </svg>
                                             Editar</el-dropdown-item>
+                                            <el-dropdown-item
+                                                v-if="$page.props.auth.user.permissions.includes('Autorizar cotizaciones') && !scope.row.authorized_at"
+                                                :command="'authorize-' + scope.row.id">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 mr-2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                                </svg>
+                                                Autorizar
+                                            </el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -110,12 +130,13 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
+import PaginationWithNoMeta from "@/Components/MyComponents/PaginationWithNoMeta.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
 import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
+import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
-import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 
 export default {
     data() {
@@ -123,28 +144,53 @@ export default {
             disableMassiveActions: true,
             inputSearch: '',
             search: '',
+            loading: false,
+            pagination: this.samples,
+            filteredSamples: this.samples.data,
             // pagination
-            itemsPerPage: 10,
-            start: 0,
-            end: 10,
+            // itemsPerPage: 10,
+            // start: 0,
+            // end: 10,
         };
     },
     components: {
-        AppLayout,
-        SecondaryButton,
-        Link,
-        TextInput,
+        PaginationWithNoMeta,
         NotificationCenter,
+        SecondaryButton,
         IndexSearchBar,
+        AppLayout,
+        TextInput,
+        Link,
     },
     props: {
         samples: Array
     },
     methods: {
-        handleSearch(search) {
+        async handleSearch(search) {
             this.search = search;
+            this.loading = true;
+            try {
+                if (!this.search) {
+                    this.filteredSamples = this.samples.data;
+                    this.pagination = this.samples; //cuando se busca con texto vacio s emuestran todas las porduccoines y la paginacion es de todas las producciones
+                } else {
+                    const response = await axios.post(route('samples.get-matches', { query: this.search }));
+
+                    if (response.status === 200) {
+                        this.filteredSamples = response.data.items.data;
+                        this.pagination = response.data.items; //se cambia la paginacion a los encontrados
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                this.loading = false;
+            }
         },
         tableRowClassName({ row, rowIndex }) {
+            if ( !row.authorized_at ) {
+                return 'cursor-pointer text-gray-400 !bg-[#fafafa]';
+            } 
             return 'cursor-pointer text-xs';
         },
         handleSelectionChange(val) {
@@ -165,15 +211,40 @@ export default {
             const commandName = command.split('-')[0];
             const rowId = command.split('-')[1];
 
-            if (commandName == 'clone') {
-                this.clone(rowId);
-            } else if (commandName == 'make_so') {
-                console.log('SO');
+            if (commandName == 'authorize') {
+                this.authorize(rowId);
             } else {
                 this.$inertia.get(route('samples.' + commandName, rowId));
             }
         },
+        async authorize(sample_id) {
+            try {
+                const response = await axios.put(route('samples.authorize', sample_id));
 
+                if (response.status == 200) {
+                    const index = this.samples.data.findIndex(item => item.id == sample_id);
+                    this.samples.data[index].authorized_at = response.data.authorized_at;
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+                } else {
+                    this.$notify({
+                        title: 'Algo salió mal',
+                        message: response.data.message,
+                        type: 'error'
+                    });
+                }
+            } catch (err) {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
+                console.log(err);
+            }
+        },
         async deleteSelections() {
             try {
                 const response = await axios.post(route('samples.massive-delete', {
@@ -187,9 +258,9 @@ export default {
                         type: 'success'
                     });
 
-                    // update list of quotes
+                    // update list of samples
                     let deletedIndexes = [];
-                    this.samples.forEach((sample, index) => {
+                    this.samples.data.forEach((sample, index) => {
                         if (this.$refs.multipleTableRef.value.includes(sample)) {
                             deletedIndexes.push(index);
                         }
@@ -200,7 +271,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.samples.splice(index, 1);
+                        this.samples.data.splice(index, 1);
                     }
 
                 } else {
@@ -225,16 +296,6 @@ export default {
         },
         edit(index, sample) {
             this.$inertia.get(route('samples.edit', sample));
-        }
-    },
-    computed: {
-        filteredTableData() {
-            return this.samples.filter(
-                (sample) =>
-                    !this.search ||
-                    sample.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                    sample.status['label'].toLowerCase().includes(this.search.toLowerCase())
-            )
         }
     },
 };
