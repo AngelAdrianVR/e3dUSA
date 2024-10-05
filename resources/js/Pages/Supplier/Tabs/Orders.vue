@@ -1,7 +1,7 @@
 <template>
     <Loading v-if="loading" class="mt-10" />
     <section v-else class="mt-6">
-        <table class="w-full mx-auto text-sm">
+        <table v-if="purchases.length" class="w-full mx-auto text-sm">
             <thead>
                 <tr class="text-left *:font-bold *:pb-2 *:px-4">
                     <th>Folio</th>
@@ -49,6 +49,7 @@
                 </tr>
             </tbody>
         </table>
+        <el-empty v-else description="No hay ordenes de compra registrados a este proveedor" />
     </section>
 
     <DialogModal :show="showRatingModal" @close="showRatingModal = false" maxWidth="4xl">

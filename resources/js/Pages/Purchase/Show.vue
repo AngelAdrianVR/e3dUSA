@@ -271,7 +271,6 @@
             </div>
           </section>
         </form>
-        {{ ratingForm }}
       </template>
       <template #footer>
         <PrimaryButton @click="storeRating" :disabled="ratingForm.processing">Continuar</PrimaryButton>

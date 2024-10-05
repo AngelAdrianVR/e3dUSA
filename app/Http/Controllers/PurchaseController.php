@@ -94,7 +94,6 @@ class PurchaseController extends Controller
         return to_route('purchases.index');
     }
 
-
     public function show($purchase_id)
     {
         $purchase = PurchaseResource::make(Purchase::with('user', 'supplier', 'contact')->find($purchase_id));
@@ -151,8 +150,6 @@ class PurchaseController extends Controller
         $currentPurchase->emited_at = now();
         $currentPurchase->status = 2; //2. Emitido
         $currentPurchase->save();
-
-        return to_route('purchases.index');
     }
 
     public function markOrderRecieved(Purchase $currentPurchase)
@@ -160,8 +157,6 @@ class PurchaseController extends Controller
         $currentPurchase->recieved_at = now();
         $currentPurchase->status = 3; //3. Recibido
         $currentPurchase->save();
-
-        return to_route('purchases.index');
     }
 
     public function massiveDelete(Request $request)
