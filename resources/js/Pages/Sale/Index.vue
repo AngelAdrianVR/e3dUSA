@@ -21,11 +21,11 @@
             </template>
 
             <div class="flex space-x-6 items-center justify-center text-xs mt-2">
-                <p class="text-red-500"><i class="fa-solid fa-circle mr-1"></i>Esperando Autorización</p>
-                <p class="text-gray-500"><i class="fa-solid fa-circle mr-1"></i>Autorizado. Sin orden de producción</p>
-                <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Producción sin iniciar</p>
-                <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Producción en proceso</p>
-                <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Producción terminada</p>
+                <p><i class="fa-solid fa-circle mr-1 text-red-500"></i>Esperando Autorización</p>
+                <p><i class="fa-solid fa-circle mr-1 text-gray-500"></i>Autorizado. Sin orden de producción</p>
+                <p><i class="fa-solid fa-circle mr-1 text-amber-500"></i>Producción sin iniciar</p>
+                <p><i class="fa-solid fa-circle mr-1 text-blue-500"></i>Producción en proceso</p>
+                <p><i class="fa-solid fa-circle mr-1 text-green-500"></i>Producción terminada</p>
             </div>
 
             <!-- Filtro -->
