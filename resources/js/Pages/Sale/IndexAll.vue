@@ -21,11 +21,11 @@
             </template>
 
             <div class="flex space-x-6 items-center justify-center text-xs mt-2">
-                <p class="text-red-500"><i class="fa-solid fa-circle mr-1"></i>Esperando Autorización</p>
-                <p class="text-gray-500"><i class="fa-solid fa-circle mr-1"></i>Autorizado. Sin orden de producción</p>
-                <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Producción sin iniciar</p>
-                <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Producción en proceso</p>
-                <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Producción terminada</p>
+                <p><i class="fa-solid fa-circle mr-1 text-red-500"></i>Esperando Autorización</p>
+                <p><i class="fa-solid fa-circle mr-1 text-gray-500"></i>Autorizado. Sin orden de producción</p>
+                <p><i class="fa-solid fa-circle mr-1 text-amber-500"></i>Producción sin iniciar</p>
+                <p><i class="fa-solid fa-circle mr-1 text-blue-500"></i>Producción en proceso</p>
+                <p><i class="fa-solid fa-circle mr-1 text-green-500"></i>Producción terminada</p>
             </div>
 
             <!-- Filtro -->
@@ -166,7 +166,6 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
-import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
@@ -208,14 +207,9 @@ export default {
             ],
             options: ['Mis órdenes', 'Todas las órdenes'],
             filteredSales: [],
-            // inputSearch: '',
             search: '',
             loading: false,
             pagination: null,
-            // pagination
-            // itemsPerPage: 10,
-            // start: 0,
-            // end: 10,
         };
 
     },
@@ -226,13 +220,11 @@ export default {
         PrimaryButton,
         Pagination,
         AppLayout,
-        TextInput,
-        Link,
         SaleProfit,
+        Link,
     },
     props: {
         sales: Object,
-        company_branches: Array
     },
     methods: {
         applyStatusFilter() {

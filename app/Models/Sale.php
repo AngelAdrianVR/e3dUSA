@@ -72,6 +72,11 @@ Sale extends Model implements HasMedia
         return $this->hasMany(CatalogProductCompanySale::class);
     }
 
+    public function logistics(): HasMany
+    {
+        return $this->hasMany(Logistic::class);
+    }
+
     public function productions()
     {
         return $this->hasManyThrough(Production::class, CatalogProductCompanySale::class, 'sale_id', 'catalog_product_company_sale_id');
