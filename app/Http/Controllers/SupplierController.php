@@ -7,8 +7,10 @@ use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\SupplierResource;
 use App\Models\Contact;
+use App\Models\Purchase;
 use App\Models\RawMaterial;
 use App\Models\Supplier;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class SupplierController extends Controller
@@ -193,5 +195,68 @@ class SupplierController extends Controller
         $orders = $supplier->orders->load(['user']);
 
         return response()->json(['items' => $orders]);
+    }
+
+    public function ratingReport($period)
+    {
+        $year = explode('-', $period)[0];
+        $month = explode('-', $period)[1];
+
+        // Obtener las órdenes con ratings, junto con la información del proveedor
+        $orders = Purchase::with(['supplier'])
+            ->whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
+            ->whereNotNull('rating')
+            ->get();
+
+        // Inicializamos un array para agrupar los resultados por proveedor
+        $groupedResults = [];
+
+        // Iteramos sobre las órdenes para agruparlas por proveedor
+        foreach ($orders as $order) {
+            $supplierId = $order->supplier->id;
+            $supplierName = $order->supplier->name;
+            $supplierNickname = $order->supplier->nickname;
+
+            // Inicializamos el proveedor en el array si aún no existe
+            if (!isset($groupedResults[$supplierId])) {
+                $groupedResults[$supplierId] = [
+                    'supplier_name' => $supplierName,
+                    'supplier_nickname' => $supplierNickname,
+                    'supplier_id' => $supplierId,
+                    'total_purchases' => 0,
+                    'total_points' => 0,
+                    'ratings_count' => 0
+                ];
+            }
+
+            // Incrementamos el contador de compras para este proveedor
+            $groupedResults[$supplierId]['total_purchases']++;
+
+            // Sumamos los puntos de la evaluación (rating)
+            foreach ($order->rating['questions'] as $question) {
+                $groupedResults[$supplierId]['total_points'] += $question['points'];
+            }
+
+            // Incrementamos el contador de evaluaciones
+            $groupedResults[$supplierId]['ratings_count']++;
+        }
+
+        // Convertimos los puntos totales a un promedio
+        foreach ($groupedResults as &$supplier) {
+            if ($supplier['ratings_count'] > 0) {
+                $supplier['avg_points'] = number_format($supplier['total_points'] / $supplier['ratings_count'], 2);
+            } else {
+                $supplier['avg_points'] = 0;
+            }
+
+            // Limpiamos los datos innecesarios
+            unset($supplier['total_points'], $supplier['ratings_count']);
+        }
+
+        return inertia('Supplier/RatingReport', [
+            'data' => $groupedResults,
+            'period' => Carbon::parse($period)->isoFormat('MMMM YYYY'),
+        ]);
     }
 }
