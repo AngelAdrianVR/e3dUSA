@@ -2,14 +2,26 @@
 
     <Head title="Reporte de evaluaciones" />
     <!-- logo -->
-    <div class="flex items-center mx-6 mt-5">
+    <div class="flex items-center justify-between mx-6 mt-5">
         <ApplicationLogo class="h-auto w-1/5 inline-block" />
+        <SecondaryButton v-if="showAdditionalElements" @click="print()">Guardar PDF</SecondaryButton>
     </div>
 
     <!-- contenido -->
-    <div class="text-xs px-6 mt-8">
-        <h1 class="font-bold text-xl mx-5">Evaluación proveedores </h1>
-        <table class="w-full table-fixed mt-4">
+    <div class="text-xs px-6 mt-8 relative">
+        <div class="bg-[#DADADA] opacity-70 size-12 rounded-full absolute top-7 left-1/2 -z-10"></div>
+        <div class="bg-[#DADADA] opacity-70 size-40 rounded-full absolute top-32 left-[77%] -z-10"></div>
+        <div class="bg-[#DADADA] opacity-70 size-32 rounded-full absolute top-7 left-[82%] -z-10"></div>
+        <div class="bg-[#DADADA] opacity-70 size-16 rounded-full absolute top-7 left-10 -z-10"></div>
+        <div class="bg-[#DADADA] opacity-70 size-8 rounded-full absolute top-10 left-28 -z-10"></div>
+        <div class="bg-[#DADADA] opacity-70 size-30 rounded-full absolute top-36 right-2/3 -z-10"></div>
+        <div class="bg-[#DADADA] opacity-70 size-8 rounded-full absolute top-36 right-1/2 -z-10"></div>
+        <div class="bg-[#DADADA] opacity-70 size-8 rounded-full absolute top-40 right-[85%] -z-10"></div>
+        <h1 class="font-bold text-xl mx-5 flex items-center justify-between">
+            <span>Evaluación proveedores</span>
+            <span class="text-[#373737] text-base">{{ period }}</span>
+        </h1>
+        <table class="w-full table-auto mt-4">
             <thead>
                 <tr class="text-left *:px-2 *:py-1">
                     <th>ID</th>
@@ -33,20 +45,23 @@
 </template>
 <script>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { Head } from '@inertiajs/vue3';
 
 export default {
     data() {
         return {
-
+            showAdditionalElements: true,
         };
     },
     components: {
         ApplicationLogo,
         Head,
+        SecondaryButton,
     },
     props: {
         data: Object,
+        period: String,
     },
     methods: {
         handleBeforePrint() {
@@ -56,7 +71,10 @@ export default {
             this.showAdditionalElements = true;
         },
         print() {
-            window.print();
+            this.showAdditionalElements = false;
+            this.$nextTick(() => {
+                window.print();
+            });
         },
     },
     mounted() {

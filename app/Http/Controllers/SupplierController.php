@@ -10,6 +10,7 @@ use App\Models\Contact;
 use App\Models\Purchase;
 use App\Models\RawMaterial;
 use App\Models\Supplier;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class SupplierController extends Controller
@@ -244,7 +245,7 @@ class SupplierController extends Controller
         // Convertimos los puntos totales a un promedio
         foreach ($groupedResults as &$supplier) {
             if ($supplier['ratings_count'] > 0) {
-                $supplier['avg_points'] = $supplier['total_points'] / $supplier['ratings_count'];
+                $supplier['avg_points'] = number_format($supplier['total_points'] / $supplier['ratings_count'], 2);
             } else {
                 $supplier['avg_points'] = 0;
             }
@@ -255,6 +256,7 @@ class SupplierController extends Controller
 
         return inertia('Supplier/RatingReport', [
             'data' => $groupedResults,
+            'period' => Carbon::parse($period)->isoFormat('MMMM YYYY'),
         ]);
     }
 }
