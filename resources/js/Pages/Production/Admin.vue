@@ -163,11 +163,6 @@ export default {
             loading: false,
             pagination: this.productions,
             filteredProductions: this.productions.data,
-            // pagination
-            // itemsPerPage: 10,
-            // start: 0,
-            // end: 10,
-
             //filtro
             filter: 'Mis órdenes',
             options: ['Mis órdenes', 'Todas las órdenes'], //opciones de filtro
