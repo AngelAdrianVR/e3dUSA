@@ -361,6 +361,8 @@ Route::put('samples/sale-order-sample/{sample}', [SampleController::class, 'sale
 Route::put('samples/finish-sample/{sample}', [SampleController::class, 'finishSample'])->name('samples.finish-sample');
 Route::put('samples/resent-sample/{sample}', [SampleController::class, 'resentSample'])->name('samples.resent-sample');
 Route::post('samples/update-with-media/{sample}', [SampleController::class, 'updateWithMedia'])->name('samples.update-with-media')->middleware('auth');
+Route::put('samples/authorize/{sample}', [SampleController::class, 'authorizeSample'])->name('samples.authorize');
+Route::post('samples/get-matches', [SampleController::class, 'getMatches'])->name('samples.get-matches');
 
 // ------- Design department routes  ---------
 Route::resource('designs', DesignController::class)->middleware('auth');
@@ -393,6 +395,7 @@ Route::put('productions/continue-production/{production}', [ProductionController
 Route::post('productions-{cpcs}-comment', [ProductionController::class, 'comment'])->name('productions.comment')->middleware('auth');
 Route::get('productions-{cpcs}-show-traveler', [ProductionController::class, 'showTravelerTemplate'])->name('productions.show-traveler-template')->middleware('auth');
 Route::post('productions-generate-box-label', [ProductionController::class, 'generateBoxLabel'])->name('productions.generate-box-label')->middleware('auth');
+Route::post('productions-get-matches', [ProductionController::class, 'getMatches'])->name('productions.get-matches');
 
 // ------- Quality department routes  ---------
 Route::resource('qualities', QualityController::class)->middleware('auth');

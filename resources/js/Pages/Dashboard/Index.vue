@@ -428,6 +428,13 @@ export default {
                     url: route('admin-additional-times.index'),
                     show: this.$page.props.auth.user.permissions.includes('Autorizar solicitudes de tiempo adicional')
                 },
+                {
+                    title: 'Muestras por autorizar',
+                    counter: this.counts[9],
+                    icon: 'fa-solid fa-box',
+                    url: route('samples.index'),
+                    show: this.$page.props.auth.user.permissions.includes('Autorizar solicitudes de tiempo adicional')
+                },
             ],
             nextAttendance: null,
             temporalFlag: false,

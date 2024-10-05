@@ -24,38 +24,41 @@ class QuoteController extends Controller
 {
     public function index()
     {        
-        $quotes = Quote::with(['catalogProducts:id,name', 'user:id,name'])
+        $pre_quotes = Quote::with(['catalogProducts:id,name', 'user:id,name'])
             ->latest()
-            ->get(['id', 'receiver', 'user_id', 'prospect_id', 'company_branch_id', 'authorized_user_name', 'created_at'])
-            ->map(function ($quote) {
-                return [
-                    'id' => $quote->id,
-                    'folio' => 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT),
-                    'user' => [
-                        'id' => $quote->user->id,
-                        'name' => $quote->user->name
-                    ],
-                    'receiver' => $quote->receiver,
-                    'companyBranch' => [
-                        'id' => $quote->companyBranch?->id,
-                        'name' => $quote->companyBranch?->name
-                    ],
-                    'prospect' => [
-                        'id' => $quote->prospect?->id,
-                        'name' => $quote->prospect?->name
-                    ],
-                    'catalog_products' => $quote->catalogProducts->map(function ($product) {
-                        return [
-                            'id' => $product->id,
-                            'name' => $product->name
-                        ];
-                    }),
-                    'authorized_user_name' => $quote->authorized_user_name ?? '--',
-                    'authorized_at' => $quote->authorized_at,
-                    'created_at' => $quote->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
-                    'profit' => $quote->getProfit(),
-                ];
-            });
+            ->paginate(20); // Pagina primero
+
+        $quotes = $pre_quotes->through(function ($quote) {
+            return [
+                'id' => $quote->id,
+                'folio' => 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT),
+                'user' => [
+                    'id' => $quote->user->id,
+                    'name' => $quote->user->name
+                ],
+                'receiver' => $quote->receiver,
+                'companyBranch' => [
+                    'id' => $quote->companyBranch?->id,
+                    'name' => $quote->companyBranch?->name
+                ],
+                'prospect' => [
+                    'id' => $quote->prospect?->id,
+                    'name' => $quote->prospect?->name
+                ],
+                'catalog_products' => $quote->catalogProducts->map(function ($product) {
+                    return [
+                        'id' => $product->id,
+                        'name' => $product->name
+                    ];
+                }),
+                'authorized_user_name' => $quote->authorized_user_name ?? '--',
+                'authorized_at' => $quote->authorized_at,
+                'created_at' => $quote->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+                'profit' => $quote->getProfit(), // Añadir el profit
+            ];
+        });
+
+        // return $quotes;
         return inertia('Quote/Index', compact('quotes'));
     }
 
@@ -318,5 +321,55 @@ class QuoteController extends Controller
 
         return response()->json(['message' => 'Cotizacion autorizadda', 'item' => $quote]); //en caso de actualizar en la misma vista descomentar
         // return to_route('quotes.index'); // en caso de mandar al index, descomentar.
+    }
+
+    public function getMatches(Request $request)
+    {
+        $query = $request->input('query');
+
+       // Realiza la búsqueda
+        $pre_quotes = Quote::where('id', 'like', "%{$query}%")
+        ->orWhereHas('user', function ($q) use ($query) {
+            $q->where('name', 'like', "%{$query}%");
+        })->orWhereHas('companyBranch', function ($q) use ($query) {
+            $q->where('name', 'like', "%{$query}%");
+        })
+        ->orWhere('receiver', 'like', "%{$query}%")
+        ->with(['user:id,name', 'catalogProducts:id,name'])
+        ->get();
+
+        // Mapea los resultados al formato del index
+        $quotes = $pre_quotes->map(function ($quote) {
+            return [
+                'id' => $quote->id,
+                'folio' => 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT),
+                'user' => [
+                    'id' => $quote->user->id,
+                    'name' => $quote->user->name
+                ],
+                'receiver' => $quote->receiver,
+                'companyBranch' => [
+                    'id' => $quote->companyBranch?->id,
+                    'name' => $quote->companyBranch?->name
+                ],
+                'prospect' => [
+                    'id' => $quote->prospect?->id,
+                    'name' => $quote->prospect?->name
+                ],
+                'catalog_products' => $quote->catalogProducts->map(function ($product) {
+                    return [
+                        'id' => $product->id,
+                        'name' => $product->name
+                    ];
+                }),
+                'authorized_user_name' => $quote->authorized_user_name ?? '--',
+                'authorized_at' => $quote->authorized_at,
+                'created_at' => $quote->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+                'profit' => $quote->getProfit(),
+            ];
+        });
+
+        // Devuelve las cotizaciones encontradas
+        return response()->json(['items' => $quotes], 200);
     }
 }

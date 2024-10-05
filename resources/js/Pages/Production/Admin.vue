@@ -1,5 +1,13 @@
 <template>
-    <div>
+    <div class="">
+        <div v-if="loading"
+            class="absolute z-30 left-0 top-0 inset-0 bg-black opacity-50 flex items-center justify-center">
+        </div>
+        <div v-if="loading"
+            class="absolute z-40 top-1/2 left-[35%] lg:left-1/2 w-32 h-32 rounded-lg bg-white flex items-center justify-center">
+            <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
+        </div>
+
         <AppLayout title="Departamento de producción">
             <template #header>
                 <div class="flex justify-between">
@@ -8,7 +16,7 @@
                     </div>
                     <div>
                         <Link :href="route('productions.create')">
-                        <SecondaryButton>+ Nuevo</SecondaryButton>
+                            <SecondaryButton>+ Nuevo</SecondaryButton>
                         </Link>
                     </div>
                 </div>
@@ -38,10 +46,10 @@
                 <div class="lg:w-[90%] mx-auto mt-6">
                     <div class="flex justify-between">
                         <!-- pagination -->
-                        <div>
-                            <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                                :total="productions.length" />
+                        <div v-if="!search" class="overflow-auto mb-2">
+                            <PaginationWithNoMeta :pagination="pagination" class="py-2" />
                         </div>
+
                         <!-- buttons -->
                         <div>
                             <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
@@ -55,7 +63,7 @@
                         <!-- buscador -->
                         <IndexSearchBar @search="handleSearch" />
                     </div>
-                    <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
+                    <el-table :data="filteredProductions" @row-click="handleRowClick" max-height="670" style="width: 100%"
                         @selection-change="handleSelectionChange" ref="multipleTableRef"
                         :row-class-name="tableRowClassName">
                         <el-table-column type="selection" width="30" />
@@ -131,7 +139,6 @@
                 </div>
             </div>
             <!-- tabla -->
-
         </AppLayout>
     </div>
 </template>
@@ -139,6 +146,7 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import PaginationWithNoMeta from "@/Components/MyComponents/PaginationWithNoMeta.vue";
 import TextInput from '@/Components/TextInput.vue';
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
@@ -152,26 +160,25 @@ export default {
             disableMassiveActions: true,
             inputSearch: '',
             search: '',
-            // pagination
-            itemsPerPage: 10,
-            start: 0,
-            end: 10,
-
+            loading: false,
+            pagination: this.productions,
+            filteredProductions: this.productions.data,
             //filtro
             filter: 'Mis órdenes',
             options: ['Mis órdenes', 'Todas las órdenes'], //opciones de filtro
         };
     },
     components: {
-        AppLayout,
+        PaginationWithNoMeta,
         NotificationCenter,
         SecondaryButton,
         IndexSearchBar,
+        AppLayout,
         TextInput,
         Link,
     },
     props: {
-        productions: Array
+        productions: Object
     },
     methods: {
          fetchItemsFiltered() {
@@ -181,8 +188,26 @@ export default {
                 this.$inertia.get(route('productions.admin-index'));
             }
         },
-        handleSearch(search) {
+        async handleSearch(search) {
             this.search = search;
+            this.loading = true;
+            try {
+                if (!this.search) {
+                    this.filteredProductions = this.productions.data;
+                    this.pagination = this.productions; //cuando se busca con texto vacio s emuestran todas las porduccoines y la paginacion es de todas las producciones
+                } else {
+                    const response = await axios.post(route('productions.get-matches', { query: this.search }));
+
+                    if (response.status === 200) {
+                        this.filteredProductions = response.data.items.data;
+                        this.pagination = response.data.items; //se cambia la paginacion a los encontrados
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                this.loading = false;
+            }
         },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
@@ -212,7 +237,7 @@ export default {
 
                     // update list of productions
                     let deletedIndexes = [];
-                    this.productions.forEach((production, index) => {
+                    this.productions.data.forEach((production, index) => {
                         if (this.$refs.multipleTableRef.value.includes(production)) {
                             deletedIndexes.push(index);
                         }
@@ -221,7 +246,7 @@ export default {
                     deletedIndexes.sort((a, b) => b - a);
 
                     for (const index of deletedIndexes) {
-                        this.productions.splice(index, 1);
+                        this.productions.data.splice(index, 1);
                     }
 
                 } else {
@@ -272,22 +297,6 @@ export default {
                 this.$inertia.get(route('productions.' + commandName, rowId));
             }
         },
-    },
-    computed: {
-        filteredTableData() {
-            if (!this.search) {
-                return this.productions.filter((item, index) => index >= this.start && index < this.end);
-            } else {
-                return this.productions.filter(
-                    (production) =>
-                        production.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                        production.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
-                        production.company_branch.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                        production.operators.toLowerCase().includes(this.search.toLowerCase()) ||
-                        production.folio.toLowerCase().includes(this.search.toLowerCase())
-                )
-            }
-        }
     },
 };
 </script>

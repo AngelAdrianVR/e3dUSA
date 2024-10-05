@@ -30,6 +30,7 @@
             />
           </el-select>
         </div>
+        
         <div class="flex items-center space-x-2">
           <el-tooltip
             v-if="$page.props.auth.user.permissions.includes('Editar muestra')"
@@ -37,8 +38,10 @@
             placement="top"
           >
             <Link :href="route('samples.edit', selectedSample)">
-              <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
-                <i class="fa-solid fa-pen text-sm"></i>
+              <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9]">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                  </svg>
               </button>
             </Link>
           </el-tooltip>
@@ -52,7 +55,8 @@
           >
             <button
               @click="returnedSampleModal = true"
-              class="rounded-lg bg-primary text-white p-2 text-sm"
+              :disabled="!currentSample.authorized_at"
+              class="rounded-lg bg-primary text-white p-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Marcar como devuelta
             </button>
@@ -149,10 +153,8 @@
             "
           >
             <template #trigger>
-              <button
-                class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm"
-              >
-                Más <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
+              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center justify-center text-sm">
+                  Más <i class="fa-solid fa-chevron-down text-[10px] ml-2 pb-[2px]"></i>
               </button>
             </template>
             <template #content>
@@ -177,6 +179,7 @@
           </Dropdown>
         </div>
       </div>
+      <p v-if="!currentSample.authorized_at" class="text-red-600 font-bold my-2 py-1 text-center bg-red-200">MUESTRA NO AUTORIZADA</p>
       <div class="lg:grid grid-cols-3 mt-12 border-b-2">
         <div class="px-14">
           <h2 class="text-xl font-bold text-center mb-6">

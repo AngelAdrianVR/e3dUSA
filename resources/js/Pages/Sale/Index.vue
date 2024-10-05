@@ -227,11 +227,11 @@ export default {
         SecondaryButton,
         IndexSearchBar,
         PrimaryButton,
+        SaleProfit,
         Pagination,
         AppLayout,
         TextInput,
         Link,
-        SaleProfit,
     },
     props: {
         sales: Object,
