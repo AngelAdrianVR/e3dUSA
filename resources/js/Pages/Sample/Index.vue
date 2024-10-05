@@ -24,12 +24,11 @@
             </template>
 
             <div class="flex space-x-6 items-center justify-center text-xs mt-2">
-                <p class="text-amber-600"><i class="fa-solid fa-circle mr-1"></i>Enviado. Esperando respuesta </p>
-                <p class="text-blue-600"><i class="fa-solid fa-circle mr-1"></i>Muestra devuelta/ esperando
-                    retroalimentación</p>
-                <p class="text-sky-500"><i class="fa-solid fa-circle mr-1"></i>Enviada con modificaciones</p>
-                <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Venta cerrada</p>
-                <p class="text-primary"><i class="fa-solid fa-circle mr-1"></i>Venta no concretada</p>
+                <p><i class="fa-solid fa-circle mr-1 text-amber-600"></i>Enviado. Esperando respuesta </p>
+                <p><i class="fa-solid fa-circle mr-1 text-blue-600"></i>Muestra devuelta/ esperandoretroalimentación</p>
+                <p><i class="fa-solid fa-circle mr-1 text-sky-500"></i>Enviada con modificaciones</p>
+                <p><i class="fa-solid fa-circle mr-1 text-green-500"></i>Venta cerrada</p>
+                <p><i class="fa-solid fa-circle mr-1 text-primary"></i>Venta no concretada</p>
             </div>
 
             <!-- tabla -->

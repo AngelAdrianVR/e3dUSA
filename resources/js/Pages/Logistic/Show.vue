@@ -35,67 +35,11 @@
                 </div>
             </div>
 
-            <section class="pt-10 md:w-[80%] md:mx-auto border">
-                <p>Folio de la orden: <strong class="ml-7">OP-{{ logistic.sale.id.toString().padStart(4, '0') }}</strong></p>
+            <section class="pt-10 md:w-[80%] md:mx-auto">
+                <OVInfo :logistic="logistic" />
 
-                <!-- informacion de la orden -->
-                <div class="border border-[#999999] rounded-xl p-4 mt-5">
-                    <h2 class="font-bold">Información de la orden</h2>
-
-                    <section class="grid grid-cols-2">
-                        <!-- lado izquierdo del grid -->
-                        <article class="mt-4 border-r border-[#999999] space-y-1">
-                            <div class="flex space-x-2">
-                                <p class="text-[#999999] w-48">Solicitada por:</p>
-                                <p>{{ logistic.sale.user.name }}</p>
-                            </div>
-                            <div class="flex space-x-2">
-                                <p class="text-[#999999] w-48">Solicitada el:</p>
-                                <p>{{ formatDate(logistic.sale.created_at) }}</p>
-                            </div>
-                            <div class="flex space-x-2">
-                                <p class="text-[#999999] w-48">Prioridad:</p>
-                                <p :class="logistic.sale.is_high_priority ? 'text-red-600 font-bold' : 'text-black'">{{ logistic.sale.is_high_priority ? 'Urgente' : 'Normal' }}</p>
-                            </div>
-                            <div class="flex space-x-2">
-                                <p class="text-[#999999] w-48">Fecha prevista entrega:</p>
-                                <p>{{ formatDate(logistic.sale.promise_date) ?? 'Sin fecha promesa' }}</p>
-                            </div>
-                            <div class="flex space-x-2">
-                                <p class="text-[#999999] w-48">Notas:</p>
-                                <p>{{ logistic.sale.notes ?? '-' }}</p>
-                            </div>
-                        </article>
-
-                        <!-- lado derecho del grid -->
-                        <article class="mt-4 space-y-1 ml-5">
-                            <div class="flex space-x-2">
-                                <p class="text-[#999999] w-48">Cliente:</p>
-                                <p>{{ logistic.sale.company_branch?.company?.business_name }}</p>
-                            </div>
-                            <div class="flex space-x-2">
-                                <p class="text-[#999999] w-48">Sucursal:</p>
-                                <p>{{ logistic.sale.company_branch?.name }}</p>
-                            </div>
-                            <div class="flex space-x-2">
-                                <p class="text-[#999999] w-48">Contacto:</p>
-                                <p>{{ logistic.sale.contact.name }}</p>
-                            </div>
-                            <div class="flex space-x-2">
-                                <p class="text-[#999999] w-48">Email:</p>
-                                <p>{{ logistic.sale.contact.email }}</p>
-                            </div>
-                            <div class="flex space-x-2">
-                                <p class="text-[#999999] w-48">Teléfono:</p>
-                                <p>{{ logistic.sale.contact.phone }}</p>
-                            </div>
-                            <div class="flex space-x-2">
-                                <p class="text-[#999999] w-48">Dirección:</p>
-                                <p class="w-full">{{ logistic.sale.company_branch?.address }}</p>
-                            </div>
-                        </article>
-                    </section>
-                </div>
+                <h2 class="font-bold mt-10 ml-5">Desgloce</h2>
+                <LogisticCard />
             </section>
 
         </main>
@@ -106,6 +50,8 @@
 import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import LogisticTimeLine from "@/Components/MyComponents/LogisticTimeLine.vue";
+import OVInfo from "@/Components/MyComponents/Logistic/OVInfo.vue";
+import LogisticCard from "@/Components/MyComponents/Logistic/LogisticCard.vue";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -119,6 +65,8 @@ components:{
     AppLayoutNoHeader,
     LogisticTimeLine,
     PrimaryButton,
+    LogisticCard,
+    OVInfo
 },
 props:{
     logistic: Object,

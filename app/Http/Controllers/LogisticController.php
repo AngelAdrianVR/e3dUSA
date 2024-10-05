@@ -52,20 +52,21 @@ class LogisticController extends Controller
     {
         // Cargar las relaciones necesarias
         $logistic->load([
-            'sale:id,tracking_guide,promise_date,user_id,company_branch_id,created_at,is_high_priority,notes,contact_id',
+            'sale:id,tracking_guide,promise_date,user_id,company_branch_id,created_at,is_high_priority,notes,contact_id,shipping_company',
             'sale.contact:id,name,email,phone',
             'sale.user:id,name',
             'sale.companyBranch.company:id,business_name',
             'sale.productions',
-            'sale.productions.catalogProductCompanySale:id,catalog_product_company_id',
+            'sale.productions.catalogProductCompanySale',
             'sale.productions.catalogProductCompanySale.catalogProductCompany:id,catalog_product_id',
+            'sale.productions.catalogProductCompanySale.catalogProductCompany.catalogProduct.media',
             'sale.productions.catalogProductCompanySale.catalogProductCompany.catalogProduct:id,name'
         ]);
         $logistics = Logistic::with([
             'sale:id',
         ])->get(['id', 'sale_id']);
 
-        // return $logistic;
+        return $logistic;
         return inertia('Logistic/Show', compact('logistic', 'logistics'));
     }
 

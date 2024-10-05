@@ -15,10 +15,10 @@
             </template>
 
             <div class="flex space-x-6 items-center justify-center text-xs mt-2">
-                <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Esperando autorización</p>
-                <p class="text-amber-700"><i class="fa-solid fa-circle mr-1"></i>Autorizado. Sin iniciar</p>
-                <p class="text-secondary"><i class="fa-solid fa-circle mr-1"></i>En proceso</p>
-                <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Terminado</p>
+                <p><i class="fa-solid fa-circle mr-1 text-amber-500"></i>Esperando autorización</p>
+                <p><i class="fa-solid fa-circle mr-1 text-amber-700"></i>Autorizado. Sin iniciar</p>
+                <p><i class="fa-solid fa-circle mr-1 text-secondary"></i>En proceso</p>
+                <p><i class="fa-solid fa-circle mr-1 text-green-500"></i>Terminado</p>
             </div>
 
             <!-- Filtro -->

@@ -102,10 +102,9 @@
         </table>
         <el-empty v-else description="No hay información para mostrar" />
       </div>
-      <!-- Estado de carga  -->
-      <div v-else class="flex justify-center items-center lg:my-40">
-        <i class="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
-      </div>
+      <!-- Estado de carga -->
+      <LoadingLogo v-else />
+
       <!-- Analisis de producto -->
       <div v-if="productSelected !== null" class="rounded-lg px-4 py-3 mx-9 mt-10 text-sm">
         <div class="w-full" v-if="!loadingCharts">
@@ -127,10 +126,8 @@
             </div>
           </div>
         </div>
-        <!-- Estado de carga  -->
-        <div v-else class="flex justify-center items-center lg:py-6">
-          <i class="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
-        </div>
+        <!-- Estado de carga -->
+        <LoadingLogo v-else />
       </div>
 
       <!-- Estadisticas -->
@@ -138,7 +135,7 @@
       <el-date-picker @change="fetchEstatisticsData" v-model="estatisticsMonth" type="month" placeholder="Elige el mes y año" format="MM-YYYY"
         value-format="YYYY-MM-D" class="mt-2" />
       <div>
-        <Loading v-if="loadingEstatistics" class="mt-24 mb-36" />
+        <LoadingLogo v-if="loadingEstatistics" />
         <div v-else class="lg:grid grid-cols-1 gap-10 mt-4 space-y-4 lg:space-y-0">
           <PieChart v-for="(item, index) in pieChartOptions" :key="index" :options="item.data" :title="item.title"
             :icon="item.icon" />
@@ -154,7 +151,8 @@ import InputLabel from "@/Components/InputLabel.vue";
 import LinealChart from "@/Components/MyComponents/LinealChart.vue";
 import ColumWithMakersChart from "@/Components/MyComponents/ColumWithMakersChart.vue";
 import BarChart from "@/Components/MyComponents/BarChart.vue";
-import Loading from "@/Components/MyComponents/Loading.vue";
+// import Loading from "@/Components/MyComponents/Loading.vue";
+import LoadingLogo from "@/Components/MyComponents/LoadingLogo.vue";
 import axios from 'axios';
 import PieChart from '@/Components/MyComponents/PieChart.vue';
 import { format } from 'date-fns';
@@ -233,11 +231,12 @@ export default {
   components: {
     AppLayoutNoHeader,
     ColumWithMakersChart,
+    LoadingLogo,
     LinealChart,
     InputLabel,
     PieChart,
     BarChart,
-    Loading,
+    // Loading,
   },
   props: {
     catalog_products: Array,
