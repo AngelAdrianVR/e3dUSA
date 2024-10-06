@@ -160,7 +160,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                             </svg>
                                             Editar</el-dropdown-item> -->
-                                        <el-dropdown-item v-if="scope.row.status !== 'Parcialmente enviado' && scope.row.status !== 'Enviado'"
+                                        <el-dropdown-item v-if="scope.row.status !== 'Enviado'"
                                             :command="'Enviado-' + scope.row.id">
                                             <svg width="18" height="15" class="size-4 mr-2" viewBox="0 0 18 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M5.93141 12.096C5.93141 12.423 5.80152 12.7366 5.57031 12.9678C5.33911 13.199 5.02553 13.3289 4.69856 13.3289C4.37159 13.3289 4.05801 13.199 3.8268 12.9678C3.5956 12.7366 3.46571 12.423 3.46571 12.096M5.93141 12.096C5.93141 11.7691 5.80152 11.4555 5.57031 11.2243C5.33911 10.9931 5.02553 10.8632 4.69856 10.8632C4.37159 10.8632 4.05801 10.9931 3.8268 11.2243C3.5956 11.4555 3.46571 11.7691 3.46571 12.096M5.93141 12.096H10.8628M3.46571 12.096H1.92465C1.67942 12.096 1.44424 11.9986 1.27083 11.8252C1.09743 11.6518 1.00002 11.4166 1.00002 11.1714V8.39748M10.8628 12.096H12.7121M10.8628 12.096V8.39748M1.00002 8.39748V2.12229C0.998709 1.89722 1.08094 1.67968 1.2308 1.51176C1.38065 1.34384 1.58747 1.23748 1.81123 1.21327C4.55065 0.928911 7.31216 0.928911 10.0516 1.21327C10.516 1.26094 10.8628 1.65545 10.8628 2.12229V2.90966M1.00002 8.39748H10.8628M15.1778 12.096C15.1778 12.423 15.0479 12.7366 14.8167 12.9678C14.5855 13.199 14.2719 13.3289 13.9449 13.3289C13.6179 13.3289 13.3044 13.199 13.0732 12.9678C12.842 12.7366 12.7121 12.423 12.7121 12.096M15.1778 12.096C15.1778 11.7691 15.0479 11.4555 14.8167 11.2243C14.5855 10.9931 14.2719 10.8632 13.9449 10.8632C13.6179 10.8632 13.3044 10.9931 13.0732 11.2243C12.842 11.4555 12.7121 11.7691 12.7121 12.096M15.1778 12.096H16.1024C16.6128 12.096 17.0303 11.6818 16.9983 11.1722C16.8331 8.45801 15.919 5.84266 14.3575 3.6165C14.2088 3.40796 14.0146 3.23597 13.7896 3.11352C13.5646 2.99107 13.3148 2.92136 13.0589 2.90966H10.8628M10.8628 2.90966V8.39748" stroke="#2F941E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -288,12 +288,26 @@ methods:{
         const commandName = command.split('-')[0];
         const rowId = command.split('-')[1];
 
-        if (commandName == 'clone') {
-            this.clone(rowId);
-        } else if (commandName == 'make_so') {
-            console.log('SO');
+        if (commandName === 'Enviado' || commandName === 'Parcialmente enviado') {
+            this.updateStatus(rowId, commandName);
         } else {
             this.$inertia.get(route('shippings.' + commandName, rowId));
+        }
+    },
+    async updateStatus(shipping_id, status) {
+        try {
+            const response = await axios.post(route('shippings.update-status', shipping_id), {status: status});
+            if ( response.status === 200 ) {
+                this.shippings.data.find(item => item.id === parseInt(shipping_id)).status = response.data.status;
+
+                this.$notify({
+                    title: 'Éxito',
+                    message: '',
+                    type: 'success'
+                });
+            }
+        } catch (error) {
+            console.log(error);
         }
     },
     fetchItemsFiltered() {

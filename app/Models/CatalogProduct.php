@@ -84,6 +84,11 @@ class CatalogProduct extends Model implements HasMedia
         return $this->hasMany(Sample::class);
     }
 
+    public function ahippingRates():HasMany 
+    {
+        return $this->hasMany(ShippingRate::class);
+    }
+
     public function getCommitedUnits() 
     {
         return 0;

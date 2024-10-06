@@ -144,8 +144,7 @@
 
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PaginationWithNoMeta from "@/Components/MyComponents/PaginationWithNoMeta.vue";
-import TextInput from '@/Components/TextInput.vue';
-import Checkbox from "@/Components/Checkbox.vue";
+import LoadingLogo from "@/Components/MyComponents/LoadingLogo.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 import SaleProfit from "@/Components/MyComponents/SaleProfit.vue";
@@ -159,10 +158,9 @@ export default {
         NotificationCenter,
         SecondaryButton,
         IndexSearchBar,
+        LoadingLogo,
         SaleProfit,
         AppLayout,
-        TextInput,
-        Checkbox,
         Link,
     },
     data() {
@@ -173,10 +171,6 @@ export default {
             loading: false,
             pagination: null,
             filteredQuotes: this.quotes.data,
-            // pagination
-            // itemsPerPage: 10,
-            // start: 0,
-            // end: 10,
         };
     },
     props: {
@@ -213,10 +207,6 @@ export default {
             } else {
                 this.disableMassiveActions = false;
             }
-        },
-        handlePagination(val) {
-            this.start = (val - 1) * this.itemsPerPage;
-            this.end = val * this.itemsPerPage;
         },
         async deleteSelections() {
             try {
@@ -375,22 +365,5 @@ export default {
             }
         },
     },
-    // computed: {
-    //     filteredTableData() {
-    //         if (!this.search) {
-    //             return this.quotes.filter((item, index) => index >= this.start && index < this.end);
-    //         } else {
-    //             return this.quotes.filter(
-    //                 (quote) =>
-    //                     quote.folio.toLowerCase().includes(this.search.toLowerCase()) ||
-    //                     quote.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
-    //                     quote.receiver.toLowerCase().includes(this.search.toLowerCase()) ||
-    //                     quote.companyBranch.name?.toLowerCase().includes(this.search.toLowerCase()) ||
-    //                     quote.prospect.name?.toLowerCase().includes(this.search.toLowerCase()) ||
-    //                     quote.catalog_products.some(product => product.name.toLowerCase().includes(this.search.toLowerCase()))
-    //             );
-    //         }
-    //     }
-    // },
 }
 </script>
