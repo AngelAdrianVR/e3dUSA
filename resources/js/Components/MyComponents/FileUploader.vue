@@ -2,7 +2,7 @@
     <div class="w-full">
         <input type="file" ref="fileInput" style="display: none" @change="handleFileInputChange" :multiple="multiple"
             :accept="getAcceptedFormat()" />
-        <button type="button" @click="openFileBrowser" class="w-full px-3 py-[5px] rounded-md bg-[#CCCCCC]">
+        <button type="button" @click="openFileBrowser" class="w-full px-3 py-[2px] rounded-md bg-[#CCCCCC]">
             <p class="flex items-center justify-between text-sm text-[#9A9A9A]">
                 <span>Clic para seleccionar {{ multiple ? 'los archivos' : 'el archivo' }}</span>
                 <span class="text-primary w-10 h-7 flex items-center justify-center border-2 border-primary rounded-full">
@@ -16,7 +16,7 @@
         </button>
 
         <div v-if="selectedFiles.length">
-            <ul class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5 text-sm mt-2">
+            <ul class="lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5 text-sm mt-2" :class="multiple ? 'grid' : null">
                 <li v-for="(file, index) in selectedFiles" :key="index" class="flex items-center justify-between px-2">
                     <p class="flex items-center">
                         <i :class="getFileTypeIcon(file.name)"></i>
