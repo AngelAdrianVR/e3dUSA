@@ -50,6 +50,7 @@ use App\Http\Controllers\SampleController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ShippingController;
+use App\Http\Controllers\ShippingRateController;
 use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
@@ -157,11 +158,18 @@ Route::post('shippings/massive-delete', [ShippingController::class, 'massiveDele
 Route::post('shippings-get-matches', [ShippingController::class, 'getMatches'])->name('shippings.get-matches');
 Route::get('shippings-index-all', [ShippingController::class, 'indexAll'])->name('shippings.index-all');
 Route::get('shippings-fetch-filtered/{filter}', [ShippingController::class, 'fetchFiltered'])->name('shippings.fetch-filtered');
+Route::post('shippings-update-status/{shipping}', [ShippingController::class, 'updateStatus'])->name('shippings.update-status');
 
 
 // ------- boxes routes  ---------
 Route::resource('boxes', BoxController::class)->middleware('auth');
 Route::post('boxes/massive-delete', [BoxController::class, 'massiveDelete'])->name('boxes.massive-delete');
+
+
+// ------- shipping-rates routes  ---------
+Route::resource('shipping-rates', ShippingRateController::class)->middleware('auth');
+Route::post('shipping-rates/massive-delete', [ShippingRateController::class, 'massiveDelete'])->name('shipping-rates.massive-delete');
+Route::get('shipping-rates/fetch-catalog-product-info/{catalog_product}', [ShippingRateController::class, 'fetchCatalogProductInfo'])->name('shipping-rates.fetch-catalog-product-info');
 
 
 // ------- CRM (Clients Routes)  ---------

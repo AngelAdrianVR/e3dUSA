@@ -52,18 +52,20 @@ class ShippingController extends Controller
 
     public function show(Sale $shipping)
     {
-        // Cargar las relaciones necesarias
-        $shipping->load([
-            'sale:id,tracking_guide,promise_date,user_id,company_branch_id,created_at,is_high_priority,notes,contact_id,shipping_company',
-            'sale.contact:id,name,email,phone',
-            'sale.user:id,name',
-            'sale.companyBranch.company:id,business_name',
-            'sale.productions',
-            'sale.productions.catalogProductCompanySale',
-            'sale.productions.catalogProductCompanySale.catalogProductCompany:id,catalog_product_id',
-            'sale.productions.catalogProductCompanySale.catalogProductCompany.catalogProduct.media',
-            'sale.productions.catalogProductCompanySale.catalogProductCompany.catalogProduct:id,name'
-        ]);
+        // Cargar las relaciones necesarias directamente desde el modelo Sale
+        $shipping = Sale::whereNotNull('tracking_guide')
+        ->with([
+            'contact:id,name,email,phone',
+            'user:id,name',
+            'companyBranch:id,name,address,company_id',
+            'companyBranch.company:id,business_name',
+            'productions',
+            'catalogProductCompanySales.catalogProductCompany:id,catalog_product_id',
+            'catalogProductCompanySales.catalogProductCompany.catalogProduct.media',
+            'catalogProductCompanySales.catalogProductCompany.catalogProduct:id,name,part_number'
+        ])
+        ->find($shipping->id, ['id', 'tracking_guide', 'promise_date', 'user_id', 'company_branch_id', 'created_at', 'is_high_priority', 'notes', 'contact_id', 'shipping_company']);
+
         $shippings = Sale::whereNotNull('tracking_guide')
             ->get(['id']);
 
@@ -120,5 +122,13 @@ class ShippingController extends Controller
         ->paginate(100);
 
         return response()->json(['items' => $shippings], 200);
+    }
+
+    public function updateStatus(Sale $shipping, Request $request)
+    {
+        $shipping->status = $request->status;
+        $shipping->save();
+
+        return response()->json(['status' => $shipping->status]);
     }
 }

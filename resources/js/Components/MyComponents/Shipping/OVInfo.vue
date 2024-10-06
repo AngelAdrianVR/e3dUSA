@@ -1,5 +1,5 @@
 <template>
-    <p>Folio de la orden: <strong class="ml-7">OP-{{ logistic.sale.id.toString().padStart(4, '0') }}</strong></p>
+    <p>Folio de la orden: <strong class="ml-7">OP-{{ shipping.id.toString().padStart(4, '0') }}</strong></p>
 
     <!-- informacion de la orden -->
     <div class="border border-[#999999] rounded-2xl p-4 mt-5">
@@ -10,23 +10,23 @@
             <article class="mt-4 border-r border-[#999999] space-y-1">
                 <div class="flex space-x-2">
                     <p class="text-[#999999] w-48">Solicitada por:</p>
-                    <p>{{ logistic.sale.user.name }}</p>
+                    <p>{{ shipping.user.name }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#999999] w-48">Solicitada el:</p>
-                    <p>{{ formatDate(logistic.sale.created_at) }}</p>
+                    <p>{{ formatDate(shipping.created_at) }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#999999] w-48">Prioridad:</p>
-                    <p :class="logistic.sale.is_high_priority ? 'text-red-600 font-bold' : 'text-black'">{{ logistic.sale.is_high_priority ? 'Urgente' : 'Normal' }}</p>
+                    <p :class="shipping.is_high_priority ? 'text-red-600 font-bold' : 'text-black'">{{ shipping.is_high_priority ? 'Urgente' : 'Normal' }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#999999] w-48">Fecha prevista entrega:</p>
-                    <p>{{ formatDate(logistic.sale.promise_date) ?? 'Sin fecha promesa' }}</p>
+                    <p>{{ formatDate(shipping.promise_date) ?? 'Sin fecha promesa' }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#999999] w-48">Notas:</p>
-                    <p>{{ logistic.sale.notes ?? '-' }}</p>
+                    <p>{{ shipping.notes ?? '-' }}</p>
                 </div>
             </article>
 
@@ -34,27 +34,27 @@
             <article class="mt-4 space-y-1 ml-5">
                 <div class="flex space-x-2">
                     <p class="text-[#999999] w-48">Cliente:</p>
-                    <p>{{ logistic.sale.company_branch?.company?.business_name }}</p>
+                    <p>{{ shipping.company_branch?.company?.business_name }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#999999] w-48">Sucursal:</p>
-                    <p>{{ logistic.sale.company_branch?.name }}</p>
+                    <p>{{ shipping.company_branch?.name }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#999999] w-48">Contacto:</p>
-                    <p>{{ logistic.sale.contact.name }}</p>
+                    <p>{{ shipping.contact.name }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#999999] w-48">Email:</p>
-                    <p>{{ logistic.sale.contact.email }}</p>
+                    <p>{{ shipping.contact.email }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#999999] w-48">Teléfono:</p>
-                    <p>{{ logistic.sale.contact.phone }}</p>
+                    <p>{{ shipping.contact.phone }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#999999] w-48">Dirección:</p>
-                    <p class="w-full">{{ logistic.sale.company_branch?.address }}</p>
+                    <p class="w-full">{{ shipping.company_branch?.address }}</p>
                 </div>
             </article>
         </section>
@@ -63,27 +63,27 @@
     <section class="my-7 space-y-1 ml-3">
         <div class="flex space-x-2">
             <p class="text-[#999999] w-48">Opciones de envío:</p>
-            <p>{{ logistic.type }}</p>
+            <p>{{ shipping.type }}</p>
         </div>
 
         <div class="flex space-x-2">
             <p class="text-[#999999] w-48">Proveedor de paquetería:</p>
-            <p>{{ logistic.sale.shipping_company ?? '-' }}</p>
+            <p>{{ shipping.shipping_company ?? '-' }}</p>
         </div>
 
         <div class="flex space-x-2">
             <p class="text-[#999999] w-48">Guía:</p>
-            <p class="font-bold">{{ logistic.sale.tracking_guide ?? '-' }}</p>
+            <p class="font-bold">{{ shipping.tracking_guide ?? '-' }}</p>
         </div>
 
         <div class="flex space-x-2">
             <p class="text-[#999999] w-48">Cantidad de cajas:</p>
-            <!-- <p>{{ logistic.sale.tracking_guide ?? '-' }}</p> -->
+            <!-- <p>{{ shipping.tracking_guide ?? '-' }}</p> -->
         </div>
 
         <div class="flex space-x-2">
             <p class="text-[#999999] w-48">Costo total de envío:</p>
-            <!-- <p>${{ logistic.sale.tracking_guide ?? '-' }}</p> -->
+            <!-- <p>${{ shipping.tracking_guide ?? '-' }}</p> -->
         </div>
     </section>
 </template>
@@ -99,12 +99,14 @@ data() {
     }
 },
 props:{
-    logistic: Object
+    shipping: Object
 },
 methods:{
     formatDate(date) {
-      const parsedDate = new Date(date);
-      return format(parsedDate, 'dd MMMM yyyy', { locale: es }); // Formato personalizado
+        if ( date ) {
+            const parsedDate = new Date(date);
+            return format(parsedDate, 'dd MMMM yyyy', { locale: es }); // Formato personalizado
+        }
     },
 }
 }

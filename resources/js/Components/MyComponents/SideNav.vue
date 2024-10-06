@@ -223,7 +223,7 @@ export default {
                         },
                         {
                             label: 'Tarifas',
-                            route: 'shippings.index',
+                            route: 'shipping-rates.index',
                             show: true,
                             // notifications: this.$page.props.auth.user?.notifications?.some(notification => {
                             //     return notification.data.module === 'suppler';

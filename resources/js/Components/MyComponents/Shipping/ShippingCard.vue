@@ -6,21 +6,22 @@
             <article class="space-y-1">
                 <div class="flex space-x-2">
                     <p class="text-[#373737] font-bold w-24">Producto:</p>
-                    <p>{{ 'xxxxxxxx' }}</p>
+                    <p>{{ product.catalog_product_company?.catalog_product?.name }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#373737] font-bold w-24">N. Parte:</p>
-                    <p>{{ 'xxxx-xxxx' }}</p>
+                    <p>{{ product.catalog_product_company?.catalog_product?.part_number }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#373737] font-bold w-24">Cantidad:</p>
-                    <p>{{ 'xx' }} unidades</p>
+                    <p>{{ product?.quantity }} unidades</p>
                 </div>
             </article>
 
             <article class="space-y-3 text-right">
-                <figure class="rounded-xl bg-gray-200 w-72 h-28">
-                    <!-- <img src="" alt=""> -->
+                <figure class="rounded-xl flex items-center justify-center bg-gray-200 w-72 h-28">
+                    <img v-if="product.catalog_product_company?.catalog_product?.media?.length" class="object-contain" :src="product.catalog_product_company?.catalog_product?.media[0]?.original_url" alt="">
+                    <i v-else class="fa-regular fa-image text-gray-300 text-5xl"></i>
                 </figure>
 
                 <p class="inline-flex rounded-md justify-center items-center px-3 bg-[#FDB9C9] text-primary">
@@ -62,6 +63,13 @@
 
 <script>
 export default {
+data() {
+    return {
 
+    }
+},
+props:{
+    product: Object
+}
 }
 </script>
