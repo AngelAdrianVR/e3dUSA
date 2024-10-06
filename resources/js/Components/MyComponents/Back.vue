@@ -3,8 +3,8 @@
         <i class="fa-solid fa-angle-left"></i>
   </button>
 
-  <button v-else @click="goToRoute" class="flex justify-center items-center rounded-full py-[9px] px-3 focus:outline-none hover-3dbuttom bg-[#373737]">
-        <i class="fa-solid fa-angle-left text-white"></i>
+  <button v-else @click="goToRoute" class="flex justify-center items-center rounded-full py-[9px] px-3 focus:outline-none hover-3dbuttom">
+        <i class="fa-solid fa-angle-left"></i>
   </button>
 </template>
 

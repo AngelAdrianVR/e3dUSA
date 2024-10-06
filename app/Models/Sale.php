@@ -31,6 +31,9 @@ Sale extends Model implements HasMedia
         'authorized_user_name',
         'authorized_at',
         'recieved_at',
+        'sent_at',
+        'sent_by',
+        'shipping_type',
         'user_id',
         'company_branch_id',
         'contact_id',
@@ -42,6 +45,7 @@ Sale extends Model implements HasMedia
     protected $casts = [
         'authorized_at' => 'datetime',
         'recieved_at' => 'datetime',
+        'sent_at' => 'datetime',
         'partialities' => 'array',
         'promise_date' => 'date',
     ];
@@ -71,11 +75,6 @@ Sale extends Model implements HasMedia
     {
         return $this->hasMany(CatalogProductCompanySale::class);
     }
-
-    // public function shippings(): HasMany
-    // {
-    //     return $this->hasMany(Shipping::class);
-    // }
 
     public function productions()
     {

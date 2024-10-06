@@ -190,39 +190,39 @@
             </label>
           </div>
             <div class="flex items-center space-x-3">
-              <div>
-                <IconInput v-model="form.width" inputPlaceholder="Ancho(mm)*" inputType="number" inputStep="0.01">
-                  <el-tooltip content="Ancho(mm)*" placement="top">
-                    <i class="fa-solid fa-text-width"></i>
-                  </el-tooltip>
-                </IconInput>
-                <InputError :message="form.errors.width" />
-              </div>
-              <div v-if="!form.is_circular">
-                <IconInput v-model="form.large" inputPlaceholder="Largo(mm)*" inputType="number" inputStep="0.01">
-                  <el-tooltip content="Largo(mm)*" placement="top">
-                    <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
-                  </el-tooltip>
-                </IconInput>
-                <InputError :message="form.errors.large" />
-              </div>
-              <div v-if="!form.is_circular">
-                <IconInput v-model="form.height" inputPlaceholder="Alto(mm)*" inputType="number" inputStep="0.01">
-                  <el-tooltip content="Alto(mm)*" placement="top">
-                    <i class="fa-solid fa-arrows-up-down"></i>
-                  </el-tooltip>
-                </IconInput>
-                <InputError :message="form.errors.height" />
-              </div>
-              <div v-if="form.is_circular">
-                <IconInput v-model="form.diameter" inputPlaceholder="Diámetro(mm)*" inputType="number" inputStep="0.01">
-                  <el-tooltip content="Diámetro(mm)*" placement="top">
-                    <i class="fa-regular fa-circle"></i>
-                  </el-tooltip>
-                </IconInput>
-                <InputError :message="form.errors.diameter" />
-              </div>
+            <div>
+              <IconInput v-model="form.width" inputPlaceholder="Ancho(mm)*" inputType="number" inputStep="0.01">
+                <el-tooltip content="Ancho(mm)*" placement="top">
+                  <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                </el-tooltip>
+              </IconInput>
+              <InputError :message="form.errors.width" />
             </div>
+            <div v-if="!form.is_circular">
+              <IconInput v-model="form.large" inputPlaceholder="Largo(mm)*" inputType="number" inputStep="0.01">
+                <el-tooltip content="Largo(mm)*" placement="top">
+                  <i class="fa-solid fa-text-width"></i>
+                </el-tooltip>
+              </IconInput>
+              <InputError :message="form.errors.large" />
+            </div>
+            <div v-if="!form.is_circular">
+              <IconInput v-model="form.height" inputPlaceholder="Alto(mm)*" inputType="number" inputStep="0.01">
+                <el-tooltip content="Alto(mm)*" placement="top">
+                  <i class="fa-solid fa-arrows-up-down"></i>
+                </el-tooltip>
+              </IconInput>
+              <InputError :message="form.errors.height" />
+            </div>
+            <div v-if="form.is_circular">
+              <IconInput v-model="form.diameter" inputPlaceholder="Diámetro(mm)*" inputType="number" inputStep="0.01">
+                <el-tooltip content="Diámetro(mm)*" placement="top">
+                  <i class="fa-regular fa-circle"></i>
+                </el-tooltip>
+              </IconInput>
+              <InputError :message="form.errors.diameter" />
+            </div>
+          </div>
             <div class="flex items-center justify-center space-x-4">
               <figure v-if="!form.is_circular" class="w-48">
                 <img src="@/../../public/images/paralelepipedo.png" alt="">

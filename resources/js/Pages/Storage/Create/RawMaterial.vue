@@ -139,7 +139,7 @@
             <div>
               <IconInput v-model="form.width" inputPlaceholder="Ancho(mm)*" inputType="number" inputStep="0.01">
                 <el-tooltip content="Ancho(mm)*" placement="top">
-                  <i class="fa-solid fa-text-width"></i>
+                  <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
                 </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.width" />
@@ -147,7 +147,7 @@
             <div v-if="!form.is_circular">
               <IconInput v-model="form.large" inputPlaceholder="Largo(mm)*" inputType="number" inputStep="0.01">
                 <el-tooltip content="Largo(mm)*" placement="top">
-                  <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                  <i class="fa-solid fa-text-width"></i>
                 </el-tooltip>
               </IconInput>
               <InputError :message="form.errors.large" />
