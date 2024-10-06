@@ -27,6 +27,10 @@ return new class extends Migration
             $table->json('partialities')->nullable();
             $table->timestamp('authorized_at')->nullable();
             $table->timestamp('recieved_at')->nullable();
+            $table->timestamp('sent_at')->nullable();
+            $table->string('sent_by')->nullable();
+            $table->string('status')->nullable();
+            $table->string('shipping_type')->nullable(); //unica o parcialidades
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('company_branch_id')->constrained()->cascadeOnDelete();
             $table->foreignId('oportunity_id')->nullable()->constrained()->cascadeOnDelete();

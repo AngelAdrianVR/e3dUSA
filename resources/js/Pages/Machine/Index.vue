@@ -87,11 +87,10 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
-import TextInput from '@/Components/TextInput.vue';
-import { Link } from "@inertiajs/vue3";
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import axios from 'axios';
+import { Link } from "@inertiajs/vue3";
 
 
 export default {
@@ -107,12 +106,11 @@ export default {
         };
     },
     components: {
-        AppLayout,
-        SecondaryButton,
-        Link,
-        TextInput,
         NotificationCenter,
+        SecondaryButton,
         IndexSearchBar,
+        AppLayout,
+        Link,
     },
     props: {
         machines: Object,
@@ -133,39 +131,6 @@ export default {
         handlePagination(val) {
             this.start = (val - 1) * this.itemsPerPage;
             this.end = val * this.itemsPerPage;
-        },
-
-        async clone(company_id) {
-            try {
-                const response = await axios.post(route('companies.clone', {
-                    company_id: company_id
-                }));
-
-                if (response.status == 200) {
-                    this.$notify({
-                        title: 'Éxito',
-                        message: response.data.message,
-                        type: 'success'
-                    });
-
-                    this.companies.data.unshift(response.data.newItem);
-
-                } else {
-                    this.$notify({
-                        title: 'Algo salió mal',
-                        message: response.data.message,
-                        type: 'error'
-                    });
-                }
-
-            } catch (err) {
-                this.$notify({
-                    title: 'Algo salió mal',
-                    message: err.message,
-                    type: 'error'
-                });
-                console.log(err);
-            }
         },
         async deleteSelections() {
             try {

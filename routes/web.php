@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdditionalTimeRequestController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BonusController;
+use App\Http\Controllers\BoxController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CallMonitorController;
 use App\Http\Controllers\CatalogProductCompanySaleController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\ExtraTimeRequestController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\KioskDeviceController;
+use App\Http\Controllers\LogisticController;
 use App\Http\Controllers\MachineController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\ManualController;
@@ -47,6 +49,7 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SampleController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
@@ -123,11 +126,13 @@ Route::get('customers-report', function () {
 // ----------- Search routes --------
 Route::get('/search', [SearchController::class, 'index'])->name('search');
 
+
 // ------- Catalog Products Routes ---------
 Route::post('catalog-product-company-sale/store-traveler-data/{cpcs}', [CatalogProductCompanySaleController::class, 'storeTravelerData'])->middleware('auth')->name('catalog-product-company-sale.store-traveler-data');
 Route::get('catalog-product-company-sale/get-traveler-data/{cpcs}', [CatalogProductCompanySaleController::class, 'getTravelerData'])->middleware('auth')->name('catalog-product-company-sale.get-traveler-data');
 Route::get('catalog-product-company-sale/get-productions/{cpcs}', [CatalogProductCompanySaleController::class, 'getProductions'])->middleware('auth')->name('catalog-product-company-sale.get-productions');
 Route::get('catalog-product-company-sale/get-raw-materials/{cpcs}', [CatalogProductCompanySaleController::class, 'getRawMaterials'])->middleware('auth')->name('catalog-product-company-sale.get-raw-materials');
+
 
 // ------- Catalog Products Routes ---------
 Route::resource('catalog-products', CatalogProductController::class)->middleware('auth');
@@ -146,11 +151,26 @@ Route::post('companies/get-all-companies', [CompanyController::class, 'getAllCom
 Route::get('companies-get-exclusive-designs/{company}', [CompanyController::class, 'getExclusiveDesigns'])->name('companies.get-exclusive-designs')->middleware('auth');
 
 
+// ------- shippings routes  ---------
+Route::resource('shippings', ShippingController::class)->middleware('auth');
+Route::post('shippings/massive-delete', [ShippingController::class, 'massiveDelete'])->name('shippings.massive-delete');
+Route::post('shippings-get-matches', [ShippingController::class, 'getMatches'])->name('shippings.get-matches');
+Route::get('shippings-index-all', [ShippingController::class, 'indexAll'])->name('shippings.index-all');
+Route::get('shippings-fetch-filtered/{filter}', [ShippingController::class, 'fetchFiltered'])->name('shippings.fetch-filtered');
+
+
+// ------- boxes routes  ---------
+Route::resource('boxes', BoxController::class)->middleware('auth');
+Route::post('boxes/massive-delete', [BoxController::class, 'massiveDelete'])->name('boxes.massive-delete');
+
+
 // ------- CRM (Clients Routes)  ---------
 Route::get('crm', [DashboardController::class, 'crmDashboard'])->middleware('auth')->name('crm.dashboard');
 
+
 // ------- CRM (exclusive customer designs Routes)  ---------
 Route::resource('exclusive-designs', ExclusiveDesignController::class)->middleware('auth');
+
 
 // ------- CRM (oportunities Routes)  ---------
 Route::resource('oportunities', OportunityController::class)->middleware('auth');
@@ -158,9 +178,11 @@ Route::put('/oportunities/update-status/{oportunity_id}', [OportunityController:
 Route::put('/oportunities/create-sale/{oportunity_id}', [OportunityController::class, 'createSale'])->name('oportunities.create-sale')->middleware('auth');
 Route::post('oportunities/update-with-media/{oportunity}', [OportunityController::class, 'updateWithMedia'])->name('oportunities.update-with-media')->middleware('auth');
 
+
 // ------- CRM (surveys Routes)  ---------
 Route::get('/surveys/create/{oportunity_id}', [SurveyController::class, 'create'])->name('surveys.create');
 Route::post('/surveys/store/{oportunity_id}', [SurveyController::class, 'store'])->name('surveys.store');
+
 
 // ------- CRM (oportunityTasks Routes)  ---------
 Route::resource('oportunity-tasks', OportunityTaskController::class)->except(['store', 'create'])->middleware('auth');
@@ -169,31 +191,39 @@ Route::post('oportunity-tasks/store/{oportunity_id}', [OportunityTaskController:
 Route::post('oportunity-tasks/{oportunity_task}/comment', [OportunityTaskController::class, 'comment'])->name('oportunity-tasks.comment')->middleware('auth');
 Route::put('oportunity-tasks/mark-as-done/{oportunityTask}', [OportunityTaskController::class, 'markAsDone'])->name('oportunity-tasks.mark-as-done')->middleware('auth');
 
+
 // ------- CRM (prospectos Routes)  ---------
 Route::resource('prospects', ProspectController::class)->middleware('auth');
 Route::get('prospects-get-matches/{query}', [ProspectController::class, 'getMatches'])->name('prospects.get-matches');
 Route::get('prospects-get-quotes/{prospect}', [ProspectController::class, 'getQuotes'])->name('prospects.get-quotes');
 Route::post('prospects/turn-into-customer/{prospect}', [ProspectController::class, 'turnIntoCustomer'])->name('prospects.turn-into-customer');
 
+
 // ------- CRM (Client monior Routes)  ---------
 Route::resource('client-monitors', ClientMonitorController::class)->middleware('auth');
+
 
 // ------- CRM (Payment monior Routes)  ---------
 Route::resource('payment-monitors', PaymentMonitorController::class)->middleware('auth');
 Route::post('payment-monitors/update-with-media/{payment_monitor}', [PaymentMonitorController::class, 'updateWithMedia'])->name('payment-monitors.update-with-media')->middleware('auth');
 
+
 // ------- CRM (meeting monior Routes)  ---------
 Route::resource('meeting-monitors', MettingMonitorController::class)->middleware('auth');
+
 
 // ------- CRM (email monior Routes)  ---------
 Route::resource('email-monitors', EmailMonitorController::class)->middleware('auth');
 
+
 // ------- CRM (Call monior Routes)  ---------
 Route::resource('call-monitors', CallMonitorController::class)->middleware('auth');
+
 
 // ------- CRM (whatsapp monior Routes)  ---------
 Route::resource('whatsapp-monitors', WhatsappMonitorController::class)->middleware('auth');
 Route::post('whatsapp-monitors/update-with-media/{whatsapp_monitor}', [WhatsappMonitorController::class, 'updateWithMedia'])->name('whatsapp-monitors.update-with-media')->middleware('auth');
+
 
 // ------- CRM(sale orders Routes)  ---------
 Route::resource('sales', SaleController::class)->middleware('auth');
@@ -208,6 +238,7 @@ Route::get('sales-quality-certificate/{sale_id}', [SaleController::class, 'Quali
 Route::get('sales-fetch-filtered/{filter}', [SaleController::class, 'fetchFiltered'])->name('sales.fetch-filtered');
 Route::get('sales-check-if-has-sale/{catalog_prroduct_company_id}', [SaleController::class, 'checkIfHasSale'])->name('sales.check-if-has-sale');
 
+
 // ------- CRM(Companybranches sucursales Routes)  ---------
 Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');
 Route::put('company-branches/clear-important-notes/{company_branch}', [CompanyBranchController::class, 'clearImportantNotes'])->name('company-branches.clear-important-notes')->middleware('auth');
@@ -215,12 +246,14 @@ Route::put('company-branches/store-important-notes/{company_branch}', [CompanyBr
 Route::put('company-branches/update-product-price/{product_company}', [CompanyBranchController::class, 'updateProductPrice'])->name('company-branches.update-product-price')->middleware('auth');
 Route::get('company-branches/fetch-design-info/{company_branch}', [CompanyBranchController::class, 'fetchDesignInfo'])->name('company-branches.fetch-design-info')->middleware('auth');
 
+
 // ------- Compras(Suppliers Routes)  ---------
 Route::resource('suppliers', SupplierController::class)->middleware('auth');
 Route::get('fetch-supplier/{supplier_id}', [SupplierController::class, 'fetchSupplier'])->name('suppliers.fetch-supplier');
 Route::get('supplier-get-orders/{supplier}', [SupplierController::class, 'getOrders'])->name('suppliers.get-orders');
 Route::get('supplier-rating-report/{period}', [SupplierController::class, 'ratingReport'])->name('suppliers.rating-report');
 Route::post('suppliers/massive-delete', [SupplierController::class, 'massiveDelete'])->name('suppliers.massive-delete');
+
 
 // ------- Compras(purchases Routes)  ---------
 Route::resource('purchases', PurchaseController::class)->middleware('auth');
@@ -234,6 +267,7 @@ Route::put('purchases/authorize/{purchase}', [PurchaseController::class, 'author
 Route::put('purchases/update-quantity/{purchase}', [PurchaseController::class, 'updateQuantity'])->name('purchases.update-quantity');
 Route::put('purchases/store-rating/{purchase}', [PurchaseController::class, 'storeRating'])->name('purchases.store-rating');
 // Route::get('develop-template', [PurchaseController::class, 'developTemplate'])->name('develop.template');
+
 
 //-------------- Projects routes ------------------
 Route::resource('projects', ProjectController::class)->middleware('auth');
