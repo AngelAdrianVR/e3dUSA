@@ -22,15 +22,9 @@
           <div class="grid grid-cols-3 gap-3">
             <div>
                 <IconInput v-model="form.length" inputPlaceholder="Largo cm*" inputType="text">
-                <el-tooltip content="Largo cm*" placement="top"> <i class="fa-solid fa-arrow-right-long"></i> </el-tooltip>
+                <el-tooltip content="Largo cm*" placement="top"> <i class="fa-solid fa-text-width"></i> </el-tooltip>
                 </IconInput>
                 <InputError :message="form.errors.length" />
-            </div>
-            <div>
-                <IconInput v-model="form.height" inputPlaceholder="Alto cm*" inputType="text">
-                <el-tooltip content="Alto cm*" placement="top"> <i class="fa-solid fa-text-height"></i> </el-tooltip>
-                </IconInput>
-                <InputError :message="form.errors.height" />
             </div>
             <div>
                 <IconInput v-model="form.width" inputPlaceholder="Ancho cm*" inputType="text">
@@ -38,6 +32,19 @@
                 </IconInput>
                 <InputError :message="form.errors.width" />
             </div>
+            <div>
+                <IconInput v-model="form.height" inputPlaceholder="Alto cm*" inputType="text">
+                <el-tooltip content="Alto cm*" placement="top"> <i class="fa-solid fa-text-height"></i> </el-tooltip>
+                </IconInput>
+                <InputError :message="form.errors.height" />
+            </div>
+
+          </div>
+
+          <div class="text-center pt-5">
+            <figure v-if="!form.is_circular" class="w-48 mx-auto">
+            <img src="@/../../public/images/paralelepipedo.png" alt="">
+            </figure>
           </div>
 
           <div class="mt-9 mx-3 md:text-right">

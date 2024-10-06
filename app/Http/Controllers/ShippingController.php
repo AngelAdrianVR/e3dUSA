@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordDeleted;
+use App\Models\Sale;
 use App\Models\Shipping;
 use Illuminate\Http\Request;
 
@@ -10,30 +11,31 @@ class ShippingController extends Controller
 {
     public function index()
     {
-        $shippings = Shipping::with([
-            'sale:id,tracking_guide,promise_date,user_id,company_branch_id,created_at' 
-                => ['user:id,name', 'companyBranch:id,name', 'productions' 
-                => ['catalogProductCompanySale:id,catalog_product_company_id' 
+        $shippings = Sale::with([
+            'user:id,name', 'companyBranch:id,name', 'productions' 
+                => ['catalogProductCompanySale:id,catalog_product_company_id,sale_id' 
                 => ['catalogProductCompany:id,catalog_product_id' 
-                => ['catalogProduct:id,name']]]]])
-                ->whereHas('sale', function ($q) {
-                    $q->where('user_id', auth()->id());
-                })
-            ->paginate(20, ['id', 'type', 'status', 'sent_at', 'sale_id']);
+                => ['catalogProduct:id,name']]]])
+            ->where('user_id', auth()->id())
+            ->whereNotNull('tracking_guide')
+            ->latest()
+            ->paginate(20, ['id', 'tracking_guide', 'promise_date', 'user_id', 'company_branch_id', 'created_at', 'sent_at', 'sent_by', 'shipping_type', 'status']);
 
+        // return $shippings;
         return inertia('Shipping/Index', compact('shippings'));
     }
 
     //recupera todos los registros de envios
     public function indexAll()
     {
-        $shippings = Shipping::with([
-            'sale:id,tracking_guide,promise_date,user_id,company_branch_id,created_at' 
-                => ['user:id,name', 'companyBranch:id,name', 'productions' 
-                => ['catalogProductCompanySale:id,catalog_product_company_id' 
+        $shippings = Sale::with([
+            'user:id,name', 'companyBranch:id,name', 'productions' 
+                => ['catalogProductCompanySale:id,catalog_product_company_id,sale_id' 
                 => ['catalogProductCompany:id,catalog_product_id' 
-                => ['catalogProduct:id,name']]]]])
-            ->paginate(20, ['id', 'type', 'status', 'sent_at', 'sale_id']);
+                => ['catalogProduct:id,name']]]])
+            ->whereNotNull('tracking_guide')
+            ->latest()
+            ->paginate(20, ['id', 'tracking_guide', 'promise_date', 'user_id', 'company_branch_id', 'created_at', 'sent_at', 'sent_by', 'shipping_type', 'status']);
 
         return inertia('Shipping/IndexAll', compact('shippings'));
     }
@@ -48,7 +50,7 @@ class ShippingController extends Controller
         //
     }
 
-    public function show(Shipping $shipping)
+    public function show(Sale $shipping)
     {
         // Cargar las relaciones necesarias
         $shipping->load([
@@ -62,9 +64,8 @@ class ShippingController extends Controller
             'sale.productions.catalogProductCompanySale.catalogProductCompany.catalogProduct.media',
             'sale.productions.catalogProductCompanySale.catalogProductCompany.catalogProduct:id,name'
         ]);
-        $shippings = Shipping::with([
-            'sale:id',
-        ])->get(['id', 'sale_id']);
+        $shippings = Sale::whereNotNull('tracking_guide')
+            ->get(['id']);
 
         // return $shipping;
         return inertia('Shipping/Show', compact('shipping', 'shippings'));
@@ -88,7 +89,7 @@ class ShippingController extends Controller
     public function massiveDelete(Request $request)
     {
         foreach ($request->shippings as $shipping) {
-            $shipping = Shipping::find($shipping['id']);
+            $shipping = Sale::find($shipping['id']);
             $shipping?->delete();
 
             event(new RecordDeleted($shipping));
@@ -102,22 +103,19 @@ class ShippingController extends Controller
         $query = $request->input('query');
         
         // Realiza la búsqueda
-        $shippings = Shipping::with([
-            'sale:id,tracking_guide,promise_date,user_id,company_branch_id,created_at' 
-                => ['user:id,name', 'companyBranch:id,name', 'productions' 
-                => ['catalogProductCompanySale:id,catalog_product_company_id' 
+        $shippings = Sale::with([
+            'user:id,name', 'companyBranch:id,name', 'productions' 
+                => ['catalogProductCompanySale:id,catalog_product_company_id,sale_id' 
                 => ['catalogProductCompany:id,catalog_product_id' 
-                => ['catalogProduct:id,name']]]]])
+                => ['catalogProduct:id,name']]]])
+        ->whereNotNull('tracking_guide')
         ->where('id', 'like', "%{$query}%")
-        ->orWhereHas('sale', function ($q) use ($query) {
-            $q->whereHas('user', function ($q2) use ($query) {
+        ->orWhereHas('user', function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%");
+        })
+        ->orwhereHas('companyBranch', function ($q2) use ($query) {
                 $q2->where('name', 'like', "%{$query}%");
-            });
-            $q->orwhereHas('companyBranch', function ($q2) use ($query) {
-                $q2->where('name', 'like', "%{$query}%");
-            });
-            $q->orWhere('id', 'like', "%{$query}%"); // Aplicar el filtro de 'id' sobre la tabla 'sale'
-        })  
+            })
         ->latest()
         ->paginate(100);
 
