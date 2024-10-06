@@ -42,8 +42,8 @@
                 </div>
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
                     <el-radio-group v-model="form.is_sale_production" size="small">
-                        <el-radio :label="1">Orden de venta</el-radio>
-                        <el-radio :label="0">Orden de stock</el-radio>
+                        <el-radio :value="1">Orden de venta</el-radio>
+                        <el-radio :value="0">Orden de stock</el-radio>
                     </el-radio-group>
                     <div class="grid grid-cols-2 gap-3 mt-4">
                         <div>
@@ -57,9 +57,9 @@
                         </div>
                         <div>
                             <InputLabel value="Contacto*" />
-                            <el-select
-                                v-model="form.contact_id" clearable filterable
-                                placeholder="Selecciona el contacto" no-data-text="Primero selecciona al cliente o al prospecto"
+                            <el-select v-model="form.contact_id" clearable filterable
+                                placeholder="Selecciona el contacto"
+                                no-data-text="Primero selecciona al cliente o al prospecto"
                                 no-match-text="No se encontraron coincidencias">
                                 <el-option v-for="contact in company_branches.find(cb => cb.id ==
                                     form.company_branch_id)?.contacts" :key="contact"
@@ -72,48 +72,282 @@
                             <InputError :message="form.errors.contact_id" />
                         </div>
                     </div>
-                    <!-- <div v-if="form.company_branch_id" class="flex items-center mt-3">
-                        <el-tooltip content="Contacto" placement="top">
-                            <span
-                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
-                                <i class="fa-solid fa-id-badge"></i>
-                            </span>
-                        </el-tooltip>
-                        <el-radio-group v-model="form.contact_id" size="small">
-                            <el-radio v-for="contact in company_branches.find(cb => cb.id ==
-                                form.company_branch_id)?.contacts" :key="contact" :label="contact.id">
-                                {{ contact.charge }}: {{ contact.name }} ({{ contact.email }}, {{
-                                    contact.additional_emails?.join(', ') }})
-                            </el-radio>
-                        </el-radio-group>
-                        <p v-if="!form.contact_id" class="text-xs text-primary ml-2">No olvides seleccionar el contacto.
+                    <!-- productos -->
+                    <section>
+                        <el-divider content-position="left">Productos</el-divider>
+                        <p v-if="!form.company_branch_id"
+                            class="flex items-center justify-center space-x-3 text-[#373737] py-2">
+                            <i class="fa-solid fa-arrow-up text-sm"></i>
+                            <span>Selecciona el cliente para visualizar los productos disponibles.</span>
                         </p>
-                        <InputError :message="form.errors.contact_id" />
-                    </div> -->
+                        <div v-else>
+                            <InputError :message="form.errors.products" />
+                            <!-- seleccion de producto -->
+                            <article v-if="form.company_branch_id"
+                                class="flex space-x-4 rounded-[20px] border border-[#999999] p-3">
+                                <div class="w-2/3">
+                                    <div class="grid grid-cols-4 gap-3">
+                                        <div class="col-span-3">
+                                            <InputLabel value="Producto" />
+                                            <el-select @change="fetchCatalogProductData(); checkIfProductHasSale()"
+                                                v-model="product.catalog_product_company_id" class="w-full"
+                                                no-data-text="No hay productos registrados a este cliente"
+                                                placeholder="Selecciona un producto *">
+                                                <el-option
+                                                    v-for="item in company_branches.find(cb => cb.id == form.company_branch_id)?.catalog_products"
+                                                    :key="item.pivot.id" :label="item.name" :value="item.pivot.id" />
+                                            </el-select>
+                                        </div>
+                                        <div>
+                                            <InputLabel value="Cantidad*" />
+                                            <el-input-number :disabled="loading || !product.catalog_product_company_id"
+                                                @change="validateQuantity()" v-model="product.quantity" :min="0.01"
+                                                class="!w-full" />
+                                        </div>
+                                    </div>
+                                    <p v-if="alertMaxQuantity" class="text-red-600 text-xs">
+                                        Sólo hay material para producir
+                                        {{ alertMaxQuantity.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
+                                        unidades.
+                                        No olvides reportar la adquisición de más mercancía
+                                    </p>
+                                    <div class="mt-3">
+                                        <InputLabel value="Notas del producto" />
+                                        <textarea v-model="product.notes" class="textarea" autocomplete="off"
+                                            placeholder="Ingresa las notas sean relevantes sobre la producción producto"></textarea>
+                                    </div>
+                                    <div class="mt-3">
+                                        <InputLabel value="Especificaciones" />
+                                        <div class="flex items-center space-x-2 w-1/2 ml-2 mt-1">
+                                            <label class="flex items-center">
+                                                <Checkbox v-model:checked="product.confusion_alert"
+                                                    class="bg-transparent" />
+                                                <span class="ml-2 text-xs">Riesgo de confusión de producto</span>
+                                            </label>
+                                            <el-tooltip placement="top">
+                                                <template #content>
+                                                    <p>
+                                                        Selecciona esta opción si el producto puede generar confusión
+                                                        <br>
+                                                        debido a su similitud con otros. Esto permitirá que el operador
+                                                        <br>
+                                                        preste mayor atención al manejarlo.
+                                                    </p>
+                                                </template>
+                                                <div
+                                                    class="rounded-full border border-primary size-3 flex items-center justify-center">
+                                                    <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                                </div>
+                                            </el-tooltip>
+                                        </div>
+                                        <label v-if="product.part_number?.split('-')[1] == 'LL'"
+                                            class="inline ml-2 mt-1">
+                                            <Checkbox v-model:checked="product.requires_medallion"
+                                                class="bg-transparent" />
+                                            <span class="ml-2 text-xs">Requiere medallón</span>
+                                        </label>
+                                        <div v-if="form.is_sale_production"
+                                            class="flex items-center space-x-2 w-1/2 ml-2 mt-1">
+                                            <label class="flex items-center">
+                                                <Checkbox v-model:checked="product.is_new_design"
+                                                    class="bg-transparent" />
+                                                <span class="ml-2 text-xs">Diseño nuevo</span>
+                                            </label>
+                                            <el-tooltip placement="top">
+                                                <template #content>
+                                                    <p>
+                                                        Selecciona esta opción cuando el diseño <br>
+                                                        del producto sea nuevo o distinto de <br>
+                                                        los existentes.
+                                                    </p>
+                                                </template>
+                                                <div
+                                                    class="rounded-full border border-primary size-3 flex items-center justify-center">
+                                                    <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                                </div>
+                                            </el-tooltip>
+                                        </div>
+                                    </div>
+                                    <div class="col-span-full">
+                                        <!-- <IconInput @change="validateQuantity()" v-model="product.quantity" inputPlaceholder="Cantidad *"
+                                            inputType="number" inputStep="0.01">
+                                            <el-tooltip content="Cantidad" placement="top">
+                                                #
+                                            </el-tooltip>
+                                        </IconInput> -->
+                                        <div class="flex items-center space-x-6 ml-5 w-full">
+                                            <!-- <div>
+                                            <label class="block text-xs">Cantidad *</label>
+                                            <el-input-number :disabled="loading || !product.catalog_product_company_id"
+                                                @change="validateQuantity()" v-model="product.quantity" :min="0.01" />
+                                        </div> -->
+                                            <!-- Descomentar cuando se implenmente lo de formato de autorizacion  -->
+                                            <!-- <div v-if="selectedCatalogProductHasSale === false" class="w-full">
+                                    <div class="flex items-center space-x-3">
+                                        <span @click="$inertia.get(route('design-authorizations.create', {company_id: selectedCompanyId}))" class="text-xs text-primary cursor-pointer inline">Crear formato</span>
+                                        <el-tooltip placement="top">
+                                            <template #content>
+                                                <p>
+                                                    Es primera venta de este producto, <br>
+                                                    es necesario seleccionar el formato de autorización <br>
+                                                    de diseño para poder agregarlo a la orden de venta. <br>
+                                                    Si aún no tienes un formato creado, da clic en 'crear formato'.
+                                                </p>
+                                            </template>
+                                            <div
+                                                class="rounded-full border border-primary size-3 flex items-center justify-center">
+                                                <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                            </div>
+                                        </el-tooltip>
+                                        <span v-if="product.design_authorization_id" @click="openDesignAuthorization()" class="text-xs text-secondary cursor-pointer">Ver formato<i class="fa-regular fa-eye ml-2"></i></span>
+                                    </div>
+                                    <el-select v-model="product.design_authorization_id" clearable
+                                        filterable placeholder="Formato de autorización de diseño" no-data-text="No hay formatos autorizados">
+                                        <el-option v-for="item in design_authorizations" :key="item.id" :label="item.name"
+                                            :value="item.id" />
+                                    </el-select>
+                                </div> -->
+                                        </div>
+                                    </div>
+                                    <div class="mt-5">
+                                        <SecondaryButton @click="addProduct"
+                                            :disabled="form.processing || !product.catalog_product_company_id || !product.quantity">
+                                            {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista'
+                                            }}
+                                        </SecondaryButton>
+                                        <!-- <SecondaryButton @click="addProduct" descomentar cuando se implemente lo del formato de autorizacion
+                                :disabled="form.processing || !product.catalog_product_company_id || !product.quantity || (selectedCatalogProductHasSale ? false : !product.design_authorization_id) ">
+                                {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
+                            </SecondaryButton> -->
+                                    </div>
+                                </div>
+                                <div class="w-1/3">
+                                    <div v-if="loading"
+                                        class="rounded-[10px] border border-[#999999] text-xs text-gray-500 text-center p-4 min-h-24">
+                                        <i class="fa-solid fa-circle-notch fa-spin mr-2"></i>
+                                        cargando imagen...
+                                    </div>
+                                    <div v-else-if="selectedCatalogProduct">
+                                        <figure class="rounded-[10px] border border-[#999999] w-full min-h-24">
+                                            <img :src="selectedCatalogProduct.media[0]?.original_url"
+                                                class="rounded-[10px] min-h-24 w-full object-contain">
+                                        </figure>
+                                        <div
+                                            class="rounded-[10px] border border-[#999999] text-[#373737] text-xs px-2 py-1 mt-1">
+                                            <h2>Almacén - Producto terminado</h2>
+                                            <p>
+                                                Stock mínimo: <span class="text-black">{{
+                                                    selectedCatalogProduct.min_quantity.toLocaleString('en-US', {
+                                                        minimumFractionDigits: 2
+                                                    }) }} unidades</span>
+                                            </p>
+                                            <p class="flex items-center space-x-1">
+                                                Stock disponible:
+                                                <b class="ml-1">{{ availableStock ?
+                                                    availableStock.quantity.toLocaleString('en-US',
+                                                        {
+                                                            minimumFractionDigits: 2
+                                                        }) : 0 }} unidades.</b>
+                                                <el-tooltip v-if="form.is_sale_production" placement="top">
+                                                    <template #content>
+                                                        Se descontarán de estas existencias para despachar la orden.
+                                                        <br>
+                                                        Se refiere a las piezas ya procesadas para tener el producto
+                                                        final, <br>
+                                                        no se refiere a la materia prima.
+                                                    </template>
+                                                    <div
+                                                        class="rounded-full border border-primary size-3 flex items-center justify-center">
+                                                        <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                                    </div>
+                                                </el-tooltip>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                            <!-- lista de productos -->
+                            <h2 v-if="form.products.length" class="font-bold mt-3 ml-2">Lista de productos</h2>
+                            <ol v-if="form.products.length"
+                                class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1 mt-3 divide-y-[1px]">
+                                <template v-for="(item, index) in form.products" :key="index">
+                                    <li class="flex justify-between items-center border-[#999999] py-1">
+                                        <p class="text-[13px]">
+                                            <span class="text-primary">{{ index + 1 }}.</span>
+                                            {{ company_branches.find(cb => cb.id ==
+                                                form.company_branch_id)?.catalog_products?.find(prd => prd.pivot.id ===
+                                                    item.catalog_product_company_id)?.name
+                                            }}
+                                            ({{ item.quantity.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
+                                            unidades)
+                                        </p>
+                                        <div class="flex space-x-2 items-center">
+                                            <el-tag v-if="editIndex == index">En edición</el-tag>
+                                            <button @click="editProduct(index)" type="button"
+                                                class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                    stroke-width="1.5" stroke="currentColor" class="size-4">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                                </svg>
+                                            </button>
+                                            <el-popconfirm confirm-button-text="Si" cancel-button-text="No"
+                                                icon-color="#0355B5" title="¿Remover?" @confirm="deleteProduct(index)">
+                                                <template #reference>
+                                                    <button type="button"
+                                                        class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                                            class="size-4">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                                        </svg>
+                                                    </button>
+                                                </template>
+                                            </el-popconfirm>
+                                        </div>
+                                    </li>
+                                </template>
+                            </ol>
+                        </div>
+                    </section>
+                    <!-- logistica -->
                     <section v-if="form.is_sale_production">
                         <el-divider content-position="left">Logistica</el-divider>
-                        <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
-                            <div class="ml-7 col-span-full">
-                                <label class="text-sm ml-2 mb-px flex items-center">Fecha de embarque esperado
-                                    <el-tooltip
-                                        content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega"
-                                        placement="right">
-                                        <div
-                                            class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
-                                            <i class="fa-solid fa-info text-primary text-[7px]"></i>
-                                        </div>
-                                    </el-tooltip>
-                                </label>
+                        <div class="md:grid grid-cols-2 gap-3">
+                            <div>
+                                <InputLabel value="Opciones de envío" />
+                                <el-select v-model="form.shipping_company" placeholder="Selecciona">
+                                    <el-option v-for="item in shippingOptions" :key="item" :label="item"
+                                        :value="item" />
+                                </el-select>
+                                <InputError :message="form.errors.shipping_options" />
+                            </div>
+                            <div>
+                                <InputLabel>
+                                    <div class="flex items-center">
+                                        <span>Fecha de embarque esperado</span>
+                                        <el-tooltip placement="top">
+                                            <template #content>
+                                                <p>
+                                                    Esta aparecerá en producción para dar prioridad<br>
+                                                    a ventas cercanas a su fecha de entrega
+                                                </p>
+                                            </template>
+                                            <div
+                                                class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
+                                                <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                            </div>
+                                        </el-tooltip>
+                                    </div>
+                                </InputLabel>
                                 <el-date-picker v-model="form.promise_date" type="date"
                                     placeholder="Fecha de entrega esperada" format="YYYY/MM/DD"
-                                    value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
+                                    value-format="YYYY-MM-DD" :disabled-date="disabledDate" class="!w-full" />
                                 <InputError :message="form.errors.promise_date" />
                             </div>
-                            <div class="flex items-center">
-                                <el-tooltip content="Paquetería" placement="top">
-                                    <i
-                                        class="fa-solid fa-truck-fast font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
-                                </el-tooltip>
+                            <div>
+                                <InputLabel value="Proveedor de paquetería*" />
                                 <el-select v-model="form.shipping_company" placeholder="Paquetería">
                                     <el-option v-for="(item, index) in shippingCompanies" :key="item" :label="item"
                                         :value="item" />
@@ -121,25 +355,24 @@
                                 <InputError :message="form.errors.shipping_company" />
                             </div>
                             <div>
-                                <IconInput v-model="form.freight_cost" inputPlaceholder="Costo logística"
-                                    inputType="text">
-                                    <el-tooltip content="Costo logística" placement="top">
-                                        <i class="fa-solid fa-file-invoice-dollar"></i>
-                                    </el-tooltip>
-                                </IconInput>
-                                <InputError :message="form.errors.freight_cost" />
-                            </div>
-                            <div class="col-span-full">
-                                <IconInput v-model="form.tracking_guide" inputPlaceholder="Guía" inputType="text">
-                                    <el-tooltip content="Guía" placement="top">
-                                        <i class="fa-solid fa-magnifying-glass-location"></i>
-                                    </el-tooltip>
-                                </IconInput>
+                                <InputLabel value="Guía" />
+                                <el-input v-model="form.plane_stock" placeholder="Ingresa la guía" />
                                 <InputError :message="form.errors.tracking_guide" />
                             </div>
                         </div>
+                        <div class="text-sm mt-3 ml-2">
+                            <p class="flex items-center space-x-3">
+                                <span class="w-40">Cantidad de cajas:</span>
+                                <span class="w-20">{{ '3' }}</span>
+                            </p>
+                            <p class="flex items-center space-x-3">
+                                <span class="w-40">Costo total de envío:</span>
+                                <span class="w-20">{{ '$108.50' }}</span>
+                            </p>
+                        </div>
+                        <h2 class="ml-2 mt-6">Detalles sobre las cajas</h2>
                         <!-- Agregar parcialidades -->
-                        <div v-for="(item, index) in form.partialities" :key="index"
+                        <!-- <div v-for="(item, index) in form.partialities" :key="index"
                             class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
                             <h2 class="col-span-full font-bold flex items-center space-x-3">
                                 <span>Parcialidad {{ (index + 2) }}</span>
@@ -154,7 +387,7 @@
                                         content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega"
                                         placement="right">
                                         <div
-                                            class="rounded-full border border-primary w-3 h-3 flex items-center justify-center ml-2">
+                                            class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
                                             <i class="fa-solid fa-info text-primary text-[7px]"></i>
                                         </div>
                                     </el-tooltip>
@@ -189,268 +422,76 @@
                                     </el-tooltip>
                                 </IconInput>
                             </div>
-                        </div>
+                        </div> -->
                         <!-- btn agregar parcialidad -->
-                        <button @click="addPartial" type="button"
+                        <!-- <button @click="addPartial" type="button"
                             class="col-span-full w-full text-primary text-xs text-right underline">+ Agregar
-                            parcialidad</button>
+                            parcialidad</button> -->
                     </section>
+                    <!-- Datos de la orden -->
                     <section v-if="form.is_sale_production">
                         <el-divider content-position="left">Datos de la órden</el-divider>
-                        <div class="grid gap-x-6 gap-y-2 mb-6 md:grid-cols-2">
-                            <div class="flex items-center">
-                                <el-tooltip content="Medio de petición *" placement="top">
-                                    <i
-                                        class="fa-solid fa-arrow-right-to-bracket font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
-                                </el-tooltip>
+                        <div class="grid gap-3 md:grid-cols-2">
+                            <div>
+                                <InputLabel value="Medio de petición*" />
                                 <el-select v-model="form.order_via" placeholder="Medio de petición *">
-                                    <el-option v-for="(item, index) in orderVias" :key="item" :label="item"
-                                        :value="item" />
+                                    <el-option v-for="item in orderVias" :key="item" :label="item" :value="item" />
                                 </el-select>
                                 <InputError :message="form.errors.order_via" />
                             </div>
                             <div>
-                                <IconInput v-model="form.invoice" inputPlaceholder="Factura">
-                                    <el-tooltip content="Factura" placement="top">
-                                        <i class="fa-solid fa-money-check-dollar"></i>
-                                    </el-tooltip>
-                                </IconInput>
+                                <InputLabel value="Factura" />
+                                <el-input v-model="form.invoice" placeholder="Ingresa folio de factura" />
                                 <InputError :message="form.errors.invoice" />
-                            </div>
-                            <div class="md:col-span-3">
-                                <IconInput v-model="form.oce_name" inputPlaceholder="Nombre / folio OCE">
-                                    <el-tooltip content="Nombre / folio OCE" placement="top">
-                                        <i class="fa-solid fa-file-invoice"></i>
-                                    </el-tooltip>
-                                </IconInput>
-                                <InputError :message="form.errors.oce_name" />
-                            </div>
-                            <div class="col-span-full">
-                                <div class="flex items-center">
-                                    <span
-                                        class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                                        <el-tooltip content="OCE" placement="top">
-                                            <i class="fa-solid fa-file-invoice"></i>
-                                        </el-tooltip>
-                                    </span>
-                                    <input @input="form.media = $event.target.files[0]" class="input h-12 rounded-lg
-                                file:mr-4 file:py-1 file:px-2
-                                file:rounded-full file:border-0
-                                file:text-sm file:font-semibold
-                                file:bg-primary file:text-white
-                                file:cursor-pointer
-                                hover:file:bg-red-600" aria-describedby="file_input_help" id="file_input" type="file">
-                                </div>
-                                <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">SVG, PNG, JPG o
-                                    GIF (MAX. 4 MB).</p>
                             </div>
                             <div class="flex items-center space-x-2 col-span-full">
                                 <label class="flex items-center">
                                     <Checkbox v-model:checked="form.is_high_priority" class="bg-transparent" />
-                                    <span class="ml-2 text-xs">Prioridad alta</span>
+                                    <span class="ml-2 text-xs">Orden con prioridad alta</span>
                                 </label>
                                 <el-tooltip
                                     content="Al seleccionar esta opción, se recordará diariamente por notificación si no se ha creado una orden de producción"
                                     placement="top">
                                     <div
-                                        class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                                        class="rounded-full border border-primary size-3 flex items-center justify-center">
                                         <i class="fa-solid fa-info text-primary text-[7px]"></i>
                                     </div>
                                 </el-tooltip>
                             </div>
+                            <div class="col-span-full">
+                                <InputLabel value="Notas de la orden" />
+                                <textarea v-model="form.notes" class="textarea" autocomplete="off"
+                                    placeholder="Notas de la órden"></textarea>
+                                <InputError :message="form.errors.notes" />
+                            </div>
+                            <h2 class="ml-2 col-span-full pt-4"><b>OCE</b> (Orden de compra externa)</h2>
+                            <div>
+                                <InputLabel value="Nombre o folio " />
+                                <el-input v-model="form.oce_name" placeholder="Escribe el nombre o folio de la OCE" />
+                                <InputError :message="form.errors.oce_name" />
+                            </div>
+                            <div>
+                                <InputLabel value="Archivo" />
+                                <FileUploader @files-selected="this.form.media = $event"
+                                    :multiple="false" />
+                                <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
+                                    PDF, PNG, JPG,(MAX 4 GB)
+                                </p>
+                            </div>
                         </div>
                     </section>
-                    <div class="flex mt-2">
-                        <el-tooltip content="Notas de la órden" placement="top">
-                            <span
-                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                                ...
-                            </span>
-                        </el-tooltip>
-                        <textarea v-model="form.notes" class="textarea" autocomplete="off"
-                            placeholder="Notas de la órden"></textarea>
-                        <InputError :message="form.errors.notes" />
-                    </div>
-                    <!-- products -->
-                    <el-divider v-if="form.company_branch_id" content-position="left">Agregar productos</el-divider>
-
-                    <InputError :message="form.errors.products" class="col-span-full" />
-                    <ol v-if="form.products.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
-                        <template v-for="(item, index) in form.products" :key="index">
-                            <li class="flex justify-between items-center">
-                                <p class="text-sm">
-                                    <span class="text-primary">{{ index + 1 }}.</span>
-                                    {{ company_branches.find(cb => cb.id ==
-                                        form.company_branch_id)?.catalog_products?.find(prd => prd.pivot.id ===
-                                            item.catalog_product_company_id)?.name
-                                    }}
-                                    (x{{ item.quantity }} unidades)
-                                </p>
-                                <div class="flex space-x-2 items-center">
-                                    <el-tag v-if="editIndex == index">En edición</el-tag>
-                                    <el-button @click="editProduct(index)" type="primary" circle>
-                                        <i class="fa-sharp fa-solid fa-pen-to-square"></i>
-                                    </el-button>
-                                    <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
-                                        title="¿Continuar?" @confirm="deleteProduct(index)">
-                                        <template #reference>
-                                            <el-button type="danger" circle><i
-                                                    class="fa-sharp fa-solid fa-trash"></i></el-button>
-                                        </template>
-                                    </el-popconfirm>
-                                </div>
-                            </li>
-                        </template>
-                    </ol>
-                    <div v-if="form.company_branch_id"
-                        class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-3 rounded-lg border-2 border-[#b8b7b7] px-5 py-3 col-span-full space-y-1 my-7">
-                        <div class="col-span-2">
-                            <div class="flex items-center">
-                                <el-tooltip
-                                    content="Producto: Seleccione entre los productos registrados para este cliente"
-                                    placement="top">
-                                    <span
-                                        class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
-                                        <i class="fa-solid fa-magnifying-glass"></i>
-                                    </span>
-                                </el-tooltip>
-                                <el-select @change="fetchCatalogProductData(); checkIfProductHasSale()"
-                                    v-model="product.catalog_product_company_id" class="w-full"
-                                    no-data-text="No hay productos registrados a este cliente"
-                                    placeholder="Selecciona un producto *">
-                                    <el-option
-                                        v-for="item in company_branches.find(cb => cb.id == form.company_branch_id)?.catalog_products"
-                                        :key="item.pivot.id" :label="item.name" :value="item.pivot.id" />
-                                </el-select>
-                            </div>
-                            <label v-if="product.part_number?.split('-')[1] == 'LL'" class="mt-1 inline">
-                                <Checkbox v-model:checked="product.requires_medallion" class="bg-transparent" />
-                                <span class="ml-2 text-xs">Requiere medallón</span>
-                            </label>
-                        </div>
-                        <div v-if="loading" class="rounded-md bg-[#CCCCCC] text-xs text-gray-500 text-center p-4">
-                            cargando imagen...
-                        </div>
-                        <figure v-else-if="selectedCatalogProduct" class="rounded-md h-24 border">
-                            <img :src="selectedCatalogProduct.media[0]?.original_url"
-                                class="rounded-md h-24 object-contain">
-                            <div
-                                class="w-full text-[#656262] border border-[#9A9A9A] px-1 py-px rounded-[5px] text-[10px] mt-1">
-                                Stock mínimo: <span class="text-black">{{
-                                    selectedCatalogProduct.min_quantity.toLocaleString('en-US', {
-                                        minimumFractionDigits: 2
-                                    }) }} unidades</span>
-                            </div>
-                        </figure>
-                        <p v-if="selectedCatalogProduct" class="col-span-full text-xs flex items-center space-x-2 pt-5">
-                            Stock disponible en almacén de producto terminado (no materia prima):
-                            <b class="ml-1">{{ availableStock ? availableStock.quantity.toLocaleString('en-US', {
-                                minimumFractionDigits: 2
-                            }) : 0 }} unidades.</b>
-                            <el-tooltip v-if="form.is_sale_production" placement="top">
-                                <template #content>
-                                    Se descontarán de estas existencias para despachar la orden. <br>
-                                    Se refiere a las piezas ya procesadas para tener el producto final, <br>
-                                    no se refiere a la materia prima.
-                                </template>
-                                <div class="rounded-full border border-primary size-3 flex items-center justify-center">
-                                    <i class="fa-solid fa-info text-primary text-[7px]"></i>
-                                </div>
-                            </el-tooltip>
-                        </p>
-                        <div class="col-span-full">
-                            <!-- <IconInput @change="validateQuantity()" v-model="product.quantity" inputPlaceholder="Cantidad *"
-                                inputType="number" inputStep="0.01">
-                                <el-tooltip content="Cantidad" placement="top">
-                                    #
-                                </el-tooltip>
-                            </IconInput> -->
-                            <div class="flex items-center space-x-6 ml-5 w-full">
-                                <div>
-                                    <label class="block text-xs">Cantidad *</label>
-                                    <el-input-number :disabled="loading || !product.catalog_product_company_id"
-                                        @change="validateQuantity()" v-model="product.quantity" :min="0.01" />
-                                </div>
-                                <!-- Descomentar cuando se implenmente lo de formato de autorizacion  -->
-                                <!-- <div v-if="selectedCatalogProductHasSale === false" class="w-full">
-                                    <div class="flex items-center space-x-3">
-                                        <span @click="$inertia.get(route('design-authorizations.create', {company_id: selectedCompanyId}))" class="text-xs text-primary cursor-pointer inline">Crear formato</span>
-                                        <el-tooltip placement="top">
-                                            <template #content>
-                                                <p>
-                                                    Es primera venta de este producto, <br>
-                                                    es necesario seleccionar el formato de autorización <br>
-                                                    de diseño para poder agregarlo a la orden de venta. <br>
-                                                    Si aún no tienes un formato creado, da clic en 'crear formato'.
-                                                </p>
-                                            </template>
-                                            <div
-                                                class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
-                                                <i class="fa-solid fa-info text-primary text-[7px]"></i>
-                                            </div>
-                                        </el-tooltip>
-                                        <span v-if="product.design_authorization_id" @click="openDesignAuthorization()" class="text-xs text-secondary cursor-pointer">Ver formato<i class="fa-regular fa-eye ml-2"></i></span>
-                                    </div>
-                                    <el-select v-model="product.design_authorization_id" clearable
-                                        filterable placeholder="Formato de autorización de diseño" no-data-text="No hay formatos autorizados">
-                                        <el-option v-for="item in design_authorizations" :key="item.id" :label="item.name"
-                                            :value="item.id" />
-                                    </el-select>
-                                </div> -->
-                                <div v-if="form.is_sale_production" class="flex items-center space-x-2 mt-3 w-1/2">
-                                    <label class="flex items-center">
-                                        <Checkbox v-model:checked="product.is_new_design" class="bg-transparent" />
-                                        <span class="ml-2 text-xs">Diseño nuevo</span>
-                                    </label>
-                                    <el-tooltip placement="top">
-                                        <template #content>
-                                            <p>
-                                                Selecciona esta opción cuando el diseño <br>
-                                                del producto sea nuevo o distinto de <br>
-                                                los existentes.
-                                            </p>
-                                        </template>
-                                        <div
-                                            class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
-                                            <i class="fa-solid fa-info text-primary text-[7px]"></i>
-                                        </div>
-                                    </el-tooltip>
-                                </div>
-                            </div>
-                            <p v-if="alertMaxQuantity" class="text-red-600 text-xs"> Sólo hay material para producir {{
-                                alertMaxQuantity }} unidades. No olvides reportar la adquisición de más mercancía </p>
-                        </div>
-                        <div class="flex col-span-full">
-                            <el-tooltip content="Notas de producto" placement="top">
-                                <span
-                                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                                    ...
-                                </span>
-                            </el-tooltip>
-                            <textarea v-model="product.notes" class="textarea" autocomplete="off"
-                                placeholder="Notas de producto"></textarea>
-                        </div>
-                        <div class="col-span-full">
-                            <SecondaryButton @click="addProduct"
-                                :disabled="form.processing || !product.catalog_product_company_id || !product.quantity">
-                                {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
-                            </SecondaryButton>
-                            <!-- <SecondaryButton @click="addProduct" descomentar cuando se implemente lo del formato de autorizacion
-                                :disabled="form.processing || !product.catalog_product_company_id || !product.quantity || (selectedCatalogProductHasSale ? false : !product.design_authorization_id) ">
-                                {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista' }}
-                            </SecondaryButton> -->
-                        </div>
-                    </div>
-                    <div class="mt-7 mx-3 md:text-right">
-                        <PrimaryButton :disabled="form.processing || !form.products.length"> Crear órden de venta
+                    <div class="mt-10 mx-3 md:text-right">
+                        <PrimaryButton :disabled="form.processing || !form.products.length">
+                            Crear órden de venta
                         </PrimaryButton>
                     </div>
                 </div>
             </form>
             <DialogModal :show="showImportantNotesModal" @close="showImportantNotesModal = false">
                 <template #title>
-                    {{ 
-                    editIMportantNotes ? 'Editar' : 'Agregar' }} notas importantes para {{ company_branches.find(item=>item.id == form.company_branch_id).name
+                    {{
+                        editIMportantNotes ? 'Editar' : 'Agregar' }} notas importantes para {{
+                        company_branches.find(item => item.id == form.company_branch_id).name
                     }}
                 </template>
                 <template #content>
@@ -505,6 +546,7 @@ import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputLabel from "@/Components/InputLabel.vue";
+import FileUploader from "@/Components/MyComponents/FileUploader.vue";
 
 export default {
     data() {
@@ -512,6 +554,7 @@ export default {
             company_branch_id: null,
             oportunity_id: null,
             contact_id: null,
+            shipping_options: null,
             shipping_company: null,
             freight_cost: null,
             invoice: null,
@@ -543,6 +586,7 @@ export default {
                 notes: null,
                 part_number: null,
                 is_new_design: false,
+                confusion_alert: false,
                 requires_medallion: false,
             },
             editIndex: null,
@@ -558,6 +602,12 @@ export default {
                 'DHL',
                 'FEDEX',
                 'TRES GUERRAS',
+            ],
+            shippingOptions: [
+                'Entrega única',
+                '2 parcialidades',
+                '3 parcialidades',
+                '4 parcialidades',
             ],
             orderVias: [
                 'Correo electrónico',
@@ -580,7 +630,8 @@ export default {
         Checkbox,
         Modal,
         Back,
-        Link
+        Link,
+        FileUploader
     },
     props: {
         company_branches: Array,
@@ -606,6 +657,7 @@ export default {
             this.form.partialities.splice(index, 1);
         },
         async fetchCatalogProductData() {
+            this.alertMaxQuantity = 0;
             try {
                 this.loading = true;
                 const catalogProductId =
@@ -762,6 +814,7 @@ export default {
             this.product.part_number = null;
             this.product.design_authorization_id = null; //formato de autorización.
             this.product.is_new_design = false;
+            this.product.confusion_alert = false;
             this.product.requires_medallion = false;
         },
         //quitar formato seleccionado de auto. de diseño de la lista para que no se pueda volver seleccionar 

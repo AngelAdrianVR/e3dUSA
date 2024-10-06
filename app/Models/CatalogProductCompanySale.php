@@ -22,6 +22,7 @@ class CatalogProductCompanySale extends Model
         'status',
         'sale_id',
         'is_new_design',
+        'confusion_alert',
         'requires_medallion',
         'catalog_product_company_id',
         'traveler_data',
