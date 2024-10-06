@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordDeleted;
-use App\Models\Logistic;
+use App\Models\Shipping;
 use Illuminate\Http\Request;
 
-class LogisticController extends Controller
+class ShippingController extends Controller
 {
     public function index()
     {
-        $logistics = Logistic::with([
+        $shippings = Shipping::with([
             'sale:id,tracking_guide,promise_date,user_id,company_branch_id,created_at' 
                 => ['user:id,name', 'companyBranch:id,name', 'productions' 
                 => ['catalogProductCompanySale:id,catalog_product_company_id' 
@@ -21,13 +21,13 @@ class LogisticController extends Controller
                 })
             ->paginate(20, ['id', 'type', 'status', 'sent_at', 'sale_id']);
 
-        return inertia('Logistic/Index', compact('logistics'));
+        return inertia('Shipping/Index', compact('shippings'));
     }
 
-    //recupera todos los registros de logistica
+    //recupera todos los registros de envios
     public function indexAll()
     {
-        $logistics = Logistic::with([
+        $shippings = Shipping::with([
             'sale:id,tracking_guide,promise_date,user_id,company_branch_id,created_at' 
                 => ['user:id,name', 'companyBranch:id,name', 'productions' 
                 => ['catalogProductCompanySale:id,catalog_product_company_id' 
@@ -35,7 +35,7 @@ class LogisticController extends Controller
                 => ['catalogProduct:id,name']]]]])
             ->paginate(20, ['id', 'type', 'status', 'sent_at', 'sale_id']);
 
-        return inertia('Logistic/IndexAll', compact('logistics'));
+        return inertia('Shipping/IndexAll', compact('shippings'));
     }
 
     public function create()
@@ -48,10 +48,10 @@ class LogisticController extends Controller
         //
     }
 
-    public function show(Logistic $logistic)
+    public function show(Shipping $shipping)
     {
         // Cargar las relaciones necesarias
-        $logistic->load([
+        $shipping->load([
             'sale:id,tracking_guide,promise_date,user_id,company_branch_id,created_at,is_high_priority,notes,contact_id,shipping_company',
             'sale.contact:id,name,email,phone',
             'sale.user:id,name',
@@ -62,39 +62,39 @@ class LogisticController extends Controller
             'sale.productions.catalogProductCompanySale.catalogProductCompany.catalogProduct.media',
             'sale.productions.catalogProductCompanySale.catalogProductCompany.catalogProduct:id,name'
         ]);
-        $logistics = Logistic::with([
+        $shippings = Shipping::with([
             'sale:id',
         ])->get(['id', 'sale_id']);
 
-        return $logistic;
-        return inertia('Logistic/Show', compact('logistic', 'logistics'));
+        // return $shipping;
+        return inertia('Shipping/Show', compact('shipping', 'shippings'));
     }
 
-    public function edit(Logistic $logistic)
+    public function edit(Shipping $shipping)
     {
         //
     }
 
-    public function update(Request $request, Logistic $logistic)
+    public function update(Request $request, Shipping $shipping)
     {
         //
     }
 
-    public function destroy(Logistic $logistic)
+    public function destroy(Shipping $shipping)
     {
         //
     }
 
     public function massiveDelete(Request $request)
     {
-        foreach ($request->logistics as $logistic) {
-            $logistic = Logistic::find($logistic['id']);
-            $logistic?->delete();
+        foreach ($request->shippings as $shipping) {
+            $shipping = Shipping::find($shipping['id']);
+            $shipping?->delete();
 
-            event(new RecordDeleted($logistic));
+            event(new RecordDeleted($shipping));
         }
 
-        return to_route('logistics.index');
+        return to_route('shippings.index');
     }
 
     public function getMatches(Request $request)
@@ -102,7 +102,7 @@ class LogisticController extends Controller
         $query = $request->input('query');
         
         // Realiza la búsqueda
-        $logistics = Logistic::with([
+        $shippings = Shipping::with([
             'sale:id,tracking_guide,promise_date,user_id,company_branch_id,created_at' 
                 => ['user:id,name', 'companyBranch:id,name', 'productions' 
                 => ['catalogProductCompanySale:id,catalog_product_company_id' 
@@ -121,7 +121,6 @@ class LogisticController extends Controller
         ->latest()
         ->paginate(100);
 
-        return response()->json(['items' => $logistics], 200);
+        return response()->json(['items' => $shippings], 200);
     }
-
 }
