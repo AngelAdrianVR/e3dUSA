@@ -221,5 +221,8 @@ return [
         'branches_number' => 'número de sucursales',
         'abstract' => 'resumen',
         'email_password' => 'contraseña de correo',
+        'length' => 'largo',
+        'height' => 'alto',
+        'width' => 'ancho',
     ],
 ];

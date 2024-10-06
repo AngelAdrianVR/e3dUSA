@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdditionalTimeRequestController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BonusController;
+use App\Http\Controllers\BoxController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CallMonitorController;
 use App\Http\Controllers\CatalogProductCompanySaleController;
@@ -48,6 +49,7 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SampleController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
@@ -149,12 +151,18 @@ Route::post('companies/get-all-companies', [CompanyController::class, 'getAllCom
 Route::get('companies-get-exclusive-designs/{company}', [CompanyController::class, 'getExclusiveDesigns'])->name('companies.get-exclusive-designs')->middleware('auth');
 
 
-// ------- logistica routes  ---------
-Route::resource('logistics', LogisticController::class)->middleware('auth');
-Route::post('logistics/massive-delete', [LogisticController::class, 'massiveDelete'])->name('logistics.massive-delete');
-Route::post('logistics-get-matches', [LogisticController::class, 'getMatches'])->name('logistics.get-matches');
-Route::get('logistics-index-all', [LogisticController::class, 'indexAll'])->name('logistics.index-all');
-Route::get('logistics-fetch-filtered/{filter}', [LogisticController::class, 'fetchFiltered'])->name('logistics.fetch-filtered');
+// ------- shippings routes  ---------
+Route::resource('shippings', ShippingController::class)->middleware('auth');
+Route::post('shippings/massive-delete', [ShippingController::class, 'massiveDelete'])->name('shippings.massive-delete');
+Route::post('shippings-get-matches', [ShippingController::class, 'getMatches'])->name('shippings.get-matches');
+Route::get('shippings-index-all', [ShippingController::class, 'indexAll'])->name('shippings.index-all');
+Route::get('shippings-fetch-filtered/{filter}', [ShippingController::class, 'fetchFiltered'])->name('shippings.fetch-filtered');
+
+
+// ------- boxes routes  ---------
+Route::resource('boxes', BoxController::class)->middleware('auth');
+Route::post('boxes/massive-delete', [BoxController::class, 'massiveDelete'])->name('boxes.massive-delete');
+
 
 // ------- CRM (Clients Routes)  ---------
 Route::get('crm', [DashboardController::class, 'crmDashboard'])->middleware('auth')->name('crm.dashboard');
