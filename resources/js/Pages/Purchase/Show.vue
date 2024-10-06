@@ -125,8 +125,8 @@
                 v-model="ratingForm.q1" class="bg-transparent text-primary focus:ring-0" />
               <label for="1.2">
                 No, hubo un retraso de
-                <el-input @change="handleChangeLateDays" @click="handleInputClick" v-model="ratingForm.q1_days" type="text" class="!w-10"
-                  :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                <el-input @change="handleChangeLateDays" @click="handleInputClick" v-model="ratingForm.q1_days"
+                  type="text" class="!w-10" :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                   :parser="(value) => value.replace(/[^\d.]/g, '')">
                 </el-input>
                 día(s)

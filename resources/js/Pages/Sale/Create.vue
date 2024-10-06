@@ -9,8 +9,6 @@
                     </div>
                 </div>
             </template>
-
-            <!-- Form -->
             <form @submit.prevent="store" class="relative overflow-x-hidden">
                 <!-- company branch important notes -->
                 <div class="absolute top-5 -right-1">
@@ -23,7 +21,8 @@
                         </h3>
                         <p style="white-space: pre-line;" class="px-1">{{ importantNotes }}</p>
                         <div class="mt-3">
-                            <button @click="editImportantNotes()" type="button" class="text-[#9A9A9A] pr-2">Editar</button>
+                            <button @click="editImportantNotes()" type="button"
+                                class="text-[#9A9A9A] pr-2">Editar</button>
                             <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
                                 title="¿Borrar notas?" @confirm="clearImportantNotes()">
                                 <template #reference>
@@ -46,20 +45,34 @@
                         <el-radio :label="1">Orden de venta</el-radio>
                         <el-radio :label="0">Orden de stock</el-radio>
                     </el-radio-group>
-                    <div class="flex items-center">
-                        <el-tooltip content="Cliente: Seleccione para poder habilitar sus productos" placement="top">
-                            <span
-                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                            </span>
-                        </el-tooltip>
-                        <el-select @change="getImportantNotes(); getDesignAuthorizations()" v-model="form.company_branch_id" class="mt-2" clearable
-                            filterable placeholder="Selecciona un cliente">
-                            <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
-                                :value="item.id" />
-                        </el-select>
+                    <div class="grid grid-cols-2 gap-3 mt-4">
+                        <div>
+                            <InputLabel value="Cliente*" />
+                            <el-select @change="getImportantNotes(); getDesignAuthorizations()"
+                                v-model="form.company_branch_id" clearable filterable
+                                placeholder="Selecciona un cliente">
+                                <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
+                                    :value="item.id" />
+                            </el-select>
+                        </div>
+                        <div>
+                            <InputLabel value="Contacto*" />
+                            <el-select
+                                v-model="form.contact_id" clearable filterable
+                                placeholder="Selecciona el contacto" no-data-text="Primero selecciona al cliente o al prospecto"
+                                no-match-text="No se encontraron coincidencias">
+                                <el-option v-for="contact in company_branches.find(cb => cb.id ==
+                                    form.company_branch_id)?.contacts" :key="contact"
+                                    :label="`${contact.charge}: ${contact.name} (${contact.email}, ${contact.additional_emails?.join(', ')})`"
+                                    :value="contact.id">
+                                    {{ contact.charge }}: {{ contact.name }} ({{ contact.email }}, {{
+                                        contact.additional_emails?.join(', ') }})
+                                </el-option>
+                            </el-select>
+                            <InputError :message="form.errors.contact_id" />
+                        </div>
                     </div>
-                    <div v-if="form.company_branch_id" class="flex items-center mt-3">
+                    <!-- <div v-if="form.company_branch_id" class="flex items-center mt-3">
                         <el-tooltip content="Contacto" placement="top">
                             <span
                                 class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
@@ -73,9 +86,10 @@
                                     contact.additional_emails?.join(', ') }})
                             </el-radio>
                         </el-radio-group>
-                        <p v-if="!form.contact_id" class="text-xs text-primary ml-2">No olvides seleccionar el contacto.</p>
+                        <p v-if="!form.contact_id" class="text-xs text-primary ml-2">No olvides seleccionar el contacto.
+                        </p>
                         <InputError :message="form.errors.contact_id" />
-                    </div>
+                    </div> -->
                     <section v-if="form.is_sale_production">
                         <el-divider content-position="left">Logistica</el-divider>
                         <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
@@ -90,8 +104,9 @@
                                         </div>
                                     </el-tooltip>
                                 </label>
-                                <el-date-picker v-model="form.promise_date" type="date" placeholder="Fecha de entrega esperada"
-                                    format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
+                                <el-date-picker v-model="form.promise_date" type="date"
+                                    placeholder="Fecha de entrega esperada" format="YYYY/MM/DD"
+                                    value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
                                 <InputError :message="form.errors.promise_date" />
                             </div>
                             <div class="flex items-center">
@@ -106,7 +121,8 @@
                                 <InputError :message="form.errors.shipping_company" />
                             </div>
                             <div>
-                                <IconInput v-model="form.freight_cost" inputPlaceholder="Costo logística" inputType="text">
+                                <IconInput v-model="form.freight_cost" inputPlaceholder="Costo logística"
+                                    inputType="text">
                                     <el-tooltip content="Costo logística" placement="top">
                                         <i class="fa-solid fa-file-invoice-dollar"></i>
                                     </el-tooltip>
@@ -144,8 +160,8 @@
                                     </el-tooltip>
                                 </label>
                                 <el-date-picker v-model="form.partialities[index].promise_date" type="date"
-                                    placeholder="Fecha de entrega esperada" format="YYYY/MM/DD" value-format="YYYY-MM-DD"
-                                    :disabled-date="disabledDate" />
+                                    placeholder="Fecha de entrega esperada" format="YYYY/MM/DD"
+                                    value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
                             </div>
                             <div class="flex items-center">
                                 <el-tooltip content="Paquetería" placement="top">
@@ -158,8 +174,8 @@
                                 </el-select>
                             </div>
                             <div>
-                                <IconInput v-model="form.partialities[index].freight_cost" inputPlaceholder="Costo logística"
-                                    inputType="text">
+                                <IconInput v-model="form.partialities[index].freight_cost"
+                                    inputPlaceholder="Costo logística" inputType="text">
                                     <el-tooltip content="Costo logística" placement="top">
                                         <i class="fa-solid fa-file-invoice-dollar"></i>
                                     </el-tooltip>
@@ -188,7 +204,8 @@
                                         class="fa-solid fa-arrow-right-to-bracket font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
                                 </el-tooltip>
                                 <el-select v-model="form.order_via" placeholder="Medio de petición *">
-                                    <el-option v-for="(item, index) in orderVias" :key="item" :label="item" :value="item" />
+                                    <el-option v-for="(item, index) in orderVias" :key="item" :label="item"
+                                        :value="item" />
                                 </el-select>
                                 <InputError :message="form.errors.order_via" />
                             </div>
@@ -235,7 +252,8 @@
                                 <el-tooltip
                                     content="Al seleccionar esta opción, se recordará diariamente por notificación si no se ha creado una orden de producción"
                                     placement="top">
-                                    <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                                    <div
+                                        class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
                                         <i class="fa-solid fa-info text-primary text-[7px]"></i>
                                     </div>
                                 </el-tooltip>
@@ -288,15 +306,17 @@
                         class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-3 rounded-lg border-2 border-[#b8b7b7] px-5 py-3 col-span-full space-y-1 my-7">
                         <div class="col-span-2">
                             <div class="flex items-center">
-                                <el-tooltip content="Producto: Seleccione entre los productos registrados para este cliente"
+                                <el-tooltip
+                                    content="Producto: Seleccione entre los productos registrados para este cliente"
                                     placement="top">
                                     <span
                                         class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9">
                                         <i class="fa-solid fa-magnifying-glass"></i>
                                     </span>
                                 </el-tooltip>
-                                <el-select @change="fetchCatalogProductData(); checkIfProductHasSale()" v-model="product.catalog_product_company_id"
-                                    class="w-full" no-data-text="No hay productos registrados a este cliente"
+                                <el-select @change="fetchCatalogProductData(); checkIfProductHasSale()"
+                                    v-model="product.catalog_product_company_id" class="w-full"
+                                    no-data-text="No hay productos registrados a este cliente"
                                     placeholder="Selecciona un producto *">
                                     <el-option
                                         v-for="item in company_branches.find(cb => cb.id == form.company_branch_id)?.catalog_products"
@@ -348,7 +368,8 @@
                             <div class="flex items-center space-x-6 ml-5 w-full">
                                 <div>
                                     <label class="block text-xs">Cantidad *</label>
-                                    <el-input-number :disabled="loading || !product.catalog_product_company_id" @change="validateQuantity()" v-model="product.quantity" :min="0.01" />
+                                    <el-input-number :disabled="loading || !product.catalog_product_company_id"
+                                        @change="validateQuantity()" v-model="product.quantity" :min="0.01" />
                                 </div>
                                 <!-- Descomentar cuando se implenmente lo de formato de autorizacion  -->
                                 <!-- <div v-if="selectedCatalogProductHasSale === false" class="w-full">
@@ -421,14 +442,15 @@
                         </div>
                     </div>
                     <div class="mt-7 mx-3 md:text-right">
-                        <PrimaryButton :disabled="form.processing || !form.products.length"> Crear órden de venta </PrimaryButton>
+                        <PrimaryButton :disabled="form.processing || !form.products.length"> Crear órden de venta
+                        </PrimaryButton>
                     </div>
                 </div>
             </form>
             <DialogModal :show="showImportantNotesModal" @close="showImportantNotesModal = false">
                 <template #title>
-                    {{ editIMportantNotes ? 'Editar' : 'Agregar' }} notas importantes para {{ company_branches.find(item =>
-                        item.id == form.company_branch_id).name
+                    {{ 
+                    editIMportantNotes ? 'Editar' : 'Agregar' }} notas importantes para {{ company_branches.find(item=>item.id == form.company_branch_id).name
                     }}
                 </template>
                 <template #content>
@@ -482,6 +504,7 @@ import Modal from "@/Components/Modal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import { Link, useForm } from "@inertiajs/vue3";
+import InputLabel from "@/Components/InputLabel.vue";
 
 export default {
     data() {
@@ -550,6 +573,7 @@ export default {
         SecondaryButton,
         PrimaryButton,
         InputError,
+        InputLabel,
         IconInput,
         CancelButton,
         DialogModal,
@@ -565,8 +589,8 @@ export default {
     },
     methods: {
         openDesignAuthorization() {
-        const url = route('design-authorizations.show', this.product.design_authorization_id);
-        window.open(url, '_blank');
+            const url = route('design-authorizations.show', this.product.design_authorization_id);
+            window.open(url, '_blank');
         },
         addPartial() {
             const partiality = {
@@ -608,7 +632,7 @@ export default {
         async checkIfProductHasSale() {
             try {
                 const response = await axios.get(route('sales.check-if-has-sale', this.product.catalog_product_company_id));
-                if ( response.status === 200 ) {
+                if (response.status === 200) {
                     this.selectedCatalogProductHasSale = response.data.has_sale;
                 }
             } catch (error) {
@@ -628,8 +652,8 @@ export default {
             });
         },
         getImportantNotes() {
+            this.form.contact_id = null;
             this.importantNotes = this.company_branches.find(item => item.id == this.form.company_branch_id)?.important_notes;
-
             //obtiene el id de la matriz para pasarla como parametro en creacion de formato de autorización de diseño.
             this.selectedCompanyId = this.company_branches.find(item => item.id == this.form.company_branch_id).company_id;
         },
@@ -741,7 +765,7 @@ export default {
             this.product.requires_medallion = false;
         },
         //quitar formato seleccionado de auto. de diseño de la lista para que no se pueda volver seleccionar 
-        refreshDesignAuthorizationsList(designAuthorizationId) { 
+        refreshDesignAuthorizationsList(designAuthorizationId) {
             const itemIndex = this.design_authorizations.findIndex(item => item.id == designAuthorizationId);
             if (itemIndex != -1) {
                 this.design_authorizations.splice(itemIndex, 1);
