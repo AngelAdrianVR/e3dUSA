@@ -157,6 +157,7 @@ Route::post('shippings/massive-delete', [ShippingController::class, 'massiveDele
 Route::post('shippings-get-matches', [ShippingController::class, 'getMatches'])->name('shippings.get-matches');
 Route::get('shippings-index-all', [ShippingController::class, 'indexAll'])->name('shippings.index-all');
 Route::get('shippings-fetch-filtered/{filter}', [ShippingController::class, 'fetchFiltered'])->name('shippings.fetch-filtered');
+Route::post('shippings-update-status/{shipping}', [ShippingController::class, 'updateStatus'])->name('shippings.update-status');
 
 
 // ------- boxes routes  ---------
