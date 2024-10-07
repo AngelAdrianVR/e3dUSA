@@ -4,7 +4,7 @@
             <div class="flex justify-between mb-5">
                 <label class="text-lg">Envíos</label>
 
-                <ShippingTimeLine />
+                <!-- <ShippingTimeLine /> -->
 
                 <Link :href="route('shippings.index')"
                     class="cursor-pointer size-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">

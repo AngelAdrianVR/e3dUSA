@@ -10,7 +10,7 @@
             <article class="mt-4 border-r border-[#999999] space-y-1">
                 <div class="flex space-x-2">
                     <p class="text-[#999999] w-48">Solicitada por:</p>
-                    <p>{{ shipping.user.name }}</p>
+                    <p>{{ shipping.user?.name }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#999999] w-48">Solicitada el:</p>
@@ -42,15 +42,15 @@
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#999999] w-48">Contacto:</p>
-                    <p>{{ shipping.contact.name }}</p>
+                    <p>{{ shipping.contact?.name ?? '-' }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#999999] w-48">Email:</p>
-                    <p>{{ shipping.contact.email }}</p>
+                    <p>{{ shipping.contact?.email ?? '-' }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#999999] w-48">Teléfono:</p>
-                    <p>{{ shipping.contact.phone }}</p>
+                    <p>{{ shipping.contact?.phone ?? '-' }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#999999] w-48">Dirección:</p>
