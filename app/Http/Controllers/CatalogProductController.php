@@ -274,4 +274,11 @@ class CatalogProductController extends Controller
 
         return response()->json(['item' => $catalog_product, 'stock' => $stock, 'commited_units' => $commited_units]);
     }
+
+    public function fetchShippingRates(CatalogProduct $catalog_product)
+    {
+        $catalog_product->load('shippingRates:id,catalog_product_id');
+
+        return response()->json(['item' => $catalog_product]);
+    }
 }

@@ -14,7 +14,7 @@
 
             <div class="flex justify-between">
                 <div class="w-1/2 md:w-1/3 mr-2">
-                    <el-select @change="$inertia.get(route('shippings.show', shippingSelected))" v-model="shippingSelected" clearable
+                    <el-select @change="$inertia.get(route('shippings.show', shippingSelected))" v-model="shippingSelected"
                     filterable placeholder="Buscar registro de logística" no-data-text="No hay opciones registradas"
                     no-match-text="No se encontraron coincidencias">
                     <el-option v-for="item in shippings" :key="item.id" :label="'EV-' + item.id.toString().padStart(4, '0') + '/ ' + 'OV-' + item.id" :value="item.id" />
