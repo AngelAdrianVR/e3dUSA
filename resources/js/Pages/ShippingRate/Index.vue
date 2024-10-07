@@ -41,7 +41,7 @@
                     :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
                     <el-table-column prop="id" label="Folio" width="100" />
-                    <el-table-column prop="catalog_product.part_number" label="Numero de parte" width="100" />
+                    <el-table-column prop="catalog_product.part_number" label="Numero de parte" width="200" />
                     <el-table-column prop="catalog_product.name" label="Producto" />
                     <el-table-column prop="receiver" label="Registro" />
                     <!-- <el-table-column label="Productos" width="210">

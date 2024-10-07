@@ -11,13 +11,13 @@ class ShippingRate extends Model
     use HasFactory;
 
     protected $fillable = [
+        'catalog_product_id',
         'quantity',
         'boxes',
-        'catalog_product_id',
     ];
 
     protected $casts = [
-        'boxes' => 'Array'
+        'boxes' => 'array'
     ];
 
     //relationships

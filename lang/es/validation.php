@@ -224,5 +224,6 @@ return [
         'length' => 'largo',
         'height' => 'alto',
         'width' => 'ancho',
+        'catalog_product_id' => 'producto',
     ],
 ];
