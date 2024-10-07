@@ -314,15 +314,18 @@
                     <!-- logistica -->
                     <section v-if="form.is_sale_production">
                         <el-divider content-position="left">Logistica</el-divider>
-                        <div class="md:grid grid-cols-2 gap-3">
-                            <div>
-                                <InputLabel value="Opciones de envío" />
-                                <el-select v-model="form.shipping_company" placeholder="Selecciona">
-                                    <el-option v-for="item in shippingOptions" :key="item" :label="item"
-                                        :value="item" />
-                                </el-select>
-                                <InputError :message="form.errors.shipping_options" />
-                            </div>
+                        <div class="w-[calc(50%-6px)] mb-3">
+                            <InputLabel value="Opciones de envío" />
+                            <el-select v-model="form.shipping_option" placeholder="Selecciona">
+                                <el-option v-for="item in shippingOptions" :key="item" :label="item" :value="item" />
+                            </el-select>
+                            <InputError :message="form.errors.shipping_option" />
+                        </div>
+                        <div v-for="(item, index) in (shippingOptions.findIndex(i => i === form.shipping_option) + 1)"
+                            :key="index" class="md:grid grid-cols-2 gap-3">
+                            <h2 v-if="form.shipping_option != 'Entrega única'" class="mt-3 col-span-full font-bold">
+                                Parcialidad {{ item
+                                }}</h2>
                             <div>
                                 <InputLabel>
                                     <div class="flex items-center">
@@ -359,6 +362,18 @@
                                 <el-input v-model="form.plane_stock" placeholder="Ingresa la guía" />
                                 <InputError :message="form.errors.tracking_guide" />
                             </div>
+                            <br>
+                            <InputLabel value="Productos para esta parcialidad" />
+                            <InputLabel value="Cantidad de piezas a enviar" />
+                            <div v-if="form.shipping_option != 'Entrega única'">
+                                <el-select v-model="form.shipping_company" multiple placeholder="Selecciona"
+                                    no-data-text="Primero agrega productos a la orden"
+                                    no-match-text="No se encontraron coincidencias">
+                                    <el-option v-for="item in form.products" :key="item.catalogProduct.id"
+                                        :label="item.catalogProduct.name" :value="item.catalogProduct.name" />
+                                </el-select>
+                                <!-- <InputError :message="form.errors.shipping_company" /> -->
+                            </div>
                         </div>
                         <div class="text-sm mt-3 ml-2">
                             <p class="flex items-center space-x-3">
@@ -370,7 +385,9 @@
                                 <span class="w-20">{{ '$108.50' }}</span>
                             </p>
                         </div>
-                        <h2 class="ml-2 mt-6">Detalles sobre las cajas</h2>
+                        <h2 v-if="form.products.length" class="ml-2 mt-6 font-bold">Detalles sobre las cajas</h2>
+                        <ShippingCard v-for="(item, index) in form.products" :key="index" :product="item.catalogProduct"
+                            :quantity="item.quantity" />
                         <!-- Agregar parcialidades -->
                         <!-- <div v-for="(item, index) in form.partialities" :key="index"
                             class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
@@ -472,8 +489,7 @@
                             </div>
                             <div>
                                 <InputLabel value="Archivo" />
-                                <FileUploader @files-selected="this.form.media = $event"
-                                    :multiple="false" />
+                                <FileUploader @files-selected="this.form.media = $event" :multiple="false" />
                                 <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
                                     PDF, PNG, JPG,(MAX 4 GB)
                                 </p>
@@ -547,6 +563,7 @@ import Back from "@/Components/MyComponents/Back.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputLabel from "@/Components/InputLabel.vue";
 import FileUploader from "@/Components/MyComponents/FileUploader.vue";
+import ShippingCard from "@/Components/MyComponents/Shipping/ShippingCard.vue";
 
 export default {
     data() {
@@ -554,7 +571,7 @@ export default {
             company_branch_id: null,
             oportunity_id: null,
             contact_id: null,
-            shipping_options: null,
+            shipping_option: null,
             shipping_company: null,
             freight_cost: null,
             invoice: null,
@@ -631,7 +648,8 @@ export default {
         Modal,
         Back,
         Link,
-        FileUploader
+        FileUploader,
+        ShippingCard
     },
     props: {
         company_branches: Array,
@@ -781,7 +799,7 @@ export default {
             }
         },
         addProduct() {
-            const product = { ...this.product };
+            const product = { ...this.product, catalogProduct: this.selectedCatalogProduct };
 
             if (this.editIndex !== null) {
                 this.form.products[this.editIndex] = product;
