@@ -142,6 +142,7 @@ Route::post('catalog-products/clone', [CatalogProductController::class, 'clone']
 Route::post('catalog-products/update-with-media/{catalog_product}', [CatalogProductController::class, 'updateWithMedia'])->name('catalog-products.update-with-media');
 Route::post('catalog-products/QR-search-catalog-product', [CatalogProductController::class, 'QRSearchCatalogProduct'])->name('catalog-products.QR-search-catalog-product');
 Route::get('catalog-products/{catalog_product}/get-data', [CatalogProductController::class, 'getCatalogProductData'])->name('catalog-products.get-data');
+Route::get('catalog-products-fetch-shipping-rates/{catalog_product}', [CatalogProductController::class, 'fetchShippingRates'])->name('catalog-products.fetch-shipping-rates');
 
 
 // ------- Ventas(Clients Routes)  ---------
@@ -169,6 +170,7 @@ Route::post('boxes/massive-delete', [BoxController::class, 'massiveDelete'])->na
 // ------- shipping-rates routes  ---------
 Route::resource('shipping-rates', ShippingRateController::class)->middleware('auth');
 Route::post('shipping-rates/massive-delete', [ShippingRateController::class, 'massiveDelete'])->name('shipping-rates.massive-delete');
+Route::post('shipping-rates-get-matches', [ShippingRateController::class, 'getMatches'])->name('shipping-rates.get-matches');
 Route::get('shipping-rates/fetch-catalog-product-info/{catalog_product}', [ShippingRateController::class, 'fetchCatalogProductInfo'])->name('shipping-rates.fetch-catalog-product-info');
 
 
