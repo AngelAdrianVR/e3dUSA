@@ -109,7 +109,10 @@
                 </footer>
 
                 <div class="text-right my-5 lg:px-8">
-                    <PrimaryButton @click="update">Guardar cambios</PrimaryButton>
+                    <PrimaryButton @click="update" :disabled="form.processing">
+                        <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
+                        Guardar cambios
+                    </PrimaryButton>
                 </div>
 
             </div>

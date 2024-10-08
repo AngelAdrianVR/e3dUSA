@@ -81,6 +81,7 @@
           <p class="text-[#373737]">Código de registro REG-MT-05</p>
           <div class="pt-8 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing">
+              <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
               {{ form.maintenance_type == 'Limpieza' ? 'Enviar a validación' : 'Registrar' }}
             </PrimaryButton>
           </div>

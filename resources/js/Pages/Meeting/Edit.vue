@@ -175,7 +175,8 @@
 
           <div class="pt-5 mx-3 md:text-left">
             <PrimaryButton :disabled="form.processing">
-              Agendar reunión
+              <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
+              Guardar cambios
             </PrimaryButton>
           </div>
         </div>

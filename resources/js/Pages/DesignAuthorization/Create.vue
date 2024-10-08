@@ -104,7 +104,10 @@
                 </footer>
 
                 <div class="text-right my-5 lg:px-8">
-                    <PrimaryButton @click="store">Enviar</PrimaryButton>
+                    <PrimaryButton @click="store" :disabled="form.processing">
+                        <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
+                        Enviar
+                    </PrimaryButton>
                 </div>
 
             </div>

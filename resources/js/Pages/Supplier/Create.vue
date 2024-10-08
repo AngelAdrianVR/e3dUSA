@@ -305,6 +305,7 @@
           <!-- ---------------- supplier Products ends ----------------- -->
           <div class="mt-2 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing">
+              <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
               Agregar proveedor
             </PrimaryButton>
           </div>
