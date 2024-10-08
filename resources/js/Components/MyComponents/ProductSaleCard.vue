@@ -29,7 +29,7 @@
     </div>
 
     <!-- card -->
-    <p class="text-center font-bold mt-4 text-sm h-12">
+    <p class="text-center font-bold mt-4 text-sm min-h-12">
       {{ catalog_product_company_sale.catalog_product_company?.catalog_product?.name }}
     </p>
     <span class="font-bold absolute right-5 top-2">{{
@@ -43,6 +43,23 @@
     <div class="grid grid-cols-2 gap-x-4">
       <div>
         <figure @mouseover="showOverlay" @mouseleave="hideOverlay" class="bg-[#D9D9D9] w-full h-28 my-3 rounded-[10px] relative">
+          <div  v-if="catalog_product_company_sale.confusion_alert" class="relative flex size-7 cursor-default">
+            <span class="animate-ping absolute -top-2 -left-2 inline-flex h-full w-full rounded-full bg-gray-700 opacity-75"></span>
+            <el-tooltip placement="bottom">
+              <template #content>
+                <div class="w-48 text-center">
+                  <h1 class="font-bold text-white mb-2">Riesgo de confusión</h1>
+                  <p>
+                    ¡Atención! Este producto es similar a otros y puede causar confusión. <br>
+                    Verifica cuidadosamente antes de continuar para evitar errores
+                  </p>
+                </div>
+              </template>
+              <div class="bg-black rounded-full size-7 absolute -top-2 -left-2 flex items-center justify-center text-lg z-50">
+                ❗❗
+              </div>
+            </el-tooltip>
+          </div>
           <img class="object-contain h-28 mx-auto" :src="catalog_product_company_sale.catalog_product_company?.catalog_product?.media[currentImage]?.original_url" alt="">
           <div v-if="imageHovered" @click="openImage(catalog_product_company_sale.catalog_product_company?.catalog_product?.media[currentImage]?.original_url)"
               class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
@@ -75,6 +92,14 @@
           <el-tag class="mt-2" type="success" v-if="catalog_product_company_sale.requires_medallion">Requiere medallón</el-tag>
           <!-- <p v-if="catalog_product_company_sale.requires_medallion" class="text-[#37951F] bg-[#ADFEB5] px-1 rounded-[3px] text-center mt-1">Requiere medallón</p> -->
         </div>
+
+        <!-- boton para ver empaque -->
+        <button class="rounded-md w-ful flex items-center justify-center bg-black text-white py-1 px-4">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+          </svg>
+          <span class="ml-3">Ver empaque</span>
+        </button>
       </div>
     </div>
 
