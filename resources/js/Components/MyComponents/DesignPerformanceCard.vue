@@ -16,7 +16,7 @@
                     <div class="w-1/2">
                         <div v-if="user.percentage > 0" :style="{
                             width: user.percentage + '%',
-                            backgroundColor: index === 0 ? '#44E536' : index === users.length - 1 ? '#D90537' : '#EC8B1F'
+                            backgroundColor: index === 0 ? '#4ade80' : index === users.length - 1 ? '#D90537' : '#fb923c'
                         }" class="h-5 bg-[#44E536] rounded-tr-full rounded-br-full"></div>
                         <div v-else class="h-5 w-[1%] bg-[#D90537] rounded-tr-full rounded-br-full"></div>
                     </div>

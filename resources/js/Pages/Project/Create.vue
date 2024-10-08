@@ -305,10 +305,10 @@
               </div>
             </div>
           </section>
-          <!-- {{form}} -->
 
           <div class="mt-9 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing || (editAccesFlag && typeAccessProject == 'Public')">
+              <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
               Crear proyecto
             </PrimaryButton>
           </div>

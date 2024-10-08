@@ -260,7 +260,9 @@
           <el-divider />
 
           <div class="md:text-right">
-            <PrimaryButton :disabled="form.processing || orderedProducts.length != 0 || saleId === null"> Crear órden de producción
+            <PrimaryButton :disabled="form.processing || orderedProducts.length != 0 || saleId === null">
+              <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
+              Crear órden de producción
             </PrimaryButton>
           </div>
         </div>

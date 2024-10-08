@@ -16,8 +16,8 @@
                     <div class="w-1/2">
                         <div v-if="user.percentage > 0" :style="{
                             width: user.percentage + '%',
-                            backgroundColor: index === 0 ? '#44E536' : index === users.length - 1 ? '#D90537' : '#EC8B1F'
-                        }" class="h-5 bg-[#44E536] rounded-tr-full rounded-br-full"></div>
+                            backgroundColor: index === 0 ? '#4ade80' : index === users.length - 1 ? '#D90537' : '#fb923c'
+                        }" class="h-5 rounded-tr-full rounded-br-full"></div>
                         <div v-else class="h-5 w-[1%] bg-[#D90537] rounded-tr-full rounded-br-full"></div>
                     </div>
                 </li>
@@ -61,7 +61,7 @@
                             dayPoints.time }}</td>
                         <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.scrap < 0 }">{{
                             dayPoints.scrap }}</td>
-                        <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.day_completed < 0, 'text-green-500':dayPoints.day_completed == 0 }">
+                        <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.day_completed < 0, 'text-green-200':dayPoints.day_completed == 0 }">
                             {{ dayPoints.day_completed < 0 ? dayPoints.day_completed : '' }}
                             <i v-if="dayPoints.day_completed >= 0" class="fa-solid fa-check"></i>
                         </td>

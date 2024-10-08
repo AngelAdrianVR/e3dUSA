@@ -203,8 +203,9 @@
                     <el-divider />
 
                     <div class="md:text-right">
-                        <PrimaryButton :disabled="form.processing || orderedProducts.length != 0"> Actualizar órden de
-                            producción
+                        <PrimaryButton :disabled="form.processing || orderedProducts.length != 0">
+                            <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
+                            Guardar cambios
                         </PrimaryButton>
                     </div>
                 </div>

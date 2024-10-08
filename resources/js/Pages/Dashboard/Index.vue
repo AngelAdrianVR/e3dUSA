@@ -1,4 +1,11 @@
 <template>
+    <!-- <div v-if="loading" 
+        class="absolute z-30 left-0 top-0 inset-0 bg-gradient-to-r from-blue-400 to-pink-500 flex items-center justify-center transition-opacity duration-1000"
+        :class="{'opacity-0': !loading}">
+        <figure class="mt-20 mx-auto w-[40%] lg:w-[25%]">
+        <img src="@/../../public/images/logo.png" alt="logo">
+        </figure>
+    </div> -->
     <AppLayoutNoHeader title="Inicio">
         <div class="px-9 pt-3 lg:px-14 lg:pt-8">
             <h1>Inicio</h1>
@@ -134,6 +141,7 @@
                             <span class="text-2xl">&#128521;</span>
                         </p>
                     </div>
+
                     <!-- oportunidad de tiempo extra -->
                     <div v-if="extra_time_request"
                         class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] py-4 px-6 text-sm col-span-2">
@@ -364,6 +372,7 @@ export default {
         });
 
         return {
+            // loading: true,
             quickCards: [
                 {
                     title: 'Cotizaciones por autorizar',
@@ -581,6 +590,10 @@ export default {
         },
     },
     mounted() {
+        // setTimeout(() => {
+        //     this.loading = false;
+        // }, 3000); // 3 segundos
+
         // Actualizar el saludo inicial
         this.updateGreeting();
 
@@ -594,3 +607,9 @@ export default {
     }
 }
 </script>
+
+<style>
+.transition-opacity {
+  transition: opacity 1s ease;
+}
+</style>

@@ -75,7 +75,10 @@
         <p class="mt-3">5. ¿Qué aspectos crees que podríamos perfeccionar que nos ayude a brindarte un mejor servicio?</p>
         <RichText @content="updateDescription($event)" v-model="form.p5" />
         <InputError :message="form.errors.p5" />
-        <PrimaryButton :disabled="form.processing">Enviar</PrimaryButton>
+        <PrimaryButton :disabled="form.processing">
+          <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
+          Enviar
+        </PrimaryButton>
       </div>
     </form>
 
