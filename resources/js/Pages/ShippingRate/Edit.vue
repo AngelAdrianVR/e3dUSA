@@ -1,16 +1,16 @@
 <template>
-    <AppLayout title="Registrar tarifa">
+    <AppLayout title="Editar tarifa">
       <template #header>
         <div class="flex justify-between">
           <Back />
           <div class="flex items-center space-x-2">
-                <h2 class="font-semibold text-xl leading-tight">Registrar tarifa</h2>
+                <h2 class="font-semibold text-xl leading-tight">Editar tarifa</h2>
           </div>
         </div>
       </template>
 
       <!-- Form -->
-      <form @submit.prevent="store">
+      <form @submit.prevent="update">
         <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg py-4 px-9 shadow-md space-y-4">
             <h2>Detalles del producto</h2>
 
@@ -165,7 +165,7 @@
                 <!-- <ThirthButton class="!border-secondary !text-secondary focus:ring-secondary">Sólo esta vez</ThirthButton> -->
                 <PrimaryButton :disabled="form.processing">
                     <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
-                    Guardar tarifa
+                    Guardar cambios
                 </PrimaryButton>
             </div>
         </div>
@@ -241,20 +241,9 @@ import axios from 'axios';
 export default {
   data() {
     const form = useForm({
-      catalog_product_id: null,
-      quantity: null,
-      boxes: [
-        {
-          box_id: null,
-          name: null,
-          length: null, //largo
-          width: null, //ancho
-          height: null, //alto
-          weight: null, //peso
-          qauantity: null, //cantidad de unidades
-          cost: null, //tarifa por la caja
-        }, 
-      ]
+      catalog_product_id: this.shipping_rate.catalog_product_id,
+      quantity: this.shipping_rate.quantity,
+      boxes: this.shipping_rate.boxes
     });
 
     const boxForm = useForm({
@@ -268,7 +257,7 @@ export default {
       form,
       boxForm,
       loading: false,
-      boxes_amount: 1,
+      boxes_amount: this.shipping_rate.boxes?.length,
       showBoxFormModal: false,
       catalogProductSelected: null,
       all_boxes_are_same: false,      
@@ -288,6 +277,7 @@ export default {
     Link
   },
   props:{
+    shipping_rate: Object,
     catalog_products: Array,
     box_types: Array
   },
@@ -325,8 +315,8 @@ export default {
     },
   },
   methods: {
-    store() {
-      this.form.post(route("shipping-rates.store"), {
+    update() {
+      this.form.put(route("shipping-rates.update", this.shipping_rate.id), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
@@ -378,5 +368,8 @@ export default {
         }
     }
   },
+  mounted() {
+    this.fetchCatalogProductInfo();
+  }
 };
 </script>

@@ -13,32 +13,36 @@
       <form @submit.prevent="update">
         <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4">
           <div>
-            <IconInput v-model="form.name" inputPlaceholder="Nombre *" inputType="text">
-              <el-tooltip content="Nombre *" placement="top"> A </el-tooltip>
-            </IconInput>
+            <InputLabel value="Nombre*" />
+            <el-input v-model="form.name" placeholder="Nombre" />
             <InputError :message="form.errors.name" />
           </div>
           
           <div class="grid grid-cols-3 gap-3">
             <div>
-                <IconInput v-model="form.length" inputPlaceholder="Largo cm*" inputType="text">
-                <el-tooltip content="Largo cm*" placement="top"> <i class="fa-solid fa-text-width"></i> </el-tooltip>
-                </IconInput>
-                <InputError :message="form.errors.length" />
+              <InputLabel value="Largo*" />
+              <el-input
+                v-model="form.length" placeholder="Largo">
+                <template #append>cm</template>
+              </el-input>
+              <InputError :message="form.errors.length" />
             </div>
             <div>
-                <IconInput v-model="form.width" inputPlaceholder="Ancho cm*" inputType="text">
-                <el-tooltip content="Ancho cm*" placement="top"> <i class="fa-solid fa-up-right-and-down-left-from-center"></i> </el-tooltip>
-                </IconInput>
-                <InputError :message="form.errors.width" />
+              <InputLabel value="Ancho*" />
+              <el-input
+                v-model="form.width" placeholder="Ancho">
+                <template #append>cm</template>
+              </el-input>
+              <InputError :message="form.errors.width" />
             </div>
             <div>
-                <IconInput v-model="form.height" inputPlaceholder="Alto cm*" inputType="text">
-                <el-tooltip content="Alto cm*" placement="top"> <i class="fa-solid fa-text-height"></i> </el-tooltip>
-                </IconInput>
-                <InputError :message="form.errors.height" />
+              <InputLabel value="Alto*" />
+              <el-input
+                v-model="form.height" placeholder="Alto">
+                <template #append>cm</template>
+              </el-input>
+              <InputError :message="form.errors.height" />
             </div>
-
           </div>
 
           <div class="text-center pt-5">
@@ -62,7 +66,7 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import InputError from "@/Components/InputError.vue";
-import IconInput from "@/Components/MyComponents/IconInput.vue";
+import InputLabel from "@/Components/InputLabel.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 
@@ -82,9 +86,9 @@ export default {
   components: {
     SecondaryButton,
     PrimaryButton,
+    InputLabel,
     InputError,
     AppLayout,
-    IconInput,
     Back,
     Link
   },
