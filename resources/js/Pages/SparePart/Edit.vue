@@ -127,7 +127,8 @@
 
           <div class="mx-3 text-right">
             <PrimaryButton :disabled="form.processing">
-              Actualizar mantenimiento
+              <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
+              Guardar cambios
             </PrimaryButton>
           </div>
         </div>

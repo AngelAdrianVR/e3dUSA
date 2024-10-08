@@ -62,11 +62,11 @@
 
                   <div class="my-3">
                       <InputLabel value="Número de cajas*" class="mb-1 ml-3" />
-                      <el-input-number v-model="boxes_amount" :min="1" :max="20" />
+                      <el-input-number v-model="form.boxes_amount" :min="1" :max="20" />
                   </div>
 
-                  <label class="inline-flex items-center">
-                    <Checkbox v-model:checked="all_boxes_are_same"
+                  <label v-if="form.boxes_amount > 1" class="inline-flex items-center">
+                    <Checkbox @change="handleChecked()" v-model:checked="form.all_boxes_are_same"
                       class="bg-transparent disabled:border-gray-400" />
                     <span class="ml-2 text-xs">Todas las cajas tienen el mismo peso, tamaño y cantidad.</span>
                   </label>
@@ -243,6 +243,8 @@ export default {
     const form = useForm({
       catalog_product_id: null,
       quantity: null,
+      all_boxes_are_same: false,
+      boxes_amount: 1,
       boxes: [
         {
           box_id: null,
@@ -268,10 +270,8 @@ export default {
       form,
       boxForm,
       loading: false,
-      boxes_amount: 1,
       showBoxFormModal: false,
       catalogProductSelected: null,
-      all_boxes_are_same: false,      
     };
   },
   components: {
@@ -293,30 +293,33 @@ export default {
   },
   watch: {
     // Observa cambios en boxes_amount
-    boxes_amount(newAmount) {
-      const currentAmount = this.form.boxes.length;
-      if (newAmount > currentAmount) {
-        // Agregar cajas si boxes_amount es mayor que la longitud actual
-        const boxesToAdd = newAmount - currentAmount;
-        for (let i = 0; i < boxesToAdd; i++) {
-          this.form.boxes.push({
-            box_id: null,
-            name: null,
-            length: null,
-            width: null,
-            height: null,
-            weight: null,
-            quantity: null,
-            cost: null,
-          });
+    'form.boxes_amount'(newAmount) {
+      //si esta checkeado que todas las cajas son iguales no se crea otro objeto
+      if ( !this.form.all_boxes_are_same ) {
+          const currentAmount = this.form.boxes.length;
+          if (newAmount > currentAmount) {
+            // Agregar cajas si boxes_amount es mayor que la longitud actual
+            const boxesToAdd = newAmount - currentAmount;
+            for (let i = 0; i < boxesToAdd; i++) {
+              this.form.boxes.push({
+                box_id: null,
+                name: null,
+                length: null,
+                width: null,
+                height: null,
+                weight: null,
+                quantity: null,
+                cost: null,
+              });
+            }
+          } else if (newAmount < currentAmount) {
+            // Eliminar cajas si boxes_amount es menor que la longitud actual
+            this.form.boxes.splice(newAmount, currentAmount - newAmount);
+          }
         }
-      } else if (newAmount < currentAmount) {
-        // Eliminar cajas si boxes_amount es menor que la longitud actual
-        this.form.boxes.splice(newAmount, currentAmount - newAmount);
-      }
     },
     // Observa cambios en all_boxes_are_same
-    'all_boxes_are_same'(newValue) {
+    'form.all_boxes_are_same'(newValue) {
       if (newValue) {
         // Si el checkbox es marcado (true), igualar todas las cajas al primer objeto
         const firstBox = this.form.boxes[0];
@@ -363,6 +366,30 @@ export default {
       this.form.boxes[index].length = box.length;
       this.form.boxes[index].width = box.width;
       this.form.boxes[index].height = box.height;
+    },
+    handleChecked() {
+      if ( this.form.all_boxes_are_same ) {
+        //se deja solo 1 objeto en el arreglo si todas las cajas son iguales
+        this.form.boxes.splice(1);
+      } else {
+        const currentAmount = this.form.boxes.length;
+          if (this.form.boxes_amount > currentAmount) {
+            // Agregar cajas si boxes_amount es mayor que la longitud actual
+            const boxesToAdd = this.form.boxes_amount - currentAmount;
+            for (let i = 0; i < boxesToAdd; i++) {
+              this.form.boxes.push({
+                box_id: null,
+                name: null,
+                length: null,
+                width: null,
+                height: null,
+                weight: null,
+                quantity: null,
+                cost: null,
+              });
+            }
+          }
+      }
     },
     async fetchCatalogProductInfo() {
       this.loading = true;

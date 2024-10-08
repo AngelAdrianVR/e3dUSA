@@ -45,7 +45,10 @@
                     <InputError :message="form.errors.media" />
                     <!-- buttons -->
                     <div class="md:text-right">
-                        <PrimaryButton :disabled="form.processing"> Subir </PrimaryButton>
+                        <PrimaryButton :disabled="form.processing">
+                            <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
+                            Subir
+                        </PrimaryButton>
                     </div>
                 </div>
             </form>

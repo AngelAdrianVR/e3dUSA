@@ -207,7 +207,10 @@
 
                 <el-divider />
                 <div class="md:text-right">
-                    <PrimaryButton :disabled="form.processing || !form.raw_materials.length"> Crear producto </PrimaryButton>
+                    <PrimaryButton :disabled="form.processing || !form.raw_materials.length">
+                        <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
+                        Crear producto
+                    </PrimaryButton>
                 </div>
             </div>
         </form>
