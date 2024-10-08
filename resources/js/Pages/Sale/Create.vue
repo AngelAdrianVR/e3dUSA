@@ -101,7 +101,7 @@
                                         <div>
                                             <InputLabel value="Cantidad*" />
                                             <el-input-number :disabled="loading || !product.catalog_product_company_id"
-                                                @change="validateQuantity()" v-model="product.quantity" :min="0.01"
+                                                @change="validateQuantity()" v-model="product.quantity" :min="1"
                                                 class="!w-full" />
                                         </div>
                                     </div>
@@ -314,136 +314,145 @@
                     <!-- logistica -->
                     <section v-if="form.is_sale_production">
                         <el-divider content-position="left">Logistica</el-divider>
-                        <div class="w-[calc(50%-6px)] mb-3">
-                            <InputLabel value="Opciones de envío" />
-                            <el-select v-model="form.shipping_option" placeholder="Selecciona">
-                                <el-option v-for="item in shippingOptions" :key="item" :label="item" :value="item" />
-                            </el-select>
-                            <InputError :message="form.errors.shipping_option" />
-                        </div>
-                        <div v-for="(item, index) in (shippingOptions.findIndex(i => i === form.shipping_option) + 1)"
-                            :key="index" class="md:grid grid-cols-2 gap-3">
-                            <h2 v-if="form.shipping_option != 'Entrega única'" class="mt-3 col-span-full font-bold">
-                                Parcialidad {{ item
-                                }}</h2>
-                            <div>
-                                <InputLabel>
-                                    <div class="flex items-center">
-                                        <span>Fecha de embarque esperado</span>
-                                        <el-tooltip placement="top">
-                                            <template #content>
-                                                <p>
-                                                    Esta aparecerá en producción para dar prioridad<br>
-                                                    a ventas cercanas a su fecha de entrega
-                                                </p>
-                                            </template>
+                        <p v-if="!form.products.length"
+                            class="flex items-center justify-center space-x-3 text-[#373737] py-2">
+                            <i class="fa-solid fa-arrow-up text-sm"></i>
+                            <span>Agrega al menos un producto a la lista para llenar los datos de logística.</span>
+                        </p>
+                        <div v-else>
+                            <div class="w-[calc(50%-6px)] mb-3">
+                                <InputLabel value="Opciones de envío" />
+                                <el-select v-model="form.shipping_option" @change="handleChangeShippingOption"
+                                    placeholder="Selecciona">
+                                    <el-option v-for="item in shippingOptions" :key="item" :label="item"
+                                        :value="item" />
+                                </el-select>
+                                <InputError :message="form.errors.shipping_option" />
+                            </div>
+                            <div v-for="(partiality, index) in form.partialities" :key="index"
+                                class="md:grid grid-cols-2 gap-3">
+                                <h2 v-if="form.shipping_option != 'Entrega única'" class="mt-3 col-span-full font-bold">
+                                    Parcialidad {{ (index + 1) }}
+                                </h2>
+                                <div>
+                                    <InputLabel>
+                                        <div class="flex items-center">
+                                            <span>Fecha de embarque esperado</span>
+                                            <el-tooltip placement="top">
+                                                <template #content>
+                                                    <p>
+                                                        Esta aparecerá en producción para dar prioridad<br>
+                                                        a ventas cercanas a su fecha de entrega
+                                                    </p>
+                                                </template>
+                                                <div
+                                                    class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
+                                                    <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                                </div>
+                                            </el-tooltip>
+                                        </div>
+                                    </InputLabel>
+                                    <el-date-picker v-model="partiality.promise_date" type="date"
+                                        placeholder="Fecha de entrega esperada" format="YYYY/MM/DD"
+                                        value-format="YYYY-MM-DD" :disabled-date="disabledDate" class="!w-full" />
+                                    <InputError :message="form.errors.promise_date" />
+                                </div>
+                                <div>
+                                    <InputLabel value="Proveedor de paquetería*" />
+                                    <el-select v-model="partiality.shipping_company" placeholder="Paquetería">
+                                        <el-option v-for="shippingCompany in shippingCompanies" :key="shippingCompany"
+                                            :label="shippingCompany" :value="shippingCompany" />
+                                    </el-select>
+                                    <InputError :message="form.errors.shipping_company" />
+                                </div>
+                                <div>
+                                    <InputLabel value="Guía" />
+                                    <el-input v-model="partiality.tracking_guide" placeholder="Ingresa la guía" />
+                                    <InputError :message="form.errors.tracking_guide" />
+                                </div>
+                                <br>
+                                <InputLabel v-if="form.shipping_option != 'Entrega única'"
+                                    value="Productos para esta parcialidad" />
+                                <InputLabel v-if="form.shipping_option != 'Entrega única'"
+                                    value="Cantidad de piezas a enviar" />
+                                <div v-if="form.shipping_option != 'Entrega única'" class="col-span-full space-y-1">
+                                    <div v-for="(prd, index2) in form.products" :key="index2"
+                                        class="grid grid-cols-2 gap-3">
+                                        <label class="inline ml-2">
+                                            <Checkbox v-model:checked="partiality.productsSelected[index2].active"
+                                                class="bg-transparent" />
+                                            <span class="ml-2 text-xs">{{ prd.catalogProduct.name }}</span>
+                                        </label>
+                                        <el-input-number v-model="partiality.productsSelected[index2].quantity" :min="1"
+                                            :max="prd.quantity" size="small" class="!w-1/2 self-start"
+                                            :disabled="!partiality.productsSelected[index2].active" />
+                                    </div>
+                                </div>
+                                <h2 v-if="form.products.length" class="ml-2 mt-6 font-bold">
+                                    Detalles sobre las cajas
+                                </h2>
+                                <ShippingCard class="col-span-full"
+                                    v-for="(shippProduct, index3) in partiality.productsSelected.filter(p => p.active)"
+                                    :key="index3" :product="form.products.find(e => e.catalogProduct.name == shippProduct.name).catalogProduct"
+                                    :quantity="shippProduct.quantity"/>
+                            </div>
+                            <!-- Agregar parcialidades -->
+                            <!-- <div v-for="(item, index) in form.partialities" :key="index"
+                                class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
+                                <h2 class="col-span-full font-bold flex items-center space-x-3">
+                                    <span>Parcialidad {{ (index + 2) }}</span>
+                                    <button @click="removePartial(index)" type="button"
+                                        class="text-xs size-6 text-primary rounded-full hover:bg-gray-200">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                </h2>
+                                <div class="ml-7 col-span-full">
+                                    <label class="text-sm ml-2 mb-px flex items-center">Fecha de entrega esperada
+                                        <el-tooltip
+                                            content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega"
+                                            placement="right">
                                             <div
                                                 class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
                                                 <i class="fa-solid fa-info text-primary text-[7px]"></i>
                                             </div>
                                         </el-tooltip>
-                                    </div>
-                                </InputLabel>
-                                <el-date-picker v-model="form.promise_date" type="date"
-                                    placeholder="Fecha de entrega esperada" format="YYYY/MM/DD"
-                                    value-format="YYYY-MM-DD" :disabled-date="disabledDate" class="!w-full" />
-                                <InputError :message="form.errors.promise_date" />
-                            </div>
-                            <div>
-                                <InputLabel value="Proveedor de paquetería*" />
-                                <el-select v-model="form.shipping_company" placeholder="Paquetería">
-                                    <el-option v-for="(item, index) in shippingCompanies" :key="item" :label="item"
-                                        :value="item" />
-                                </el-select>
-                                <InputError :message="form.errors.shipping_company" />
-                            </div>
-                            <div>
-                                <InputLabel value="Guía" />
-                                <el-input v-model="form.plane_stock" placeholder="Ingresa la guía" />
-                                <InputError :message="form.errors.tracking_guide" />
-                            </div>
-                            <br>
-                            <InputLabel value="Productos para esta parcialidad" />
-                            <InputLabel value="Cantidad de piezas a enviar" />
-                            <div v-if="form.shipping_option != 'Entrega única'">
-                                <el-select v-model="form.shipping_company" multiple placeholder="Selecciona"
-                                    no-data-text="Primero agrega productos a la orden"
-                                    no-match-text="No se encontraron coincidencias">
-                                    <el-option v-for="item in form.products" :key="item.catalogProduct.id"
-                                        :label="item.catalogProduct.name" :value="item.catalogProduct.name" />
-                                </el-select>
-                                <!-- <InputError :message="form.errors.shipping_company" /> -->
-                            </div>
+                                    </label>
+                                    <el-date-picker v-model="form.partialities[index].promise_date" type="date"
+                                        placeholder="Fecha de entrega esperada" format="YYYY/MM/DD"
+                                        value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
+                                </div>
+                                <div class="flex items-center">
+                                    <el-tooltip content="Paquetería" placement="top">
+                                        <i
+                                            class="fa-solid fa-truck-fast font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
+                                    </el-tooltip>
+                                    <el-select v-model="form.partialities[index].shipping_company" placeholder="Paquetería">
+                                        <el-option v-for="(item, index) in shippingCompanies" :key="item" :label="item"
+                                            :value="item" />
+                                    </el-select>
+                                </div>
+                                <div>
+                                    <IconInput v-model="form.partialities[index].freight_cost"
+                                        inputPlaceholder="Costo logística" inputType="text">
+                                        <el-tooltip content="Costo logística" placement="top">
+                                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                                        </el-tooltip>
+                                    </IconInput>
+                                </div>
+                                <div class="col-span-full">
+                                    <IconInput v-model="form.partialities[index].tracking_guide" inputPlaceholder="Guía"
+                                        inputType="text">
+                                        <el-tooltip content="Guía" placement="top">
+                                            <i class="fa-solid fa-magnifying-glass-location"></i>
+                                        </el-tooltip>
+                                    </IconInput>
+                                </div>
+                            </div> -->
+                            <!-- btn agregar parcialidad -->
+                            <!-- <button @click="addPartial" type="button"
+                                class="col-span-full w-full text-primary text-xs text-right underline">+ Agregar
+                                parcialidad</button> -->
                         </div>
-                        <div class="text-sm mt-3 ml-2">
-                            <p class="flex items-center space-x-3">
-                                <span class="w-40">Cantidad de cajas:</span>
-                                <span class="w-20">{{ '3' }}</span>
-                            </p>
-                            <p class="flex items-center space-x-3">
-                                <span class="w-40">Costo total de envío:</span>
-                                <span class="w-20">{{ '$108.50' }}</span>
-                            </p>
-                        </div>
-                        <h2 v-if="form.products.length" class="ml-2 mt-6 font-bold">Detalles sobre las cajas</h2>
-                        <ShippingCard v-for="(item, index) in form.products" :key="index" :product="item.catalogProduct"
-                            :quantity="item.quantity" />
-                        <!-- Agregar parcialidades -->
-                        <!-- <div v-for="(item, index) in form.partialities" :key="index"
-                            class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
-                            <h2 class="col-span-full font-bold flex items-center space-x-3">
-                                <span>Parcialidad {{ (index + 2) }}</span>
-                                <button @click="removePartial(index)" type="button"
-                                    class="text-xs size-6 text-primary rounded-full hover:bg-gray-200">
-                                    <i class="fa-regular fa-trash-can"></i>
-                                </button>
-                            </h2>
-                            <div class="ml-7 col-span-full">
-                                <label class="text-sm ml-2 mb-px flex items-center">Fecha de entrega esperada
-                                    <el-tooltip
-                                        content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega"
-                                        placement="right">
-                                        <div
-                                            class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
-                                            <i class="fa-solid fa-info text-primary text-[7px]"></i>
-                                        </div>
-                                    </el-tooltip>
-                                </label>
-                                <el-date-picker v-model="form.partialities[index].promise_date" type="date"
-                                    placeholder="Fecha de entrega esperada" format="YYYY/MM/DD"
-                                    value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
-                            </div>
-                            <div class="flex items-center">
-                                <el-tooltip content="Paquetería" placement="top">
-                                    <i
-                                        class="fa-solid fa-truck-fast font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
-                                </el-tooltip>
-                                <el-select v-model="form.partialities[index].shipping_company" placeholder="Paquetería">
-                                    <el-option v-for="(item, index) in shippingCompanies" :key="item" :label="item"
-                                        :value="item" />
-                                </el-select>
-                            </div>
-                            <div>
-                                <IconInput v-model="form.partialities[index].freight_cost"
-                                    inputPlaceholder="Costo logística" inputType="text">
-                                    <el-tooltip content="Costo logística" placement="top">
-                                        <i class="fa-solid fa-file-invoice-dollar"></i>
-                                    </el-tooltip>
-                                </IconInput>
-                            </div>
-                            <div class="col-span-full">
-                                <IconInput v-model="form.partialities[index].tracking_guide" inputPlaceholder="Guía"
-                                    inputType="text">
-                                    <el-tooltip content="Guía" placement="top">
-                                        <i class="fa-solid fa-magnifying-glass-location"></i>
-                                    </el-tooltip>
-                                </IconInput>
-                            </div>
-                        </div> -->
-                        <!-- btn agregar parcialidad -->
-                        <!-- <button @click="addPartial" type="button"
-                            class="col-span-full w-full text-primary text-xs text-right underline">+ Agregar
-                            parcialidad</button> -->
                     </section>
                     <!-- Datos de la orden -->
                     <section v-if="form.is_sale_production">
@@ -657,17 +666,37 @@ export default {
         sample: Object,
     },
     methods: {
+        handleChangeShippingOption() {
+            this.form.partialities = [];
+            const numberOfShippings = this.shippingOptions.findIndex(i => i === this.form.shipping_option) + 1;
+            for (let index = 0; index < numberOfShippings; index++) {
+                this.addPartial();
+            }
+        },
         openDesignAuthorization() {
             const url = route('design-authorizations.show', this.product.design_authorization_id);
             window.open(url, '_blank');
         },
         addPartial() {
-            const partiality = {
-                shipping_company: null,
-                freight_cost: null,
-                tracking_guide: null,
+            let partiality = {
                 promise_date: null,
+                promise_date: null,
+                shipping_company: null,
+                tracking_guide: null,
+                productsSelected: [],
+                quantities: [],
             };
+
+            // llenar productos seleccionados para parcialidad
+            this.form.products.forEach(product => {
+                const prd = {
+                    name: product.catalogProduct.name,
+                    selected: false,
+                    quantity: 0,
+                };
+
+                partiality.productsSelected.push({ ...prd });
+            });
 
             this.form.partialities.push({ ...partiality });
         },

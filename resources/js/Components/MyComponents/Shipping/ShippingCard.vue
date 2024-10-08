@@ -63,7 +63,7 @@
                     </template>
                 </el-popconfirm>
             </div>
-            <PrimaryButton v-else>Agregar cajas</PrimaryButton>
+            <PrimaryButton type="button" v-else>Agregar cajas</PrimaryButton>
         </h2>
 
         <section v-if="shippingInfo.legth">
