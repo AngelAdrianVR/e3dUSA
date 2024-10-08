@@ -96,8 +96,25 @@ class SaleController extends Controller
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
             'products' => 'array|min:1',
-            'partialities' => 'nullable'
+            'partialities' => 'array|min:1'
         ]);
+
+        // Obtener todas las parcialidades (envios programados) del request
+        $partialities = $request->input('partialities');
+
+        // Iterar sobre las parcialidades y filtrar los productos seleccionados
+        foreach ($partialities as &$partiality) {
+            // Filtrar los productos cuyo 'selected' sea true
+            $partiality['productsSelected'] = array_filter($partiality['productsSelected'], function ($product) {
+                return $product['selected'] === true;
+            });
+
+            // Eliminar la clave 'selected' de cada producto
+            $partiality['productsSelected'] = array_map(function ($product) {
+                unset($product['selected']); // Eliminar la clave 'selected'
+                return $product;
+            }, $partiality['productsSelected']);
+        }
 
         $sale = Sale::create($request->except('products') + ['user_id' => auth()->id()]);
         $can_authorize = auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin');
@@ -111,7 +128,7 @@ class SaleController extends Controller
         }
 
         // store media
-        $sale->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection('oce'));
+        $sale->addAllMediaFromRequest()->each(fn($file) => $file->toMediaCollection('oce'));
 
         foreach ($request->products as $product) {
             $cpcs = CatalogProductCompanySale::create($product + ['sale_id' => $sale->id]);
@@ -270,7 +287,7 @@ class SaleController extends Controller
 
         // media
         $sale->clearMediaCollection();
-        $sale->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+        $sale->addAllMediaFromRequest()->each(fn($file) => $file->toMediaCollection());
 
         foreach ($request->products as $product) {
             $productData = $product + ['sale_id' => $sale->id];
@@ -365,7 +382,8 @@ class SaleController extends Controller
 
         return response()
             ->json([
-                'message' => "Orden clonada: $new_item_folio", 'newItem' => saleResource::make(Sale::with('companyBranch', 'user')->find($clone->id))
+                'message' => "Orden clonada: $new_item_folio",
+                'newItem' => saleResource::make(Sale::with('companyBranch', 'user')->find($clone->id))
             ]);
     }
 
@@ -419,7 +437,7 @@ class SaleController extends Controller
 
     public function fetchFiltered($filter)
     {
-        if ( $filter == 'Mis órdenes') {
+        if ($filter == 'Mis órdenes') {
             $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->where('user_id', auth()->id())->latest()->paginate(20));
             return inertia('Sale/Index', compact('sales'));
         } else {
