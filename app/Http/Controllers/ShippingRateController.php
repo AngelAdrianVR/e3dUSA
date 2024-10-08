@@ -40,6 +40,11 @@ class ShippingRateController extends Controller
             'boxes.*.cost' => 'required|numeric|min:0', // Tarifa de la caja
         ]);
 
+        if ($request->all_boxes_are_same) {
+            $box = $request->boxes[0]; // Primer caja
+            $request->merge(['boxes' => array_fill(0, $request->boxes_amount, $box)]); // Clona la primera caja
+        }
+        
         $shipping_rate = ShippingRate::create([
             'quantity' => $request->quantity,
             'boxes' => $request->boxes,
