@@ -107,7 +107,7 @@
                                     </div>
                                     <p v-if="alertMaxQuantity" class="text-red-600 text-xs">
                                         Sólo hay material para producir
-                                        {{ alertMaxQuantity.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
+                                        {{ alertMaxQuantity?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
                                         unidades.
                                         No olvides reportar la adquisición de más mercancía
                                     </p>
@@ -278,7 +278,7 @@
                                                 form.company_branch_id)?.catalog_products?.find(prd => prd.pivot.id ===
                                                     item.catalog_product_company_id)?.name
                                             }}
-                                            ({{ item.quantity.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
+                                            ({{ item.quantity?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
                                             unidades)
                                         </p>
                                         <div class="flex space-x-2 items-center">
@@ -378,80 +378,26 @@
                                 <div v-if="form.shipping_option != 'Entrega única'" class="col-span-full space-y-1">
                                     <div v-for="(prd, index2) in form.products" :key="index2"
                                         class="grid grid-cols-2 gap-3">
-                                        <label class="inline ml-2">
-                                            <Checkbox v-model:checked="partiality.productsSelected[index2].active"
+                                        <label v-if="partiality.productsSelected[index2]" class="inline ml-2">
+                                            <Checkbox v-model:checked="partiality.productsSelected[index2].selected"
                                                 class="bg-transparent" />
                                             <span class="ml-2 text-xs">{{ prd.catalogProduct.name }}</span>
                                         </label>
-                                        <el-input-number v-model="partiality.productsSelected[index2].quantity" :min="1"
+                                        <el-input-number v-if="partiality.productsSelected[index2]"
+                                            v-model="partiality.productsSelected[index2].quantity" :min="1"
                                             :max="prd.quantity" size="small" class="!w-1/2 self-start"
-                                            :disabled="!partiality.productsSelected[index2].active" />
+                                            :disabled="!partiality.productsSelected[index2]?.selected" />
                                     </div>
                                 </div>
                                 <h2 v-if="form.products.length" class="ml-2 mt-6 font-bold">
                                     Detalles sobre las cajas
                                 </h2>
                                 <ShippingCard class="col-span-full"
-                                    v-for="(shippProduct, index3) in partiality.productsSelected.filter(p => p.active)"
-                                    :key="index3" :product="form.products.find(e => e.catalogProduct.name == shippProduct.name).catalogProduct"
-                                    :quantity="shippProduct.quantity"/>
+                                    v-for="(shippProduct, index3) in partiality.productsSelected.filter(p => p?.selected)"
+                                    :key="index3"
+                                    :product="form.products.find(e => e.catalogProduct.name == shippProduct.name).catalogProduct"
+                                    :quantity="shippProduct.quantity" />
                             </div>
-                            <!-- Agregar parcialidades -->
-                            <!-- <div v-for="(item, index) in form.partialities" :key="index"
-                                class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
-                                <h2 class="col-span-full font-bold flex items-center space-x-3">
-                                    <span>Parcialidad {{ (index + 2) }}</span>
-                                    <button @click="removePartial(index)" type="button"
-                                        class="text-xs size-6 text-primary rounded-full hover:bg-gray-200">
-                                        <i class="fa-regular fa-trash-can"></i>
-                                    </button>
-                                </h2>
-                                <div class="ml-7 col-span-full">
-                                    <label class="text-sm ml-2 mb-px flex items-center">Fecha de entrega esperada
-                                        <el-tooltip
-                                            content="Esta aparecerá en producción para dar prioridad a ventas cercanas a su fecha de entrega"
-                                            placement="right">
-                                            <div
-                                                class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
-                                                <i class="fa-solid fa-info text-primary text-[7px]"></i>
-                                            </div>
-                                        </el-tooltip>
-                                    </label>
-                                    <el-date-picker v-model="form.partialities[index].promise_date" type="date"
-                                        placeholder="Fecha de entrega esperada" format="YYYY/MM/DD"
-                                        value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
-                                </div>
-                                <div class="flex items-center">
-                                    <el-tooltip content="Paquetería" placement="top">
-                                        <i
-                                            class="fa-solid fa-truck-fast font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"></i>
-                                    </el-tooltip>
-                                    <el-select v-model="form.partialities[index].shipping_company" placeholder="Paquetería">
-                                        <el-option v-for="(item, index) in shippingCompanies" :key="item" :label="item"
-                                            :value="item" />
-                                    </el-select>
-                                </div>
-                                <div>
-                                    <IconInput v-model="form.partialities[index].freight_cost"
-                                        inputPlaceholder="Costo logística" inputType="text">
-                                        <el-tooltip content="Costo logística" placement="top">
-                                            <i class="fa-solid fa-file-invoice-dollar"></i>
-                                        </el-tooltip>
-                                    </IconInput>
-                                </div>
-                                <div class="col-span-full">
-                                    <IconInput v-model="form.partialities[index].tracking_guide" inputPlaceholder="Guía"
-                                        inputType="text">
-                                        <el-tooltip content="Guía" placement="top">
-                                            <i class="fa-solid fa-magnifying-glass-location"></i>
-                                        </el-tooltip>
-                                    </IconInput>
-                                </div>
-                            </div> -->
-                            <!-- btn agregar parcialidad -->
-                            <!-- <button @click="addPartial" type="button"
-                                class="col-span-full w-full text-primary text-xs text-right underline">+ Agregar
-                                parcialidad</button> -->
                         </div>
                     </section>
                     <!-- Datos de la orden -->
@@ -514,10 +460,8 @@
             </form>
             <DialogModal :show="showImportantNotesModal" @close="showImportantNotesModal = false">
                 <template #title>
-                    {{
-                        editIMportantNotes ? 'Editar' : 'Agregar' }} notas importantes para {{
-                        company_branches.find(item => item.id == form.company_branch_id).name
-                    }}
+                    {{ editIMportantNotes ? 'Editar' : 'Agregar' }} notas importantes para
+                    {{ company_branches.find(item => item.id == form.company_branch_id).name }}
                 </template>
                 <template #content>
                     <div class="flex mt-6">
@@ -670,29 +614,31 @@ export default {
             this.form.partialities = [];
             const numberOfShippings = this.shippingOptions.findIndex(i => i === this.form.shipping_option) + 1;
             for (let index = 0; index < numberOfShippings; index++) {
-                this.addPartial();
+                this.addPartial(numberOfShippings == 1);
             }
         },
         openDesignAuthorization() {
             const url = route('design-authorizations.show', this.product.design_authorization_id);
             window.open(url, '_blank');
         },
-        addPartial() {
+        addPartial(fillAllProducts = false) {
             let partiality = {
                 promise_date: null,
-                promise_date: null,
+                shipping_cost: null,
                 shipping_company: null,
+                number_of_packages: null,
                 tracking_guide: null,
+                status: 'Pendiente de envío',
                 productsSelected: [],
-                quantities: [],
             };
 
             // llenar productos seleccionados para parcialidad
             this.form.products.forEach(product => {
                 const prd = {
+                    id: product.catalogProduct.id,
                     name: product.catalogProduct.name,
-                    selected: false,
-                    quantity: 0,
+                    selected: fillAllProducts,
+                    quantity: fillAllProducts ? product.quantity : 0,
                 };
 
                 partiality.productsSelected.push({ ...prd });
@@ -837,6 +783,15 @@ export default {
                 this.form.products.push(product);
             }
 
+            // si se agrega un producto a ultimo momento, actualizar parcialidades
+            if (this.form.shipping_option) {
+                if (this.form.shipping_option == 'Entrega única') {
+                    this.handleChangeShippingOption();
+                } else {
+                    this.syncPartialitiesProducts(); // Sincronizar productos
+                }
+            }
+
             //quitar formato seleccionado de auto. de diseño de la lista para que no se pueda volver seleccionar 
             // this.refreshDesignAuthorizationsList(this.product.design_authorization_id);
 
@@ -844,15 +799,47 @@ export default {
             this.resetProductForm();
             this.selectedCatalogProduct = null;
             this.alertMaxQuantity = 0;
+        },
+        syncPartialitiesProducts() {
+            this.form.partialities.forEach(partiality => {
+                // Crear un nuevo array de productsSelected con los productos sincronizados
+                const updatedProductsSelected = [];
 
+                // Iterar sobre los productos actuales
+                this.form.products.forEach(product => {
+                    // Buscar si el producto ya existe en productsSelected de la parcialidad
+                    const existingProduct = partiality.productsSelected.find(p => p.id === product.catalogProduct.id);
+
+                    // Si el producto ya existe, conservar 'selected' y 'quantity'
+                    if (existingProduct) {
+                        updatedProductsSelected.push({
+                            ...existingProduct, // Mantener los datos capturados
+                            name: product.catalogProduct.name // Actualizar el nombre si ha cambiado
+                        });
+                    } else {
+                        // Si es un nuevo producto, agregarlo con 'selected: false' o con valores por defecto
+                        updatedProductsSelected.push({
+                            id: product.catalogProduct.id,
+                            name: product.catalogProduct.name,
+                            selected: false, // Valor por defecto para nuevos productos
+                            quantity: 0 // Cantidad por defecto
+                        });
+                    }
+                });
+
+                // Reemplazar productsSelected con el nuevo array sincronizado
+                partiality.productsSelected = updatedProductsSelected;
+            });
         },
         deleteProduct(index) {
             this.form.products.splice(index, 1);
+            this.syncPartialitiesProducts(); // Sincronizar productos
         },
         editProduct(index) {
             const product = { ...this.form.products[index] };
             this.product = product;
             this.editIndex = index;
+            this.syncPartialitiesProducts(); // Sincronizar productos
         },
         resetProductForm() {
             this.product.catalog_product_company_id = null;
