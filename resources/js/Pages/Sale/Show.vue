@@ -156,8 +156,6 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import ProductSaleCard from "@/Components/MyComponents/ProductSaleCard.vue";
 import axios from "axios";
 import { Link } from "@inertiajs/vue3";
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 
 export default {
   data() {
@@ -189,11 +187,6 @@ export default {
     openPrintPage() {
       const url = route('sales.print', this.sale.data.id);
       window.open(url, '_blank');
-    },
-    dateFormat(date) {
-      const formattedDate = format(new Date(date), 'dd MMMM yyyy', { locale: es });
-
-      return formattedDate;
     },
     handleClick(tab) {
       // Agrega la variable currentTab=tab.props.name a la URL para mejorar la navegacion al actalizar o cambiar de pagina
