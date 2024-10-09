@@ -48,7 +48,7 @@ Sale extends Model implements HasMedia
         'recieved_at' => 'datetime',
         'sent_at' => 'datetime',
         'partialities' => 'array',
-        // 'promise_date' => 'date',
+        'promise_date' => 'date',
     ];
 
     //relationships

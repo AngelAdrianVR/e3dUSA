@@ -11,8 +11,8 @@
                 </div>
                 <div class="flex justify-between">
                     <div class="w-1/3">
-                        <el-select @change="$inertia.get(route('productions.show', selectedSale))" v-model="selectedSale"
-                            clearable filterable placeholder="Buscar orden de producción"
+                        <el-select @change="$inertia.get(route('productions.show', selectedSale))"
+                            v-model="selectedSale" clearable filterable placeholder="Buscar orden de producción"
                             no-data-text="No hay órdenes registradas" no-match-text="No se encontraron coincidencias">
                             <el-option v-for="item in sales" :key="item.id"
                                 :label="'OP-' + item.id + ' | ' + item.company_branch.name" :value="item.id" />
@@ -22,11 +22,13 @@
                         <el-tooltip v-if="$page.props.auth.user?.permissions.includes('Ordenes de produccion todas')"
                             content="Editar" placement="top">
                             <Link :href="route('productions.edit', selectedSale)">
-                                <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9]">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                    </svg>
-                                </button>
+                            <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9]">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="size-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                </svg>
+                            </button>
                             </Link>
                         </el-tooltip>
                     </div>
@@ -49,228 +51,30 @@
                 </el-tooltip>
                 <span> {{ sale.data?.folio.replace('OV', 'OP') + ' | ' + sale.data?.company_branch?.name }}</span>
             </h1>
-            <!-- ------------- tabs section starts ------------- -->
-            <div class="border-y-2 border-[#cccccc] flex justify-between items-center py-2">
-                <div class="flex">
-                    <p @click="tabs = 1" :class="tabs == 1 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-                        "
-                        class="h-10 p-2 cursor-pointer md:ml-5 transition duration-300 ease-in-out text-sm md:text-base">
-                        Datos de la órden
-                    </p>
-                    <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
-                    <p @click="tabs = 2" :class="tabs == 2 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-                        "
-                        class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-                        Productos
-                    </p>
-                    <div class="border-r-2 border-[#cccccc] h-10 ml-3"></div>
-                    <p @click="tabs = 3" :class="tabs == 3 ? 'bg-secondary-gray rounded-xl text-primary' : ''
-                        "
-                        class="md:ml-3 h-10 p-2 cursor-pointer transition duration-300 ease-in-out text-sm md:text-base">
-                        Hojas viajeras
-                    </p>
-                </div>
-            </div>
 
-            <!-- ------------- Informacion general Starts 1 ------------- -->
-            <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
-                <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
-                    <h2 class="text-secondary col-span-full">Logística</h2>
-                    <span class="text-gray-500 my-1">Paquetería</span>
-                    <span>{{ sale.data?.shipping_company }}</span>
-                    <span class="text-gray-500 my-1">Guía</span>
-                    <span>{{ sale.data?.tracking_guide ?? '--' }}</span>
-                    <span class="text-gray-500 my-1">Costo logística</span>
-                    <span>$ {{ sale.data?.freight_cost }}</span>
-                    <span v-if="sale.data?.promise_date" class="text-gray-500 my-1">Fecha de embarque esperada</span>
-                    <span v-if="sale.data?.promise_date" class="text-red-600 bg-red-200 px-2 py-1">
-                        {{ sale.data.promise_date }}
-                    </span>
-                    <div v-if="sale.data.partialities" class="col-span-full">
-                        <article v-for="(item, index) in sale.data.partialities" :key="index" class="grid grid-cols-2">
-                            <span class="col-span-full font-bold my-2">Parcialidad {{ (index + 2) }}</span>
-                            <span class="text-gray-500">Paquetería</span>
-                            <span>{{ item.shipping_company }}</span>
-                            <span class="text-gray-500 my-1">Guía</span>
-                            <span>{{ item.traking_guide }}</span>
-                            <span class="text-gray-500 my-1">Costo de envío</span>
-                            <span>$ {{ item.freight_cost }}</span>
-                            <span v-if="item.promise_date" class="text-gray-500 my-1">Fecha de embarque esperada</span>
-                            <span v-if="item.promise_date" class="text-red-600 bg-red-200 px-2 py-1">{{
-                                dateFormat(item.promise_date) }}</span>
-                        </article>
-                    </div>
-
-                    <h2 class="text-secondary col-span-full mt-6">Datos de la orden</h2>
-                    <span class="text-gray-500">ID</span>
-                    <span>{{ sale.data?.folio.replace('OV', 'OP') }}</span>
-                    <span class="text-gray-500 my-2">Vendedor</span>
-                    <span>{{ sale.data?.user?.name }}</span>
-                    <span class="text-gray-500 my-2">Creador de orden de producción</span>
-                    <span>{{ sale.data?.productions[0].user?.name }}</span>
-                    <span class="text-gray-500 my-2">Solicitada el</span>
-                    <span>{{ getDateFormtted(sale.data?.productions[0].created_at) }}</span>
-                    <span class="text-gray-500 my-2">Medio de petición</span>
-                    <span>{{ sale.data?.order_via }}</span>
-                    <span class="text-gray-500 my-2">Factura</span>
-                    <span>{{ sale.data?.invoice ?? '--' }}</span>
-                    <span class="text-gray-500 my-2">OCE</span>
-                    <a :href="sale.data?.media[0]?.original_url" target="_blank"
-                        class="text-secondary cursor-pointer hover:underline">
-                        {{ sale.data?.oce_name ?? sale.data?.media[0]?.file_name }}
-                    </a>
-                    <span class="text-gray-500 my-2">Notas</span>
-                    <span>{{ sale.data?.notes ?? '--' }}</span>
-                    <span class="text-gray-500 my-2">Estatus</span>
-                    <span class="rounded-full border text-center" :class="sale.data?.status['text-color'] +
-                        ' ' +
-                        sale.data?.status['border-color']
-                        ">{{ sale.data?.status["label"] }}</span>
-                </div>
-
-                <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
-                    <h2 class="text-secondary col-span-full">Datos del cliente</h2>
-                    <span class="text-gray-500">Razon social</span>
-                    <span>{{ sale.data?.company_branch.company.business_name }}</span>
-                    <span class="text-gray-500 my-2">RFC</span>
-                    <span>{{ sale.data?.company_branch.company.rfc }}</span>
-                    <span class="text-gray-500 my-2">Método de pago</span>
-                    <span>{{ sale.data?.company_branch.sat_method }}</span>
-                    <span class="text-gray-500 my-2">Medio de pago</span>
-                    <span>{{ sale.data?.company_branch.sat_way }}</span>
-                    <span class="text-gray-500 my-2">Uso de factura</span>
-                    <span>{{ sale.data?.company_branch.sat_type }}</span>
-                    <span class="text-gray-500 my-2">Cliente / sucursal</span>
-                    <span>{{ sale.data?.company_branch.name }}</span>
-                    <span class="text-gray-500 my-2">Dirección de entrega</span>
-                    <span>{{ sale.data?.company_branch.address }}. C.P. {{ sale.data?.company_branch.post_code }}</span>
-
-                    <h2 class="text-secondary mt-6 col-span-full">Contacto</h2>
-                    <span class="text-gray-500 my-2">Nombre</span>
-                    <span>{{ sale.data?.contact?.name }}</span>
-                    <span class="text-gray-500 my-2">Correo electronico</span>
-                    <span>{{ sale.data?.contact?.email }}</span>
-                    <span class="text-gray-500 my-2">Teléfono</span>
-                    <span>{{ sale.data?.contact?.phone }}</span>
-
-                </div>
-            </div>
-            <!-- -------------tab 2 productos starts ------------- -->
-            <div v-if="tabs == 2" class="p-7">
-                <div class="mb-5">
-                    <el-dropdown @click="openPrintPage" split-button type="primary" 
-                                :disabled="!orderedProductsSelected.length">
-                    Imprimir
-                    <template #dropdown>
-                        <el-dropdown-menu>
-                        <el-dropdown-item @click="showPackageLabelForm = true">Generador de etiqueta para envío</el-dropdown-item>
-                        </el-dropdown-menu>
-                    </template>
-                    </el-dropdown>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-4 gap-7">
-                    <ProductSaleCard @selected="handleSelections(index, $event)"
-                        v-for="(productSale, index) in sale.data.catalogProductCompanySales" :key="productSale.id"
-                        :catalog_product_company_sale="productSale" :isHighPriority="sale.data.is_high_priority"
-                        :qualities="qualities" />
-                </div>
-            </div>
-            <!-- -------------tab 3 hojas viajeras starts ------------- -->
-            <div v-if="tabs == 3" class="p-7">
-                <Traveler :sale="sale.data" />
-            </div>
-
-            <!-- ----------------- etiqueta de envío modal ----------- -->
-            <Modal :show="showPackageLabelForm"
-                @close="showPackageLabelForm = false">
-                <form @submit.stop="createBoxLabel" class="p-5 grid grid-cols-2 gap-x-3">
-                    <h1 class="col-span-full font-bold mb-1">Generar etiqueta</h1>
-                    <p class="text-xs col-span-full mb-3">Este sólo es un generador de etiquetas, por lo tanto no se guardan en el sistema.</p>
-    
-                    <div class="mt-2">
-                        <InputLabel value="Guía*" class="ml-2" />
-                        <input v-model="labelForm.guide" type="text" class="input" placeholder="Agrega la guía" />
-                        <InputError :message="labelForm.errors.guide" />
-                    </div>
-    
-                    <div class="mt-2">
-                        <InputLabel value="Orden de compra" class="ml-2" />
-                        <input v-model="labelForm.ov" type="text" class="input" placeholder="Escriba la orden de compra" />
-                        <InputError :message="labelForm.errors.ov" />
-                    </div>
-    
-                    <div class="mt-2">
-                        <InputLabel value="Folio" class="ml-2" />
-                        <input v-model="labelForm.folio" type="text" class="input" placeholder="Escriba el folio" />
-                        <InputError :message="labelForm.errors.folio" />
-                    </div>
-    
-                    <div class="mt-2">
-                        <InputLabel value="Factura" class="ml-2" />
-                        <input v-model="labelForm.invoice" type="text" class="input" placeholder="Escriba la factura" />
-                        <InputError :message="labelForm.errors.invoice" />
-                    </div>
-    
-                    <div class="my-2">
-                        <InputLabel value="No. de parte" class="ml-2" />
-                        <input v-model="labelForm.part_number" type="text" class="input" placeholder="Agregue el número de parte" />
-                    </div>
-    
-                    <!-- ----- Número de cajas ----- -->
-                    <section v-for="(box, index) in labelForm.boxes" :key="index" class="col-span-full flex items-center space-x-3 mt-2">
-                        <div class="w-1/4">
-                            <InputLabel value="Caja" class="ml-2" />
-                            <input v-model="labelForm.boxes[index].name" disabled type="text" class="input" placeholder="Nombre de caja" />
-                        </div>
-                        <div class="w-1/4">
-                            <InputLabel value="Producto" class="ml-2" />
-                            <input v-model="labelForm.boxes[index].product_name" type="text" class="input" placeholder="Escribe el nombre del producto" />
-                        </div>
-                        <div class="w-1/4">
-                            <InputLabel value="Piezas" class="ml-2" />
-                            <input v-model="labelForm.boxes[index].quantity" type="text" class="input" placeholder="Escribe la cantidad de piezas"
-                                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                                :parser="(value) => value.replace(/\D/g, '')" />
-                        </div>
-                        <i @click="deleteBox(index)" v-if="index === boxIndex - 1 && labelForm.boxes.length >1" class="fa-regular fa-trash-can text-primary cursor-pointer p-1 mt-5"></i>
-                    </section>
-    
-                    <p @click="addBox" class="text-primary mt-2 cursor-pointer ml-4">+ Agregar caja</p>
-    
-                    <div class="block ml-4 mt-4 col-span-full">
-                        <label class="flex items-center">
-                        <Checkbox v-model:checked="labelForm.is_fragil" class="bg-transparent"/>
-                        <span class="ml-2 text-sm">El producto es frágil</span>
-                        </label>
-                    </div>
-    
-                    <div class="col-span-full flex justify-end space-x-3 items-start mt-4">
-                        <CancelButton @click="showPackageLabelForm = false">Cancelar</CancelButton>
-                        <PrimaryButton :disabled="!labelForm.boxes[0].product_name || !labelForm.boxes[0].quantity">Crear etiqueta</PrimaryButton>
-                    </div>
-                </form>
-            </Modal>
+            <!-- Tabs -->
+            <el-tabs v-model="activeTab" class="mx-5 mt-3" @tab-click="handleClickInTab">
+                <el-tab-pane label="Datos de la órden" name="1">
+                    <General :sale="sale.data" />
+                </el-tab-pane>
+                <el-tab-pane label="Productos" name="2">
+                    <Products :sale="sale.data" :qualities="qualities" />
+                </el-tab-pane>
+                <el-tab-pane label="Hojas viajeras" name="3">
+                    <Traveler :sale="sale.data" />
+                </el-tab-pane>
+            </el-tabs>
         </AppLayoutNoHeader>
     </div>
 </template>
-  
+
 <script>
 import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
-import Checkbox from "@/Components/Checkbox.vue";
-import Modal from "@/Components/Modal.vue";
-import InputLabel from "@/Components/InputLabel.vue";
 import Dropdown from "@/Components/Dropdown.vue";
-import DropdownLink from "@/Components/DropdownLink.vue";
-import CancelButton from "@/Components/MyComponents/CancelButton.vue";
-import ProductSaleCard from "@/Components/MyComponents/ProductSaleCard.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import InputError from "@/Components/InputError.vue";
 import Traveler from "./Tabs/Traveler.vue";
 import { Link, useForm } from "@inertiajs/vue3";
-import moment from "moment";
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import General from "./Tabs/General.vue";
+import Products from "./Tabs/Products.vue";
 
 export default {
     data() {
@@ -278,36 +82,10 @@ export default {
             expected_end_at: null,
         });
 
-        const labelForm = useForm({
-            client: this.sale.data.company_branch.company.business_name,
-            company_branch: this.sale.data.company_branch.name,
-            contact: this.sale.data.contact?.name,
-            company_branch_address: this.sale.data.company_branch.address,
-            post_code: this.sale.data.company_branch.post_code,
-            contact_phone: this.sale.data.contact?.phone,
-            ov: this.sale.data.folio,
-            folio: null,
-            guide: null,
-            invoice: null,
-            part_number: null,
-            is_fragil: false,
-            boxes: [
-                {
-                    name: 'Caja 1',
-                    product_name: null,
-                    quantity: null,
-                }
-            ],
-        });
-
         return {
             form,
-            labelForm,
-            boxIndex: 1, //cuenta el index de cada caja del arreglo en labelForm
-            orderedProductsSelected: [],
-            showPackageLabelForm: false, //muestra formulario para imprir etiqueta de envío
             selectedSale: "",
-            tabs: 1,
+            activeTab: '1',
         };
     },
     props: {
@@ -317,63 +95,34 @@ export default {
     },
     components: {
         AppLayoutNoHeader,
-        ProductSaleCard,
-        PrimaryButton,
-        DropdownLink,
-        InputLabel,
-        CancelButton,
-        CancelButton,
-        InputError,
         Dropdown,
-        Checkbox,
         Traveler,
-        Modal,
-        Link
+        Link,
+        General,
+        Products,
     },
     methods: {
-        openPrintPage() {
-            const url = route('productions.print', JSON.stringify(this.orderedProductsSelected));
-            window.open(url, '_blank');
+        handleClickInTab(tab) {
+            // Agrega la variable currentTab=tab.props.name a la URL para mejorar la navegacion al actalizar o cambiar de pagina
+            const currentURL = new URL(window.location.href);
+            currentURL.searchParams.set('currentTab', tab.props.name);
+            // Actualiza la URL
+            window.history.replaceState({}, document.title, currentURL.href);
         },
-        createBoxLabel() {
-            this.$inertia.post(route('productions.generate-box-label'), { data: this.labelForm });
-        },
-        addBox() {
-            this.labelForm.boxes.push({ name: 'Caja ' + (this.boxIndex + 1), quantity: null });
-            this.boxIndex ++;
-        },
-        deleteBox(index) {
-            this.labelForm.boxes.splice(index, 1);
-            this.boxIndex --;
-        },
-        dateFormat(date) {
-            const formattedDate = format(new Date(date), 'dd MMMM yyyy', { locale: es });
+        setTabInUrl() {
+            // Obtener la URL actual
+            const currentURL = new URL(window.location.href);
+            // Extraer el valor de 'currentTab' de los parámetros de búsqueda
+            const currentTabFromURL = currentURL.searchParams.get('currentTab');
 
-            return formattedDate;
-        },
-        handleSelections(index, isSelected) {
-            if (isSelected) {
-                this.orderedProductsSelected.push(this.sale.data.catalogProductCompanySales[index].id);
+            if (currentTabFromURL) {
+                this.activeTab = currentTabFromURL;
             }
-            else {
-                const opsIndex = this.orderedProductsSelected.findIndex(item => item == this.sale.data.catalogProductCompanySales[index].id)
-                this.orderedProductsSelected.splice(opsIndex, 1);
-            }
-        },
-        getDateFormtted(dateTime) {
-            if (!dateTime) return null;
-            return moment(dateTime).format("DD MMM YYYY, hh:mmA");
         },
     },
-
-    // watch: {
-    //     selectedSale(newVal) {
-    //         this.currentSale = this.sales.data.find((item) => item.id == newVal);
-    //     },
-    // },
-
     mounted() {
         this.selectedSale = this.sale.data.id;
+        this.setTabInUrl();
     },
 };
 </script>

@@ -563,6 +563,8 @@ export default {
                 promise_date: null,
                 shipping_cost: null,
                 shipping_company: null,
+                sent_at: null,
+                sent_by: null,
                 number_of_packages: null,
                 tracking_guide: null,
                 status: 'Pendiente de envío',
