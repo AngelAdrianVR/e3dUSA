@@ -169,18 +169,7 @@
                                         </div>
                                     </div>
                                     <div class="col-span-full">
-                                        <!-- <IconInput @change="validateQuantity()" v-model="product.quantity" inputPlaceholder="Cantidad *"
-                                            inputType="number" inputStep="0.01">
-                                            <el-tooltip content="Cantidad" placement="top">
-                                                #
-                                            </el-tooltip>
-                                        </IconInput> -->
                                         <div class="flex items-center space-x-6 ml-5 w-full">
-                                            <!-- <div>
-                                            <label class="block text-xs">Cantidad *</label>
-                                            <el-input-number :disabled="loading || !product.catalog_product_company_id"
-                                                @change="validateQuantity()" v-model="product.quantity" :min="0.01" />
-                                        </div> -->
                                             <!-- Descomentar cuando se implenmente lo de formato de autorizacion  -->
                                             <!-- <div v-if="selectedCatalogProductHasSale === false" class="w-full">
                                     <div class="flex items-center space-x-3">
@@ -458,6 +447,7 @@
                     </div>
                 </div>
             </form>
+
             <DialogModal :show="showImportantNotesModal" @close="showImportantNotesModal = false">
                 <template #title>
                     {{ editIMportantNotes ? 'Editar' : 'Agregar' }} notas importantes para
@@ -483,6 +473,7 @@
                     </PrimaryButton>
                 </template>
             </DialogModal>
+
             <Modal :show="showCreateProjectModal" @close="showCreateProjectModal = false">
                 <section class="mx-7 my-4 space-y-4">
                     <div>
@@ -507,7 +498,6 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import InputError from "@/Components/InputError.vue";
-import IconInput from "@/Components/MyComponents/IconInput.vue";
 import DialogModal from "@/Components/DialogModal.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import Modal from "@/Components/Modal.vue";
@@ -525,13 +515,13 @@ export default {
             oportunity_id: null,
             contact_id: null,
             shipping_option: null,
-            shipping_company: null,
-            freight_cost: null,
+            // shipping_company: null,
+            // freight_cost: null,
+            // tracking_guide: null,
+            // promise_date: null,
             invoice: null,
             oce_name: null,
             order_via: null,
-            tracking_guide: null,
-            promise_date: null,
             notes: null,
             is_high_priority: false,
             products: [],
@@ -594,7 +584,6 @@ export default {
         PrimaryButton,
         InputError,
         InputLabel,
-        IconInput,
         CancelButton,
         DialogModal,
         Checkbox,
@@ -764,7 +753,6 @@ export default {
                 if (maxQuantity === null || maxQuantity > currentMax) {
                     maxQuantity = currentMax;
                 }
-
             });
 
             if (maxQuantity !== null && this.product.quantity > maxQuantity) {

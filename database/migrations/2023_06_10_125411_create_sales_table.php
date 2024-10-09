@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->string('shipping_company')->nullable();
-            $table->unsignedFloat('freight_cost')->nullable();
+            // $table->string('shipping_company')->nullable();
+            // $table->unsignedFloat('freight_cost')->nullable();
+            // $table->string('tracking_guide')->nullable();
+            // $table->date('promise_date')->nullable();
             $table->string('oce_name')->nullable();
             $table->string('order_via')->nullable();
-            $table->string('tracking_guide')->nullable();
             $table->string('is_sale_production')->default(1);
-            $table->date('promise_date')->nullable();
             $table->string('invoice')->nullable();
             $table->text('notes')->nullable();
             $table->boolean('is_high_priority')->default(false);
@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('sent_by')->nullable();
             $table->string('status')->nullable();
             $table->string('shipping_type')->nullable(); //unica o parcialidades
+            $table->string('shipping_option')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('company_branch_id')->constrained()->cascadeOnDelete();
             $table->foreignId('oportunity_id')->nullable()->constrained()->cascadeOnDelete();

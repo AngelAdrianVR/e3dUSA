@@ -17,13 +17,13 @@ Sale extends Model implements HasMedia
     use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
-        'shipping_company',
-        'freight_cost',
+        // 'shipping_company',
+        // 'freight_cost',
+        // 'tracking_guide',
+        // 'promise_date',
         'status',
         'oce_name',
         'order_via',
-        'tracking_guide',
-        'promise_date',
         'invoice',
         'notes',
         'is_high_priority',
@@ -40,6 +40,7 @@ Sale extends Model implements HasMedia
         'oportunity_id',
         'partialities',
         'is_sale_production',
+        'shipping_option',
     ];
 
     protected $casts = [
@@ -47,7 +48,7 @@ Sale extends Model implements HasMedia
         'recieved_at' => 'datetime',
         'sent_at' => 'datetime',
         'partialities' => 'array',
-        'promise_date' => 'date',
+        // 'promise_date' => 'date',
     ];
 
     //relationships
