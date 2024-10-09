@@ -29,7 +29,7 @@ return new class extends Migration
             $table->timestamp('recieved_at')->nullable();
             $table->timestamp('sent_at')->nullable();
             $table->string('sent_by')->nullable();
-            $table->string('status')->nullable();
+            $table->string('status')->default('Esperando autorización');
             $table->string('shipping_type')->nullable(); //unica o parcialidades
             $table->string('shipping_option')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();

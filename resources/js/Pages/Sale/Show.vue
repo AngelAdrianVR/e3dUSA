@@ -195,21 +195,6 @@ export default {
       // Actualiza la URL
       window.history.replaceState({}, document.title, currentURL.href);
     },
-    getFileTypeIcon(fileName) {
-      // Asocia extensiones de archivo a iconos
-      const fileExtension = fileName.split('.').pop().toLowerCase();
-      switch (fileExtension) {
-        case 'pdf':
-          return 'fa-regular fa-file-pdf text-red-700';
-        case 'jpg':
-        case 'jpeg':
-        case 'png':
-        case 'gif':
-          return 'fa-regular fa-image text-blue-300';
-        default:
-          return 'fa-regular fa-file-lines';
-      }
-    },
     async deleteItem() {
       try {
         const response = await axios.delete(

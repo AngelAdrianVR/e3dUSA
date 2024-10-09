@@ -39,7 +39,7 @@ class ProductionController extends Controller
 
         return inertia('Production/Admin', compact('productions'));
     }
-    
+
     //Index que contiene todos los registros de produccion
     public function adminIndex()
     {
@@ -366,6 +366,8 @@ class ProductionController extends Controller
 
     public function changeStatus(Request $request, Production $production)
     {
+        $sale = $production->catalogProductCompanySale->sale;
+
         if (!$production->started_at) {
             $production->update(['started_at' => now()]);
             $message = 'Se ha registrado el inicio';
@@ -379,7 +381,8 @@ class ProductionController extends Controller
                 'packages' => 'nullable|array',
             ]);
             $production->update([
-                'finished_at' => now(), 'is_paused' => 0,
+                'finished_at' => now(),
+                'is_paused' => 0,
                 'scrap' => $request->scrap,
                 'scrap_reason' => $request->reason,
                 'good_units' => $request->good_units,
@@ -388,7 +391,7 @@ class ProductionController extends Controller
             ]);
 
             // si ya se finalizó completamente
-            if ($production->catalogProductCompanySale->sale->getStatus()['label'] == 'Producción terminada') {
+            if ($sale->getStatus()['label'] == 'Producción terminada') {
                 $cpcs = CatalogProductCompanySale::find($production['catalog_product_company_sale_id']);
                 $raw_materials = $cpcs->catalogProductCompany->catalogProduct->rawMaterials;
                 // descontar materia prima utilizada para la producción
@@ -454,9 +457,9 @@ class ProductionController extends Controller
 
             // notificar a jefe de producción
             $user = User::where('employee_properties->job_position', 'Jefe de producción')->first();
-            
+
             //si se encuentra jefe de producción se hace la notificación, si no se encuentra no se manda
-            if ( $user ) {
+            if ($user) {
                 $user->notify(
                     new ProductionCompletedNotification(
                         $production->catalogProductCompanySale->catalogProductCompany->catalogProduct->name,
@@ -466,7 +469,7 @@ class ProductionController extends Controller
                     )
                 );
             }
-                    
+
             $message = $production->catalogProductCompanySale->sale->is_sale_production
                 ? 'Se ha registrado el final'
                 : 'Se ha guardado automáticamente la cantidad en almacén de producto terminado.';
@@ -475,6 +478,10 @@ class ProductionController extends Controller
             $production = null;
             $message = "No se puede iniciar y finalizar la tarea de inmediato. Al iniciar, empiezas la tarea y marcas el final cuando la completas realmente. Esto permite monitorear la producción en tiempo real.";
         }
+
+        // actualizar status para evitar calcularlo cada que se requiera solicitar
+        $sale->status = $sale->getStatus()['label'];
+        $sale->save();
 
         return response()->json(['message' => $message, 'item' => $production]);
     }
@@ -555,7 +562,7 @@ class ProductionController extends Controller
     {
         return inertia('Production/TravelerTemplate', compact('cpcs'));
     }
-    
+
     public function generateBoxLabel(Request $request)
     {
         return inertia('Production/BoxLabel', ['data' => $request->data]);
@@ -564,17 +571,17 @@ class ProductionController extends Controller
     public function getMatches(Request $request)
     {
         $query = $request->input('query');
-        
+
         // Realiza la búsqueda
         $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch', 'productions.operator')
-        ->whereHas('productions')
-        ->where('id', 'like', "%{$query}%")
-        ->orWhereHas('user', function ($q) use ($query) {
-            $q->where('name', 'like', "%{$query}%");
-        })
-        ->latest()
-        ->paginate(100);
-        
+            ->whereHas('productions')
+            ->where('id', 'like', "%{$query}%")
+            ->orWhereHas('user', function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%");
+            })
+            ->latest()
+            ->paginate(100);
+
         $productions = $this->processDataIndex($pre_productions);
 
         return response()->json(['items' => $productions], 200);
