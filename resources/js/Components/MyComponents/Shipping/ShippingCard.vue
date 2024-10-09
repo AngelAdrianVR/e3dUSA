@@ -14,7 +14,7 @@
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#373737] font-bold w-24">Cantidad:</p>
-                    <p>{{ quantity }} {{ quntity == 1 ? 'unidad' : 'unidades' }}</p>
+                    <p>{{ quantity }} {{ quantity == 1 ? 'unidad' : 'unidades' }}</p>
                 </div>
             </article>
             <article class="flex flex-col items-end justify-end space-y-3">

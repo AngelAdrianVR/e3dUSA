@@ -12,16 +12,13 @@ class ShippingController extends Controller
     public function index()
     {
         $shippings = Sale::with([
-            'user:id,name', 'companyBranch:id,name', 'productions' 
-                => ['catalogProductCompanySale:id,catalog_product_company_id,sale_id' 
-                => ['catalogProductCompany:id,catalog_product_id' 
-                => ['catalogProduct:id,name']]]])
+            'user:id,name', 'companyBranch:id,name'])
             ->where('user_id', auth()->id())
-            ->whereNotNull('tracking_guide')
+            ->where('status', 'Producción terminada')
             ->latest()
-            ->paginate(20, ['id', 'tracking_guide', 'promise_date', 'user_id', 'company_branch_id', 'created_at', 'sent_at', 'sent_by', 'shipping_type', 'status']);
+            ->paginate(20, ['id', 'promise_date', 'user_id', 'company_branch_id', 'created_at', 'sent_at', 'sent_by', 'shipping_type', 'status', 'partialities']);
 
-        // return $shippings;
+            // return $shippings;
         return inertia('Shipping/Index', compact('shippings'));
     }
 
@@ -29,13 +26,10 @@ class ShippingController extends Controller
     public function indexAll()
     {
         $shippings = Sale::with([
-            'user:id,name', 'companyBranch:id,name', 'productions' 
-                => ['catalogProductCompanySale:id,catalog_product_company_id,sale_id' 
-                => ['catalogProductCompany:id,catalog_product_id' 
-                => ['catalogProduct:id,name']]]])
-            ->whereNotNull('tracking_guide')
+            'user:id,name', 'companyBranch:id,name'])
+            ->where('status', 'Producción terminada')
             ->latest()
-            ->paginate(20, ['id', 'tracking_guide', 'promise_date', 'user_id', 'company_branch_id', 'created_at', 'sent_at', 'sent_by', 'shipping_type', 'status']);
+            ->paginate(20, ['id', 'promise_date', 'user_id', 'company_branch_id', 'created_at', 'sent_at', 'sent_by', 'shipping_type', 'status', 'partialities']);
 
         return inertia('Shipping/IndexAll', compact('shippings'));
     }
@@ -53,39 +47,24 @@ class ShippingController extends Controller
     public function show(Sale $shipping)
     {
         // Cargar las relaciones necesarias directamente desde el modelo Sale
-        $shipping = Sale::whereNotNull('tracking_guide')
-        ->with([
+        $shipping = Sale::with([
             'contact:id,name,email,phone',
             'user:id,name',
             'companyBranch:id,name,address,company_id',
             'companyBranch.company:id,business_name',
-            'productions',
+            // 'productions',
             'catalogProductCompanySales.catalogProductCompany:id,catalog_product_id',
             'catalogProductCompanySales.catalogProductCompany.catalogProduct.media',
+            'catalogProductCompanySales.catalogProductCompany.catalogProduct.shippingRates',
             'catalogProductCompanySales.catalogProductCompany.catalogProduct:id,name,part_number'
         ])
-        ->find($shipping->id, ['id', 'tracking_guide', 'promise_date', 'user_id', 'company_branch_id', 'created_at', 'is_high_priority', 'notes', 'contact_id', 'shipping_company']);
+        ->find($shipping->id, ['id', 'promise_date', 'user_id', 'company_branch_id', 'created_at', 'is_high_priority', 'notes', 'contact_id', 'shipping_company', 'status', 'partialities']);
 
-        $shippings = Sale::whereNotNull('tracking_guide')
+        $shippings = Sale::where('status', 'Producción terminada')
             ->get(['id']);
 
         // return $shipping;
         return inertia('Shipping/Show', compact('shipping', 'shippings'));
-    }
-
-    public function edit(Shipping $shipping)
-    {
-        //
-    }
-
-    public function update(Request $request, Shipping $shipping)
-    {
-        //
-    }
-
-    public function destroy(Shipping $shipping)
-    {
-        //
     }
 
     public function massiveDelete(Request $request)
@@ -110,7 +89,7 @@ class ShippingController extends Controller
                 => ['catalogProductCompanySale:id,catalog_product_company_id,sale_id' 
                 => ['catalogProductCompany:id,catalog_product_id' 
                 => ['catalogProduct:id,name']]]])
-        ->whereNotNull('tracking_guide')
+        // ->whereNotNull('tracking_guide')
         ->where('id', 'like', "%{$query}%")
         ->orWhereHas('user', function ($q) use ($query) {
                 $q->where('name', 'like', "%{$query}%");
