@@ -59,33 +59,6 @@
             </article>
         </section>
     </div>
-
-    <section class="my-7 space-y-1 ml-3">
-        <div class="flex space-x-2">
-            <p class="text-[#999999] w-48">Opciones de envío:</p>
-            <p>{{ shipping.type }}</p>
-        </div>
-
-        <div class="flex space-x-2">
-            <p class="text-[#999999] w-48">Proveedor de paquetería:</p>
-            <p>{{ shipping.shipping_company ?? '-' }}</p>
-        </div>
-
-        <div class="flex space-x-2">
-            <p class="text-[#999999] w-48">Guía:</p>
-            <p class="font-bold">{{ shipping.tracking_guide ?? '-' }}</p>
-        </div>
-
-        <div class="flex space-x-2">
-            <p class="text-[#999999] w-48">Cantidad de cajas:</p>
-            <!-- <p>{{ shipping.tracking_guide ?? '-' }}</p> -->
-        </div>
-
-        <div class="flex space-x-2">
-            <p class="text-[#999999] w-48">Costo total de envío:</p>
-            <!-- <p>${{ shipping.tracking_guide ?? '-' }}</p> -->
-        </div>
-    </section>
 </template>
 
 <script>

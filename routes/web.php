@@ -197,6 +197,7 @@ Route::post('shippings-get-matches', [ShippingController::class, 'getMatches'])-
 Route::get('shippings-index-all', [ShippingController::class, 'indexAll'])->name('shippings.index-all');
 Route::get('shippings-fetch-filtered/{filter}', [ShippingController::class, 'fetchFiltered'])->name('shippings.fetch-filtered');
 Route::post('shippings-update-status/{shipping}', [ShippingController::class, 'updateStatus'])->name('shippings.update-status');
+Route::post('shippings-partiality-sent/{shipping}', [ShippingController::class, 'updateSent'])->name('shippings.partiality-sent');
 
 
 // ------- boxes routes  ---------
