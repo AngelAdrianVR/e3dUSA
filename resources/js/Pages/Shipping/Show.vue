@@ -69,6 +69,7 @@
                                 </template>
                             </el-popconfirm>
                         </div>
+
                         <div class="flex space-x-2">
                             <p class="text-[#999999] w-48">Proveedor de paquetería:</p>
                             <p>{{ partiality.shipping_company ?? '-' }}</p>
