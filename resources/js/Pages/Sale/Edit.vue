@@ -177,8 +177,9 @@
                                     <div class="mt-5">
                                         <SecondaryButton @click="addProduct"
                                             :disabled="form.processing || !product.catalog_product_company_id || !product.quantity">
-                                            {{ editIndex !== null ? 'Actualizar producto' : 'Agregar producto a lista'
-                                            }}
+                                            {{ editIndex !== null 
+                                            ? 'Actualizar producto' 
+                                            : 'Agregar producto a lista' }}
                                         </SecondaryButton>
                                     </div>
                                 </div>
@@ -494,6 +495,7 @@ export default {
             showCreateProjectModal: false,
             availableStock: null,
             product: {
+                catalogProduct: null,
                 catalog_product_company_id: null,
                 quantity: null,
                 notes: null,
@@ -636,16 +638,16 @@ export default {
             this.importantNotesToStore = this.importantNotes;
         },
         addProduct() {
-            const product = { ...this.product, catalogProduct: this.selectedCatalogProduct };
-
             if (this.editIndex !== null) {
+                const product = { ...this.product };
                 this.form.products[this.editIndex] = product;
                 this.editIndex = null;
             } else {
+                const product = { ...this.product, catalogProduct: this.selectedCatalogProduct };
                 this.form.products.push(product);
+                // si se agrega un producto a ultimo momento, actualizar parcialidades
             }
 
-            // si se agrega un producto a ultimo momento, actualizar parcialidades
             if (this.form.shipping_option) {
                 if (this.form.shipping_option == 'Entrega única') {
                     this.handleChangeShippingOption();
@@ -653,7 +655,6 @@ export default {
                     this.syncPartialitiesProducts(); // Sincronizar productos
                 }
             }
-
             //quitar formato seleccionado de auto. de diseño de la lista para que no se pueda volver seleccionar 
             // this.refreshDesignAuthorizationsList(this.product.design_authorization_id);
 
@@ -701,7 +702,6 @@ export default {
             const product = { ...this.form.products[index] };
             this.product = product;
             this.editIndex = index;
-            this.syncPartialitiesProducts(); // Sincronizar productos
         },
         resetProductForm() {
             this.product.id = null;
