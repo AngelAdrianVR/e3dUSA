@@ -99,9 +99,8 @@ class SaleController extends Controller
             'partialities' => 'array|min:1'
         ]);
 
-        // // Obtener todas las parcialidades (envios programados) del request
+        // // Eliminar de productos seleccionados en parcialidades aquellos que no se fueron en el envio
         // $partialities = $request->input('partialities');
-
         // // Iterar sobre las parcialidades y filtrar los productos seleccionados
         // foreach ($partialities as &$partiality) {
         //     // Filtrar los productos cuyo 'selected' sea true
@@ -120,7 +119,7 @@ class SaleController extends Controller
         $can_authorize = auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin');
 
         if ($can_authorize) {
-            $sale->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
+            $sale->update(['status' => 'Autorizado sin orden de producción', 'authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
         } elseif (app()->environment() === 'production') {
             // notify to Maribel
             $maribel = User::find(3);
