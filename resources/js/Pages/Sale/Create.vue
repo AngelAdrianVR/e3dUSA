@@ -169,18 +169,7 @@
                                         </div>
                                     </div>
                                     <div class="col-span-full">
-                                        <!-- <IconInput @change="validateQuantity()" v-model="product.quantity" inputPlaceholder="Cantidad *"
-                                            inputType="number" inputStep="0.01">
-                                            <el-tooltip content="Cantidad" placement="top">
-                                                #
-                                            </el-tooltip>
-                                        </IconInput> -->
                                         <div class="flex items-center space-x-6 ml-5 w-full">
-                                            <!-- <div>
-                                            <label class="block text-xs">Cantidad *</label>
-                                            <el-input-number :disabled="loading || !product.catalog_product_company_id"
-                                                @change="validateQuantity()" v-model="product.quantity" :min="0.01" />
-                                        </div> -->
                                             <!-- Descomentar cuando se implenmente lo de formato de autorizacion  -->
                                             <!-- <div v-if="selectedCatalogProductHasSale === false" class="w-full">
                                     <div class="flex items-center space-x-3">
@@ -458,6 +447,7 @@
                     </div>
                 </div>
             </form>
+
             <DialogModal :show="showImportantNotesModal" @close="showImportantNotesModal = false">
                 <template #title>
                     {{ editIMportantNotes ? 'Editar' : 'Agregar' }} notas importantes para
@@ -483,6 +473,7 @@
                     </PrimaryButton>
                 </template>
             </DialogModal>
+
             <Modal :show="showCreateProjectModal" @close="showCreateProjectModal = false">
                 <section class="mx-7 my-4 space-y-4">
                     <div>
@@ -507,7 +498,6 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import InputError from "@/Components/InputError.vue";
-import IconInput from "@/Components/MyComponents/IconInput.vue";
 import DialogModal from "@/Components/DialogModal.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import Modal from "@/Components/Modal.vue";
@@ -525,13 +515,13 @@ export default {
             oportunity_id: null,
             contact_id: null,
             shipping_option: null,
-            shipping_company: null,
-            freight_cost: null,
+            // shipping_company: null,
+            // freight_cost: null,
+            // tracking_guide: null,
+            // promise_date: null,
             invoice: null,
             oce_name: null,
             order_via: null,
-            tracking_guide: null,
-            promise_date: null,
             notes: null,
             is_high_priority: false,
             products: [],
@@ -551,6 +541,7 @@ export default {
             availableStock: null,
             product: {
                 design_authorization_id: null, //formato de autorización seleccionado
+                catalogProduct: null,
                 catalog_product_company_id: null,
                 quantity: null,
                 notes: null,
@@ -594,7 +585,6 @@ export default {
         PrimaryButton,
         InputError,
         InputLabel,
-        IconInput,
         CancelButton,
         DialogModal,
         Checkbox,
@@ -649,41 +639,6 @@ export default {
         removePartial(index) {
             this.form.partialities.splice(index, 1);
         },
-        async fetchCatalogProductData() {
-            this.alertMaxQuantity = 0;
-            try {
-                this.loading = true;
-                const catalogProductId =
-                    this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.catalog_products?.find(cp => cp.pivot.id == this.product.catalog_product_company_id)?.id;
-                const response = await axios.get(route('catalog-products.get-data', catalogProductId));
-
-                if (response.status === 200) {
-                    this.commitedUnits = response.data.commited_units;
-                    this.selectedCatalogProduct = response.data.item;
-                    this.product.part_number = this.selectedCatalogProduct.part_number;
-                    this.availableStock = response.data.stock;
-                    this.loading = false;
-                }
-            } catch (error) {
-                console.log(error);
-                this.$notify({
-                    title: 'Problemas con el servidor',
-                    message: 'No se pudo obtener la imagen del producto seleccionado debido a inconvenientes con el servidor. Inteéntalo más tarde',
-                    type: 'error'
-                });
-            }
-        },
-        //Check if catalog product company has sales. if dont, ask for design authorization.
-        async checkIfProductHasSale() {
-            try {
-                const response = await axios.get(route('sales.check-if-has-sale', this.product.catalog_product_company_id));
-                if (response.status === 200) {
-                    this.selectedCatalogProductHasSale = response.data.has_sale;
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        },
         store() {
             this.form.post(route('sales.store'), {
                 onSuccess: () => {
@@ -702,53 +657,6 @@ export default {
             //obtiene el id de la matriz para pasarla como parametro en creacion de formato de autorización de diseño.
             this.selectedCompanyId = this.company_branches.find(item => item.id == this.form.company_branch_id).company_id;
         },
-        async getDesignAuthorizations() {
-            try {
-                const response = await axios.get(route('design-authorizations.fetch-for-company-branch', this.form.company_branch_id));
-                if (response.status === 200) {
-                    this.design_authorizations = response.data.items;
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        },
-        async clearImportantNotes() {
-            try {
-                const response = await axios.put(route('company-branches.clear-important-notes', this.form.company_branch_id));
-
-                if (response.status === 200) {
-                    this.importantNotes = null;
-                    this.company_branches.find(item => item.id == this.form.company_branch_id).important_notes = null;
-                    this.$notify({
-                        title: 'Éxito',
-                        message: response.data.message,
-                        type: 'success'
-                    });
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        },
-        async storeImportantNotes() {
-            try {
-                const response = await axios.put(route('company-branches.store-important-notes', this.form.company_branch_id), { notes: this.importantNotesToStore });
-
-                if (response.status === 200) {
-                    this.importantNotes = this.importantNotesToStore;
-                    this.company_branches.find(item => item.id == this.form.company_branch_id).important_notes = this.importantNotesToStore;
-                    this.importantNotesToStore = null;
-                    this.$notify({
-                        title: 'Éxito',
-                        message: response.data.message,
-                        type: 'success'
-                    });
-                }
-            } catch (error) {
-                console.log(error);
-            } finally {
-                this.showImportantNotesModal = false;
-            }
-        },
         editImportantNotes() {
             this.isEditImportantNotes = true;
             this.showImportantNotesModal = true;
@@ -764,7 +672,6 @@ export default {
                 if (maxQuantity === null || maxQuantity > currentMax) {
                     maxQuantity = currentMax;
                 }
-
             });
 
             if (maxQuantity !== null && this.product.quantity > maxQuantity) {
@@ -774,16 +681,16 @@ export default {
             }
         },
         addProduct() {
-            const product = { ...this.product, catalogProduct: this.selectedCatalogProduct };
-
             if (this.editIndex !== null) {
+                const product = { ...this.product };
                 this.form.products[this.editIndex] = product;
                 this.editIndex = null;
             } else {
+                const product = { ...this.product, catalogProduct: this.selectedCatalogProduct };
                 this.form.products.push(product);
+                // si se agrega un producto a ultimo momento, actualizar parcialidades
             }
 
-            // si se agrega un producto a ultimo momento, actualizar parcialidades
             if (this.form.shipping_option) {
                 if (this.form.shipping_option == 'Entrega única') {
                     this.handleChangeShippingOption();
@@ -791,7 +698,6 @@ export default {
                     this.syncPartialitiesProducts(); // Sincronizar productos
                 }
             }
-
             //quitar formato seleccionado de auto. de diseño de la lista para que no se pueda volver seleccionar 
             // this.refreshDesignAuthorizationsList(this.product.design_authorization_id);
 
@@ -839,7 +745,6 @@ export default {
             const product = { ...this.form.products[index] };
             this.product = product;
             this.editIndex = index;
-            this.syncPartialitiesProducts(); // Sincronizar productos
         },
         resetProductForm() {
             this.product.catalog_product_company_id = null;
@@ -862,6 +767,88 @@ export default {
             const today = new Date();
             today.setHours(0, 0, 0, 0); // Establece la hora a las 00:00:00.000
             return time < today;
+        },
+        async fetchCatalogProductData() {
+            this.alertMaxQuantity = 0;
+            try {
+                this.loading = true;
+                const catalogProductId =
+                    this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.catalog_products?.find(cp => cp.pivot.id == this.product.catalog_product_company_id)?.id;
+                const response = await axios.get(route('catalog-products.get-data', catalogProductId));
+
+                if (response.status === 200) {
+                    this.commitedUnits = response.data.commited_units;
+                    this.selectedCatalogProduct = response.data.item;
+                    this.product.part_number = this.selectedCatalogProduct.part_number;
+                    this.availableStock = response.data.stock;
+                    this.loading = false;
+                }
+            } catch (error) {
+                console.log(error);
+                this.$notify({
+                    title: 'Problemas con el servidor',
+                    message: 'No se pudo obtener la imagen del producto seleccionado debido a inconvenientes con el servidor. Inteéntalo más tarde',
+                    type: 'error'
+                });
+            }
+        },
+        //Check if catalog product company has sales. if dont, ask for design authorization.
+        async checkIfProductHasSale() {
+            try {
+                const response = await axios.get(route('sales.check-if-has-sale', this.product.catalog_product_company_id));
+                if (response.status === 200) {
+                    this.selectedCatalogProductHasSale = response.data.has_sale;
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async getDesignAuthorizations() {
+            try {
+                const response = await axios.get(route('design-authorizations.fetch-for-company-branch', this.form.company_branch_id));
+                if (response.status === 200) {
+                    this.design_authorizations = response.data.items;
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async clearImportantNotes() {
+            try {
+                const response = await axios.put(route('company-branches.clear-important-notes', this.form.company_branch_id));
+
+                if (response.status === 200) {
+                    this.importantNotes = null;
+                    this.company_branches.find(item => item.id == this.form.company_branch_id).important_notes = null;
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async storeImportantNotes() {
+            try {
+                const response = await axios.put(route('company-branches.store-important-notes', this.form.company_branch_id), { notes: this.importantNotesToStore });
+
+                if (response.status === 200) {
+                    this.importantNotes = this.importantNotesToStore;
+                    this.company_branches.find(item => item.id == this.form.company_branch_id).important_notes = this.importantNotesToStore;
+                    this.importantNotesToStore = null;
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                this.showImportantNotesModal = false;
+            }
         },
     },
     mounted() {

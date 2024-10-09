@@ -99,22 +99,22 @@ class SaleController extends Controller
             'partialities' => 'array|min:1'
         ]);
 
-        // Obtener todas las parcialidades (envios programados) del request
-        $partialities = $request->input('partialities');
+        // // Obtener todas las parcialidades (envios programados) del request
+        // $partialities = $request->input('partialities');
 
-        // Iterar sobre las parcialidades y filtrar los productos seleccionados
-        foreach ($partialities as &$partiality) {
-            // Filtrar los productos cuyo 'selected' sea true
-            $partiality['productsSelected'] = array_filter($partiality['productsSelected'], function ($product) {
-                return $product['selected'] === true;
-            });
+        // // Iterar sobre las parcialidades y filtrar los productos seleccionados
+        // foreach ($partialities as &$partiality) {
+        //     // Filtrar los productos cuyo 'selected' sea true
+        //     $partiality['productsSelected'] = array_filter($partiality['productsSelected'], function ($product) {
+        //         return $product['selected'] === true;
+        //     });
 
-            // Eliminar la clave 'selected' de cada producto
-            $partiality['productsSelected'] = array_map(function ($product) {
-                unset($product['selected']); // Eliminar la clave 'selected'
-                return $product;
-            }, $partiality['productsSelected']);
-        }
+        //     // Eliminar la clave 'selected' de cada producto
+        //     $partiality['productsSelected'] = array_map(function ($product) {
+        //         unset($product['selected']); // Eliminar la clave 'selected'
+        //         return $product;
+        //     }, $partiality['productsSelected']);
+        // }
 
         $sale = Sale::create($request->except('products') + ['user_id' => auth()->id()]);
         $can_authorize = auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin');
@@ -231,12 +231,11 @@ class SaleController extends Controller
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
             'products' => 'array|min:1',
-            'partialities' => 'nullable'
+            'partialities' => 'array|min:1'
         ]);
 
         $updatedProductIds = [];
         $sale->update($request->except('products'));
-
 
         foreach ($request->products as $product) {
             $productData = $product + ['sale_id' => $sale->id];

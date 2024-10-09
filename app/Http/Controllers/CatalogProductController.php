@@ -7,13 +7,9 @@ use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\CatalogProductResource;
 use App\Models\CatalogProduct;
-use App\Models\CatalogProductCompany;
-use App\Models\Payroll;
 use App\Models\ProductionCost;
 use App\Models\RawMaterial;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class CatalogProductController extends Controller
 {
@@ -274,7 +270,7 @@ class CatalogProductController extends Controller
 
         return response()->json(['item' => $catalog_product, 'stock' => $stock, 'commited_units' => $commited_units]);
     }
-
+    
     public function fetchShippingRates(CatalogProduct $catalog_product)
     {
         $catalog_product->load('shippingRates:id,catalog_product_id');
