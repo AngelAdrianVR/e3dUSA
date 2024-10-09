@@ -15,6 +15,8 @@ class ShippingController extends Controller
             'user:id,name', 'companyBranch:id,name'])
             ->where('user_id', auth()->id())
             ->where('status', 'Producción terminada')
+            ->orWhere('status', 'Enviado')
+            ->orWhere('status', 'Parcialmente enviado')
             ->latest()
             ->paginate(20, ['id', 'promise_date', 'user_id', 'company_branch_id', 'created_at', 'sent_at', 'sent_by', 'shipping_type', 'status', 'partialities']);
 
@@ -28,6 +30,8 @@ class ShippingController extends Controller
         $shippings = Sale::with([
             'user:id,name', 'companyBranch:id,name'])
             ->where('status', 'Producción terminada')
+            ->orWhere('status', 'Enviado')
+            ->orWhere('status', 'Parcialmente enviado')
             ->latest()
             ->paginate(20, ['id', 'promise_date', 'user_id', 'company_branch_id', 'created_at', 'sent_at', 'sent_by', 'shipping_type', 'status', 'partialities']);
 
@@ -106,8 +110,48 @@ class ShippingController extends Controller
     public function updateStatus(Sale $shipping, Request $request)
     {
         $shipping->status = $request->status;
+
+        if ( $request->status === 'Enviado' ) {
+            // Actualizar sent_at de todas las partialities a la fecha de hoy
+            $shipping->partialities = collect($shipping->partialities)->map(function($partiality) {
+                $partiality['sent_at'] = now();
+                $partiality['sent_by'] = auth()->user()->name;
+                $partiality['status'] = 'Enviado';
+                return $partiality;
+            })->toArray();
+        }
+
         $shipping->save();
 
         return response()->json(['status' => $shipping->status]);
+    }
+
+    public function updateSent(Sale $shipping, Request $request)
+    {
+        $partialityIndex = $request->partialityIndex;
+
+        // Convertir las parcialidades a un arreglo para poder modificarlas
+        $partialities = $shipping->partialities;
+
+        // Actualizar solo la parcialidad cuyo índice coincide
+        $partialities[$partialityIndex]['sent_at'] = now();
+        $partialities[$partialityIndex]['sent_by'] = auth()->user()->name;
+        $partialities[$partialityIndex]['status'] = 'Enviado';
+
+        // Asignar el arreglo modificado de vuelta
+        $shipping->partialities = $partialities;
+
+        
+        // Verificar si todas las parcialidades tienen fecha de envío
+        if (collect($shipping->partialities)->every(fn($p) => !is_null($p['sent_at']))) {
+            $shipping->status = 'Enviado';
+            
+        } else if (collect($shipping->partialities)->some(fn($p) => !is_null($p['sent_at']))) {
+            $shipping->status = 'Parcialmente enviado';
+        }
+
+        $shipping->save();
+        
+        return response()->json(['partialities' => $shipping->partialities, 'status' => $shipping->status]);
     }
 }

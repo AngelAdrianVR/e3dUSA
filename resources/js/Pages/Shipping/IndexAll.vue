@@ -1,8 +1,8 @@
 <template>
-    <AppLayout title="Logística">
+    <AppLayout title="Envíos">
         <template #header>
             <div class="flex justify-between mt-4">
-                <h2 class="font-semibold text-xl leading-tight">Logística</h2>
+                <h2 class="font-semibold text-xl leading-tight">Envíos</h2>
             </div>
         </template>
 
@@ -288,13 +288,15 @@ methods:{
         try {
             const response = await axios.post(route('shippings.update-status', shipping_id), {status: status});
             if ( response.status === 200 ) {
-                this.shippings.data.find(item => item.id === parseInt(shipping_id)).status = response.data.status;
+                // this.shippings.data.find(item => item.id === parseInt(shipping_id)).status = response.data.status;
 
                 this.$notify({
                     title: 'Éxito',
                     message: '',
                     type: 'success'
                 });
+
+                location.reload();
             }
         } catch (error) {
             console.log(error);
