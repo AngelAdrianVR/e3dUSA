@@ -75,12 +75,20 @@
         </div>
       </div>
     </div>
-    <p class="text-center font-bold text-lg mb-4">
-      {{ purchase.data.supplier.name }} -
-      <span class="py-1 p-2" :class="purchase.data.status == 'Pendiente' ? 'text-red-600 bg-red-200'
+
+    <el-steps :active="getCurrentStep" finish-status="success" class="w-2/3 mx-auto">
+      <el-step title="Autorizado.Compra no realizada" />
+      <el-step title="Compra realizada" />
+      <el-step title="Producto/servicio recibido" />
+    </el-steps>
+
+
+    <p class="text-center font-bold text-lg mb-4 mt-5">
+      {{ purchase.data.supplier.name }}
+      <!-- <span class="py-1 p-2" :class="purchase.data.status == 'Pendiente' ? 'text-red-600 bg-red-200'
         : purchase.data.status == 'Autorizado' ? 'text-yellow-600 bg-yellow-200'
           : purchase.data.status == 'Emitido' ? 'text-blue-600 bg-blue-200' : 'text-green-600 bg-green-200'">{{
-            purchase.data.status }}</span>
+            purchase.data.status }}</span> -->
     </p>
 
     <el-tabs v-model="activeTab" class="mx-5 mt-3" @tab-click="handleClickInTab">
@@ -267,6 +275,18 @@ export default {
     InputLabel,
     General,
     Products,
+  },
+  computed: {
+    getCurrentStep() {
+      const statuses = [
+        'Pendiente',
+        'Autorizado',
+        'Emitido',
+        'Recibido',
+      ];
+
+      return statuses.findIndex(i => i == this.purchase.data.status);
+    },
   },
   methods: {
     handleClickInTab(tab) {
