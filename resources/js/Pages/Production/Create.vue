@@ -62,7 +62,7 @@
               </div>
               <div>
                 <figure class="pb-1 size-56">
-                  <img class="rounded-md mx-auto object-contain" :src="product?.catalog_product_company?.catalog_product.media[currentImage].original_url">
+                  <img class="rounded-md mx-auto object-contain h-full" :src="product?.catalog_product_company?.catalog_product.media[currentImage].original_url">
                 </figure>
                 <div v-if="product?.catalog_product_company?.catalog_product.media?.length > 1" class="my-3 flex items-center justify-center space-x-3">
                   <i @click="currentImage = index" v-for="(image, index) in product?.catalog_product_company?.catalog_product.media?.length" :key="index" 

@@ -8,6 +8,7 @@ use App\Events\RecordEdited;
 use App\Http\Resources\ProductionCostResource;
 use App\Http\Resources\QualityResource;
 use App\Http\Resources\SaleResource;
+use App\Models\CatalogProduct;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Comment;
 use App\Models\Production;
@@ -585,5 +586,12 @@ class ProductionController extends Controller
         $productions = $this->processDataIndex($pre_productions);
 
         return response()->json(['items' => $productions], 200);
+    }
+
+    public function fetchCatalogProductShippingRates(CatalogProduct $catalog_product)
+    {
+        $catalog_product->load('shippingRates');
+
+        return response()->json(['item' => $catalog_product]);
     }
 }

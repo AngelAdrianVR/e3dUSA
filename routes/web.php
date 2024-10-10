@@ -479,6 +479,7 @@ Route::post('productions-{cpcs}-comment', [ProductionController::class, 'comment
 Route::get('productions-{cpcs}-show-traveler', [ProductionController::class, 'showTravelerTemplate'])->name('productions.show-traveler-template')->middleware('auth');
 Route::post('productions-generate-box-label', [ProductionController::class, 'generateBoxLabel'])->name('productions.generate-box-label')->middleware('auth');
 Route::post('productions-get-matches', [ProductionController::class, 'getMatches'])->name('productions.get-matches');
+Route::get('productions-fetch-catalog-product-shipping-rates/{catalog_product}', [ProductionController::class, 'fetchCatalogProductShippingRates'])->name('productions.fetch-catalog-product-shipping-rates');
 
 // ------- Quality department routes  ---------
 Route::resource('qualities', QualityController::class)->middleware('auth');
