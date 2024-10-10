@@ -53,11 +53,12 @@
                     <article class="ml-5 space-y-1">
                         <div class="flex justify-between items-center">
                             <div class="flex items-center space-x-3">
-                                <h2 class="my-3 font-bold text-base">Parcialidad {{ index + 1 }}</h2>
+                                <h2 v-if="shipping.partialities.length > 1" class="my-3 font-bold text-base">Parcialidad {{ index + 1 }}</h2>
                                 <p class="px-4 py-1 flex items-center rounded-full" 
                                     :class="partiality.sent_at ? 'bg-[#C1F0B9] text-[#2F941E]' : 'bg-[#FDE0BD] text-[#F68C0F]'">
                                     <span v-html="getIcon(partiality.sent_at)" class="mr-2"></span>
-                                    {{ partiality.sent_at ? 'Parcialidad enviada' : 'Pendiente de envío' }}
+                                    {{ partiality.sent_at ? 'Enviada' : 'Pendiente de envío' }}
+                                    
                                 </p>
                             </div>
                             <el-popconfirm
@@ -65,7 +66,7 @@
                                 confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
                                 title="¿Continuar?" @confirm="partialitySent(index)">
                                 <template #reference>
-                                    <PrimaryButton>Confirmar entrega parcial</PrimaryButton>
+                                    <PrimaryButton v-if="shipping.partialities.length > 1">Confirmar entrega parcial</PrimaryButton>
                                 </template>
                             </el-popconfirm>
                         </div>
@@ -90,7 +91,6 @@
                             <p>${{ totalCost[index] }}</p>
                         </div>
                     </article>
-
                     <h2 class="font-bold mt-3 ml-5">{{ shipping.partialities?.length > 1 ? 'Desglose de productos para esta parcialidad' : 'Desgloce'}}</h2>
                     <ShippingCard
                         class="my-3"
@@ -98,8 +98,10 @@
                         :key="item.id"
                         :product="getCatalogProductFromSales(item.id)"
                         :quantity="item.quantity"
-                        @total-boxes="totalBoxes[index] = $event"
-                        @total-cost="totalCost[index] = $event"
+                        :routePage="'shippings.show'"
+                        :idRoute="shipping.id"
+                        @total-boxes="totalBoxes[index] += $event"
+                        @total-cost="totalCost[index] += $event"
                     />
                 </section>
             </section>
@@ -124,8 +126,8 @@ data(){
     return {
         shippingSelected: this.shipping.id,
         loading: false,
-        totalBoxes: [],
-        totalCost: [],
+        totalBoxes: new Array(this.shipping?.partialities?.length).fill(0),
+        totalCost: new Array(this.shipping?.partialities?.length).fill(0),
     }
 },
 components:{
@@ -180,14 +182,14 @@ methods:{
         try {
             const response = await axios.post(route('shippings.partiality-sent', this.shipping.id), { partialityIndex: partialityIndex });
             if ( response.status === 200 ) {
-                this.shipping.partialities = response.data.partialities;
-                this.shipping.status = response.data.status;
+                // this.shipping.partialities = response.data.partialities;
+                // this.shipping.status = response.data.status;
                 this.$notify({
                     title: 'Éxito',
                     message: '',
                     type: 'success'
                 });
-                // location.reload();
+                location.reload();
             }
         } catch (error) {
             console.log(error);

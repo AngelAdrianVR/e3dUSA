@@ -250,7 +250,9 @@ export default {
       all_boxes_are_same: !! this.shipping_rate.all_boxes_are_same,
       is_fragile: !! this.shipping_rate.is_fragile,
       boxes_amount: this.shipping_rate.boxes?.length,
-      boxes: this.shipping_rate.boxes
+      boxes: this.shipping_rate.boxes,
+      routePage: this.route, //para retornar a la ruta en que fue accionado
+      idRoute: this.idRoute //para retornar a la ruta en que fue accionado
     });
 
     const boxForm = useForm({
@@ -284,7 +286,9 @@ export default {
   props:{
     shipping_rate: Object,
     catalog_products: Array,
-    box_types: Array
+    box_types: Array,
+    route: String, //para redireccionar al actualizar
+    idRoute: Number, //para redireccionar al actualizar
   },
   watch: {
     // Observa cambios en boxes_amount
