@@ -195,16 +195,6 @@ methods:{
             console.log(error);
         }
     },
-    // async getCatalogProductInfo(CatalogProductId) {
-    //     try {
-    //         const response = await axios.get(route('shippings.fetch-catalog-product-info', CatalogProductId));
-    //         if ( response.status === 200 ) {
-    //             return response.data.item;
-    //         }
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
 }
 }
 </script>
