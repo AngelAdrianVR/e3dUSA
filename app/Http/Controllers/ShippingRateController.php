@@ -16,12 +16,18 @@ class ShippingRateController extends Controller
         return inertia('ShippingRate/Index', compact('shipping_rates'));
     }
 
-    public function create()
+    public function create(Request $request)
     {   
+        //si se manda algun id de producto 
+        $catalog_product_id = $request->catalog_product_id ?? null;
         $catalog_products = CatalogProduct::all(['id', 'name', 'part_number']);
         $box_types = Box::all();
 
-        return inertia('ShippingRate/Create', compact('catalog_products', 'box_types'));
+        return inertia('ShippingRate/Create', [
+            'catalog_products' => $catalog_products,
+            'box_types' => $box_types,
+            'catalog_product_id' => $catalog_product_id
+        ]);
     }
 
     public function store(Request $request)
@@ -47,6 +53,8 @@ class ShippingRateController extends Controller
         
         $shipping_rate = ShippingRate::create([
             'quantity' => $request->quantity,
+            'all_boxes_are_same' => $request->all_boxes_are_same,
+            'is_fragile' => $request->is_fragile,
             'boxes' => $request->boxes,
             'catalog_product_id' => $request->catalog_product_id,
         ]);
@@ -61,10 +69,9 @@ class ShippingRateController extends Controller
             'catalogProduct.shippingRates'
         ]);
         
-        $shipping_rates = CatalogProduct::has('shippingRates')->get(['id', 'name', 'part_number']);
+        $catalog_products = CatalogProduct::has('shippingRates')->get(['id', 'name', 'part_number']);
 
-        // return $shipping_rates;
-        return inertia('ShippingRate/Show', compact('shipping_rate', 'shipping_rates'));
+        return inertia('ShippingRate/Show', compact('shipping_rate', 'catalog_products'));
     }
 
     public function edit(ShippingRate $shipping_rate)
@@ -72,7 +79,6 @@ class ShippingRateController extends Controller
         $catalog_products = CatalogProduct::all(['id', 'name', 'part_number']);
         $box_types = Box::all();
 
-        // return $shipping_rate;
         return inertia('ShippingRate/Edit', compact('catalog_products', 'box_types', 'shipping_rate'));
     }
 
@@ -99,6 +105,8 @@ class ShippingRateController extends Controller
 
         $shipping_rate->update([
             'quantity' => $request->quantity,
+            'all_boxes_are_same' => $request->all_boxes_are_same,
+            'is_fragile' => $request->is_fragile,
             'boxes' => $request->boxes,
             'catalog_product_id' => $request->catalog_product_id,
         ]);
@@ -109,6 +117,8 @@ class ShippingRateController extends Controller
     public function destroy(ShippingRate $shipping_rate)
     {
         $shipping_rate->delete();
+
+        // return to_route('shipping-rates.index');
     }
 
     public function fetchCatalogProductInfo(CatalogProduct $catalog_product)

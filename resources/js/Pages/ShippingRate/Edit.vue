@@ -19,7 +19,7 @@
                     <div class="mb-3">
                         <div class="flex justify-between">
                             <InputLabel value="Producto*" />
-                            <InputLabel v-if="form.catalog_product_id" :value="'N. Parte:' + catalog_products.find(item => item.id === form.catalog_product_id).part_number" />
+                            <InputLabel v-if="catalogProductSelected" :value="'N. Parte:' + catalogProductSelected?.part_number" />
                         </div>
                         <el-select @change="fetchCatalogProductInfo()" class="w-full" filterable v-model="form.catalog_product_id"
                             placeholder="Seleccione" no-data-text="No hay opciones registradas"
@@ -40,6 +40,12 @@
                         </el-input>
                         <InputError :message="form.errors.quantity" />
                     </div>
+
+                    <label class="inline-flex items-center mt-4">
+                    <Checkbox v-model:checked="form.is_fragile"
+                      class="bg-transparent disabled:border-gray-400" />
+                    <span class="ml-2 text-xs">El producto es frágil</span>
+                  </label>
                 </article>
 
                 <figure class="border border-[#999999] flex items-center justify-center rounded-lg h-40">
@@ -161,7 +167,6 @@
             </section>
 
             <div class="flex space-x-3 mt-9 mx-3 justify-end">
-                <!-- <ThirthButton class="!border-secondary !text-secondary focus:ring-secondary">Sólo esta vez</ThirthButton> -->
                 <PrimaryButton :disabled="form.processing">
                     <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
                     Guardar cambios
@@ -242,7 +247,8 @@ export default {
     const form = useForm({
       catalog_product_id: this.shipping_rate.catalog_product_id,
       quantity: this.shipping_rate.quantity,
-      all_boxes_are_same: false,
+      all_boxes_are_same: !! this.shipping_rate.all_boxes_are_same,
+      is_fragile: !! this.shipping_rate.is_fragile,
       boxes_amount: this.shipping_rate.boxes?.length,
       boxes: this.shipping_rate.boxes
     });
@@ -396,6 +402,7 @@ export default {
   },
   mounted() {
     this.fetchCatalogProductInfo();
+    this.handleChecked();
   }
 };
 </script>

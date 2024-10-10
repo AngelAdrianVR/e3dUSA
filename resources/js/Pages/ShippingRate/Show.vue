@@ -15,7 +15,7 @@
                     <el-select @change="getShippingRates(catalogProductSelected)" v-model="catalogProductSelected"
                         filterable placeholder="Buscar registro de tarifas" no-data-text="No hay opciones registradas"
                         no-match-text="No se encontraron coincidencias">
-                        <el-option v-for="item in shipping_rates" :key="item.id" :label="item.name" :value="item.id">
+                        <el-option v-for="item in catalog_products" :key="item.id" :label="item.name" :value="item.id">
                             <p class="flex items-center justify-between space-x-4">
                                 <span>{{ item.name }}</span>
                                 <span class="text-[10px] text-gray99">({{ item.part_number }})</span>
@@ -24,7 +24,7 @@
                     </el-select>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <PrimaryButton @click="$inertia.get(route('shipping-rates.create'))">Registrar tarifa</PrimaryButton>
+                    <PrimaryButton @click="$inertia.get(route('shipping-rates.create', {catalog_product_id: shipping_rate.catalog_product?.id}))">Registrar tarifa</PrimaryButton>
                 </div>
             </section>
 
@@ -66,6 +66,18 @@
                         <div class="px-7 space-y-1 mt-1">
                             <p>Cantidad: <span class="ml-16">{{ item.quantity }} unidades</span></p>
                             <p>Cajas necesarias: <span class="ml-4">{{ item.boxes?.length }}</span></p>
+                            <p v-if="shipping_rate.is_fragile" class="inline-flex rounded-md justify-center items-center px-3 py-[2px] bg-[#FDB9C9] text-primary">
+                                <svg class="mr-2" width="8" height="14" viewBox="0 0 8 14" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M2.63137 0H0.0145374C0.12422 5.10188 -0.263825 5.06154 0.404279 6.24615C0.961078 5.11539 1.42056 4.46654 2.35299 3.82308C2.1303 3.33846 1.68488 2.90769 1.35079 2.47692C1.87381 1.53081 2.15193 0.986847 2.63137 0Z"
+                                        fill="#D90537" />
+                                    <path
+                                        d="M2.18598 2.42308C2.13029 2.36923 3.52224 0 3.52224 0H7.92076C8.0261 1.75289 8.00576 2.78859 7.97644 4.63077C8.03212 6.78462 6.41747 7.91539 4.58012 7.96923V12.7615H7.25263V14H0.571346V12.7615H3.24386V7.96923C2.01354 7.86996 1.50341 7.61407 0.849733 6.89231C1.51786 5.33077 2.18948 4.63672 3.46657 3.98462C2.96487 3.35599 2.24167 2.47692 2.18598 2.42308Z"
+                                        fill="#D90537" />
+                                </svg>
+                                Frágil
+                            </p>
                         </div>
                         
                         <!-- Tabla -->
@@ -123,7 +135,7 @@ import axios from 'axios';
 export default {
 data(){
     return {
-        catalogProductSelected: null,
+        catalogProductSelected: this.shipping_rate.catalog_product?.id,
         showConfirmModal: false,
         itemToDelete: null,
         loading: false
@@ -139,7 +151,7 @@ components:{
 },
 props:{
     shipping_rate: Object,
-    shipping_rates: Array
+    catalog_products: Array
 },
 methods:{
     formatDate(date) {
