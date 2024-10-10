@@ -261,7 +261,9 @@ export default {
           quantity: null, //cantidad de unidades
           cost: null, //tarifa por la caja
         }, 
-      ]
+      ],
+      routePage: this.route, //para retornar a la ruta en que fue accionado
+      idRoute: this.idRoute //para retornar a la ruta en que fue accionado
     });
 
     const boxForm = useForm({
@@ -294,6 +296,8 @@ export default {
   },
   props:{
     catalog_product_id: Number,
+    route: String,
+    idRoute: Number,
     catalog_products: Array,
     box_types: Array
   },
