@@ -43,7 +43,7 @@
     <div class="grid grid-cols-2 gap-x-4">
       <div>
         <figure @mouseover="showOverlay" @mouseleave="hideOverlay" class="bg-[#D9D9D9] w-full h-28 my-3 rounded-[10px] relative">
-          <div  v-if="catalog_product_company_sale.confusion_alert" class="relative flex size-7 cursor-default">
+          <div  v-if="catalog_product_company_sale.confusion_alert" class="absolute flex size-7 cursor-default">
             <span class="animate-ping absolute -top-2 -left-2 inline-flex h-full w-full rounded-full bg-gray-700 opacity-75"></span>
             <el-tooltip placement="bottom">
               <template #content>
@@ -60,7 +60,7 @@
               </div>
             </el-tooltip>
           </div>
-          <img class="object-contain h-28 mx-auto" :src="catalog_product_company_sale.catalog_product_company?.catalog_product?.media[currentImage]?.original_url" alt="">
+          <img class="object-contain w-full h-28 mx-auto" :src="catalog_product_company_sale.catalog_product_company?.catalog_product?.media[currentImage]?.original_url" alt="">
           <div v-if="imageHovered" @click="openImage(catalog_product_company_sale.catalog_product_company?.catalog_product?.media[currentImage]?.original_url)"
               class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
               <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>

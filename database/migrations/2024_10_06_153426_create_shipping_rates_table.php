@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('shipping_rates', function (Blueprint $table) {
             $table->id();
             $table->unsignedMediumInteger('quantity');
+            $table->boolean('all_boxes_are_same')->default(false);
+            $table->boolean('is_fragile')->default(false);
             $table->json('boxes')->nullable(); //id de caja, largo, ancho , alto, peso, cantidad ,costo
             $table->foreignId('catalog_product_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
