@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RecordDeleted;
+use App\Models\CatalogProduct;
 use App\Models\Sale;
 use App\Models\Shipping;
 use Illuminate\Http\Request;
@@ -20,7 +21,6 @@ class ShippingController extends Controller
             ->latest()
             ->paginate(20, ['id', 'promise_date', 'user_id', 'company_branch_id', 'created_at', 'sent_at', 'sent_by', 'shipping_type', 'status', 'partialities']);
 
-            // return $shippings;
         return inertia('Shipping/Index', compact('shippings'));
     }
 
@@ -65,6 +65,8 @@ class ShippingController extends Controller
         ->find($shipping->id, ['id', 'promise_date', 'user_id', 'company_branch_id', 'created_at', 'is_high_priority', 'notes', 'contact_id', 'shipping_company', 'status', 'partialities']);
 
         $shippings = Sale::where('status', 'Producción terminada')
+            ->orWhere('status', 'Enviado')
+            ->orWhere('status', 'Parcialmente enviado')
             ->get(['id']);
 
         // return $shipping;
@@ -153,5 +155,12 @@ class ShippingController extends Controller
         $shipping->save();
         
         return response()->json(['partialities' => $shipping->partialities, 'status' => $shipping->status]);
+    }
+
+    public function fetchCatalogProductInfo(CatalogProduct $catalog_product)
+    {
+        $catalog_product->load(['media', 'shippingRates']);
+
+        return response()->json(['item' => $catalog_product]);
     }
 }

@@ -1,6 +1,6 @@
 <template>
     <main class="border border-[#999999] rounded-2xl py-4 mt-1">
-        <h2 class="font-bold mb-3 px-4">Producto x</h2>
+        <!-- <h2 class="font-bold mb-3 px-4">Producto x</h2> -->
 
         <section class="grid grid-cols-2 gap-3 px-4">
             <article class="space-y-1">
@@ -19,11 +19,11 @@
             </article>
             <article class="flex flex-col items-end justify-end space-y-3">
                 <figure class="rounded-xl flex items-center justify-center bg-gray-200 w-3/4 h-28">
-                    <img v-if="product.media?.length" class="object-contain" :src="product.media[0]?.original_url">
+                    <img v-if="product.media?.length" class="object-contain h-full" :src="product.media[0]?.original_url">
                     <i v-else class="fa-regular fa-image text-gray-300 text-5xl"></i>
                 </figure>
 
-                <p class="inline-flex rounded-md justify-center items-center px-3 bg-[#FDB9C9] text-primary">
+                <p v-if="shippingInfo?.is_fragile" class="inline-flex rounded-md justify-center items-center px-3 bg-[#FDB9C9] text-primary">
                     <svg class="mr-2" width="8" height="14" viewBox="0 0 8 14" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -40,8 +40,8 @@
 
         <h2 class="font-semibold text-[#373737] mt-5 px-4 flex items-center justify-between">
             <span>Especificaciones de la(s) caja(s)</span>
-            <div v-if="shippingInfo.legth" class="flex space-x-2 items-center">
-                <button @click="editProduct(index)" type="button"
+            <div v-if="shippingInfo" class="flex space-x-2 items-center">
+                <button @click="$inertia.get(route('shipping-rates.edit', shippingInfo.id))" type="button"
                     class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-4">
@@ -63,11 +63,11 @@
                     </template>
                 </el-popconfirm>
             </div>
-            <PrimaryButton type="button" v-else>Agregar cajas</PrimaryButton>
+            <PrimaryButton @click="$inertia.get(route('shipping-rates.create', {catalog_product_id: product.id}))" type="button" v-else>Agregar cajas</PrimaryButton>
         </h2>
 
-        <section v-if="shippingInfo.legth">
-            <p class="mt-2 px-4">Cajas necesarias: <span class="ml-4">{{ '2' }}</span></p>
+        <section v-if="shippingInfo">
+            <p class="mt-2 px-4">Cajas necesarias: <span class="ml-4">{{ shippingInfo.boxes.length }}</span></p>
             <div class="overflow-x-auto mt-4">
                 <table class="min-w-full">
                     <thead class="bg-[#373737] text-white">
@@ -80,12 +80,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="*:px-4 *:py-2">
-                            <td>1</td>
-                            <td>50x40x30 cm</td>
-                            <td>20 kg</td>
-                            <td>100 piezas</td>
-                            <td>$32.50</td>
+                        <tr v-for="(box, index) in shippingInfo.boxes" :key="box" class="*:px-4 *:py-2">
+                            <td>{{ (index + 1) }}</td>
+                            <td>{{ box.length + 'x' + box.width + 'x' + box.height }} cm</td>
+                            <td>{{ box.weight }} kg</td>
+                            <td>{{ box.quantity }} piezas</td>
+                            <td>${{ box.cost }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -104,7 +104,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 export default {
     data() {
         return {
-            shippingInfo: [],
+            shippingInfo: null,
         }
     },
     components: {
@@ -113,6 +113,18 @@ export default {
     props: {
         product: Object,
         quantity: Number,
+    },
+    emits:['total-boxes', 'total-cost'],
+    mounted() {
+        if ( this.product.shipping_rates?.length ) {
+            this.shippingInfo = this.product.shipping_rates.find(item => item.quantity === this.quantity);
+            const totalBoxes = this.shippingInfo.boxes.length;
+            this.$emit('total-boxes', totalBoxes);
+            const totalCost = this.shippingInfo.boxes.reduce((acc, box) => {
+                return acc + parseFloat(box.cost); // Asegúrate de convertir el 'cost' a número
+            }, 0);
+            this.$emit('total-cost', totalCost);
+        }
     }
 }
 </script>

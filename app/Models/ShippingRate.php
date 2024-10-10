@@ -12,6 +12,8 @@ class ShippingRate extends Model
 
     protected $fillable = [
         'catalog_product_id',
+        'all_boxes_are_same',
+        'is_fragile',
         'quantity',
         'boxes',
     ];
