@@ -87,7 +87,7 @@
       </div>
 
       <el-steps :active="getCurrentStep" finish-status="success" class="w-2/3 mx-auto">
-        <el-step title="Autorizado. Sin orden de poducción" />
+        <el-step title="Autorizado. Sin orden de producción" />
         <el-step title="Producción sin iniciar" />
         <el-step title="Producción en proceso" />
         <el-step title="Producción terminada" />
@@ -202,7 +202,7 @@ export default {
     getCurrentStep() {
       const statuses = [
         'Esperando autorización',
-        'Autorizado. Sin orden de poducción',
+        'Autorizado. Sin orden de producción',
         'Producción sin iniciar',
         'Producción en proceso',
         'Producción terminada',
@@ -210,7 +210,7 @@ export default {
         'Enviado',
       ];
 
-      return statuses.findIndex(i => i == this.sale.data.status.label);
+      return statuses.findIndex(i => i == this.sale.data.raw_status);
     },
   },
   methods: {

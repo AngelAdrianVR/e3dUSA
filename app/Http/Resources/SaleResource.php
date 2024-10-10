@@ -21,6 +21,7 @@ class SaleResource extends JsonResource
             // 'tracking_guide' => $this->tracking_guide,
             // 'promise_date' => $this->promise_date?->isoFormat('DD MMMM YYYY') ?? '--',
             'status' => $this->getStatus(),
+            'raw_status' => $this->status,
             'oce_name' => $this->oce_name,
             'order_via' => $this->order_via,
             'invoice' => $this->invoice,

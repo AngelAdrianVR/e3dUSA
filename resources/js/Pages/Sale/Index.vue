@@ -115,7 +115,7 @@
                                     <p class="mr-2" :class="getStatusColor(scope.row)">
                                         <i class="fa-solid fa-circle text-[6px]"></i>
                                     </p>
-                                    <p class="flex-0 w-[80%]">{{ scope.row.status['label'] }}</p>
+                                    <p class="flex-0 w-[80%]">{{ scope.row.raw_status }}</p>
                                 </div>
                             </template>
                         </el-table-column>
@@ -251,15 +251,15 @@ export default {
             return 'cursor-pointer text-xs';
         },
         getStatusColor(row) {
-            if (row.status['label'] == 'Esperando autorización') {
+            if (row.raw_status == 'Esperando autorización') {
                 return 'text-red-500';
-            } else if (row.status['label'] == 'Producción sin iniciar') {
+            } else if (row.raw_status == 'Producción sin iniciar') {
                 return 'text-amber-500';
-            } else if (row.status['label'] == 'Producción en proceso') {
+            } else if (row.raw_status == 'Producción en proceso') {
                 return 'text-blue-500';
-            } else if (row.status['label'] == 'Producción terminada') {
+            } else if (row.raw_status == 'Producción terminada') {
                 return 'text-green-500';
-            } else if (row.status['label'] == 'Autorizado sin orden de producción') {
+            } else if (row.raw_status == 'Autorizado. Sin orden de producción') {
                 return 'text-gray-500';
             }
         },
