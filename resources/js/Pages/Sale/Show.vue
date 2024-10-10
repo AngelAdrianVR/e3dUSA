@@ -91,6 +91,7 @@
         <el-step title="Producción sin iniciar" />
         <el-step title="Producción en proceso" />
         <el-step title="Producción terminada" />
+        <el-step title="Parcialmente enviado" />
         <el-step title="Enviado" />
       </el-steps>
 
@@ -205,6 +206,7 @@ export default {
         'Producción sin iniciar',
         'Producción en proceso',
         'Producción terminada',
+        'Parcialmente enviado',
         'Enviado',
       ];
 
