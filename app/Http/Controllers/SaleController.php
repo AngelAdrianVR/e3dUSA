@@ -119,7 +119,7 @@ class SaleController extends Controller
         $can_authorize = auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin');
 
         if ($can_authorize) {
-            $sale->update(['status' => 'Autorizado sin orden de producción', 'authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
+            $sale->update(['status' => 'Autorizado. Sin orden de producción', 'authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
         } elseif (app()->environment() === 'production') {
             // notify to Maribel
             $maribel = User::find(3);

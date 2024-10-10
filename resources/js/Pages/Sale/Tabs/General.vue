@@ -47,7 +47,7 @@
             <span :class="sale.status['text-color'] +
                 ' ' +
                 sale.status['border-color']
-                " class="rounded-full border text-center">{{ sale.status["label"] }}</span>
+                " class="rounded-full border text-center">{{ sale.raw_status }}</span>
             <span class="text-gray-500 my-1">Notas</span>
             <span>{{ sale.notes ?? '-' }}</span>
 
