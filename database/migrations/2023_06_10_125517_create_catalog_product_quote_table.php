@@ -17,7 +17,7 @@ return new class extends Migration
             $table->float('price');
             $table->boolean('show_image')->default(true);
             $table->text('notes')->nullable();
-            $table->boolean('requires_med')->nullable();
+            $table->boolean('requires_med')->default(false);
             $table->foreignId('quote_id')->constrained()->cascadeOnDelete();
             $table->foreignId('catalog_product_id')->constrained()->cascadeOnDelete();
             $table->timestamps();

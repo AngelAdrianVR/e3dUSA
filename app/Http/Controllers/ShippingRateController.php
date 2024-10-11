@@ -11,22 +11,29 @@ class ShippingRateController extends Controller
 {
     public function index()
     {   
-        $shipping_rates = CatalogProduct::has('shippingRates')->with('shippingRates:id,boxes,catalog_product_id')->paginate(20, ['id', 'name', 'part_number']);
+        $shipping_rates = CatalogProduct::has('shippingRates')->with('shippingRates:id,boxes,catalog_product_id')
+            ->latest()
+            ->paginate(20, ['id', 'name', 'part_number']);
 
         return inertia('ShippingRate/Index', compact('shipping_rates'));
     }
 
     public function create(Request $request)
     {   
-        //si se manda algun id de producto 
+        //si se manda algun id de producto y/o ruta por url
         $catalog_product_id = $request->catalog_product_id ?? null;
+        $route = $request->route ?? null;
+        $idRoute = $request->idRoute ?? null;
+
         $catalog_products = CatalogProduct::all(['id', 'name', 'part_number']);
         $box_types = Box::all();
 
         return inertia('ShippingRate/Create', [
             'catalog_products' => $catalog_products,
             'box_types' => $box_types,
-            'catalog_product_id' => $catalog_product_id
+            'catalog_product_id' => $catalog_product_id,
+            'route' => $route,
+            'idRoute' => $idRoute
         ]);
     }
 
@@ -59,7 +66,13 @@ class ShippingRateController extends Controller
             'catalog_product_id' => $request->catalog_product_id,
         ]);
 
-        return to_route('shipping-rates.show', $shipping_rate->id);
+        if ( $request->routePage ) {
+            // si se envía una ruta especifica
+            return to_route($request->routePage, intval($request->idRoute));
+        } else {
+            // si no se manda ninguna ruta para redireccionar, manda al show del nuevo creado
+            return to_route('shipping-rates.show', $shipping_rate->id);
+        }
     }
 
     public function show(ShippingRate $shipping_rate)
@@ -74,12 +87,16 @@ class ShippingRateController extends Controller
         return inertia('ShippingRate/Show', compact('shipping_rate', 'catalog_products'));
     }
 
-    public function edit(ShippingRate $shipping_rate)
+    public function edit(Request $request, ShippingRate $shipping_rate)
     {
+        //si se manda algun id de producto y/o ruta por url
+        $route = $request->route ?? null;
+        $idRoute = $request->idRoute ?? null;
+
         $catalog_products = CatalogProduct::all(['id', 'name', 'part_number']);
         $box_types = Box::all();
 
-        return inertia('ShippingRate/Edit', compact('catalog_products', 'box_types', 'shipping_rate'));
+        return inertia('ShippingRate/Edit', compact('catalog_products', 'box_types', 'shipping_rate', 'route', 'idRoute'));
     }
 
     public function update(Request $request, ShippingRate $shipping_rate)
@@ -111,7 +128,13 @@ class ShippingRateController extends Controller
             'catalog_product_id' => $request->catalog_product_id,
         ]);
 
-        return to_route('shipping-rates.show', $shipping_rate->id);
+        if ( $request->routePage ) {
+            // si se envía una ruta especifica
+            return to_route($request->routePage, intval($request->idRoute));
+        } else {
+            // si no se manda ninguna ruta para redireccionar, manda al show del nuevo creado
+            return to_route('shipping-rates.show', $shipping_rate->id);
+        }
     }
 
     public function destroy(ShippingRate $shipping_rate)

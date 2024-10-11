@@ -41,7 +41,7 @@
         <h2 class="font-semibold text-[#373737] mt-5 px-4 flex items-center justify-between">
             <span>Especificaciones de la(s) caja(s)</span>
             <div v-if="shippingInfo" class="flex space-x-2 items-center">
-                <button @click="$inertia.get(route('shipping-rates.edit', shippingInfo.id))" type="button"
+                <button @click="$inertia.get(route('shipping-rates.edit', shippingInfo.id), {route: routePage, idRoute: idRoute})" type="button"
                     class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-4">
@@ -50,7 +50,7 @@
                     </svg>
                 </button>
                 <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Remover?"
-                    @confirm="deleteProduct(index)">
+                    @confirm="deleteItem()">
                     <template #reference>
                         <button type="button"
                             class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
@@ -63,7 +63,11 @@
                     </template>
                 </el-popconfirm>
             </div>
-            <PrimaryButton @click="$inertia.get(route('shipping-rates.create', {catalog_product_id: product.id}))" type="button" v-else>Agregar cajas</PrimaryButton>
+            <PrimaryButton 
+                @click="$inertia.get(route('shipping-rates.create', {catalog_product_id: product.id, route: routePage, idRoute: idRoute}))" 
+                type="button" v-else>
+                Agregar cajas
+            </PrimaryButton>
         </h2>
 
         <section v-if="shippingInfo">
@@ -113,8 +117,21 @@ export default {
     props: {
         product: Object,
         quantity: Number,
+        routePage:{
+            type: String,
+            default: null
+        },
+        idRoute:{
+            type: Number,
+            default: null
+        }
     },
     emits:['total-boxes', 'total-cost'],
+    methods:{
+        deleteItem() {
+            this.$inertia.delete(route('shipping-rates.destroy', this.shippingInfo.id));
+        }   
+    },
     mounted() {
         if ( this.product.shipping_rates?.length ) {
             this.shippingInfo = this.product.shipping_rates.find(item => item.quantity === this.quantity);
