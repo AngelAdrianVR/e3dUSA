@@ -270,14 +270,29 @@ class QuoteController extends Controller
         $branch = CompanyBranch::find($quote->company_branch_id);
 
         $sale = Sale::create([
-            'freight_cost' => $quote->freight_cost,
+            // 'freight_cost' => $quote->freight_cost,
             'order_via' => "Cotización folio $folio",
             'authorized_user_name' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? auth()->user()->name : null,
             'authorized_at' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? now() : null,
             'user_id' => auth()->id(),
             'notes' => $quote->notes,
             'company_branch_id' => $quote->company_branch_id,
+            'partialities' => [],
         ]);
+
+        $partialities = [
+            [
+                'promise_date' => null,
+                'shipping_cost' => null,
+                'shipping_company' => null,
+                'tracking_guide' => null,
+                'sent_at' => null,
+                'sent_by' => null,
+                'number_of_packages' => null,
+                'status' => 'Pendiente de envío',
+                'productsSelected' => [] // Inicialmente vacío
+            ]
+        ];
 
         $sale_folio = 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT);
 
@@ -303,9 +318,22 @@ class QuoteController extends Controller
                 'requires_medallion' => $product->pivot->requires_med,
                 'notes' => $product->pivot->notes,
             ]);
+
+            $prdForPartiality = [
+                'id' => $product->id,
+                'name' => $product->name,
+                'selected' => true,
+                'quantity' => $product->pivot->quantity,
+            ];
+
+            // Asignar el array de productos seleccionados a la parcialidad
+            $partialities[0]['productsSelected'][] = $prdForPartiality;
         }
 
-        return response()->json(['message' => "Cotización convertida en orden de venta con folio: {$sale_folio}"]);
+        $sale->partialities = $partialities;
+        $sale->save();
+
+        return response()->json(['message' => "Cotización convertida en orden de venta con folio: {$sale_folio}. Completar información de la misma"]);
     }
 
     public function authorizeQuote(Quote $quote)
