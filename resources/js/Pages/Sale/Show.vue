@@ -128,7 +128,7 @@
         <el-tab-pane
           v-if="sale.data?.catalogProductCompanySales?.some(item => item?.catalog_product_company?.catalog_product?.part_number.includes('EM'))"
           label="Certificado de calidad" name="3">
-          <a class="inline-block" :href="route('sales.quality-certificate', sale.id)" target="_blank">
+          <a class="inline-block" :href="route('sales.quality-certificate', sale.data.id)" target="_blank">
             <p class="text-secondary underline mb-2 cursor-pointer">Ver certificado de calidad</p>
           </a>
         </el-tab-pane>

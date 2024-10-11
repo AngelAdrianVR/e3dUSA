@@ -86,8 +86,8 @@
                             <article v-if="form.company_branch_id"
                                 class="flex space-x-4 rounded-[20px] border border-[#999999] p-3">
                                 <div class="w-2/3">
-                                    <div class="grid grid-cols-4 gap-3">
-                                        <div class="col-span-3">
+                                    <div class="grid grid-cols-3 gap-3">
+                                        <div class="col-span-2">
                                             <InputLabel value="Producto" />
                                             <el-select @change="fetchCatalogProductData(); checkIfProductHasSale()"
                                                 v-model="product.catalog_product_company_id" class="w-full"
@@ -118,7 +118,7 @@
                                     </div>
                                     <div class="mt-3">
                                         <InputLabel value="Especificaciones" />
-                                        <div class="flex items-center space-x-2 w-1/2 ml-2 mt-1">
+                                        <div class="flex items-center space-x-2 w-full ml-2 mt-1">
                                             <label class="flex items-center">
                                                 <Checkbox v-model:checked="product.confusion_alert"
                                                     class="bg-transparent" />
@@ -385,9 +385,7 @@
                                     v-for="(shippProduct, index3) in partiality.productsSelected.filter(p => p?.selected)"
                                     :key="index3"
                                     :product="form.products.find(e => e.catalogProduct.name == shippProduct.name).catalogProduct"
-                                    :quantity="shippProduct.quantity"
-                                    :routePage="'sales.create'"
-                                    />
+                                    :quantity="shippProduct.quantity" :routePage="'sales.create'" />
                             </div>
                         </div>
                     </section>
@@ -656,7 +654,13 @@ export default {
             });
         },
         getImportantNotes() {
+            // limpiar informacion de logistica
             this.form.contact_id = null;
+            this.form.products = [];
+            this.form.partialities = [];
+            this.form.shipping_option = null;
+            this.resetProductForm();
+
             this.importantNotes = this.company_branches.find(item => item.id == this.form.company_branch_id)?.important_notes;
             //obtiene el id de la matriz para pasarla como parametro en creacion de formato de autorización de diseño.
             this.selectedCompanyId = this.company_branches.find(item => item.id == this.form.company_branch_id).company_id;

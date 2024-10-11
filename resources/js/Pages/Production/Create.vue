@@ -93,8 +93,7 @@
                     <span class="text-primary">{{ index + 1 }}.</span>
                     {{ sales.data.find(item2 => item2.id == form.sale_id).catalogProductCompanySales.find(cpcs =>
                       cpcs.id == item?.catalog_product_company_sale_id)?.catalog_product_company?.catalog_product.name }}
-                    | {{ is_automatic_assignment ? 'Asignación de operdores automática' : item.tasks?.length + '
-                    operador(es) asignado(s)' }}
+                    | {{ is_automatic_assignment ? 'Asignación de operdores automática' : item.tasks?.length + 'operador(es) asignado(s)' }}
                   </p>
                   <div class="flex space-x-2 items-center">
                     <el-tag v-if="editProductionIndex == index">En edición</el-tag>
