@@ -47,14 +47,14 @@
                             <p class="flex">{{ scope.row.length }} cm</p>
                         </template>
                     </el-table-column>
-                    <el-table-column label="Alto">
-                        <template #default="scope">
-                            <p class="flex">{{ scope.row.height }} cm</p>
-                        </template>
-                    </el-table-column>
                     <el-table-column label="Ancho">
                         <template #default="scope">
                             <p class="flex">{{ scope.row.width }} cm</p>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Alto">
+                        <template #default="scope">
+                            <p class="flex">{{ scope.row.height }} cm</p>
                         </template>
                     </el-table-column>
                     <el-table-column align="right">

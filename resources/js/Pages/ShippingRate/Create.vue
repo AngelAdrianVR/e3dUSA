@@ -153,7 +153,7 @@
                       <InputError :message="form.errors[`boxes.${index}.quantity`]"/>
                     </div>
                     <div>
-                      <InputLabel value="Costo*" />
+                      <InputLabel value="Costo" />
                       <el-input
                         v-model="form.boxes[index].cost"
                         placeholder="Tarifa de la caja"

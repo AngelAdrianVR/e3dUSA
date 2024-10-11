@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-xl px-7 py-3 relative text-xs shadow-lg bg-[#cccccc] border border-transparent"
+  <div class="rounded-xl px-7 py-3 relative text-xs shadow-lg bg-[#cccccc] border-[3px] border-transparent"
     :class="{
         '!border-primary': isHighPriority,
     }">
@@ -54,8 +54,8 @@
                   </p>
                 </div>
               </template>
-              <div class="bg-black rounded-full size-7 absolute -top-2 -left-2 flex items-center justify-center text-lg z-50">
-                ❗❗
+              <div class="bg-black rounded-full size-7 absolute -top-2 -left-2 flex items-center justify-center text-lg z-10">
+                <span class="text-xs">❗❗</span>
               </div>
             </el-tooltip>
           </div>

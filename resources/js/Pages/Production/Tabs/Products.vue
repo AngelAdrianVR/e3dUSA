@@ -13,7 +13,7 @@
             </el-dropdown>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-7">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-7 mt-12">
             <ProductSaleCard @selected="handleSelections(index, $event)"
                 v-for="(productSale, index) in sale.catalogProductCompanySales" :key="productSale.id"
                 :catalog_product_company_sale="productSale" :isHighPriority="Boolean(parseInt(sale.is_high_priority))"
