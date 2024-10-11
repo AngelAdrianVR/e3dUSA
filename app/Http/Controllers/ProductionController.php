@@ -594,4 +594,9 @@ class ProductionController extends Controller
 
         return response()->json(['item' => $catalog_product]);
     }
+
+    public function fetchSaleInfo(Sale $sale)
+    {
+        return response()->json(['item' => $sale]);
+    }
 }

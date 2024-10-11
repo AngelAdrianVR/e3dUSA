@@ -1,5 +1,8 @@
 <template>
-    <main class="border border-[#999999] rounded-2xl py-4 mt-1">
+    <div v-if="loading" class="flex justify-center border border-[#999999] rounded-2xl py-4">
+        <i class="fa-solid fa-spinner fa-spin text-3xl text-primary"></i>
+    </div>
+    <main v-else class="border border-[#999999] rounded-2xl py-4 mt-1">
         <!-- <h2 class="font-bold mb-3 px-4">Producto x</h2> -->
 
         <section class="grid grid-cols-2 gap-3 px-4">
@@ -71,7 +74,7 @@
         </h2>
 
         <section v-if="shippingInfo">
-            <p class="mt-2 px-4">Cajas necesarias: <span class="ml-4">{{ shippingInfo.boxes.length }}</span></p>
+            <p class="mt-2 px-4">Cajas necesarias: <span class="ml-4">{{ shippingInfo?.boxes?.length }}</span></p>
             <div class="overflow-x-auto mt-4">
                 <table class="min-w-full">
                     <thead class="bg-[#373737] text-white">
@@ -84,7 +87,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(box, index) in shippingInfo.boxes" :key="box" class="*:px-4 *:py-2">
+                        <tr v-for="(box, index) in shippingInfo?.boxes" :key="box" class="*:px-4 *:py-2">
                             <td>{{ (index + 1) }}</td>
                             <td>{{ box.length + 'x' + box.width + 'x' + box.height }} cm</td>
                             <td>{{ box.weight }} kg</td>
@@ -109,6 +112,7 @@ export default {
     data() {
         return {
             shippingInfo: null,
+            loading: false,
         }
     },
     components: {
@@ -127,20 +131,62 @@ export default {
         }
     },
     emits:['total-boxes', 'total-cost'],
+    watch:{
+        quantity(){
+            this.calculateShippingData();
+        }
+    },
     methods:{
         deleteItem() {
             this.$inertia.delete(route('shipping-rates.destroy', this.shippingInfo.id));
-        }   
-    },
-    mounted() {
-        if ( this.product.shipping_rates?.length ) {
+        },
+        calculateShippingData() {
             this.shippingInfo = this.product.shipping_rates.find(item => item.quantity === this.quantity);
-            const totalBoxes = this.shippingInfo.boxes.length;
+            const totalBoxes = this.shippingInfo?.boxes?.length;
             this.$emit('total-boxes', totalBoxes);
-            const totalCost = this.shippingInfo.boxes.reduce((acc, box) => {
+            const totalCost = this.shippingInfo?.boxes?.reduce((acc, box) => {
                 return acc + parseFloat(box.cost); // Asegúrate de convertir el 'cost' a número
             }, 0);
             this.$emit('total-cost', totalCost);
+        },
+        async fetchCatalogProuctShippingRates() {
+            this.loading = true;
+            try {
+                const response = await axios.get(route('productions.fetch-catalog-product-shipping-rates', this.product?.id));
+
+                if (response.status === 200) {
+                    // Actualiza las propiedades de this.product en lugar de asignarlo directamente
+                    Object.assign(this.product, response.data.item);
+                    
+                    // seleccionar la tarifa coincidente y emitir cantidad de cajas y costo
+                    this.calculateShippingData();
+                    // this.shippingInfo = this.product.shipping_rates.find(item => item.quantity === this.quantity);
+                    // const totalBoxes = this.shippingInfo?.boxes?.length;
+                    // this.$emit('total-boxes', totalBoxes);
+                    // const totalCost = this.shippingInfo?.boxes?.reduce((acc, box) => {
+                    //     return acc + parseFloat(box.cost); // Asegúrate de convertir el 'cost' a número
+                    // }, 0);
+                    // this.$emit('total-cost', totalCost);
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                this.loading = false;
+            }
+        },
+    },
+    mounted() {
+        if ( this.product.shipping_rates?.length ) {
+            this.calculateShippingData();
+            // this.shippingInfo = this.product.shipping_rates.find(item => item.quantity === this.quantity);
+            // const totalBoxes = this.shippingInfo?.boxes?.length;
+            // this.$emit('total-boxes', totalBoxes);
+            // const totalCost = this.shippingInfo?.boxes?.reduce((acc, box) => {
+            //     return acc + parseFloat(box.cost); // Asegúrate de convertir el 'cost' a número
+            // }, 0);
+            // this.$emit('total-cost', totalCost);
+        } else {
+            this.fetchCatalogProuctShippingRates();
         }
     }
 }

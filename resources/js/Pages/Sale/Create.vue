@@ -385,7 +385,9 @@
                                     v-for="(shippProduct, index3) in partiality.productsSelected.filter(p => p?.selected)"
                                     :key="index3"
                                     :product="form.products.find(e => e.catalogProduct.name == shippProduct.name).catalogProduct"
-                                    :quantity="shippProduct.quantity" />
+                                    :quantity="shippProduct.quantity"
+                                    :routePage="'sales.create'"
+                                    />
                             </div>
                         </div>
                     </section>

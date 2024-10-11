@@ -83,12 +83,12 @@
 
                         <div class="flex space-x-2">
                             <p class="text-[#999999] w-48">Cantidad de cajas:</p>
-                            <p>{{ totalBoxes[index] }}</p>
+                            <p>{{ totalBoxes[index] ?? 'Sin información' }}</p>
                         </div>
 
                         <div class="flex space-x-2">
                             <p class="text-[#999999] w-48">Costo total de envío:</p>
-                            <p>${{ totalCost[index] }}</p>
+                            <p>${{ totalCost[index] ?? 'Sin información' }}</p>
                         </div>
                     </article>
                     <h2 class="font-bold mt-3 ml-5">{{ shipping.partialities?.length > 1 ? 'Desglose de productos para esta parcialidad' : 'Desgloce'}}</h2>
