@@ -23,7 +23,7 @@ use Illuminate\Http\Request;
 class QuoteController extends Controller
 {
     public function index()
-    {        
+    {
         $pre_quotes = Quote::with(['catalogProducts:id,name', 'user:id,name'])
             ->latest()
             ->paginate(20); // Pagina primero
@@ -111,7 +111,7 @@ class QuoteController extends Controller
                 "notes" => $product['notes'],
             ];
 
-            if ( $product['isCatalogProduct'] ) {
+            if ($product['isCatalogProduct']) {
                 $quote->catalogProducts()->attach($product['id'], $quoted_product);
             } else {
                 $quote->rawMaterials()->attach($product['id'], $quoted_product);
@@ -196,7 +196,7 @@ class QuoteController extends Controller
                 "notes" => $product['notes'],
             ];
 
-            if ( $product['isCatalogProduct'] ) {
+            if ($product['isCatalogProduct']) {
                 $quote->catalogProducts()->attach($product['id'], $quoted_product);
             } else {
                 $quote->rawMaterials()->attach($product['id'], $quoted_product);
@@ -270,20 +270,35 @@ class QuoteController extends Controller
         $branch = CompanyBranch::find($quote->company_branch_id);
 
         $sale = Sale::create([
-            'freight_cost' => $quote->freight_cost,
+            // 'freight_cost' => $quote->freight_cost,
             'order_via' => "Cotización folio $folio",
             'authorized_user_name' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? auth()->user()->name : null,
             'authorized_at' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? now() : null,
             'user_id' => auth()->id(),
             'notes' => $quote->notes,
             'company_branch_id' => $quote->company_branch_id,
+            'partialities' => [],
         ]);
+
+        $partialities = [
+            [
+                'promise_date' => null,
+                'shipping_cost' => null,
+                'shipping_company' => null,
+                'tracking_guide' => null,
+                'sent_at' => null,
+                'sent_by' => null,
+                'number_of_packages' => null,
+                'status' => 'Pendiente de envío',
+                'productsSelected' => [] // Inicialmente vacío
+            ]
+        ];
 
         $sale_folio = 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT);
 
         // add products for sale to sale
         foreach ($quote->catalogProducts as $product) {
-            $catalog_product_company = $branch->company->catalogProducts->first(fn ($item) => $item->id == $product->id);
+            $catalog_product_company = $branch->company->catalogProducts->first(fn($item) => $item->id == $product->id);
             if (!$catalog_product_company) {
                 // register products to company if any required
                 $pivot = [
@@ -303,9 +318,25 @@ class QuoteController extends Controller
                 'requires_medallion' => $product->pivot->requires_med,
                 'notes' => $product->pivot->notes,
             ]);
+
+            $prdForPartiality = [
+                'id' => $product->id,
+                'name' => $product->name,
+                'selected' => true,
+                'quantity' => $product->pivot->quantity,
+            ];
+
+            // Asignar el array de productos seleccionados a la parcialidad
+            $partialities[0]['productsSelected'][] = $prdForPartiality;
         }
 
-        return response()->json(['message' => "Cotización convertida en orden de venta con folio: {$sale_folio}"]);
+        $sale->partialities = $partialities;
+        $sale->save();
+
+        return response()->json([
+            'message' => "Cotización convertida en orden de venta con folio: {$sale_folio}. Completar información de la misma",
+            'sale_id' => $sale->id,
+        ]);
     }
 
     public function authorizeQuote(Quote $quote)
@@ -327,16 +358,16 @@ class QuoteController extends Controller
     {
         $query = $request->input('query');
 
-       // Realiza la búsqueda
+        // Realiza la búsqueda
         $pre_quotes = Quote::where('id', 'like', "%{$query}%")
-        ->orWhereHas('user', function ($q) use ($query) {
-            $q->where('name', 'like', "%{$query}%");
-        })->orWhereHas('companyBranch', function ($q) use ($query) {
-            $q->where('name', 'like', "%{$query}%");
-        })
-        ->orWhere('receiver', 'like', "%{$query}%")
-        ->with(['user:id,name', 'catalogProducts:id,name'])
-        ->get();
+            ->orWhereHas('user', function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%");
+            })->orWhereHas('companyBranch', function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%");
+            })
+            ->orWhere('receiver', 'like', "%{$query}%")
+            ->with(['user:id,name', 'catalogProducts:id,name'])
+            ->get();
 
         // Mapea los resultados al formato del index
         $quotes = $pre_quotes->map(function ($quote) {

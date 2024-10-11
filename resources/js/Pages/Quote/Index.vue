@@ -138,6 +138,26 @@
                 </el-table>
             </div>
         </div>
+
+        <ConfirmationModal :show="showConversionConfirm" @close="showConversionConfirm = true">
+            <template #title>
+                    <h1>Convertir cotización a orden de venta</h1>
+            </template>
+            <template #content>
+                    <p>
+                        Al hacer la conversión se te redireccionará a la OV creada ya que
+                        quedarán varios campos sin llenar. <br>
+                        Es importante llenar toda la información correspondiente, para evitar
+                        futuros problemas. 
+                    </p>
+            </template>
+            <template #footer>
+                    <div class="flex items-center justify-end space-x-1">
+                        <CancelButton @click="showConversionConfirm = false" :disabled="converting">Cancelar</CancelButton>
+                        <PrimaryButton @click="createSO" :disabled="converting">Convertir</PrimaryButton>
+                    </div>
+            </template>
+        </ConfirmationModal>
     </AppLayout>
 </template>
 <script>
@@ -151,17 +171,23 @@ import SaleProfit from "@/Components/MyComponents/SaleProfit.vue";
 import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
+import ConfirmationModal from '@/Components/ConfirmationModal.vue';
+import CancelButton from '@/Components/MyComponents/CancelButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 export default {
     components: {
         PaginationWithNoMeta,
         NotificationCenter,
         SecondaryButton,
+        PrimaryButton,
+        CancelButton,
         IndexSearchBar,
         LoadingLogo,
         SaleProfit,
         AppLayout,
         Link,
+        ConfirmationModal,
     },
     data() {
         return {
@@ -171,6 +197,9 @@ export default {
             loading: false,
             pagination: null,
             filteredQuotes: this.quotes.data,
+            showConversionConfirm: false,
+            converting: false,
+            selectedQuoteId: null,
         };
     },
     props: {
@@ -293,13 +322,15 @@ export default {
                 console.log(err);
             }
         },
-        async createSO(quote_id) {
+        async createSO() {
             try {
+                this.converting = true;
                 const response = await axios.post(route('quotes.create-so', {
-                    quote_id: quote_id
+                    quote_id: this.selectedQuoteId
                 }));
 
                 if (response.status == 200) {
+                    this.$inertia.visit(route('sales.edit', response.data.sale_id));
                     this.$notify({
                         title: 'Éxito',
                         message: response.data.message,
@@ -357,7 +388,8 @@ export default {
             if (commandName == 'clone') {
                 this.clone(rowId);
             } else if (commandName == 'make_so') {
-                this.createSO(rowId);
+                this.selectedQuoteId = rowId;
+                this.showConversionConfirm = true;
             } else if (commandName == 'authorize') {
                 this.authorize(rowId);
             } else {
