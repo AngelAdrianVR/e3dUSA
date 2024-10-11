@@ -23,7 +23,6 @@ use App\Notifications\LowStockToDispatchOrderNotification;
 use App\Notifications\MentionInProductionNotification;
 use App\Notifications\ProductionCompletedNotification;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Permission;
 
 class ProductionController extends Controller
 {
@@ -183,7 +182,7 @@ class ProductionController extends Controller
         $request->validate([
             'productions' => 'array|min:1',
         ]);
-
+        
         $is_automatic_assignment = Setting::where('key', 'AUTOMATIC_PRODUCTION_ASSIGNMENT')->first()->value;
 
         foreach ($request->productions as $production) {
@@ -231,6 +230,11 @@ class ProductionController extends Controller
             //     ]);
             // }
         }
+
+        // actualizar status de la venta
+        $sale = Sale::find($request->sale_id);
+        $sale->status = 'Producción sin iniciar';
+        $sale->save();
 
         return redirect()->route('productions.index');
     }
@@ -593,5 +597,10 @@ class ProductionController extends Controller
         $catalog_product->load('shippingRates');
 
         return response()->json(['item' => $catalog_product]);
+    }
+
+    public function fetchSaleInfo(Sale $sale)
+    {
+        return response()->json(['item' => $sale]);
     }
 }
