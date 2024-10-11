@@ -115,8 +115,8 @@
             <template #content> ¿Continuar con la eliminación? </template>
             <template #footer>
                 <div>
-                <CancelButton @click="showConfirmModal = false" class="mr-2">Cancelar</CancelButton>
-                <PrimaryButton @click="deleteItem(itemToDelete)">Eliminar</PrimaryButton>
+                <CancelButton @click="showConfirmModal = false" class="mr-2" :disabled="deleting">Cancelar</CancelButton>
+                <PrimaryButton @click="deleteItem()" :disabled="deleting">Eliminar</PrimaryButton>
                 </div>
             </template>
         </ConfirmationModal>
@@ -138,7 +138,8 @@ data(){
         catalogProductSelected: this.shipping_rate.catalog_product?.id,
         showConfirmModal: false,
         itemToDelete: null,
-        loading: false
+        loading: false,
+        deleting: false,
     }
 },
 components:{
@@ -164,14 +165,14 @@ methods:{
         const url = this.route('catalog-products.show', catalogProductId);
         window.open(url, '_blank');
     },
-    deleteItem(item) {
-        this.$inertia.delete(route('shipping-rates.destroy', item.id));
+    deleteItem() {
+        this.deleting = true;
+        this.$inertia.delete(route('shipping-rates.destroy', this.itemToDelete.id));
         this.$notify({
             title: "Éxito",
             message: "",
             type: "success",
         });
-        location.reload();
     },
     async getShippingRates(catalog_product_id) {
         this.loading = true;

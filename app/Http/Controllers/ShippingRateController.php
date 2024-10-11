@@ -50,7 +50,7 @@ class ShippingRateController extends Controller
             'boxes.*.height' => 'required|numeric|min:0', // Alto de la caja
             'boxes.*.weight' => 'required|numeric|min:0', // Peso de la caja
             'boxes.*.quantity' => 'required|integer|min:1', // Cantidad de unidades en la caja
-            'boxes.*.cost' => 'required|numeric|min:0', // Tarifa de la caja
+            'boxes.*.cost' => 'nullable|numeric|min:0', // Tarifa de la caja
         ]);
 
         if ($request->all_boxes_are_same) {
@@ -151,7 +151,7 @@ class ShippingRateController extends Controller
     {
         $shipping_rate->delete();
 
-        // return to_route('shipping-rates.index');
+        return to_route('shipping-rates.index');
     }
 
     public function fetchCatalogProductInfo(CatalogProduct $catalog_product)
