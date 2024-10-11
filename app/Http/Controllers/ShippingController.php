@@ -15,11 +15,12 @@ class ShippingController extends Controller
         $shippings = Sale::with([
             'user:id,name', 'companyBranch:id,name'])
             ->where('user_id', auth()->id())
+            ->where('is_sale_production', true)
             ->where('status', 'Producción terminada')
             ->orWhere('status', 'Enviado')
             ->orWhere('status', 'Parcialmente enviado')
             ->latest()
-            ->paginate(20, ['id', 'promise_date', 'user_id', 'company_branch_id', 'created_at', 'sent_at', 'sent_by', 'shipping_type', 'status', 'partialities']);
+            ->paginate(20, ['id', 'promise_date', 'is_sale_production', 'company_branch_id', 'created_at', 'sent_at', 'sent_by', 'shipping_type', 'status', 'partialities']);
 
         return inertia('Shipping/Index', compact('shippings'));
     }
@@ -29,6 +30,7 @@ class ShippingController extends Controller
     {
         $shippings = Sale::with([
             'user:id,name', 'companyBranch:id,name'])
+            ->where('is_sale_production', true)
             ->where('status', 'Producción terminada')
             ->orWhere('status', 'Enviado')
             ->orWhere('status', 'Parcialmente enviado')

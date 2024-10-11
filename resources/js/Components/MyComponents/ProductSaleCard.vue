@@ -648,6 +648,7 @@
           Faltan datos sobre las dimensiones de las cajas para este producto. Si tienes la información da clic
           en el botón “Agregar cajas”.
       </p>
+      {{salePartialities}}
     </template>
     <template #footer>
       <div class="flex items-center justify-end w-full">
@@ -947,6 +948,17 @@ export default {
         console.log(error);
       }
     },
+    async fetchSaleInfo() {
+      try {
+        const response = await axios.get(route('productions.fetch-sale-info', this.catalog_product_company_sale.sale_id));
+
+        if ( response.status === 200 ) {
+          this.salePartialities = response.data.item.partialities;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
     openImage(url) {
       window.open(url, '_blank');
     },
@@ -959,7 +971,8 @@ export default {
   },
   mounted() {
     this.fetchUsers();
-    this.fetchCatalogProuctShippingRates(); //recupera las tarifas del catalog_product para no cargarlo desde la vista show    
+    this.fetchCatalogProuctShippingRates(); //recupera las tarifas del catalog_product para no cargarlo desde la vista show
+    this.fetchSaleInfo();    
   }
 };
 </script>

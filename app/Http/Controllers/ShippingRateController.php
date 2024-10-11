@@ -66,9 +66,14 @@ class ShippingRateController extends Controller
             'catalog_product_id' => $request->catalog_product_id,
         ]);
 
+        // si se envía una ruta especifica
         if ( $request->routePage ) {
-            // si se envía una ruta especifica
-            return to_route($request->routePage, intval($request->idRoute));
+            //si tiene id como parametro
+            if ( $request->idRoute ) {
+                return to_route($request->routePage, intval($request->idRoute));
+            } else {
+                return to_route($request->routePage);
+            }
         } else {
             // si no se manda ninguna ruta para redireccionar, manda al show del nuevo creado
             return to_route('shipping-rates.show', $shipping_rate->id);
@@ -128,9 +133,14 @@ class ShippingRateController extends Controller
             'catalog_product_id' => $request->catalog_product_id,
         ]);
 
+        // si se envía una ruta especifica
         if ( $request->routePage ) {
-            // si se envía una ruta especifica
-            return to_route($request->routePage, intval($request->idRoute));
+            //si tiene id como parametro
+            if ( $request->idRoute ) {
+                return to_route($request->routePage, intval($request->idRoute));
+            } else {
+                return to_route($request->routePage);
+            }
         } else {
             // si no se manda ninguna ruta para redireccionar, manda al show del nuevo creado
             return to_route('shipping-rates.show', $shipping_rate->id);
