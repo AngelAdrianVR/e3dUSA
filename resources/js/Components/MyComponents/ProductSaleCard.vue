@@ -93,7 +93,10 @@
         </div>
 
         <!-- boton para ver empaque -->
-        <button @click="showPackageModal = true" class="rounded-md w-ful flex items-center justify-center bg-black text-white py-1 px-3 self-start">
+        <div v-if="loadingShippingRate" class="flex justify-center">
+          <i class="fa-solid fa-spinner fa-spin text-xl text-primary"></i>
+        </div>
+        <button v-else @click="showPackageModal = true" class="rounded-md w-ful flex items-center justify-center bg-black text-white py-1 px-3 self-start">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
             <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
           </svg>
@@ -572,83 +575,88 @@
       <h1 class="!text-left mb-4">Empaque</h1>
     </template>
     <template #content>
-      <p>
-        Empaca el producto en las cajas mostradas a continuación. Si no hay stock, haz clic en el botón y agrega las dimensiones (largo, nacho y alto) de la caja de forma manual
-      </p>
-      <section class="grid grid-cols-2 gap-3 px-4 mt-5">
-            <article class="space-y-1">
-                <div class="flex space-x-2">
-                    <p class="text-[#373737] font-bold w-24">Producto:</p>
-                    <p>{{ catalog_product_company_sale.catalog_product_company?.catalog_product?.name }}</p>
-                </div>
-                <div class="flex space-x-2">
-                    <p class="text-[#373737] font-bold w-24">N. Parte:</p>
-                    <p>{{ catalog_product_company_sale.catalog_product_company?.catalog_product?.part_number }}</p>
-                </div>
-                <div class="flex space-x-2">
-                    <p class="text-[#373737] font-bold w-24">Cantidad:</p>
-                    <p>{{ catalog_product_company_sale.quantity }} {{ catalog_product_company_sale.quantity == 1 ? 'unidad' : 'unidades' }}</p>
-                </div>
-            </article>
-            <article class="flex flex-col items-end justify-end space-y-3">
-                <figure class="rounded-xl flex items-center justify-center bg-gray-200 w-3/4 h-28">
-                    <img v-if="catalog_product_company_sale.catalog_product_company?.catalog_product?.media?.length" class="object-contain h-full" :src="catalog_product_company_sale.catalog_product_company?.catalog_product?.media[0]?.original_url">
-                    <i v-else class="fa-regular fa-image text-gray-300 text-5xl"></i>
-                </figure>
+      <main class="overflow-auto max-h-[550px]">
 
-                <p v-if="shippingInfo?.is_fragile" class="inline-flex rounded-md justify-center items-center px-3 py-[2px] bg-[#FDB9C9] text-primary">
-                    <svg class="mr-2" width="8" height="14" viewBox="0 0 8 14" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M2.63137 0H0.0145374C0.12422 5.10188 -0.263825 5.06154 0.404279 6.24615C0.961078 5.11539 1.42056 4.46654 2.35299 3.82308C2.1303 3.33846 1.68488 2.90769 1.35079 2.47692C1.87381 1.53081 2.15193 0.986847 2.63137 0Z"
-                            fill="#D90537" />
-                        <path
-                            d="M2.18598 2.42308C2.13029 2.36923 3.52224 0 3.52224 0H7.92076C8.0261 1.75289 8.00576 2.78859 7.97644 4.63077C8.03212 6.78462 6.41747 7.91539 4.58012 7.96923V12.7615H7.25263V14H0.571346V12.7615H3.24386V7.96923C2.01354 7.86996 1.50341 7.61407 0.849733 6.89231C1.51786 5.33077 2.18948 4.63672 3.46657 3.98462C2.96487 3.35599 2.24167 2.47692 2.18598 2.42308Z"
-                            fill="#D90537" />
-                    </svg>
-                    Frágil
-                </p>
-            </article>
-          <section class="flex justify-between items-center col-span-2 mt-3">
-            <span>Especificaciones de la(s) caja(s)</span>
-              <PrimaryButton v-if="!shippingInfo" 
-                  @click="$inertia.get(route('shipping-rates.create', {catalog_product_id: catalogProductShippingRates.id, route: 'productions.show', idRoute: catalog_product_company_sale.sale_id}))" 
-                  type="button">
-                  Agregar cajas
-              </PrimaryButton>
+        <p>
+          Empaca el producto en las cajas mostradas a continuación. Si no hay stock, haz clic en el botón y agrega las dimensiones (largo, nacho y alto) de la caja de forma manual
+        </p>
+        <h2 class="my-5 ml-4 font-bold text-lg text-black">{{ salePartialities.length > 1 ? 'Envío en parcialidades' : '' }}</h2>
+        <section
+          v-for="(partiality, index) in salePartialities.filter(item => item.productsSelected.some(product => product.id === catalogProductShippingRates.id))"  :key="partiality" 
+          class="grid grid-cols-2 gap-3 px-4 my-4 py-4 border-b border-gray-500">
+              <article class="space-y-1">
+                  <div v-if="salePartialities.filter(item => item.productsSelected.some(product => product.id === catalogProductShippingRates.id))?.length > 1" class="flex space-x-2">
+                      <p class="text-[#373737] font-bold w-24">Parcialidad:</p>
+                      <p>{{ index + 1 }}</p>
+                  </div>
+                  <div class="flex space-x-2">
+                      <p class="text-[#373737] font-bold w-24">Producto:</p>
+                      <p>{{ catalog_product_company_sale.catalog_product_company?.catalog_product?.name }}</p>
+                  </div>
+                  <div class="flex space-x-2">
+                      <p class="text-[#373737] font-bold w-24">N. Parte:</p>
+                      <p>{{ catalog_product_company_sale.catalog_product_company?.catalog_product?.part_number }}</p>
+                  </div>
+                  <div class="flex space-x-2">
+                      <p class="text-[#373737] font-bold w-24">Cantidad:</p>
+                      <p>{{ partiality.productsSelected.find(item => item.id === catalogProductShippingRates.id)?.quantity }} {{ partiality.productsSelected.find(item => item.id === catalogProductShippingRates.id)?.quantity == 1 ? 'unidad' : 'unidades' }}</p>
+                  </div>
+              </article>
+              <article class="flex flex-col items-end justify-end space-y-3">
+                  <figure class="rounded-xl flex items-center justify-center bg-gray-200 w-3/4 h-28">
+                      <img v-if="catalog_product_company_sale.catalog_product_company?.catalog_product?.media?.length" class="object-contain h-full" :src="catalog_product_company_sale.catalog_product_company?.catalog_product?.media[0]?.original_url">
+                      <i v-else class="fa-regular fa-image text-gray-300 text-5xl"></i>
+                  </figure>
+
+                  <p v-if="shippingInfo?.is_fragile" class="inline-flex rounded-md justify-center items-center px-3 py-[2px] bg-[#FDB9C9] text-primary">
+                      <svg class="mr-2" width="8" height="14" viewBox="0 0 8 14" fill="none"
+                          xmlns="http://www.w3.org/2000/svg">
+                          <path
+                              d="M2.63137 0H0.0145374C0.12422 5.10188 -0.263825 5.06154 0.404279 6.24615C0.961078 5.11539 1.42056 4.46654 2.35299 3.82308C2.1303 3.33846 1.68488 2.90769 1.35079 2.47692C1.87381 1.53081 2.15193 0.986847 2.63137 0Z"
+                              fill="#D90537" />
+                          <path
+                              d="M2.18598 2.42308C2.13029 2.36923 3.52224 0 3.52224 0H7.92076C8.0261 1.75289 8.00576 2.78859 7.97644 4.63077C8.03212 6.78462 6.41747 7.91539 4.58012 7.96923V12.7615H7.25263V14H0.571346V12.7615H3.24386V7.96923C2.01354 7.86996 1.50341 7.61407 0.849733 6.89231C1.51786 5.33077 2.18948 4.63672 3.46657 3.98462C2.96487 3.35599 2.24167 2.47692 2.18598 2.42308Z"
+                              fill="#D90537" />
+                      </svg>
+                      Frágil
+                  </p>
+              </article>
+            <section class="flex justify-between items-center col-span-2 mt-3">
+              <span>Especificaciones de la(s) caja(s)</span>
+                <PrimaryButton v-if="!shippingInfo" 
+                    @click="$inertia.get(route('shipping-rates.create', {catalog_product_id: catalogProductShippingRates.id, route: 'productions.show', idRoute: catalog_product_company_sale.sale_id}))" 
+                    type="button">
+                    Agregar cajas
+                </PrimaryButton>
+            </section>
+
+              <section class="col-span-full" v-if="hasShippingInfo(partiality)">
+                <p class="mt-2 px-4">Cajas necesarias: <span class="ml-4">{{ shippingInfo[index].boxes.length }}</span></p>
+                <div class="overflow-x-auto mt-4">
+                    <table class="min-w-full">
+                        <thead class="bg-[#373737] text-white">
+                            <tr class="*:px-4 *:py-2 *:text-left">
+                                <th>#Caja</th>
+                                <th>Tamaño</th>
+                                <th>Dimensiones</th>
+                                <th>Peso</th>
+                                <th>Piezas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(box, index) in shippingInfo[index].boxes" :key="box" class="*:px-4 *:py-2">
+                                <td>{{ (index + 1) }}</td>
+                                <td>{{ box.name }}</td>
+                                <td>{{ box.length + 'x' + box.width + 'x' + box.height }} cm</td>
+                                <td>{{ box.weight }} kg</td>
+                                <td>{{ box.quantity }} piezas</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
           </section>
-        </section>
-
-        <section v-if="shippingInfo">
-          <p class="mt-2 px-4">Cajas necesarias: <span class="ml-4">{{ shippingInfo.boxes.length }}</span></p>
-          <div class="overflow-x-auto mt-4">
-              <table class="min-w-full">
-                  <thead class="bg-[#373737] text-white">
-                      <tr class="*:px-4 *:py-2 *:text-left">
-                          <th>#Caja</th>
-                          <th>Tamaño</th>
-                          <th>Dimensiones</th>
-                          <th>Peso</th>
-                          <th>Piezas</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      <tr v-for="(box, index) in shippingInfo.boxes" :key="box" class="*:px-4 *:py-2">
-                          <td>{{ (index + 1) }}</td>
-                          <td>{{ box.name }}</td>
-                          <td>{{ box.length + 'x' + box.width + 'x' + box.height }} cm</td>
-                          <td>{{ box.weight }} kg</td>
-                          <td>{{ box.quantity }} piezas</td>
-                      </tr>
-                  </tbody>
-              </table>
-          </div>
-      </section>
-      <p v-else class="text-center text-[#373737] px-6 mt-5">
-          Faltan datos sobre las dimensiones de las cajas para este producto. Si tienes la información da clic
-          en el botón “Agregar cajas”.
-      </p>
-      {{salePartialities}}
+      </main>
     </template>
     <template #footer>
       <div class="flex items-center justify-end w-full">
@@ -704,7 +712,8 @@ export default {
       supervision: false,
       comment: null,
       catalogProductShippingRates: null, //catalog product con tarifas cargadas
-      shippingInfo: null, //tarifa seleccionada para ese producto
+      shippingInfo: [], //tarifa seleccionada para ese producto
+      loadingShippingRate: false,
       users: [],
       // paquetes
       packages: [],
@@ -768,6 +777,22 @@ export default {
     },
     removePackage(index) {
       this.packages.splice(index, 1)
+    },
+    hasShippingInfo(partiality) {
+      // Buscar el producto en partiality.productsSelected
+      const productSelected = partiality.productsSelected.find(product => product.id === this.catalogProductShippingRates.id);
+
+      // Si no se encuentra el producto, retornar false
+      if (!productSelected) {
+        return false;
+      }
+
+      // Buscar la información de envío del producto seleccionado en catalogProductShippingRates
+      const productSelectedShippingInfo = this.catalogProductShippingRates.shipping_rates.find(item => item.quantity === productSelected.quantity);
+      this.shippingInfo.push(productSelectedShippingInfo);
+
+      // Retornar true si existe la información de envío, de lo contrario false
+      return !!productSelectedShippingInfo;
     },
     async fetchUsers() {
       try {
@@ -935,13 +960,14 @@ export default {
       }
     },
     async fetchCatalogProuctShippingRates() {
+      this.loadingShippingRate = true;
       try {
         const response = await axios.get(route('productions.fetch-catalog-product-shipping-rates', this.catalog_product_company_sale.catalog_product_company?.catalog_product?.id));
 
         if ( response.status === 200 ) {
           this.catalogProductShippingRates = response.data.item;
           if ( this.catalogProductShippingRates?.shipping_rates?.length ) {
-              this.shippingInfo = this.catalogProductShippingRates?.shipping_rates.find(item => item.quantity === this.catalog_product_company_sale.quantity);
+              // this.shippingInfo = this.catalogProductShippingRates?.shipping_rates.find(item => item.quantity === this.catalog_product_company_sale.quantity);
           }
         }
       } catch (error) {
@@ -957,6 +983,8 @@ export default {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        this.loadingShippingRate = false;
       }
     },
     openImage(url) {
