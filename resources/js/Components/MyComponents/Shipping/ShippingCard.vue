@@ -3,12 +3,11 @@
         <i class="fa-solid fa-spinner fa-spin text-3xl text-primary"></i>
     </div>
     <main v-else class="border border-[#999999] rounded-2xl py-4 mt-1">
-        <p class="text-xs text-gray-500 px-3 bg-yellow-200">
+        <!-- <p class="text-xs text-gray-500 px-3 bg-yellow-200">
             Si acabas de registrar una tarifa nueva para este producto y no te aparece, da
             <button @click="fetchCatalogProuctShippingRates()" class="underline text-secondary">clic aqui</button> para 
             actualizar la información
-        </p>
-        <!-- <h2 class="font-bold mb-3 px-4">Producto x</h2> -->
+        </p> -->
 
         <section class="grid grid-cols-2 gap-3 px-4 mt-3">
             <article class="space-y-1">
@@ -103,9 +102,12 @@
                 </table>
             </div>
         </section>
-        <p v-else class="text-center text-[#373737] px-6 mt-5">
+        <p v-else class="text-center text-[#373737] px-6 mt-5 text-sm">
             Faltan datos sobre las dimensiones de las cajas para este producto. Si tienes la información da clic
-            en el botón “Agregar cajas”.
+            en el botón “Agregar cajas”. <br>
+            Si acabas de registrar una tarifa nueva para este producto y no te aparece, da
+            <button @click="fetchCatalogProuctShippingRates()" class="underline text-secondary">clic aqui</button> para 
+            actualizar la información
         </p>
     </main>
 </template>

@@ -35,7 +35,7 @@
             </div>
             <div>
               <InputLabel value="Cantidad*" />
-              <el-input v-model="form.quantity" placeholder="Ej.300">
+              <el-input @change="handleChangeQuantity" v-model="form.quantity" placeholder="Ej.300">
                 <template #append>unidades</template>
               </el-input>
               <InputError :message="form.errors.quantity" />
@@ -340,6 +340,11 @@ export default {
     },
   },
   methods: {
+    handleChangeQuantity() {
+      if (this.form.boxes_amount == 1) {
+        this.form.boxes[0].quantity = this.form.quantity;
+      }
+    },
     store() {
       this.form.post(route("shipping-rates.store"), {
         onSuccess: () => {
