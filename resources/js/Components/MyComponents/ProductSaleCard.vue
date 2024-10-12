@@ -578,7 +578,7 @@
       <main class="overflow-auto max-h-[550px]">
 
         <p>
-          Empaca el producto en las cajas mostradas a continuación. Si no hay stock, haz clic en el botón y agrega las dimensiones (largo, nacho y alto) de la caja de forma manual
+          Empaca el producto en las cajas mostradas a continuación.
         </p>
         <h2 class="my-5 ml-4 font-bold text-lg text-black">{{ salePartialities.length > 1 ? 'Envío en parcialidades' : '' }}</h2>
         <section
