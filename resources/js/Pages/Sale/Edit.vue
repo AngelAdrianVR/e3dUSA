@@ -50,7 +50,7 @@
                     <div class="grid grid-cols-2 gap-3 mt-4">
                         <div>
                             <InputLabel value="Cliente*" />
-                            <el-select @change="getImportantNotes(); getDesignAuthorizations()"
+                            <el-select @change="handleCompanyBranchIdChange"
                                 v-model="form.company_branch_id" clearable filterable
                                 placeholder="Selecciona un cliente">
                                 <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
@@ -551,6 +551,11 @@ export default {
         media: Array,
     },
     methods: {
+        handleCompanyBranchIdChange() {
+            this.getImportantNotes();
+            this.getDesignAuthorizations();
+            this.cleanShippingData();
+        },
         handleChangeShippingOption() {
             this.form.partialities = [];
             const numberOfShippings = this.shippingOptions.findIndex(i => i === this.form.shipping_option) + 1;
@@ -631,14 +636,15 @@ export default {
                 });
             }
         },
-        getImportantNotes() {
+        cleanShippingData() {
             // limpiar informacion de logistica
             this.form.contact_id = null;
             this.form.products = [];
             this.form.partialities = [];
             this.form.shipping_option = null;
             this.resetProductForm();
-
+        },
+        getImportantNotes() {
             this.importantNotes = this.company_branches.find(item => item.id == this.form.company_branch_id)?.important_notes;
             //obtiene el id de la matriz para pasarla como parametro en creacion de formato de autorización de diseño.
             this.selectedCompanyId = this.company_branches.find(item => item.id == this.form.company_branch_id).company_id;
@@ -728,6 +734,17 @@ export default {
             const today = new Date();
             today.setHours(0, 0, 0, 0); // Establece la hora a las 00:00:00.000
             return time < today;
+        },
+        //Check if catalog product company has sales. if dont, ask for design authorization.
+        async checkIfProductHasSale() {
+            try {
+                const response = await axios.get(route('sales.check-if-has-sale', this.product.catalog_product_company_id));
+                if (response.status === 200) {
+                    this.selectedCatalogProductHasSale = response.data.has_sale;
+                }
+            } catch (error) {
+                console.log(error);
+            }
         },
         async fetchCatalogProductData() {
             try {

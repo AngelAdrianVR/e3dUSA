@@ -270,7 +270,7 @@ class QuoteController extends Controller
         $branch = CompanyBranch::find($quote->company_branch_id);
 
         $sale = Sale::create([
-            // 'freight_cost' => $quote->freight_cost,
+            'shipping_option' => "Entrega única",
             'order_via' => "Cotización folio $folio",
             'authorized_user_name' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? auth()->user()->name : null,
             'authorized_at' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? now() : null,

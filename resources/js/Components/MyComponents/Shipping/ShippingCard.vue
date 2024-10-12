@@ -3,12 +3,6 @@
         <i class="fa-solid fa-spinner fa-spin text-3xl text-primary"></i>
     </div>
     <main v-else class="border border-[#999999] rounded-2xl py-4 mt-1">
-        <!-- <p class="text-xs text-gray-500 px-3 bg-yellow-200">
-            Si acabas de registrar una tarifa nueva para este producto y no te aparece, da
-            <button @click="fetchCatalogProuctShippingRates()" class="underline text-secondary">clic aqui</button> para 
-            actualizar la información
-        </p> -->
-
         <section class="grid grid-cols-2 gap-3 px-4 mt-3">
             <article class="space-y-1">
                 <div class="flex space-x-2">
@@ -26,11 +20,13 @@
             </article>
             <article class="flex flex-col items-end justify-end space-y-3">
                 <figure class="rounded-xl flex items-center justify-center bg-gray-200 w-3/4 h-28">
-                    <img v-if="product.media?.length" class="object-contain h-full" :src="product.media[0]?.original_url">
+                    <img v-if="product.media?.length" class="object-contain h-full"
+                        :src="product.media[0]?.original_url">
                     <i v-else class="fa-regular fa-image text-gray-300 text-5xl"></i>
                 </figure>
 
-                <p v-if="shippingInfo?.is_fragile" class="inline-flex rounded-md justify-center items-center px-3 bg-[#FDB9C9] text-primary">
+                <p v-if="shippingInfo?.is_fragile"
+                    class="inline-flex rounded-md justify-center items-center px-3 bg-[#FDB9C9] text-primary">
                     <svg class="mr-2" width="8" height="14" viewBox="0 0 8 14" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -48,7 +44,9 @@
         <h2 class="font-semibold text-[#373737] mt-5 px-4 flex items-center justify-between">
             <span>Especificaciones de la(s) caja(s)</span>
             <div v-if="shippingInfo" class="flex space-x-2 items-center">
-                <button @click="$inertia.get(route('shipping-rates.edit', shippingInfo.id), {route: routePage, idRoute: idRoute})" type="button"
+                <button
+                    @click="$inertia.get(route('shipping-rates.edit', shippingInfo.id), { route: routePage, idRoute: idRoute })"
+                    type="button"
                     class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-4">
@@ -70,9 +68,7 @@
                     </template>
                 </el-popconfirm>
             </div>
-            <PrimaryButton 
-                @click="openNewWindow()" 
-                type="button" v-else>
+            <PrimaryButton @click="openNewWindow()" type="button" v-else>
                 Agregar cajas
             </PrimaryButton>
         </h2>
@@ -102,13 +98,16 @@
                 </table>
             </div>
         </section>
-        <p v-else class="text-center text-[#373737] px-6 mt-5 text-sm">
+        <div v-else class="text-center text-[#373737] px-6 mt-5 text-sm">
             Faltan datos sobre las dimensiones de las cajas para este producto. Si tienes la información da clic
             en el botón “Agregar cajas”. <br>
-            Si acabas de registrar una tarifa nueva para este producto y no te aparece, da
-            <button @click="fetchCatalogProuctShippingRates()" class="underline text-secondary">clic aqui</button> para 
-            actualizar la información
-        </p>
+            <p class="bg-yellow-200">
+                Si acabas de registrar una tarifa nueva para este producto y no te aparece, da
+                <button @click="fetchCatalogProuctShippingRates()" class="underline text-secondary">clic aqui</button>
+                para
+                actualizar la información
+            </p>
+        </div>
     </main>
 </template>
 
@@ -128,24 +127,24 @@ export default {
     props: {
         product: Object,
         quantity: Number,
-        routePage:{
+        routePage: {
             type: String,
             default: null
         },
-        idRoute:{
+        idRoute: {
             type: Number,
             default: null
         }
     },
-    emits:['total-boxes', 'total-cost'],
-    watch:{
-        quantity(){
+    emits: ['total-boxes', 'total-cost'],
+    watch: {
+        quantity() {
             this.calculateShippingData();
         }
     },
-    methods:{
+    methods: {
         openNewWindow() {
-            const url = route('shipping-rates.create', {catalog_product_id: this.product.id, route: this.routePage, idRoute: this.idRoute, dismiss: true});
+            const url = route('shipping-rates.create', { catalog_product_id: this.product.id, route: this.routePage, idRoute: this.idRoute, dismiss: true, quantity: this.quantity });
             window.open(url, '_blank');
         },
         deleteItem() {
@@ -168,7 +167,7 @@ export default {
                 if (response.status === 200) {
                     // Actualiza las propiedades de this.product en lugar de asignarlo directamente
                     Object.assign(this.product, response.data.item);
-                    
+
                     // seleccionar la tarifa coincidente y emitir cantidad de cajas y costo
                     this.calculateShippingData();
                     // this.shippingInfo = this.product.shipping_rates.find(item => item.quantity === this.quantity);
@@ -187,7 +186,7 @@ export default {
         },
     },
     mounted() {
-        if ( this.product.shipping_rates?.length ) {
+        if (this.product.shipping_rates?.length) {
             this.calculateShippingData();
             // this.shippingInfo = this.product.shipping_rates.find(item => item.quantity === this.quantity);
             // const totalBoxes = this.shippingInfo?.boxes?.length;

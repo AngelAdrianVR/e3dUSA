@@ -301,7 +301,7 @@ export default {
     dismiss_window: {
       type: Boolean,
       default: false
-    }
+    },
   },
   watch: {
     // Observa cambios en boxes_amount
@@ -412,6 +412,15 @@ export default {
         }
       }
     },
+    getQuantityFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const quantity = urlParams.get('quantity');
+
+      if (quantity) {
+        this.form.quantity = quantity;
+        this.form.boxes[0].quantity = quantity;
+      }
+    },
     async fetchCatalogProductInfo() {
       this.loading = true;
       try {
@@ -431,6 +440,8 @@ export default {
       this.form.catalog_product_id = parseInt(this.catalog_product_id);
       this.fetchCatalogProductInfo();
     }
+
+    this.getQuantityFromUrl();
   }
 };
 </script>

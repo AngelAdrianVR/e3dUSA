@@ -48,7 +48,7 @@
                     <div class="grid grid-cols-2 gap-3 mt-4">
                         <div>
                             <InputLabel value="Cliente*" />
-                            <el-select @change="getImportantNotes(); getDesignAuthorizations()"
+                            <el-select @change="handleCompanyBranchIdChange"
                                 v-model="form.company_branch_id" clearable filterable
                                 placeholder="Selecciona un cliente">
                                 <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
@@ -600,6 +600,11 @@ export default {
         sample: Object,
     },
     methods: {
+        handleCompanyBranchIdChange() {
+            this.getImportantNotes();
+            this.getDesignAuthorizations();
+            this.cleanShippingData();
+        },
         handleChangeShippingOption() {
             this.form.partialities = [];
             const numberOfShippings = this.shippingOptions.findIndex(i => i === this.form.shipping_option) + 1;
@@ -653,18 +658,31 @@ export default {
                 }
             });
         },
-        getImportantNotes() {
+        cleanShippingData() {
             // limpiar informacion de logistica
             this.form.contact_id = null;
             this.form.products = [];
             this.form.partialities = [];
             this.form.shipping_option = null;
             this.resetProductForm();
-
+        },
+        getImportantNotes() {
             this.importantNotes = this.company_branches.find(item => item.id == this.form.company_branch_id)?.important_notes;
             //obtiene el id de la matriz para pasarla como parametro en creacion de formato de autorización de diseño.
             this.selectedCompanyId = this.company_branches.find(item => item.id == this.form.company_branch_id).company_id;
         },
+        // getImportantNotes() {
+        //     // limpiar informacion de logistica
+        //     this.form.contact_id = null;
+        //     this.form.products = [];
+        //     this.form.partialities = [];
+        //     this.form.shipping_option = null;
+        //     this.resetProductForm();
+
+        //     this.importantNotes = this.company_branches.find(item => item.id == this.form.company_branch_id)?.important_notes;
+        //     //obtiene el id de la matriz para pasarla como parametro en creacion de formato de autorización de diseño.
+        //     this.selectedCompanyId = this.company_branches.find(item => item.id == this.form.company_branch_id).company_id;
+        // },
         editImportantNotes() {
             this.isEditImportantNotes = true;
             this.showImportantNotesModal = true;
