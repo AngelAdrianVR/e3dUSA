@@ -32,7 +32,7 @@ class ShippingRateController extends Controller
         return inertia('ShippingRate/Create', [
             'catalog_products' => $catalog_products,
             'box_types' => $box_types,
-            'catalog_product_id' => $catalog_product_id,
+            'catalog_product_id' => intval($catalog_product_id),
             'route' => $route,
             'idRoute' => $idRoute,
             'dismiss_window' => boolval($dismiss_window),

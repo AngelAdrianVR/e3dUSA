@@ -35,7 +35,7 @@
             </div>
             <div>
               <InputLabel value="Cantidad*" />
-              <el-input v-model="form.quantity" placeholder="Ej.300">
+              <el-input @change="handleChangeQuantity" v-model="form.quantity" placeholder="Ej.300">
                 <template #append>unidades</template>
               </el-input>
               <InputError :message="form.errors.quantity" />
@@ -301,7 +301,7 @@ export default {
     dismiss_window: {
       type: Boolean,
       default: false
-    }
+    },
   },
   watch: {
     // Observa cambios en boxes_amount
@@ -340,6 +340,11 @@ export default {
     },
   },
   methods: {
+    handleChangeQuantity() {
+      if (this.form.boxes_amount == 1) {
+        this.form.boxes[0].quantity = this.form.quantity;
+      }
+    },
     store() {
       this.form.post(route("shipping-rates.store"), {
         onSuccess: () => {
@@ -407,6 +412,15 @@ export default {
         }
       }
     },
+    getQuantityFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const quantity = urlParams.get('quantity');
+
+      if (quantity) {
+        this.form.quantity = quantity;
+        this.form.boxes[0].quantity = quantity;
+      }
+    },
     async fetchCatalogProductInfo() {
       this.loading = true;
       try {
@@ -426,6 +440,8 @@ export default {
       this.form.catalog_product_id = parseInt(this.catalog_product_id);
       this.fetchCatalogProductInfo();
     }
+
+    this.getQuantityFromUrl();
   }
 };
 </script>
