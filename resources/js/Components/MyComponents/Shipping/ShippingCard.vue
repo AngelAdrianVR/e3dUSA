@@ -3,9 +3,14 @@
         <i class="fa-solid fa-spinner fa-spin text-3xl text-primary"></i>
     </div>
     <main v-else class="border border-[#999999] rounded-2xl py-4 mt-1">
+        <p class="text-xs text-gray-500 px-3 bg-yellow-200">
+            Si acabas de registrar una tarifa nueva para este producto y no te aparece, da
+            <button @click="fetchCatalogProuctShippingRates()" class="underline text-secondary">clic aqui</button> para 
+            actualizar la información
+        </p>
         <!-- <h2 class="font-bold mb-3 px-4">Producto x</h2> -->
 
-        <section class="grid grid-cols-2 gap-3 px-4">
+        <section class="grid grid-cols-2 gap-3 px-4 mt-3">
             <article class="space-y-1">
                 <div class="flex space-x-2">
                     <p class="text-[#373737] font-bold w-24">Producto:</p>
@@ -67,7 +72,7 @@
                 </el-popconfirm>
             </div>
             <PrimaryButton 
-                @click="$inertia.get(route('shipping-rates.create', {catalog_product_id: product.id, route: routePage, idRoute: idRoute}))" 
+                @click="openNewWindow()" 
                 type="button" v-else>
                 Agregar cajas
             </PrimaryButton>
@@ -137,6 +142,10 @@ export default {
         }
     },
     methods:{
+        openNewWindow() {
+            const url = route('shipping-rates.create', {catalog_product_id: this.product.id, route: this.routePage, idRoute: this.idRoute, dismiss: true});
+            window.open(url, '_blank');
+        },
         deleteItem() {
             this.$inertia.delete(route('shipping-rates.destroy', this.shippingInfo.id));
         },

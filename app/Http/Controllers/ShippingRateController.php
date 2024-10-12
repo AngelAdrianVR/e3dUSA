@@ -20,6 +20,7 @@ class ShippingRateController extends Controller
 
     public function create(Request $request)
     {   
+        $dismiss_window = request('dismiss');
         //si se manda algun id de producto y/o ruta por url
         $catalog_product_id = $request->catalog_product_id ?? null;
         $route = $request->route ?? null;
@@ -33,7 +34,8 @@ class ShippingRateController extends Controller
             'box_types' => $box_types,
             'catalog_product_id' => $catalog_product_id,
             'route' => $route,
-            'idRoute' => $idRoute
+            'idRoute' => $idRoute,
+            'dismiss_window' => boolval($dismiss_window),
         ]);
     }
 
