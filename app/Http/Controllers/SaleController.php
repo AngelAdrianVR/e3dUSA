@@ -154,6 +154,7 @@ class SaleController extends Controller
         $sale = SaleResource::make(Sale::with(['user:id,name', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator:id,name', 'comments.user'], 'productions' => ['user:id,name', 'operator:id,name']])->find($sale_id));
         $sales = Sale::latest()->get(['id']);
 
+        // return $sale;
         return inertia('Sale/Show', compact('sale', 'sales'));
     }
 
@@ -260,7 +261,8 @@ class SaleController extends Controller
 
         event(new RecordEdited($sale));
 
-        return to_route('sales.index');
+        // return to_route('sales.index');
+        return to_route('sales.show', $sale->id );
     }
 
     public function updateWithMedia(Request $request, Sale $sale)
@@ -285,7 +287,7 @@ class SaleController extends Controller
 
         // media
         $sale->clearMediaCollection();
-        $sale->addAllMediaFromRequest()->each(fn($file) => $file->toMediaCollection());
+        $sale->addAllMediaFromRequest()->each(fn($file) => $file->toMediaCollection('oce'));
 
         foreach ($request->products as $product) {
             $productData = $product + ['sale_id' => $sale->id];
@@ -311,7 +313,8 @@ class SaleController extends Controller
 
         event(new RecordEdited($sale));
 
-        return to_route('sales.index');
+        // return to_route('sales.index');
+        return to_route('sales.show', $sale->id );
     }
 
     public function destroy(Sale $sale)
