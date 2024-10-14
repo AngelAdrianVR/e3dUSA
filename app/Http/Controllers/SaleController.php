@@ -345,6 +345,7 @@ class SaleController extends Controller
         $sale->update([
             'authorized_at' => now(),
             'authorized_user_name' => auth()->user()->name,
+            'status' => 'Autorizado. Sin orden de producción',
         ]);
 
         return response()->json(['item' => SaleResource::make($sale)]);
@@ -355,7 +356,6 @@ class SaleController extends Controller
         $sale = Sale::find($request->sale_id);
 
         $clone = $sale->replicate()->fill([
-            'status' => 0,
             'oce_name' => null,
             'tracking_guide' => null,
             'authorized_user_name' => null,
