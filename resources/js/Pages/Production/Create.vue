@@ -116,7 +116,7 @@
                     <i class="fa-solid fa-magnifying-glass"></i>
                   </span>
                 </el-tooltip>
-                <el-select v-model="production.catalog_product_compan_id" clearable filterable
+                <el-select v-model="production.catalog_product_company_sale_id" clearable filterable
                   placeholder="Busca en productos ordenados" no-data-text="No hay productos registrados"
                   no-match-text="No se encontraron coincidencias">
                   <el-option v-for="item in orderedProducts" :key="item.id"

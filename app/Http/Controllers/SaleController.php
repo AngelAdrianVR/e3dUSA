@@ -96,7 +96,7 @@ class SaleController extends Controller
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
             'products' => 'array|min:1',
-            'partialities' => 'array|min:1'
+            'partialities' => 'nullable|array'
         ]);
 
         // // Eliminar de productos seleccionados en parcialidades aquellos que no se fueron en el envio
