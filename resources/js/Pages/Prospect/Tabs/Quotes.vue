@@ -14,7 +14,7 @@
             <tbody class="text-xs">
                 <tr v-for="item in quotes" :key="item.id" class="*:pt-2">
                     <td>
-                        <button @click="$inertia.get(route('quotes.show', item))" class="text-secondary hover:underline">
+                        <button @click="openQuote(item)" class="text-secondary hover:underline">
                             {{ 'COT-' + String(item.id).padStart(4, '0') }}
                         </button>
                     </td>
@@ -51,6 +51,10 @@ export default {
             const formattedDate = format(new Date(date), 'dd MMM, yyyy h:mm a', { locale: es });
 
             return formattedDate;
+        },
+        openQuote(quote) {
+            const url = this.route('quotes.show', quote);
+            window.open(url, '_blank');
         },
         async fetchQuotes() {
             try {

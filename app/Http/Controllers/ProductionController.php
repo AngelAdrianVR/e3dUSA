@@ -31,13 +31,13 @@ class ProductionController extends Controller
     {
         //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
         $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch', 'productions.operator')->whereHas('productions', function ($query) {
-            $query->where('productions.operator_id', auth()->id());
+            $query->where('productions.user_id', auth()->id());
         })->latest()
-            ->paginate(70);
+            ->paginate(10);
 
         $productions = $this->processDataIndex($pre_productions);
 
-        return inertia('Production/Admin', compact('productions'));
+        return inertia('Production/Index', compact('productions'));
     }
 
     //Index que contiene todos los registros de produccion
@@ -47,10 +47,10 @@ class ProductionController extends Controller
         $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch', 'productions.operator')
             ->whereHas('productions')
             ->latest()
-            ->paginate(20); // Paginar 20 por página
+            ->paginate(10); // Paginar 20 por página
 
         $productions = $this->processDataIndex($pre_productions);
-
+        
         return inertia('Production/Admin', compact('productions'));
     }
 
@@ -146,7 +146,8 @@ class ProductionController extends Controller
                     'id' => $production->user->id,
                     'name' => $production->user->name
                 ],
-                'status' => $status,
+                'status' => $status, //clculado
+                'sale_status' => $production->status, //estatus de la venta
                 'operators' => $operators, //nombres de operadores asignados
                 'company_branch' => [
                     'id' => $production->companyBranch->id,
@@ -581,6 +582,7 @@ class ProductionController extends Controller
         $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch', 'productions.operator')
             ->whereHas('productions')
             ->where('id', 'like', "%{$query}%")
+            ->orWhere('status', 'like', "%{$query}%")
             ->orWhereHas('user', function ($q) use ($query) {
                 $q->where('name', 'like', "%{$query}%");
             })

@@ -12,7 +12,7 @@
                 <div class="md:w-1/3">
                     <el-select @change="$inertia.get(route('catalog-products.show', selectedCatalogProduct))" v-model="selectedCatalogProduct" clearable filterable placeholder="Buscar producto"
                         no-data-text="No hay productos en el catalogo" no-match-text="No se encontraron coincidencias">
-                        <el-option v-for="item in catalog_products" :key="item.id" :label="item.name"
+                        <el-option class="w-[700px] text-sm" v-for="item in catalog_products" :key="item.id" :label="item.name"
                             :value="item.id" />
                     </el-select>
                 </div>
@@ -57,13 +57,15 @@
                 <div class="px-14">
                     <h2 class="text-xl font-bold text-center mb-6">{{ catalog_product.data.name }}</h2>
                     <div class="flex items-center">
-                    <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
-                        class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center">
-                        <img class="object-contain h-60" :src="catalog_product.data.media[currentImage]?.original_url" alt="">
-                        <div v-if="imageHovered" @click="openImage(catalog_product.data.media[0]?.original_url)"
-                            class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
-                            <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
-                        </div>
+                    <figure @mouseover="showOverlay" @mouseleave="hideOverlay" class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center">
+                        <section v-if="catalog_product.data.media?.length">
+                            <img class="object-contain h-60" :src="catalog_product.data.media[currentImage]?.original_url" alt="">
+                            <div v-if="imageHovered" @click="openImage(catalog_product.data.media[0]?.original_url)"
+                                class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
+                                <i class="fa-solid fa-magnifying-glass-plus text-white text-4xl"></i>
+                            </div>
+                        </section>
+                        <i v-else class="fa-regular fa-image text-gray-400 text-5xl"></i>
                     </figure>
                     </div>
                     <div v-if="catalog_product.data.media?.length > 1" class="mt-3 flex items-center justify-center space-x-3">
@@ -97,7 +99,7 @@
                         </div>
                         <div class="flex mb-6 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Características</p>
-                            <!-- <p>{{ catalog_product.data.features?.raw.join(', ') }}</p> -->
+                            <p>{{ Array.isArray(catalog_product.data.features?.raw) ? catalog_product.data.features.raw.join(', ') : '- SIN CARATERISTICAS -' }}</p>
                         </div>
                         <div class="flex mb-2 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Número parte</p>
@@ -207,10 +209,11 @@ export default {
                         message: response.data.message,
                         type: 'success'
                     });
-                    console.log(response.data.newItem);
-                    this.catalog_products.data.push(response.data.newItem);
-                    this.selectedCatalogProduct = response.data.newItem.id;
-                    this.catalog_product.data = response.data.newItem
+                    this.$inertia.get(route('catalog-products.index'));
+                    // console.log(response.data.newItem);
+                    // this.catalog_products.data.push(response.data.newItem);
+                    // this.selectedCatalogProduct = response.data.newItem.id;
+                    // this.catalog_product.data = response.data.newItem
 
                 } else {
                     this.$notify({

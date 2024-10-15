@@ -78,7 +78,8 @@ class CatalogProductController extends Controller
 
         event(new RecordCreated($catalog_product));
 
-        return to_route('catalog-products.index');
+        // return to_route('catalog-products.index');
+        return to_route('catalog-products.show', $catalog_product->id);
     }
 
 
@@ -99,6 +100,7 @@ class CatalogProductController extends Controller
         $raw_materials = RawMaterial::all(['id', 'name']);
         $media = $catalog_product->getFirstMedia();
 
+        // return $catalog_product;
         return inertia('CatalogProduct/Edit', compact('catalog_product', 'production_costs', 'raw_materials', 'media'));
     }
 
@@ -134,7 +136,8 @@ class CatalogProductController extends Controller
 
         event(new RecordEdited($catalog_product));
 
-        return to_route('catalog-products.index');
+        // return to_route('catalog-products.index');
+        return to_route('catalog-products.show', $catalog_product->id);
     }
 
     public function updateWithMedia(Request $request, CatalogProduct $catalog_product)
@@ -171,7 +174,8 @@ class CatalogProductController extends Controller
 
         event(new RecordEdited($catalog_product));
 
-        return to_route('catalog-products.index');
+        // return to_route('catalog-products.index');
+        return to_route('catalog-products.show', $catalog_product->id);
     }
 
 
