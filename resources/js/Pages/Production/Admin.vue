@@ -23,10 +23,11 @@
             </template>
 
             <div class="flex space-x-6 items-center justify-center text-xs mt-2">
-                <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Producción sin iniciar</p>
-                <p class="text-red-500"><i class="fa-solid fa-circle mr-1"></i>Falta de materia prima</p>
-                <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Producción en proceso</p>
-                <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Producción terminada</p>
+                <p><i class="fa-solid fa-circle mr-1 text-amber-500"></i>Producción sin iniciar</p>
+                <p><i class="fa-solid fa-circle mr-1 text-red-500"></i>Falta de materia prima</p>
+                <p><i class="fa-solid fa-circle mr-1 text-blue-500"></i>Producción en proceso</p>
+                <p><i class="fa-solid fa-circle mr-1 text-green-500"></i>Producción terminada</p>
+                <p><i class="fa-solid fa-circle mr-1 text-teal-300"></i>Enviado</p>
             </div>
 
             <!-- Filtro por propietario -->
@@ -102,7 +103,7 @@
                                     <p class="mr-2" :class="getStatusColor(scope.row)">
                                         <i class="fa-solid fa-circle text-[6px]"></i>
                                     </p>
-                                    <p class="flex">{{ scope.row.status['label'] }}</p>
+                                    <p class="flex">{{ scope.row.sale_status }}</p>
                                 </div>
                             </template>
                         </el-table-column>
@@ -164,7 +165,7 @@ export default {
             pagination: this.productions,
             filteredProductions: this.productions.data,
             //filtro
-            filter: 'Mis órdenes',
+            filter: 'Todas las órdenes',
             options: ['Mis órdenes', 'Todas las órdenes'], //opciones de filtro
         };
     },
@@ -181,7 +182,7 @@ export default {
         productions: Object
     },
     methods: {
-         fetchItemsFiltered() {
+        fetchItemsFiltered() {
             if ( this.filter === 'Mis órdenes' ) {
                 this.$inertia.get(route('productions.index'));
             } else {
@@ -217,10 +218,6 @@ export default {
             } else {
                 this.disableMassiveActions = false;
             }
-        },
-        handlePagination(val) {
-            this.start = (val - 1) * this.itemsPerPage;
-            this.end = val * this.itemsPerPage;
         },
         async deleteSelections() {
             try {
@@ -270,15 +267,19 @@ export default {
             return 'cursor-pointer text-xs';
         },
         getStatusColor(row) {
-            if (row.status['label'] == 'Esperando autorización') {
+            if (row.sale_status == 'Esperando autorización') {
                 return 'text-red-500';
-            } else if (row.status['label'] == 'Producción sin iniciar') {
+            } else if (row.sale_status == 'Producción sin iniciar') {
                 return 'text-amber-500';
-            } else if (row.status['label'] == 'Producción en proceso') {
+            } else if (row.sale_status == 'Producción en proceso') {
                 return 'text-blue-500';
-            } else if (row.status['label'] == 'Producción terminada') {
+            } else if (row.sale_status == 'Autorizado sin orden de producción') {
+                return 'text-gray-500';
+            } else if (row.sale_status == 'Producción terminada') {
                 return 'text-green-500';
-            } else if (row.status['label'] == 'Autorizado sin orden de producción') {
+            } else if (row.sale_status == 'Enviado') {
+                return 'text-teal-300';
+            } else {
                 return 'text-gray-500';
             }
         },

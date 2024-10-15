@@ -41,6 +41,7 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Editar ordenes de venta', 'category' => 'Ventas']);
         Permission::create(['name' => 'Eliminar ordenes de venta', 'category' => 'Ventas']);
         Permission::create(['name' => 'Autorizar ordenes de venta', 'category' => 'Ventas']);
+        Permission::create(['name' => 'Crear ordenes de venta sin cotizacion', 'category' => 'Ventas']);
 
         Permission::create(['name' => 'Ver logistica', 'category' => 'Ventas']);
         Permission::create(['name' => 'Crear logistica', 'category' => 'Ventas']);

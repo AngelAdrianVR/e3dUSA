@@ -268,4 +268,12 @@ class CompanyController extends Controller
 
         return response()->json(compact('items'));
     }
+
+    public function contactsReport()
+    {
+        $company_branches = CompanyBranch::with('contacts:id,contactable_type,contactable_id,name,email,phone,birthdate_day,birthdate_month,charge')
+            ->get(['id', 'name']);
+
+        return inertia('Company/ContactsTemplate', compact('company_branches'));
+    }
 }

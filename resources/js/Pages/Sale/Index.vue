@@ -13,9 +13,9 @@
                     <div class="flex items-center space-x-2">
                         <h2 class="font-semibold text-xl leading-tight">Órdenes de venta</h2>
                     </div>
-                    <Link v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')"
-                        :href="route('sales.create')">
-                    <SecondaryButton>+ Nuevo</SecondaryButton>
+                    <Link v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')" :href="route('sales.create')">
+                        <SecondaryButton :disabled="!$page.props.auth.user.permissions.includes('Crear ordenes de venta sin cotizacion')">+ Nuevo</SecondaryButton>
+                        
                     </Link>
                 </div>
             </template>
@@ -26,6 +26,7 @@
                 <p><i class="fa-solid fa-circle mr-1 text-amber-500"></i>Producción sin iniciar</p>
                 <p><i class="fa-solid fa-circle mr-1 text-blue-500"></i>Producción en proceso</p>
                 <p><i class="fa-solid fa-circle mr-1 text-green-500"></i>Producción terminada</p>
+                <p><i class="fa-solid fa-circle mr-1 text-teal-300"></i>Enviado</p>
             </div>
 
             <!-- Filtro -->
@@ -268,6 +269,8 @@ export default {
                 return 'text-green-500';
             } else if (row.raw_status == 'Autorizado. Sin orden de producción') {
                 return 'text-gray-500';
+            } else if (row.raw_status == 'Enviado') {
+                return 'text-teal-300';
             }
         },
         handleRowClick(row) {

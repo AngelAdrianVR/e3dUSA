@@ -188,6 +188,7 @@ Route::post('companies/massive-delete', [CompanyController::class, 'massiveDelet
 Route::post('companies/clone', [CompanyController::class, 'clone'])->name('companies.clone');
 Route::post('companies/get-all-companies', [CompanyController::class, 'getAllCompanies'])->name('companies.get-all-companies')->middleware('auth');
 Route::get('companies-get-exclusive-designs/{company}', [CompanyController::class, 'getExclusiveDesigns'])->name('companies.get-exclusive-designs')->middleware('auth');
+Route::get('companies-contacts-report', [CompanyController::class, 'contactsReport'])->name('companies.contacts-report')->middleware('auth');
 
 
 // ------- shippings routes  ---------

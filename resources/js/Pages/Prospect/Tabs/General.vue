@@ -25,7 +25,7 @@
                 </span>
             </p>
             <span class="text-[#9a9a9a]">WhatsApp</span>
-            <p>{{ prospect.contact_whatsapp }}</p>
+            <p>{{ prospect.contact_whatsapp ?? '-' }}</p>
         </div>
         <div class="w-px border border-[#9a9a9a]"></div>
         <div class="w-[45%] grid grid-cols-3 gap-x-6 gap-y-2 self-start">
