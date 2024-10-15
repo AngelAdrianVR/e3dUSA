@@ -399,6 +399,8 @@ export default {
                         this.sales.data.splice(index, 1);
                     }
 
+                    // location.reload();
+
                 } else {
                     this.$notify({
                         title: 'Algo salió mal',

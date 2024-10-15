@@ -378,6 +378,17 @@
                                             :disabled="!partiality.productsSelected[index2]?.selected" />
                                     </div>
                                 </div>
+
+                                <!-- <div class="flex space-x-2">
+                                    <p class="text-[#999999] w-48">Cantidad de cajas:</p>
+                                    <p>{{ totalBoxes ?? 'Sin información' }}</p>
+                                </div>
+
+                                <div class="flex space-x-2">
+                                    <p class="text-[#999999] w-48">Costo total de envío:</p>
+                                    <p>${{ totalCost ?? 'Sin información' }}</p>
+                                </div> -->
+
                                 <h2 v-if="form.products.length" class="ml-2 mt-6 font-bold">
                                     Detalles sobre las cajas
                                 </h2>
@@ -385,7 +396,8 @@
                                     v-for="(shippProduct, index3) in partiality.productsSelected.filter(p => p?.selected)"
                                     :key="index3"
                                     :product="form.products.find(e => e.catalogProduct.name == shippProduct.name).catalogProduct"
-                                    :quantity="shippProduct.quantity" :routePage="'sales.create'" />
+                                    :quantity="shippProduct.quantity" :routePage="'sales.create'" 
+                                />
                             </div>
                         </div>
                     </section>
@@ -577,6 +589,8 @@ export default {
                 'Resurtido programado',
                 'Otro',
             ],
+            // totalBoxes: [],
+            // totalCost: [],
         };
     },
     components: {
@@ -599,6 +613,12 @@ export default {
         opportunityId: Number,
         sample: Object,
     },
+    // watch: {
+    //     'form.partialities'() {
+    //         this.totalBoxes = new Array(this.form.partialities?.length).fill(0);
+    //         this.totalCost = new Array(this.form.partialities?.length).fill(0);
+    //     },
+    // },
     methods: {
         handleCompanyBranchIdChange() {
             this.getImportantNotes();
