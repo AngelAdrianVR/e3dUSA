@@ -25,7 +25,7 @@ class CatalogProductController extends Controller
     public function create()
     {
         $raw_materials = RawMaterial::all(['id', 'name']);
-        $production_costs = ProductionCost::all();
+        $production_costs = ProductionCost::all(['id', 'name', 'cost']);
 
         // consecutive
         $last = CatalogProduct::latest()->first();

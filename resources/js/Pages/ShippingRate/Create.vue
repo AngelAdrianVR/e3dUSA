@@ -246,7 +246,7 @@ export default {
       catalog_product_id: null,
       quantity: null,
       all_boxes_are_same: false,
-      is_fragile: false,
+      is_fragile: true,
       boxes_amount: 1,
       boxes: [
         {
@@ -370,7 +370,7 @@ export default {
           });
 
           this.showBoxFormModal = false;
-          this.form.reset();
+          this.boxForm.reset();
         },
       });
     },
