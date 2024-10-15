@@ -30,7 +30,6 @@
           </div>
 
           <!-- -----------------Extra info in productions -------------------- -->
-
           <template v-if="form.sale_id">
             <div v-for="product in orderedProducts" :key="product"
               class="grid grid-cols-3 gap-x-3 self-start text-xs border-b border-gray-400">
@@ -82,9 +81,7 @@
           </template>
           <!-- products ordered to generate production -->
           <div v-if="form.sale_id">
-
             <el-divider content-position="left" class="col-span-full">Órdenes de producción</el-divider>
-
             <InputError :message="errorMessage" class="col-span-full" />
             <ol v-if="form.productions.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
               <template v-for="(item, index) in form.productions" :key="index">
@@ -119,7 +116,7 @@
                     <i class="fa-solid fa-magnifying-glass"></i>
                   </span>
                 </el-tooltip>
-                <el-select v-model="production.catalog_product_company_sale_id" clearable filterable
+                <el-select v-model="production.catalog_product_compan_id" clearable filterable
                   placeholder="Busca en productos ordenados" no-data-text="No hay productos registrados"
                   no-match-text="No se encontraron coincidencias">
                   <el-option v-for="item in orderedProducts" :key="item.id"
@@ -296,7 +293,7 @@ import { Link, useForm } from "@inertiajs/vue3";
 export default {
   data() {
     const form = useForm({
-      sale_id,
+      sale_id: null,
       productions: [],
     });
 

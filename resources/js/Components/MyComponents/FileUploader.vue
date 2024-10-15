@@ -4,7 +4,10 @@
             :accept="getAcceptedFormat()" />
         <button type="button" @click="openFileBrowser" class="w-full px-3 py-[2px] rounded-md bg-[#CCCCCC]">
             <p class="flex items-center justify-between text-sm text-[#9A9A9A]">
-                <span>Clic para seleccionar {{ multiple ? 'los archivos' : 'el archivo' }}</span>
+                <span v-if="selectedFiles.length"class="text-[#373737]">
+                    {{ selectedFiles.length }} {{ selectedFiles.length == 1 ? 'archivo seleccionado' : 'archivos seleccionados' }}
+                </span>
+                <span v-else>Clic para seleccionar {{ multiple ? 'los archivos' : 'el archivo' }}</span>
                 <span class="text-primary w-10 h-7 flex items-center justify-center border-2 border-primary rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.4"
                         stroke="currentColor" class="size-[22px]">

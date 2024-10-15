@@ -42,7 +42,6 @@
             </el-tooltip>
 
             <!-- ----------------------- botones para super admin starts------------------------ -->
-
             <el-popconfirm
               v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de venta') && !sale.data.authorized_at"
               confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
@@ -271,7 +270,7 @@ export default {
     // },
     async authorizeOrder() {
       try {
-        const response = await axios.put(route("sales.authorize", this.sale.dataid));
+        const response = await axios.put(route("sales.authorize", this.sale.data.id));
 
         if (response.status === 200) {
           this.$notify({
@@ -280,7 +279,7 @@ export default {
             type: "success",
           });
 
-          locatoin.reload();
+          location.reload();
           //this.$inertia.get(route('sales.index'));
           // this.sale.data.authorized_at = response.data.item.authorized_at;
           // this.sale.data.status = response.data.item.status;
