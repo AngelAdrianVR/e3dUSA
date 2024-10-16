@@ -37,7 +37,7 @@
                     <div class="flex justify-between">
                         <!-- pagination -->
                         <div>
-                            <el-pagination @current-change="handlePagination" layout="prev, pager, next"
+                            <el-pagination v-if="!search" @current-change="handlePagination" layout="prev, pager, next"
                                 :total="designs.length" />
                         </div>
                         <!-- buttons -->

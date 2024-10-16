@@ -22,61 +22,90 @@ class DesignController extends Controller
     public function index()
     {
         if (auth()->user()->hasRole('Super admin') || auth()->user()->can('Ordenes de diseño todas')) {
-            // $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->latest()->get());
 
             //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
-            $designs = Design::with('user', 'designer', 'designType')->latest()->get();
-            $designs = $designs->map(function ($design) {
-                $status = [
-                    'label' => 'Esperando Autorización',
-                    'text-color' => 'text-amber-500',
-                    'border-color' => 'border-amber-500'
-                ];
-
-                if ($design->authorized_at) {
-                    $status = [
-                        'label' => 'Autorizado. Sin iniciar',
-                        'text-color' => 'text-amber-700',
-                    ];
-                    if ($design->started_at) {
-                        $status = [
-                            'label' => 'En proceso',
-                            'text-color' => 'text-[#0355B5]',
-                        ];
-                        if ($design->finished_at) {
-                            $status = [
-                                'label' => 'Terminado',
-                                'text-color' => 'text-green-600',
-                            ];
-                        }
-                    }
-                }
-                return [
-                    'id' => $design->id,
-                    'user' => [
-                        'id' => $design->user->id,
-                        'name' => $design->user->name
-                    ],
-                    'designer' => [
-                        'id' => $design->designer->id,
-                        'name' => $design->designer->name
-                    ],
-                    'design' => $design->name,
-                    'has_priority' => $design->has_priority,
-                    'design_type' => $design->designType,
-                    'status' => $status,
-                    'created_at' => $design->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
-                ];
-            });
-
+            $pre_designs = Design::with('user:id,name', 'designer:id,name', 'designType:id,name')
+                ->latest()
+                ->get(['id', 'name', 'created_at', 'user_id', 'designer_id', 'design_type_id', 'authorized_at', 'started_at', 'finished_at', 'has_priority']);
+            
+            $designs = $this->processDataIndex($pre_designs);
+            
             return inertia('Design/Admin', compact('designs'));
-        } elseif (auth()->user()->can('Ordenes de diseño personal')) {
-            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->where('user_id', auth()->id())->latest()->get());
+
+        } else if (auth()->user()->can('Ordenes de diseño personal')) {
+            
+            //trae diseños de creadores y trabajadores
+            $pre_designs = Design::with('user:id,name', 'designer:id,name', 'designType:id,name')
+                ->where('user_id', auth()->id())
+                ->orWhere('designer_id', auth()->id())
+                ->latest()
+                ->get(['id', 'name', 'created_at', 'user_id', 'designer_id', 'design_type_id', 'authorized_at', 'started_at', 'finished_at', 'has_priority']);
+
+            $designs = $this->processDataIndex($pre_designs);
+
             return inertia('Design/Index', compact('designs'));
         } else {
-            $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->whereNotNull('authorized_at')->where('designer_id', auth()->id())->latest()->get());
+
+            //solo para los empleados
+            $pre_designs = Design::with('user:id,name', 'designer:id,name', 'designType:id,name')
+                ->whereNotNull('authorized_at')
+                ->where('designer_id', auth()->id())
+                ->latest()
+                ->get(['id', 'name', 'created_at', 'user_id', 'designer_id', 'design_type_id', 'authorized_at', 'started_at', 'finished_at', 'has_priority']);
+
+                $designs = $this->processDataIndex($pre_designs);
+
             return inertia('Design/Index', compact('designs'));
         }
+    }
+
+    public function processDataIndex($pre_designs)
+    {
+        $designs = $pre_designs->map(function ($design) {
+            $status = [
+                'label' => 'Esperando Autorización',
+                'text-color' => 'text-amber-500',
+                'border-color' => 'border-amber-500'
+            ];
+
+            if ($design->authorized_at) {
+                $status = [
+                    'label' => 'Autorizado. Sin iniciar',
+                    'text-color' => 'text-amber-700',
+                ];
+                if ($design->started_at) {
+                    $status = [
+                        'label' => 'En proceso',
+                        'text-color' => 'text-[#0355B5]',
+                    ];
+                    if ($design->finished_at) {
+                        $status = [
+                            'label' => 'Terminado',
+                            'text-color' => 'text-green-600',
+                        ];
+                    }
+                }
+            }
+            return [
+                'id' => $design->id,
+                'name' => $design->name,
+                'user' => [
+                    'id' => $design->user->id,
+                    'name' => $design->user->name
+                ],
+                'designer' => [
+                    'id' => $design->designer->id,
+                    'name' => $design->designer->name
+                ],
+                'design' => $design->name,
+                'has_priority' => $design->has_priority,
+                'design_type' => $design->designType,
+                'status' => $status,
+                'created_at' => $design->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+            ];
+        });
+
+        return $designs;
     }
 
     public function create()

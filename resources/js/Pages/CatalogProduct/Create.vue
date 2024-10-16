@@ -54,8 +54,8 @@
                     <InputError :message="form.errors.min_quantity" />
                 </div>
                 <div>
-                    <InputLabel value="Cantidad mínima" />
-                    <el-input v-model="form.max_quantity" placeholder="Cantidad mpaxima de stock"
+                    <InputLabel value="Cantidad máxima" />
+                    <el-input v-model="form.max_quantity" placeholder="Cantidad máxima de stock"
                         :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                         :parser="(value) => value.replace(/\$\s?|(,*)/g, '')"/>
                     <InputError :message="form.errors.max_quantity" />

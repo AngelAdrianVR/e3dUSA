@@ -78,22 +78,22 @@
         <thead>
           <tr class="text-center">
             <th class="font-bold pb-3 pl-2 text-left">
-              Folio <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Folio
             </th>
             <th class="font-bold pb-3 text-left">
-              Cliente <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Cliente
             </th>
             <th class="font-bold pb-3 text-left">
-              Tipo que interacciones <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Tipo que interacciones
             </th>
             <th class="font-bold pb-3 text-left">
-              Fecha <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Fecha
             </th>
             <th class="font-bold pb-3 text-left">
-              Concepto <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Concepto
             </th>
             <th class="font-bold pb-3 text-left">
-              Vededor <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Vededor
             </th>
             <th></th>
           </tr>
