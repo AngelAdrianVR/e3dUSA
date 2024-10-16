@@ -379,15 +379,15 @@
                                     </div>
                                 </div>
 
-                                <!-- <div class="flex space-x-2">
+                                <div class="flex space-x-2 bg-yellow-200">
                                     <p class="text-[#999999] w-48">Cantidad de cajas:</p>
-                                    <p>{{ totalBoxes ?? 'Sin información' }}</p>
+                                    <p>{{ totalBoxes[index] ?? '- Sin información -' }}</p>
                                 </div>
 
-                                <div class="flex space-x-2">
+                                <div class="flex space-x-2 bg-yellow-200">
                                     <p class="text-[#999999] w-48">Costo total de envío:</p>
-                                    <p>${{ totalCost ?? 'Sin información' }}</p>
-                                </div> -->
+                                    <p>${{ totalCost[index] ?? '- Sin información -' }}</p>
+                                </div>
 
                                 <h2 v-if="form.products.length" class="ml-2 mt-6 font-bold">
                                     Detalles sobre las cajas
@@ -397,6 +397,8 @@
                                     :key="index3"
                                     :product="form.products.find(e => e.catalogProduct.name == shippProduct.name).catalogProduct"
                                     :quantity="shippProduct.quantity" :routePage="'sales.create'" 
+                                    @total-boxes="totalBoxes[index] = totalBoxes[index] + $event"
+                                    @total-cost="totalCost[index] = totalCost[index] + $event"
                                 />
                             </div>
                         </div>
@@ -453,7 +455,7 @@
                         </div>
                     </section>
                     <div class="mt-10 mx-3 md:text-right">
-                        <PrimaryButton :disabled="form.processing || !form.products.length">
+                        <PrimaryButton :disabled="form.processing || !form.products.length || !form.partialities.length">
                             Crear órden de venta
                         </PrimaryButton>
                     </div>
@@ -589,8 +591,8 @@ export default {
                 'Resurtido programado',
                 'Otro',
             ],
-            // totalBoxes: [],
-            // totalCost: [],
+            totalBoxes: [0],
+            totalCost: [0],
         };
     },
     components: {
@@ -613,12 +615,12 @@ export default {
         opportunityId: Number,
         sample: Object,
     },
-    // watch: {
-    //     'form.partialities'() {
-    //         this.totalBoxes = new Array(this.form.partialities?.length).fill(0);
-    //         this.totalCost = new Array(this.form.partialities?.length).fill(0);
-    //     },
-    // },
+    watch: {
+        'form.partialities'() {
+            this.totalBoxes = new Array(this.form.partialities?.length).fill(0);
+            this.totalCost = new Array(this.form.partialities?.length).fill(0);
+        },
+    },
     methods: {
         handleCompanyBranchIdChange() {
             this.getImportantNotes();

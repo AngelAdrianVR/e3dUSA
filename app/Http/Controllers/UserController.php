@@ -276,9 +276,10 @@ class UserController extends Controller
                 'disabled_at' => now()
             ]);
         } else {
-
+            
             $user->update([
-                'is_active' => true
+                'is_active' => true,
+                'disabled_at' => null
             ]);
         }
     }

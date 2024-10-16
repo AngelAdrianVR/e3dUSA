@@ -80,6 +80,7 @@
                     <thead class="bg-[#373737] text-white">
                         <tr class="*:px-4 *:py-2 *:text-left">
                             <th>#Caja</th>
+                            <th>Nombre</th>
                             <th>Dimensiones</th>
                             <th>Peso</th>
                             <th>Piezas</th>
@@ -89,6 +90,7 @@
                     <tbody>
                         <tr v-for="(box, index) in shippingInfo?.boxes" :key="box" class="*:px-4 *:py-2">
                             <td>{{ (index + 1) }}</td>
+                            <td>{{ box.name }}</td>
                             <td>{{ box.length + 'x' + box.width + 'x' + box.height }} cm</td>
                             <td>{{ box.weight }} kg</td>
                             <td>{{ box.quantity }} piezas</td>
@@ -153,11 +155,13 @@ export default {
         calculateShippingData() {
             this.shippingInfo = this.product.shipping_rates.find(item => item.quantity === this.quantity);
             const totalBoxes = this.shippingInfo?.boxes?.length;
-            this.$emit('total-boxes', totalBoxes);
+            this.$emit('total-boxes', totalBoxes ?? 0);
             const totalCost = this.shippingInfo?.boxes?.reduce((acc, box) => {
                 return acc + parseFloat(box.cost); // Asegúrate de convertir el 'cost' a número
             }, 0);
-            this.$emit('total-cost', totalCost);
+            this.$emit('total-cost', totalCost ?? 0);
+            console.log('cajas:', totalBoxes);
+            console.log('costo:', totalCost);
         },
         async fetchCatalogProuctShippingRates() {
             this.loading = true;
@@ -170,13 +174,6 @@ export default {
 
                     // seleccionar la tarifa coincidente y emitir cantidad de cajas y costo
                     this.calculateShippingData();
-                    // this.shippingInfo = this.product.shipping_rates.find(item => item.quantity === this.quantity);
-                    // const totalBoxes = this.shippingInfo?.boxes?.length;
-                    // this.$emit('total-boxes', totalBoxes);
-                    // const totalCost = this.shippingInfo?.boxes?.reduce((acc, box) => {
-                    //     return acc + parseFloat(box.cost); // Asegúrate de convertir el 'cost' a número
-                    // }, 0);
-                    // this.$emit('total-cost', totalCost);
                 }
             } catch (error) {
                 console.log(error);
@@ -188,13 +185,6 @@ export default {
     mounted() {
         if (this.product.shipping_rates?.length) {
             this.calculateShippingData();
-            // this.shippingInfo = this.product.shipping_rates.find(item => item.quantity === this.quantity);
-            // const totalBoxes = this.shippingInfo?.boxes?.length;
-            // this.$emit('total-boxes', totalBoxes);
-            // const totalCost = this.shippingInfo?.boxes?.reduce((acc, box) => {
-            //     return acc + parseFloat(box.cost); // Asegúrate de convertir el 'cost' a número
-            // }, 0);
-            // this.$emit('total-cost', totalCost);
         } else {
             this.fetchCatalogProuctShippingRates();
         }
