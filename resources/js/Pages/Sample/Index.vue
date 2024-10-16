@@ -187,9 +187,6 @@ export default {
             }
         },
         tableRowClassName({ row, rowIndex }) {
-            if ( !row.authorized_at ) {
-                return 'cursor-pointer text-gray-400 !bg-[#fafafa]';
-            } 
             return 'cursor-pointer text-xs';
         },
         handleSelectionChange(val) {
