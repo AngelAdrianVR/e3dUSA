@@ -41,8 +41,11 @@
                     </div>
                 </div>
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
+                    <p class="text-xs text-primary mb-3">
+                        Para crear una ov es necesario convertirla desde una cotización
+                    </p>
                     <el-radio-group v-model="form.is_sale_production" size="small">
-                        <el-radio :value="1">Orden de venta</el-radio>
+                        <!-- <el-radio :disabled="!$page.props.auth.user.permissions.includes('Crear ordenes de venta sin cotizacion')" :value="1">Orden de venta</el-radio> -->
                         <el-radio :value="0">Orden de stock</el-radio>
                     </el-radio-group>
                     <div class="grid grid-cols-2 gap-3 mt-4">
@@ -541,7 +544,7 @@ export default {
             products: [],
             media: null,
             partialities: [],
-            is_sale_production: 1,
+            is_sale_production: 0, //seleccionado stock porque se necesita cotizacion para crear venta
         });
 
         return {

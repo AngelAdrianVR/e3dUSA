@@ -14,8 +14,8 @@
                         <h2 class="font-semibold text-xl leading-tight">Órdenes de venta</h2>
                     </div>
                     <Link class="flex flex-col justify-center items-center" v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')" :href="route('sales.create')">
-                        <SecondaryButton :disabled="!$page.props.auth.user.permissions.includes('Crear ordenes de venta sin cotizacion')">+ Nuevo</SecondaryButton>
-                        <p class="text-sm text-primary w-48" v-if="!$page.props.auth.user.permissions.includes('Crear ordenes de venta sin cotizacion')">Para crear una ov es necesario convertirla desde la cotización</p>
+                        <SecondaryButton>+ Nuevo</SecondaryButton>
+                        <!-- <p class="text-sm text-primary w-48" v-if="!$page.props.auth.user.permissions.includes('Crear ordenes de venta sin cotizacion')">Para crear una ov es necesario convertirla desde una cotización</p> -->
                     </Link>
                 </div>
             </template>
