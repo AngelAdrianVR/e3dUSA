@@ -21,12 +21,12 @@
 
         <div class="relative overflow-hidden min-h-[60vh]">
             <div class="flex justify-center space-x-5 mt-5">
-                <p class="mr-2 text-xs text-green-500 flex items-center space-x-2">
-                    <i class="fa-solid fa-circle"></i>
+                <p class="mr-2 text-xs flex items-center space-x-2">
+                    <i class="fa-solid fa-circle text-green-500"></i>
                     <span>Clilentes</span>
                 </p>
-                <p class="mr-2 text-xs text-blue-500 flex items-center space-x-2">
-                    <i class="fa-solid fa-circle"></i>
+                <p class="mr-2 text-xs flex items-center space-x-2">
+                    <i class="fa-solid fa-circle text-blue-500"></i>
                     <span>Prospectos</span>
                 </p>
             </div>
