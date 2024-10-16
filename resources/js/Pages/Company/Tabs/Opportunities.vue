@@ -1,6 +1,6 @@
 <template>
     <section class="p-7 w-full mx-auto my-4">
-        <div v-if="company.oportunities.length">
+        <div v-if="company.oportunities?.length">
             <CompanyOportunityTable :oportunities="company.oportunities" />
         </div>
         <div class="flex flex-col text-center justify-center" v-else>

@@ -65,7 +65,7 @@
                             </el-tooltip>
                         </td>
                         <td class="text-left py-2">
-                            {{ prospect.seller?.name }}
+                            {{ prospect.seller?.name ?? prospect.user?.name }}
                         </td>
                         <td v-if="$page.props.auth.user.permissions.includes('Eliminar prospectos')"
                             class="text-left pr-2 rounded-r-full">

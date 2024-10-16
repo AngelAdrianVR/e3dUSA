@@ -10,7 +10,7 @@
     </section>
 </template>
 <script>
-import CompanyQuoteTable from "@/Components/MyComponents/CompanyQuoteTable.vue";
+import ProjectTable from "@/Components/MyComponents/ProjectTable.vue";
 
 export default {
     data() {
@@ -22,7 +22,7 @@ export default {
         company: Object,
     },
     components: {
-        CompanyQuoteTable,
+        ProjectTable,
     },
     methods: {
     },

@@ -6,9 +6,10 @@
                     <div class="flex items-center space-x-2">
                         <h2 class="font-semibold text-xl leading-tight">Cartera de Clientes</h2>
                     </div>
-                    <div v-if="$page.props.auth.user.permissions.includes('Crear clientes')">
+                    <div class="flex items-center space-x-2" v-if="$page.props.auth.user.permissions.includes('Crear clientes')">
+                        <ThirthButton @click="openReport()" class="text-secondary border-secondary focus:ring-secondary">Reporte de contactos</ThirthButton>
                         <Link :href="route('companies.create')">
-                        <SecondaryButton>+ Nuevo</SecondaryButton>
+                            <SecondaryButton>+ Nuevo</SecondaryButton>
                         </Link>
                     </div>
                 </div>
@@ -50,10 +51,10 @@
                         <el-table-column label="Vendedor" width="180">
                             <template #default="scope">
                                 <div class="flex items-center">
-                                    <p class="mr-2" :style="{ color: getColorHex(scope.row.seller.id) }">
+                                    <p class="mr-2" :style="{ color: getColorHex(scope.row.seller?.id) }">
                                         <i class="fa-solid fa-star"></i>
                                     </p>
-                                    <p class="flex-0 w-[80%]">{{ scope.row.seller.name }}</p>
+                                    <p class="flex-0 w-[80%]">{{ scope.row.seller?.name }}</p>
                                 </div>
                             </template>
                         </el-table-column>
@@ -103,6 +104,7 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import ThirthButton from "@/Components/MyComponents/ThirthButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
@@ -130,6 +132,7 @@ export default {
         SecondaryButton,
         IndexSearchBar,
         PrimaryButton,
+        ThirthButton,
         AppLayout,
         TextInput,
         Link,
@@ -138,6 +141,10 @@ export default {
         companies: Object
     },
     methods: {
+        openReport() {
+            const url = this.route('companies.contacts-report');
+            window.open(url, '_blank');
+        },
         getColorHex(number) {
             if (number) {
                 // Ajusta el tono (hue) en función del número proporcionado

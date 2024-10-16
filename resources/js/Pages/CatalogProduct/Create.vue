@@ -22,37 +22,19 @@
                     </el-option>
                 </el-select>
             </div>
-            <!-- <div class="flex items-center mb-2">
-                <el-tooltip content="Tipo de producto (necesario para generar el número de parte)" placement="top">
-                    <span
-                        class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                        <i class="fa-solid fa-tag"></i>
-                    </span>
-                </el-tooltip>
-                <el-select @change="generatePartNumber" v-model="productType" placeholder="Tipo de producto *">
-                    <el-option v-for="item in productTypes" :key="item.value" :label="item.label" :value="item.value">
-                        <span style="float: left">{{ item.label }}</span>
-                        <span style="
-                float: right;
-                color: #cccccc;
-                font-size: 13px;
-                ">{{ item.value }}</span>
-                    </el-option>
-                </el-select>
-            </div> -->
             <div class="md:grid gap-x-6 gap-y-2 grid-cols-2 my-3">
                 <div>
                     <InputLabel value="Marca del producto *" />
-                        <el-input v-model="brand" @change="generatePartNumber" inputPlaceholder="Marca del producto *" />
+                        <el-input v-model="brand" @change="generatePartNumber" placeholder="Ej. Toyota" />
                 </div>
                 <div>
                     <InputLabel value="Nombre del producto *" />
-                    <el-input v-model="form.name" inputPlaceholder="Nombre *" />
+                    <el-input v-model="form.name" placeholder="Escribe el nombre del producto" />
                     <InputError :message="form.errors.name" />
                 </div>
                 <div>
                     <InputLabel value="Número de parte *" />
-                    <el-input v-model="form.part_number" />
+                    <el-input v-model="form.part_number" placeholder="Generación automática" />
                     <InputError :message="form.errors.part_number" />
                 </div>
                 <div>
@@ -66,14 +48,14 @@
                 </div>
                 <div>
                     <InputLabel value="Cantidad mínima" />
-                    <el-input v-model="form.min_quantity" inputPlaceholder="Cantidad mínima" 
+                    <el-input v-model="form.min_quantity" placeholder="Cantidad mínima de stock" 
                         :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                         :parser="(value) => value.replace(/\$\s?|(,*)/g, '')"/>
                     <InputError :message="form.errors.min_quantity" />
                 </div>
                 <div>
                     <InputLabel value="Cantidad mínima" />
-                    <el-input v-model="form.max_quantity" inputPlaceholder="Cantidad máxima" 
+                    <el-input v-model="form.max_quantity" placeholder="Cantidad mpaxima de stock"
                         :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                         :parser="(value) => value.replace(/\$\s?|(,*)/g, '')"/>
                     <InputError :message="form.errors.max_quantity" />
@@ -89,79 +71,8 @@
                         type="textarea"
                     />
                     <InputError :message="form.errors.max_quantity" />
-                </div>
-            
-            <!-- <div class="mb-2">
-                <IconInput v-model="brand" @change="generatePartNumber" inputPlaceholder="Marca del producto *"
-                    inputType="text">
-                    <el-tooltip content="Marca del producto (si no tiene marca colocar 'Generico')" placement="top">
-                        <i class="fa-solid fa-copyright"></i>
-                    </el-tooltip>
-                </IconInput>
-            </div> -->
-            <!-- <div class="mb-2">
-                <IconInput v-model="form.name" inputPlaceholder="Nombre *" inputType="text">
-                    <el-tooltip content="Nombre" placement="top">
-                        A
-                    </el-tooltip>
-                </IconInput>
-                <InputError :message="form.errors.name" />
-            </div> -->
-            <!-- <div class="md:grid gap-x-6 gap-y-2 my-3 grid-cols-2"> -->
-                <!-- <div class="flex items-center">
-                    <el-tooltip content="Número de parte *" placement="top">
-                        <span
-                            class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                            #
-                        </span>
-                    </el-tooltip>
-                    <input v-model="form.part_number" type="text"
-                        class="input disabled:cursor-not-allowed disabled:opacity-80" placeholder="Número de parte *"
-                        disabled>
-                    <InputError :message="form.errors.part_number" />
-                </div> -->
-                <!-- <div class="flex items-center">
-                    <el-tooltip content="Unidad de medida" placement="top">
-                        <span
-                            class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                            <i class="fa-solid fa-ruler-vertical"></i>
-                        </span>
-                    </el-tooltip>
-                    <el-select v-model="form.measure_unit" clearable placeholder="Busca unidad de medida"
-                        no-data-text="No hay unidades de medida registradas"
-                        no-match-text="No se encontraron coincidencias">
-                        <el-option v-for="(item, index) in mesureUnits" :key="index" :label="item" :value="item" />
-                    </el-select>
-                    <InputError :message="form.errors.measure_unit" />
-                </div> -->
-                <!-- <div>
-                    <IconInput v-model="form.min_quantity" inputPlaceholder="Cantidad mínima" inputType="number">
-                        <el-tooltip content="Cantidad mínima" placement="top">
-                            <i class="fa-solid fa-minus"></i>
-                        </el-tooltip>
-                    </IconInput>
-                    <InputError :message="form.errors.min_quantity" />
-                </div> -->
-                <!-- <div>
-                    <IconInput v-model="form.max_quantity" inputPlaceholder="Cantidad máxima" inputType="number">
-                        <el-tooltip content="Cantidad máxima" placement="top">
-                            <i class="fa-solid fa-plus"></i>
-                        </el-tooltip>
-                    </IconInput>
-                    <InputError :message="form.errors.max_quantity" />
-                </div> -->
-                <!-- <div class="flex col-span-full">
-                    <el-tooltip content="Descripción" placement="top">
-                        <span
-                            class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                            ...
-                        </span>
-                    </el-tooltip>
-                    <textarea v-model="form.description" class="textarea mb-1" autocomplete="off"
-                        placeholder="Descripción"></textarea>
-                    <InputError :message="form.errors.description" />
-                </div> -->
-                <div class="col-span-full">
+                </div>            
+                <div class="col-span-full my-2">
                     <div class="flex space-x-2 mb-1">
                         <IconInput v-model="newFeature" inputPlaceholder="Ingresa una caracteristica" inputType="text"
                             class="w-full">
@@ -180,8 +91,12 @@
                             :value="feature"></el-option>
                     </el-select>
                 </div>
-
-                <el-upload action="#" list-type="picture-card" :auto-upload="false" :on-change="handleChange" class="col-span-full" ref="upload">
+                <el-upload action="#" list-type="picture-card" 
+                    :auto-upload="false" 
+                    :on-change="handleChange" class="col-span-full"
+                    :on-remove="handleRemoveImage"
+                    v-model:file-list="fileList"
+                    ref="upload">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7 text-black">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
@@ -200,7 +115,6 @@
 
                             </span>
                             <span
-                                v-if="!disabled"
                                 class="el-upload-list__item-delete"
                                 @click="handleDownloadImage(file)"
                             >
@@ -210,7 +124,6 @@
 
                             </span>
                             <span
-                                v-if="!disabled"
                                 class="el-upload-list__item-delete"
                                 @click="handleRemoveImage(file)"
                             >
@@ -226,11 +139,6 @@
                 <el-dialog v-model="dialogVisible">
                     <img class="mx-auto" w-full :src="dialogImageUrl" alt="Preview Image" />
                 </el-dialog>
-
-                <!-- <div class="grid grid-cols-2 lg:grid-cols-3 gap-2 col-span-full">
-                    <InputFilePreview v-for="(file,index) in form.media" :key="index" :canDelete="index == (form.media.length - 2)"
-                        @imagen="saveImage" @cleared="handleCleared(index)" class="p-2" />
-                </div> -->
 
                 <el-divider content-position="left" class="col-span-full">Componentes de este producto</el-divider>
 
@@ -319,7 +227,6 @@
                     Crear producto
                 </PrimaryButton>
             </div>
-            {{ form.media }}
         </form>
     </AppLayout>
 </template>
@@ -346,13 +253,14 @@ export default {
             description: null,
             raw_materials: [],
             features: [],
-            media: [null],
+            media: [],
         });
 
         return {
             form,
             dialogVisible: false, //imagen element-plus
             dialogImageUrl: '', //imagen element-plus
+            fileList: [], // Archivos para el componente el-upload
             editIndex: null,
             loading: false,
             rawMaterial: {
@@ -505,7 +413,6 @@ export default {
         },
         handleChange(file, fileList) {
             this.form.media = fileList.map(item => item.raw); // Actualiza form.media con los archivos
-            console.log(this.form);
         },
         handlePictureCardPreview(file) {
             this.dialogImageUrl = file.url;
@@ -523,28 +430,30 @@ export default {
                 console.error('No hay URL disponible para descargar el archivo.');
             }
         },
-        handleRemoveImage(file) {
+        handleRemoveImage(file, fileList) {
+            console.log('archivo:', file);
             this.$confirm('¿Estás seguro de eliminar este archivo?', 'Confirmar', {
             confirmButtonText: 'Sí',
             cancelButtonText: 'No',
             type: 'warning'
             }).then(() => {
-            // Remover de fileList (el-upload)
-            const index = this.$refs.upload.uploadFiles.indexOf(file);
-            if (index !== -1) {
-                this.$refs.upload.uploadFiles.splice(index, 1);
-            }
-            
-            // Remover de form.media
-            const mediaIndex = this.form.media.indexOf(file.raw);
-            if (mediaIndex !== -1) {
-                this.form.media.splice(mediaIndex, 1);
-            }
+
+                // Remover de form.media
+                const mediaIndex = this.form.media.indexOf(file.raw);
+                if (mediaIndex !== -1) {
+                    this.form.media.splice(mediaIndex, 1); // Elimina el archivo de form.media
+                }
+                // Remover del componente
+                const mediaUploadIndex = this.fileList.indexOf(file);
+                if (mediaUploadIndex !== -1) {
+                    this.fileList.splice(mediaUploadIndex, 1); // Elimina el archivo de form.media
+                }
+
             }).catch(() => {
-            this.$message({
-                type: 'info',
-                message: 'Eliminación cancelada'
-            });
+                this.$message({
+                    type: 'info',
+                    message: 'Eliminación cancelada'
+                });
             });
         },
         generatePartNumber() {
@@ -584,15 +493,6 @@ export default {
                 this.features.push(this.newFeature);
                 this.newFeature = '';
             }
-        },
-        saveImage(image) {
-            const currentIndex = this.form.media.length -1;
-            this.form.media[currentIndex] = image;
-            this.form.media.push(null);
-        },
-        handleCleared(index) {
-            // Eliminar el componente y su informacion correspondiente cuando se borra la imagen
-            this.form.media.splice(index, 1);
         },
         async fetchRawMaterial() {
             this.loading = true;

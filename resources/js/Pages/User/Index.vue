@@ -161,7 +161,6 @@ export default {
             }
         },
         changeStatus(user) {
-
             this.$inertia.put(route("users.change-status", user)),
 
                 this.$notify({
@@ -169,7 +168,6 @@ export default {
                     message: "Se cambió el estatus del usuario",
                     type: "success",
                 });
-
         }
     },
     computed: {

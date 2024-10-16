@@ -15,7 +15,8 @@ class ProspectController extends Controller
 
     public function index()
     {
-        $prospects = ProspectResource::collection(Prospect::paginate(20));
+        $prospects = Prospect::with('user:id,name', 'seller:id,name')
+            ->paginate(30, ['id', 'name', 'created_at', 'contact_name', 'contact_phone', 'status', 'user_id', 'seller_id']);
 
         return inertia('Prospect/Index', compact('prospects'));
     }
@@ -45,7 +46,7 @@ class ProspectController extends Controller
             'seller_id' => 'nullable|numeric|min:1',
         ]);
 
-        $prospect = Prospect::create($validated + ['user_id' => auth()->id()]);
+        $prospect = Prospect::create($validated + ['user_id' => auth()->id(), 'seller_id' => auth()->id()]);
 
         if ( !$request->quick_creation ) {
             return to_route('prospects.show', $prospect);

@@ -1,5 +1,13 @@
 <template>
     <div>
+        <div v-if="loading"
+            class="absolute z-30 left-0 top-0 inset-0 bg-black opacity-50 flex items-center justify-center">
+        </div>
+        <div v-if="loading"
+            class="absolute z-40 top-1/2 left-[35%] lg:left-1/2 w-32 h-32 rounded-lg bg-white flex items-center justify-center">
+            <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
+        </div>
+
         <AppLayout title="Departamento de producción">
             <template #header>
                 <div class="flex justify-between">
@@ -8,26 +16,29 @@
                     </div>
                     <div>
                         <Link :href="route('productions.create')">
-                        <SecondaryButton>+ Nuevo</SecondaryButton>
+                            <SecondaryButton>+ Nuevo</SecondaryButton>
                         </Link>
                     </div>
                 </div>
             </template>
 
             <div class="flex space-x-6 items-center justify-center text-xs mt-2">
-                <p class="text-amber-500"><i class="fa-solid fa-circle mr-1"></i>Producción sin iniciar</p>
-                <p class="text-red-500"><i class="fa-solid fa-circle mr-1"></i>Falta de materia prima</p>
-                <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Producción en proceso</p>
-                <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Producción terminada</p>
+                <p><i class="fa-solid fa-circle mr-1 text-amber-500"></i>Producción sin iniciar</p>
+                <p><i class="fa-solid fa-circle mr-1 text-red-500"></i>Falta de materia prima</p>
+                <p><i class="fa-solid fa-circle mr-1 text-blue-500"></i>Producción en proceso</p>
+                <p><i class="fa-solid fa-circle mr-1 text-green-500"></i>Producción terminada</p>
+                <p><i class="fa-solid fa-circle mr-1 text-teal-300"></i>Enviado</p>
             </div>
 
             <!-- Filtro por propietario -->
-            <div class="w-1/4 flex flex-col">
-                <label class="text-sm ml-2 mb-1">Filtro por propietario</label>
-                <el-select @change="fetchItemsFiltered" v-model="filter" class="!w-full"
-                    placeholder="Selecciona una opción">
-                    <el-option v-for="item in options" :key="item" :label="item" :value="item" />
-                </el-select>
+            <div class="flex items-center space-x-5 lg:mx-28 mx-4 mt-5">
+                <div class="w-1/4 flex flex-col">
+                    <label class="text-sm ml-2 mb-1">Filtro por propietario</label>
+                    <el-select @change="fetchItemsFiltered" v-model="filter" class="!w-full"
+                        placeholder="Selecciona una opción">
+                        <el-option v-for="item in options" :key="item" :label="item" :value="item" />
+                    </el-select>
+                </div>
             </div>
 
             <!-- tabla -->
@@ -36,10 +47,10 @@
                 <div class="lg:w-5/6 mx-auto mt-6">
                     <div class="flex justify-between">
                         <!-- pagination -->
-                        <div>
-                            <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                                :total="productions.data.length" />
+                        <div v-if="!search" class="overflow-auto mb-2">
+                            <PaginationWithNoMeta :pagination="pagination" class="py-2" />
                         </div>
+
                         <!-- buttons -->
                         <div>
                             <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
@@ -53,7 +64,7 @@
                         <!-- buscador -->
                         <IndexSearchBar @search="handleSearch" />
                     </div>
-                    <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
+                    <el-table :data="filteredProductions" @row-click="handleRowClick" max-height="670" style="width: 100%"
                         @selection-change="handleSelectionChange" ref="multipleTableRef"
                         :row-class-name="tableRowClassName">
                         <el-table-column type="selection" width="30" />
@@ -92,11 +103,11 @@
                                     <p class="mr-2" :class="getStatusColor(scope.row)">
                                         <i class="fa-solid fa-circle text-[6px]"></i>
                                     </p>
-                                    <p class="flex-0 w-[80%]">{{ scope.row.status['label'] }}</p>
+                                    <p class="flex">{{ scope.row.sale_status }}</p>
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="productions.length" label="Operadores" />
+                        <el-table-column prop="operators" label="Operadores" width="210" />
                         <el-table-column align="right">
                             <template #default="scope">
                                 <el-dropdown trigger="click" @command="handleCommand">
@@ -132,6 +143,7 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
+import PaginationWithNoMeta from "@/Components/MyComponents/PaginationWithNoMeta.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
@@ -145,27 +157,54 @@ export default {
             disableMassiveActions: true,
             inputSearch: '',
             search: '',
-            // pagination
-            itemsPerPage: 10,
-            start: 0,
-            end: 10,
+            loading: false,
+            pagination: this.productions,
+            filteredProductions: this.productions.data,
+            //filtro
+            filter: 'Mis órdenes',
             options: ['Mis órdenes', 'Todas las órdenes'], //opciones de filtro
         };
     },
     components: {
-        AppLayout,
-        SecondaryButton,
-        Link,
-        TextInput,
+        PaginationWithNoMeta,
         NotificationCenter,
+        SecondaryButton,
         IndexSearchBar,
+        AppLayout,
+        TextInput,
+        Link,
     },
     props: {
-        productions: Array
+        productions: Object
     },
     methods: {
-        handleSearch(search) {
+        fetchItemsFiltered() {
+            if ( this.filter === 'Mis órdenes' ) {
+                this.$inertia.get(route('productions.index'));
+            } else {
+                this.$inertia.get(route('productions.admin-index'));
+            }
+        },
+         async handleSearch(search) {
             this.search = search;
+            this.loading = true;
+            try {
+                if (!this.search) {
+                    this.filteredProductions = this.productions.data;
+                    this.pagination = this.productions; //cuando se busca con texto vacio s emuestran todas las porduccoines y la paginacion es de todas las producciones
+                } else {
+                    const response = await axios.post(route('productions.get-matches', { query: this.search }));
+
+                    if (response.status === 200) {
+                        this.filteredProductions = response.data.items.data;
+                        this.pagination = response.data.items; //se cambia la paginacion a los encontrados
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                this.loading = false;
+            }
         },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
@@ -175,10 +214,6 @@ export default {
             } else {
                 this.disableMassiveActions = false;
             }
-        },
-        handlePagination(val) {
-            this.start = (val - 1) * this.itemsPerPage;
-            this.end = val * this.itemsPerPage;
         },
         async deleteSelections() {
             try {
@@ -230,20 +265,24 @@ export default {
             return 'cursor-pointer text-xs';
         },
         getStatusColor(row) {
-            if (row.status['label'] == 'Esperando autorización') {
+            if (row.sale_status == 'Esperando autorización') {
                 return 'text-red-500';
-            } else if (row.status['label'] == 'Producción sin iniciar') {
+            } else if (row.sale_status == 'Producción sin iniciar') {
                 return 'text-amber-500';
-            } else if (row.status['label'] == 'Producción en proceso') {
+            } else if (row.sale_status == 'Producción en proceso') {
                 return 'text-blue-500';
-            } else if (row.status['label'] == 'Producción terminada') {
+            } else if (row.sale_status == 'Autorizado sin orden de producción') {
+                return 'text-gray-500';
+            } else if (row.sale_status == 'Producción terminada') {
                 return 'text-green-500';
-            } else if (row.status['label'] == 'Autorizado sin orden de producción') {
+            } else if (row.sale_status == 'Enviado') {
+                return 'text-teal-300';
+            } else {
                 return 'text-gray-500';
             }
         },
         handleRowClick(row) {
-            this.$inertia.get(route('productions.show', row));
+            this.$inertia.get(route('productions.show', row.id));
         },
         handleCommand(command) {
             const commandName = command.split('-')[0];
@@ -258,20 +297,20 @@ export default {
             }
         },
     },
-    computed: {
-        filteredTableData() {
-            if (!this.search) {
-                return this.productions.data.filter((item, index) => index >= this.start && index < this.end);
-            } else {
-                return this.productions.data.filter(
-                    (production) =>
-                        production.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                        production.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
-                        production.company_branch.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                        production.p_folio.toLowerCase().includes(this.search.toLowerCase())
-                )
-            }
-        }
-    },
+    // computed: {
+    //     filteredTableData() {
+    //         if (!this.search) {
+    //             return this.productions.data.filter((item, index) => index >= this.start && index < this.end);
+    //         } else {
+    //             return this.productions.data.filter(
+    //                 (production) =>
+    //                     production.user.name.toLowerCase().includes(this.search.toLowerCase()) ||
+    //                     production.status.label.toLowerCase().includes(this.search.toLowerCase()) ||
+    //                     production.company_branch.name.toLowerCase().includes(this.search.toLowerCase()) ||
+    //                     production.p_folio.toLowerCase().includes(this.search.toLowerCase())
+    //             )
+    //         }
+    //     }
+    // },
 };
 </script>

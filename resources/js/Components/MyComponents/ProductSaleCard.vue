@@ -42,7 +42,7 @@
     <div class="grid grid-cols-2 gap-x-4">
       <div>
         <figure @mouseover="showOverlay" @mouseleave="hideOverlay" class="bg-[#D9D9D9] w-full h-28 my-3 rounded-[10px] relative">
-          <div  v-if="catalog_product_company_sale.confusion_alert" class="absolute flex size-7 cursor-default">
+          <div v-if="catalog_product_company_sale.confusion_alert" class="absolute flex size-7 cursor-default">
             <span class="animate-ping absolute -top-2 -left-2 inline-flex h-full w-full rounded-full bg-gray-700 opacity-75"></span>
             <el-tooltip placement="bottom">
               <template #content>
@@ -572,7 +572,7 @@
   <!-- empaque modal -->
   <DialogModal :show="showPackageModal" @close="showPackageModal = false" maxWidth="4xl">
     <template #title>
-      <h1 class="!text-left mb-4">Empaque</h1>
+      <h1 class="!text-left mb-4">Empaque <strong v-if="catalog_product_company_sale.confusion_alert" class="text-primary ml-3">{{ '¡El producto tiene riesgo de confusión. Revisar con vendedor antes de empacar!' }}</strong></h1>
     </template>
     <template #content>
       <main class="overflow-auto max-h-[550px]">
@@ -656,6 +656,12 @@
                 </div>
             </section>
           </section>
+          
+          <!-- Notas del producto -->
+          <div v-if="catalog_product_company_sale.notes" class="mt-5 font-bold">
+            <p class="text-black">Notas de producto:</p>
+            <p class="text-primary">{{ catalog_product_company_sale.notes }}</p>
+          </div>
       </main>
     </template>
     <template #footer>
