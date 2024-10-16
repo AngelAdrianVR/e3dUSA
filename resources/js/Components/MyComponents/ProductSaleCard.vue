@@ -656,6 +656,12 @@
                 </div>
             </section>
           </section>
+          
+          <!-- Notas del producto -->
+          <div v-if="catalog_product_company_sale.notes" class="mt-5 font-bold">
+            <p class="text-black">Notas de producto:</p>
+            <p class="text-primary">{{ catalog_product_company_sale.notes }}</p>
+          </div>
       </main>
     </template>
     <template #footer>

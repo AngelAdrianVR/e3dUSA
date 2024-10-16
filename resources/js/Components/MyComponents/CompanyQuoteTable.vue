@@ -72,20 +72,20 @@
   </div>
 
   <!-- -------------- Modal starts----------------------- -->
-      <Modal :show="rejectedRazonModal" @close="rejectedRazonModal = false">
-        <div class="p-5 relative">
-            <h2 class="font-bold">Información de rechazo de cotización</h2>
-            <i @click="rejectedRazonModal = false"
-            class="fa-solid fa-xmark cursor-pointer w-5 h-5 rounded-full border border-black flex items-center justify-center absolute right-3 top-3"></i>
-            <p class="text-sm text-gray-600">Por favor, revisa los detalles las razones del rechazo para tomar las medidas necesarias para abordar las preocupaciones del cliente. </p>
+  <Modal :show="rejectedRazonModal" @close="rejectedRazonModal = false">
+    <div class="p-5 relative">
+        <h2 class="font-bold">Información de rechazo de cotización</h2>
+        <i @click="rejectedRazonModal = false"
+        class="fa-solid fa-xmark cursor-pointer w-5 h-5 rounded-full border border-black flex items-center justify-center absolute right-3 top-3"></i>
+        <p class="text-sm text-gray-600">Por favor, revisa los detalles las razones del rechazo para tomar las medidas necesarias para abordar las preocupaciones del cliente. </p>
 
-            <div class="mt-5">
-              <InputLabel value="Motivo de rechazo" class="ml-3 mb-1" />
-              <p class="text-sm text-gray-500">{{ rejected_razon }}</p>
-            </div>
+        <div class="mt-5">
+          <InputLabel value="Motivo de rechazo" class="ml-3 mb-1" />
+          <p class="text-sm text-gray-500">{{ rejected_razon }}</p>
         </div>
-      </Modal>
-      <!-- --------------------------- Modal ends ------------------------------------ -->
+    </div>
+  </Modal>
+  <!-- --------------------------- Modal ends ------------------------------------ -->
 </template>
 
 <script>
