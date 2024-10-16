@@ -438,11 +438,11 @@ export default {
                     show: this.$page.props.auth.user.permissions.includes('Autorizar solicitudes de tiempo adicional')
                 },
                 {
-                    title: 'Muestras por autorizar',
+                    title: 'Envio de Muestras por autorizar',
                     counter: this.counts[9],
                     icon: 'fa-solid fa-box',
                     url: route('samples.index'),
-                    show: this.$page.props.auth.user.permissions.includes('Autorizar solicitudes de tiempo adicional')
+                    show: this.$page.props.auth.user.permissions.includes('Autorizar solicitudes de envios de muestras')
                 },
             ],
             nextAttendance: null,
