@@ -41,8 +41,6 @@ class ProjectController extends Controller
         $project_groups = ProjectGroupResource::collection(ProjectGroup::all());
         $users = User::where('is_active', true)->whereNot('id', 1)->get(['id', 'name', 'employee_properties']);
 
-        // return $companies;
-
         return inertia('Project/Create', compact('companies', 'users', 'tags', 'project_groups'));
     }
 
@@ -104,12 +102,16 @@ class ProjectController extends Controller
 
     public function show($project_id)
     {
-        $project = ProjectResource::make(Project::with(['tasks' => ['participants', 'project', 'user', 'comments.user', 'media'], 'user', 'users', 'company', 'owner', 'tags'])->find($project_id));
+        $project = ProjectResource::make(Project::with
+        (['tasks' => ['participants', 'project', 'user', 'comments.user', 'media'], 'user', 'users', 'company', 'owner', 'tags'])
+            ->find($project_id));
+
         $projects = Project::latest()->get(['id', 'project_name']);
         $users = User::where('is_active', true)->whereNot('id', 1)->get(['id', 'name']);
 
         $defaultTab = request('defaultTab');
 
+        // return $project;
         return inertia('Project/Show', compact('project', 'projects', 'users', 'defaultTab'));
     }
 
