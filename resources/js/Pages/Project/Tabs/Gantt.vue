@@ -1,8 +1,12 @@
 <template>
-    <div class="text-left text-sm items-center">
-        <!-- <GanttDiagramMonth v-if="period === 'Mes'" :currentProject="project" :currentDate="currentDate" />
-        <GanttDiagramBimester v-if="period === 'Bimestre'" :currentProject="project"
-            :currentDate="currentDate" />
+    <div class="text-left text-sm items-center pb-12">
+        <GanttDiagramMonth v-if="period === 'Mes'" :currentProject="project" />
+        <GanttDiagramBimester v-if="period === 'Bimestre'" :currentProject="project"/>
+        
+        <!-- <p class="text-center text-gray-500 mt-5" v-if="currentProject?.tasks?.length == 0">No hay tareas para mostrar. 
+          <span @click="$inertia.get(route('project-tasks.create', { projectId: currentProject?.id ?? 1 }))" class="text-primary font-bold cursor-pointer underline">Crea una</span></p> -->
+
+
         <div class="text-right mr-9">
             <div class="border border-[#9A9A9A] rounded-md inline-flex justify-end mt-4">
                 <p :class="period == 'Mes' ? 'bg-primary text-white rounded-sm' : 'border-[#9A9A9A]'
@@ -17,7 +21,7 @@
                     Bimestre
                 </p>
             </div>
-        </div> -->
+        </div>
     </div>
 </template>
 <script>

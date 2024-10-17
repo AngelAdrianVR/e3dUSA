@@ -14,12 +14,12 @@
       <form @submit.prevent="store">
         <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4">
           <div>
-            <label>Título del proyecto *</label>
+            <InputLabel value="Título del proyecto*" />
             <input v-model="form.project_name" class="input" type="text" placeholder="Escribe el título">
             <InputError :message="form.errors.project_name" />
           </div>
           <div>
-            <label>Responsable *</label>
+            <InputLabel value="Responsable*" />
             <el-select v-model="form.owner_id" placeholder="Seleccione" class="w-full mt-1"
               no-data-text="No hay opciones para mostrar" no-match-text="No se encontraron coincidencias">
               <el-option v-for="(item, index) in users" :key="item.id" :label="item.name" :value="item.id">
@@ -32,26 +32,28 @@
             </el-select>
             <InputError :message="form.errors.owner_id" />
           </div>
-          <div class="pt-1">
-            <label class="block">Duración *</label>
-            <el-date-picker @change="handleDateRange" v-model="range" type="daterange" range-separator="A"
-              start-placeholder="Fecha de inicio" end-placeholder="Fecha límite" value-format="YYYY-MM-DD" />
-          </div>
-          <div class="flex justify-end items-center space-x-3 mr-auto mt-2">
-            <label class="flex items-center">
-              <Checkbox v-model:checked="form.is_strict_project" class="bg-transparent" />
-              <span class="ml-2 text-sm">Proyecto estricto</span>
-            </label>
-            <el-tooltip
-              content="Las tareas no pueden comenzar ni finalizar fuera de las fechas programadas de un proyecto "
-              placement="top">
-              <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
-                <i class="fa-solid fa-info text-primary text-[7px]"></i>
-              </div>
-            </el-tooltip>
+          <div class="flex justify-between items-center space-x-5 w-full">
+            <div>
+              <InputLabel value="Duración*" />
+              <el-date-picker @change="handleDateRange" v-model="range" type="daterange" range-separator="A"
+                start-placeholder="Fecha de inicio" end-placeholder="Fecha límite" value-format="YYYY-MM-DD" />
+            </div>
+            <div class="flex justify-end items-center space-x-3 mt-3 mr-auto">
+              <label class="flex items-center">
+                <Checkbox v-model:checked="form.is_strict_project" class="bg-transparent" />
+                <span class="ml-2 text-sm">Proyecto estricto</span>
+              </label>
+              <el-tooltip
+                content="Las tareas no pueden comenzar ni finalizar fuera de las fechas programadas de un proyecto "
+                placement="top">
+                <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
+                  <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                </div>
+              </el-tooltip>
+            </div>
           </div>
           <div class="mt-5 col-span-full">
-            <label>Descripción</label>
+            <InputLabel value="Descripción" />
             <!-- <RichText @content="updateDescription($event)" /> -->
             <textarea v-model="form.description" rows="5" class="textarea" placeholder="..."></textarea>
           </div>
@@ -60,8 +62,8 @@
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <div class="flex justify-between items-center mx-2">
-                <label>Etiquetas</label>
+              <div class="flex justify-between items-center mt-1 mx-2">
+                <InputLabel value="Etiquetas" />
                 <button @click="showTagFormModal = true" type="button"
                   class="rounded-full border border-primary w-4 h-4 flex items-center justify-center">
                   <i class="fa-solid fa-plus text-primary text-[9px]"></i>
@@ -77,7 +79,7 @@
             <div>
               <div class="flex justify-between items-center mx-2">
                 <div class="flex items-center space-x-2">
-                  <label>Grupo</label>
+                  <InputLabel value="Grupo" />
                   <el-tooltip
                     content="Organice su proyecto en grupos. Seleccione o cree un grupo para asociar este proyecto"
                     placement="right">
@@ -118,7 +120,7 @@
 
             <div class="flex space-x-7 justify-between">
               <div class="w-1/2">
-                <label>Cliente *</label> <br>
+                <InputLabel value="Cliente*" />
                 <el-select v-model="form.company_id" @change="companyChanged()" filterable placeholder="Seleccione"
                   no-data-text="No hay clientes registrados" no-match-text="No se encontraron coincidencias">
                   <el-option v-for="company in companies" :key="company" :label="company.business_name"
@@ -127,7 +129,7 @@
                 <InputError :message="form.errors.company_id" />
               </div>
               <div class="w-1/2">
-                <label>Sucursal *</label> <br>
+                <InputLabel value="Sucursal*" />
                 <el-select @change="saveCompanyBranchAddress" v-model="form.company_branch_id" filterable
                   placeholder="Seleccione" no-data-text="No hay sucursales registradas"
                   no-match-text="No se encontraron coincidencias">
@@ -147,7 +149,7 @@
                 <InputError :message="form.errors.shipping_address" />
               </div>
               <div class="w-1/2">
-                <label>OV *</label> <br>
+                <InputLabel value="OV*" />
                 <el-select v-model="form.sale_id" filterable placeholder="Seleccione"
                   :no-data-text="form.company_branch_id ? 'No hay órdenes de venta relacionadas a esta sucursal o las existentes ya tienen un proyecto' : 'Seleccionar sucursal para mostrar ov disponibles'"
                   no-match-text="No se encontraron coincidencias">
@@ -163,7 +165,7 @@
 
           <div class="flex space-x-7 justify-between">
             <div class="w-1/2">
-              <label>Moneda</label> <br>
+              <InputLabel value="Moneda" />
               <el-select v-model="form.currency" filterable placeholder="Seleccione"
                 no-data-text="No hay opciones registradas" no-match-text="No se encontraron coincidencias">
                 <el-option v-for="currency in currencies" :key="currency" :label="currency" :value="currency" />
@@ -172,7 +174,7 @@
             </div>
             <div class="w-1/2">
               <label class="flex items-center">
-                <span class="mr-2">Monto *</span>
+                <InputLabel value="Monto*" class="mr-2" />
                 <el-tooltip content="Es un estimado de cuanto se gastarán en hacer el proyecto" placement="top">
                   <div class="rounded-full border border-primary w-3 h-3 flex items-center justify-center">
                     <i class="fa-solid fa-info text-primary text-[7px]"></i>
@@ -365,6 +367,7 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
+import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import ThirthButton from "@/Components/MyComponents/ThirthButton.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
@@ -434,17 +437,18 @@ export default {
     };
   },
   components: {
-    AppLayout,
     SecondaryButton,
     PrimaryButton,
-    InputError,
-    IconInput,
-    Checkbox,
-    ThirthButton,
-    RichText,
-    FileUploader,
-    DialogModal,
     CancelButton,
+    FileUploader,
+    ThirthButton,
+    DialogModal,
+    InputError,
+    InputLabel,
+    IconInput,
+    AppLayout,
+    RichText,
+    Checkbox,
     Link,
     Back,
     Tag
