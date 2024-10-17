@@ -19,7 +19,7 @@ class SampleController extends Controller
     public function index()
     {
         $pre_samples = Sample::with(['catalogProduct:id,name', 'companyBranch:id,name', 'user:id,name'])->latest()
-            ->paginate(20, ['id', 'name', 'quantity', 'sent_at', 'returned_at', 'comments', 'catalog_product_id', 'company_branch_id', 'user_id', 'sale_order_at', 'will_back', 'authorized_at']);
+            ->paginate(20, ['id', 'name', 'quantity', 'sent_at', 'returned_at', 'comments', 'catalog_product_id', 'company_branch_id', 'user_id', 'sale_order_at', 'denied_at', 'will_back', 'authorized_at']);
 
         //procesamiento de la informacion para darle formato a los atributos
         $samples = $this->processDataIndex($pre_samples);
@@ -31,83 +31,85 @@ class SampleController extends Controller
     {
         $samples = $pre_samples->through(function ($sample) {
 
-            if ($sample->will_back) {
-
+            if (!$sample->authorized_at) {
                 $status = [
-                    'label' => 'Enviado. Esperando regreso de muestra',
-                    'bg-color' => 'bg-amber-600',
-                    'text-color' => 'text-amber-600',
-                    'border-color' => 'border-amber-600',
-                    'description' => 'Esperando a que la muestra sea devuelta y obtengas retroalimentación',
-                    'progress' => 'w-1/4'
+                    'label' => 'Muestra no enviada aún',
+                    'bg-color' => 'bg-gray-500',
+                    'text-color' => 'text-gray-500',
+                    'border-color' => 'border-gray-500',
+                    'description' => 'Muestra no enviada aún',
                 ];
-
-                if ($sample->returned_at) {
-
+            } else {
+                if ($sample->will_back) {
                     $status = [
-                        'label' => 'Muestra devuelta',
-                        'bg-color' => 'bg-blue-600',
-                        'text-color' => 'text-blue-600',
-                        'border-color' => 'border-blue-600',
-                        'description' => 'Muestra devuelta. Da seguimiento para concretar venta',
-                        'progress' => 'w-1/2'
+                        'label' => 'Enviado. Esperando respuesta',
+                        'bg-color' => 'bg-amber-600',
+                        'text-color' => 'text-amber-600',
+                        'border-color' => 'border-amber-600',
+                        'description' => 'Esperando a que la muestra sea devuelta y obtengas retroalimentación',
+                        'progress' => 'w-1/4'
                     ];
 
-                    if ($sample->requires_modification) {
-
+                    if ($sample->returned_at) {
                         $status = [
-                            'label' => 'Muestra enviada de nuevo con modificación',
-                            'bg-color' => 'bg-indigo-500',
-                            'text-color' => 'text-indigo-600',
-                            'border-color' => 'border-indigo-600',
+                            'label' => 'Muestra devuelta',
+                            'bg-color' => 'bg-blue-600',
+                            'text-color' => 'text-blue-600',
+                            'border-color' => 'border-blue-600',
+                            'description' => 'Muestra devuelta. Da seguimiento para concretar venta',
+                            'progress' => 'w-1/2'
+                        ];
+
+                        if ($sample->requires_modification) {
+                            $status = [
+                                'label' => 'Muestra enviada con modificaciones',
+                                'bg-color' => 'bg-sky-500',
+                                'text-color' => 'text-sky-600',
+                                'border-color' => 'border-sky-600',
+                                'description' => 'Muestra enviada de nuevo con modificaciones. Espera retroalimentación para finalizar con el seguimiento',
+                                'progress' => 'w-3/4'
+                            ];
+                        }
+                    }
+                } else {
+                    $status = [
+                        'label' => 'Enviado. Esperando respuesta',
+                        'bg-color' => 'bg-amber-600',
+                        'text-color' => 'text-amber-600',
+                        'border-color' => 'border-amber-500',
+                        'description' => 'Muestra enviada. Esperando respuesta',
+                        'progress' => 'w-1/2'
+                    ];
+                    if ($sample->requires_modification) {
+                        $status = [
+                            'label' => 'Muestra enviada con modificaciones',
+                            'bg-color' => 'bg-sky-500',
+                            'text-color' => 'text-sky-600',
+                            'border-color' => 'border-sky-600',
                             'description' => 'Muestra enviada de nuevo con modificaciones. Espera retroalimentación para finalizar con el seguimiento',
                             'progress' => 'w-3/4'
                         ];
                     }
                 }
-            } else {
-
-                $status = [
-                    'label' => 'Enviado. Esperando respuesta',
-                    'bg-color' => 'bg-amber-600',
-                    'text-color' => 'text-amber-600',
-                    'border-color' => 'border-amber-500',
-                    'description' => 'Muestra enviada. Esperando respuesta',
-                    'progress' => 'w-1/2'
-                ];
-
-                if ($sample->requires_modification) {
-
+                if ($sample->sale_order_at) {
                     $status = [
-                        'label' => 'Muestra enviada de nuevo con modificación',
-                        'bg-color' => 'bg-indigo-500',
-                        'text-color' => 'text-indigo-600',
-                        'border-color' => 'border-indigo-600',
-                        'description' => 'Muestra enviada de nuevo con modificaciones. Espera retroalimentación para finalizar con el seguimiento',
-                        'progress' => 'w-3/4'
+                        'label' => 'Venta cerrada',
+                        'bg-color' => 'bg-green-500',
+                        'text-color' => 'text-green-500',
+                        'border-color' => 'border-green-500',
+                        'description' => 'Orden generada. Venta exitosa',
+                        'progress' => 'w-full'
                     ];
                 }
-            }
-
-            if ($sample->sale_order_at) {
-
-                $status = [
-                    'label' => 'Orden generada. Venta exitosa',
-                    'bg-color' => 'bg-green-500',
-                    'text-color' => 'text-green-500',
-                    'border-color' => 'border-green-500',
-                    'description' => '¡Venta cerrada!',
-                    'progress' => 'w-full'
-                ];
-            } elseif ($sample->denied_at) {
-
-                $status = [
-                    'label' => 'Venta no concretada',
-                    'bg-color' => 'bg-primary',
-                    'text-color' => 'text-primary',
-                    'border-color' => 'border-primary',
-                    'description' => 'Venta no concretada',
-                ];
+                if ($sample->denied_at) {
+                    $status = [
+                        'label' => 'Venta no concretada',
+                        'bg-color' => 'bg-primary',
+                        'text-color' => 'text-primary',
+                        'border-color' => 'border-primary',
+                        'description' => 'Venta no concretada',
+                    ];
+                }
             }
 
             return [
@@ -277,12 +279,13 @@ class SampleController extends Controller
         return to_route('samples.show', $sample->id);
     }
 
-
     public function destroy(Sample $sample)
     {
         $sample->delete();
 
         event(new RecordDeleted($sample));
+
+        return to_route('samples.index');
     }
 
     public function massiveDelete(Request $request)
@@ -294,7 +297,7 @@ class SampleController extends Controller
             event(new RecordDeleted($sample));
         }
 
-        return response()->json(['message' => 'reunion(es) eliminada(s)']);
+        return response()->json(['message' => 'Registro(s) eliminado(s)']);
     }
 
     public function returned(Request $request, Sample $sample)
