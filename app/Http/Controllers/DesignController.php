@@ -27,13 +27,12 @@ class DesignController extends Controller
             $pre_designs = Design::with('user:id,name', 'designer:id,name', 'designType:id,name')
                 ->latest()
                 ->get(['id', 'name', 'created_at', 'user_id', 'designer_id', 'design_type_id', 'authorized_at', 'started_at', 'finished_at', 'has_priority']);
-            
-            $designs = $this->processDataIndex($pre_designs);
-            
-            return inertia('Design/Admin', compact('designs'));
 
+            $designs = $this->processDataIndex($pre_designs);
+
+            return inertia('Design/Admin', compact('designs'));
         } else if (auth()->user()->can('Ordenes de diseño personal')) {
-            
+
             //trae diseños de creadores y trabajadores
             $pre_designs = Design::with('user:id,name', 'designer:id,name', 'designType:id,name')
                 ->where('user_id', auth()->id())
@@ -53,7 +52,7 @@ class DesignController extends Controller
                 ->latest()
                 ->get(['id', 'name', 'created_at', 'user_id', 'designer_id', 'design_type_id', 'authorized_at', 'started_at', 'finished_at', 'has_priority']);
 
-                $designs = $this->processDataIndex($pre_designs);
+            $designs = $this->processDataIndex($pre_designs);
 
             return inertia('Design/Index', compact('designs'));
         }
@@ -112,7 +111,7 @@ class DesignController extends Controller
     {
         $designers = User::where('is_active', 1)->where('employee_properties->department', 'Diseño')->get();
         $design_types = DesignType::all();
-        $company_branches = CompanyBranch::with('contacts:id,contactable_id,contactable_type,name')->latest()->get(['id', 'name']);
+        $company_branches = CompanyBranch::with('contacts:id,contactable_id,contactable_type,name,email,charge')->latest()->get(['id', 'name']);
         $prospects = Prospect::all(['id', 'name', 'contact_name']);
 
         return inertia('Design/Create', compact('designers', 'design_types', 'company_branches', 'prospects'));
@@ -124,12 +123,12 @@ class DesignController extends Controller
             'company_branch_name' => 'required',
             'contact_name' => 'nullable',
             'designer_id' => 'required',
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'design_type_id' => 'required',
             'dimensions' => 'nullable',
             'measure_unit' => 'required',
-            'pantones' => 'nullable',
-            'specifications' => 'required',
+            'pantones' => 'nullable|string|max:255',
+            'specifications' => 'required|string|max:800',
         ]);
 
         $design = Design::create($request->except('original_design_id') + [
@@ -145,19 +144,23 @@ class DesignController extends Controller
             $maribel->notify(new ApprovalRequiredNotification('orden de diseño', 'designs.index'));
         }
 
-        // Guardar el archivo en la colección 'plano'
-        if ($request->hasFile('media_plano')) {
-            $design->addMediaFromRequest('media_plano')->toMediaCollection('plano');
-        }
-
         // Guardar el archivo en la colección 'logo'
         if ($request->hasFile('media_logo')) {
-            $design->addMediaFromRequest('media_logo')->toMediaCollection('logo');
+            $design->addMediaFromRequest('media_logo')
+                ->preservingOriginal() // Preserva el archivo original
+                ->toMediaCollection('logo');
+        }
+
+        // Guardar el archivo en la colección 'plano'
+        if ($request->hasFile('media_plano')) {
+            $design->addMediaFromRequest('media_plano')
+                ->preservingOriginal() // Preserva el archivo original
+                ->toMediaCollection('plano');
         }
 
         event(new RecordCreated($design));
 
-        return to_route('designs.index');
+        return to_route('designs.show', $design->id);
     }
 
     public function show($design_id)
@@ -200,11 +203,12 @@ class DesignController extends Controller
     {
         $designers = User::where('is_active', 1)->where('employee_properties->department', 'Diseño')->get();
         $design_types = DesignType::all();
-        $company_branches = CompanyBranch::with('contacts:id,contactable_id,contactable_type,name')->latest()->get(['id', 'name']);
         $prospects = Prospect::all(['id', 'name', 'contact_name']);
-        $companies = Company::all();
+        $company_branches = CompanyBranch::with('contacts:id,contactable_id,contactable_type,name,email,charge')->latest()->get(['id', 'name']);
+        $media_logo_url = $design->getFirstMediaUrl('logo');
+        $media_plane_url = $design->getFirstMediaUrl('plano');
 
-        return inertia('Design/Edit', compact('design', 'designers', 'design_types', 'companies'));
+        return inertia('Design/Edit', compact('design', 'designers', 'design_types', 'company_branches', 'prospects', 'media_logo_url', 'media_plane_url'));
     }
 
     public function update(Request $request, Design $design)
@@ -213,30 +217,19 @@ class DesignController extends Controller
             'company_branch_name' => 'required',
             'contact_name' => 'nullable',
             'designer_id' => 'required',
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'design_type_id' => 'required',
             'dimensions' => 'nullable',
             'measure_unit' => 'required',
-            'pantones' => 'nullable',
-            'specifications' => 'required',
+            'pantones' => 'nullable|string|max:255',
+            'specifications' => 'required|string|max:800',
         ]);
-
-
-        // Guardar el archivo en la colección 'plano'
-        if ($request->hasFile('media_plano')) {
-            $design->addMediaFromRequest('media_plano')->toMediaCollection('plano');
-        }
-
-        // Guardar el archivo en la colección 'logo'
-        if ($request->hasFile('media_logo')) {
-            $design->addMediaFromRequest('media_logo')->toMediaCollection('logo');
-        }
 
         $design->update($request->except('original_design_id'));
 
         event(new RecordEdited($design));
 
-        return to_route('designs.index');
+        return to_route('designs.show', $design->id);
     }
 
     public function updateWithMedia(Request $request, Design $design)
@@ -245,12 +238,12 @@ class DesignController extends Controller
             'company_branch_name' => 'required',
             'contact_name' => 'nullable',
             'designer_id' => 'required',
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'design_type_id' => 'required',
             'dimensions' => 'nullable',
             'measure_unit' => 'required',
-            'pantones' => 'nullable',
-            'specifications' => 'required',
+            'pantones' => 'nullable|string|max:255',
+            'specifications' => 'required|string|max:800',
         ]);
 
         $design->update($request->except('original_design_id'));
@@ -258,17 +251,24 @@ class DesignController extends Controller
         // update image
         $design->clearMediaCollection('plano');
         $design->clearMediaCollection('logo');
+
+        // Guardar el archivo en la colección 'plano'
         if ($request->hasFile('media_plano')) {
-            $design->addMediaFromRequest('media_plano')->toMediaCollection('plano');
+            $design->addMediaFromRequest('media_plano')
+                ->preservingOriginal() // Preserva el archivo original
+                ->toMediaCollection('plano');
         }
+        // Guardar el archivo en la colección 'logo'
         if ($request->hasFile('media_logo')) {
-            $design->addMediaFromRequest('media_logo')->toMediaCollection('logo');
+            $design->addMediaFromRequest('media_logo')
+                ->preservingOriginal() // Preserva el archivo original
+                ->toMediaCollection('logo');
         }
         $design->save();
 
         event(new RecordEdited($design));
 
-        return to_route('designs.index');
+        return to_route('designs.show', $design->id);
     }
 
 
@@ -339,7 +339,7 @@ class DesignController extends Controller
         } else {
             $designs = DesignResource::collection(Design::with('user', 'designer', 'designType')->where('user_id', auth()->id())->latest()->get());
         }
-        
+
         return response()->json($designs);
     }
 }
