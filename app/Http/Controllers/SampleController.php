@@ -19,7 +19,7 @@ class SampleController extends Controller
     public function index()
     {
         $pre_samples = Sample::with(['catalogProduct:id,name', 'companyBranch:id,name', 'user:id,name'])->latest()
-            ->paginate(20, ['id', 'name', 'quantity', 'sent_at', 'returned_at', 'comments', 'catalog_product_id', 'company_branch_id', 'user_id', 'sale_order_at', 'denied_at', 'will_back', 'authorized_at']);
+            ->paginate(20, ['id', 'name', 'quantity', 'sent_at', 'returned_at', 'comments', 'catalog_product_id', 'company_branch_id', 'user_id', 'sale_order_at', 'requires_modification', 'denied_at', 'will_back', 'authorized_at']);
 
         //procesamiento de la informacion para darle formato a los atributos
         $samples = $this->processDataIndex($pre_samples);

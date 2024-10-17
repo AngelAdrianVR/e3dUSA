@@ -24,6 +24,7 @@
                 <p><i class="fa-solid fa-circle mr-1 text-green-500"></i>Venta cerrada</p>
                 <p><i class="fa-solid fa-circle mr-1 text-primary"></i>Venta no concretada</p>
             </div>
+
             <!-- tabla -->
             <div class="lg:w-5/6 mx-auto mt-6">
                 <NotificationCenter module="samples" />
