@@ -15,8 +15,8 @@
             </template>
 
             <div class="flex space-x-6 items-center justify-center text-xs mt-2">
-                <p class="text-red-500"><i class="fa-solid fa-circle mr-1"></i>Inactivo</p>
-                <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Activo</p>
+                <p><i class="fa-solid fa-circle mr-1 text-red-500"></i>Inactivo</p>
+                <p><i class="fa-solid fa-circle mr-1 text-green-500"></i>Activo</p>
             </div>
 
             <!-- tabla -->

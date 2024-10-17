@@ -22,13 +22,13 @@
             </div>
 
             <!-- Filtro -->
-            <div class="w-44 lg:ml-32 ml-4 mt-2">
+            <!-- <div class="w-44 lg:ml-32 ml-4 mt-2">
                 <el-select @change="fetchItemsFiltered" v-model="filter" class="mt-2" clearable
                     filterable placeholder="Selecciona una opción">
                     <el-option v-for="item in options" :key="item" :label="item"
                         :value="item" />
                 </el-select>
-            </div>
+            </div> -->
 
             <!-- tabla -->
             <div class="relative overflow-hidden min-h-[60vh]">
