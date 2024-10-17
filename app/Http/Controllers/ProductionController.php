@@ -30,11 +30,20 @@ class ProductionController extends Controller
     public function index()
     {
         //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
-        $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch', 'productions.operator')->whereHas('productions', function ($query) {
-            $query->where('productions.user_id', auth()->id());
+        $pre_productions = Sale::with([
+            'user:id,name', 
+            'productions' => ['catalogProductCompanySale:id,catalog_product_company_id,sale_id' 
+                => ['catalogProductCompany:id,catalog_product_id' 
+                => ['catalogProduct:id,name']]], 
+            'companyBranch:id,name', 
+            'productions.operator:id,name'
+        ])
+            ->whereHas('productions', function ($query) {
+            $query->where('productions.operator_id', auth()->id());
         })->latest()
-            ->paginate(10);
-
+            ->paginate(10, ['id', 'user_id', 'created_at', 'status', 'is_high_priority', 'company_branch_id', 'is_sale_production' ]);
+            
+        // return $pre_productions;
         $productions = $this->processDataIndex($pre_productions);
 
         return inertia('Production/Index', compact('productions'));
@@ -44,7 +53,14 @@ class ProductionController extends Controller
     public function adminIndex()
     {
         // Pagina 20 items por página
-        $pre_productions = Sale::with('user', 'productions.catalogProductCompanySale.catalogProductCompany.catalogProduct', 'companyBranch', 'productions.operator')
+        $pre_productions = Sale::with([
+            'user:id,name', 
+            'productions' => ['catalogProductCompanySale:id,catalog_product_company_id,sale_id' 
+                => ['catalogProductCompany:id,catalog_product_id' 
+                => ['catalogProduct:id,name']]], 
+            'companyBranch:id,name', 
+            'productions.operator:id,name'
+        ])
             ->whereHas('productions')
             ->latest()
             ->paginate(10); // Paginar 20 por página
@@ -587,7 +603,7 @@ class ProductionController extends Controller
                 $q->where('name', 'like', "%{$query}%");
             })
             ->latest()
-            ->paginate(100);
+            ->paginate(200);
 
         $productions = $this->processDataIndex($pre_productions);
 

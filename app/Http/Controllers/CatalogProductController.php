@@ -42,7 +42,7 @@ class CatalogProductController extends Controller
         $total_cost = 0;
 
         $validated = $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:254',
             'part_number' => 'required|string|unique:catalog_products,part_number',
             'measure_unit' => 'required|string',
             'min_quantity' => 'required|min:0',
@@ -109,7 +109,7 @@ class CatalogProductController extends Controller
     {
         $total_cost = 0;
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:254',
             'part_number' => 'required|string',
             'measure_unit' => 'required|string',
             'min_quantity' => 'required|min:0',
@@ -144,7 +144,7 @@ class CatalogProductController extends Controller
     {
         $total_cost = 0;
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:254',
             'part_number' => 'required|string',
             'measure_unit' => 'required|string',
             'min_quantity' => 'required|min:0',

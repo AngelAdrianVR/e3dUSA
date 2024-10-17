@@ -16,8 +16,8 @@
       </template>
 
       <div class="flex space-x-6 items-center justify-center text-xs mt-2">
-        <p class="text-amber-500"> <i class="fa-regular fa-clock mr-1"></i>Esperando autorización </p>
-        <p class="text-green-500"><i class="fa-regular fa-circle-check mr-1"></i>Autorizado</p>
+        <p> <i class="fa-regular fa-clock mr-1 text-amber-500"></i>Esperando autorización </p>
+        <p><i class="fa-regular fa-circle-check mr-1 text-green-500"></i>Autorizado</p>
       </div>
 
       <!-- tabla -->

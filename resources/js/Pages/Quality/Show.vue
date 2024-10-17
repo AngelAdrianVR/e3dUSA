@@ -11,7 +11,7 @@
 
         <div class="flex justify-between">
         <div class="md:w-1/3 mr-2">
-          <el-select @change="getQuality" v-model="qualitySelectedId" clearable filterable placeholder="Buscar supervisión"
+          <el-select @change="getQuality" v-model="qualitySelectedId" filterable placeholder="Buscar supervisión"
             no-data-text="No hay inspecciones registradas" no-match-text="No se encontraron coincidencias">
             <el-option v-for="item in qualities" :key="item.id" :label="item.folio" :value="item.id" />
           </el-select>

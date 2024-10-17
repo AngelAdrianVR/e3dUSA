@@ -95,7 +95,7 @@
                                                 Ver</el-dropdown-item>
                                             <el-dropdown-item
                                                 v-if="(scope.row.status['label'] != 'Terminado' && scope.row.user.id == $page.props.auth.user.id) ||
-                            ($page.props.auth.user.permissions.includes('Ordenes de diseño todas') && scope.row.status['label'] != 'Terminado')"
+                                                ($page.props.auth.user.permissions.includes('Ordenes de diseño todas') && scope.row.status['label'] != 'Terminado')"
                                                 :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                                 Editar</el-dropdown-item>
                                         </el-dropdown-menu>
