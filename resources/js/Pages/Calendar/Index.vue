@@ -2,9 +2,9 @@
   <AppLayoutNoHeader title="Calendario">
     <div class="relative overflow-hidden">
       <div class="flex justify-between text-lg mx-2 lg:mx-14 mt-2">
-        <span>Calendario</span>
+        <span>Calendario de actividades</span>
         <Link :href="route('dashboard')"
-          class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+          class="cursor-default w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
         <i class="fa-solid fa-xmark"></i>
         </Link>
       </div>
@@ -13,14 +13,17 @@
         <!-- <span class="text-primary text-sm cursor-pointer">Mes <i class="fa-solid fa-angle-down text-xs ml-2"></i></span> -->
         <span></span>
         <div class="flex justify-between items-center lg:w-1/5">
-          <i @click="changeMonth(-1)" class="fa-solid fa-angle-left text-primary text-xs mr-5 cursor-pointer p-1"></i>
-          <i class="fa-solid fa-calendar-days text-primary text-sm mr-2"></i>
+          <i @click="changeMonth(-1)" class="fa-solid fa-angle-left text-primary text-xs mr-5 cursor-default px-2 py-1 hover:bg-gray2 rounded-full"></i>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-primary mr-2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+          </svg>
+          <!-- <i class="fa-solid fa-calendar-days text-primary text-sm mr-2"></i> -->
           <p class="text-[#cccccc]">|</p>
           <p class="text-sm ml-2 uppercase">{{ currentMonth.toLocaleDateString('es-ES', {
             month: 'long', year: 'numeric'
           })
           }}</p>
-          <i @click="changeMonth(1)" class="fa-solid fa-angle-right text-primary text-xs ml-5 cursor-pointer p-1"></i>
+          <i @click="changeMonth(1)" class="fa-solid fa-angle-right text-primary text-xs ml-5 cursor-default px-2 py-1 hover:bg-gray2 rounded-full"></i>
         </div>
         <div class="flex space-x-2">
           <Link :href="route('calendars.create')">
@@ -38,34 +41,41 @@
       <!-- -------------- calendar section --------------- -->
       <section @click="selectedDay = null" class="w-11/12 mx-auto mb-24 min-h-screen">
         <table class="w-full mt-12">
-          <tr class="text-center">
-            <th class="py-2 w-[14.28%] border border-[#9A9A9A]">DOM</th>
-            <th class="py-2 w-[14.28%] border border-[#9A9A9A]">LUN</th>
-            <th class="py-2 w-[14.28%] border border-[#9A9A9A]">MAR</th>
-            <th class="py-2 w-[14.28%] border border-[#9A9A9A]">MIE</th>
-            <th class="py-2 w-[14.28%] border border-[#9A9A9A]">JUE</th>
-            <th class="py-2 w-[14.28%] border border-[#9A9A9A]">VIE</th>
-            <th class="py-2 w-[14.28%] border border-[#9A9A9A]">SAB</th>
+          <tr class="text-center *:py-2 *:w-[14.28%] *:border *:border-[#9A9A9A] *:bg-gray2 *:text-secondary">
+            <th>DOM</th>
+            <th>LUN</th>
+            <th>MAR</th>
+            <th>MIE</th>
+            <th>JUE</th>
+            <th>VIE</th>
+            <th>SAB</th>
           </tr>
           <tr v-for="(week, index) in weeks" :key="index" class="text-sm text-right">
             <td v-for="day in week" :key="day" class="h-32 pb-4 border border-[#9A9A9A] relative">
-              <p class="absolute bottom-0 right-3">{{ day }}</p>
+              <p :class="{'bg-gray-500': day}" class="absolute bottom-0 right-0 rounded-full size-6 flex items-center justify-center text-white text-center"><span>{{ day }}</span></p>
               <!-- Agregar línea para tareas y eventos -->
               <div v-for="task in tasks.data" :key="task.id">
                 <div class="" v-if="isTaskDay(task, day)">
                   <div @click.stop="selectedTask = task; selectedDay = day"
-                    :class="task.type === 'Tarea' ? 'bg-[#B9D9FE] border-[#0355B5] border-l-4 border' : 'bg-[#FDB9C9] border-[#D90537] border-l-4 border'"
+                    :class="task.type === 'Tarea' ? 'bg-[#bfdbfc] border-[#0355B5] border-l-4 border' : 'bg-[#FDB9C9] border-[#D90537] border-l-4 border'"
                     class="h-5 rounded-sm my-1 text-xs justify-center items-center cursor-pointer flex relative">
-                    <p>{{ task.title }} <i v-if="task.status === 'Terminada'"
-                        class="fa-solid fa-check ml-3 text-sm font-bold text-green-600"></i></p>
+                    <p class="flex ">{{ task.title }}
+                        <svg v-if="task.status === 'Terminada'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" 
+                          class="size-4 text-green-600 ml-4">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+
+                       <!-- <i v-if="task.status === 'Terminada'" class="fa-solid fa-check ml-3 text-sm font-bold text-green-500"></i> -->
+                       </p>
+
                     <div v-if="selectedTask === task && selectedDay == day" style="z-index: 999;"
-                      class="px-1 pb-3 absolute -bottom-56 w-56 h-auto bg-[#D9D9D9] rounded-md border cursor-default">
+                      class="px-1 pb-3 absolute -bottom-[185px] w-64 h-auto bg-[#D9D9D9] rounded-md border cursor-default">
                       <!-- --- Head --- -->
                       <div class="flex items-center justify-end">
                         <p :class="selectedTask.type === 'Tarea' ? 'border-[#0355B5] bg-[#B9D9FE]' : 'bg-[#FDB9C9] border-[#D90537]'"
-                          class="border inline rounded-md py-[1px] px-[2px]">{{ selectedTask.type }}</p>
+                          class="border inline rounded-md py-[1px] px-[4px]">{{ selectedTask.type }}</p>
                         <i @click.stop="selectedTask = null; selectedDay = null"
-                          class="fa-solid fa-xmark text-xs p-2 ml-4 cursor-pointer"></i>
+                          class="fa-solid fa-xmark text-xs p-2 ml-4 cursor-default hover:text-red-500"></i>
                       </div>
                       <!-- --- Body --- -->
                       <div class="px-3">
