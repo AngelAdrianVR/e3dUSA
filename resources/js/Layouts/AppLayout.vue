@@ -559,7 +559,7 @@ onMounted(() => {
                         </a>
                       </el-tooltip>
                       <div v-if="unseenMessages > 0"
-                        class="absolute bottom-4 right-5 bg-primary text-white w-4 h-4 flex items-center justify-center text-[10px] rounded-full">
+                        class="absolute bottom-6 right-11 bg-primary text-white w-4 h-4 flex items-center justify-center text-[10px] rounded-full">
                         {{ unseenMessages }}
                       </div>
                     </div>
