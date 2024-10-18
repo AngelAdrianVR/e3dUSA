@@ -167,6 +167,7 @@ class SaleController extends Controller
         $sale = Sale::find($sale->id);
         $catalog_products_company_sale = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')->where('sale_id', $sale->id)->get();
         $media = $sale->getMedia('oce')->all();
+        $media_oce_url = $sale->getFirstMediaUrl('oce');
 
         //optimizacion de datos en vista para reducir el tiempo de carga
         $pre_company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
@@ -196,8 +197,6 @@ class SaleController extends Controller
                     'raw_materials' => $raw_materials,
                 ];
             });
-
-
             $contacts = $company_branch->contacts->map(function ($contact) {
                 return [
                     'id' => $contact->id,
@@ -208,7 +207,6 @@ class SaleController extends Controller
                     'additional_phones' => $contact->additional_phones,
                 ];
             });
-
             return [
                 'id' => $company_branch->id,
                 'name' => $company_branch->name,
@@ -218,7 +216,7 @@ class SaleController extends Controller
             ];
         });
 
-        return inertia('Sale/Edit', compact('company_branches', 'sale', 'catalog_products_company_sale', 'media'));
+        return inertia('Sale/Edit', compact('company_branches', 'sale', 'catalog_products_company_sale', 'media', 'media_oce_url'));
     }
 
     public function update(Request $request, Sale $sale)
@@ -290,7 +288,7 @@ class SaleController extends Controller
         $sale->update($request->except('products'));
 
         // media
-        $sale->clearMediaCollection();
+        $sale->clearMediaCollection('oce');
         $sale->addAllMediaFromRequest()->each(fn($file) => $file->toMediaCollection('oce'));
 
         foreach ($request->products as $product) {

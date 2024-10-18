@@ -25,7 +25,7 @@
             <div class="md:grid gap-x-6 gap-y-2 grid-cols-2 my-3">
                 <div>
                     <InputLabel value="Marca del producto *" />
-                        <el-input v-model="brand" @change="generatePartNumber" placeholder="Ej. Toyota" />
+                    <el-input v-model="brand" @change="generatePartNumber" placeholder="Ej. Toyota" />
                 </div>
                 <div>
                     <InputLabel value="Nombre del producto *" />
@@ -34,7 +34,7 @@
                 </div>
                 <div>
                     <InputLabel value="Número de parte *" />
-                    <el-input v-model="form.part_number" placeholder="Generación automática" />
+                    <el-input v-model="form.part_number" placeholder="Generación automática" disabled />
                     <InputError :message="form.errors.part_number" />
                 </div>
                 <div>
@@ -48,91 +48,75 @@
                 </div>
                 <div>
                     <InputLabel value="Cantidad mínima" />
-                    <el-input v-model="form.min_quantity" placeholder="Cantidad mínima de stock" 
+                    <el-input v-model="form.min_quantity" type="text"
                         :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                        :parser="(value) => value.replace(/\$\s?|(,*)/g, '')"/>
+                        :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 500">
+                    </el-input>
                     <InputError :message="form.errors.min_quantity" />
                 </div>
                 <div>
                     <InputLabel value="Cantidad máxima" />
-                    <el-input v-model="form.max_quantity" placeholder="Cantidad máxima de stock"
+                    <el-input v-model="form.max_quantity" type="text"
                         :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                        :parser="(value) => value.replace(/\$\s?|(,*)/g, '')"/>
+                        :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 1,000" />
                     <InputError :message="form.errors.max_quantity" />
                 </div>
                 <div class="col-span-full">
                     <InputLabel value="Descripción" />
-                    <el-input
-                        v-model="form.description"
-                        rows="3"
-                        maxlength="800"
-                        placeholder="Descripción"
-                        show-word-limit
-                        type="textarea"
-                    />
+                    <el-input v-model="form.description" :rows="3" maxlength="800" placeholder="Descripción"
+                        show-word-limit type="textarea" />
                     <InputError :message="form.errors.max_quantity" />
-                </div>            
+                </div>
                 <div class="col-span-full my-2">
-                    <div class="flex space-x-2 mb-1">
-                        <IconInput v-model="newFeature" inputPlaceholder="Ingresa una caracteristica" inputType="text"
-                            class="w-full">
-                            <el-tooltip content="Caracteristicas" placement="top">
-                                <i class="fa-solid fa-palette"></i>
-                            </el-tooltip>
-                        </IconInput>
-                        <SecondaryButton @click="addFeature" type="button">
+                    <InputLabel value="Caracteristicas" />
+                    <div class="flex mb-1">
+                        <el-input v-model="newFeature" type="text" placeholder="Ej. Color cromado" />
+                        <SecondaryButton @click="addFeature" type="button" class="!rounded-r-full !rounded-l-none" :disabled="!newFeature">
                             Agregar
                             <i class="fa-solid fa-arrow-down ml-2"></i>
                         </SecondaryButton>
                     </div>
-                    <el-select v-model="form.features" multiple clearable placeholder="Caracteristicas"
+                    <el-select v-model="form.features" multiple clearable placeholder="Ninguna caracteristica agregada"
                         no-data-text="Agrega primero una caracteristica">
                         <el-option v-for="feature in features" :key="feature" :label="feature"
                             :value="feature"></el-option>
                     </el-select>
                 </div>
-                <el-upload action="#" list-type="picture-card" 
-                    :auto-upload="false" 
-                    :on-change="handleChange" class="col-span-full"
-                    :on-remove="handleRemoveImage"
-                    v-model:file-list="fileList"
-                    ref="upload">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7 text-black">
+                <el-upload action="#" list-type="picture-card" :auto-upload="false" :on-change="handleChange"
+                    class="col-span-full" :on-remove="handleRemoveImage" v-model:file-list="fileList" ref="upload">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-7 text-black">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
-
                     <template #file="{ file }">
-                    <div>
-                        <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
-                        <span class="el-upload-list__item-actions">
-                            <span
-                                class="el-upload-list__item-preview"
-                                @click="handlePictureCardPreview(file)"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-white">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
-                                </svg>
+                        <div>
+                            <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
+                            <span class="el-upload-list__item-actions">
+                                <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-6 text-white">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
+                                    </svg>
 
-                            </span>
-                            <span
-                                class="el-upload-list__item-delete"
-                                @click="handleDownloadImage(file)"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-white">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                                </svg>
+                                </span>
+                                <span class="el-upload-list__item-delete" @click="handleDownloadImage(file)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-6 text-white">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                    </svg>
 
+                                </span>
+                                <span class="el-upload-list__item-delete" @click="handleRemoveImage(file)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                    </svg>
+                                </span>
                             </span>
-                            <span
-                                class="el-upload-list__item-delete"
-                                @click="handleRemoveImage(file)"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                </svg>
-                            </span>
-                        </span>
-                    </div>
+                        </div>
                     </template>
                 </el-upload>
 
@@ -143,38 +127,8 @@
                 <el-divider content-position="left" class="col-span-full">Componentes de este producto</el-divider>
 
                 <!-- product components -->
-                <InputError :message="form.errors.rawMaterials" class="col-span-full" />
-                <ol v-if="form.raw_materials.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
-                    <template v-for="(item, index) in form.raw_materials" :key="index">
-                        <li class="flex justify-between items-center">
-                            <p class="text-sm">
-                                <span class="text-primary">{{ index + 1 }}.</span>
-                                {{ raw_materials.find(prd => prd.id === item.raw_material_id)?.name }}
-                                (x{{ item.quantity }} unidades)
-                            </p>
-                            <div class="flex space-x-2 items-center">
-                                <el-tag v-if="editIndex == index">En edición</el-tag>
-                                <el-button @click="editProduct(index)" type="primary" circle>
-                                    <i class="fa-sharp fa-solid fa-pen-to-square"></i>
-                                </el-button>
-                                <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
-                                    title="¿Continuar?" @confirm="deleteProduct(index)">
-                                    <template #reference>
-                                        <el-button type="danger" circle><i
-                                                class="fa-sharp fa-solid fa-trash"></i></el-button>
-                                    </template>
-                                </el-popconfirm>
-                            </div>
-                        </li>
-                    </template>
-                </ol>
-                <div class="flex items-center my-2">
-                    <el-tooltip content="Materias primas" placement="top">
-                        <span
-                            class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </span>
-                    </el-tooltip>
+                <div>
+                    <InputLabel value="Materias primas*" />
                     <el-select @change="fetchRawMaterial" v-model="rawMaterial.raw_material_id" clearable filterable
                         placeholder="Busca en materias primas" no-data-text="No hay materias primas registradas"
                         no-match-text="No se encontraron coincidencias">
@@ -184,33 +138,24 @@
                 <div v-if="loading" class="rounded-md bg-[#CCCCCC] text-xs text-gray-500 text-center p-4">
                     cargando imagen...
                 </div>
-                <figure v-else-if="selectedRawMaterial" class="rounded-md">
+                <figure v-else-if="selectedRawMaterial" class="rounded-md border border-[#9a9a9a]">
                     <img :src="selectedRawMaterial.media[0]?.original_url" class="rounded-md object-cover w-36">
                 </figure>
-                <div class="flex items-center mb-2">
-                    <el-tooltip content="proceso(s) de produccion" placement="top">
-                        <span
-                            class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </span>
-                    </el-tooltip>
+                <div>
+                    <InputLabel value="proceso(s) de producción" />
                     <el-select v-model="rawMaterial.production_costs" multiple clearable filterable
-                        placeholder="Selecciona proceso(s) de produccion" no-data-text="No hay procesos registradas"
+                        placeholder="Selecciona proceso(s) de producción" no-data-text="No hay procesos registradas"
                         no-match-text="No se encontraron coincidencias">
                         <el-option v-for="item in production_costs" :key="item.id" :label="item.name"
                             :value="item.id" />
                     </el-select>
-
                 </div>
-                <div class="grid grid-cols-3 gap-x-1">
-                    <IconInput v-model="rawMaterial.quantity" inputPlaceholder="Cantidad necesaria *" inputType="number"
-                        inputStep="0.1" class="col-span-2">
-                        <el-tooltip content="Cantidad necesaria de materia prima seleccionada" placement="top">
-                            #
-                        </el-tooltip>
-                    </IconInput>
-                    <span class="text-sm pt-2">{{ raw_materials.find(item => item.id ==
-                        rawMaterial.raw_material_id)?.measure_unit }}</span>
+                <div>
+                    <InputLabel value="Cantidad necesaria*" />
+                    <el-input v-model="rawMaterial.quantity" type="text"
+                        :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                        :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 1">
+                    </el-input>
                 </div>
                 <div calss="col-span-full">
                     <SecondaryButton @click="addProduct" type="button"
@@ -218,6 +163,43 @@
                         {{ editIndex !== null ? 'Actualizar componente' : 'Agregar componente a lista' }}
                     </SecondaryButton>
                 </div>
+                <InputError :message="form.errors.raw_materials" class="col-span-full" />
+                <ol v-if="form.raw_materials.length"
+                    class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1 mt-3 divide-y-[1px]">
+                    <template v-for="(item, index) in form.raw_materials" :key="index">
+                        <li class="flex justify-between border-[#999999] items-center py-1">
+                            <p class="text-xs">
+                                <span class="text-primary">{{ index + 1 }}.</span>
+                                {{ raw_materials.find(prd => prd.id === item.raw_material_id)?.name }}
+                                (x{{ item.quantity }} unidades)
+                            </p>
+                            <div class="flex space-x-2 items-center">
+                                <el-tag v-if="editIndex == index">En edición</el-tag>
+                                <button @click="editProduct(index)" type="button"
+                                    class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                    </svg>
+                                </button>
+                                <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                                    title="¿Continuar?" @confirm="deleteProduct(index)">
+                                    <template #reference>
+                                        <button type="button"
+                                            class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="size-4">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                            </svg>
+                                        </button>
+                                    </template>
+                                </el-popconfirm>
+                            </div>
+                        </li>
+                    </template>
+                </ol>
             </div>
 
             <el-divider />
@@ -433,9 +415,9 @@ export default {
         handleRemoveImage(file, fileList) {
             console.log('archivo:', file);
             this.$confirm('¿Estás seguro de eliminar este archivo?', 'Confirmar', {
-            confirmButtonText: 'Sí',
-            cancelButtonText: 'No',
-            type: 'warning'
+                confirmButtonText: 'Sí',
+                cancelButtonText: 'No',
+                type: 'warning'
             }).then(() => {
 
                 // Remover de form.media
@@ -497,10 +479,10 @@ export default {
         async fetchRawMaterial() {
             this.loading = true;
             try {
-                const response = await axios.get(route('raw-materials.fetch', this.rawMaterial.raw_material_id)); 
+                const response = await axios.get(route('raw-materials.fetch', this.rawMaterial.raw_material_id));
 
                 if (response.status === 200) {
-                this.selectedRawMaterial = response.data.item;
+                    this.selectedRawMaterial = response.data.item;
                 }
 
             } catch (error) {
