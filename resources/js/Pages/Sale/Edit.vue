@@ -50,9 +50,8 @@
                     <div class="grid grid-cols-2 gap-3 mt-4">
                         <div>
                             <InputLabel value="Cliente*" />
-                            <el-select @change="handleCompanyBranchIdChange"
-                                v-model="form.company_branch_id" clearable filterable
-                                placeholder="Selecciona un cliente">
+                            <el-select @change="handleCompanyBranchIdChange" v-model="form.company_branch_id" clearable
+                                filterable placeholder="Selecciona un cliente">
                                 <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
@@ -406,7 +405,8 @@
                             </div>
                             <div>
                                 <InputLabel value="Archivo" />
-                                <FileUploader @files-selected="this.form.media = $event" :multiple="false" />
+                                <FileUploader @files-selected="handleMediaSelected" :multiple="false"
+                                    :existingFileUrls="media_oce_url ? [media_oce_url] : []" />
                                 <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
                                     PDF, PNG, JPG,(MAX 4 GB)
                                 </p>
@@ -414,7 +414,8 @@
                         </div>
                     </section>
                     <div class="mt-10 mx-3 md:text-right">
-                        <PrimaryButton :disabled="form.processing || !form.products.length || !form.partialities.length">
+                        <PrimaryButton
+                            :disabled="form.processing || !form.products.length || !form.partialities.length">
                             Guardar cambios
                         </PrimaryButton>
                     </div>
@@ -508,6 +509,7 @@ export default {
             alertMaxQuantity: 0,
             selectedCatalogProduct: null,
             commitedUnits: null,
+            mediaEdited: false,
             shippingCompanies: [
                 'PAQUETEXPRESS',
                 'LOCAL',
@@ -549,8 +551,13 @@ export default {
         catalog_products_company_sale: Array,
         sale: Object,
         media: Array,
+        media_oce_url: String,
     },
     methods: {
+        handleMediaSelected(files, mediaUpdated) {
+            this.form.media = files;
+            this.mediaEdited = mediaUpdated;
+        },
         handleCompanyBranchIdChange() {
             this.getImportantNotes();
             this.getDesignAuthorizations();
@@ -613,7 +620,7 @@ export default {
             }
         },
         update() {
-            if (this.form.media !== null) {
+            if (this.mediaEdited) {
                 this.form.post(route("sales.update-with-media", this.sale), {
                     method: '_put',
                     onSuccess: () => {
@@ -625,6 +632,7 @@ export default {
                     },
                 });
             } else {
+                this.form.media = null;
                 this.form.put(route("sales.update", this.sale), {
                     onSuccess: () => {
                         this.$notify({

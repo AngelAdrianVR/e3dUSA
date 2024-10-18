@@ -286,7 +286,7 @@ class DesignController extends Controller
             event(new RecordDeleted($design));
         }
 
-        return response()->json(['message' => 'Cliente(s) eliminado(s)']);
+        return response()->json(['message' => 'Diseño(s) eliminado(s)']);
     }
 
     public function startOrder(Request $request, Design $design)

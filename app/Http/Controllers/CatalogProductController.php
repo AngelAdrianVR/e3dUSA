@@ -21,7 +21,6 @@ class CatalogProductController extends Controller
         return inertia('CatalogProduct/Index', compact('catalog_products'));
     }
 
-
     public function create()
     {
         $raw_materials = RawMaterial::all(['id', 'name']);
@@ -35,7 +34,6 @@ class CatalogProductController extends Controller
         return inertia('CatalogProduct/Create', compact('raw_materials', 'production_costs', 'consecutive'));
     }
 
-
     public function store(Request $request)
     {
         // total production cost
@@ -48,7 +46,8 @@ class CatalogProductController extends Controller
             'min_quantity' => 'required|min:0',
             'max_quantity' => 'required|min:0',
             'description' => 'nullable',
-            'raw_materials.*.production_cost' => 'array|min:1'
+            'raw_materials.*.production_cost' => 'array|min:1',
+            'features' => 'nullable',
         ]);
 
         // consecutive
@@ -82,7 +81,6 @@ class CatalogProductController extends Controller
         return to_route('catalog-products.show', $catalog_product->id);
     }
 
-
     public function show($catalog_product_id)
     {
         $catalog_product = CatalogProductResource::make(CatalogProduct::with(['rawMaterials:id,name,part_number' 
@@ -91,7 +89,6 @@ class CatalogProductController extends Controller
         
         return inertia('CatalogProduct/Show', compact('catalog_products', 'catalog_product'));
     }
-
 
     public function edit(CatalogProduct $catalog_product)
     {
@@ -104,7 +101,6 @@ class CatalogProductController extends Controller
         return inertia('CatalogProduct/Edit', compact('catalog_product', 'production_costs', 'raw_materials', 'media'));
     }
 
-
     public function update(Request $request, CatalogProduct $catalog_product)
     {
         $total_cost = 0;
@@ -114,7 +110,8 @@ class CatalogProductController extends Controller
             'measure_unit' => 'required|string',
             'min_quantity' => 'required|min:0',
             'max_quantity' => 'required|min:0',
-            'description' => 'nullable'
+            'description' => 'nullable',
+            'raw_materials.*.production_cost' => 'array|min:1',
         ]);
 
         $catalog_product->update($request->all());
@@ -149,7 +146,8 @@ class CatalogProductController extends Controller
             'measure_unit' => 'required|string',
             'min_quantity' => 'required|min:0',
             'max_quantity' => 'required|min:0',
-            'description' => 'nullable'
+            'description' => 'nullable',
+            'raw_materials.*.production_cost' => 'array|min:1'
         ]);
 
         $catalog_product->update($request->all());
@@ -169,7 +167,6 @@ class CatalogProductController extends Controller
         $catalog_product->clearMediaCollection();
         $catalog_product->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
 
-
         $catalog_product->update(['cost' => $total_cost]);
 
         event(new RecordEdited($catalog_product));
@@ -177,7 +174,6 @@ class CatalogProductController extends Controller
         // return to_route('catalog-products.index');
         return to_route('catalog-products.show', $catalog_product->id);
     }
-
 
     public function destroy(CatalogProduct $catalog_product)
     {
