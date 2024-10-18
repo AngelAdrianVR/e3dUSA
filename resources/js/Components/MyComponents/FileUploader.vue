@@ -25,7 +25,7 @@
         </button>
 
         <div v-if="selectedFiles.length">
-            <ul class="lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5 text-sm mt-2" :class="multiple ? 'grid' : null">
+            <ul class="text-sm my-2">
                 <li v-for="(file, index) in selectedFiles" :key="index" class="flex items-center justify-between px-2">
                     <p class="flex items-center">
                         <i :class="getFileTypeIcon(file.name)"></i>

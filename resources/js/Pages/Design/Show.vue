@@ -114,12 +114,14 @@
             <div>
               <InputLabel>
                 <div class="flex items-center space-x-2">
-                  <span>Archivos de resultado*</span>
+                  <span>Archivos de resultado</span>
                   <el-tooltip placement="top">
                     <template #content>
                       <p>
                         Puedes subir todos los archivos que necesites <br>
-                        para dar por terminada la orden. No es obligatorio.
+                        para dar por terminada la orden. <br> 
+                        En caso de no requerir subir archivos solo da clic <br>
+                        En "Subir" para indicar que la orden se a completado.
                       </p>
                     </template>
                     <div class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
@@ -278,6 +280,7 @@ export default {
             type: "success",
           });
 
+          this.design.data.expected_end_at = response.data.item.expected_end_at;
           this.design.data.started_at = response.data.item.started_at;
           this.form.reset();
           this.startOrderModal = false;
