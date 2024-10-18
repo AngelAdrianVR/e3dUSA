@@ -90,9 +90,6 @@ import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
-import SupplierBankCard from "@/Components/MyComponents/SupplierBankCard.vue";
-import SupplierContactCard from "@/Components/MyComponents/SupplierContactCard.vue";
-import SupplierProductCard from "@/Components/MyComponents/SupplierProductCard.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
@@ -122,9 +119,6 @@ export default {
     ConfirmationModal,
     CancelButton,
     PrimaryButton,
-    SupplierBankCard,
-    SupplierProductCard,
-    SupplierContactCard,
     Link,
     General,
     Contacts,
