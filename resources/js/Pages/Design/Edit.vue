@@ -355,8 +355,11 @@ export default {
           },
         });
       } else {
-        this.form.put(
-          route("designs.update", this.design), {
+        // borrar los archivos para evitar error al enviar formulario por PUT
+        this.form.media_logo = null;
+        this.form.media_plano = null;
+        
+        this.form.put(route("designs.update", this.design), {
           onSuccess: () => {
             this.$notify({
               title: "Éxito",
