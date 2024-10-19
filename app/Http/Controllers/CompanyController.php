@@ -67,6 +67,8 @@ class CompanyController extends Controller
             }
 
             foreach ($request->products as $product) {
+                $product['new_updated_by'] = auth()->user()->name;
+                $product['old_updated_by'] = $product['old_price'] ? auth()->user()->name : null;
                 $company->catalogProducts()->attach($product['catalog_product_id'], $product);
             }
         }
@@ -89,8 +91,6 @@ class CompanyController extends Controller
         });
 
         $defaultTab = request('defaultTab');
-
-        // return $company;
 
         return inertia('Company/Show', compact('company', 'companies', 'defaultTab'));
     }

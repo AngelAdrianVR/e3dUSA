@@ -37,7 +37,7 @@
                     {{ catalogProductCompany.pivot.oldest_currency }}
                 </div>
                 <div class="table-cell text-left py-2 px-4 border-b border-r border-[#9A9A9A]">
-                    {{ catalogProductCompany.pivot.user?.name ?? '--' }}
+                    {{ catalogProductCompany.pivot.oldest_updated_by ?? '--' }}
                 </div>
                 <div class="table-cell text-left py-2 px-4 border-l border-b border-[#9A9A9A]">
                     {{ catalogProductCompany.pivot.old_date ? formatDate(catalogProductCompany.pivot.old_date) : '--' }}
@@ -47,7 +47,7 @@
                     {{ catalogProductCompany.pivot.old_currency }}
                 </div>
                 <div class="table-cell text-left py-2 px-4 border-b border-r border-[#9A9A9A]">
-                    {{ catalogProductCompany.pivot.user?.name ?? '--' }}
+                    {{ catalogProductCompany.pivot.old_updated_by ?? '--' }}
                 </div>
                 <div class="table-cell text-left py-2 px-4 border-l border-b border-[#9A9A9A]">
                     {{ formatDate(catalogProductCompany.pivot.new_date) }}
@@ -56,7 +56,7 @@
                     {{ catalogProductCompany.pivot.new_price + ' ' + catalogProductCompany.pivot.new_currency }}
                 </div>
                 <div class="table-cell text-left py-2 px-4 border-b border-r border-[#9A9A9A]">
-                    {{ catalogProductCompany.pivot.user?.name ?? '--' }}
+                    {{ catalogProductCompany.pivot.new_updated_by ?? '--' }}
                 </div>
             </div>
         </div>
@@ -73,6 +73,7 @@
                     <el-input v-model="form.new_price" type="text"
                     :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                     :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 30.90" />
+                    <InputError :message="form.errors.new_price" />
                 </div>
                 <div>
                     <InputLabel value="Moneda*" />
@@ -82,6 +83,7 @@
                             <span style="float: right; color: #cccccc; font-size: 13px">{{ item.value }}</span>
                         </el-option>
                     </el-select>
+                    <InputError :message="form.errors.new_currency" />
                 </div>
             </section>
         </template>
@@ -102,6 +104,7 @@ import { useForm } from "@inertiajs/vue3";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import InputLabel from "@/Components/InputLabel.vue";
+import InputError from "@/Components/InputError.vue";
 
 export default {
     data() {
@@ -124,6 +127,7 @@ export default {
         CancelButton,
         DialogModal,
         InputLabel,
+        InputError,
     },
     props: {
         catalogProductsCompany: Object
