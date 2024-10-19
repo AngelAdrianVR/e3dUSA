@@ -61,36 +61,12 @@
               <InputError :message="form.errors.seller_id" />
             </div>
           </div>
-          <!-- ---------------- Company ends ----------------- -->
 
           <!-- ---------------- Company Branch starts ----------------- -->
           <el-divider content-position="left">Sucursales</el-divider>
           <button @click="prefillBranchForm" type="button"
             class="text-sm text-primary underline w-full text-right pr-7">Llenar sucursal con la información
             anterior</button>
-          <ol v-if="form.company_branches.length"
-            class="rounded-lg bg-[#CCCCCC] px-5 pb-3 col-span-full space-y-1 mb-2">
-            <template v-for="(item, index) in form.company_branches" :key="index">
-              <li class="flex justify-between items-center">
-                <p class="text-sm">
-                  <span class="text-primary">{{ index + 1 }}.</span>
-                  {{ item.name }}
-                </p>
-                <div class="flex space-x-2 items-center">
-                  <el-tag v-if="editBranchIndex == index">En edición</el-tag>
-                  <el-button @click="editBranch(index)" type="primary" circle>
-                    <i class="fa-sharp fa-solid fa-pen-to-square"></i>
-                  </el-button>
-                  <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
-                    title="¿Continuar?" @confirm="deleteBranch(index)">
-                    <template #reference>
-                      <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>
-                    </template>
-                  </el-popconfirm>
-                </div>
-              </li>
-            </template>
-          </ol>
           <InputError :message="form.errors.company_branches" />
           <div class="space-y-3 md:w-[92%] mx-auto border-2 border-[#b8b7b7] rounded-lg p-5">
             <div>
@@ -103,7 +79,7 @@
             </div>
             <div>
               <InputLabel value="Estado*" />
-              <el-select v-model="form.state" filterable placeholder="Selecciona el estado de la república"
+              <el-select v-model="branch.state" filterable placeholder="Selecciona el estado de la república"
                 class="w-full" no-data-text="No hay opciones para mostrar"
                 no-match-text="No se encontraron coincidencias">
                 <el-option v-for="(item, index) in states" :key="index" :label="item" :value="item" />
@@ -165,8 +141,8 @@
                   <el-tooltip placement="top">
                     <template #content>
                       <p>
-                        Días sin movimientos (cotizaciones, OV o muestras) para notificar <br>
-                        como sucursal inactiva y poder reactivar interacciones.
+                        Al pasar estos días sin movimientos (cotizaciones, OV o muestras) <br>
+                        Se notificará por correo para poder reactivar interacciones con el cliente.
                       </p>
                     </template>
                     <div class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
@@ -204,28 +180,6 @@
 
             <!-- ---------------- Company Contacts starts ----------------- -->
             <el-divider content-position="left">Contactos</el-divider>
-            <ol v-if="contacts.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
-              <template v-for="(item, index) in contacts" :key="index">
-                <li class="flex justify-between items-center">
-                  <p class="text-sm">
-                    <span class="text-primary">{{ index + 1 }}.</span>
-                    {{ item.name }} | {{ item.email }}
-                  </p>
-                  <div class="flex space-x-2 items-center">
-                    <el-tag v-if="editContactIndex == index">En edición</el-tag>
-                    <el-button @click="editContact(index)" type="primary" circle>
-                      <i class="fa-sharp fa-solid fa-pen-to-square"></i>
-                    </el-button>
-                    <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
-                      title="¿Continuar?" @confirm="deleteContact(index)">
-                      <template #reference>
-                        <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>
-                      </template>
-                    </el-popconfirm>
-                  </div>
-                </li>
-              </template>
-            </ol>
             <div class="md:w-[92%] mx-auto pt-3 md:space-y-3 rounded-lg p-5 border-2 border-[#b8b7b7]">
               <div>
                 <InputLabel value="Nombre de contacto*" />
@@ -239,18 +193,14 @@
               </div>
               <div class="md:grid gap-x-6 gap-y-2 md:mb-6 grid-cols-2">
                 <div class="cols-pan-full">
-                  <InputLabel value="email" />
+                  <InputLabel value="email*" />
                   <el-input v-model="contact.email" placeholder="Ej. usuario@ejemplo.com" />
 
                   <!-- correos adicionales -->
                   <div v-for="(additionalEmail, index) in contact.additional_emails" :key="index"
                     class="flex items-center">
-                    <IconInput v-model="contact.additional_emails[index]"
-                      inputPlaceholder="Correo electrónico adicional" inputType="email">
-                      <el-tooltip content="Correo electrónico adicional" placement="top">
-                        <i class="fa-solid fa-envelope"></i>
-                      </el-tooltip>
-                    </IconInput>
+                    <el-input v-model="contact.additional_emails[index]" placeholder="Ej. usuario2@ejemplo.com"
+                      class="mt-2" />
                     <button @click="removeAdditionalEmail(index)" type="button"
                       class="text-sm ml-1 hover:text-primary">x</button>
                   </div>
@@ -258,20 +208,12 @@
                     correo</button>
                 </div>
                 <div>
-                  <IconInput v-model="contact.phone" inputPlaceholder="Teléfono principal *" inputType="text">
-                    <el-tooltip content="Teléfono principal *" placement="top">
-                      <i class="fa-solid fa-phone"></i>
-                    </el-tooltip>
-                  </IconInput>
+                  <InputLabel value="Teléfono principal*" />
+                  <el-input v-model="contact.phone" placeholder="Ej. 3316879633" />
                   <!-- telefonos adicionales -->
                   <div v-for="(additionalPhone, index) in contact.additional_phones" :key="index"
                     class="flex items-center">
-                    <IconInput v-model="contact.additional_phones[index]" inputPlaceholder="Teléfono adicional"
-                      inputType="text">
-                      <el-tooltip content="Teléfono adicional" placement="top">
-                        <i class="fa-solid fa-phone"></i>
-                      </el-tooltip>
-                    </IconInput>
+                    <el-input v-model="contact.additional_phones[index]" placeholder="Ej. 3316879633" class="mt-2" />
                     <button @click="removeAdditionalPhone(index)" type="button"
                       class="text-sm ml-1 hover:text-primary">x</button>
                   </div>
@@ -280,13 +222,8 @@
                 </div>
               </div>
               <div>
-                <div class="flex items-center">
-                  <el-tooltip content="Cumpleaños" placement="top">
-                    <span
-                      class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md ">
-                      <i class="fa-solid fa-cake"></i>
-                    </span>
-                  </el-tooltip>
+                <div>
+                  <InputLabel value="Cumpleaños*" />
                   <div class="grid grid-cols-2 gap-2 w-full">
                     <el-select v-model="contact.birthdate_day" placeholder="Dia">
                       <el-option v-for="day in 31" :key="day" :label="day" :value="day" />
@@ -297,8 +234,8 @@
                   </div>
                 </div>
               </div>
-              <SecondaryButton @click="addContact" :disabled="!this.contact.name || !this.contact.email || !this.contact.phone || !this.contact.charge
-                ">
+              <SecondaryButton @click="addContact"
+                :disabled="!this.contact.name || !this.contact.email || !this.contact.phone || !this.contact.charge">
                 {{
                   editContactIndex !== null
                     ? "Actualizar contacto"
@@ -306,6 +243,40 @@
                 }}
               </SecondaryButton>
             </div>
+            <ol v-if="contacts.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1 divide-y-[1px]">
+              <template v-for="(item, index) in contacts" :key="index">
+                <li class="flex justify-between items-center border-[#999999] py-1">
+                  <p class="text-xs">
+                    <span class="text-primary">{{ index + 1 }}.</span>
+                    {{ item.name }} | {{ item.email }}
+                  </p>
+                  <div class="flex space-x-2 items-center">
+                    <el-tag v-if="editContactIndex == index" @close="editContactIndex = null; resetContactForm()" closable>En edición</el-tag>
+                    <button @click="editContact(index)" type="button"
+                      class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-4">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                          d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                      </svg>
+                    </button>
+                    <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                      title="¿Continuar?" @confirm="deleteContact(index)">
+                      <template #reference>
+                        <button type="button"
+                          class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                          </svg>
+                        </button>
+                      </template>
+                    </el-popconfirm>
+                  </div>
+                </li>
+              </template>
+            </ol>
             <div>
               <SecondaryButton @click="addBranch" :disabled="contacts.length == 0 ||
                 !branch.name ||
@@ -323,31 +294,35 @@
               </SecondaryButton>
             </div>
           </div>
-          <!-- ---------------- Company Contacts ends ----------------- -->
-
-          <!-- ---------------- Company Products starts ----------------- -->
-          <el-divider content-position="left">Productos del cliente</el-divider>
-          <ol v-if="form.products.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
-            <template v-for="(item, index) in form.products" :key="index">
-              <li class="flex justify-between items-center">
-                <p class="text-sm">
+          <ol v-if="form.company_branches.length"
+            class="rounded-lg bg-[#CCCCCC] px-5 py-2 col-span-full space-y-1 mb-2 divide-y-[1px] mt-3">
+            <template v-for="(item, index) in form.company_branches" :key="index">
+              <li class="flex justify-between items-center border-[#999999] py-1">
+                <p class="text-xs">
                   <span class="text-primary">{{ index + 1 }}.</span>
-                  {{
-                    catalog_products.find(
-                      (prd) => prd.id === item.catalog_product_id
-                    )?.name
-                  }}
-                  ({{ item.new_price }} {{ item.new_currency }} / unidad)
+                  {{ item.name }}
                 </p>
                 <div class="flex space-x-2 items-center">
-                  <el-tag v-if="editProductIndex == index">En edición</el-tag>
-                  <el-button @click="editProduct(index)" type="primary" circle>
-                    <i class="fa-sharp fa-solid fa-pen-to-square"></i>
-                  </el-button>
+                  <el-tag v-if="editBranchIndex == index" @close="editBranchIndex = null; resetBranchForm()" closable>En edición</el-tag>
+                  <button @click="editBranch(index)" type="button"
+                    class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                    </svg>
+                  </button>
                   <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
-                    title="¿Continuar?" @confirm="deleteProduct(index)">
+                    title="¿Continuar?" @confirm="deleteBranch(index)">
                     <template #reference>
-                      <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>
+                      <button type="button"
+                        class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                          stroke="currentColor" class="size-4">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                        </svg>
+                      </button>
                     </template>
                   </el-popconfirm>
                 </div>
@@ -355,73 +330,57 @@
             </template>
           </ol>
 
+          <!-- ---------------- Company Products starts ----------------- -->
+          <el-divider content-position="left">Productos del cliente</el-divider>
           <div class="space-y-3 rounded-lg p-5">
-            <div class="flex items-center">
-              <el-tooltip content="Producto de catálogo" placement="top">
-                <span
-                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md ">
-                  <i class="fa-solid fa-magnifying-glass"></i>
-                </span>
-              </el-tooltip>
+            <div>
+              <InputLabel value="Producto de catálogo*" />
               <el-select v-model="product.catalog_product_id" filterable placeholder="Buscar producto">
                 <el-option v-for="item in catalog_products" :key="item.id" :label="item.name" :value="item.id" />
               </el-select>
             </div>
-            <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-3">
+            <div class="md:grid gap-x-3 gap-y-2 mb-6 grid-cols-3">
               <div>
-                <IconInput v-model="product.old_price" inputPlaceholder="Precio anterior *" inputType="number"
-                  inputStep="0.01">
-                  <el-tooltip content="Precio anterior" placement="top">
-                    <i class="fa-solid fa-money-bill"></i>
-                  </el-tooltip>
-                </IconInput>
+                <InputLabel value="Precio anterior" />
+                <el-input v-model="product.old_price" type="text"
+                  :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                  :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 14.50" />
               </div>
-              <div class="flex items-center">
-                <el-tooltip content="Moneda" placement="top">
-                  <span
-                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md ">
-                    <i class="fa-solid fa-dollar-sign"></i>
-                  </span>
-                </el-tooltip>
-                <el-select v-model="product.old_currency" placeholder="Moneda *" :fit-input-width="true">
+              <div>
+                <InputLabel value="Moneda" />
+                <el-select v-model="product.old_currency" placeholder="Seleccionar" :fit-input-width="true">
                   <el-option v-for="item in currencies" :key="item.value" :label="item.label" :value="item.value">
                     <span style="float: left">{{ item.label }}</span>
                     <span style="float: right; color: #cccccc; font-size: 13px">{{ item.value }}</span>
                   </el-option>
                 </el-select>
               </div>
-              <div class="flex items-center">
+              <div>
+                <InputLabel value="Precio anterior fijado el*" />
                 <el-date-picker v-model="product.old_date" type="date" placeholder="Fecha" format="YYYY/MM/DD"
                   value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
               </div>
               <div>
-                <IconInput v-model="product.new_price" inputPlaceholder="Precio nuevo *" inputType="number"
-                  inputStep="0.01">
-                  <el-tooltip content="Precio nuevo" placement="top">
-                    <i class="fa-solid fa-money-bill"></i>
-                  </el-tooltip>
-                </IconInput>
+                <InputLabel value="Precio actual*" />
+                <el-input v-model="product.new_price" type="text"
+                  :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                  :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 18.00" />
               </div>
-              <div class="flex items-center">
-                <el-tooltip content="Moneda" placement="top">
-                  <span
-                    class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md ">
-                    <i class="fa-solid fa-dollar-sign"></i>
-                  </span>
-                </el-tooltip>
-                <el-select v-model="product.new_currency" placeholder="Moneda *" :fit-input-width="true">
+              <div>
+                <InputLabel value="Moneda*" />
+                <el-select v-model="product.new_currency" placeholder="Seleccionar" :fit-input-width="true">
                   <el-option v-for="item in currencies" :key="item.value" :label="item.label" :value="item.value">
                     <span style="float: left">{{ item.label }}</span>
                     <span style="float: right; color: #cccccc; font-size: 13px">{{ item.value }}</span>
                   </el-option>
                 </el-select>
               </div>
-              <div class="flex items-center">
+              <div>
+                <InputLabel value="Precio actual fijado el*" />
                 <el-date-picker v-model="product.new_date" type="date" placeholder="Fecha" format="YYYY/MM/DD"
                   value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
               </div>
             </div>
-
             <SecondaryButton @click="addProduct" :disabled="!product.catalog_product_id ||
               !product.new_date ||
               !product.new_currency ||
@@ -434,7 +393,47 @@
               }}
             </SecondaryButton>
           </div>
-          <!-- ---------------- Company Products ends ----------------- -->
+          <ol v-if="form.products.length"
+            class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1 divide-y-[1px]">
+            <template v-for="(item, index) in form.products" :key="index">
+              <li class="flex justify-between items-center border-[#999999] py-1">
+                <p class="text-xs">
+                  <span class="text-primary">{{ index + 1 }}.</span>
+                  {{
+                    catalog_products.find(
+                      (prd) => prd.id === item.catalog_product_id
+                    )?.name
+                  }}
+                  ({{ item.new_price }} {{ item.new_currency }} / unidad)
+                </p>
+                <div class="flex space-x-2 items-center">
+                  <el-tag v-if="editProductIndex == index" @close="editProductIndex = null; resetProductForm()" closable>En edición</el-tag>
+                  <button @click="editProduct(index)" type="button"
+                    class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                    </svg>
+                  </button>
+                  <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                    title="¿Continuar?" @confirm="deleteProduct(index)">
+                    <template #reference>
+                      <button type="button"
+                        class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                          stroke="currentColor" class="size-4">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                        </svg>
+                      </button>
+                    </template>
+                  </el-popconfirm>
+                </div>
+              </li>
+            </template>
+          </ol>
+
           <el-divider />
           <div class="md:text-right">
             <PrimaryButton :disabled="form.processing">
@@ -713,6 +712,9 @@ export default {
         this.contacts.push(contact);
       }
 
+      this.resetContactForm();
+    },
+    resetContactForm() {
       this.contact.name = null;
       this.contact.email = null;
       this.contact.phone = null;
@@ -730,7 +732,6 @@ export default {
       this.contact = contact;
       this.editContactIndex = index;
     },
-
     // branches
     addBranch() {
       let branch = { ...this.branch };
@@ -744,6 +745,9 @@ export default {
       }
 
       // reser branch form & list of contacts
+      this.resetBranchForm();
+    },
+    resetBranchForm() {
       this.branch.name = null;
       this.branch.address = null;
       this.branch.post_code = null;
@@ -791,6 +795,9 @@ export default {
       }
 
       // reser product form
+      this.resetProductForm();
+    },
+    resetProductForm() {
       this.product.catalog_product_id = null;
       this.product.old_date = null;
       this.product.new_date = null;

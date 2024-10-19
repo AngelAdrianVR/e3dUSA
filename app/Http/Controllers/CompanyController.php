@@ -18,7 +18,6 @@ use Illuminate\Validation\Rule;
 
 class CompanyController extends Controller
 {
-
     public function index()
     {
         $companies = CompanyResource::collection(Company::with(['companyBranches', 'seller:id,name'])
@@ -27,7 +26,6 @@ class CompanyController extends Controller
 
         return inertia('Company/Index', compact('companies'));
     }
-
 
     public function create()
     {
@@ -43,7 +41,6 @@ class CompanyController extends Controller
         
         return inertia('Company/Create', compact('catalog_products', 'sellers'));
     }
-
 
     public function store(Request $request)
     {
@@ -79,7 +76,6 @@ class CompanyController extends Controller
         return to_route('companies.show', $company);
     }
 
-
     public function show($company_id)
     {
         $company = CompanyResource::make(Company::with('user', 'seller', 'companyBranches.contacts', 'companyBranches.designAuthorizations', 'companyBranches.sales', 'companyBranches.sales.user', 'companyBranches.quotes', 'catalogProducts.media', 'oportunities', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'projects.tasks')->find($company_id));
@@ -99,7 +95,6 @@ class CompanyController extends Controller
         return inertia('Company/Show', compact('company', 'companies', 'defaultTab'));
     }
 
-
     public function edit(Company $company)
     {
         $company = Company::with('catalogProducts', 'companyBranches.contacts')->find($company->id);
@@ -115,7 +110,6 @@ class CompanyController extends Controller
 
         return inertia('Company/Edit', compact('company', 'catalog_products', 'sellers'));
     }
-
 
     public function update(Request $request, Company $company)
     {
@@ -192,7 +186,6 @@ class CompanyController extends Controller
 
         return to_route('companies.show', $company);
     }
-
 
     public function destroy(Company $company)
     {

@@ -243,7 +243,7 @@
                                             unidades)
                                         </p>
                                         <div class="flex space-x-2 items-center">
-                                            <el-tag v-if="editIndex == index">En edición</el-tag>
+                                            <el-tag v-if="editIndex == index" @close="editIndex = null; resetProductForm()" closable>En edición</el-tag>
                                             <button @click="editProduct(index)" type="button"
                                                 class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
