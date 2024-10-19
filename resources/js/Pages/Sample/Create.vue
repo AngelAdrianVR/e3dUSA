@@ -106,14 +106,13 @@
               <InputLabel value="Cantidad de muestras enviadas*" />
               <el-input v-model="form.quantity" type="text"
                 :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 5">
-              </el-input>
+                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 5" />
               <InputError :message="form.errors.quantity" />
             </div>
           </div>
           <div>
             <InputLabel value="Comentarios / notas" />
-            <el-input v-model="form.comments" rows="3" maxlength="800" placeholder="..." show-word-limit
+            <el-input v-model="form.comments" :rows="3" maxlength="800" placeholder="..." show-word-limit
               type="textarea" />
             <InputError :message="form.errors.comments" />
           </div>
