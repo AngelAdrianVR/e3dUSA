@@ -58,7 +58,6 @@ class PaymentMonitorController extends Controller
 
         $payment_monitor->addAllMediaFromRequest()->each(fn($file) => $file->toMediaCollection());
 
-
         $client_monitor = ClientMonitor::create([
             'type' => 'Pago',
             'date' => $request->paid_at,

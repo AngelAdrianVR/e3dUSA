@@ -24,11 +24,11 @@
         </div>
         <div>
           <InputLabel value="Cliente*" />
-          <el-input v-model="company_name" type="text" disabled placeholder="Selección automática" />
+          <el-input v-model="company_name" type="text" disabled placeholder="Llenado automático" />
         </div>
         <div>
           <InputLabel value="Vendedor*" />
-          <el-input v-model="seller_name" type="text" disabled placeholder="Selección automática" />
+          <el-input v-model="seller_name" type="text" disabled placeholder="Llenado automático" />
         </div>
         <h2 class="text-[#373737] font-bold col-span-full">Detalles del pago</h2>
         <div>
@@ -64,6 +64,7 @@
           <InputError :message="form.errors.notes" />
         </div>
         <div class="col-span-full">
+          <InputLabel value="Evidencias" />
           <FileUploader @files-selected="handleMediaSelected"
             :existingFileUrls="media_urls" />
         </div>

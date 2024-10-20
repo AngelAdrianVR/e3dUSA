@@ -77,7 +77,7 @@
         <span class="text-gray-500">Fecha de pago</span>
         <span>{{ payment_monitor.data.paid_at }}</span>
         <span class="text-gray-500">Observaciones</span>
-        <span>{{ payment_monitor.data.notes }}</span>
+        <p style="white-space: pre-line;">{{ payment_monitor.data.notes }}</p>
         <p class="text-secondary col-span-2 mb-2 mt-5">Archivos adjuntos</p>
         <div v-if="payment_monitor.data.media?.length" class="col-span-full">
           <li v-for="file in payment_monitor.data.media" :key="file"

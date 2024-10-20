@@ -14,7 +14,7 @@
       <div class="md:w-1/2 md:mx-auto grid grid-cols-2 gap-3 text-sm my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md">
         <h2 class="text-[#373737] font-bold col-span-full">Datos del cliente</h2>
         <div>
-          <label>Folio de la oportunidad *</label>
+          <InputLabel value="Folio de la oportunidad*" />
           <el-select @change="getCompany" class="w-full" v-model="form.oportunity_id" clearable filterable
             placeholder="Seleccione" no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
             <el-option v-for="oportunity in oportunities" :key="oportunity"
@@ -23,75 +23,68 @@
           <InputError :message="form.errors.oportunity_id" />
         </div>
         <div>
-          <label>Vendedor*</label>
-          <el-select class="w-full" v-model="form.seller_id" clearable filterable placeholder="Seleccione"
+          <InputLabel value="Vendedor*" />
+          <el-select class="w-full" v-model="form.seller_id" clearable filterable placeholder="Selecciona"
             no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
             <el-option v-for="seller in users.filter(item => item.employee_properties?.department == 'Ventas')"
               :key="seller" :label="seller.name" :value="seller.id" />
           </el-select>
           <InputError :message="form.errors.seller_id" />
         </div>
-        <div class="flex items-center space-x-2">
-          <div>
-            <label>Cliente *</label>
-            <input v-model="form.company_name" disabled class="input" type="text">
-            <InputError :message="form.errors.company_id" />
-          </div>
-          <div>
-            <label>Sucursal</label> <br>
-            <el-select @change="saveCompanyBranchAddress" v-model="form.company_branch_id" clearable filterable
-              placeholder="Seleccione" no-data-text="No hay sucursales registradas"
-              no-match-text="No se encontraron coincidencias">
-              <el-option
-                v-for="company_branch in companies.find((item) => item.id == form.company_id)?.company_branches"
-                :key="company_branch" :label="company_branch.name" :value="company_branch.id" />
-            </el-select>
-            <InputError :message="form.errors.company_branch" />
-          </div>
-        </div>
-        <div class="flex items-center space-x-2">
-          <div v-if="!has_contact">
-            <label>Contacto</label>
-            <el-select @change="getContactPhone" v-model="form.contact_id" clearable filterable placeholder="Seleccione"
-              no-data-text="No hay contactos registrados" no-match-text="No se encontraron coincidencias">
-              <el-option v-for="contact in company_branch_obj?.contacts" :key="contact" :label="contact.name"
-                :value="contact.id" />
-            </el-select>
-            <InputError :message="form.errors.contact_id" />
-          </div>
-          <div>
-            <label>Teléfono</label>
-            <input v-model="form.contact_phone" class="input" type="text">
-            <InputError :message="form.errors.contact_phone" />
-          </div>
-        </div>
-
-        <h2 class="text-secondary pt-4">Interacción de Whatsaap</h2>
-
-        <div class="lg:w-1/2 lg:mt-0">
-          <label class="block">Fecha *</label>
-          <el-date-picker v-model="form.date" type="date" placeholder="Fecha de pago *" format="YYYY/MM/DD"
-            value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
-          <InputError :message="form.errors.date" />
+        <div>
+          <InputLabel value="Cliente*" />
+          <el-input v-model="form.company_name" type="text" disabled placeholder="Llenado automático" />
+          <InputError :message="form.errors.company_id" />
         </div>
         <div>
-          <label>Notas</label>
-          <textarea v-model="form.notes" class="textarea" rows="2">
-      </textarea>
+          <InputLabel value="Sucursal*" />
+          <el-select @change="saveCompanyBranchAddress" v-model="form.company_branch_id" clearable filterable
+            placeholder="Seleccione" no-data-text="Primero selecciona la oportunidad"
+            no-match-text="No se encontraron coincidencias">
+            <el-option v-for="company_branch in companies.find((item) => item.id == form.company_id)?.company_branches"
+              :key="company_branch" :label="company_branch.name" :value="company_branch.id" />
+          </el-select>
+          <InputError :message="form.errors.company_branch_id" />
+        </div>
+        <div v-if="!has_contact">
+          <InputLabel value="Contacto*" />
+          <el-select @change="getContactPhone" v-model="form.contact_id" clearable filterable placeholder="Selecciona"
+            no-data-text="Primero selecciona la oportunidad" no-match-text="No se encontraron coincidencias">
+            <el-option v-for="contact in company_branch_obj?.contacts" :key="contact" :label="contact.name"
+              :value="contact.id" />
+          </el-select>
+          <InputError :message="form.errors.contact_id" />
+        </div>
+        <div>
+          <InputLabel value="Teléfono*" />
+          <el-input v-model="form.contact_phone" type="text"
+            :formatter="(value) => `${value}`.replace(/(\d{2})(\d{4})(\d{4})/, '$1 $2 $3')"
+            :parser="(value) => value.replace(/\D/g, '')" maxlength="10" clearable placeholder="Ej. 3312479856" />
+          <InputError :message="form.errors.contact_phone" />
+        </div>
+        <h2 class="text-[#373737] font-bold col-span-full">Interacción de Whatsapp</h2>
+        <div>
+          <InputLabel value="Fecha*" />
+          <el-date-picker v-model="form.date" type="date" placeholder="Fecha de pago *" format="YYYY/MM/DD"
+          class="!w-full" value-format="YYYY-MM-DD" :disabled-date="disabledDate" />
+          <InputError :message="form.errors.date" />
+        </div>
+        <div class="col-span-full">
+          <InputLabel value="Notas" />
+          <el-input v-model="form.notes" :rows="3" maxlength="800" placeholder="..." show-word-limit type="textarea" />
           <InputError :message="form.errors.notes" />
         </div>
-        <div class="ml-2 mt-2 col-span-full flex">
-          <FileUploader @files-selected="this.form.media = $event" />
+        <div class="col-span-full">
+          <InputLabel value="Evidencias" />
+          <FileUploader @files-selected="handleMediaSelected" />
         </div>
-        <div class="flex justify-end items-center">
+        <div class="flex justify-end items-center col-span-full">
           <PrimaryButton :disabled="form.processing">
             Agregar
           </PrimaryButton>
-
         </div>
       </div>
     </form>
-
   </AppLayout>
 </template>
 
@@ -102,6 +95,7 @@ import InputError from "@/Components/InputError.vue";
 import FileUploader from "@/Components/MyComponents/FileUploader.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import { Link, useForm } from "@inertiajs/vue3";
+import InputLabel from "@/Components/InputLabel.vue";
 
 export default {
   data() {
@@ -131,7 +125,8 @@ export default {
     InputError,
     AppLayout,
     Back,
-    Link
+    Link,
+    InputLabel,
   },
   props: {
     oportunities: Object,
@@ -140,6 +135,9 @@ export default {
     opportunity: Object,
   },
   methods: {
+    handleMediaSelected(files, mediaUpdated) {
+      this.form.media = files;
+    },
     store() {
       this.form.post(route('whatsapp-monitors.store'), {
         onSuccess: () => {
@@ -212,15 +210,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-/* Estilo para el hover de las opciones */
-.el-select-dropdown .el-select-dropdown__item:hover {
-  background-color: #D90537;
-  /* Color de fondo al hacer hover */
-  color: white;
-  /* Color del texto al hacer hover */
-  border-radius: 20px;
-  /* Redondeo */
-}
-</style>
