@@ -156,7 +156,6 @@
               :class="index == currentImage ? 'text-black' : 'text-gray-300'"
               class="fa-solid fa-circle text-xs cursor-pointer"></i>
           </div>
-
           <!-- ----------------------progress bar---------------------- -->
           <el-tooltip content="Progreso para dar seguimiento a la muestra" placement="top">
             <div class="mt-14 ml-6 text-sm">
@@ -169,7 +168,6 @@
             </div>
           </el-tooltip>
         </div>
-
         <!-- ------------------------ tabs--------------------- -->
         <div class="col-span-2 border-2">
           <el-tabs v-if="currentSample" v-model="activeTab" class="mx-5 mt-3" @tab-click="handleClickInTab">
@@ -398,11 +396,6 @@ export default {
       }
     },
   },
-  // watch: {
-  //   selectedSample() {
-  //     this.$inertia.get(route('samples.show', this.selectedSample));
-  //   },
-  // },
   mounted() {
     this.selectedSample = this.sample.data.id;
     this.currentSample = this.sample.data;
