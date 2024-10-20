@@ -26,9 +26,9 @@
                 no-data-text="No hay estatus registrados" no-match-text="No se encontraron coincidencias">
                 <el-option v-for="item in statuses" :key="item" :label="item.label" :value="item.label">
                   <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
-                  <span style="float: center; margin-left: 5px; font-size: 13px">{{
-                    item.label
-                  }}</span>
+                  <span style="float: center; margin-left: 5px; font-size: 13px">
+                    {{ item.label }}
+                  </span>
                 </el-option>
               </el-select>
             </div>

@@ -19,7 +19,6 @@ use Illuminate\Support\Str;
 
 class OportunityController extends Controller
 {
-
     public function index()
     {
         $oportunities = Oportunity::with('oportunityTasks:id,oportunity_id')->whereHas('users', function ($query) {
@@ -42,7 +41,6 @@ class OportunityController extends Controller
         // return $companies;
         return inertia('Oportunity/Create', compact('users', 'companies', 'tags'));
     }
-
 
     public function store(Request $request)
     {
@@ -85,7 +83,6 @@ class OportunityController extends Controller
                 'asigned_id' => $request->seller_id,
             ]);
         } else {
-
             $oportunity = Oportunity::create($validated + ['user_id' => auth()->id()]);
             $time = \Carbon\Carbon::createFromFormat('h A', '7 PM')->format('H:i:s'); //tiempo limite de realización de tarea en formato am y pm
             //Tarea 1. Contactar al cliente
@@ -188,18 +185,14 @@ class OportunityController extends Controller
         return to_route('oportunities.index');
     }
 
-
     public function show($oportunity_id)
     {
         // $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller', 'users', 'company', 'companyBranch')->latest()->get());
         $oportunity = OportunityResource::make(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller', 'users', 'company', 'companyBranch')->latest()->find($oportunity_id));
         $oportunities = Oportunity::latest()->get(['id', 'name']);
         $users = User::where('is_active', true)->whereNot('id', 1)->get(['id', 'name']);
-        $defaultTab = request('defaultTab');
 
-        // return $users;
-
-        return inertia('Oportunity/Show', compact('oportunity', 'oportunities', 'users', 'defaultTab'));
+        return inertia('Oportunity/Show', compact('oportunity', 'oportunities', 'users'));
     }
 
 

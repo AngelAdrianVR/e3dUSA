@@ -86,7 +86,7 @@ export default {
     components: {
         OportunityTaskCard,
     },
-    computed: {       
+    computed: {
         todayTasksList() {
             return this.todayTasksList = this.opportunity.oportunityTasks.filter(oportunity => oportunity.deadline_status === 'Terminar hoy' && !oportunity.finished_at);
         },
@@ -104,6 +104,23 @@ export default {
         },
     },
     methods: {
+        async markAsDone(data) {
+            try {
+                const response = await axios.put(route('oportunity-tasks.mark-as-done', data));
+
+                if (response.status === 200) {
+                    this.$notify({
+                        title: "Éxito",
+                        message: "Se ha marcado como terminada",
+                        type: "success",
+                    });
+
+                    this.opportunity.oportunityTasks.find(item => item.id === data).finished_at = new Date();
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
         async deleteTask(data) {
             try {
                 const response = await axios.delete(route('oportunity-tasks.destroy', data));

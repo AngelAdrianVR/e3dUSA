@@ -24,7 +24,8 @@
             class="border border-t-0 border-[#9A9A9A] bg-transparent rounded-br-[5px] rounded-bl-[5px] p-2 flex justify-between">
             <button @click="showUsersList = !showUsersList" type="button"
                 class="text-primary text-sm cursor-pointer">@Mención</button>
-            <PrimaryButton type="button" @click="$emit('submitComment')" :disabled="disabled">Agregar comentarios
+            <PrimaryButton type="button" @click="$emit('submitComment')" :disabled="disabled">
+                Agregar comentarios
             </PrimaryButton>
             <transition name="fade">
                 <ul v-if="showUsersList"
