@@ -29,8 +29,8 @@
     </div>
     <div>
       <p class="text-primary text-left">Caracteristicas</p>
-      <li v-for="(feature, index) in company_product.features" :key="index" class="text-gray-800 list-disc">{{ feature
-        }}
+      <li v-for="(feature, index) in company_product.features.raw" :key="index" class="text-gray-800 list-disc">
+        {{ feature }}
       </li>
     </div>
 
