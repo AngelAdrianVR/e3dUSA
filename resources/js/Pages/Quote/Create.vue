@@ -145,7 +145,8 @@
                             <InputError :message="form.errors.tooling_cost" />
                         </div>
                         <div class="flex space-x-3 mt-5">
-                            <el-select v-model="form.tooling_currency" placeholder="Moneda" :fit-input-width="true">
+                            <el-select v-model="form.tooling_currency" placeholder="Sin moneda (texto libre)"
+                                :fit-input-width="true">
                                 <el-option v-for="item in toolingCurrencies" :key="item.value" :label="item.label"
                                     :value="item.value">
                                     <span style="float: left">{{ item.label }}</span>
@@ -157,14 +158,17 @@
                                 </el-option>
                             </el-select>
                             <InputError :message="form.errors.tooling_currency" />
+                        </div>
+                        <div class="flex items-center space-x-2 col-span-full">
                             <label class="flex items-center text-gray-600">
                                 <input type="checkbox" v-model="form.tooling_cost_stroked"
                                     class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
                                 <span class="ml-2 text-sm">Tachar:</span>
-                                <span class="text-gray-600 ml-3"
-                                    :class="form.tooling_cost_stroked ? 'line-through' : ''">{{
-                                        form.tooling_cost }} {{ form.tooling_currency }}</span>
                             </label>
+                            <span class="text-gray-700 text-xs mt-1"
+                                :class="form.tooling_cost_stroked ? 'line-through' : ''">
+                                {{ form.tooling_cost }} {{ form.tooling_currency }}
+                            </span>
                         </div>
                         <div>
                             <InputLabel value="Costo de flete*" />
@@ -219,17 +223,11 @@
                                     class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
                                 <span class="ml-2 text-sm">Requiere medallón</span>
                             </label>
-                            <div class="flex items-center">
-                                <el-tooltip content="¿Mostrar imagen en cotización?" placement="top">
-                                    <span
-                                        class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </span>
-                                </el-tooltip>
+                            <div>
+                                <InputLabel value="¿Mostrar imagen en cotización?" />
                                 <el-switch v-model="product.show_image" inline-prompt size="large"
                                     style="--el-switch-on-color: #0355B5; --el-switch-off-color: #CCCCCC"
-                                    active-text="Mostrar imagen en cotización"
-                                    inactive-text="No mostrar imagen en cotización" />
+                                    active-text="Si" inactive-text="No" />
                             </div>
                         </div>
                         <div>
@@ -242,7 +240,7 @@
                             <InputLabel value="Precio unitario*" />
                             <el-input v-model="product.price" type="text"
                                 :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 500" />
+                                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 16.85" />
                         </div>
                         <div class="col-span-full">
                             <InputLabel value="Notas" />
@@ -277,7 +275,8 @@
                                         </span>
                                     </p>
                                     <div class="flex space-x-2 items-center">
-                                        <el-tag v-if="editIndex == index">En edición</el-tag>
+                                        <el-tag v-if="editIndex == index" @close="editIndex = null; resetProductForm()"
+                                            closable>En edición</el-tag>
                                         <button @click="editProduct(index)" type="button"
                                             class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -325,23 +324,34 @@
                     {{ company_branches.find(item => item.id == form.company_branch_id).name }}
                 </template>
                 <template #content>
-                    <div class="flex mt-6">
-                        <el-tooltip
-                            content="Estas notas se mostraran cuando se seleccione esta sucursal para crear cotizacion, orden de venta u otro movimiento"
-                            placement="top">
-                            <span
-                                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                                <i class="fa-solid fa-grip-lines"></i>
-                            </span>
-                        </el-tooltip>
-                        <textarea v-model="importantNotesToStore" rows="4" class="textarea mb-1" autocomplete="off"
-                            placeholder="Notas. Ejemplo: Precio acordado de 'x' producto en siguiente cotizacion $45.30"></textarea>
+                    <div>
+                        <InputLabel>
+                            <div class="flex items-center space-x-2">
+                                <span>Notas</span>
+                                <el-tooltip placement="top">
+                                    <template #content>
+                                        <p>
+                                            Estas notas se mostraran cuando se seleccione <br>
+                                            esta sucursal para crear cotizacion, orden <br>
+                                            de venta u otro movimiento
+                                        </p>
+                                    </template>
+                                    <div
+                                        class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
+                                        <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                    </div>
+                                </el-tooltip>
+                            </div>
+                        </InputLabel>
+                        <el-input v-model="importantNotesToStore" :rows="3" maxlength="1000"
+                            placeholder="Ej. Precio acordado de 'x' producto en siguiente cotizacion $45.30"
+                            show-word-limit type="textarea" />
                     </div>
                 </template>
                 <template #footer>
+                    <CancelButton @click="showImportantNotesModal = false">Cancelar</CancelButton>
                     <PrimaryButton @click="storeImportantNotes()" :disabled="!importantNotesToStore">Guardar notas
                     </PrimaryButton>
-                    <CancelButton @click="showImportantNotesModal = false">Cancelar</CancelButton>
                 </template>
             </DialogModal>
 
