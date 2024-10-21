@@ -455,10 +455,10 @@
                             </div>
                         </div>
                     </section>
-                    <div class="mt-10 mx-3 md:text-right">
+                    <div class="mt-6 mx-3 md:text-right">
                         <PrimaryButton
-                            :disabled="form.processing || !form.products.length || !form.partialities.length">
-                            Crear órden de venta
+                            :disabled="form.processing || !form.products.length || (form.is_sale_production && !form.partialities.length)">
+                            Crear
                         </PrimaryButton>
                     </div>
                 </div>
