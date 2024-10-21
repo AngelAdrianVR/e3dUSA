@@ -415,7 +415,7 @@
                     </section>
                     <div class="mt-10 mx-3 md:text-right">
                         <PrimaryButton
-                            :disabled="form.processing || !form.products.length || !form.partialities.length">
+                            :disabled="form.processing || !form.products.length || (form.is_sale_production && !form.partialities.length)">
                             Guardar cambios
                         </PrimaryButton>
                     </div>

@@ -41,19 +41,18 @@
                     </div>
                 </div>
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
-                    <p class="text-xs text-primary mb-3">
-                        Para crear una ov es necesario convertirla desde una cotización
+                    <p v-if="!form.opportunity_id" class="text-xs text-primary mb-3">
+                        Por indicaciones de dirección, sólo se puede crear una OV desde una cotización.
                     </p>
                     <el-radio-group v-model="form.is_sale_production" size="small">
-                        <!-- <el-radio :disabled="!$page.props.auth.user.permissions.includes('Crear ordenes de venta sin cotizacion')" :value="1">Orden de venta</el-radio> -->
+                        <el-radio v-if="form.opportunity_id" :value="1">Orden de venta</el-radio>
                         <el-radio :value="0">Orden de stock</el-radio>
                     </el-radio-group>
                     <div class="grid grid-cols-2 gap-3 mt-4">
                         <div>
                             <InputLabel value="Cliente*" />
-                            <el-select @change="handleCompanyBranchIdChange"
-                                v-model="form.company_branch_id" clearable filterable
-                                placeholder="Selecciona un cliente">
+                            <el-select @change="handleCompanyBranchIdChange" v-model="form.company_branch_id" clearable
+                                filterable placeholder="Selecciona un cliente">
                                 <el-option v-for="item in company_branches" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
@@ -399,10 +398,9 @@
                                     v-for="(shippProduct, index3) in partiality.productsSelected.filter(p => p?.selected)"
                                     :key="index3"
                                     :product="form.products.find(e => e.catalogProduct.name == shippProduct.name).catalogProduct"
-                                    :quantity="shippProduct.quantity" :routePage="'sales.create'" 
+                                    :quantity="shippProduct.quantity" :routePage="'sales.create'"
                                     @total-boxes="totalBoxes[index] = totalBoxes[index] + $event"
-                                    @total-cost="totalCost[index] = totalCost[index] + $event"
-                                />
+                                    @total-cost="totalCost[index] = totalCost[index] + $event" />
                             </div>
                         </div>
                     </section>
@@ -457,9 +455,10 @@
                             </div>
                         </div>
                     </section>
-                    <div class="mt-10 mx-3 md:text-right">
-                        <PrimaryButton :disabled="form.processing || !form.products.length || !form.partialities.length">
-                            Crear órden de venta
+                    <div class="mt-6 mx-3 md:text-right">
+                        <PrimaryButton
+                            :disabled="form.processing || !form.products.length || (form.is_sale_production && !form.partialities.length)">
+                            Crear
                         </PrimaryButton>
                     </div>
                 </div>
@@ -529,7 +528,7 @@ export default {
     data() {
         const form = useForm({
             company_branch_id: null,
-            oportunity_id: null,
+            opportunity_id: null,
             contact_id: null,
             shipping_option: null,
             // shipping_company: null,
@@ -819,6 +818,18 @@ export default {
             today.setHours(0, 0, 0, 0); // Establece la hora a las 00:00:00.000
             return time < today;
         },
+        setOpportunityIdFromUrl() {
+            // Obtener la URL actual
+            const currentURL = new URL(window.location.href);
+            // Extraer el valor de 'opportunityId' de los parámetros de búsqueda
+            const opportunityIdFromURL = currentURL.searchParams.get('opportunityId');
+
+            if (opportunityIdFromURL) {
+                this.form.opportunity_id = opportunityIdFromURL;
+                this.form.company_branch_id = parseInt(this.opportunityId.company_branch_id);
+                this.form.is_sale_production = 1;
+            }
+        },
         async fetchCatalogProductData() {
             this.alertMaxQuantity = 0;
             try {
@@ -903,10 +914,8 @@ export default {
         },
     },
     mounted() {
-        if (this.opportunityId) {
-            this.form.company_branch_id = parseInt(this.opportunityId.company_branch_id);
-            this.form.oportunity_id = parseInt(this.opportunityId);
-        }
+        this.setOpportunityIdFromUrl();
+
         if (this.sample) {
             this.form.company_branch_id = parseInt(this.sample.company_branch_id);
         }

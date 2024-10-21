@@ -32,6 +32,7 @@ class RawMaterialResource extends JsonResource
             'pivot' => $this->pivot,
             'features' => $this->features,
             'storages' => $this->whenLoaded('storages'),
+            // 'media' => $this->whenLoaded('media'),
             'isInCatalogProduct' => $this->isInCatalogProduct(),
             'media' => $this->getMedia()->all(),
             'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),

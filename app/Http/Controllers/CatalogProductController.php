@@ -97,7 +97,6 @@ class CatalogProductController extends Controller
         $raw_materials = RawMaterial::all(['id', 'name']);
         $media = $catalog_product->getFirstMedia();
 
-        // return $catalog_product;
         return inertia('CatalogProduct/Edit', compact('catalog_product', 'production_costs', 'raw_materials', 'media'));
     }
 

@@ -1,6 +1,6 @@
 <template>
     <div class="md:grid grid-cols-2 text-sm">
-        <div class="grid grid-cols-2 gap-1 text-left p-4 border-r-2 border-gray-[#cccccc] items-center">
+        <div class="grid grid-cols-2 gap-1 text-left p-4 border-r-2 border-gray-[#cccccc] items-center *:self-start">
             <p class="text-secondary col-span-2 mb-2">Información de la oportunidad</p>
             <span class="text-gray-500">Folio</span>
             <span>{{ opportunity.folio }}</span>
@@ -14,7 +14,7 @@
             <span>{{ opportunity.seller?.name }}</span>
             <span class="text-gray-500">Estatus</span>
             <div class="flex items-center relative">
-                <div :class="getColorStatus()" class="absolute -left-10 top-5 rounded-full w-3 h-3"></div>
+                <div :class="getColorStatus()" class="absolute -left-10 top-5 rounded-full size-3"></div>
                 <el-select @change="status == 'Perdida' ? showLostOportunityModal = true
                     : status == 'Cerrada' || status == 'Pagado' ? showCreateSaleModal = true
                         : updateStatus()" class="lg:w-1/2 mt-2" v-model="status" filterable
@@ -30,7 +30,7 @@
             </div>
             <span class="text-gray-500">Prioridad</span>
             <span class="relative">{{ opportunity.priority.label }} <div :class="getColorPriority()"
-                    class="absolute -left-10 top-1 rounded-full w-3 h-3"></div></span>
+                    class="absolute -left-10 top-1 rounded-full size-3"></div></span>
             <span class="text-gray-500">Probabilidad</span>
             <span>{{ opportunity.probability }}%</span>
             <span class="text-gray-500">Valor de oportunidad</span>
@@ -51,8 +51,8 @@
             <span class="text-gray-500">Teléfono</span>
             <span>{{ opportunity.contact_phone }}</span>
             <span v-if="opportunity.lost_oportunity_razon" class="text-gray-500">Causa de pérdida</span>
-            <span class="bg-red-300 py-1 px-2 rounded-full" v-if="opportunity.lost_oportunity_razon">{{
-                opportunity.lost_oportunity_razon }}</span>
+            <span class="bg-red-300 py-1 px-2 rounded-lg" v-if="opportunity.lost_oportunity_razon">
+                {{ opportunity.lost_oportunity_razon }}</span>
         </div>
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center self-start">
             <p class="text-secondary col-span-2 mb-2">Usuarios</p>
@@ -113,14 +113,27 @@
         @close="showLostOportunityModal = false; showCreateSaleModal = false">
         <section v-if="showLostOportunityModal" class="mx-7 my-4 space-y-4 relative">
             <div>
-                <label>Causa oportunidad perdida
-                    <el-tooltip content="Escribe la causa por la cual se PERDIÓ esta oportunidad" placement="top">
-                        <i class="fa-regular fa-circle-question ml-2 text-primary text-xs"></i>
-                    </el-tooltip>
-                </label>
-                <textarea v-model="lost_oportunity_razon" class="textarea mt-3"></textarea>
+                <InputLabel>
+                    <div class="flex items-center space-x-2">
+                        <span>Causa oportunidad perdida</span>
+                        <el-tooltip placement="top">
+                            <template #content>
+                                <p>
+                                    Escribe la causa por la cual se PERDIÓ <br> 
+                                    esta oportunidad.
+                                </p>
+                            </template>
+                            <div
+                                class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
+                                <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                            </div>
+                        </el-tooltip>
+                    </div>
+                </InputLabel>
+                <el-input v-model="lost_oportunity_razon" :rows="3" maxlength="800" placeholder="..." show-word-limit
+                    type="textarea" />
             </div>
-            <div class="flex justify-end space-x-3 pt-5 pb-1">
+            <div class="flex justify-end space-x-1 mt-3 pb-1">
                 <CancelButton @click="showLostOportunityModal = false">Cancelar</CancelButton>
                 <PrimaryButton :disabled="!lost_oportunity_razon" @click="updateStatus">Actualizar estatus
                 </PrimaryButton>
@@ -131,19 +144,20 @@
                 <h2 class="font bold text-center font-bold mb-5">Paso clave - Crear Orden de Venta</h2>
                 <p class="px-5">Es necesario crear una orden de venta al haber marcado como <span
                         class="text-[#FD8827]">”cerrada”</span>
-                    o <span class="text-[#37951F]">”Pagada”</span> la oportunidad para llevar un correcto seguimiento y
-                    flujo de
-                    trabajo.
+                    o <span class="text-[#37951F]">”Pagada”</span>
+                    la oportunidad para llevar un correcto seguimiento y flujo de trabajo.
                 </p>
             </div>
-            <div class="flex justify-end space-x-3 pt-5 pb-1">
-                <CancelButton @click="cancelUpdating">Cancelar</CancelButton>
+            <div class="flex justify-end space-x-1 pt-5 pb-1">
+                <CancelButton @click="showCreateSaleModal = false">Cancelar</CancelButton>
                 <PrimaryButton @click="CreateSale">Continuar</PrimaryButton>
             </div>
         </section>
     </Modal>
 </template>
 <script>
+import InputLabel from '@/Components/InputLabel.vue';
+import Modal from '@/Components/Modal.vue';
 import CancelButton from '@/Components/MyComponents/CancelButton.vue';
 import Tag from '@/Components/MyComponents/Tag.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -154,6 +168,7 @@ export default {
             showLostOportunityModal: false,
             showCreateSaleModal: false,
             status: this.opportunity.status,
+            lost_oportunity_razon: null,
             statuses: [
                 {
                     label: "Nueva",
@@ -185,6 +200,8 @@ export default {
         Tag,
         CancelButton,
         PrimaryButton,
+        Modal,
+        InputLabel,
     },
     methods: {
         getColorStatus() {
@@ -226,6 +243,27 @@ export default {
                     return 'fa-regular fa-image text-blue-300';
                 default:
                     return 'fa-regular fa-file-lines';
+            }
+        },
+        async CreateSale() {
+            try {
+                const response = await axios.put(route('oportunities.create-sale', this.opportunity.id));
+                if (response.status === 200) {
+                    if (response.data.message) {
+                        this.$notify({
+                            title: "Denegado",
+                            message: response.data.message,
+                            type: "error",
+                        });
+                        this.showCreateSaleModal = false;
+                        this.updateStatus();
+                    } else {
+                        this.updateStatus();
+                        this.$inertia.get(route('sales.create'), { opportunityId: this.opportunity.id });
+                    }
+                }
+            } catch (error) {
+                console.log(error);
             }
         },
         async updateStatus() {
