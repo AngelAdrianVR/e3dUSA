@@ -82,7 +82,6 @@
       <el-step title="Producto/servicio recibido" />
     </el-steps>
 
-
     <p class="text-center font-bold text-lg mb-4 mt-5">
       {{ purchase.data.supplier.name }}
       <!-- <span class="py-1 p-2" :class="purchase.data.status == 'Pendiente' ? 'text-red-600 bg-red-200'

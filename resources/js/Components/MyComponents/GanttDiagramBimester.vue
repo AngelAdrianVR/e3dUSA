@@ -1,79 +1,117 @@
 <template>
-  <table class="border border-[#9A9A9A] default w-full">
-        <tr>
-          <th class="border-y border-[#9A9A9A] text-left pl-7 py-3 font-thin relative w-1/4" scope="row">
-            Proyecto <br />
-            <strong class="text-lg font-bold">{{ currentProject?.project_name }}</strong>
-            <i @click="showDepartmentFilter = !showDepartmentFilter"
-              class="fa-solid fa-ellipsis text-primary absolute bottom-4 right-4 cursor-pointer hover:bg-[#dfdede] rounded-full p-2"></i>
-            <div v-if="showDepartmentFilter" class="absolute right-4 top-[60px] bg-[#D9D9D9] rounded-md px-4 py-2">
-              <label class="flex items-center">
-                <Checkbox v-model:checked="productionCheck" class="bg-transparent" />
-                <span class="ml-2 text-sm text-[#9A9A9A]">Producción</span>
-              </label>
-              <label class="flex items-center">
-                <Checkbox v-model:checked="designCheck" class="bg-transparent" />
-                <span class="ml-2 text-sm text-[#9A9A9A]">Diseño</span>
-              </label>
-              <label class="flex items-center">
-                <Checkbox v-model:checked="salesCheck" class="bg-transparent" />
-                <span class="ml-2 text-sm text-[#9A9A9A]">Ventas</span>
-              </label>
-              <label class="flex items-center">
-                <Checkbox v-model:checked="marketingCheck" class="bg-transparent" />
-                <span class="ml-2 text-sm text-[#9A9A9A]">Marketing</span>
-              </label>
-            </div>
-          </th>
-          <th class="border border-[#9A9A9A] text-center font-thin text-xs">
-            <strong class="text-base uppercase font-bold tex">{{ monthName }}</strong><br />
-            <div class="flex space-x-3 justify-center w-[95%] mx-auto">
-              <p
-                v-for="day in daysInMonth"
-                :key="day"
-                class="text-secondary relative"
-              >
-                {{ daysOfWeek[(day + startDayOfWeek - 2) % 7] }}
-                <span class="absolute -bottom-3 -left-0 text-[10px] text-black">{{ day }}</span>
-              </p>
-            </div>
-          </th>
-          <th class="border border-[#9A9A9A] text-center font-thin text-xs">
-          <strong class="text-base uppercase font-bold">{{ nextMonthName }}</strong>
-           <div class="flex space-x-3 justify-center w-[95%] mx-auto">
-              <p
-                v-for="day in daysInNextMonth"
-                :key="day"
-                class="text-secondary relative"
-              >
-                {{ daysOfWeek[(day + startDayOfWeekNextMonth - 2) % 7] }}
-                <span class="absolute -bottom-3 -left-0 text-[10px] text-black">{{ day }}</span>
-              </p>
-            </div>
-        </th>
-        </tr>
+<main class="overflow-auto pb-2">
+  <table class="border border-[#9A9A9A] default w-[1800px]">
+    <tr>
+      <th class="border-y border-[#9A9A9A] text-left pl-7 py-3 font-thin relative w-1/4" scope="row">
+        Proyecto <br />
+        <p :title="currentProject?.project_name" class="text-base font-bold truncate w-4/5">{{ currentProject?.project_name }}</p>
+        <i @click="showDepartmentFilter = !showDepartmentFilter"
+          class="fa-solid fa-ellipsis text-primary absolute bottom-4 right-4 cursor-pointer hover:bg-[#dfdede] rounded-full p-2"></i>
+        <div v-if="showDepartmentFilter" class="absolute right-4 top-[60px] bg-[#D9D9D9] rounded-md px-4 py-2">
+          <label class="flex items-center">
+            <Checkbox v-model:checked="productionCheck" class="bg-transparent" />
+            <span class="ml-2 text-sm text-[#9A9A9A]">Producción</span>
+          </label>
+          <label class="flex items-center">
+            <Checkbox v-model:checked="designCheck" class="bg-transparent" />
+            <span class="ml-2 text-sm text-[#9A9A9A]">Diseño</span>
+          </label>
+          <label class="flex items-center">
+            <Checkbox v-model:checked="salesCheck" class="bg-transparent" />
+            <span class="ml-2 text-sm text-[#9A9A9A]">Ventas</span>
+          </label>
+          <label class="flex items-center">
+            <Checkbox v-model:checked="marketingCheck" class="bg-transparent" />
+            <span class="ml-2 text-sm text-[#9A9A9A]">Marketing</span>
+          </label>
+        </div>
+      </th>
+      <th class="border border-[#9A9A9A] text-center font-thin text-xs">
+        <strong class="text-base uppercase font-bold tex">{{ monthName }}</strong><br />
+        <div class="flex space-x-3 justify-center w-[100%] mx-auto">
+          <p
+            v-for="day in daysInMonth"
+            :key="day"
+            class="text-secondary relative pb-1"
+          >
+            {{ daysOfWeek[(day + startDayOfWeek - 2) % 7] }}
+            <span class="absolute -bottom-3 -left-0 text-[10px] text-black">{{ day }}</span>
+          </p>
+        </div>
+      </th>
+      <th class="border border-[#9A9A9A] text-center font-thin text-xs">
+        <strong class="text-base uppercase font-bold">{{ nextMonthName }}</strong>
+        <div class="flex space-x-3 justify-center w-[100%] mx-auto">
+            <p
+              v-for="day in daysInNextMonth"
+              :key="day"
+              class="text-secondary relative"
+            >
+              {{ daysOfWeek[(day + startDayOfWeekNextMonth - 2) % 7] }}
+              <span class="absolute -bottom-3 -left-0 text-[10px] text-black">{{ day }}</span>
+            </p>
+          </div>
+      </th>
+    </tr>
 
     <tr v-for="task in currentProject?.tasks" :key="task" v-show="taskMatchesFilters(task)">
-      <th class="font-normal pl-7 py-2 border-y border-[#9A9A9A]">
-        <div :class="task.priority.color_border" class="border-r-4">
-          <p class="w-[300px] truncate text-sm" :title="task.title">{{ task.title }}</p>
-          <p class="text-[#9A9A9A] text-xs">Depto. {{ task.department }}</p>
+      <th class="font-normal pl-5 py-2 border-y border-[#9A9A9A]">
+        <div :class="task.priority.color_border" class="border-r-4 flex items-center px-2">
+          <div>
+            <p class="w-[300px] truncate text-sm" :title="task.title">{{ task.title }}</p>
+            <p class="text-[#9A9A9A] text-xs">Depto. {{ task.department }}</p>
+          </div>
+
+            <div class="flex items-center ml-2">
+              <div v-for="(user, index) in task.participants" :key="index">
+                <el-tooltip :content="user.name" placement="top">
+                  <div v-if="index < 3" class="flex text-sm rounded-full w-8">
+                    <img class="h-7 w-7 rounded-full border border-[#cccccc] object-cover" :src="user.profile_photo_url" :alt="user.name" />
+                  </div>
+                </el-tooltip>
+              </div>
+              <el-tooltip placement="top">
+                <template #content>
+                  <li v-for="(user, index) in currentProject?.users.filter((item, index) => index >= 3)" :key="index"
+                    class="ml-2 text-xs">
+                    {{ user.name }}
+                  </li>
+                </template>
+                <span v-if="task.participants?.length > 3" class="ml-1 text-primary text-sm">
+                  +{{ (task.participants.length - 3) }}
+                </span>
+              </el-tooltip>
+          </div>
         </div>
       </th>
       <td class="border-x border-[#CCCCCC]">
         <div class="w-[93%] mx-auto">
           <el-tooltip :content="task.start_date + ' -- ' + task.end_date" placement="top">
-            <div class="h-5 rounded-full shadow-md shadow-gray-400/100" :class="getStatusColor(task) + ' start-day-2'"
+            <template #content>
+              <div>
+                <p>Periodo esperado:</p>
+                <p>{{ task.start_date + ' - ' + task.end_date }}</p>
+                <p :class="{'text-sky-400': task.status === 'En curso',
+                    'text-emerald-400': task.status === 'Terminada'
+                }">
+                  • Estatus: {{ task.status }}
+                </p>
+              </div>
+            </template>
+            <div class="h-5 rounded-full shadow-md shadow-gray-400/100 relative" :class="getStatusColor(task) + ' start-day-2'"
               :style="{
-                width: (100 / daysInMonth) * taskDuration(task) + '%',
+                width: (90 / daysInMonth) * taskDuration(task) + '%',
                 '--days-in-month': daysInMonth,
                 '--task-start-day': taskStartDay(task)
-              }"></div>
+              }">
+              <i v-if="task.status === 'Terminada'" class="fa-solid fa-check absolute left-[2px] top-[1px] text-green-500 rounded-full px-[2px] py-[1px] mt-[1px] bg-white"></i>
+              </div>
           </el-tooltip>
         </div>
       </td>
     </tr>
   </table>
+</main>
 </template>
 
 <script>
@@ -98,7 +136,7 @@ export default {
   },
   props: {
     currentProject: Object,
-    currentDate: Object,
+    // currentDate: Object,
   },
   methods: {
     getStatusColor(task) {
@@ -113,7 +151,7 @@ export default {
     taskStartDay(task) {
       const startDate = new Date(task.start_date_raw);
       const startDay = startDate.getDate();
-      const currentMonthFirstDay = new Date(this.currentDate?.getFullYear(), this.currentDate?.getMonth(), 1);
+      const currentMonthFirstDay = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1);
       const dayDifference = Math.abs(startDate - currentMonthFirstDay) / (1000 * 60 * 60 * 24);
       return dayDifference; // Sumar 1 para que el primer día sea 1 en lugar de 0
     },
@@ -159,13 +197,13 @@ export default {
       return months[this.currentDate.getMonth()];
     },
     daysInMonth() {
-      const year = this.currentDate.getFullYear();
-      const month = this.currentDate.getMonth() + 1;
+      const year = this.currentDate?.getFullYear();
+      const month = this.currentDate?.getMonth() + 1;
       return new Date(year, month, 0).getDate();
     },
     startDayOfWeek() {
-      const year = this.currentDate.getFullYear();
-      const month = this.currentDate.getMonth();
+      const year = this.currentDate?.getFullYear();
+      const month = this.currentDate?.getMonth();
       return new Date(year, month, 1).getDay(); // 0 para domingo, 1 para lunes, etc.
     },
     nextMonthDate() {
@@ -196,7 +234,7 @@ export default {
       return new Date(nextYear, nextMonth, 1).getDay(); // 0 para domingo, 1 para lunes, etc.
     },
   },
-  mounted() {
+  created() {
     // Verificar si hay tareas en el proyecto y si la primera tarea tiene una fecha de inicio
     if (this.currentProject && this.currentProject.tasks?.length > 0) {
       const firstTask = this.currentProject.tasks[0];

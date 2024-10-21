@@ -160,8 +160,6 @@ export default {
                 return acc + parseFloat(box.cost); // Asegúrate de convertir el 'cost' a número
             }, 0);
             this.$emit('total-cost', totalCost ?? 0);
-            console.log('cajas:', totalBoxes);
-            console.log('costo:', totalCost);
         },
         async fetchCatalogProuctShippingRates() {
             this.loading = true;

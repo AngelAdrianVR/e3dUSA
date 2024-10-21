@@ -17,10 +17,10 @@
       </template>
 
       <div class="flex space-x-6 items-center justify-center text-xs mt-2">
-        <p class="text-red-500"><i class="fa-solid fa-circle mr-1"></i>Sin autorización</p>
-        <p class="text-yellow-500"><i class="fa-solid fa-circle mr-1"></i>Autorizado.Compra no realizada</p>
-        <p class="text-blue-600"><i class="fa-solid fa-circle mr-1"></i>Compra realizada</p>
-        <p class="text-green-600"><i class="fa-solid fa-circle mr-1"></i>Producto recibido</p>
+        <p><i class="fa-solid fa-circle mr-1 text-red-500"></i>Sin autorización</p>
+        <p><i class="fa-solid fa-circle mr-1 text-yellow-500"></i>Autorizado.Compra no realizada</p>
+        <p><i class="fa-solid fa-circle mr-1 text-blue-600"></i>Compra realizada</p>
+        <p><i class="fa-solid fa-circle mr-1 text-green-600"></i>Producto recibido</p>
       </div>
 
       <!-- tabla -->

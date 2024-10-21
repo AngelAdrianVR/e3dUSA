@@ -2,24 +2,30 @@
     <div class="w-full">
         <input type="file" ref="fileInput" style="display: none" @change="handleFileInputChange" :multiple="multiple"
             :accept="getAcceptedFormat()" />
-        <button type="button" @click="openFileBrowser" class="w-full px-3 py-[2px] rounded-md bg-[#CCCCCC]">
-            <p class="flex items-center justify-between text-sm text-[#9A9A9A]">
-                <span v-if="selectedFiles.length"class="text-[#373737]">
-                    {{ selectedFiles.length }} {{ selectedFiles.length == 1 ? 'archivo seleccionado' : 'archivos seleccionados' }}
+        <button type="button" @click="openFileBrowser" class="w-full px-3 py-[2px] rounded-md bg-[#CCCCCC]" :disabled="loading">
+            <div v-if="loading" class="flex items-center justify-between text-sm text-[#9A9A9A] h-7">
+                <span>Cargando archivo(s)...</span>
+                <i class="fa-solid fa-circle-notch fa-spin text-primary text-lg"></i>
+            </div>
+            <div v-else class="flex items-center justify-between text-sm text-[#9A9A9A]">
+                <span v-if="selectedFiles.length" class="text-[#373737]">
+                    {{ selectedFiles.length }}
+                    {{ selectedFiles.length == 1 ? 'archivo seleccionado' : 'archivos seleccionados' }}
                 </span>
                 <span v-else>Clic para seleccionar {{ multiple ? 'los archivos' : 'el archivo' }}</span>
-                <span class="text-primary w-10 h-7 flex items-center justify-center border-2 border-primary rounded-full">
+                <span
+                    class="text-primary w-10 h-7 flex items-center justify-center border-2 border-primary rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.4"
                         stroke="currentColor" class="size-[22px]">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z" />
                     </svg>
                 </span>
-            </p>
+            </div>
         </button>
 
         <div v-if="selectedFiles.length">
-            <ul class="lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5 text-sm mt-2" :class="multiple ? 'grid' : null">
+            <ul class="text-sm my-2">
                 <li v-for="(file, index) in selectedFiles" :key="index" class="flex items-center justify-between px-2">
                     <p class="flex items-center">
                         <i :class="getFileTypeIcon(file.name)"></i>
@@ -36,6 +42,7 @@
 export default {
     data() {
         return {
+            loading: false,
             selectedFiles: [],
         };
     },
@@ -47,6 +54,10 @@ export default {
         acceptedFormat: {
             type: String,
             default: 'Todo'
+        },
+        existingFileUrls: {
+            type: Array,
+            default: () => []
         },
     },
     emits: ['files-selected'],
@@ -63,6 +74,7 @@ export default {
             this.$refs.fileInput.click();
         },
         handleFileInputChange(event) {
+            let mediaUpdated = true;
             // Agrega los archivos seleccionados a la lista existente
             const newSelectedFiles = Array.from(event.target.files);
             if (this.multiple) {
@@ -70,11 +82,12 @@ export default {
             } else {
                 this.selectedFiles = [...newSelectedFiles];
             }
-            this.$emit('files-selected', this.selectedFiles);
+            this.$emit('files-selected', this.selectedFiles, mediaUpdated);
         },
         removeFile(index) {
+            let mediaUpdated = true;
             this.selectedFiles.splice(index, 1); // Elimina el archivo de la lista por su índice
-            this.$emit('files-selected', this.selectedFiles); // Emitir la lista actualizada después de la eliminación
+            this.$emit('files-selected', this.selectedFiles, mediaUpdated); // Emitir la lista actualizada después de la eliminación
         },
         getFileTypeIcon(fileName) {
             // Asocia extensiones de archivo a iconos
@@ -96,6 +109,30 @@ export default {
                     return 'fa-regular fa-file-lines';
             }
         },
+        async fetchAndConvertFiles(urls) {
+            this.loading = true;
+            let mediaUpdated = false;
+            try {
+                const filePromises = urls.map(async (url) => {
+                    const response = await fetch(url);
+                    const data = await response.blob();
+                    const fileName = url.split('/').pop();
+                    return new File([data], fileName, { type: data.type });
+                });
+                const files = await Promise.all(filePromises);
+                this.selectedFiles = [...this.selectedFiles, ...files];
+                this.$emit('files-selected', this.selectedFiles, mediaUpdated);
+            } catch (error) {
+                console.error('Error al convertir los archivos:', error);
+            } finally {
+                this.loading = false;
+            }
+        },
+    },
+    mounted() {
+        if (this.existingFileUrls.length > 0) {
+            this.fetchAndConvertFiles(this.existingFileUrls);
+        }
     },
 };
 </script>

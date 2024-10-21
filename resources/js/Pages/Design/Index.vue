@@ -37,8 +37,8 @@
                     <div class="flex justify-between">
                         <!-- pagination -->
                         <div>
-                            <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                                :total="localDesigns.length" />
+                            <el-pagination v-if="!search" @current-change="handlePagination" layout="prev, pager, next"
+                                :total="designs.length" />
                         </div>
                         <!-- buttons -->
                         <div>
@@ -95,7 +95,7 @@
                                                 Ver</el-dropdown-item>
                                             <el-dropdown-item
                                                 v-if="(scope.row.status['label'] != 'Terminado' && scope.row.user.id == $page.props.auth.user.id) ||
-                            ($page.props.auth.user.permissions.includes('Ordenes de diseño todas') && scope.row.status['label'] != 'Terminado')"
+                                                ($page.props.auth.user.permissions.includes('Ordenes de diseño todas') && scope.row.status['label'] != 'Terminado')"
                                                 :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
                                                 Editar</el-dropdown-item>
                                         </el-dropdown-menu>
@@ -124,7 +124,7 @@ export default {
         return {
             filter: 'Mis órdenes', //filtro
             options: ['Mis órdenes', 'Todas las órdenes'], //filtro
-            localDesigns: this.designs.data,
+            // localDesigns: this.designs.data,
             disableMassiveActions: true,
             inputSearch: '',
             search: '',
@@ -188,7 +188,7 @@ export default {
 
                     // update list of quotes
                     let deletedIndexes = [];
-                    this.localDesigns.forEach((design, index) => {
+                    this.designs.forEach((design, index) => {
                         if (this.$refs.multipleTableRef.value.includes(design)) {
                             deletedIndexes.push(index);
                         }
@@ -199,7 +199,7 @@ export default {
 
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.localDesigns.splice(index, 1);
+                        this.designs.splice(index, 1);
                     }
 
                 } else {
@@ -223,7 +223,7 @@ export default {
             return 'cursor-pointer text-xs';
         },
         handleRowClick(row) {
-            this.$inertia.get(route('designs.show', row));
+            this.$inertia.get(route('designs.show', row.id));
         },
         handleCommand(command) {
             const commandName = command.split('-')[0];
@@ -243,7 +243,7 @@ export default {
             try {
                 const response = await axios.get(route('designs.fetch-filtered', this.filter));
                 if (response.status === 200) {
-                    this.localDesigns = response.data.items;
+                    this.designs = response.data.items;
                 }
             } catch (error) {
                 console.log(error);
@@ -255,9 +255,9 @@ export default {
     computed: {
         filteredTableData() {
             if (!this.search) {
-                return this.localDesigns.filter((item, index) => index >= this.start && index < this.end);
+                return this.designs.filter((item, index) => index >= this.start && index < this.end);
             } else {
-                return this.localDesigns.filter(
+                return this.designs.filter(
                     (design) =>
                         design.id.toString().toLowerCase().includes(this.search.toLowerCase()) ||
                         design.name.toLowerCase().includes(this.search.toLowerCase()) ||

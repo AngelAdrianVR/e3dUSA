@@ -15,14 +15,17 @@ class CatalogProductCompany extends Pivot
     public $incrementing = true;
 
     protected $fillable = [
+        'oldest_updated_by',
         'oldest_price',
         'oldest_date',
         'oldest_currency',
+        'old_updated_by',
         'old_date',
-        'new_date',
         'old_price',
-        'new_price',
         'old_currency',
+        'new_updated_by',
+        'new_date',
+        'new_price',
         'new_currency',
         'catalog_product_id',
         'company_id',
@@ -36,7 +39,6 @@ class CatalogProductCompany extends Pivot
     ];
 
     //relationships
-
     public function company():BelongsTo
     {
         return $this->belongsTo(Company::class);

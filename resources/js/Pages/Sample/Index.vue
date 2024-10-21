@@ -1,13 +1,6 @@
 <template>
     <div>
-        <div v-if="loading"
-            class="absolute z-30 left-0 top-0 inset-0 bg-black opacity-50 flex items-center justify-center">
-        </div>
-        <div v-if="loading"
-            class="absolute z-40 top-1/2 left-[35%] lg:left-1/2 w-32 h-32 rounded-lg bg-white flex items-center justify-center">
-            <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
-        </div>
-
+        <AllPageLoading v-if="loading" />
         <AppLayout title="Seguimiento de muestras">
             <template #header>
                 <div class="flex justify-between">
@@ -24,9 +17,10 @@
             </template>
 
             <div class="flex space-x-6 items-center justify-center text-xs mt-2">
-                <p><i class="fa-solid fa-circle mr-1 text-amber-600"></i>Enviado. Esperando respuesta </p>
-                <p><i class="fa-solid fa-circle mr-1 text-blue-600"></i>Muestra devuelta/ esperandoretroalimentación</p>
-                <p><i class="fa-solid fa-circle mr-1 text-sky-500"></i>Enviada con modificaciones</p>
+                <p><i class="fa-solid fa-circle mr-1 text-gray-500"></i>Muestra no envida aún</p>
+                <p><i class="fa-solid fa-circle mr-1 text-amber-600"></i>Enviado. Esperando respuesta</p>
+                <p><i class="fa-solid fa-circle mr-1 text-blue-600"></i>Muestra devuelta</p>
+                <p><i class="fa-solid fa-circle mr-1 text-sky-500"></i>Muestra enviada con modificaciones</p>
                 <p><i class="fa-solid fa-circle mr-1 text-green-500"></i>Venta cerrada</p>
                 <p><i class="fa-solid fa-circle mr-1 text-primary"></i>Venta no concretada</p>
             </div>
@@ -39,7 +33,6 @@
                     <div v-if="!search" class="overflow-auto mb-2">
                         <PaginationWithNoMeta :pagination="pagination" class="py-2" />
                     </div>
-
                     <div>
                         <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar muestra')"
                             confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
@@ -136,6 +129,7 @@ import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
+import AllPageLoading from "@/Components/MyComponents/AllPageLoading.vue";
 
 export default {
     data() {
@@ -160,36 +154,13 @@ export default {
         AppLayout,
         TextInput,
         Link,
+        AllPageLoading,
     },
     props: {
         samples: Array
     },
     methods: {
-        async handleSearch(search) {
-            this.search = search;
-            this.loading = true;
-            try {
-                if (!this.search) {
-                    this.filteredSamples = this.samples.data;
-                    this.pagination = this.samples; //cuando se busca con texto vacio s emuestran todas las porduccoines y la paginacion es de todas las producciones
-                } else {
-                    const response = await axios.post(route('samples.get-matches', { query: this.search }));
-
-                    if (response.status === 200) {
-                        this.filteredSamples = response.data.items.data;
-                        this.pagination = response.data.items; //se cambia la paginacion a los encontrados
-                    }
-                }
-            } catch (error) {
-                console.log(error);
-            } finally {
-                this.loading = false;
-            }
-        },
         tableRowClassName({ row, rowIndex }) {
-            if ( !row.authorized_at ) {
-                return 'cursor-pointer text-gray-400 !bg-[#fafafa]';
-            } 
             return 'cursor-pointer text-xs';
         },
         handleSelectionChange(val) {
@@ -205,7 +176,6 @@ export default {
             this.start = (val - 1) * this.itemsPerPage;
             this.end = val * this.itemsPerPage;
         },
-
         handleCommand(command) {
             const commandName = command.split('-')[0];
             const rowId = command.split('-')[1];
@@ -216,7 +186,14 @@ export default {
                 this.$inertia.get(route('samples.' + commandName, rowId));
             }
         },
+        handleRowClick(row) {
+            this.$inertia.get(route('samples.show', row));
+        },
+        edit(index, sample) {
+            this.$inertia.get(route('samples.edit', sample));
+        },
         async authorize(sample_id) {
+            this.loading = true;
             try {
                 const response = await axios.put(route('samples.authorize', sample_id));
 
@@ -242,9 +219,12 @@ export default {
                     type: 'error'
                 });
                 console.log(err);
+            } finally {
+                this.loading = false;
             }
         },
         async deleteSelections() {
+            this.loading = true;
             try {
                 const response = await axios.post(route('samples.massive-delete', {
                     samples: this.$refs.multipleTableRef.value
@@ -288,14 +268,31 @@ export default {
                     type: 'error'
                 });
                 console.log(err);
+            } finally {
+                this.loading = false;
             }
         },
-        handleRowClick(row) {
-            this.$inertia.get(route('samples.show', row));
+        async handleSearch(search) {
+            this.search = search;
+            this.loading = true;
+            try {
+                if (!this.search) {
+                    this.filteredSamples = this.samples.data;
+                    this.pagination = this.samples; //cuando se busca con texto vacio s emuestran todas las porduccoines y la paginacion es de todas las producciones
+                } else {
+                    const response = await axios.post(route('samples.get-matches', { query: this.search }));
+
+                    if (response.status === 200) {
+                        this.filteredSamples = response.data.items.data;
+                        this.pagination = response.data.items; //se cambia la paginacion a los encontrados
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                this.loading = false;
+            }
         },
-        edit(index, sample) {
-            this.$inertia.get(route('samples.edit', sample));
-        }
     },
 };
 </script>

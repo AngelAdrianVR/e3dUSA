@@ -18,7 +18,6 @@ use Illuminate\Validation\Rule;
 
 class CompanyController extends Controller
 {
-
     public function index()
     {
         $companies = CompanyResource::collection(Company::with(['companyBranches', 'seller:id,name'])
@@ -27,7 +26,6 @@ class CompanyController extends Controller
 
         return inertia('Company/Index', compact('companies'));
     }
-
 
     public function create()
     {
@@ -43,7 +41,6 @@ class CompanyController extends Controller
         
         return inertia('Company/Create', compact('catalog_products', 'sellers'));
     }
-
 
     public function store(Request $request)
     {
@@ -70,6 +67,8 @@ class CompanyController extends Controller
             }
 
             foreach ($request->products as $product) {
+                $product['new_updated_by'] = auth()->user()->name;
+                $product['old_updated_by'] = $product['old_price'] ? auth()->user()->name : null;
                 $company->catalogProducts()->attach($product['catalog_product_id'], $product);
             }
         }
@@ -78,7 +77,6 @@ class CompanyController extends Controller
 
         return to_route('companies.show', $company);
     }
-
 
     public function show($company_id)
     {
@@ -94,11 +92,8 @@ class CompanyController extends Controller
 
         $defaultTab = request('defaultTab');
 
-        // return $company;
-
         return inertia('Company/Show', compact('company', 'companies', 'defaultTab'));
     }
-
 
     public function edit(Company $company)
     {
@@ -115,7 +110,6 @@ class CompanyController extends Controller
 
         return inertia('Company/Edit', compact('company', 'catalog_products', 'sellers'));
     }
-
 
     public function update(Request $request, Company $company)
     {
@@ -192,7 +186,6 @@ class CompanyController extends Controller
 
         return to_route('companies.show', $company);
     }
-
 
     public function destroy(Company $company)
     {

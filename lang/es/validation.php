@@ -225,5 +225,8 @@ return [
         'height' => 'alto',
         'width' => 'ancho',
         'catalog_product_id' => 'producto',
+        'new_price' => 'precio nuevo',
+        'new_currency' => 'moneda',
+        'brand' => 'marca',
     ],
 ];

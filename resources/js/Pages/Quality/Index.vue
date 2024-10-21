@@ -34,19 +34,19 @@
         <thead>
           <tr class="text-center">
             <th class="font-bold pb-3 pl-2 text-left">
-              ID <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              ID
             </th>
             <th class="font-bold pb-3 text-left">
-              Supervisor <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Supervisor
             </th>
             <th class="font-bold pb-3 text-left">
-              Fecha y hora <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Fecha y hora
             </th>
             <th class="font-bold pb-3 text-left">
-              Folio inspeccionado <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Folio inspeccionado
             </th>
             <th class="font-bold pb-3 text-left">
-              Estado de folio <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Estado de folio
             </th>
             <th></th>
           </tr>

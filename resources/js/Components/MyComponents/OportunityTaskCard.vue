@@ -103,7 +103,7 @@
         <textarea v-model="form.reminder" disabled class="textarea w-3/4 cursor-not-allowed"> </textarea>
         <InputError :message="form.errors.reminder" />
       </div> -->
-      <div class="flex justify-between items-center space-x-2">
+      <div class="flex justify-between">
         <label class="text-sm">Descripción</label>
       <RichText v-if="canEdit" @content="updateDescription($event)" :defaultValue="form.description" />
         <div v-else class="rounded-[10px] bg-[#cccccc] px-3 py-2 min-h-[100px] text-sm w-3/4">{{ form.description }}</div>
@@ -146,12 +146,12 @@
               :alt="$page.props.auth.user.name" />
           </div>
           <RichText @submitComment="storeComment(taskComponentLocal)" @content="updateComment($event)" ref="commentEditor"
-            class="flex-1" withFooter :userList="users" :disabled="sendingComments" />
+            class="flex-1" withFooter :userList="users" :disabled="sendingComments || !form.comment" />
         </div>
       </div>
 
-      <div class="flex justify-start space-x-3 pt-5 pb-1">
-        <el-dropdown v-if="taskComponentLocal.finished_at === null" split-button type="primary" @click="handleClick" class="custom-dropdown" :disabled="(!toBool(authUserPermissions[2]) && !authUserIsParticipant) || canEdit">
+      <div class="flex justify-end space-x-1 pt-5 pb-1">
+        <el-dropdown v-if="!canEdit && taskComponentLocal.finished_at === null" split-button type="primary" @click="handleClick" class="custom-dropdown" :disabled="(!toBool(authUserPermissions[2]) && !authUserIsParticipant) || canEdit">
           Marcar como hecho
           <template #dropdown>
             <el-dropdown-menu>
@@ -160,7 +160,7 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <CancelButton v-if="canEdit" @click="canEdit = false">
+        <CancelButton v-if="canEdit" @click="canEdit = false; form.reset()">
           Cancelar edición
         </CancelButton>
         <PrimaryButton v-if="canEdit" type="button" @click="update()">Guardar cambios</PrimaryButton>
@@ -286,6 +286,7 @@ export default {
           });
           this.taskComponentLocal = response.data.item;
           this.taskInformationModal = false;
+          this.canEdit = false;
           this.$emit('updated-oportunityTask', this.taskComponentLocal);
         }
       } catch (error) {
