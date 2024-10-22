@@ -64,8 +64,8 @@ class QuoteController extends Controller
 
     public function create()
     {
-        $catalog_products = CatalogProduct::all(['id', 'name', 'part_number']);
-        $raw_materials = RawMaterial::all(['id', 'name', 'part_number']);
+        $catalog_products = CatalogProduct::with(['media'])->get(['id', 'name', 'part_number']);
+        $raw_materials = RawMaterial::with(['media'])->get(['id', 'name', 'part_number']);
         $company_branches = CompanyBranch::get(['id', 'name']);
         $prospects = Prospect::get(['id', 'name', 'contact_name', 'contact_charge']);
 
@@ -160,8 +160,8 @@ class QuoteController extends Controller
     public function edit(Quote $quote)
     {
         $quote = $quote->load('catalogProducts', 'rawMaterials');
-        $catalog_products = CatalogProduct::all(['id', 'name', 'part_number']);
-        $raw_materials = RawMaterial::all(['id', 'name', 'part_number']);
+        $catalog_products = CatalogProduct::with(['media'])->get(['id', 'name', 'part_number']);
+        $raw_materials = RawMaterial::with(['media'])->get(['id', 'name', 'part_number']);
         $company_branches = CompanyBranch::all(['id', 'name']);
         $prospects = Prospect::get(['id', 'name', 'contact_name', 'contact_charge']);
 
