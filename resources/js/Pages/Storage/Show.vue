@@ -30,8 +30,8 @@
               </button>
             </el-tooltip>
 
-            <el-tooltip v-if="$page.props.auth.user.permissions.includes('Crear salidas')" content="Dar salida de almacén"
-              placement="top">
+            <el-tooltip v-if="$page.props.auth.user.permissions.includes('Crear salidas')"
+              content="Dar salida de almacén" placement="top">
               <button @click="
                 is_add = false;
               showDialogModal = true;
@@ -46,11 +46,13 @@
               v-if="$page.props.auth.user.permissions.includes('Editar materia prima') && storage.data.type != 'producto-terminado'"
               content="Editar" placement="top">
               <Link :href="route('raw-materials.edit', selectedRawMaterial)">
-                <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9]">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                    </svg>
-                </button>
+              <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9]">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="size-5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                </svg>
+              </button>
               </Link>
             </el-tooltip>
             <!-- <el-tooltip
@@ -67,10 +69,10 @@
               $page.props.auth.user.permissions.includes(
                 'Eliminar materia prima'
               )
-              ">
+            ">
               <template #trigger>
                 <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center justify-center text-sm">
-                    Más <i class="fa-solid fa-chevron-down text-[10px] ml-2 pb-[2px]"></i>
+                  Más <i class="fa-solid fa-chevron-down text-[10px] ml-2 pb-[2px]"></i>
                 </button>
               </template>
               <template #content>
@@ -82,12 +84,12 @@
                   v-if="$page.props.auth.user.permissions.includes('Crear scrap')">
                   Mandar a scrap
                 </DropdownLink>
-                <DropdownLink @click="showConfirmModal = true" as="button" v-if="$page.props.auth.user.permissions.includes(
+                <!-- <DropdownLink @click="showConfirmModal = true" as="button" v-if="$page.props.auth.user.permissions.includes(
                   'Eliminar materia prima'
                 )
-                  ">
+                ">
                   Eliminar
-                </DropdownLink>
+                </DropdownLink> -->
               </template>
             </Dropdown>
           </div>
@@ -200,7 +202,11 @@
               </div>
               <div class="flex space-x-2 mb-6">
                 <p class="w-1/3 text-[#9A9A9A]">Tipo:</p>
-                <p>{{ storage.data.storageable_type == 'App\\Models\\RawMaterial' ? 'Materia prima' : 'Producto de catálogo' }}</p>
+                <p>
+                  {{ storage.data.storageable_type == 'App\\Models\\RawMaterial'
+                    ? 'Materia prima'
+                    : 'Producto decatálogo' }}
+                </p>
               </div>
               <div class="flex space-x-2 mb-6">
                 <p class="w-1/3 text-[#9A9A9A]">Fecha de Alta</p>
@@ -306,7 +312,8 @@
                   <td class="text-center pb-3">
                     {{ movement.quantity }}
                   </td>
-                  <td :class="movement.type === 'Entrada' ? 'text-green-500' : 'text-red-500' " class="text-center pb-3 flex items-center space-x-2">
+                  <td :class="movement.type === 'Entrada' ? 'text-green-500' : 'text-red-500'"
+                    class="text-center pb-3 flex items-center space-x-2">
                     <p>{{ movement.type }}</p>
                     <i v-if="movement.type === 'Entrada'" class="fa-solid fa-arrow-right-to-bracket"></i>
                     <i v-if="movement.type === 'Salida'" class="fa-solid fa-arrow-right-from-bracket"></i>
@@ -319,9 +326,9 @@
             </table>
             <p v-else class="text-center text-sm text-gray-500">No hay movimientos registrados</p>
           </div>
-          <!-- --------------------- Tab 2 historial de movimientos ends------------------ -->
         </div>
       </div>
+
       <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
         <template #title> Eliminar producto de Almacén </template>
         <template #content> Continuar con la eliminación? </template>
@@ -334,35 +341,27 @@
       </ConfirmationModal>
 
       <!-- -------------- Dialog Modal starts----------------------- -->
-      <DialogModal :show="showDialogModal" @close="
-        showDialogModal = false;
-      is_add = null;
-      form.reset();
-      ">
+      <DialogModal :show="showDialogModal" @close="showDialogModal = false; is_add = null; form.reset();">
         <template #title>
           <p>Ingresa la cantidad</p>
         </template>
         <template #content>
           <form ref="myForm" @submit.prevent="is_add ? addStorage() : subStorage()">
             <div>
-              <IconInput v-model="form.quantity" inputPlaceholder="Cantidad" inputType="number" inputStep="0.01">
-                <el-tooltip content="Cantidad" placement="top">
-                  123
-                </el-tooltip>
-              </IconInput>
+              <InputLabel value="Cantidad*" />
+              <el-input v-model="form.quantity" type="text"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 50" />
               <p v-if="errorMessage" class="text-red-600 text-xs">
                 {{ errorMessage }}
               </p>
               <InputError :message="form.errors.quantity" />
             </div>
-            <div class="flex">
-              <el-tooltip content="Notas" placement="top">
-                <span
-                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                  ...
-                </span>
-              </el-tooltip>
-              <textarea v-model="form.notes" class="textarea" autocomplete="off" placeholder="Notas"></textarea>
+            <div class="mt-3">
+              <InputLabel value="Notas" />
+              <el-input v-model="form.notes" :rows="3" maxlength="800"
+                :placeholder="is_add ? 'Ej. Se encontraron unidades extraviadas y se dieron ingreso a almacen' : 'Ej. Ajuste de inventario por recuento'"
+                show-word-limit type="textarea" />
               <InputError :message="form.errors.notes" />
             </div>
           </form>
@@ -394,27 +393,22 @@
                   <i class="fa-solid fa-xmark"></i>
                 </div>
                 <div>
-                  <IconInput v-model="form.quantity" inputPlaceholder="Cantidad" inputType="number" inputStep="0.01">
-                    <el-tooltip content="Cantidad" placement="top">
-                      123
-                    </el-tooltip>
-                  </IconInput>
+                  <InputLabel value="Cantidad*" />
+                  <el-input v-model="form.quantity" type="text"
+                    :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 35" />
                   <InputError :message="form.errors.quantity" />
                 </div>
-                <div>
-                  <IconInput v-model="form.location" inputPlaceholder="Ubicación" inputType="text">
-                    <el-tooltip content="Ubicación" placement="top">
-                      U
-                    </el-tooltip>
-                    <InputError :message="form.errors.location" />
-                  </IconInput>
+                <div class="mt-3">
+                  <InputLabel value="Ubicación*" />
+                  <el-input v-model="form.location" type="text" placeholder="Ej. S-10" />
+                  <InputError :message="form.errors.location" />
                 </div>
               </div>
             </section>
             <!-- -------------- scrapModal ends----------------------- -->
-
             <div class="flex justify-end space-x-3 pt-5 pb-1">
-              <PrimaryButton>Mandar a scrap</PrimaryButton>
+              <PrimaryButton :disabled="form.processing">Mandar a scrap</PrimaryButton>
             </div>
           </div>
         </form>
@@ -460,6 +454,7 @@ import moment from "moment";
 import { Link, useForm } from "@inertiajs/vue3";
 import Modal from "@/Components/Modal.vue";
 import axios from "axios";
+import InputLabel from "@/Components/InputLabel.vue";
 
 export default {
   data() {
@@ -521,6 +516,7 @@ export default {
     IconInput,
     InputError,
     Modal,
+    InputLabel,
   },
   props: {
     storage: Object,
