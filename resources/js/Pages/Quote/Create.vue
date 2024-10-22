@@ -196,7 +196,7 @@
                             <el-radio-button label="Producto de catálogo" value="Producto de catálogo" />
                             <el-radio-button label="Materia prima" value="Materia prima" />
                         </el-radio-group>
-                        <div v-if="productType === 'Producto de catálogo'">
+                        <div v-if="productType === 'Producto de catálogo'" class="col-span-full">
                             <InputLabel value="Producto de catálogo*" />
                             <el-select v-model="product.id" clearable filterable
                                 placeholder="Busca el producto de catálogo" no-data-text="No hay productos registrados"
@@ -206,7 +206,7 @@
                                     :value="item.id" />
                             </el-select>
                         </div>
-                        <div v-else>
+                        <div v-else class="col-span-full">
                             <InputLabel value="Materia prima*" />
                             <el-select v-model="product.id" clearable filterable
                                 placeholder="Busca el producto sin componentes"
@@ -216,19 +216,22 @@
                                     :label="item.name + ' (' + item.part_number + ')'" :value="item.id" />
                             </el-select>
                         </div>
-                        <div class="flex items-center space-x-4">
-                            <label v-if="isKeyChain" class="flex items-center text-gray-600">
-                                <input @change="handleRequiredMed(product.requires_med)" type="checkbox"
-                                    v-model="product.requires_med"
-                                    class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
-                                <span class="ml-2 text-sm">Requiere medallón</span>
-                            </label>
-                            <div>
-                                <InputLabel value="¿Mostrar imagen en cotización?" />
-                                <el-switch v-model="product.show_image" inline-prompt size="large"
-                                    style="--el-switch-on-color: #0355B5; --el-switch-off-color: #CCCCCC"
-                                    active-text="Si" inactive-text="No" />
-                            </div>
+                        <div>
+                            <figure class="border border-[#9a9a9a] rounded-md min-h-20 w-full">
+                                <img v-if="product.id"
+                                    :src="catalog_products.find(p => p.id == product.id).media[0].original_url"
+                                    class="object-contain min-h-20 rounded-md">
+                                <p v-else class="flex items-center space-x-2 justify-center text-sm text-[#373737] mt-3">
+                                    <i class="fa-solid fa-arrow-up"></i>
+                                    <span>Selecciona un producto para ver imagen</span>
+                                </p>
+                            </figure>
+                        </div>
+                        <div>
+                            <InputLabel value="¿Mostrar imagen en cotización?" />
+                            <el-switch v-model="product.show_image" inline-prompt size="large"
+                                style="--el-switch-on-color: #0355B5; --el-switch-off-color: #CCCCCC" active-text="Si"
+                                inactive-text="No" />
                         </div>
                         <div>
                             <InputLabel value="Cantidad a cotizar*" />
@@ -241,6 +244,14 @@
                             <el-input v-model="product.price" type="text"
                                 :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 16.85" />
+                        </div>
+                        <div v-if="isKeyChain">
+                            <label class="flex items-center text-gray-600">
+                                <input @change="handleRequiredMed(product.requires_med)" type="checkbox"
+                                    v-model="product.requires_med"
+                                    class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
+                                <span class="ml-2 text-sm">Requiere medallón</span>
+                            </label>
                         </div>
                         <div class="col-span-full">
                             <InputLabel value="Notas" />
