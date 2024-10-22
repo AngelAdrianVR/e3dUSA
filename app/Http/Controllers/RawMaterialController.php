@@ -260,7 +260,7 @@ class RawMaterialController extends Controller
             // Clonar la imagen si existe
             $rawMaterialImage = $rawMaterial->getFirstMedia();
 
-            if ($rawMaterialImage) {
+            if ($rawMaterialImage && file_exists($rawMaterialImage->getPath())) {
                 // Crear una nueva instancia de Media
                 $clonedImage = $catalogProduct
                     ->addMedia($rawMaterialImage->getPath())
@@ -281,7 +281,6 @@ class RawMaterialController extends Controller
 
         return response()->json(['message' => 'Este producto ya existe en el catalogo', 'type' => 'info', 'title' => '']);
     }
-
 
     public function fetchItem($raw_material_id)
     {
