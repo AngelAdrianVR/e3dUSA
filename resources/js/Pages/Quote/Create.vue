@@ -217,10 +217,10 @@
                             </el-select>
                         </div>
                         <div>
-                            <figure class="border border-[#9a9a9a] rounded-md min-h-20 w-full">
+                            <figure class="flex justify-center border border-[#9a9a9a] rounded-md min-h-20 max-h-44 w-full">
                                 <img v-if="product.id"
                                     :src="catalog_products.find(p => p.id == product.id).media[0].original_url"
-                                    class="object-contain min-h-20 rounded-md">
+                                    class="object-contain min-h-20 max-h-44 rounded-md">
                                 <p v-else class="flex items-center space-x-2 justify-center text-sm text-[#373737] mt-3">
                                     <i class="fa-solid fa-arrow-up"></i>
                                     <span>Selecciona un producto para ver imagen</span>
