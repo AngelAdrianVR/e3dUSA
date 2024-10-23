@@ -79,7 +79,7 @@ class RawMaterial extends Model implements HasMedia
         // Verificar en cada producto de catálogo si esta es la única materia prima
         foreach ($catalogProducts as $catalogProduct) {
             if ($catalogProduct->rawMaterials()->count() == 1) {
-                return true; // ya hay un producto de catalogo con solo esta materia prima como componente
+                return $catalogProduct; // ya hay un producto de catalogo con solo esta materia prima como componente
             }
         }
 
