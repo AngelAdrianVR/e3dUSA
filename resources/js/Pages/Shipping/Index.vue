@@ -3,6 +3,7 @@
         <template #header>
             <div class="flex justify-between mt-4">
                 <h2 class="font-semibold text-xl leading-tight">Envíos</h2>
+                <ThirthButton @click="showReportFilter = true" class="text-secondary border-secondary focus:ring-secondary">Reporte de gastos de envío</ThirthButton>
             </div>
         </template>
 
@@ -175,17 +176,43 @@
                 </el-table>
             </div>
         </div>
-        </AppLayout>
+
+        <!-- report filter modal -->
+        <DialogModal :show="showReportFilter" @close="showReportFilter = false" maxWidth="lg">
+            <template #title>
+                <h1 class="font-bold mb-4 text-left">Filtro de periodo para reporte</h1>
+            </template>
+            <template #content>
+                <div class="text-center">
+                    <InputLabel class="mb-2" value="Selecciona el periodo de reporte" />
+                    <el-date-picker
+                        v-model="reportPeriod"
+                        type="daterange"
+                        unlink-panels
+                        range-separator="A"
+                        start-placeholder="Fecha de inicio"
+                        end-placeholder="Fecha final"
+                    />
+                </div>
+            </template>
+            <template #footer>
+                <PrimaryButton @click="openReport" :disabled="!reportPeriod">Ver reporte</PrimaryButton>
+            </template>
+        </DialogModal>
+    </AppLayout>
 </template>
 
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ThirthButton from "@/Components/MyComponents/ThirthButton.vue";
 import LoadingLogo from '@/Components/MyComponents/LoadingLogo.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import InputLabel from "@/Components/InputLabel.vue";
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import PaginationWithNoMeta from "@/Components/MyComponents/PaginationWithNoMeta.vue";
+import DialogModal from "@/Components/DialogModal.vue";
 import { Link } from "@inertiajs/vue3";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -203,6 +230,8 @@ data() {
         filteredShippings: this.shippings.data,
         search: '',
         loading: false,
+        showReportFilter: false, //reporte
+        reportPeriod: null, //reporte
         // pagination: this.shippings,
     }
 },
@@ -212,7 +241,10 @@ components:{
     SecondaryButton,
     IndexSearchBar,
     PrimaryButton,
+    ThirthButton,
+    DialogModal,
     LoadingLogo,
+    InputLabel,
     AppLayout,
     Link
 },  
@@ -231,6 +263,9 @@ methods:{
             const parsedDate = new Date(date);
             return format(parsedDate, 'dd MMM yyyy, a las h:mm', { locale: es }); // Formato personalizado
         }
+    },
+    openReport() {
+        this.$inertia.post(route('shippings.costs-report'), { reportPeriod: this.reportPeriod });
     },
     openInNewTab(saleId) {
         const url = this.route('sales.show', saleId);
