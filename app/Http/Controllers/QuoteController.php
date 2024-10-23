@@ -104,17 +104,24 @@ class QuoteController extends Controller
         }
 
         foreach ($request->products as $product) {
-            $quoted_product = [
-                "quantity" => $product['quantity'],
-                "price" => $product['price'],
-                "show_image" => $product['show_image'],
-                "requires_med" => $product['requires_med'],
-                "notes" => $product['notes'],
-            ];
-
             if ($product['isCatalogProduct']) {
+                $quoted_product = [
+                    "quantity" => $product['quantity'],
+                    "price" => $product['price'],
+                    "show_image" => $product['show_image'],
+                    "requires_med" => $product['requires_med'],
+                    "notes" => $product['notes'],
+                ];
+
                 $quote->catalogProducts()->attach($product['id'], $quoted_product);
             } else {
+                $quoted_product = [
+                    "quantity" => $product['quantity'],
+                    "price" => $product['price'],
+                    "show_image" => $product['show_image'],
+                    "notes" => $product['notes'],
+                ];
+
                 $quote->rawMaterials()->attach($product['id'], $quoted_product);
             }
         }
@@ -341,6 +348,89 @@ class QuoteController extends Controller
             ];
         }
 
+        foreach ($quote->rawMaterials as $rawMaterial) {
+            $catalogProductExisting = $rawMaterial->isInCatalogProduct();
+            // Verificar si la materia prima ya es un producto de catálogo
+            if (!$catalogProductExisting) {
+                // Si no está en el catálogo, convertirla
+                $last = CatalogProduct::latest()->first();
+                $next_id = $last ? $last->id + 1 : 1;
+                $consecutive = str_pad($next_id, 4, "0", STR_PAD_LEFT);
+                $family = explode('-', $rawMaterial->part_number)[0];
+                $part_number = "C-$family-GEN-$consecutive";
+
+                // Crear un nuevo producto de catálogo
+                $catalogProduct = CatalogProduct::create([
+                    'name' => $rawMaterial->name,
+                    'description' => $rawMaterial->description,
+                    'part_number' => $part_number,
+                    'measure_unit' => $rawMaterial->measure_unit,
+                    'cost' => $rawMaterial->cost,
+                    'min_quantity' => $rawMaterial->min_quantity,
+                    'max_quantity' => $rawMaterial->max_quantity,
+                    'features' => $rawMaterial->features,
+                ]);
+
+                // Clonar la imagen si existe
+                $rawMaterialImage = $rawMaterial->getFirstMedia();
+                if ($rawMaterialImage && file_exists($rawMaterialImage->getPath())) {
+                    $clonedImage = $catalogProduct
+                        ->addMedia($rawMaterialImage->getPath())
+                        ->preservingOriginal()
+                        ->toMediaCollection();
+                    $catalogProduct->media()->save($clonedImage);
+                }
+
+                // Agregar el material al producto de catálogo
+                $catalogProduct->rawMaterials()->attach($rawMaterial, [
+                    'quantity' => 1,
+                    'production_costs' => [15],
+                ]);
+            } else {
+                // Si ya está en el catálogo, obtener el producto asociado
+                $catalogProduct = $catalogProductExisting;
+            }
+
+            // Verificar si el producto de catálogo ya está asociado con la compañía
+            $exists = $company->catalogProducts()->where('catalog_product_id', $catalogProduct->id)->exists();
+
+            if (!$exists) {
+                // Si no existe, hacer attach con todos los campos requeridos
+                $company->catalogProducts()->attach($catalogProduct->id, [
+                    'new_updated_by' => $quote->user->name,
+                    'new_date' => today(),
+                    'new_price' => $rawMaterial->pivot->price,
+                    'new_currency' => $quote->currency,
+                    'user_id' => $quote->user_id,
+                ]);
+
+                // Obtener el registro que acabamos de asociar
+                $catalog_product_company = $company->catalogProducts()
+                    ->where('catalog_product_id', $catalogProduct->id)
+                    ->first();
+            } else {
+                $catalog_product_company = $company->catalogProducts()
+                    ->where('catalog_product_id', $catalogProduct->id)
+                    ->first();
+            }
+
+            // Crear la relación en la tabla pivot para la venta
+            CatalogProductCompanySale::create([
+                'catalog_product_company_id' => $catalog_product_company->pivot->id,
+                'sale_id' => $sale->id,
+                'quantity' => $rawMaterial->pivot->quantity,
+                'requires_medallion' => false,
+                'notes' => $rawMaterial->pivot->notes,
+            ]);
+
+            // Asignar producto a las parcialidades
+            $partialities[0]['rawMaterialsSelected'][] = [
+                'id' => $rawMaterial->id,
+                'name' => $rawMaterial->name,
+                'selected' => true,
+                'quantity' => $rawMaterial->pivot->quantity,
+            ];
+        }
 
         // Guardar las parcialidades en la venta
         $sale->update(['partialities' => $partialities]);
