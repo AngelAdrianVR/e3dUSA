@@ -8,6 +8,7 @@ use App\Events\RecordEdited;
 use App\Http\Resources\QuoteResource;
 use App\Models\CatalogProduct;
 use App\Models\CatalogProductCompanySale;
+use App\Models\Company;
 use App\Models\CompanyBranch;
 use App\Models\Oportunity;
 use App\Models\Prospect;
@@ -267,7 +268,51 @@ class QuoteController extends Controller
     {
         $quote = Quote::find($request->quote_id);
         $folio = 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT);
-        $branch = CompanyBranch::find($quote->company_branch_id);
+
+        if ($quote->company_branch_id) {
+            $branch = CompanyBranch::find($quote->company_branch_id);
+        } else {
+            $prospect = $quote->prospect;
+            // crear compañia
+            $company = Company::create([
+                'business_name' => $prospect->name,
+                'phone' => $prospect->contact_phone,
+                'rfc' => 'convertido desde prospecto con ID ' . $prospect->id,
+                'post_code' => '12345',
+                'fiscal_address' => $prospect->address,
+                'user_id' => $prospect->user_id,
+                'seller_id' => $prospect->seller_id,
+                'branches_number' => $prospect->branches_number,
+            ]);
+            // crear sucursal
+            $branch = CompanyBranch::create([
+                'name' => $company->business_name,
+                'password' => bcrypt('e3d'),
+                'address' => $company->fiscal_address,
+                'state' => $prospect->state,
+                'post_code' => '12345',
+                'meet_way' => 'Otro',
+                'sat_method' => 'PUE',
+                'sat_type' => 'G03',
+                'sat_way' => '99',
+                'company_id' => $company->id,
+                'important_notes' => 'Cliente convertido de prospecto automaticamente al crear ' . $folio . ' a OV. Completar información faltante y borrar esta nota.',
+                'days_to_reactivate' => 30,
+            ]);
+            // crear productos
+            // foreach ($quote->catalogProducts as $product) {
+            //     $current_product = [
+            //         'new_updated_by' => $quote->user->name,
+            //         'new_date' => now(),
+            //         'new_price' => $product->pivot->price,
+            //         'new_currency' => $quote->currency,
+            //         'catalog_product_id' => $product->id,
+            //         // 'company_id' => $company_id,
+            //         'user_id' => $quote->user_id,
+            //     ];
+            //     $company->catalogProducts()->attach($product->id, $current_product);
+            // }
+        }
 
         $sale = Sale::create([
             'shipping_option' => "Entrega única",
@@ -276,7 +321,7 @@ class QuoteController extends Controller
             'authorized_at' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? now() : null,
             'user_id' => auth()->id(),
             'notes' => $quote->notes,
-            'company_branch_id' => $quote->company_branch_id,
+            'company_branch_id' => $branch->id,
             'partialities' => [],
         ]);
 
@@ -298,16 +343,34 @@ class QuoteController extends Controller
 
         // add products for sale to sale
         foreach ($quote->catalogProducts as $product) {
-            $catalog_product_company = $branch->company->catalogProducts->first(fn($item) => $item->id == $product->id);
-            if (!$catalog_product_company) {
-                // register products to company if any required
-                $pivot = [
-                    'new_date' => today(),
-                    'new_price' => $product->pivot->price,
-                    'new_currency' => $quote->currency,
-                ];
-                $branch->company->catalogProducts()->attach($product->pivot->catalog_product_id, $pivot);
-                $branch = CompanyBranch::find($quote->company_branch_id);
+            $pivot = [
+                'new_updated_by' => $quote->user->name,
+                'new_date' => today(),
+                'new_price' => $product->pivot->price,
+                'new_currency' => $quote->currency,
+                'user_id' => $quote->user_id,
+            ];
+            if ($quote->company_branch_id) {
+                $catalog_product_company = $branch->company->catalogProducts->first(fn($item) => $item->id == $product->id);
+                if (!$catalog_product_company) {
+                    // register products to company if any required
+                    $branch->company->catalogProducts()->attach($product->pivot->catalog_product_id, $pivot);
+                    $branch = $branch->fresh();
+                    // $branch = CompanyBranch::find($quote->company_branch_id);
+                    $catalog_product_company = $branch->company->catalogProducts->last();
+                }
+            } else {
+                // $pivot = [
+                //     'new_updated_by' => $quote->user->name,
+                //     'new_date' => today(),
+                //     'new_price' => $product->pivot->price,
+                //     'new_currency' => $quote->currency,
+                //     // 'catalog_product_id' => $product->id,
+                //     // 'company_id' => $company_id,
+                //     'user_id' => $quote->user_id,
+                // ];
+                $company->catalogProducts()->attach($product->pivot->catalog_product_id, $pivot);
+                $branch = $branch->fresh();
                 $catalog_product_company = $branch->company->catalogProducts->last();
             }
 
