@@ -1,7 +1,7 @@
 <template>
-    <div class="lg:h-64 h-52 bg-[#D9D9D9] rounded-[30px] lg:rounded-xl lg:p-5 py-2 px-4 relative text-xs lg:text-sm">
+    <div class="lg:h-64 h-52 bg-[#D9D9D9] dark:bg-[#202020] rounded-[30px] lg:rounded-xl lg:p-5 py-2 px-4 relative text-xs lg:text-sm transition-all ease-linear duration-500">
         <img class="lg:h-16 h-6 absolute top-4 left-14 lg:top-2 lg:left-24" src="@/../../public/images/star.png">
-        <h3 class="text-center text-gray-700 my-3">
+        <h3 class="text-center text-gray-700 dark:text-white my-3">
             Desempeño de Producción <i class="fa-solid fa-helmet-safety ml-2"></i>
         </h3>
         <div v-if="users?.length" class="mb-28 px-2 w-full h-full">

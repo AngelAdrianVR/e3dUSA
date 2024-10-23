@@ -797,7 +797,7 @@ onMounted(() => {
             <slot name="header" />
           </div>
         </header>
-        <div class="overflow-y-auto h-[calc(100vh-6.2rem)] bg-[#F2F2F2]">
+        <div class="overflow-y-auto h-[calc(100vh-6.2rem)] bg-[#F2F2F2] dark:bg-black">
           <slot />
         </div>
       </main>

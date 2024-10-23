@@ -12,8 +12,8 @@
     </Link>
 
     <Link :href="href"
-        class="lg:hidden h-32 border-[#D90537] bg-[#D9D9D9] bg-opacity-60 text-gray-400 rounded-[30px] flex flex-col justify-center items-center p-3 hover:border-2 hover:scale-105 transition ease-in duration-300 cursor-pointer"
-        :class="counter ? 'bg-opacity-100 text-gray-900' : ''">
+        class="lg:hidden h-32 border-[#D90537] bg-[#D9D9D9] dark:bg-[#202020] bg-opacity-60 rounded-[30px] flex flex-col justify-center items-center p-3 hover:border-2 hover:scale-105 transition ease-in duration-300 cursor-pointer"
+        :class="counter ? 'bg-opacity-100 text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500'">
     <div class="flex justify-center space-x-3 items-center px-3">
         <p class="text-3xl font-bold">{{ counter }}</p>
         <div class="text-2xl">
