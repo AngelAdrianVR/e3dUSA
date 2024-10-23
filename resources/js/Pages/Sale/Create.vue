@@ -381,12 +381,12 @@
                                     </div>
                                 </div>
 
-                                <div class="flex space-x-2 bg-yellow-200">
+                                <div class="flex space-x-2 bg-yellow-200 pl-3">
                                     <p class="text-[#999999] w-48">Cantidad de cajas:</p>
                                     <p>{{ totalBoxes[index] ?? '- Sin información -' }}</p>
                                 </div>
 
-                                <div class="flex space-x-2 bg-yellow-200">
+                                <div class="flex space-x-2 bg-yellow-200 pl-3">
                                     <p class="text-[#999999] w-48">Costo total de envío:</p>
                                     <p>${{ totalCost[index] ?? '- Sin información -' }}</p>
                                 </div>

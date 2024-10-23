@@ -199,6 +199,7 @@ Route::get('shippings-index-all', [ShippingController::class, 'indexAll'])->name
 Route::get('shippings-fetch-filtered/{filter}', [ShippingController::class, 'fetchFiltered'])->name('shippings.fetch-filtered');
 Route::post('shippings-update-status/{shipping}', [ShippingController::class, 'updateStatus'])->name('shippings.update-status');
 Route::post('shippings-partiality-sent/{shipping}', [ShippingController::class, 'updateSent'])->name('shippings.partiality-sent');
+Route::post('shippings-costs-report', [ShippingController::class, 'costsReport'])->name('shippings.costs-report');
 Route::get('shippings/fetch-catalog-product-info/{catalog_product}', [ShippingController::class, 'fetchCatalogProductInfo'])->name('shippings.fetch-catalog-product-info');
 
 

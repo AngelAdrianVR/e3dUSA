@@ -6,6 +6,7 @@ use App\Events\RecordDeleted;
 use App\Models\CatalogProduct;
 use App\Models\Sale;
 use App\Models\Shipping;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ShippingController extends Controller
@@ -164,5 +165,20 @@ class ShippingController extends Controller
         $catalog_product->load(['media', 'shippingRates']);
 
         return response()->json(['item' => $catalog_product]);
+    }
+
+    public function costsReport(Request $request)
+    {   
+        $startDate = $request->reportPeriod[0];
+        $endDate = Carbon::parse($request->reportPeriod[1])->endOfDay();
+
+        //recupera las ventas registradas en el periodo selecionado y que sea unicamente ventas y no stock
+        $sales = Sale::with('companyBranch:id,name')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('is_sale_production', true)
+            ->get(['id', 'shipping_company', 'freight_cost', 'partialities', 'status', 'company_branch_id']); 
+
+        // return $sales;
+        return inertia('Shipping/CostsReport', compact('sales'));
     }
 }
