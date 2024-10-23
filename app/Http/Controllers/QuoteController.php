@@ -268,69 +268,10 @@ class QuoteController extends Controller
     {
         $quote = Quote::find($request->quote_id);
         $folio = 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT);
+        $branch = $this->getOrCreateBranch($quote);
+        $company = $branch->company;
 
-        if ($quote->company_branch_id) {
-            $branch = CompanyBranch::find($quote->company_branch_id);
-        } else {
-            $prospect = $quote->prospect;
-            // crear compañia
-            $company = Company::create([
-                'business_name' => $prospect->name,
-                'phone' => $prospect->contact_phone,
-                'rfc' => 'convertido desde prospecto con ID ' . $prospect->id,
-                'post_code' => '12345',
-                'fiscal_address' => $prospect->address ?? 'No especificado',
-                'user_id' => $prospect->user_id,
-                'seller_id' => $prospect->seller_id ?? auth()->id(),
-                'branches_number' => $prospect->branches_number,
-            ]);
-            // crear sucursal
-            $branch = CompanyBranch::create([
-                'name' => $company->business_name,
-                'password' => bcrypt('e3d'),
-                'address' => $company->fiscal_address ?? 'No especificado',
-                'state' => $prospect->state,
-                'post_code' => '12345',
-                'meet_way' => 'Otro',
-                'sat_method' => 'PUE',
-                'sat_type' => 'G03',
-                'sat_way' => '99',
-                'company_id' => $company->id,
-                'important_notes' => 'Cliente convertido de prospecto automáticamente al crear ' . $folio . ' a OV. Completar información faltante en el apartado de clientes y borrar esta nota.',
-                'days_to_reactivate' => 30,
-            ]);
-            // crear contacto
-            $contact = [
-                'name' => $prospect->contact_name,
-                'email' => $prospect->contact_email,
-                'phone' => $prospect->contact_phone,
-                'charge' => $prospect->contact_charge,
-            ];
-            $branch->contacts()->create($contact);
-
-            // pasar sus contizaciones a "cliente"
-            $prospect->quotes->each(function ($quote) use ($branch) {
-                $quote->update(['company_branch_id' => $branch->id, 'prospect_id' => null]);
-            });
-
-            // eliminar prospecto
-            $prospect->delete();
-            // cambiar de prospecto a cliente la cotizacion
-            // crear productos
-            // foreach ($quote->catalogProducts as $product) {
-            //     $current_product = [
-            //         'new_updated_by' => $quote->user->name,
-            //         'new_date' => now(),
-            //         'new_price' => $product->pivot->price,
-            //         'new_currency' => $quote->currency,
-            //         'catalog_product_id' => $product->id,
-            //         // 'company_id' => $company_id,
-            //         'user_id' => $quote->user_id,
-            //     ];
-            //     $company->catalogProducts()->attach($product->id, $current_product);
-            // }
-        }
-
+        // Crear la orden de venta
         $sale = Sale::create([
             'shipping_option' => "Entrega única",
             'order_via' => "Cotización folio $folio",
@@ -339,9 +280,12 @@ class QuoteController extends Controller
             'user_id' => auth()->id(),
             'notes' => $quote->notes,
             'company_branch_id' => $branch->id,
-            'partialities' => [],
+            'partialities' => [], // Inicialmente vacío
         ]);
 
+        $sale_folio = 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT);
+
+        // Inicializar parcialidades
         $partialities = [
             [
                 'promise_date' => null,
@@ -356,68 +300,246 @@ class QuoteController extends Controller
             ]
         ];
 
-        $sale_folio = 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT);
-
-        // add products for sale to sale
+        // Añadir productos a la venta
         foreach ($quote->catalogProducts as $product) {
-            $pivot = [
-                'new_updated_by' => $quote->user->name,
-                'new_date' => today(),
-                'new_price' => $product->pivot->price,
-                'new_currency' => $quote->currency,
-                'user_id' => $quote->user_id,
-            ];
-            if ($quote->company_branch_id) {
-                $catalog_product_company = $branch->company->catalogProducts->first(fn($item) => $item->id == $product->id);
-                if (!$catalog_product_company) {
-                    // register products to company if any required
-                    $branch->company->catalogProducts()->attach($product->pivot->catalog_product_id, $pivot);
-                    $branch = $branch->fresh();
-                    // $branch = CompanyBranch::find($quote->company_branch_id);
-                    $catalog_product_company = $branch->company->catalogProducts->last();
-                }
-            } else {
-                // $pivot = [
-                //     'new_updated_by' => $quote->user->name,
-                //     'new_date' => today(),
-                //     'new_price' => $product->pivot->price,
-                //     'new_currency' => $quote->currency,
-                //     // 'catalog_product_id' => $product->id,
-                //     // 'company_id' => $company_id,
-                //     'user_id' => $quote->user_id,
-                // ];
-                $company->catalogProducts()->attach($product->pivot->catalog_product_id, $pivot);
-                $branch = $branch->fresh();
-                $catalog_product_company = $branch->company->catalogProducts->last();
+            // Verificar si el producto ya está asociado con la compañía
+            $catalog_product_company = $company->catalogProducts()
+                ->where('catalog_product_id', $product->id)
+                ->first(); // Obtener la relación si ya existe
+
+            if (!$catalog_product_company) {
+                // Si no existe, hacer attach con todos los campos requeridos
+                $company->catalogProducts()->attach($product->id, [
+                    'new_updated_by' => $quote->user->name,
+                    'new_date' => today(),
+                    'new_price' => $product->pivot->price,
+                    'new_currency' => $quote->currency,
+                    'user_id' => $quote->user_id,
+                ]);
+
+                // Obtener el registro que acabamos de asociar
+                $catalog_product_company = $company->catalogProducts()
+                    ->where('catalog_product_id', $product->id)
+                    ->first();
             }
 
+            // Crear la relación en la tabla pivot para la venta
             CatalogProductCompanySale::create([
-                'catalog_product_company_id' => $catalog_product_company->pivot->id,
+                'catalog_product_company_id' => $catalog_product_company->pivot->id, // Usar el id del pivote
                 'sale_id' => $sale->id,
                 'quantity' => $product->pivot->quantity,
                 'requires_medallion' => $product->pivot->requires_med,
                 'notes' => $product->pivot->notes,
             ]);
 
-            $prdForPartiality = [
+            // Asignar producto a las parcialidades
+            $partialities[0]['productsSelected'][] = [
                 'id' => $product->id,
                 'name' => $product->name,
                 'selected' => true,
                 'quantity' => $product->pivot->quantity,
             ];
-
-            // Asignar el array de productos seleccionados a la parcialidad
-            $partialities[0]['productsSelected'][] = $prdForPartiality;
         }
 
-        $sale->partialities = $partialities;
-        $sale->save();
+
+        // Guardar las parcialidades en la venta
+        $sale->update(['partialities' => $partialities]);
 
         return response()->json([
             'message' => "Cotización convertida en orden de venta con folio: {$sale_folio}. Completar información de la misma",
             'sale_id' => $sale->id,
         ]);
     }
+
+    /**
+     * Obtiene o crea una sucursal a partir de la cotización.
+     * Si la cotización proviene de un prospecto, lo convierte en cliente.
+     */
+    private function getOrCreateBranch($quote)
+    {
+        $folio = 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT);
+        if ($quote->company_branch_id) {
+            return CompanyBranch::find($quote->company_branch_id);
+        }
+
+        // Convertir prospecto en cliente
+        $prospect = $quote->prospect;
+        $company = Company::create([
+            'business_name' => $prospect->name,
+            'phone' => $prospect->contact_phone,
+            'rfc' => 'convertido desde prospecto con ID ' . $prospect->id,
+            'post_code' => '12345',
+            'fiscal_address' => $prospect->address ?? 'No especificado',
+            'user_id' => $prospect->user_id,
+            'seller_id' => $prospect->seller_id ?? auth()->id(),
+            'branches_number' => $prospect->branches_number,
+        ]);
+
+        // Crear sucursal
+        $branch = CompanyBranch::create([
+            'name' => $company->business_name,
+            'password' => bcrypt('e3d'),
+            'address' => $company->fiscal_address ?? 'No especificado',
+            'state' => $prospect->state,
+            'post_code' => '12345',
+            'meet_way' => 'Otro',
+            'sat_method' => 'PUE',
+            'sat_type' => 'G03',
+            'sat_way' => '99',
+            'company_id' => $company->id,
+            'important_notes' => 'Cliente convertido de prospecto automáticamente al crear ' . $folio . ' a OV. Completar información faltante en el apartado de clientes y borrar esta nota.',
+            'days_to_reactivate' => 30,
+        ]);
+
+        // Crear contacto para la sucursal
+        $branch->contacts()->create([
+            'name' => $prospect->contact_name,
+            'email' => $prospect->contact_email,
+            'phone' => $prospect->contact_phone,
+            'charge' => $prospect->contact_charge,
+        ]);
+
+        // Actualizar cotizaciones del prospecto
+        $prospect->quotes->each(function ($quote) use ($branch) {
+            $quote->update(['company_branch_id' => $branch->id, 'prospect_id' => null]);
+        });
+
+        // Eliminar prospecto
+        $prospect->delete();
+
+        return $branch;
+    }
+
+    // public function createSO(Request $request)
+    // {
+    //     $quote = Quote::find($request->quote_id);
+    //     $folio = 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT);
+
+    //     if ($quote->company_branch_id) {
+    //         $branch = CompanyBranch::find($quote->company_branch_id);
+    //     } else {
+    //         $prospect = $quote->prospect;
+    //         // crear compañia
+    //         $company = Company::create([
+    //             'business_name' => $prospect->name,
+    //             'phone' => $prospect->contact_phone,
+    //             'rfc' => 'convertido desde prospecto con ID ' . $prospect->id,
+    //             'post_code' => '12345',
+    //             'fiscal_address' => $prospect->address ?? 'No especificado',
+    //             'user_id' => $prospect->user_id,
+    //             'seller_id' => $prospect->seller_id ?? auth()->id(),
+    //             'branches_number' => $prospect->branches_number,
+    //         ]);
+    //         // crear sucursal
+    //         $branch = CompanyBranch::create([
+    //             'name' => $company->business_name,
+    //             'password' => bcrypt('e3d'),
+    //             'address' => $company->fiscal_address ?? 'No especificado',
+    //             'state' => $prospect->state,
+    //             'post_code' => '12345',
+    //             'meet_way' => 'Otro',
+    //             'sat_method' => 'PUE',
+    //             'sat_type' => 'G03',
+    //             'sat_way' => '99',
+    //             'company_id' => $company->id,
+    //             'important_notes' => 'Cliente convertido de prospecto automáticamente al crear ' . $folio . ' a OV. Completar información faltante en el apartado de clientes y borrar esta nota.',
+    //             'days_to_reactivate' => 30,
+    //         ]);
+    //         // crear contacto
+    //         $contact = [
+    //             'name' => $prospect->contact_name,
+    //             'email' => $prospect->contact_email,
+    //             'phone' => $prospect->contact_phone,
+    //             'charge' => $prospect->contact_charge,
+    //         ];
+    //         $branch->contacts()->create($contact);
+
+    //         // pasar sus contizaciones a "cliente"
+    //         $prospect->quotes->each(function ($quote) use ($branch) {
+    //             $quote->update(['company_branch_id' => $branch->id, 'prospect_id' => null]);
+    //         });
+
+    //         // eliminar prospecto
+    //         $prospect->delete();
+    //     }
+
+    //     $sale = Sale::create([
+    //         'shipping_option' => "Entrega única",
+    //         'order_via' => "Cotización folio $folio",
+    //         'authorized_user_name' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? auth()->user()->name : null,
+    //         'authorized_at' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? now() : null,
+    //         'user_id' => auth()->id(),
+    //         'notes' => $quote->notes,
+    //         'company_branch_id' => $branch->id,
+    //         'partialities' => [],
+    //     ]);
+
+    //     $partialities = [
+    //         [
+    //             'promise_date' => null,
+    //             'shipping_cost' => null,
+    //             'shipping_company' => null,
+    //             'tracking_guide' => null,
+    //             'sent_at' => null,
+    //             'sent_by' => null,
+    //             'number_of_packages' => null,
+    //             'status' => 'Pendiente de envío',
+    //             'productsSelected' => [] // Inicialmente vacío
+    //         ]
+    //     ];
+
+    //     $sale_folio = 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT);
+
+    //     // add products for sale to sale
+    //     foreach ($quote->catalogProducts as $product) {
+    //         $pivot = [
+    //             'new_updated_by' => $quote->user->name,
+    //             'new_date' => today(),
+    //             'new_price' => $product->pivot->price,
+    //             'new_currency' => $quote->currency,
+    //             'user_id' => $quote->user_id,
+    //         ];
+    //         if ($quote->company_branch_id) {
+    //             $catalog_product_company = $branch->company->catalogProducts->first(fn($item) => $item->id == $product->id);
+    //             if (!$catalog_product_company) {
+    //                 // register products to company if any required
+    //                 $branch->company->catalogProducts()->attach($product->pivot->catalog_product_id, $pivot);
+    //                 $branch = $branch->fresh();
+    //                 $catalog_product_company = $branch->company->catalogProducts->last();
+    //             }
+    //         } else {
+    //             $company->catalogProducts()->attach($product->pivot->catalog_product_id, $pivot);
+    //             $branch = $branch->fresh();
+    //             $catalog_product_company = $branch->company->catalogProducts->last();
+    //         }
+
+    //         CatalogProductCompanySale::create([
+    //             'catalog_product_company_id' => $catalog_product_company->pivot->id,
+    //             'sale_id' => $sale->id,
+    //             'quantity' => $product->pivot->quantity,
+    //             'requires_medallion' => $product->pivot->requires_med,
+    //             'notes' => $product->pivot->notes,
+    //         ]);
+
+    //         $prdForPartiality = [
+    //             'id' => $product->id,
+    //             'name' => $product->name,
+    //             'selected' => true,
+    //             'quantity' => $product->pivot->quantity,
+    //         ];
+
+    //         // Asignar el array de productos seleccionados a la parcialidad
+    //         $partialities[0]['productsSelected'][] = $prdForPartiality;
+    //     }
+
+    //     $sale->partialities = $partialities;
+    //     $sale->save();
+
+    //     return response()->json([
+    //         'message' => "Cotización convertida en orden de venta con folio: {$sale_folio}. Completar información de la misma",
+    //         'sale_id' => $sale->id,
+    //     ]);
+    // }
 
     public function authorizeQuote(Quote $quote)
     {
