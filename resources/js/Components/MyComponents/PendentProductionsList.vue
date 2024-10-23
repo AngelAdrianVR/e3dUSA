@@ -1,6 +1,6 @@
 <template>
-    <div class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] py-4 px-6 text-sm">
-        <h2 class="text-black font-bold flex justify-center items-center">
+    <div class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] dark:bg-[#202020] py-4 px-6 text-sm transition-all ease-linear duration-500">
+        <h2 class="text-black dark:text-white font-bold flex justify-center items-center">
             <p>¿Cero tareas pendientes?. ¡Pide tareas para avanzar!</p>
         </h2>
         <div v-if="loading" class="animate-pulse flex space-x-4">

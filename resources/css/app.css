@@ -6,38 +6,6 @@
     display: none;
 }
 
-/* @layer utilities{
-    .bg-primary {
-        background-color: #D90537;
-    }
-    .bg-primary-light {
-        background-color: #e2355d;
-    }
-
-    .text-primary {
-        color: #D90537;
-    }
-
-    .bg-secondary{
-        background-color: #0355B5;
-    }
-    .bg-secondary-light{
-        background-color: #136bcf;
-    }
-
-    .text-secondary{
-        color: #0355B5;
-    }
-
-    .bg-primary-gray{
-        background-color: #9a9a9a;
-    }
-
-    .bg-secondary-gray{
-        background-color: #cccccc;
-    }
-} */
-
 *::-webkit-scrollbar {
 	width: 3px;
 	height: 6px;
@@ -55,7 +23,7 @@
 
 @layer components{
     .input{
-        @apply h-8 bg-[#CCCCCC] border placeholder:text-gray-400 border-transparent text-gray-700 text-sm rounded-lg focus:ring-0 focus:border-primary block w-full p-2.5 disabled:cursor-not-allowed placeholder:text-xs placeholder:lg:text-sm;
+        @apply h-8 bg-transparent border placeholder:text-gray-400 border-transparent text-gray-700 dark:text-white text-sm rounded-lg focus:ring-0 focus:border-primary block w-full p-2.5 disabled:cursor-not-allowed placeholder:text-xs placeholder:lg:text-sm;
     }
 
     .textarea{
@@ -69,3 +37,25 @@
         @apply hover:shadow-sm hover:shadow-gray-400 hover:bg-gray-700 hover:text-white transition ease-in-out duration-300 hover:-translate-y-1;
     }
 }
+
+/* estilos de element plus */
+/* tablas------------------------------------------------- */
+.dark .el-table tr {
+    background-color: #525252; /* Fondo oscuro */
+    color: #ffffff; /* Texto claro */
+}
+
+.dark .el-table tr:hover {
+    color: #383838; /* Texto claro */
+}
+
+.dark .el-table th {
+    background-color: #202020 !important; /* Fondo de encabezado */
+    color: #cccccc; /* Texto del encabezado */
+}
+
+/* Paginacion----------------- */
+.dark .el-pagination button {
+    background-color: #333333;
+    color: #cccccc;
+  }

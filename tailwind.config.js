@@ -11,7 +11,7 @@ export default {
         './resources/views/**/*.blade.php',
         './resources/js/**/*.vue',
     ],
-
+    darkMode: 'class', // Opción para manejar el modo oscuro mediante una clase
     theme: {
         extend: {
             fontFamily: {

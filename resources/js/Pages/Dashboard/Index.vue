@@ -7,7 +7,7 @@
         </figure>
     </div> -->
     <AppLayoutNoHeader title="Inicio">
-        <div class="px-9 pt-3 lg:px-14 lg:pt-8">
+        <div class="px-9 pt-3 lg:px-14 lg:pt-8 dark:bg-black dark:text-white transition-all ease-linear duration-500">
             <h1>Inicio</h1>
 
             <!-- <div class="my-5">
@@ -27,7 +27,7 @@
             </div> -->
 
             <!-- attendance -->
-            <div class="lg:hidden mx-auto w-4/5 rounded-[20px] bg-[#d9d9d9] py-3 px-5 flex flex-col space-y-2 mt-4">
+            <div class="lg:hidden mx-auto w-4/5 rounded-[20px] bg-[#d9d9d9] dark:bg-[#202020] py-3 px-5 flex flex-col space-y-2 mt-4">
                 <div class="flex flex-col items-center space-y-2">
                     <p class="text-center">{{ greeting?.text }} <strong>{{ $page.props.auth.user.name }}</strong></p>
                     <i :class="greeting?.class"></i>
@@ -107,11 +107,11 @@
                 ">
                 <h2 class="text-primary lg:text-xl text-lg lg:mt-16 mt-6">Operativo</h2>
 
-                <div class="grid lg:grid-cols-4 grid-cols-2 gap-3 mt-4">
+                <div class="grid lg:grid-cols-4 grid-cols-2 gap-3 mt-4 transition-all ease-linear duration-500">
                     <!-- sellers -->
                     <div v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')"
-                        class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] py-4 px-6 text-sm col-span-2">
-                        <h2 class="text-black font-bold flex items-center">
+                        class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] dark:bg-[#202020] py-4 px-6 text-sm col-span-2 transition-all ease-linear duration-500">
+                        <h2 class="text-black dark:text-white font-bold flex items-center">
                             <p>Órdenes de venta hechas por ti sin
                                 producción</p>
                             <i class="fa-solid fa-triangle-exclamation ml-3"></i>
@@ -144,7 +144,7 @@
 
                     <!-- oportunidad de tiempo extra -->
                     <div v-if="extra_time_request"
-                        class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] py-4 px-6 text-sm col-span-2">
+                        class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] dark:bg-[#202020] py-4 px-6 text-sm col-span-2 transition-all ease-linear duration-500">
                         <h2 class="text-black font-bold text-center">
                             Oportunidad de tiempo extra
                         </h2>

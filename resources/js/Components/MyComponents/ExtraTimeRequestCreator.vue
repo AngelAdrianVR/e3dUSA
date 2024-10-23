@@ -1,6 +1,6 @@
 <template>
-    <div class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] py-4 px-6 text-sm">
-        <h2 class="text-black font-bold flex justify-between items-center">
+    <div class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] dark:bg-[#202020] py-4 px-6 text-sm transition-all ease-linear duration-500">
+        <h2 class="text-black dark:text-white font-bold flex justify-between items-center">
             <p>Oportunidades de tiempo extra</p>
             <button @click="showCreateModal = true"
                 class="w-6 h-6 border border-transparent hover:border-primary rounded-full text-primary flex items-center justify-center">

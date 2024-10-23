@@ -32,11 +32,11 @@ const close = () => {
                         class="fa-solid fa-xmark text-xs"></i>
                 </button>
             </div>
-            <div class="text-lg font-bold text-center text-gray-900">
+            <div class="text-lg font-bold text-center text-gray-900 dark:text-white">
                 <slot name="title" />
             </div>
 
-            <div class="mt-1 text-sm text-gray-600">
+            <div class="mt-1 text-sm text-gray-600 dark:text-white">
                 <slot name="content" />
             </div>
         </div>

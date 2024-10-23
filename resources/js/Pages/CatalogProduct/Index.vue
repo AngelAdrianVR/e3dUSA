@@ -100,8 +100,6 @@ import axios from 'axios';
 
 export default {
     data() {
-
-
         return {
             disableMassiveActions: true,
             inputSearch: '',
@@ -255,3 +253,10 @@ export default {
     }
 };
 </script>
+
+<style>
+.dark .el-pagination button {
+  background-color: #333333;
+  color: #cccccc;
+}
+</style>
