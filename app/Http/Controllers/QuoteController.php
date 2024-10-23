@@ -424,8 +424,8 @@ class QuoteController extends Controller
             ]);
 
             // Asignar producto a las parcialidades
-            $partialities[0]['rawMaterialsSelected'][] = [
-                'id' => $rawMaterial->id,
+            $partialities[0]['productsSelected'][] = [
+                'id' => $catalogProduct->id,
                 'name' => $rawMaterial->name,
                 'selected' => true,
                 'quantity' => $rawMaterial->pivot->quantity,
