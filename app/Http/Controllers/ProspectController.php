@@ -142,7 +142,7 @@ class ProspectController extends Controller
             'post_code' => '12345',
             'fiscal_address' => $prospect->address ?? 'No especificado',
             'branches_number' => $prospect->branches_number,
-            'seller_id' => $prospect->seller_id ?? $prospect->seller_id,
+            'seller_id' => $prospect->seller_id ?? auth()->id(),
         ];
         $company = Company::create($customer_data + ['user_id' => auth()->id()]);
 
@@ -150,7 +150,7 @@ class ProspectController extends Controller
         $branch = [
             'company_id' => $company->id,
             'name' => $prospect->name,
-            'password' => '$2y$10$HOl.Lb1BpPJbGrUZUA4OQu0dTziq/jWOOkLNuUI8RGf5dtrr.dovC',
+            'password' => bcrypt('e3d'),
             'address' => $prospect->address ?? 'No especificado',
             'state' => $prospect->state,
             'post_code' => '12345',
