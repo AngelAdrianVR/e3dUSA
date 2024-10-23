@@ -158,7 +158,7 @@
           <CancelButton @click="showPermissionModal = false; permissionForm.reset(); editFlag = false;"
             :disabled="permissionForm.processing">Cancelar</CancelButton>
           <PrimaryButton @click="submitPermissionForm" :disabled="permissionForm.processing">
-            <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
+            <i v-if="permissionForm.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
             {{ editFlag ? 'Actualizar' : 'Crear' }}
           </PrimaryButton>
         </template>
