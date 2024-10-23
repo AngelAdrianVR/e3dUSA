@@ -7,7 +7,7 @@
                         <h2 class="font-semibold text-xl leading-tight">Cartera de Clientes</h2>
                     </div>
                     <div class="flex items-center space-x-2" v-if="$page.props.auth.user.permissions.includes('Crear clientes')">
-                        <!-- <ThirthButton @click="openReport()" class="text-secondary border-secondary focus:ring-secondary">Reporte de contactos</ThirthButton> -->
+                        <ThirthButton @click="openReport()" class="text-secondary border-secondary focus:ring-secondary">Reporte de contactos</ThirthButton>
                         <Link :href="route('companies.create')">
                             <SecondaryButton>+ Nuevo</SecondaryButton>
                         </Link>
