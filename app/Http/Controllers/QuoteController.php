@@ -279,16 +279,16 @@ class QuoteController extends Controller
                 'phone' => $prospect->contact_phone,
                 'rfc' => 'convertido desde prospecto con ID ' . $prospect->id,
                 'post_code' => '12345',
-                'fiscal_address' => $prospect->address,
+                'fiscal_address' => $prospect->address ?? 'No especificado',
                 'user_id' => $prospect->user_id,
-                'seller_id' => $prospect->seller_id,
+                'seller_id' => $prospect->seller_id ?? auth()->id(),
                 'branches_number' => $prospect->branches_number,
             ]);
             // crear sucursal
             $branch = CompanyBranch::create([
                 'name' => $company->business_name,
                 'password' => bcrypt('e3d'),
-                'address' => $company->fiscal_address,
+                'address' => $company->fiscal_address ?? 'No especificado',
                 'state' => $prospect->state,
                 'post_code' => '12345',
                 'meet_way' => 'Otro',
@@ -296,9 +296,26 @@ class QuoteController extends Controller
                 'sat_type' => 'G03',
                 'sat_way' => '99',
                 'company_id' => $company->id,
-                'important_notes' => 'Cliente convertido de prospecto automaticamente al crear ' . $folio . ' a OV. Completar información faltante y borrar esta nota.',
+                'important_notes' => 'Cliente convertido de prospecto automáticamente al crear ' . $folio . ' a OV. Completar información faltante en el apartado de clientes y borrar esta nota.',
                 'days_to_reactivate' => 30,
             ]);
+            // crear contacto
+            $contact = [
+                'name' => $prospect->contact_name,
+                'email' => $prospect->contact_email,
+                'phone' => $prospect->contact_phone,
+                'charge' => $prospect->contact_charge,
+            ];
+            $branch->contacts()->create($contact);
+
+            // pasar sus contizaciones a "cliente"
+            $prospect->quotes->each(function ($quote) use ($branch) {
+                $quote->update(['company_branch_id' => $branch->id, 'prospect_id' => null]);
+            });
+
+            // eliminar prospecto
+            $prospect->delete();
+            // cambiar de prospecto a cliente la cotizacion
             // crear productos
             // foreach ($quote->catalogProducts as $product) {
             //     $current_product = [
