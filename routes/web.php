@@ -302,7 +302,7 @@ Route::get('company-branches/fetch-design-info/{company_branch}', [CompanyBranch
 Route::resource('suppliers', SupplierController::class)->middleware('auth');
 Route::get('fetch-supplier/{supplier_id}', [SupplierController::class, 'fetchSupplier'])->name('suppliers.fetch-supplier');
 Route::get('supplier-get-orders/{supplier}', [SupplierController::class, 'getOrders'])->name('suppliers.get-orders');
-Route::get('supplier-rating-report/{period}', [SupplierController::class, 'ratingReport'])->name('suppliers.rating-report');
+Route::get('supplier-rating-report/{p}', [SupplierController::class, 'ratingReport'])->name('suppliers.rating-report');
 Route::post('suppliers/massive-delete', [SupplierController::class, 'massiveDelete'])->name('suppliers.massive-delete');
 
 

@@ -15,7 +15,6 @@ use Illuminate\Http\Request;
 
 class SupplierController extends Controller
 {
-
     public function index()
     {
         // $suppliers = SupplierResource::collection(Supplier::latest()->get());
@@ -33,7 +32,6 @@ class SupplierController extends Controller
             ];
         });
 
-        // return $suppliers;
         return inertia('Supplier/Index', compact('suppliers'));
     }
 
@@ -197,16 +195,18 @@ class SupplierController extends Controller
         return response()->json(['items' => $orders]);
     }
 
-    public function ratingReport($period)
+    public function ratingReport($p)
     {
-        $year = explode('-', $period)[0];
-        $month = explode('-', $period)[1];
+        $suppliers = request('s'); //obtiene id de proveedres. Ej. [1,5,9,12,32]
+        $year = explode('-', $p)[0];
+        $month = explode('-', $p)[1];
 
         // Obtener las órdenes con ratings, junto con la información del proveedor
         $orders = Purchase::with(['supplier'])
             ->whereMonth('created_at', $month)
             ->whereYear('created_at', $year)
             ->whereNotNull('rating')
+            ->whereIn('supplier_id', $suppliers)
             ->get();
 
         // Inicializamos un array para agrupar los resultados por proveedor
@@ -256,7 +256,7 @@ class SupplierController extends Controller
 
         return inertia('Supplier/RatingReport', [
             'data' => $groupedResults,
-            'period' => Carbon::parse($period)->isoFormat('MMMM YYYY'),
+            'period' => Carbon::parse($p)->isoFormat('MMMM YYYY'),
         ]);
     }
 }
