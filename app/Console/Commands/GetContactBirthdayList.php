@@ -7,29 +7,40 @@ use App\Models\User;
 use App\Notifications\ContactBirthdayNotification;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class GetContactBirthdayList extends Command
 {
     protected $signature = 'app:get-contact-birthday-list';
 
-    protected $description = "get today's list of customer birthdays";
+    protected $description = "Get the list of contacts who have a birthday in exactly 7 days";
 
     public function handle()
     {
+        // Calcular la fecha dentro de 7 días
+        $targetDate = today()->addDays(7);
+
+        // Obtener contactos que cumplen años en 7 días
         $contact_birthdays = Contact::with('contactable')
-            ->where('birthdate_month', (today()->month - 1))
-            ->where('birthdate_day', (today()->day))
+            ->where('birthdate_month', $targetDate->month - 1)
+            ->where('birthdate_day', $targetDate->day)
             ->get();
 
-        // usuarios a notificar
-        $users = User::whereIn('id', [1, 2, 3])->get();
-
-        foreach ($contact_birthdays as $contact) {
-            foreach ($users as $user) {
-                $user->notify(new ContactBirthdayNotification($contact));
-            }
+        // Verificar si hay contactos con cumpleaños en 7 días
+        if ($contact_birthdays->isEmpty()) {
+            Log::info('No birthdays found for the target date: ' . $targetDate->toDateString());
+            return;
         }
 
-        Log::info('app:get-contact-birthday-list executed successfully. There where ' . $contact_birthdays->count() . ' birthday(s)');
+        // Usuarios a notificar
+        $users = User::whereIn('id', [2,3])->get();
+
+        // Enviar un solo correo con la lista completa de cumpleaños
+        foreach ($users as $user) {
+            $user->notify(new ContactBirthdayNotification($contact_birthdays));
+        }
+
+        // Registrar en el log el número de contactos notificados
+        Log::info('app:get-contact-birthday-list executed successfully. ' . $contact_birthdays->count() . ' birthday(s) found for the target date: ' . $targetDate->toDateString());
     }
 }

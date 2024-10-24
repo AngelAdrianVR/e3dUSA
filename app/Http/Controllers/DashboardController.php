@@ -69,10 +69,8 @@ class DashboardController extends Controller
                 return $user;
             });
 
-        // customers birthdays
-        $customers_birthdays = Contact::with('contactable')
-            ->where('birthdate_month', (today()->month - 1))
-            ->get();
+        // cumpleaños de clientes 1 semana antes
+        $customers_birthdays = $this->getNextCustomersBirthday();
 
         // solicitud de tiempo extra
         $extra_time_request = ExtraTimeRequest::whereDate('date', '>=', today())->where('operator_id', auth()->id())->latest()->first();
@@ -93,6 +91,44 @@ class DashboardController extends Controller
         ));
     }
 
+    private function getNextCustomersBirthday()
+    {
+        // Definir el rango de fechas de una semana antes
+        $startOfWeek = today()->subWeek()->startOfWeek();
+        $endOfWeek = today()->endOfWeek();
+
+        // Crear un array de días y meses que corresponden a la semana pasada
+        $daysRange = [];
+        for ($date = $startOfWeek; $date <= $endOfWeek; $date->addDay()) {
+            $daysRange[] = ['day' => $date->day, 'month' => $date->month];
+        }
+
+        $customers_birthdays = Contact::with('contactable')
+            ->where(function ($query) use ($daysRange) {
+                foreach ($daysRange as $date) {
+                    $query->orWhere(function ($query) use ($date) {
+                        $query->where('birthdate_day', $date['day'])
+                            ->where('birthdate_month', $date['month'] - 1);
+                    });
+                }
+            })
+            ->get();
+
+        // Ordenar los resultados por el mes y luego por el día de nacimiento en orden descendente
+        $customers_birthdays = $customers_birthdays->sort(function ($a, $b) {
+            // Comparar primero el mes
+            if ($a->birthdate_month == $b->birthdate_month) {
+                // Si los meses son iguales, comparar los días
+                return $a->birthdate_day <=> $b->birthdate_day;
+            }
+            // Si los meses son diferentes, comparar los meses
+            return $a->birthdate_month <=> $b->birthdate_month;
+        });
+
+        // Convertir el resultado en un array sin claves asociativas
+        return $customers_birthdays->values()->toArray();
+    }
+
     private function getProductionPerformance()
     {
         $current_payroll = Payroll::getCurrent();
@@ -106,7 +142,7 @@ class DashboardController extends Controller
 
         foreach ($users as $user) {
             $weekly_points = [];
-            
+
             $productionsFinishedThisWeek = $user->productions()->with('catalogProductCompanySale.sale')->whereNotNull('finished_at')->whereBetween('finished_at', [$weekStart, $weekEnd])->get();
             foreach ($productionsFinishedThisWeek as $production) {
                 $day = $production->finished_at->isoFormat('ddd DD MMM'); // para la clave
@@ -162,8 +198,6 @@ class DashboardController extends Controller
                     $hours_worked = $payroll->pivot->totalWorkedTime()['hours'];
                     $weekly_points[$day]["day_completed"] += $hours_worked < $hours_to_work ? -50 : 0;
                 }
-
-                
             }
 
             // Agregar puntos por registro de supervision de calidad creada
