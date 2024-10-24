@@ -19,7 +19,7 @@ const iconClass = computed(() => {
 <template>
     <div @onmouseover="hover.value = true">
         <Link @mouseenter="hovering = true" @mouseleave="hovering = false" :href="href"
-            class="rounded-lg px-2 py-[2px] text-xs leading-4 text-gray-900 hover:bg-primary hover:text-white focus:outline-none focus:bg-primary transition duration-150 ease-in-out flex justify-between items-center">
+            class="rounded-lg px-2 py-[2px] text-xs leading-4 text-gray-900 dark:text-white hover:bg-primary hover:text-white focus:outline-none focus:bg-primary transition duration-150 ease-in-out flex justify-between items-center">
         <slot />
         <i v-if="notifications" :class="iconClass"></i>
         </Link>

@@ -24,6 +24,8 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Crear catalogo de productos', 'category' => 'Catalogo_de_productos']);
         Permission::create(['name' => 'Editar catalogo de productos', 'category' => 'Catalogo_de_productos']);
         Permission::create(['name' => 'Eliminar catalogo de productos', 'category' => 'Catalogo_de_productos']);
+        
+        Permission::create(['name' => 'Ver reporte de envios', 'category' => 'Embarques']);
 
         Permission::create(['name' => 'Ver cotizaciones','category' => 'Ventas']);
         Permission::create(['name' => 'Crear cotizaciones','category' => 'Ventas']);
