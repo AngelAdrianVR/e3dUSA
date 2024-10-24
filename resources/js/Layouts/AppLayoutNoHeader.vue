@@ -405,13 +405,13 @@ onMounted(() => {
 
     <Banner />
 
-    <div class="overflow-hidden h-screen bg-[#F2F2F2] dark:bg-slate-800 md:grid md:grid-cols-12">
+    <div class="overflow-hidden h-screen bg-[#F2F2F2] dark:bg-[#0D0D0D] md:grid md:grid-cols-12">
       <aside>
         <SideNav />
       </aside>
 
       <main class="md:col-span-11">
-        <nav class="bg-[#F2F2F2] dark:bg-slate-800 border-b border-[#D9D9D9] transition-all ease-linear duration-500">
+        <nav class="bg-[#F2F2F2] dark:bg-[#0D0D0D] border-b border-[#D9D9D9] transition-all ease-linear duration-500">
           <!-- Primary Navigation Menu -->
           <div class="w-11/12 mx-auto">
             <div class="flex items-center justify-between h-14">
@@ -745,7 +745,7 @@ onMounted(() => {
             <slot name="header" />
           </div>
         </header>
-        <div class="overflow-y-auto h-[calc(100vh-3.5rem)] bg-[#F2F2F2] dark:bg-black">
+        <div class="overflow-y-auto h-[calc(100vh-3.5rem)] bg-[#F2F2F2] dark:bg-[#0D0D0D] transition-all ease-linear duration-500">
           <slot />
         </div>
       </main>
