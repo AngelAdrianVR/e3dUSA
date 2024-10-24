@@ -28,7 +28,7 @@
                             :total="users.length" />
                     </div>
                     <!-- buttons -->
-                    <div>
+                    <!-- <div>
                         <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
                             title="¿Continuar?" @confirm="deleteSelections">
                             <template #reference>
@@ -36,7 +36,7 @@
                                     :disabled="disableMassiveActions">Eliminar</el-button>
                             </template>
                         </el-popconfirm>
-                    </div>
+                    </div> -->
                     <!-- buscador -->
                     <IndexSearchBar @search="handleSearch" />
                 </div>
@@ -178,6 +178,7 @@ export default {
                 return this.users.filter(
                     (user) =>
                         user.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                        user.email?.toLowerCase().includes(this.search.toLowerCase()) ||
                         user.id.toString().toLowerCase().includes(this.search.toLowerCase()) ||
                         user.employee_properties?.job_position.toLowerCase().includes(this.search.toLowerCase())
                 )

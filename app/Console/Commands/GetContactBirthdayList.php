@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Notifications\ContactBirthdayNotification;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class GetContactBirthdayList extends Command
 {
@@ -33,7 +32,15 @@ class GetContactBirthdayList extends Command
         }
 
         // Usuarios a notificar
-        $users = User::whereIn('id', [2,3])->get();
+        $users = User::whereIn(
+            'email',
+            [
+                'asistente.director@emblemas3d.com',
+                'gerencia.admon@emblemas3d.com',
+                'key.accounts@emblems3d.com',
+                'miguelvz26.mv@gmail.com',
+            ]
+        )->get();
 
         // Enviar un solo correo con la lista completa de cumpleaños
         foreach ($users as $user) {

@@ -9,11 +9,8 @@ use App\Http\Resources\NotificationResource;
 use App\Http\Resources\UserResource;
 use App\Models\Bonus;
 use App\Models\ChMessage;
-use App\Models\Design;
 use App\Models\Discount;
 use App\Models\PayrollUser;
-use App\Models\Production;
-use App\Models\Sale;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -31,6 +28,7 @@ class UserController extends Controller
             return [
                 'id' => $user->id,
                 'name' => $user->name,
+                'email' => $user->email,
                 'disabled_at' => $user->disabled_at?->isoFormat('DD MMM YYYY'),
                 'is_active' => [
                     'string' => $user->is_active ? 'Activo' : 'Inactivo',
@@ -59,7 +57,8 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required',
-            'email' => 'required|string|unique:users,email',
+            'email' => 'required|string',
+            // 'email' => 'required|string|unique:users,email',
             'roles' => 'array|min:1',
             'employee_properties.salary.week' => 'required|numeric|min:1',
             'employee_properties.birthdate' => 'required|date',
@@ -183,7 +182,8 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required',
-            'email' => 'required|string|unique:users,email,' . $user->id,
+            'email' => 'required|string',
+            // 'email' => 'required|string|unique:users,email,' . $user->id,
             'roles' => 'array|min:1',
             'employee_properties.salary.week' => 'required|numeric|min:1',
             'employee_properties.birthdate' => 'required|date',
