@@ -7,7 +7,7 @@
         </figure>
     </div> -->
     <AppLayoutNoHeader title="Inicio">
-        <div class="px-9 pt-3 lg:px-14 lg:pt-8 dark:bg-black dark:text-white transition-all ease-linear duration-500">
+        <div class="px-9 pt-3 lg:px-14 lg:pt-8 dark:bg-[#0D0D0D] dark:text-white transition-all ease-linear duration-500">
             <h1>Inicio</h1>
 
             <!-- <div class="my-5">

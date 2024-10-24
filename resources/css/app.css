@@ -23,11 +23,11 @@
 
 @layer components{
     .input{
-        @apply h-8 bg-transparent border placeholder:text-gray-400 border-transparent text-gray-700 dark:text-white text-sm rounded-lg focus:ring-0 focus:border-primary block w-full p-2.5 disabled:cursor-not-allowed placeholder:text-xs placeholder:lg:text-sm;
+        @apply h-8 bg-transparent border placeholder:text-gray-400 dark:border-[#d9d9d9] dark:focus:border-primary text-gray-700 dark:text-white text-sm rounded-lg focus:ring-0 focus:border-primary block w-full p-2.5 disabled:cursor-not-allowed placeholder:text-xs placeholder:lg:text-sm;
     }
 
     .textarea{
-        @apply bg-[#CCCCCC] placeholder:text-gray-400 border border-transparent text-gray-700 text-sm rounded-lg focus:ring-0 focus:border-primary block w-full p-2.5;
+        @apply bg-[#CCCCCC] dark:bg-transparent dark:border-[#d9d9d9] dark:text-white dark:focus:border-primary placeholder:text-gray-400 border border-transparent text-gray-700 text-sm rounded-lg focus:ring-0 focus:border-primary block w-full p-2.5;
     }
 
     .label{
@@ -58,4 +58,91 @@
 .dark .el-pagination button {
     background-color: #333333;
     color: #cccccc;
-  }
+}
+
+.dark .el-pager li {
+    background: #333333;
+    color: white;
+}
+
+/* input--------------------------------------------------------- */
+/* Estilo del placeholder en modo oscuro */
+.dark .el-input__inner::placeholder {
+    color: #8b8b8b; /* Color del placeholder en modo oscuro */
+}
+
+.dark .el-input__inner {
+    color: #fff; /* Color del placeholder en modo oscuro */
+    background-color: transparent;
+    border-color: #9A9A9A;
+}
+
+.dark .el-input.is-disabled .el-input__wrapper {
+    /* background-color: var(--el-disabled-bg-color); */
+    background-color: transparent;
+}
+
+.dark .el-input__wrapper {
+    background-color: transparent;
+}
+
+.dark .el-textarea__inner::placeholder {
+    color: #8b8b8b; /* Color del placeholder en modo oscuro */
+}
+
+.dark .el-textarea__inner {
+    color: #fff; /* Color del placeholder en modo oscuro */
+    background-color: transparent;
+    border-color: #9A9A9A;
+}
+
+.dark .el-textarea .el-input__count {
+    background: transparent;
+    color: 9A9A9A;
+
+}
+
+/* select-------------------------------------------------------- */
+.dark .el-select-dropdown__item.is-hovering {
+    background-color: black
+}
+
+.dark .el-select-dropdown__item.is-disabled {
+    background-color: #333333;
+    color: #9A9A9A;
+}
+
+.dark .el-select-dropdown__item {
+    background-color: #333333;
+    color: #9A9A9A;
+}
+
+.dark .el-select__wrapper {
+    background-color: transparent;
+}
+
+.dark .el-select__placeholder {
+    color: white;
+}
+
+.dark .el-select-dropdown__empty,
+.dark .el-select-dropdown__loading {
+    color: white;
+    background-color: #333333;
+}
+
+/* upload ----------------------------------------------------------- */
+.dark .el-upload--picture-card {
+    background-color: #333333;
+}
+
+.el-upload--picture-card {
+    background-color: #cccccc !important;
+}
+
+
+/* radiobutton ------------------------------------*/
+.dark .el-radio-button__inner {
+    background: #333333;
+    color: white;
+}
