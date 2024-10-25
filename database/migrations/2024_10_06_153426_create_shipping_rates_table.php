@@ -18,6 +18,7 @@ return new class extends Migration
             $table->boolean('is_fragile')->default(false);
             $table->json('boxes')->nullable(); //id de caja, largo, ancho , alto, peso, cantidad ,costo
             $table->foreignId('catalog_product_id')->constrained()->cascadeOnDelete();
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

@@ -45,6 +45,7 @@ class ShippingRateController extends Controller
             'catalog_product_id' =>'required',
             'quantity' => 'required|numeric|min:1|max:999999',
             'boxes' => 'required|array|min:1',
+            'notes' => 'nullable|string',
             // Validar cada atributo dentro de cada objeto en boxes
             'boxes.*.box_id' => 'nullable|integer',
             'boxes.*.length' => 'required|numeric|min:0', // Largo de la caja
@@ -112,6 +113,7 @@ class ShippingRateController extends Controller
             'catalog_product_id' =>'required',
             'quantity' => 'required|numeric|min:1|max:999999',
             'boxes' => 'required|array|min:1',
+            'notes' => 'nullable|string',
             // Validar cada atributo dentro de cada objeto en boxes
             'boxes.*.box_id' => 'nullable|integer',
             'boxes.*.length' => 'required|numeric|min:0', // Largo de la caja

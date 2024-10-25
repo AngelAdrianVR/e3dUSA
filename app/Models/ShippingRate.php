@@ -16,6 +16,7 @@ class ShippingRate extends Model
         'is_fragile',
         'quantity',
         'boxes',
+        'notes',
     ];
 
     protected $casts = [

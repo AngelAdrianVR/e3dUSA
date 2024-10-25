@@ -144,7 +144,8 @@
                             <el-input v-model="form.tooling_cost" placeholder="Ej. 800" />
                             <InputError :message="form.errors.tooling_cost" />
                         </div>
-                        <div class="flex space-x-3 mt-5">
+                        <div>
+                            <InputLabel value="Moneda" />
                             <el-select v-model="form.tooling_currency" placeholder="Sin moneda (texto libre)"
                                 :fit-input-width="true">
                                 <el-option v-for="item in toolingCurrencies" :key="item.value" :label="item.label"
