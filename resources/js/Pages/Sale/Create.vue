@@ -9,7 +9,7 @@
                     </div>
                 </div>
             </template>
-            <form @submit.prevent="store" class="relative overflow-x-hidden">
+            <form @submit.prevent="store" class="relative overflow-x-hidden dark:text-white">
                 <!-- company branch important notes -->
                 <div class="absolute top-5 -right-1">
                     <div v-if="importantNotes" class="text-xs border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-72">
@@ -40,7 +40,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
+                <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md dark:bg-[#202020] dark:text-white">
                     <p v-if="!form.opportunity_id" class="text-xs text-primary mb-3">
                         Por indicaciones de dirección, sólo se puede crear una OV desde una cotización.
                     </p>
@@ -224,10 +224,10 @@
                                                 class="rounded-[10px] min-h-24 w-full object-contain">
                                         </figure>
                                         <div
-                                            class="rounded-[10px] border border-[#999999] text-[#373737] text-xs px-2 py-1 mt-1">
+                                            class="rounded-[10px] border border-[#999999] text-[#373737] dark:text-gray-400 text-xs px-2 py-1 mt-1">
                                             <h2>Almacén - Producto terminado</h2>
                                             <p>
-                                                Stock mínimo: <span class="text-black">{{
+                                                Stock mínimo: <span class="text-black dark:text-white">{{
                                                     selectedCatalogProduct.min_quantity.toLocaleString('en-US', {
                                                         minimumFractionDigits: 2
                                                     }) }} unidades</span>
@@ -260,7 +260,7 @@
                             <!-- lista de productos -->
                             <h2 v-if="form.products.length" class="font-bold mt-3 ml-2">Lista de productos</h2>
                             <ol v-if="form.products.length"
-                                class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1 mt-3 divide-y-[1px]">
+                                class="rounded-lg bg-[#CCCCCC] text-black px-5 py-3 col-span-full space-y-1 mt-3 divide-y-[1px]">
                                 <template v-for="(item, index) in form.products" :key="index">
                                     <li class="flex justify-between items-center border-[#999999] py-1">
                                         <p class="text-[13px]">

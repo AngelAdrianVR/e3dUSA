@@ -2,11 +2,11 @@
   <div>
     <AppLayoutNoHeader title="Almacén">
 
-      <div class="flex justify-between text-lg mx-14 mt-11">
+      <div class="flex justify-between text-lg mx-14 mt-11 dark:text-white">
         <span>Almacén</span>
 
         <Link :href="backRoute"
-          class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+          class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] dark:hover:bg-[#191919] hover:!text-primary dark:text-white flex items-center justify-center">
         <i class="fa-solid fa-xmark"></i>
         </Link>
       </div>
@@ -46,7 +46,7 @@
               v-if="$page.props.auth.user.permissions.includes('Editar materia prima') && storage.data.type != 'producto-terminado'"
               content="Editar" placement="top">
               <Link :href="route('raw-materials.edit', selectedRawMaterial)">
-              <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9]">
+              <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                   stroke="currentColor" class="size-5">
                   <path stroke-linecap="round" stroke-linejoin="round"
@@ -71,7 +71,7 @@
               )
             ">
               <template #trigger>
-                <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center justify-center text-sm">
+                <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center justify-center text-sm">
                   Más <i class="fa-solid fa-chevron-down text-[10px] ml-2 pb-[2px]"></i>
                 </button>
               </template>
@@ -95,7 +95,7 @@
           </div>
         </div>
       </div>
-      <div class="lg:grid grid-cols-3 mt-12 border-b-2">
+      <div class="lg:grid grid-cols-3 mt-12 border-b-2 dark:text-white">
         <div class="px-6">
           <h2 class="text-xl font-bold text-center mb-6">
             {{ storage.data.storageable?.name }}

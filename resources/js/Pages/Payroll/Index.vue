@@ -9,7 +9,7 @@
         </div>
       </template>
 
-      <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+      <div class="flex space-x-6 items-center justify-center text-xs mt-2 dark:text-white">
         <p><i class="fa-solid fa-circle mr-1 text-blue-600"></i>Nómina en curso</p>
       </div>
       <!-- tabla -->

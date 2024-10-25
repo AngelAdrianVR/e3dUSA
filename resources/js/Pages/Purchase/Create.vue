@@ -13,7 +13,7 @@
       </template>
       <!-- Form -->
       <form @submit.prevent="store">
-        <div class="md:w-1/2 md:mx-auto grid grid-cols-2 gap-3 mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
+        <div class="md:w-1/2 md:mx-auto grid grid-cols-2 gap-3 mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md">
           <div class="col-span-full">
             <el-radio-group v-model="form.is_spanish_template" size="small">
               <el-radio :value="1">Plantilla en español</el-radio>

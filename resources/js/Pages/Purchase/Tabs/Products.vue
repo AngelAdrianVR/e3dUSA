@@ -1,5 +1,5 @@
 <template>
-    <section class="p-7">
+    <section class="p-7 dark:text-white">
         <div v-if="!loading">
             <div v-if="rawMaterials?.length > 0" class="lg:grid grid-cols-4 mt-7 gap-5">
                 <SupplierProductCard v-for="product in rawMaterials" :key="product" :product="product" />

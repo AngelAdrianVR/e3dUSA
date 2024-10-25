@@ -20,7 +20,7 @@
                 </div>
             </template>
 
-            <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+            <div class="flex space-x-6 items-center justify-center text-xs mt-2 dark:text-white">
                 <p><i class="fa-solid fa-circle mr-1 text-red-500"></i>Esperando Autorización</p>
                 <p><i class="fa-solid fa-circle mr-1 text-gray-500"></i>Autorizado. Sin orden de producción</p>
                 <p><i class="fa-solid fa-circle mr-1 text-amber-500"></i>Producción sin iniciar</p>

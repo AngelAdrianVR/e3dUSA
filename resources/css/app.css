@@ -71,7 +71,6 @@
 }
 
 /* input--------------------------------------------------------- */
-/* Estilo del placeholder en modo oscuro */
 .dark .el-input__inner::placeholder {
     color: #8b8b8b; /* Color del placeholder en modo oscuro */
 }
@@ -110,7 +109,23 @@
 .dark .el-textarea .el-input__count {
     background: transparent;
     color: 9A9A9A;
+}
 
+.dark .el-input-group__append,
+.dark .el-input-group__prepend {
+    background-color: #333333;
+    color: var(--el-color-info);
+}
+
+/* Input number ------------------------------------------------ */
+.dark .el-input-number__decrease,
+.dark .el-input-number__increase {
+    background: #333333;
+}
+
+.dark .el-input-number__decrease.is-disabled,
+.dark .el-input-number__increase.is-disabled {
+    background-color: #636363;
 }
 
 /* select-------------------------------------------------------- */
@@ -176,3 +191,9 @@
     background-color: #575757 !important;
     color: white
 }
+
+/* step ------------------------------- */
+.dark .el-step__title.is-process {
+    color: white;
+}
+

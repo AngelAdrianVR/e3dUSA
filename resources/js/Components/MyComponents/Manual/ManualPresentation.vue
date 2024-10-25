@@ -1,6 +1,6 @@
 <template>
     <article @click="openFile"
-        class="lg:grid grid-cols-5 gap-x-6 border-t border-gray1 py-5 cursor-pointer hover:bg-[#ededed] px-2">
+        class="lg:grid grid-cols-5 gap-x-6 border-t border-gray1 py-5 cursor-pointer dark:hover:bg-[#333333] hover:bg-[#ededed] px-2">
         <figure class="rounded-[10px] bg-[#d9d9d9] h-44 lg:h-32 flex items-center justify-center relative mb-3 lg:mb-0">
             <div v-if="loading"
                 class="absolute inset-0 rounded-[10px] bg-gray-700 opacity-80 flex items-center justify-center text-white">
@@ -42,7 +42,7 @@
                 <div class="flex items-center space-x-6">
                     <button v-if="$page.props.auth.user.permissions.includes('Eliminar manuales')" @click.stop="showConfirmationModal = true" class="text-primary"><i class="fa-regular fa-trash-can"></i></button>
                     <ThirthButton v-if="$page.props.auth.user.permissions.includes('Editar manuales')" @click.stop="edit"
-                        class="!rounded-[5px] !px-2 !py-1">Editar</ThirthButton>
+                        class="!rounded-[5px] !px-2 !py-1 dark:text-white">Editar</ThirthButton>
                 </div>
             </footer>
         </div>
