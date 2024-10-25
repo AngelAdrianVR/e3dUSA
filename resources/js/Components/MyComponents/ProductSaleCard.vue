@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-xl px-7 py-3 relative text-xs shadow-lg bg-[#cccccc] border-[3px] border-transparent" :class="{
+  <div class="rounded-xl px-7 py-3 relative text-xs shadow-lg bg-[#cccccc] dark:bg-[#202020] dark:text-white border-[3px] border-transparent" :class="{
     '!border-primary': isHighPriority,
   }">
     <!-- low stock message -->
@@ -38,10 +38,10 @@
         class="fa-solid fa-question text-[9px] h-3 w-3 bg-primary-gray rounded-full text-center absolute right-2 top-1"></i>
     </el-tooltip>
 
-    <div class="grid grid-cols-2 gap-x-4">
+    <div class="grid grid-cols-2 gap-x-4 ">
       <div>
         <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
-          class="bg-[#D9D9D9] w-full h-28 my-3 rounded-[10px] relative">
+          class="bg-[#D9D9D9] dark:bg-[#333333] w-full h-28 my-3 rounded-[10px] relative">
           <div v-if="catalog_product_company_sale.confusion_alert" class="absolute flex size-7 cursor-default">
             <span
               class="animate-ping absolute -top-2 -left-2 inline-flex h-full w-full rounded-full bg-gray-700 opacity-75"></span>
@@ -117,7 +117,7 @@
     </div>
 
     <div class="border-b-2 border-[#9a9a9a] pb-1">
-      <p class="text-black flex justify-between">
+      <p class="text-black dark:text-white flex justify-between">
       <div class="flex items-center space-x-1">
         <span>Unidades de stock usadas</span>
         <el-tooltip placement="top">
@@ -132,7 +132,7 @@
           </div>
         </el-tooltip>
       </div>
-      <span class="text-black">{{
+      <span class="">{{
         catalog_product_company_sale.finished_product_used.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       }}</span></p>
       <p class="text-primary flex items-center justify-between">
@@ -150,12 +150,12 @@
           </div>
         </el-tooltip>
       </div>
-      <strong class="ml-4 text-black">{{
+      <strong class="ml-4 ">{{
         (catalog_product_company_sale.quantity -
           catalog_product_company_sale.finished_product_used).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       }}</strong>
       </p>
-      <p class="text-black flex justify-between">
+      <p class="flex justify-between">
       <div class="flex items-center space-x-1">
         <span>Unidades ordenadas</span>
         <el-tooltip placement="top">
@@ -169,7 +169,7 @@
           </div>
         </el-tooltip>
       </div>
-      <span class="text-black">{{
+      <span>{{
         catalog_product_company_sale.quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       }}</span></p>
     </div>
@@ -275,12 +275,12 @@
     </div>
 
     <!-- Notas del producto -->
-    <div class="bg-[#d9d9d9] rounded-lg p-2 my-3">
+    <div class="bg-[#d9d9d9] dark:bg-[#333333] dark:text-white rounded-lg p-2 my-3">
       <p class="font-bold">Notas: <span class="font-thin">{{ catalog_product_company_sale.notes ?? '-' }}</span></p>
     </div>
 
     <!-- Historial de precios -->
-    <div class="bg-[#d9d9d9] rounded-lg p-2 grid grid-cols-2 my-3">
+    <div class="bg-[#d9d9d9] dark:bg-[#191919] dark:text-white rounded-lg p-2 grid grid-cols-2 my-3">
       <span class="">Precio Anterior:</span>
       <span class="text-secondary ">{{ catalog_product_company_sale.catalog_product_company?.old_price ?? 'N/A' }}
         {{ catalog_product_company_sale.catalog_product_company?.old_currency }}</span>

@@ -1,11 +1,11 @@
 <template>
-    <div>
+    <div class="dark:text-white">
         <AppLayoutNoHeader title="Órdenes de producción">
             <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
                 <div class="flex justify-between">
                     <label class="text-lg">Órdenes de producción</label>
                     <Link :href="route('productions.index')"
-                        class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+                        class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] dark:hover:bg-[#191919] hover:!text-primary dark:text-white flex items-center justify-center">
                     <i class="fa-solid fa-xmark"></i>
                     </Link>
                 </div>
@@ -22,7 +22,7 @@
                         <el-tooltip v-if="$page.props.auth.user?.permissions.includes('Ordenes de produccion todas')"
                             content="Editar" placement="top">
                             <Link :href="route('productions.edit', selectedSale)">
-                            <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9]">
+                            <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-5">
                                     <path stroke-linecap="round" stroke-linejoin="round"

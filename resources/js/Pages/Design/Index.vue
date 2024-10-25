@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="dark:text-white">
         <AppLayout title="Departamento de diseño">
             <template #header>
                 <div class="flex justify-between">

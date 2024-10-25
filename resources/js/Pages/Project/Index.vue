@@ -6,7 +6,7 @@
     <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
   </div>
   <AppLayoutNoHeader title="Gestor de proyectos">
-    <div class="flex justify-between text-lg mx-14 mt-11">
+    <div class="flex justify-between text-lg mx-14 mt-11 dark:text-white">
       <span>Proyectos</span>
     </div>
 
@@ -25,7 +25,7 @@
     <div v-if="!search" class="overflow-auto mx-1 lg:mx-14">
       <Pagination :pagination="projects" class="mt-6 py-2" />
     </div>
-    <div class="lg:px-14 pb-7 pt-10 text-sm overflow-x-scroll">
+    <div class="lg:px-14 pb-7 pt-10 text-sm overflow-x-scroll dark:text-white">
       <table v-if="projects.data.length > 0" class="w-full mx-auto">
         <thead>
           <tr class="text-left border-b border-primary *:pb-2">

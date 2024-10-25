@@ -1,5 +1,5 @@
 <template>
-    <section class="lg:grid grid-cols-2 gap-8 md:mt-12 md:px-14">
+    <section class="lg:grid grid-cols-2 gap-8 md:mt-12 md:px-14 dark:text-white">
         <CompanyBranchCard :company_branches="company.company_branches" />
     </section>
 </template>

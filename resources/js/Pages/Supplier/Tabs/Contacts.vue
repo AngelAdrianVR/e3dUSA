@@ -1,5 +1,5 @@
 <template>
-    <section class="lg:grid grid-cols-3 gap-x-5 md:mt-12 md:px-14 mb-6">
+    <section class="lg:grid grid-cols-3 gap-x-5 md:mt-12 md:px-14 mb-6 dark:text-white">
         <h2 class="font-bold col-span-full mb-2">Cuentas bancarias</h2>
         <SupplierBankCard v-for="(bank, index) in supplier.banks" :key="index" :bank="bank" />
 

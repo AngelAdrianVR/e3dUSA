@@ -15,7 +15,7 @@
       <!-- Form -->
       <form @submit.prevent="store">
         <!-- ---------------- Company starts ----------------- -->
-        <div class="md:w-1/2 md:mx-auto mx-3 my-3 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
+        <div class="md:w-1/2 md:mx-auto mx-3 my-3 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md transition-all ease-linear duration-500">
           <div class="md:grid gap-3 mb-6 grid-cols-2 pb-4">
             <div>
               <InputLabel value="Razon social*" />
@@ -295,7 +295,7 @@
             </div>
           </div>
           <ol v-if="form.company_branches.length"
-            class="rounded-lg bg-[#CCCCCC] px-5 py-2 col-span-full space-y-1 mb-2 divide-y-[1px] mt-3">
+            class="rounded-lg bg-[#CCCCCC] text-black px-5 py-2 col-span-full space-y-1 mb-2 divide-y-[1px] mt-3">
             <template v-for="(item, index) in form.company_branches" :key="index">
               <li class="flex justify-between items-center border-[#999999] py-1">
                 <p class="text-xs">

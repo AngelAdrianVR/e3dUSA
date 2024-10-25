@@ -1,5 +1,5 @@
 <template>
-    <div class="md:grid grid-cols-3 text-left p-4 text-sm">
+    <div class="md:grid grid-cols-3 text-left p-4 text-sm dark:text-white">
         <div class="lg:border-r lg:mb-0 mb-16 border-[#9A9A9A] h-auto lg:pr-7">
             <h2 class="font-bold mb-10">
                 POR HACER <span class="font-normal ml-7">{{ pendingTasksList.length }}</span>

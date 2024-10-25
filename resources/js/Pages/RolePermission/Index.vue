@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="dark:text-white">
     <AppLayoutNoHeader title="Roles y permisos">
       <div class="flex justify-between text-lg mx-14 mt-11">
         <span>Roles y permisos</span>

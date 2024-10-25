@@ -3,7 +3,7 @@
     <div class="flex justify-between text-lg mx-2 lg:mx-14 mt-11">
       <span>Proyectos</span>
       <Link :href="route('projects.index')"
-        class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+        class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] dark:hover:bg-[#191919] hover:!text-primary dark:text-white flex items-center justify-center">
       <i class="fa-solid fa-xmark"></i>
       </Link>
     </div>
@@ -19,7 +19,7 @@
       <div v-if="activeTab == '1'" class="flex space-x-2 w-full justify-end">
         <PrimaryButton @click="$inertia.get(route('projects.create'))" class="!rounded-[10px]">Nuevo proyecto</PrimaryButton>
         <button @click="$inertia.get(route('projects.edit', currentProject?.id ?? 1))"
-          class="size-9 flex items-center justify-center rounded-lg bg-[#D9D9D9]">
+          class="size-9 flex items-center justify-center rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="size-5">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -35,7 +35,7 @@
     </div>
 
     <!-- --------------project title--------------------------- -->
-    <div class="text-center font-bold lg:text-lg mb-4 flex justify-center items-center mt-5 mx-2">
+    <div class="text-center font-bold lg:text-lg mb-4 flex justify-center items-center mt-5 mx-2 dark:text-white">
       <p>{{ currentProject?.project_name }}</p>
       <div class="flex items-center ml-5">
         <div v-for="(user, index) in currentProject?.users" :key="index">

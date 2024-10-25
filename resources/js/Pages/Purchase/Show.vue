@@ -1,10 +1,10 @@
 <template>
   <AppLayoutNoHeader title="Órdenes de compra">
-    <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
+    <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1 dark:text-white">
       <div class="flex justify-between">
         <label class="text-lg">Órdenes de compra</label>
         <Link :href="route('purchases.index')"
-          class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+          class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] dark:hover:bg-[#191919] hover:!text-primary dark:text-white flex items-center justify-center">
         <i class="fa-solid fa-xmark"></i>
         </Link>
       </div>
@@ -48,7 +48,7 @@
           <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar ordenes de compra') &&
             purchase.data.user.id == $page.props.auth.user.id" content="Editar" placement="top">
             <Link :href="route('purchases.edit', selectedPurchase)">
-            <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
+            <button class="w-9 h-9 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
               <i class="fa-solid fa-pen text-sm"></i>
             </button>
             </Link>
@@ -57,7 +57,7 @@
           <Dropdown align="right" width="48"
             v-if="$page.props.auth.user.permissions.includes('Crear ordenes de compra') && $page.props.auth.user.permissions.includes('Eliminar ordenes de compra')">
             <template #trigger>
-              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
+              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center text-sm">
                 Más <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
               </button>
             </template>
@@ -82,7 +82,7 @@
       <el-step title="Producto/servicio recibido" />
     </el-steps>
 
-    <p class="text-center font-bold text-lg mb-4 mt-5">
+    <p class="text-center font-bold text-lg dark:text-white mb-4 mt-5">
       {{ purchase.data.supplier.name }}
       <!-- <span class="py-1 p-2" :class="purchase.data.status == 'Pendiente' ? 'text-red-600 bg-red-200'
         : purchase.data.status == 'Autorizado' ? 'text-yellow-600 bg-yellow-200'
@@ -121,7 +121,7 @@
         <p class="text-[#999999]">Por favor, completa la siguiente evaluación del proveedor.</p>
         <form @submit.prevent="storeRating" class="mt-5">
           <section>
-            <h2 class="text-[#373737] font-bold mb-2">¿Cumplió con el tiempo de entrega?</h2>
+            <h2 class="text-[#373737] dark:text-gray-500 font-bold mb-2">¿Cumplió con el tiempo de entrega?</h2>
             <div class="flex items-center space-x-2 mx-3">
               <input type="radio" id="1.1" value="Si" v-model="ratingForm.q1"
                 class="bg-transparent text-primary focus:ring-0" />
@@ -141,7 +141,7 @@
             </div>
           </section>
           <section class="mt-3">
-            <h2 class="text-[#373737] font-bold mb-2">¿Las características solicitadas de los productos o servicio
+            <h2 class="text-[#373737] dark:text-gray-500 font-bold mb-2">¿Las características solicitadas de los productos o servicio
               fueron cubiertos?</h2>
             <div class="flex items-center space-x-2 mx-3">
               <input type="radio" id="2.1" value="Sí, cumplió con todo" v-model="ratingForm.q2"
@@ -157,7 +157,7 @@
             </div>
           </section>
           <section class="mt-3">
-            <h2 class="text-[#373737] font-bold mb-2">¿Cumplió con el apoyo técnico ofrecido?</h2>
+            <h2 class="text-[#373737] dark:text-gray-500 font-bold mb-2">¿Cumplió con el apoyo técnico ofrecido?</h2>
             <div>
               <InputLabel value="Tipo de soporte brindado" />
               <el-select @change="handleQ31Change" v-model="ratingForm.q3_1" no-data-text="No hay opciones por mostrar"
@@ -174,7 +174,7 @@
             </div>
           </section>
           <section class="mt-3">
-            <h2 class="text-[#373737] font-bold mb-2">Ante alguna urgencia, ¿se ofreció apoyo en la entrega?</h2>
+            <h2 class="text-[#373737] dark:text-gray-500 font-bold mb-2">Ante alguna urgencia, ¿se ofreció apoyo en la entrega?</h2>
             <div>
               <InputLabel value="Días de atraso en la urgencia" />
               <el-select v-model="ratingForm.q4" no-data-text="No hay opciones por mostrar"
@@ -184,7 +184,7 @@
             </div>
           </section>
           <section class="mt-3">
-            <h2 class="text-[#373737] font-bold mb-2">¿Hubo alguna incidencia?</h2>
+            <h2 class="text-[#373737] dark:text-gray-500 font-bold mb-2">¿Hubo alguna incidencia?</h2>
             <div>
               <InputLabel value="Avisos de rechazo" />
               <el-select v-model="ratingForm.q5" no-data-text="No hay opciones por mostrar"

@@ -1,17 +1,17 @@
 <template>
-  <div v-if="$page.props.auth.user.permissions.includes('Editar nominas')">
+  <div class="dark:text-white" v-if="$page.props.auth.user.permissions.includes('Editar nominas')">
     <AppLayoutNoHeader title="Nóminas">
       <div v-if="loading" class="absolute left-0 top-0 inset-0 z-10 bg-black opacity-50 flex items-center justify-center">
       </div>
       <div v-if="loading"
-        class="absolute z-20 top-1/2 left-1/2 w-32 h-32 rounded-lg bg-white flex items-center justify-center">
+        class="absolute z-20 top-1/2 left-1/2 w-32 h-32 rounded-lg bg-white  flex items-center justify-center">
         <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
       </div>
       <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
         <div class="flex justify-between">
           <label>Nóminas</label>
           <Link :href="route('payrolls.index')"
-            class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+            class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] dark:hover:bg-[#191919] hover:!text-primary dark:text-white flex items-center justify-center">
           <i class="fa-solid fa-xmark"></i>
           </Link>
         </div>

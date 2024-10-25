@@ -27,7 +27,7 @@
     }
 
     .textarea{
-        @apply bg-[#CCCCCC] dark:bg-transparent dark:border-[#d9d9d9] dark:text-white dark:focus:border-primary placeholder:text-gray-400 border border-transparent text-gray-700 text-sm rounded-lg focus:ring-0 focus:border-primary block w-full p-2.5;
+        @apply bg-[#CCCCCC] dark:bg-transparent dark:border-[#d9d9d9] dark:text-white dark:focus:border-primary placeholder:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-[#333333] border border-transparent text-gray-700 text-sm rounded-lg focus:ring-0 focus:border-primary block w-full p-2.5;
     }
 
     .label{
@@ -41,7 +41,7 @@
 /* estilos de element plus */
 /* tablas------------------------------------------------- */
 .dark .el-table tr {
-    background-color: #525252; /* Fondo oscuro */
+    background-color: #414141; /* Fondo oscuro */
     color: #ffffff; /* Texto claro */
 }
 
@@ -65,8 +65,12 @@
     color: white;
 }
 
+.dark .el-pagination button.is-disabled,
+.dark .el-pagination button:disabled {
+    background-color: #686767   ;
+}
+
 /* input--------------------------------------------------------- */
-/* Estilo del placeholder en modo oscuro */
 .dark .el-input__inner::placeholder {
     color: #8b8b8b; /* Color del placeholder en modo oscuro */
 }
@@ -74,6 +78,12 @@
 .dark .el-input__inner {
     color: #fff; /* Color del placeholder en modo oscuro */
     background-color: transparent;
+    border-color: #9A9A9A;
+}
+
+.dark .el-input__inner.is-disabled {
+    color: #d9d9d9; /* Color del placeholder en modo oscuro */
+    background-color: #333333;
     border-color: #9A9A9A;
 }
 
@@ -99,7 +109,23 @@
 .dark .el-textarea .el-input__count {
     background: transparent;
     color: 9A9A9A;
+}
 
+.dark .el-input-group__append,
+.dark .el-input-group__prepend {
+    background-color: #333333;
+    color: var(--el-color-info);
+}
+
+/* Input number ------------------------------------------------ */
+.dark .el-input-number__decrease,
+.dark .el-input-number__increase {
+    background: #333333;
+}
+
+.dark .el-input-number__decrease.is-disabled,
+.dark .el-input-number__increase.is-disabled {
+    background-color: #636363;
 }
 
 /* select-------------------------------------------------------- */
@@ -131,6 +157,14 @@
     background-color: #333333;
 }
 
+.dark .el-select__wrapper.is-disabled {
+    background-color: #333333;
+    color: var(--el-text-color-placeholder);
+}
+
+/* cascader-------------------------------------------------------- */
+
+
 /* upload ----------------------------------------------------------- */
 .dark .el-upload--picture-card {
     background-color: #333333;
@@ -146,3 +180,20 @@
     background: #333333;
     color: white;
 }
+
+/* Tabs ---------------------------------------------------------- */
+.dark .el-tabs__item {
+    color: white;
+}
+
+/* divider --------------------------------------------------- */
+.dark .el-divider__text {
+    background-color: #575757 !important;
+    color: white
+}
+
+/* step ------------------------------- */
+.dark .el-step__title.is-process {
+    color: white;
+}
+
