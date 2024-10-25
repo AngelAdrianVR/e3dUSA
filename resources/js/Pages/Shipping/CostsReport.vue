@@ -1,6 +1,6 @@
 <template>
     <Head :title="'Reporte pdf'" />
-    <div class="mx-auto">
+    <div class="mx-auto bg-gray-100">
         <table class="styled-table">
             <caption class="text-sm my-2 font-bold">
                 Información de envíos

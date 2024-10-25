@@ -6,6 +6,7 @@ use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\SaleResource;
+use App\Models\Calendar;
 use App\Models\CatalogProductCompanySale;
 use App\Models\CompanyBranch;
 use App\Models\Oportunity;
@@ -262,6 +263,24 @@ class SaleController extends Controller
         $sold_products->delete();
 
         event(new RecordEdited($sale));
+
+        //se crea el evento de calendario si se enviará por parcialidades
+        if (collect($request->partialities)->count() > 1) {
+            foreach ($request->partialities as $index => $partiality) {
+                // if ($index > 0) { // Omite el primer elemento
+                    Calendar::create([
+                        'type' => 'Tarea',
+                        'title' => 'Envío de parcialidad N°' . ($index + 1) . ' de OV-' . $sale->id,
+                        'repeater' => 'No se repite',
+                        'description' => 'Revisar envío de parcialidad agendada automáticamente para la OV-' . $sale->id,
+                        'status' => 'Pendiente',
+                        'start_date' => $partiality['promise_date'],
+                        'start_time' => '8:00 AM',
+                        'user_id' => auth()->id(),
+                    ]);
+                // }
+            }
+        }        
 
         // return to_route('sales.index');
         return to_route('sales.show', $sale->id );

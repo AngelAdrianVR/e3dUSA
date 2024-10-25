@@ -1,6 +1,6 @@
 <template>
   <AppLayoutNoHeader title="Inicio CRM">
-    <div class="md:mx-9 md:my-1 m-1">
+    <div class="md:mx-9 md:my-1 m-1 dark:text-white">
       <div class="flex justify-between mb-2">
         <label class="text-lg font-bold">Inicio</label>
       </div>

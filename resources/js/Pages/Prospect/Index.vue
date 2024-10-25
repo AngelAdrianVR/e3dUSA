@@ -6,7 +6,7 @@
         <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
     </div>
     <AppLayoutNoHeader title="Prospectos">
-        <div class="flex justify-between text-lg mx-14 mt-11">
+        <div class="flex justify-between text-lg mx-14 mt-11 dark:text-white">
             <span>Prospectos</span>
         </div>
 

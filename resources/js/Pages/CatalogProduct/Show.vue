@@ -1,10 +1,10 @@
 <template>
-    <div>
+    <div class="dark:text-white">
         <AppLayoutNoHeader title="Ver catalogo de productos">
             <div class="flex justify-between text-lg mx-14 mt-11">
                 <span>Catálogo de productos</span>
                 <Link :href="route('catalog-products.index')"
-                    class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+                    class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] dark:hover:bg-[#191919] hover:!text-primary dark:text-white flex items-center justify-center">
                 <i class="fa-solid fa-xmark"></i>
                 </Link>
             </div>
@@ -20,7 +20,7 @@
                     <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar catalogo de productos')"
                         content="Editar" placement="top">
                         <Link :href="route('catalog-products.edit', selectedCatalogProduct)">
-                        <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9]">
+                        <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                             </svg>
@@ -32,7 +32,7 @@
                         v-if="$page.props.auth.user.permissions.includes('Crear catalogo de productos') 
                         && $page.props.auth.user.permissions.includes('Eliminar catalogo de productos')">
                         <template #trigger>
-                            <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center justify-center text-sm">
+                            <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center justify-center text-sm">
                                 Más <i class="fa-solid fa-chevron-down text-[10px] ml-2 pb-[2px]"></i>
                             </button>
                         </template>
@@ -57,7 +57,7 @@
                 <div class="px-14">
                     <h2 class="text-xl font-bold text-center mb-6">{{ catalog_product.data.name }}</h2>
                     <div class="flex items-center">
-                    <figure @mouseover="showOverlay" @mouseleave="hideOverlay" class="w-full h-60 bg-[#D9D9D9] rounded-lg relative flex items-center justify-center">
+                    <figure @mouseover="showOverlay" @mouseleave="hideOverlay" class="w-full h-60 bg-[#D9D9D9] dark:bg-[#333333] rounded-lg relative flex items-center justify-center">
                         <section v-if="catalog_product.data.media?.length">
                             <img class="object-contain h-60" :src="catalog_product.data.media[currentImage]?.original_url" alt="">
                             <div v-if="imageHovered" @click="openImage(catalog_product.data.media[0]?.original_url)"

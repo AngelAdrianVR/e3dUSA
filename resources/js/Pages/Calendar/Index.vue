@@ -57,13 +57,18 @@
               <div v-for="task in tasks.data" :key="task.id">
                 <div class="" v-if="isTaskDay(task, day)">
                   <div @click.stop="selectedTask = task; selectedDay = day"
-                    :class="task.type === 'Tarea' ? 'bg-[#bfdbfc] border-[#0355B5] border-l-4 border' : 'bg-[#FDB9C9] border-[#D90537] border-l-4 border'"
-                    class="h-5 rounded-sm my-1 text-xs justify-center items-center cursor-pointer flex relative">
+                    :class="task.status === 'Terminada' 
+                    ? 'bg-[#D1FAE5] border-[#10B981] border-l-4 border' 
+                    : task.type === 'Tarea' 
+                        ? 'bg-[#bfdbfc] border-[#0355B5] border-l-4 border' 
+                        : 'bg-[#FDB9C9] border-[#D90537] border-l-4 border'"
+                    class="h-7 rounded-sm text-xs justify-center items-center cursor-pointer flex relative">
+
                     <p class="flex ">{{ task.title }}
-                        <svg v-if="task.status === 'Terminada'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" 
-                          class="size-4 text-green-600 ml-4">
+                        <!-- <svg v-if="task.status === 'Terminada'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" 
+                          class="size-4 text-green-600 ml-3">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                        </svg>
+                        </svg> -->
 
                        <!-- <i v-if="task.status === 'Terminada'" class="fa-solid fa-check ml-3 text-sm font-bold text-green-500"></i> -->
                        </p>
@@ -97,12 +102,15 @@
                             <PrimaryButton class="text-xs h-5">Hecho</PrimaryButton>
                           </template>
                         </el-popconfirm>
+                      
                         <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#D90537"
                           title="Eliminar tarea?" @confirm="deleteTask">
                           <template #reference>
                             <i class="fa-regular fa-trash-can text-primary cursor-pointer"></i>
                           </template>
                         </el-popconfirm>
+
+                        <p v-if="selectedTask?.status === 'Terminada'" class="text-green-600 bg-green-200 px-2 py-1">Terminada</p>
                       </div>
                     </div>
                   </div>
