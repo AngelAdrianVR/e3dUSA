@@ -11,7 +11,7 @@
       </template>
 
       <!-- Form -->
-      <form @submit.prevent="store" class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md">
+      <form @submit.prevent="store" class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg lg:p-9 p-4 shadow-md transition-all ease-linear duration-500">
         <h1 class="my-4 font-bold">Nuevo prospecto</h1>
         <div class="grid grid-cols-2 gap-3">
           <div class="self-end">

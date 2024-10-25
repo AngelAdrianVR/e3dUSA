@@ -41,7 +41,7 @@
       </div>
       <h2 class="text-center text-primary mt-7">Top 20 en ventas</h2>
       <!-- Tabla de productos vendidos -->
-      <div v-if="!loading" class="w-10/12 h-[301px] overflow-auto mx-auto mt-3 mb-2 rounded-md">
+      <div v-if="!loading" class="w-10/12 h-[301px] overflow-auto mx-auto mt-3 mb-2 rounded-md dark:text-white">
         <table v-if="topProducts" class="w-full h-full mx-auto text-sm">
           <thead>
             <tr class="text-center border-b border-primary">
