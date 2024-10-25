@@ -96,7 +96,25 @@
                     </el-table-column>
                 </el-table>
             </div>
-            <!-- tabla -->
+
+            <DialogModal :show="showInactivatingModal" @close="showInactivatingModal = false" maxWidth="md">
+                <template #title>
+                    <h1 class="font-bold">Inhabilitación de usuario</h1>
+                </template>
+                <template #content>
+                    <div>
+                        <InputLabel value="Fecha de baja*" />
+                        <el-date-picker v-model="inactivatingForm.disabled_at" type="date" class="!w-full"
+                            placeholder="Selecciona una fecha" format="DD MMM, YYYY" value-format="YYYY-MM-DD" />
+                    </div>
+                </template>
+                <template #footer>
+                    <CancelButton @click="showInactivatingModal = false; inactivatingForm.reset()" :disabled="inactivatingForm.processing">
+                        Cancelar
+                    </CancelButton>
+                    <PrimaryButton @click="changeStatus()" :disabled="inactivatingForm.processing">Dar de baja</PrimaryButton>
+                </template>
+            </DialogModal>
         </AppLayout>
     </div>
 </template>
@@ -106,12 +124,21 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
 import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
-import { Link } from "@inertiajs/vue3";
-import axios from 'axios';
+import { Link, useForm } from "@inertiajs/vue3";
+import DialogModal from "@/Components/DialogModal.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import { format } from "date-fns";
 
 export default {
     data() {
+        const inactivatingForm = useForm({
+            disabled_at: format(new Date(), "yyyy-MM-dd"),
+        });
+
         return {
+            inactivatingForm,
             disableMassiveActions: true,
             inputSearch: '',
             search: '',
@@ -125,13 +152,17 @@ export default {
     },
     components: {
         AppLayout,
+        PrimaryButton,
         SecondaryButton,
+        CancelButton,
         Link,
         TextInput,
         IndexSearchBar,
+        DialogModal,
+        InputLabel,
     },
     props: {
-        users: Object,
+        users: Array,
     },
     methods: {
         handleSearch(search) {
@@ -163,25 +194,28 @@ export default {
             if (commandName == 'clone') {
                 this.clone(userId);
             } else if (commandName == 'status') {
-                const user = this.users.data.find(u => u.id == userId)
-                if (user.is_active) {
+                this.userToInactivate = this.users.find(u => u.id == userId);
+                if (this.userToInactivate.is_active.bool) {
                     this.showInactivatingModal = true;
-                    this.userToInactivate = user;
                 } else {
-                    this.changeStatus(user);
+                    this.changeStatus();
                 }
             } else {
                 this.$inertia.get(route('users.' + commandName, userId));
             }
         },
-        changeStatus(user) {
-            this.$inertia.put(route("users.change-status", user)),
-
-                this.$notify({
-                    title: "Éxito",
-                    message: "Se cambió el estatus del usuario",
-                    type: "success",
-                });
+        changeStatus() {
+            this.inactivatingForm.put(route("users.change-status", this.userToInactivate), {
+                onSuccess: () => {
+                    this.inactivatingForm.reset();
+                    this.showInactivatingModal = false;
+                    this.$notify({
+                        title: "Éxito",
+                        message: "Se cambió el estatus del usuario",
+                        type: "success",
+                    });
+                },
+            });
         }
     },
     computed: {

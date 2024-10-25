@@ -183,6 +183,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required',
             'email' => 'required|string',
+            'disabled_at' => 'nullable|string',
             // 'email' => 'required|string|unique:users,email,' . $user->id,
             'roles' => 'array|min:1',
             'employee_properties.salary.week' => 'required|numeric|min:1',
@@ -267,19 +268,16 @@ class UserController extends Controller
         ]);
     }
 
-    public function changeStatus(User $user)
+    public function changeStatus(Request $request, User $user)
     {
         if ($user->is_active) {
-
             $user->update([
                 'is_active' => false,
-                'disabled_at' => now()
+                'disabled_at' => $request->disabled_at,
             ]);
         } else {
-            
             $user->update([
                 'is_active' => true,
-                'disabled_at' => null
             ]);
         }
     }
