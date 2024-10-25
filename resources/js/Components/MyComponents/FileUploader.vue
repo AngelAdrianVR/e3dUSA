@@ -2,7 +2,7 @@
     <div class="w-full">
         <input type="file" ref="fileInput" style="display: none" @change="handleFileInputChange" :multiple="multiple"
             :accept="getAcceptedFormat()" />
-        <button type="button" @click="openFileBrowser" class="w-full px-3 py-[2px] rounded-md bg-[#CCCCCC]" :disabled="loading">
+        <button type="button" @click="openFileBrowser" class="w-full px-3 py-[2px] rounded-md bg-[#CCCCCC] dark:bg-[#333333] dark:text-white" :disabled="loading">
             <div v-if="loading" class="flex items-center justify-between text-sm text-[#9A9A9A] h-7">
                 <span>Cargando archivo(s)...</span>
                 <i class="fa-solid fa-circle-notch fa-spin text-primary text-lg"></i>

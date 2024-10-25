@@ -1,5 +1,5 @@
 <template>
-    <section class="flex justify-between mt-3 text-sm">
+    <section class="flex justify-between mt-3 text-sm dark:text-white">
         <div class="w-[45%] grid grid-cols-3 gap-x-6 gap-y-2">
             <span class="text-[#9a9a9a]">ID</span>
             <span class="col-span-2">{{ String(prospect.id).padStart(2, '0') }}</span>

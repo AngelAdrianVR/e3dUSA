@@ -1,5 +1,5 @@
 <template>
-    <section class="p-7">
+    <section class="p-7 dark:text-white">
         <p class="text-secondary">Productos registrados</p>
         <div v-if="company.catalogProducts?.length" class="grid lg:grid-cols-4 md:grid-cols-2 mt-7 gap-10">
             <CompanyProductCard v-for="company_product in company.catalogProducts" :key="company_product.id"
