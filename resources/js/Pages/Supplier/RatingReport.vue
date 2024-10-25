@@ -21,7 +21,7 @@
             <span>Evaluación proveedores</span>
             <span class="text-[#373737] text-base">{{ period }}</span>
         </h1>
-        <table class="w-full table-auto mt-4">
+        <table class="w-full table-auto mt-4" v-if="Object.keys(data).length > 0">
             <thead>
                 <tr class="text-left *:px-2 *:py-1">
                     <th>ID</th>
@@ -41,6 +41,7 @@
                 </tr>
             </tbody>
         </table>
+        <p v-else class="text-center text-lg mt-10">No hay información de compras de los proveedores seleccionados</p>
     </div>
 </template>
 <script>
