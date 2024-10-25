@@ -90,10 +90,10 @@ class SaleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'shipping_company' => 'nullable',
+            // 'shipping_company' => 'nullable',
+            // 'order_via' => 'nullable',
+            // 'tracking_guide' => 'nullable',
             'freight_cost' => 'nullable|numeric|min:0',
-            'order_via' => 'nullable',
-            'tracking_guide' => 'nullable',
             'notes' => 'nullable',
             'is_high_priority' => 'boolean',
             'is_sale_production' => 'boolean',
@@ -222,10 +222,10 @@ class SaleController extends Controller
     public function update(Request $request, Sale $sale)
     {
         $request->validate([
-            'shipping_company' => 'nullable',
+            // 'shipping_company' => 'nullable',
+            // 'order_via' => 'nullable',
+            // 'tracking_guide' => 'nullable',
             'freight_cost' => 'nullable|numeric|min:0',
-            'order_via' => 'nullable',
-            'tracking_guide' => 'nullable',
             'invoice' => 'nullable',
             'notes' => 'nullable',
             'is_high_priority' => 'nullable',
@@ -233,7 +233,7 @@ class SaleController extends Controller
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
             'products' => 'array|min:1',
-            'partialities' => 'array|min:1'
+            'partialities' => 'array|min:1',
         ]);
 
         $updatedProductIds = [];
@@ -270,10 +270,10 @@ class SaleController extends Controller
     public function updateWithMedia(Request $request, Sale $sale)
     {
         $request->validate([
-            'shipping_company' => 'nullable',
+            // 'shipping_company' => 'nullable',
+            // 'order_via' => 'nullable',
+            // 'tracking_guide' => 'nullable',
             'freight_cost' => 'nullable|numeric|min:0',
-            'order_via' => 'nullable',
-            'tracking_guide' => 'nullable',
             'invoice' => 'nullable',
             'notes' => 'nullable',
             'is_high_priority' => 'boolean',
@@ -295,7 +295,7 @@ class SaleController extends Controller
             $productData = $product + ['sale_id' => $sale->id];
 
             if (isset($product['id'])) {
-                // Actualizar la relaci贸n existente en catalogProductCompanySales
+                // Actualizar la relacion existente en catalogProductCompanySales
                 $existingRelation = CatalogProductCompanySale::findOrFail($product['id']);
                 $existingRelation->update($productData);
                 $updatedProductIds[] = $product['id'];

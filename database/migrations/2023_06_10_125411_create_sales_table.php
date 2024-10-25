@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
             // $table->string('shipping_company')->nullable();
-            // $table->unsignedFloat('freight_cost')->nullable();
             // $table->string('tracking_guide')->nullable();
             // $table->date('promise_date')->nullable();
+            $table->unsignedFloat('freight_cost')->nullable();
             $table->string('oce_name')->nullable();
             $table->string('order_via')->nullable();
             $table->string('is_sale_production')->default(1);

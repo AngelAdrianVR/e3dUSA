@@ -16,9 +16,9 @@ Sale extends Model implements HasMedia
 
     protected $fillable = [
         // 'shipping_company',
-        // 'freight_cost',
         // 'tracking_guide',
         // 'promise_date',
+        'freight_cost',
         'status',
         'oce_name',
         'order_via',
