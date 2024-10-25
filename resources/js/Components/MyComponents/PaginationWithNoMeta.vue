@@ -10,7 +10,7 @@
 
           <template v-for="(link, key) in pagination?.links">
             <div :key="key" v-if="link.url == null"
-              class="rounded-sm relative inline-flex items-center border bg-gray-100 dark:bg-[#333333] dark:text-white cursor-pointer hover:bg-gray-200 hover:border-primary px-2 py-1 text-[11px] lg:text-sm font-medium text-gray-600 border-gray-400 focus:z-20 "
+              class="rounded-sm relative inline-flex items-center border bg-gray-100 dark:bg-[#333333] dark:text-white cursor-pointer hover:bg-gray-200 hover:border-primary px-2 py-1 text-[11px] lg:text-sm font-medium text-gray-600 border-gray-400 focus:z-20"
               v-html="link.label">
 
             </div>

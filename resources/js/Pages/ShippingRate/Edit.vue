@@ -11,7 +11,7 @@
 
     <!-- Form -->
     <form @submit.prevent="update">
-      <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg py-4 px-9 shadow-md space-y-4">
+      <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg py-4 px-9 shadow-md space-y-4">
         <h2>Detalles del producto</h2>
 
         <section class="grid grid-cols-3 gap-5">
@@ -87,7 +87,7 @@
           </article>
 
           <!-- tarjeta de cajas -->
-          <article v-for="(packageCard, index) in form.boxes" :key="packageCard" class="rounded-lg py-5 px-2"
+          <article v-for="(packageCard, index) in form.boxes" :key="packageCard" class="rounded-lg py-5 px-2 dark:bg-[#333333]"
             :class="index % 2 === 0 ? 'bg-[#C0C0C0]' : 'bg-[#9F9FA2]'">
             <div class="mb-3">
               <div class="flex justify-between">
@@ -107,9 +107,7 @@
                 <el-option v-for="item in box_types" :key="item" :label="item.name" :value="item.id">
                   <p class="flex items-center justify-between">
                     <span>{{ item.name }}</span>
-                    <span class="text-[10px] text-gray99">({{ 'L-' + item.length + 'cm x ' + 'An-' + item.width + 'cm x
-                    ' +
-                      'Al-' + item.height + 'cm' }})</span>
+                    <span class="text-[10px] text-gray99">({{ 'L-' + item.length + 'cm x ' + 'An-' + item.width + 'cm x' +'Al-' + item.height + 'cm' }})</span>
                   </p>
                 </el-option>
               </el-select>

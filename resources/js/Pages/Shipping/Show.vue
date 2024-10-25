@@ -1,6 +1,6 @@
 <template>
     <AppLayoutNoHeader title="Envíos">
-        <main class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1 text-sm">
+        <main class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1 text-sm dark:text-white">
             <div class="flex justify-between mb-5">
                 <label class="text-lg">Envíos</label>
 

@@ -1,5 +1,5 @@
 <template>
-    <div class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
+    <div class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm dark:text-white">
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
             <p class="text-secondary col-span-2 mb-2">Información del proyecto</p>
 

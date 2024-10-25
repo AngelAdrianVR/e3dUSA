@@ -12,7 +12,7 @@
 
       <!-- Form -->
       <form @submit.prevent="update">
-        <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4">
+        <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg lg:p-9 p-4 shadow-md space-y-4">
           <div>
             <InputLabel value="Título del proyecto*" />
             <input v-model="form.project_name" class="input" type="text" placeholder="Escribe el título">
@@ -110,7 +110,7 @@
           <div class="flex items-center cursor-pointer flex-shrink-0 flex-grow-0">
             <label class="flex items-center">
               <Checkbox v-model:checked="form.is_internal_project" class="bg-transparent" />
-              <span class="ml-2 text-sm text-black">Proyecto interno</span>
+              <span class="ml-2 text-sm text-black dark:text-white">Proyecto interno</span>
             </label>
             <el-tooltip class="ml-2"
               content="Seleccione esta opción si el proyecto es una iniciativa de la empresa y no esta relacionado con un cliente en específico"
@@ -219,7 +219,7 @@
               </p>
             </div>
           </div>
-          <section class="rounded-[10px] py-12 mx-1 mt-5 max-h-[580px] col-span-full bg-[#CCCCCC]">
+          <section class="rounded-[10px] py-12 mx-1 mt-5 max-h-[580px] col-span-full bg-[#CCCCCC] dark:bg-[#333333] dark:text-white">
             <div class="flex px-16 mb-8">
               <div v-if="typeAccessProject === 'Private'" class="w-full">
                 <h2 class="font-bold text-sm my-2 ml-2 col-span-full">Asignar participantes </h2>

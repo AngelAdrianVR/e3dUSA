@@ -1,5 +1,5 @@
 <template>
-    <div class="text-left text-sm items-center pb-12">
+    <div class="text-left text-sm items-center pb-12 dark:text-white">
         <GanttDiagramMonth v-if="period === 'Mes'" :currentProject="project" />
         <GanttDiagramBimester v-if="period === 'Bimestre'" :currentProject="project"/>
         
