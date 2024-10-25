@@ -1,6 +1,6 @@
 <template>
     <Loading v-if="loading" class="mt-10" />
-    <div v-else class="my-5 text-sm">
+    <div v-else class="my-5 text-sm dark:text-white">
         <table class="w-full">
             <thead>
                 <tr class="*:text-start">

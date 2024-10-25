@@ -10,7 +10,7 @@
                 </div>
             </template>
             <!-- Form -->
-            <form @submit.prevent="store" class="relative overflow-x-hidden">
+            <form @submit.prevent="store" class="relative overflow-x-hidden dark:text-white">
                 <!-- company branch important notes -->
                 <div class="absolute top-5 -right-1">
                     <div v-if="importantNotes" class="text-xs border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-72">
@@ -41,7 +41,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="md:w-full lg:w-1/2 md:mx-auto mx-7 my-5 bg-[#D9D9D9] rounded-lg px-9 py-5 shadow-md">
+                <div class="md:w-full lg:w-1/2 md:mx-auto mx-7 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg px-9 py-5 shadow-md">
                     <div class="md:grid gap-3 gap-y-2 mb-6 grid-cols-2">
                         <div class="col-span-2 flex justify-between mb-7">
                             <el-radio-group v-model="form.is_spanish_template" size="small">
@@ -160,7 +160,7 @@
                             <InputError :message="form.errors.tooling_currency" />
                         </div>
                         <div class="flex items-center space-x-2 col-span-full">
-                            <label class="flex items-center text-gray-600">
+                            <label class="flex items-center text-gray-600 dark:text-gray-500">
                                 <input type="checkbox" v-model="form.tooling_cost_stroked"
                                     class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
                                 <span class="ml-2 text-sm">Tachar:</span>
@@ -221,7 +221,7 @@
                                 <img v-if="product.id"
                                     :src="catalog_products.find(p => p.id == product.id).media[0].original_url"
                                     class="object-contain min-h-20 max-h-44 rounded-md">
-                                <p v-else class="flex items-center space-x-2 justify-center text-sm text-[#373737] mt-3">
+                                <p v-else class="flex items-center space-x-2 justify-center text-sm text-[#373737] dark:text-gray-500 mt-3">
                                     <i class="fa-solid fa-arrow-up"></i>
                                     <span>Selecciona un producto para ver imagen</span>
                                 </p>
@@ -268,7 +268,7 @@
                         </div>
                         <InputError :message="form.errors.products" class="col-span-full" />
                         <ol v-if="form.products.length"
-                            class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1 divide-y-[1px]">
+                            class="rounded-lg bg-[#CCCCCC] dark:text-black px-5 py-3 col-span-full space-y-1 divide-y-[1px]">
                             <template v-for="(item, index) in form.products" :key="index">
                                 <li class="flex justify-between items-center border-[#999999] py-1">
                                     <!-- Si es producto de catalogo lo busca en esos productos -->

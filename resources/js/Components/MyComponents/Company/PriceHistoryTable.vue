@@ -13,7 +13,7 @@
                 class="font-bold text-sm !py-1">Actualizar precio</PrimaryButton>
         </div>
         <!-- Encabezado de la tabla -->
-        <div class="grid grid-cols-3 table-header text-left rounded-t-md bg-[#D9D9D9] border border-[#9A9A9A] mt-2">
+        <div class="grid grid-cols-3 table-header text-left rounded-t-md bg-[#D9D9D9] dark:bg-[#333333] border border-[#9A9A9A] mt-2">
             <div class="table-cell font-bold py-3 px-4">
                 Fecha de cambio
             </div>

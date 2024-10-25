@@ -19,7 +19,7 @@
             </div>
         </template>
 
-        <div class="relative overflow-hidden min-h-[60vh]">
+        <div class="relative overflow-hidden min-h-[60vh] dark:text-white">
             <div class="flex justify-center space-x-5 mt-5">
                 <p class="mr-2 text-xs flex items-center space-x-2">
                     <i class="fa-solid fa-circle text-green-500"></i>

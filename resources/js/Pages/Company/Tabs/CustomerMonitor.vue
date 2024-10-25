@@ -1,5 +1,5 @@
 <template>
-    <section class="p-7 w-full mx-auto my-4">
+    <section class="p-7 w-full mx-auto my-4 dark:text-white">
         <div v-if="company.clientMonitors?.length">
             <CompanyClientMonitorTable :client_monitors="company.clientMonitors" />
         </div>

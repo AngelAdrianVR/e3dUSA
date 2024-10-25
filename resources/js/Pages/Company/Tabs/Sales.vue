@@ -1,5 +1,5 @@
 <template>
-    <section class="p-7 w-full mx-auto my-4">
+    <section class="p-7 w-full mx-auto my-4 dark:text-white">
         <div v-if="company.company_branches?.some(branch => branch.sales?.length > 0)">
             <CompanySalesTable :company_sales="getAllSales()" />
         </div>

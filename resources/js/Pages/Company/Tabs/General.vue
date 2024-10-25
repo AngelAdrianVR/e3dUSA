@@ -1,5 +1,5 @@
 <template>
-    <section class="md:w-1/2 grid grid-cols-2 text-left p-4 md:ml-20 text-sm items-center">
+    <section class="md:w-1/2 grid grid-cols-2 text-left p-4 md:ml-20 text-sm items-center dark:text-white">
         <span class="text-gray-500">ID</span>
         <span>{{ company.id }}</span>
         <span class="text-gray-500">Sucursales totales con las que cuenta el cliente</span>

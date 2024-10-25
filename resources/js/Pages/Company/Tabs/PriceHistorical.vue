@@ -1,5 +1,5 @@
 <template>
-    <section class="p-7 w-full mx-auto my-4">
+    <section class="p-7 w-full mx-auto my-4 dark:text-white">
         <div class="flex justify-between items-center">
             <p class="text-secondary">Historial de precios</p>
         </div>
