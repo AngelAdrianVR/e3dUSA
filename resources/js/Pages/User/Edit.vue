@@ -13,7 +13,7 @@
       </template>
       <!-- Form -->
       <form @submit.prevent="update">
-        <div class="md:w-1/2 md:mx-auto mx-3 grid grid-cols-2 gap-3 my-5 bg-[#D9D9D9] rounded-lg px-9 py-5 shadow-md">
+        <div class="md:w-1/2 md:mx-auto mx-3 grid grid-cols-2 gap-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg px-9 py-5 shadow-md">
           <div>
             <InputLabel value="Nombre completo*" />
             <el-input v-model="form.name" placeholder="Ej. Miguel Gonzalez Rivera" />

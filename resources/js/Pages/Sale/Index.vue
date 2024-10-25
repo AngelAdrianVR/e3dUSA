@@ -20,7 +20,7 @@
                 </div>
             </template>
 
-            <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+            <div class="flex space-x-6 items-center justify-center text-xs mt-2 dark:text-white">
                 <p><i class="fa-solid fa-circle mr-1 text-red-500"></i>Esperando Autorización</p>
                 <p><i class="fa-solid fa-circle mr-1 text-gray-500"></i>Autorizado. Sin orden de producción</p>
                 <p><i class="fa-solid fa-circle mr-1 text-amber-500"></i>Producción sin iniciar</p>
@@ -30,7 +30,7 @@
             </div>
 
             <!-- Filtro -->
-            <div class="flex items-center space-x-5 lg:mx-28 mx-4 mt-5">
+            <div class="flex items-center space-x-5 lg:mx-28 mx-4 mt-5 dark:text-white">
                 <div class="w-1/4 flex flex-col">
                     <label class="text-sm ml-2 mb-1">Filtro por propietario</label>
                     <el-select @change="fetchItemsFiltered" v-model="filter" class="!w-full"

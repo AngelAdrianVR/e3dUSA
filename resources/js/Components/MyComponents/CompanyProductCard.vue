@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-xl bg-[#cccccc] px-7 py-3 relative">
+  <div class="rounded-xl bg-[#cccccc] dark:bg-[#202020] dark:text-white px-7 py-3 relative">
     <p class="text-center font-bold mt-4">
       {{ company_product.name }}
     </p>
@@ -14,7 +14,7 @@
       <img class="object-contain h-40 rounded-md" :src="company_product.media[0]?.original_url" alt="">
     </figure> -->
     <div>
-      <figure @mouseover="showOverlay" @mouseleave="hideOverlay" class="bg-[#D9D9D9] w-full  my-3 rounded-[10px] relative">
+      <figure @mouseover="showOverlay" @mouseleave="hideOverlay" class="bg-[#D9D9D9] dark:bg-[#333333] w-full  my-3 rounded-[10px] relative">
         <img class="object-contain h-40 mx-auto" :src="company_product.media[currentImage]?.original_url" alt="">
         <div v-if="imageHovered" @click="openImage(company_product.media[currentImage]?.original_url)"
             class="cursor-pointer h-full w-full absolute top-0 left-0 opacity-50 bg-black flex items-center justify-center rounded-lg transition-all duration-300 ease-in">
@@ -34,7 +34,7 @@
       </li>
     </div>
 
-    <div class="bg-[#d9d9d9] rounded-lg p-2 grid grid-cols-2 my-3">
+    <div class="bg-[#d9d9d9] dark:bg-[#333333] rounded-lg p-2 grid grid-cols-2 my-3">
       <span class="text-sm">Precio Anterior:</span>
       <span class="text-secondary text-sm">{{ company_product.pivot.old_price }}
         {{ company_product.pivot.old_currency }}</span>

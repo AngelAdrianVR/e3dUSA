@@ -5,7 +5,7 @@
                 <label class="text-lg">Detalles de tarifa</label>
 
                 <Link :href="route('shipping-rates.index')"
-                    class="cursor-pointer size-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+                    class="cursor-pointer size-7 rounded-full hover:bg-[#D9D9D9] dark:hover:bg-[#191919] hover:!text-primary dark:text-white flex items-center justify-center">
                     <i class="fa-solid fa-xmark"></i>
                 </Link>
             </section>
@@ -30,12 +30,12 @@
 
             <LoadingLogo v-if="loading" />
 
-            <section v-else class="pt-7 md:grid grid-cols-3 gap-8">
+            <section v-else class="pt-7 md:grid grid-cols-3 gap-8 dark:text-white">
                 <!-- lado izquierdo del grid -->
                 <article class="col-span-1">
                     <h1 class="text-lg font-bold text-center">{{ shipping_rate.catalog_product?.name }}</h1>
 
-                    <figure class="flex justify-center items-center mt-5 h-60 bg-gray-200 rounded-lg">
+                    <figure class="flex justify-center items-center mt-5 h-60 bg-gray-200 dark:bg-[#202020] rounded-lg">
                         <img v-if="shipping_rate.catalog_product?.media?.length" class="border rounded-md object-contain h-full" :src="shipping_rate.catalog_product?.media[0]?.original_url" alt="">
                         <i v-else class="fa-regular fa-image text-gray-300 text-5xl"></i>
                     </figure>

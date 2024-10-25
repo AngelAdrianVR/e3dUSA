@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="dark:text-white">
         <div v-if="loading"
             class="absolute z-30 left-0 top-0 inset-0 bg-black opacity-50 flex items-center justify-center">
         </div>

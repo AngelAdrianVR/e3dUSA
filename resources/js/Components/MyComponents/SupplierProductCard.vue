@@ -1,6 +1,6 @@
 <template>
     <div class="rounded-lg border border-gray1 py-4 px-4 my-2 lg:my-0">
-        <figure class="rounded-md p-4 bg-gray-200 w-4/5 mx-auto">
+        <figure class="rounded-md p-4 bg-gray-200 dark:bg-[#202020] w-4/5 mx-auto">
             <img class="rounded-md object-contain w-full h-28" :src="product.media[0]?.original_url">
         </figure>
         <div class="grid grid-cols-2 gap-2 mt-5 text-xs">

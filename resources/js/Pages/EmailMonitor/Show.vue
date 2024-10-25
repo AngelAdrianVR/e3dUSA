@@ -1,10 +1,10 @@
 <template>
   <AppLayoutNoHeader title="Seguimiento de correos">
-    <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
+    <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1 dark:text-white">
       <div class="flex justify-between">
         <label class="text-lg">Seguimiento integral</label>
         <Link :href="route('client-monitors.index')"
-          class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+          class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] dark:hover:bg-[#191919] hover:!text-primary dark:text-white flex items-center justify-center">
         <i class="fa-solid fa-xmark"></i>
         </Link>
       </div>
@@ -18,7 +18,7 @@
 
           <Dropdown align="right" width="48">
             <template #trigger>
-              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
+              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center text-sm">
                 Más <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
               </button>
             </template>
@@ -43,7 +43,7 @@
     </div>
 
     <!-- ------------- Email Starts 1 ------------- -->
-    <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] text-sm">
+    <div v-if="tabs == 1" class="md:grid grid-cols-2 border-b-2 border-[#cccccc] dark:text-white text-sm">
       <div
         class="grid grid-cols-2 gap-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center *:self-start">
         <p class="text-secondary col-span-2 mb-2">Información de oportuindad</p>

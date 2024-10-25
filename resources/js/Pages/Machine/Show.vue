@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="dark:text-white">
     <AppLayoutNoHeader title="Ver maquinaria">
       <div class="flex justify-between text-lg mx-14 mt-11">
         <span>Maquinaria</span>
         <Link :href="route('machines.index')"
-          class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+          class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] dark:hover:bg-[#191919] hover:!text-primary dark:text-white flex items-center justify-center">
         <i class="fa-solid fa-xmark"></i>
         </Link>
       </div>
@@ -19,7 +19,7 @@
           <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar maquinas') && currentMachine"
             content="Editar" placement="top">
             <Link :href="route('machines.edit', selectedMachine)">
-                <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9]">
+                <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                     </svg>
@@ -29,7 +29,7 @@
           <Dropdown align="right" width="48"
             v-if="$page.props.auth.user.permissions.includes('Crear maquinas') && $page.props.auth.user.permissions.includes('Crear mantenimientos') && $page.props.auth.user.permissions.includes('Crear refacciones') && $page.props.auth.user.permissions.includes('Eliminar maquinas') && currentMachine">
             <template #trigger>
-              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center justify-center text-sm">
+              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center justify-center text-sm">
                   Más <i class="fa-solid fa-chevron-down text-[10px] ml-2 pb-[2px]"></i>
               </button>
             </template>
@@ -67,7 +67,7 @@
             <i :class="currentIndexMachine == 0 ? 'hidden' : 'block'" @click="previus"
               class="fa-solid fa-chevron-left mr-4 text-lg text-gray-600 cursor-pointer p-1 rounded-full"></i>
             <figure @mouseover="showOverlay" @mouseleave="hideOverlay"
-              :class="currentMachine?.media?.length ? 'bg-transparent' : 'bg-[#D9D9D9]'"
+              :class="currentMachine?.media?.length ? 'dark:bg-[#333333] bg-[#d9d9d9]' : 'bg-[#D9D9D9]'"
               class="w-full h-60 rounded-lg relative flex items-center justify-center">
               <!-- <el-image style="height: 100%; " :src="currentMachine?.media[0]?.original_url" fit="fit">
               <template #error>
@@ -311,22 +311,22 @@
         <template #content>
           <section class="mt-3">
             <div class="grid grid-cols-3 gap-2">
-              <p class="text-[#373737]">Máquina:</p>
-              <p class="text-black col-span-2">{{ currentMachine.name }}</p>
-              <p class="text-[#373737]">No. Mantenimiento:</p>
-              <p class="text-black col-span-2">{{ maintenanceIndex }}</p>
-              <p class="text-[#373737]">Tipo de mantenimiento:</p>
-              <p class="text-black col-span-2"> {{ maintenanceTypes[selectedMaintenance.maintenance_type_id] }}</p>
-              <p class="text-[#373737]">Fecha:</p>
-              <p class="text-black col-span-2"> {{ selectedMaintenance.start_date }}</p>
-              <p class="text-[#373737]">Costo:</p>
-              <p class="text-black col-span-2"> ${{ selectedMaintenance.cost }}</p>
-              <p class="text-[#373737]">Realizado por:</p>
-              <p class="text-black col-span-2">{{ selectedMaintenance.responsible }}</p>
-              <p class="text-[#373737]">Descripción de acciones:</p>
-              <p class="text-black col-span-2">{{ selectedMaintenance.actions }}</p>
-              <p class="text-[#373737]">Validado por:</p>
-              <div v-if="selectedMaintenance.maintenance_type_id == 2" class="text-black col-span-2">
+              <p class="text-[#373737] dark:text-gray-500">Máquina:</p>
+              <p class=" col-span-2">{{ currentMachine.name }}</p>
+              <p class="text-[#373737] dark:text-gray-500">No. Mantenimiento:</p>
+              <p class=" col-span-2">{{ maintenanceIndex }}</p>
+              <p class="text-[#373737] dark:text-gray-500">Tipo de mantenimiento:</p>
+              <p class=" col-span-2"> {{ maintenanceTypes[selectedMaintenance.maintenance_type_id] }}</p>
+              <p class="text-[#373737] dark:text-gray-500">Fecha:</p>
+              <p class=" col-span-2"> {{ selectedMaintenance.start_date }}</p>
+              <p class="text-[#373737] dark:text-gray-500">Costo:</p>
+              <p class=" col-span-2"> ${{ selectedMaintenance.cost }}</p>
+              <p class="text-[#373737] dark:text-gray-500">Realizado por:</p>
+              <p class=" col-span-2">{{ selectedMaintenance.responsible }}</p>
+              <p class="text-[#373737] dark:text-gray-500">Descripción de acciones:</p>
+              <p class=" col-span-2">{{ selectedMaintenance.actions }}</p>
+              <p class="text-[#373737] dark:text-gray-500">Validado por:</p>
+              <div v-if="selectedMaintenance.maintenance_type_id == 2" class=" col-span-2">
                 <div v-if="!selectedMaintenance.validated_by" class="flex items-center space-x-2">
                   <el-tooltip content="Esperando validación" placement="top">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
@@ -370,23 +370,23 @@
         <template #content>
           <section class="mt-3">
             <div class="grid grid-cols-3 gap-2">
-              <p class="text-[#373737]">Máquina:</p>
-              <p class="text-black col-span-2">{{ currentMachine.name }}</p>
-              <p class="text-[#373737]">Refacción:</p>
-              <p class="text-black col-span-2"> {{ selectedSparePart.name }}</p>
-              <p class="text-[#373737]">Adquirida el:</p>
-              <p class="text-black col-span-2"> {{ selectedSparePart.created_at }}</p>
-              <p class="text-[#373737]">Costo unitario $MXN:</p>
-              <p class="text-black col-span-2"> ${{ selectedSparePart.cost }}</p>
-              <p class="text-[#373737]">Cantidad:</p>
-              <p class="text-black col-span-2">{{ selectedSparePart.quantity }}</p>
-              <p class="text-[#373737]">Proveedor:</p>
-              <p class="text-black col-span-2">{{ selectedSparePart.supplier }}</p>
-              <p class="text-[#373737]">Ubicación:</p>
-              <p class="text-black col-span-2">{{ selectedSparePart.location }}</p>
-              <p class="text-[#373737]">Descripción:</p>
-              <p class="text-black col-span-2">{{ selectedSparePart.actions }}</p>
-              <p class="text-[#373737]">Evidencia:</p>
+              <p class="text-[#373737] dark:text-gray-500">Máquina:</p>
+              <p class="col-span-2">{{ currentMachine.name }}</p>
+              <p class="text-[#373737] dark:text-gray-500">Refacción:</p>
+              <p class="col-span-2"> {{ selectedSparePart.name }}</p>
+              <p class="text-[#373737] dark:text-gray-500">Adquirida el:</p>
+              <p class="col-span-2"> {{ selectedSparePart.created_at }}</p>
+              <p class="text-[#373737] dark:text-gray-500">Costo unitario $MXN:</p>
+              <p class="col-span-2"> ${{ selectedSparePart.cost }}</p>
+              <p class="text-[#373737] dark:text-gray-500">Cantidad:</p>
+              <p class="col-span-2">{{ selectedSparePart.quantity }}</p>
+              <p class="text-[#373737] dark:text-gray-500">Proveedor:</p>
+              <p class="col-span-2">{{ selectedSparePart.supplier }}</p>
+              <p class="text-[#373737] dark:text-gray-500">Ubicación:</p>
+              <p class="col-span-2">{{ selectedSparePart.location }}</p>
+              <p class="text-[#373737] dark:text-gray-500">Descripción:</p>
+              <p class="col-span-2">{{ selectedSparePart.actions }}</p>
+              <p class="text-[#373737] dark:text-gray-500">Evidencia:</p>
               <div v-for="(media, index) in selectedSparePart.media" :key="index"
                 class="text-secondary hover:underline inline-flex space-y-1">
                 <a :href="media.original_url" target="_blank" rel="noopener noreferrer">

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="dark:text-white">
     <AppLayoutNoHeader title="Historial de acciones">
       <div class="flex justify-between text-lg mx-14 mt-11">
         <span>Historial de acciones</span>
@@ -70,7 +70,7 @@
                 <tr
                   v-for="record_created in audits_created.data"
                   :key="record_created.id"
-                  class="mb-4 hover:bg-gray-200"
+                  class="mb-4 hover:bg-gray-200 dark:hover:bg-[#333333]"
                 >
                   <td @click="showModal = true; current_audit = record_created" class="text-left py-2 px-1 rounded-l-full cursor-pointer">
                     {{ translate(record_created.table_name) }}
@@ -118,7 +118,7 @@
                 <tr
                   v-for="record_edited in audits_edited.data"
                   :key="record_edited.id"
-                  class="mb-4 cursor-pointer hover:bg-gray-200"
+                  class="mb-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-[#333333]"
                    @click="showModal = true; current_audit = record_edited"
                 >
                   <td class="text-left pb-3">
@@ -168,7 +168,7 @@
                 <tr
                   v-for="record_deleted in audits_deleted.data"
                   :key="record_deleted.id"
-                  class="mb-4 cursor-pointer hover:bg-gray-200"
+                  class="mb-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-[#333333]"
                    @click="showModal = true; current_audit = record_deleted"
                 >
                   <td @click="showModal = true" class="text-left pb-3">

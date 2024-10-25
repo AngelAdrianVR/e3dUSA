@@ -14,7 +14,7 @@
 
       <!-- Form -->
       <form @submit.prevent="store">
-        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4">
+        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md space-y-4">
           <div class="flex items-center">
             <el-tooltip content="Órdenes de venta sin orden de producción" placement="top">
               <span
@@ -58,7 +58,7 @@
                   </div>
                 </div>
                 <p class="text-primary">Cantidad a producir</p>
-                <span class="text-black">{{ product?.quantity - product?.finished_product_used }} unidades</span>
+                <span class="text-black dark:text-white">{{ product?.quantity - product?.finished_product_used }} unidades</span>
                 <p>Cantidad ordenada</p>
                 <span>{{ product?.quantity }} unidades</span>
                 <p>Notas</p>
@@ -83,7 +83,7 @@
           <div v-if="form.sale_id">
             <el-divider content-position="left" class="col-span-full">Órdenes de producción</el-divider>
             <InputError :message="errorMessage" class="col-span-full" />
-            <ol v-if="form.productions.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
+            <ol v-if="form.productions.length" class="rounded-lg bg-[#CCCCCC] text-black px-5 py-3 col-span-full space-y-1">
               <template v-for="(item, index) in form.productions" :key="index">
                 <li class="flex justify-between items-center">
                   <p class="text-sm">
@@ -127,7 +127,7 @@
               <el-divider v-if="production?.catalog_product_company_sale_id" content-position="left"
                 class="col-span-full">Tareas</el-divider>
 
-              <ol v-if="tasks.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
+              <ol v-if="tasks.length" class="rounded-lg bg-[#CCCCCC] text-black px-5 py-3 col-span-full space-y-1">
                 <template v-for="(item, index) in tasks" :key="index">
                   <li class="flex justify-between items-center">
                     <p class="text-sm">

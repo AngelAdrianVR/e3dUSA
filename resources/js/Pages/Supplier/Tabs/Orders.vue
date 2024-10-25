@@ -1,6 +1,6 @@
 <template>
     <Loading v-if="loading" class="mt-10" />
-    <section v-else class="mt-6">
+    <section v-else class="mt-6 dark:text-white">
         <table v-if="purchases.length" class="w-full mx-auto text-sm">
             <thead>
                 <tr class="text-left *:font-bold *:pb-2 *:px-4">

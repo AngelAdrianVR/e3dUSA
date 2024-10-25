@@ -1,5 +1,5 @@
 <template>
-    <section class="md:w-1/2 grid grid-cols-2 text-left p-4 md:ml-20 text-sm">
+    <section class="md:w-1/2 grid grid-cols-2 text-left p-4 md:ml-20 text-sm dark:text-white">
         <span class="text-gray-500">ID</span>
         <span>{{ supplier.id }}</span>
         <span class="col-span-2 mt-8 mb-2">Datos</span>

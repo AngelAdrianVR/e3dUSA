@@ -11,7 +11,7 @@
 
     <!-- Form -->
     <form @submit.prevent="store">
-      <div class="md:w-1/2 md:mx-auto grid grid-cols-2 gap-3 text-sm my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md">
+      <div class="md:w-1/2 md:mx-auto grid grid-cols-2 gap-3 text-sm my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg lg:p-9 p-4 shadow-md">
         <div>
           <InputLabel value="Folio de la oportunidad*" />
           <el-select @change="getCompany" v-model="form.oportunity_id" clearable filterable placeholder="Selecciona"
@@ -22,7 +22,7 @@
           <InputError :message="form.errors.oportunity_id" />
         </div>
 
-        <h2 class="text-[#373737] font-bold col-span-full">Datos del cliente</h2>
+        <h2 class="text-[#373737] dark:text-gray-300 font-bold col-span-full">Datos del cliente</h2>
         <div>
           <InputLabel value="Cliente*" />
           <el-select disabled v-model="form.company_id" clearable filterable placeholder="Selección automática"

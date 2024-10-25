@@ -1,11 +1,11 @@
 <template>
   <div>
     <AppLayoutNoHeader title="Proveedores">
-      <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
+      <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1 dark:text-white">
         <div class="flex justify-between">
           <label class="text-lg">Proveedor</label>
           <Link :href="route('suppliers.index')"
-            class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+            class="cursor-pointer w-7 h-7 rounded-full hover:bg-[#D9D9D9] dark:hover:bg-[#191919] hover:!text-primary dark:text-white flex items-center justify-center">
           <i class="fa-solid fa-xmark"></i>
           </Link>
         </div>
@@ -21,7 +21,7 @@
             <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar proveedores')" content="Editar"
               placement="top">
               <Link :href="route('suppliers.edit', selectedSupplier)">
-              <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9]">
+              <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                   stroke="currentColor" class="size-5">
                   <path stroke-linecap="round" stroke-linejoin="round"
@@ -33,7 +33,7 @@
             <Dropdown align="right" width="48"
               v-if="$page.props.auth.user.permissions.includes('Crear proveedores') && $page.props.auth.user.permissions.includes('Eliminar proveedores')">
               <template #trigger>
-                <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center justify-center text-sm">
+                <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center justify-center text-sm">
                   Más <i class="fa-solid fa-chevron-down text-[10px] ml-2 pb-[2px]"></i>
                 </button>
               </template>

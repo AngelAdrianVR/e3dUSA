@@ -1,6 +1,6 @@
 <template>
   <AppLayoutNoHeader title="Oportunidades">
-    <div class="relative overflow-hidden">
+    <div class="relative overflow-hidden dark:text-white">
       <div @click="show_type_view = false" class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
         <div class="flex justify-between">
           <label class="text-lg">Oportunidades</label>

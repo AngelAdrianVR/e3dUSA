@@ -14,7 +14,7 @@
 
       <!-- Form -->
       <form @submit.prevent="store">
-        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-1">
+        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md space-y-1">
           <h1 class="font-bold text-lg">Cambiar producto de almacén a obsoletos</h1>
           <div class="flex items-center bg-secondarylight text-secondary px-3 py-1 rounded-[5px]">
             <div class="rounded-full border border-secondary w-3 h-3 flex items-center justify-center mr-2">

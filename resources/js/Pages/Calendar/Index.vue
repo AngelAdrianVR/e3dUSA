@@ -1,15 +1,15 @@
 <template>
   <AppLayoutNoHeader title="Calendario">
     <div class="relative overflow-hidden">
-      <div class="flex justify-between text-lg mx-2 lg:mx-14 mt-2">
+      <div class="flex justify-between text-lg mx-2 lg:mx-14 mt-2 dark:text-white">
         <span>Calendario de actividades</span>
         <Link :href="route('dashboard')"
-          class="cursor-default w-7 h-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+          class="cursor-default w-7 h-7 rounded-full hover:bg-[#D9D9D9] dark:hover:bg-[#191919] hover:!text-primary dark:text-white flex items-center justify-center">
         <i class="fa-solid fa-xmark"></i>
         </Link>
       </div>
 
-      <div class="flex justify-between text-lg mx-2 lg:mx-14 mt-11">
+      <div class="flex justify-between text-lg mx-2 lg:mx-14 mt-11 dark:text-white">
         <!-- <span class="text-primary text-sm cursor-pointer">Mes <i class="fa-solid fa-angle-down text-xs ml-2"></i></span> -->
         <span></span>
         <div class="flex justify-between items-center lg:w-1/5">

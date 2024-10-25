@@ -1,5 +1,5 @@
 <template>
-<main class="overflow-auto pb-2">
+<main class="overflow-auto pb-2 ">
   <table class="border border-[#9A9A9A] default w-[1800px]">
     <tr>
       <th class="border-y border-[#9A9A9A] text-left pl-7 py-3 font-thin relative w-1/4" scope="row">
@@ -31,7 +31,7 @@
         <div class="flex space-x-8 justify-center w-[95%] mx-4">
           <p v-for="day in daysInMonth" :key="day" class="text-secondary relative pb-1">
             {{ daysOfWeek[(day + startDayOfWeek - 2) % 7] }}
-            <span class="absolute -bottom-3 -left-0 text-[9px] text-black">{{ day }}</span>
+            <span class="absolute -bottom-3 -left-0 text-[9px] text-black dark:text-white">{{ day }}</span>
           </p>
         </div>
       </th>

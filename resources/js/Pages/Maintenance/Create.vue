@@ -14,7 +14,7 @@
 
       <!-- Form -->
       <form @submit.prevent="store">
-        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-2">
+        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md space-y-2">
           <h1 class="font-bold text-end">{{ machine.name }}</h1>
           <div style="margin-top: 20px">
             <p class="text-[#999999] mb-3 text-sm">Selecciona el tipo de mantenimiento que se va a realizar</p>

@@ -11,7 +11,7 @@
 
       <!-- Form -->
       <form @submit.prevent="update">
-        <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9  p-4 shadow-md space-y-4 mx-3">
+        <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg lg:p-9 p-4 shadow-md space-y-4 mx-3">
         <h1 class="font-bold text-lg text-left">Registro de supervisión de producción</h1>
         <div>
             <InputLabel value="Folio de producción *" class="ml-2" />

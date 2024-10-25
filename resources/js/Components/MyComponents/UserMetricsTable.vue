@@ -63,4 +63,9 @@ td {
     text-align: left;
     padding: 8px;
 }
+.dark th,
+.dark td {
+    border: 1px solid #fff;
+}
+
 </style>

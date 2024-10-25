@@ -21,11 +21,11 @@
         </div>
         <div v-if="sample.devolution_date" class="flex mb-2 space-x-2">
             <p class="w-1/3 text-[#9A9A9A]">Fecha esperada de devolución</p>
-            <p class="bg-red-200 px-3">{{ sample.devolution_date }}</p>
+            <p class="bg-red-200 dark:text-black px-3">{{ sample.devolution_date }}</p>
         </div>
         <div class="flex mb-6 space-x-2">
             <p class="w-1/3 text-[#9A9A9A]">Devuelta el</p>
-            <p :class="sample.returned_at ? 'bg-green-200 px-3' : ''">{{ sample.returned_at ?? "--" }}
+            <p :class="sample.returned_at ? 'bg-green-200 px-3 dark:text-black' : ''">{{ sample.returned_at ?? "--" }}
             </p>
         </div>
         <div v-if="sample.sale_order_at" class="flex mb-6 space-x-2">
@@ -49,7 +49,7 @@
         </div>
         <div class="flex mb-2 space-x-2">
             <p class="w-1/3 text-[#9A9A9A]">Comentarios/notas de seguimiento</p>
-            <p class="bg-yellow-200 px-2">
+            <p class="bg-yellow-200 px-2 dark:text-black">
                 {{ sample.comments ?? "--" }}
             </p>
         </div>

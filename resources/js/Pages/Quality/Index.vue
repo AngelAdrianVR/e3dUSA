@@ -1,6 +1,6 @@
 <template>
   <AppLayoutNoHeader title="Calidad">
-    <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
+    <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1 dark:text-white">
       <div class="flex justify-between">
         <label class="text-lg">Departamento de calidad</label>
       </div>
@@ -29,7 +29,7 @@
     </div>
 
 
-    <div class="w-11/12 mx-8 my-16">
+    <div class="w-11/12 mx-8 my-16 dark:text-white">
       <table v-if="filteredTableData.length" class="w-full mx-auto text-sm">
         <thead>
           <tr class="text-center">
