@@ -11,7 +11,7 @@
 
     <!-- Form -->
     <form @submit.prevent="store">
-      <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4">
+      <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg lg:p-9 p-4 shadow-md space-y-4">
         <div class="flex justify-center items-center space-x-12">
           <div class="flex items-center">
             <input v-model="form.type" value="Evento"

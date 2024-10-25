@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="dark:text-white">
         <AllPageLoading v-if="loading" />
         <AppLayout title="Seguimiento de muestras">
             <template #header>

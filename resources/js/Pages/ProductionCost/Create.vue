@@ -12,7 +12,7 @@
 
       <!-- Form -->
       <form @submit.prevent="store">
-        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4">
+        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md space-y-4">
           <div>
             <IconInput v-model="form.name" inputPlaceholder="Nombre *" inputType="text">
               <el-tooltip content="Nombre *" placement="top"> A </el-tooltip>
