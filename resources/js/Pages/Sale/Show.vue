@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="dark:text-white">
     <AppLayoutNoHeader title="Órdenes de venta / stock">
       <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
         <div class="flex justify-between">
@@ -20,7 +20,7 @@
           </div>
           <div class="flex items-center space-x-2">
             <el-tooltip content="Imprimir" placement="top">
-              <button @click="openPrintPage" class="size-9 flex items-center justify-center rounded-lg bg-[#D9D9D9]">
+              <button @click="openPrintPage" class="size-9 flex items-center justify-center rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                   stroke="currentColor" class="size-5">
                   <path stroke-linecap="round" stroke-linejoin="round"
@@ -31,7 +31,7 @@
             <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar ordenes de venta') ||
               sale.data.user_id == $page.props.auth.user.id" content="Editar" placement="top">
               <Link :href="route('sales.edit', sale.data.id)">
-                <button class="size-9 flex items-center justify-center rounded-lg bg-[#D9D9D9]">
+                <button class="size-9 flex items-center justify-center rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-5">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -62,7 +62,7 @@
               )
             ">
               <template #trigger>
-                <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center justify-center text-sm">
+                <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center justify-center text-sm">
                   Más <i class="fa-solid fa-chevron-down text-[10px] ml-2 pb-[2px]"></i>
                 </button>
               </template>
