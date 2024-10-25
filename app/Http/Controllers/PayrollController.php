@@ -299,7 +299,7 @@ class PayrollController extends Controller
                 if ($minutes_late >= 15) {
                     $amount = $current_discount->amount;
                 }
-            } elseif ($user_discount_id === 2) { //seguro
+            } else { //seguro y otros
                 $amount = $current_discount->amount;
             }
 
