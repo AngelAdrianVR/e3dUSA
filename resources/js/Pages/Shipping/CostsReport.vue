@@ -28,7 +28,7 @@
                         <p class="pb-2">{{ item.company_branch?.name }}</p>
                     </td>
                     <td>
-                        <p class="pb-2">${{ item.freight_cost?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '-' }}</p>
+                        <p class="pb-2">${{ item.freight_cost?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '-' }} {{ item.freight_cost_charged_in_product ? '(Cargado a producto)' : '' }}</p>
                     </td>
                     <td>
                         <div v-for="partiality in item.partialities" :key="partiality">

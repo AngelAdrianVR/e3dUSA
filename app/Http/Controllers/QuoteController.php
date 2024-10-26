@@ -282,6 +282,7 @@ class QuoteController extends Controller
         $sale = Sale::create([
             'shipping_option' => "Entrega única",
             'freight_cost' => is_numeric($quote->freight_cost) ? $quote->freight_cost : 0,
+            'freight_cost_charged_in_product' => $quote->freight_cost_charged_in_product,
             'order_via' => "Cotización folio $folio",
             'authorized_user_name' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? auth()->user()->name : null,
             'authorized_at' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? now() : null,

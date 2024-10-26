@@ -170,8 +170,44 @@
                                 {{ form.tooling_cost }} {{ form.tooling_currency }}
                             </span>
                         </div>
+                        <div class="col-span-full">
+                            <label class="flex items-center text-gray-600 dark:text-gray-500">
+                                <input type="checkbox" v-model="form.freight_cost_charged_in_product"
+                                    class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
+                                <span class="ml-2 text-sm">Cargo de flete en precio des producto</span>
+                                <el-tooltip placement="top">
+                                    <template #content>
+                                        <p>
+                                            Activar si el precio de flete será cargado al precio <br>
+                                            de algún(os) producto(s) para que no aparezca visible <br>
+                                            en la cotización.
+                                        </p>
+                                    </template>
+                                    <div
+                                        class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
+                                        <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                    </div>
+                                </el-tooltip> 
+                            </label>
+                        </div>
                         <div>
-                            <InputLabel value="Costo de flete*" />
+                            <div class="flex items-center space-x-2">
+                                <InputLabel v-if="form.freight_cost_charged_in_product" value="Costo de flete cargado a precio de producto*" />
+                                <InputLabel v-else value="Costo de flete*" />
+                                <el-tooltip v-if="form.freight_cost_charged_in_product" placement="top">
+                                    <template #content>
+                                        <p>
+                                            Es necesario ingresar el costo del flete <br>
+                                            aunque se cargue al costo del producto <br>
+                                            Para contemplarlo en el reporte de gastos de envío
+                                        </p>
+                                    </template>
+                                    <div
+                                        class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
+                                        <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                    </div>
+                                </el-tooltip> 
+                            </div>
                             <el-input v-model="form.freight_cost" placeholder="Ej. 550" />
                             <InputError :message="form.errors.freight_cost" />
                         </div>
@@ -201,7 +237,7 @@
                             <el-select v-model="product.id" clearable filterable
                                 placeholder="Busca el producto de catálogo" no-data-text="No hay productos registrados"
                                 no-match-text="No se encontraron coincidencias">
-                                <el-option @click="handleSelectedProduct(item)" v-for="item in catalog_products"
+                                <el-option class="w-[820px]" @click="handleSelectedProduct(item)" v-for="item in catalog_products"
                                     :key="item.id" :label="item.name + ' (' + item.part_number + ')'"
                                     :value="item.id" />
                             </el-select>
@@ -444,6 +480,7 @@ export default {
             tooling_cost_stroked: Boolean(this.quote.tooling_cost_stroked),
             tooling_currency: this.quote.tooling_currency,
             freight_cost: this.quote.freight_cost,
+            freight_cost_charged_in_product: !! this.quote.freight_cost_charged_in_product,
             first_production_days: this.quote.first_production_days,
             notes: this.quote.notes,
             currency: this.quote.currency,
