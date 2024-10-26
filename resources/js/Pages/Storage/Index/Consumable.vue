@@ -13,7 +13,7 @@
                 </div>
             </template>
 
-            <div class="flex space-x-6 items-center justify-center text-xs mt-2">
+            <div class="flex space-x-6 items-center justify-center text-xs mt-2 dark:text-white">
                 <p><i class="fa-solid fa-arrow-down mr-1 text-red-600"></i>Stok debajo de lo permitido</p>
                 <p><i class="fa-solid fa-arrow-up mr-1 text-yellow-500"></i>Stock sobre lo permitido</p>
                 <p><i class="fa-regular fa-circle-check mr-1 text-green-600"></i>Stock efectivo</p>

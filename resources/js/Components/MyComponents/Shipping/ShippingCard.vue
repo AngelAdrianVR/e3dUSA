@@ -6,20 +6,20 @@
         <section class="grid grid-cols-2 gap-3 px-4 mt-3">
             <article class="space-y-1">
                 <div class="flex space-x-2">
-                    <p class="text-[#373737] font-bold w-24">Producto:</p>
+                    <p class="text-[#373737] dark:text-gray-400 font-bold w-24">Producto:</p>
                     <p>{{ product.name }}</p>
                 </div>
                 <div class="flex space-x-2">
-                    <p class="text-[#373737] font-bold w-24">N. Parte:</p>
+                    <p class="text-[#373737] dark:text-gray-400 font-bold w-24">N. Parte:</p>
                     <p>{{ product.part_number }}</p>
                 </div>
                 <div class="flex space-x-2">
-                    <p class="text-[#373737] font-bold w-24">Cantidad:</p>
+                    <p class="text-[#373737] dark:text-gray-400 font-bold w-24">Cantidad:</p>
                     <p>{{ quantity }} {{ quantity == 1 ? 'unidad' : 'unidades' }}</p>
                 </div>
             </article>
             <article class="flex flex-col items-end justify-end space-y-3">
-                <figure class="rounded-xl flex items-center justify-center bg-gray-200 w-3/4 h-28">
+                <figure class="rounded-xl flex items-center justify-center bg-gray-200 dark:bg-[#202020] w-3/4 h-28">
                     <img v-if="product.media?.length" class="object-contain h-full"
                         :src="product.media[0]?.original_url">
                     <i v-else class="fa-regular fa-image text-gray-300 text-5xl"></i>
@@ -42,7 +42,7 @@
         </section>
 
         <h2 class="font-semibold text-[#373737] mt-5 px-4 flex items-center justify-between">
-            <span>Especificaciones de la(s) caja(s)</span>
+            <span class="dark:text-gray-400">Especificaciones de la(s) caja(s)</span>
             <div v-if="shippingInfo" class="flex space-x-2 items-center">
                 <button
                     @click="$inertia.get(route('shipping-rates.edit', shippingInfo.id), { route: routePage, idRoute: idRoute })"

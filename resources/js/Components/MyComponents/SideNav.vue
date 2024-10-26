@@ -1,7 +1,7 @@
 <template>
     <!-- sidebar -->
     <div class="h-screen hidden md:block shadow-lg relative">
-        <div class="bg-[#D9D9D9] h-full overflow-auto">
+        <div class="bg-[#D9D9D9] dark:bg-[#202020] h-full overflow-auto transition-all ease-linear duration-500">
             <nav class="pt-2 px-2">
                 <div>
                     <div @click="showModal = true" v-if="$page.props.auth.user?.employee_properties"
@@ -21,12 +21,12 @@
                                 <i v-if="menu.notifications" class="fa-solid fa-circle fa-flip text-primary text-[10px] absolute top-3 right-7"></i>
                             </template>
                             <template #content>
-                                <template v-for="option in menu.options" :key="option">
+                                <div v-for="option in menu.options" :key="option">
                                     <DropdownNavLink v-if="option.show" :href="route(option.route)"
                                         :notifications="option.notifications">
                                         {{ option.label }}
                                     </DropdownNavLink>
-                                </template>
+                                </div>
                             </template>
                         </SideNavLink>
                     </template>

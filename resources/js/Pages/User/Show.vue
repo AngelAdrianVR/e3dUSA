@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="dark:text-white">
     <AppLayoutNoHeader title="Usuarios">
       <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
         <div class="flex justify-between">
           <label class="text-lg">Usuarios</label>
 
           <Link :href="route('users.index')"
-            class="cursor-pointer size-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+            class="cursor-pointer size-7 rounded-full hover:bg-[#D9D9D9] dark:hover:bg-[#191919] hover:!text-primary dark:text-white flex items-center justify-center">
           <i class="fa-solid fa-xmark"></i>
           </Link>
         </div>
@@ -21,7 +21,7 @@
           <div class="flex items-center space-x-2">
             <el-tooltip content="Editar" placement="top">
               <Link :href="route('users.edit', userSelected)">
-              <button class="w-9 h-9 rounded-lg bg-[#D9D9D9]">
+              <button class="w-9 h-9 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
                 <i class="fa-solid fa-pen text-sm"></i>
               </button>
               </Link>
@@ -35,7 +35,7 @@
             </el-tooltip>
             <Dropdown align="right" width="48">
               <template #trigger>
-                <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
+                <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center text-sm">
                   Más <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
                 </button>
               </template>

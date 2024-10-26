@@ -9,7 +9,10 @@
                     <span>{{ item.shipping_company }}</span>
                     <span class="text-gray-500">Guía</span>
                     <span>{{ item.tracking_guide }}</span>
-                    <span class="text-gray-500">Costo de envío</span>
+                    <span class="text-gray-500">Cobro de envío</span>
+                    <span>{{ sale.freight_cost ? '$' + sale.freight_cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,
+                        ",") : 'No especificado' }}</span>
+                    <span class="text-gray-500">Costo real de envío</span>
                     <span>{{ item.shipping_cost ? '$' + item.shipping_cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,
                         ",") : 'No especificado' }}</span>
                     <span v-if="item.promise_date" class="text-gray-500">Fecha promesa de envio</span>

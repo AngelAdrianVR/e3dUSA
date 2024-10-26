@@ -135,12 +135,10 @@ class ProductionController extends Controller
             //-------------------------------------------------------------------------------
             $percentage = $finishedCount > 0 ? (100 / count($production->productions)) * $finishedCount : 0;
 
-
             // Estatus de fecha de entrega --------------------------------------------------------
             //-------------------------------------------------------------------------------------
             $delivery_status = '--'; //inicializo el estatus en caso de no haber fecha
             $threeDaysBefore = now()->addDays(3); // Verificar si la fecha está a 3 días o más de distancia 
-
 
             if ($status['label'] !== 'Producción terminada') {
 
@@ -258,7 +256,7 @@ class ProductionController extends Controller
 
     public function show($sale_id)
     {
-        $sale = SaleResource::make(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'catalogProductCompany.catalogProduct.rawMaterials.storages.storageable', 'productions' => ['operator', 'progress'], 'comments.user'], 'productions' => ['user', 'operator', 'progress']])->find($sale_id));
+        $sale = SaleResource::make(Sale::with(['user', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'catalogProductCompany.catalogProduct.rawMaterials.storages.storageable', 'productions' => ['user', 'operator', 'progress'], 'comments.user']])->find($sale_id));
         $sales = Sale::with('companyBranch:id,name')->latest()->get(['id', 'company_branch_id']);
         $qualities = QualityResource::collection(Quality::with('supervisor:id,name')->where('production_id', $sale->id)->get());
 

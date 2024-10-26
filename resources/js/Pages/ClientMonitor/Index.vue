@@ -1,6 +1,6 @@
 <template>
 <AppLayoutNoHeader title="(CRM) Seguimiento integral">
-    <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
+    <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1 dark:text-white">
         <div class="flex justify-between">
           <label class="text-lg">Seguimiento integral</label>
         </div>
@@ -29,7 +29,7 @@
             $page.props.auth.user.permissions.includes('Agendar citas en seguimiento integral')"
           >
             <template #trigger>
-              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center justify-center text-sm">
+              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center justify-center text-sm">
                   Más <i class="fa-solid fa-chevron-down text-[10px] ml-2 pb-[2px]"></i>
               </button>
             </template>
@@ -73,7 +73,7 @@
     </div>
 
     <!-- ----------- Client monitor table ----------- -->
-    <div class="w-11/12 mx-8 my-16">
+    <div class="w-11/12 mx-8 my-16  dark:text-white">
       <table v-if="filteredTableData.length" class="w-full mx-auto text-sm">
         <thead>
           <tr class="text-center">

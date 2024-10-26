@@ -6,6 +6,7 @@ use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\SaleResource;
+use App\Models\Calendar;
 use App\Models\CatalogProductCompanySale;
 use App\Models\CompanyBranch;
 use App\Models\Oportunity;
@@ -90,10 +91,10 @@ class SaleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'shipping_company' => 'nullable',
+            // 'shipping_company' => 'nullable',
+            // 'order_via' => 'nullable',
+            // 'tracking_guide' => 'nullable',
             'freight_cost' => 'nullable|numeric|min:0',
-            'order_via' => 'nullable',
-            'tracking_guide' => 'nullable',
             'notes' => 'nullable',
             'is_high_priority' => 'boolean',
             'is_sale_production' => 'boolean',
@@ -222,10 +223,10 @@ class SaleController extends Controller
     public function update(Request $request, Sale $sale)
     {
         $request->validate([
-            'shipping_company' => 'nullable',
+            // 'shipping_company' => 'nullable',
+            // 'order_via' => 'nullable',
+            // 'tracking_guide' => 'nullable',
             'freight_cost' => 'nullable|numeric|min:0',
-            'order_via' => 'nullable',
-            'tracking_guide' => 'nullable',
             'invoice' => 'nullable',
             'notes' => 'nullable',
             'is_high_priority' => 'nullable',
@@ -233,7 +234,7 @@ class SaleController extends Controller
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
             'products' => 'array|min:1',
-            'partialities' => 'array|min:1'
+            'partialities' => 'array|min:1',
         ]);
 
         $updatedProductIds = [];
@@ -263,6 +264,24 @@ class SaleController extends Controller
 
         event(new RecordEdited($sale));
 
+        //se crea el evento de calendario si se enviará por parcialidades
+        if (collect($request->partialities)->count() > 1) {
+            foreach ($request->partialities as $index => $partiality) {
+                // if ($index > 0) { // Omite el primer elemento
+                    Calendar::create([
+                        'type' => 'Tarea',
+                        'title' => 'Envío de parcialidad N°' . ($index + 1) . ' de OV-' . $sale->id,
+                        'repeater' => 'No se repite',
+                        'description' => 'Revisar envío de parcialidad agendada automáticamente para la OV-' . $sale->id,
+                        'status' => 'Pendiente',
+                        'start_date' => $partiality['promise_date'],
+                        'start_time' => '8:00 AM',
+                        'user_id' => auth()->id(),
+                    ]);
+                // }
+            }
+        }        
+
         // return to_route('sales.index');
         return to_route('sales.show', $sale->id );
     }
@@ -270,10 +289,10 @@ class SaleController extends Controller
     public function updateWithMedia(Request $request, Sale $sale)
     {
         $request->validate([
-            'shipping_company' => 'nullable',
+            // 'shipping_company' => 'nullable',
+            // 'order_via' => 'nullable',
+            // 'tracking_guide' => 'nullable',
             'freight_cost' => 'nullable|numeric|min:0',
-            'order_via' => 'nullable',
-            'tracking_guide' => 'nullable',
             'invoice' => 'nullable',
             'notes' => 'nullable',
             'is_high_priority' => 'boolean',
@@ -295,7 +314,7 @@ class SaleController extends Controller
             $productData = $product + ['sale_id' => $sale->id];
 
             if (isset($product['id'])) {
-                // Actualizar la relaci贸n existente en catalogProductCompanySales
+                // Actualizar la relacion existente en catalogProductCompanySales
                 $existingRelation = CatalogProductCompanySale::findOrFail($product['id']);
                 $existingRelation->update($productData);
                 $updatedProductIds[] = $product['id'];

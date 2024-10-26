@@ -11,7 +11,7 @@
             </template>
 
             <!-- Form -->
-            <form @submit.prevent="update" class="relative overflow-x-hidden">
+            <form @submit.prevent="update" class="relative overflow-x-hidden dark:text-white">
                 <!-- company branch important notes -->
                 <div class="absolute top-5 -right-1">
                     <div v-if="importantNotes" class="text-xs border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-72">
@@ -42,7 +42,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
+                <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] rounded-lg p-9 shadow-md">
                     <el-radio-group v-model="form.is_sale_production" size="small">
                         <el-radio :value="1">Orden de venta</el-radio>
                         <el-radio :value="0">Orden de stock</el-radio>
@@ -194,10 +194,10 @@
                                                 class="rounded-[10px] min-h-24 w-full object-contain">
                                         </figure>
                                         <div
-                                            class="rounded-[10px] border border-[#999999] text-[#373737] text-xs px-2 py-1 mt-1">
+                                            class="rounded-[10px] border border-[#999999] text-[#373737] dark:text-gray-400 text-xs px-2 py-1 mt-1">
                                             <h2>Almacén - Producto terminado</h2>
                                             <p>
-                                                Stock mínimo: <span class="text-black">{{
+                                                Stock mínimo: <span class="text-black dark:text-white">{{
                                                     selectedCatalogProduct.min_quantity.toLocaleString('en-US', {
                                                         minimumFractionDigits: 2
                                                     }) }} unidades</span>
@@ -230,7 +230,7 @@
                             <!-- lista de productos -->
                             <h2 v-if="form.products.length" class="font-bold mt-3 ml-2">Lista de productos</h2>
                             <ol v-if="form.products.length"
-                                class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1 mt-3 divide-y-[1px]">
+                                class="rounded-lg bg-[#CCCCCC] text-black px-5 py-3 col-span-full space-y-1 mt-3 divide-y-[1px]">
                                 <template v-for="(item, index) in form.products" :key="index">
                                     <li class="flex justify-between items-center border-[#999999] py-1">
                                         <p class="text-[13px]">
@@ -243,7 +243,9 @@
                                             unidades)
                                         </p>
                                         <div class="flex space-x-2 items-center">
-                                            <el-tag v-if="editIndex == index" @close="editIndex = null; resetProductForm()" closable>En edición</el-tag>
+                                            <el-tag v-if="editIndex == index"
+                                                @close="editIndex = null; resetProductForm()" closable>En
+                                                edición</el-tag>
                                             <button @click="editProduct(index)" type="button"
                                                 class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -281,17 +283,43 @@
                             <span>Agrega al menos un producto a la lista para llenar los datos de logística.</span>
                         </p>
                         <div v-else>
-                            <div class="w-[calc(50%-6px)] mb-3">
-                                <InputLabel value="Opciones de envío" />
-                                <el-select v-model="form.shipping_option" @change="handleChangeShippingOption"
-                                    placeholder="Selecciona">
-                                    <el-option v-for="item in shippingOptions" :key="item" :label="item"
-                                        :value="item" />
-                                </el-select>
-                                <InputError :message="form.errors.shipping_option" />
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <InputLabel value="Opciones de envío" />
+                                    <el-select v-model="form.shipping_option" @change="handleChangeShippingOption"
+                                        placeholder="Selecciona">
+                                        <el-option v-for="item in shippingOptions" :key="item" :label="item"
+                                            :value="item" />
+                                    </el-select>
+                                    <InputError :message="form.errors.shipping_option" />
+                                </div>
+                                <div>
+                                    <InputLabel>
+                                        <div class="flex items-center">
+                                            <span>Costo de flete cotizado*</span>
+                                            <el-tooltip placement="top">
+                                                <template #content>
+                                                    <p>
+                                                        Es el monto especificado en la cotización.<br>
+                                                        Si en la cotización se registra como texto <br>
+                                                        el monto aqui aparecerá como 0, debido a que <br>
+                                                        este campo debe ser numérico para poder hacer <br>
+                                                        cálculos
+                                                    </p>
+                                                </template>
+                                                <div
+                                                    class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
+                                                    <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                                </div>
+                                            </el-tooltip>
+                                        </div>
+                                    </InputLabel>
+                                    <el-input v-model="form.freight_cost" placeholder="Ej. 800" />
+                                    <InputError :message="form.errors.freight_cost" />
+                                </div>
                             </div>
                             <div v-for="(partiality, index) in form.partialities" :key="index"
-                                class="md:grid grid-cols-2 gap-3">
+                                class="md:grid grid-cols-2 gap-3 mt-3">
                                 <h2 v-if="form.shipping_option != 'Entrega única'" class="mt-3 col-span-full font-bold">
                                     Parcialidad {{ (index + 1) }}
                                 </h2>
@@ -353,12 +381,12 @@
 
                                 <div class="flex space-x-2 bg-yellow-200 pl-3">
                                     <p class="text-[#999999] w-48">Cantidad de cajas:</p>
-                                    <p>{{ totalBoxes[index] ?? '- Sin información -' }}</p>
+                                    <p class="text-black">{{ totalBoxes[index] ?? '- Sin información -' }}</p>
                                 </div>
 
                                 <div class="flex space-x-2 bg-yellow-200 pl-3">
                                     <p class="text-[#999999] w-48">Costo total de envío:</p>
-                                    <p>${{ totalCost[index] ?? '- Sin información -' }}</p>
+                                    <p class="text-black">${{ totalCost[index] ?? '- Sin información -' }}</p>
                                 </div>
 
                                 <h2 v-if="form.products.length" class="ml-2 mt-6 font-bold">
@@ -406,8 +434,8 @@
                             </div>
                             <div class="col-span-full">
                                 <InputLabel value="Notas de la orden" />
-                                <textarea v-model="form.notes" class="textarea" autocomplete="off"
-                                    placeholder="Notas de la órden"></textarea>
+                                <el-input v-model="form.notes" :rows="3" maxlength="900" placeholder="Notas de la órden"
+                                    show-word-limit type="textarea" />
                                 <InputError :message="form.errors.notes" />
                             </div>
                             <h2 class="ml-2 col-span-full pt-4"><b>OCE</b> (Orden de compra externa)</h2>
@@ -484,8 +512,8 @@ export default {
             company_branch_id: this.sale.company_branch_id,
             contact_id: this.sale.contact_id,
             shipping_option: this.sale.shipping_option,
+            freight_cost: this.sale.freight_cost,
             // shipping_company: this.sale.shipping_company,
-            // freight_cost: this.sale.freight_cost,
             // tracking_guide: this.sale.tracking_guide,
             // promise_date: this.sale.promise_date,
             invoice: this.sale.invoice,

@@ -11,7 +11,7 @@
 
     <!-- Form -->
     <form @submit.prevent="store">
-      <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg py-4 px-9 shadow-md space-y-4">
+      <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg py-4 px-9 shadow-md space-y-4">
         <h2>Detalles del producto</h2>
 
         <section class="grid grid-cols-3 gap-5">
@@ -88,7 +88,7 @@
           </article>
 
           <!-- tarjeta de cajas -->
-          <article v-for="(packageCard, index) in form.boxes" :key="packageCard" class="rounded-lg py-5 px-2"
+          <article v-for="(packageCard, index) in form.boxes" :key="packageCard" class="rounded-lg py-5 px-2 dark:bg-[#333333]"
             :class="index % 2 === 0 ? 'bg-[#C0C0C0]' : 'bg-[#9F9FA2]'">
             <div class="mb-3">
               <div class="flex justify-between">
@@ -166,6 +166,13 @@
               </div>
             </section>
           </article>
+
+          <div class="mt-3">
+            <InputLabel value="Notas" />
+            <el-input v-model="form.notes" :rows="3" maxlength="1000" placeholder="Ej. Atención al tipo de caja" show-word-limit
+              type="textarea" />
+            <InputError :message="form.errors.notes" />
+          </div>
         </section>
         <div class="flex space-x-3 mt-9 mx-3 justify-end">
           <PrimaryButton :disabled="form.processing">
@@ -261,7 +268,8 @@ export default {
         },
       ],
       routePage: this.route, //para retornar a la ruta en que fue accionado
-      idRoute: this.idRoute //para retornar a la ruta en que fue accionado
+      idRoute: this.idRoute, //para retornar a la ruta en que fue accionado
+      notes: null,
     });
 
     const boxForm = useForm({

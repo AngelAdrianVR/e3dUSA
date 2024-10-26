@@ -12,7 +12,7 @@
 
       <!-- Form -->
       <form @submit.prevent="store">
-        <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4 mx-3">
+        <div class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg lg:p-9 p-4 shadow-md space-y-4 mx-3">
           <div>
             <label class="text-sm">Nombre de la oportunidad *</label>
             <input v-model="form.name" class="input" type="text" placeholder="Ingresa el nombre" />
@@ -219,7 +219,7 @@
             </div>
           </div>
 
-          <section class="rounded-[10px] py-12 mx-1 mt-5 max-h-[580px] col-span-full bg-[#CCCCCC]">
+          <section class="rounded-[10px] py-12 mx-1 mt-5 max-h-[580px] col-span-full bg-[#CCCCCC] dark:bg-[#333333] dark:text-white">
             <div class="flex px-16 mb-8">
               <div v-if="typeAccessProject === 'Private'" class="w-full">
                 <h2 class="font-bold text-sm my-2 ml-2 col-span-full">Asignar participantes </h2>
@@ -270,7 +270,7 @@
                             <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
                               v-model:checked="user.permissions[0]" :checked="user.permissions[0]" />{{ permissions }}
                             <span
-                              :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
+                              :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 dark:text-gray-400 cursor-not-allowed' : ''"
                               class="ml-2 text-xs">
                               Crea actividades
                             </span>
@@ -279,28 +279,28 @@
                             <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
                               v-model:checked="user.permissions[1]" :checked="user.permissions[1]" />
                             <span
-                              :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
+                              :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 dark:text-gray-400 cursor-not-allowed' : ''"
                               class="ml-2 text-xs">Ver</span>
                           </label>
                           <label class="flex items-center">
                             <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
                               v-model:checked="user.permissions[2]" :checked="user.permissions[2]" />
                             <span
-                              :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
+                              :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 dark:text-gray-400 cursor-not-allowed' : ''"
                               class="ml-2 text-xs">Editar</span>
                           </label>
                           <label class="flex items-center">
                             <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
                               v-model:checked="user.permissions[3]" :checked="user.permissions[3]" />
                             <span
-                              :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
+                              :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 dark:text-gray-400 cursor-not-allowed' : ''"
                               class="ml-2 text-xs">Eliminar</span>
                           </label>
                           <label class="flex items-center">
                             <Checkbox :disabled="!editAccesFlag || user.employee_properties === null"
                               v-model:checked="user.permissions[4]" :checked="user.permissions[4]" />
                             <span
-                              :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 cursor-not-allowed' : ''"
+                              :class="!editAccesFlag || user.employee_properties === null ? 'text-gray-500/80 dark:text-gray-400 cursor-not-allowed' : ''"
                               class="ml-2 text-xs">Comentar</span>
                           </label>
                         </div>

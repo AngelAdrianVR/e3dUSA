@@ -11,7 +11,7 @@
       </template>
 
       <form @submit.prevent="update">
-        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg px-9 py-5 shadow-md space-y-3">
+        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg px-9 py-5 shadow-md space-y-3">
           <div class="flex justify-end mb-5">
             <el-radio-group v-model="is_customer" @change="handleChangeModelId()" size="small">
               <el-radio :value="1">Para cliente</el-radio>
@@ -125,7 +125,7 @@
               <div v-else>
                 <!-- Historial de diseños -->
                 <div class="px-3 max-h-48 overflow-auto text-sm">
-                  <p class="font-bold text-[#373737] mb-2">Historial de diseños</p>
+                  <p class="font-bold text-[#373737] dark:text-gray-500 mb-2">Historial de diseños</p>
                   <table v-if="companyBranchDesigns?.length" class="w-full h-full mx-auto text-xs table-fixed">
                     <thead>
                       <tr class="text-center *:font-bold *:pb-3 *:text-left">
@@ -159,7 +159,7 @@
 
                 <!-- Historial de diseños -->
                 <div class="px-3 max-h-52 overflow-auto">
-                  <p class="text-sm font-bold text-[#373737] mb-2">Productos</p>
+                  <p class="text-sm font-bold text-[#373737] dark:text-gray-500 mb-2">Productos</p>
                   <table v-if="companyProducts?.length" class="w-full h-full mx-auto text-xs">
                     <thead>
                       <tr class="text-center *:font-bold *:pb-3 *:text-left">

@@ -3,10 +3,12 @@
         <template #header>
             <div class="flex justify-between mt-4">
                 <h2 class="font-semibold text-xl leading-tight">Envíos</h2>
+                <ThirthButton v-if="$page.props.auth.user.permissions.includes('Ver reporte de envios')"
+                    @click="showReportFilter = true" class="text-secondary border-secondary focus:ring-secondary">Reporte de gastos de envío</ThirthButton>
             </div>
         </template>
 
-        <div class="flex space-x-6 items-center justify-center text-xs">
+        <div class="flex space-x-6 items-center justify-center text-xs dark:text-white">
             <p class="flex items-center space-x-2">
                 <svg width="16" height="16" class="size-5" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <mask id="mask0_13713_230" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="16">
@@ -83,13 +85,6 @@
                             <p @click.stop="openInNewTab(scope.row.id)" class="hover:underline !text-blue-500">EV-{{ scope.row.id.toString().padStart(4, '0') }}</p>
                         </template>
                     </el-table-column>
-                    <!-- <el-table-column label="Folio de ov" width="100">
-                        <template #default="scope">
-                            <p @click.stop="openInNewTab(scope.row.sale.id)" class="hover:underline">
-                                OV-{{ scope.row.sale.id.toString().padStart(4, '0') }}
-                            </p>
-                        </template>
-                    </el-table-column> -->
                     <el-table-column prop="user.name" label="Vendedor" />
                     <el-table-column label="Creado el">
                         <template #default="scope">
@@ -175,12 +170,38 @@
                 </el-table>
             </div>
         </div>
-        </AppLayout>
+
+        <!-- report filter modal -->
+        <DialogModal :show="showReportFilter" @close="showReportFilter = false" maxWidth="lg">
+            <template #title>
+                <h1 class="font-bold mb-4 text-left">Filtro de periodo para reporte</h1>
+            </template>
+            <template #content>
+                <div class="text-center">
+                    <InputLabel class="mb-2" value="Selecciona el periodo de reporte" />
+                    <el-date-picker
+                        v-model="reportPeriod"
+                        type="daterange"
+                        unlink-panels
+                        range-separator="A"
+                        start-placeholder="Fecha de inicio"
+                        end-placeholder="Fecha final"
+                    />
+                </div>
+            </template>
+            <template #footer>
+                <PrimaryButton @click="openReport" :disabled="!reportPeriod">Ver reporte</PrimaryButton>
+            </template>
+        </DialogModal>
+    </AppLayout>
 </template>
 
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ThirthButton from "@/Components/MyComponents/ThirthButton.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import DialogModal from "@/Components/DialogModal.vue";
 import LoadingLogo from '@/Components/MyComponents/LoadingLogo.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
@@ -203,6 +224,8 @@ data() {
         filteredShippings: this.shippings.data,
         search: '',
         loading: false,
+        showReportFilter: false, //reporte
+        reportPeriod: null, //reporte
         // pagination: this.shippings,
     }
 },
@@ -212,7 +235,10 @@ components:{
     SecondaryButton,
     IndexSearchBar,
     PrimaryButton,
+    ThirthButton,
+    DialogModal,
     LoadingLogo,
+    InputLabel,
     AppLayout,
     Link
 },  
@@ -231,6 +257,9 @@ methods:{
             const parsedDate = new Date(date);
             return format(parsedDate, 'dd MMM yyyy, a las h:mm', { locale: es }); // Formato personalizado
         }
+    },
+    openReport() {
+        this.$inertia.post(route('shippings.costs-report'), { reportPeriod: this.reportPeriod });
     },
     openInNewTab(saleId) {
         const url = this.route('sales.show', saleId);

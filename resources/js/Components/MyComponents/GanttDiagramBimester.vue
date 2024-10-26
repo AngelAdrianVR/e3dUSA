@@ -35,7 +35,7 @@
             class="text-secondary relative pb-1"
           >
             {{ daysOfWeek[(day + startDayOfWeek - 2) % 7] }}
-            <span class="absolute -bottom-3 -left-0 text-[10px] text-black">{{ day }}</span>
+            <span class="absolute -bottom-3 -left-0 text-[10px] text-black dark:text-white">{{ day }}</span>
           </p>
         </div>
       </th>
@@ -48,7 +48,7 @@
               class="text-secondary relative"
             >
               {{ daysOfWeek[(day + startDayOfWeekNextMonth - 2) % 7] }}
-              <span class="absolute -bottom-3 -left-0 text-[10px] text-black">{{ day }}</span>
+              <span class="absolute -bottom-3 -left-0 text-[10px] text-black dark:text-white">{{ day }}</span>
             </p>
           </div>
       </th>

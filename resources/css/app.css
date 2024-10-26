@@ -6,38 +6,6 @@
     display: none;
 }
 
-/* @layer utilities{
-    .bg-primary {
-        background-color: #D90537;
-    }
-    .bg-primary-light {
-        background-color: #e2355d;
-    }
-
-    .text-primary {
-        color: #D90537;
-    }
-
-    .bg-secondary{
-        background-color: #0355B5;
-    }
-    .bg-secondary-light{
-        background-color: #136bcf;
-    }
-
-    .text-secondary{
-        color: #0355B5;
-    }
-
-    .bg-primary-gray{
-        background-color: #9a9a9a;
-    }
-
-    .bg-secondary-gray{
-        background-color: #cccccc;
-    }
-} */
-
 *::-webkit-scrollbar {
 	width: 3px;
 	height: 6px;
@@ -55,11 +23,11 @@
 
 @layer components{
     .input{
-        @apply h-8 bg-[#CCCCCC] border placeholder:text-gray-400 border-transparent text-gray-700 text-sm rounded-lg focus:ring-0 focus:border-primary block w-full p-2.5 disabled:cursor-not-allowed placeholder:text-xs placeholder:lg:text-sm;
+        @apply h-8 bg-transparent border placeholder:text-gray-400 dark:border-[#d9d9d9] dark:focus:border-primary text-gray-700 dark:text-white text-sm rounded-lg focus:ring-0 focus:border-primary block w-full p-2.5 disabled:cursor-not-allowed placeholder:text-xs placeholder:lg:text-sm;
     }
 
     .textarea{
-        @apply bg-[#CCCCCC] placeholder:text-gray-400 border border-transparent text-gray-700 text-sm rounded-lg focus:ring-0 focus:border-primary block w-full p-2.5;
+        @apply bg-[#CCCCCC] dark:bg-transparent dark:border-[#d9d9d9] dark:text-white dark:focus:border-primary placeholder:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-[#333333] border border-transparent text-gray-700 text-sm rounded-lg focus:ring-0 focus:border-primary block w-full p-2.5;
     }
 
     .label{
@@ -69,3 +37,163 @@
         @apply hover:shadow-sm hover:shadow-gray-400 hover:bg-gray-700 hover:text-white transition ease-in-out duration-300 hover:-translate-y-1;
     }
 }
+
+/* estilos de element plus */
+/* tablas------------------------------------------------- */
+.dark .el-table tr {
+    background-color: #414141; /* Fondo oscuro */
+    color: #ffffff; /* Texto claro */
+}
+
+.dark .el-table tr:hover {
+    color: #383838; /* Texto claro */
+}
+
+.dark .el-table th {
+    background-color: #202020 !important; /* Fondo de encabezado */
+    color: #cccccc; /* Texto del encabezado */
+}
+
+/* Paginacion----------------- */
+.dark .el-pagination button {
+    background-color: #333333;
+    color: #cccccc;
+}
+
+.dark .el-pager li {
+    background: #333333;
+    color: white;
+}
+
+.dark .el-pagination button.is-disabled,
+.dark .el-pagination button:disabled {
+    background-color: #686767   ;
+}
+
+/* input--------------------------------------------------------- */
+.dark .el-input__inner::placeholder {
+    color: #8b8b8b; /* Color del placeholder en modo oscuro */
+}
+
+.dark .el-input__inner {
+    color: #fff; /* Color del placeholder en modo oscuro */
+    background-color: transparent;
+    border-color: #9A9A9A;
+}
+
+.dark .el-input__inner.is-disabled {
+    color: #d9d9d9; /* Color del placeholder en modo oscuro */
+    background-color: #333333;
+    border-color: #9A9A9A;
+}
+
+.dark .el-input.is-disabled .el-input__wrapper {
+    /* background-color: var(--el-disabled-bg-color); */
+    background-color: transparent;
+}
+
+.dark .el-input__wrapper {
+    background-color: transparent;
+}
+
+.dark .el-textarea__inner::placeholder {
+    color: #8b8b8b; /* Color del placeholder en modo oscuro */
+}
+
+.dark .el-textarea__inner {
+    color: #fff; /* Color del placeholder en modo oscuro */
+    background-color: transparent;
+    border-color: #9A9A9A;
+}
+
+.dark .el-textarea .el-input__count {
+    background: transparent;
+    color: 9A9A9A;
+}
+
+.dark .el-input-group__append,
+.dark .el-input-group__prepend {
+    background-color: #333333;
+    color: var(--el-color-info);
+}
+
+/* Input number ------------------------------------------------ */
+.dark .el-input-number__decrease,
+.dark .el-input-number__increase {
+    background: #333333;
+}
+
+.dark .el-input-number__decrease.is-disabled,
+.dark .el-input-number__increase.is-disabled {
+    background-color: #636363;
+}
+
+/* select-------------------------------------------------------- */
+.dark .el-select-dropdown__item.is-hovering {
+    background-color: black
+}
+
+.dark .el-select-dropdown__item.is-disabled {
+    background-color: #333333;
+    color: #9A9A9A;
+}
+
+.dark .el-select-dropdown__item {
+    background-color: #333333;
+    color: #9A9A9A;
+}
+
+.dark .el-select__wrapper {
+    background-color: transparent;
+}
+
+.dark .el-select__placeholder {
+    color: white;
+}
+
+.dark .el-select-dropdown__empty,
+.dark .el-select-dropdown__loading {
+    color: white;
+    background-color: #333333;
+}
+
+.dark .el-select__wrapper.is-disabled {
+    background-color: #333333;
+    color: var(--el-text-color-placeholder);
+}
+
+/* cascader-------------------------------------------------------- */
+
+
+/* upload ----------------------------------------------------------- */
+.dark .el-upload--picture-card {
+    background-color: #333333;
+}
+
+.el-upload--picture-card {
+    background-color: #cccccc !important;
+}
+
+
+/* radiobutton ------------------------------------*/
+.dark .el-radio-button__inner {
+    background: #333333;
+    color: white;
+}
+
+/* Tabs ---------------------------------------------------------- */
+.dark .el-tabs__item {
+    color: white;
+}
+
+/* divider --------------------------------------------------- */
+.dark .el-divider__text {
+    background-color: #575757 !important;
+    color: white
+}
+
+/* step ------------------------------- */
+.dark .el-step__title.is-process {
+    color: white;
+}
+

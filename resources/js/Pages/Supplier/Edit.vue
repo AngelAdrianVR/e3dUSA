@@ -13,7 +13,7 @@
       </template>
       <!-- Form -->
       <form @submit.prevent="update">
-        <div class="md:w-1/2 md:mx-auto grid grid-cols-2 gap-3 mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
+        <div class="md:w-1/2 md:mx-auto grid grid-cols-2 gap-3 mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md">
           <div>
             <InputLabel value="Nombre del proveedor*" />
             <el-input v-model="form.name" placeholder="Ej. Proveedora de cajas sa de cv" />
@@ -86,7 +86,7 @@
             </SecondaryButton>
           </div>
           <InputError :message="form.errors.banks" />
-          <ol v-if="form.banks.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1 divide-y-[1px]">
+          <ol v-if="form.banks.length" class="rounded-lg bg-[#CCCCCC] text-black px-5 py-3 col-span-full space-y-1 divide-y-[1px]">
             <template v-for="(item, index) in form.banks" :key="index">
               <li class="flex justify-between items-center border-[#999999] py-1">
                 <p class="text-xs">
@@ -152,7 +152,7 @@
           </div>
           <InputError :message="form.errors.contacts" />
           <ol v-if="form.contacts.length"
-            class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1 divide-y-[1px]">
+            class="rounded-lg bg-[#CCCCCC] text-black px-5 py-3 col-span-full space-y-1 divide-y-[1px]">
             <template v-for="(item, index) in form.contacts" :key="index">
               <li class="flex justify-between items-center border-[#999999] py-1">
                 <p class="text-xs">
@@ -229,7 +229,7 @@
             </SecondaryButton>
           </div>
           <ol v-if="form.rawMaterials.length"
-            class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1 divide-y-[1px]">
+            class="rounded-lg bg-[#CCCCCC] text-black px-5 py-3 col-span-full space-y-1 divide-y-[1px]">
             <template v-for="(item, index) in form.rawMaterials" :key="index">
               <li class="flex justify-between items-center border-[#999999] py-1">
                 <p class="text-xs">

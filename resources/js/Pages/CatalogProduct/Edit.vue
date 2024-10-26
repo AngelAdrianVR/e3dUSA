@@ -12,7 +12,7 @@
     </template>
 
     <!-- Form -->
-    <form @submit.prevent="update" class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md">
+    <form @submit.prevent="update" class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md transition-all ease-linear duration-500">
       <div class="my-2">
         <InputLabel value="Tipo de producto (necesario para generar el número de parte)" />
         <el-select @change="generatePartNumber" v-model="productType" placeholder="Tipo de producto *">
@@ -168,7 +168,7 @@
           class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1 mt-3 divide-y-[1px]">
           <template v-for="(item, index) in form.raw_materials" :key="index">
             <li class="flex justify-between border-[#999999] items-center py-1">
-              <p class="text-xs">
+              <p class="text-xs text-black">
                 <span class="text-primary">{{ index + 1 }}.</span>
                 {{ raw_materials.find(prd => prd.id === item.raw_material_id)?.name }}
                 (x{{ item.quantity }} unidades)
@@ -551,3 +551,4 @@ export default {
   },
 };
 </script>
+

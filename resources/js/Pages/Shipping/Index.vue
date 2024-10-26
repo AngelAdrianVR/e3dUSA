@@ -3,11 +3,12 @@
         <template #header>
             <div class="flex justify-between mt-4">
                 <h2 class="font-semibold text-xl leading-tight">Envíos</h2>
-                <ThirthButton @click="showReportFilter = true" class="text-secondary border-secondary focus:ring-secondary">Reporte de gastos de envío</ThirthButton>
+                <ThirthButton v-if="$page.props.auth.user.permissions.includes('Ver reporte de envios')"
+                    @click="showReportFilter = true" class="text-secondary border-secondary focus:ring-secondary">Reporte de gastos de envío</ThirthButton>
             </div>
         </template>
 
-        <div class="flex space-x-6 items-center justify-center text-xs">
+        <div class="flex space-x-6 items-center justify-center text-xs dark:text-white">
             <p class="flex items-center space-x-2">
                 <svg width="16" height="16" class="size-5" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <mask id="mask0_13713_230" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="16">
@@ -84,13 +85,6 @@
                             <p @click.stop="openInNewTab(scope.row.id)" class="hover:underline !text-blue-500">EV-{{ scope.row.id.toString().padStart(4, '0') }}</p>
                         </template>
                     </el-table-column>
-                    <!-- <el-table-column label="Folio de ov" width="100">
-                        <template #default="scope">
-                            <p @click.stop="openInNewTab(scope.row.sale.id)" class="hover:underline">
-                                OV-{{ scope.row.sale.id.toString().padStart(4, '0') }}
-                            </p>
-                        </template>
-                    </el-table-column> -->
                     <el-table-column prop="user.name" label="Vendedor" />
                     <el-table-column label="Creado el">
                         <template #default="scope">

@@ -97,11 +97,31 @@
                 <div>
                     <InputLabel value="Mes" />
                     <el-date-picker v-model="period" type="month" placeholder="Selecciona el mes" format="MMM, YYYY"
-                        value-format="YYYY-MM" />
+                        class="!w-full" value-format="YYYY-MM" />
+                </div>
+                <div class="mt-3">
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold">Proveedor(es)</span>
+                        <button v-if="suppliersFiltered.length == suppliers.length" @click="cleanFilter"
+                            class="text-primary underline" type="button">
+                            Limpiar selecciones
+                        </button>
+                        <button v-else @click="grantAllSuppliers" class="text-primary underline" type="button">
+                            Seleccionar todos
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mt-3">
+                        <label v-for="supplier in suppliers" :key="supplier.id" class="flex items-center">
+                            <input type="checkbox" v-model="suppliersFiltered" :value="supplier.id"
+                                class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent size-4" />
+                            <span class="ml-2 text-xs">{{ supplier.name }}</span>
+                        </label>
+                    </div>
                 </div>
             </template>
             <template #footer>
-                <PrimaryButton @click="openReport" :disabled="!period">Ver reporte</PrimaryButton>
+                <PrimaryButton @click="openReport" :disabled="!period || !suppliersFiltered.length">Ver reporte
+                </PrimaryButton>
             </template>
         </DialogModal>
     </AppLayout>
@@ -131,6 +151,7 @@ export default {
             // modales
             showReportFilter: false,
             period: null,
+            suppliersFiltered: [],
         };
     },
     components: {
@@ -147,8 +168,16 @@ export default {
         suppliers: Array
     },
     methods: {
+        cleanFilter() {
+            this.suppliersFiltered = [];
+        },
+        grantAllSuppliers() {
+            this.suppliersFiltered = this.suppliers
+                .flat() // Aplanar los arrays de permisos por guard
+                .map(supplier => supplier.id); // Obtener solo los IDs de los permisos
+        },
         openReport() {
-            const url = this.route('suppliers.rating-report', this.period);
+            const url = this.route('suppliers.rating-report', {p: this.period, s: this.suppliersFiltered});
             window.open(url, '_blank');
         },
         handleSearch(search) {

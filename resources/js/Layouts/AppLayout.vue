@@ -45,6 +45,8 @@ const showSearchResults = ref(false); //buscador general
 const searchResults = ref(null); //buscador general
 const searchInput = ref(null); //buscador general
 const loadingSearch = ref(false); //buscador general
+const isDarkMode = ref(localStorage.getItem('darkMode') === 'true');// Obtener el estado del modo nocturno desde el localStorage
+const darkModeSwitch = ref(localStorage.getItem('darkMode') === 'true');// Obtener el estado del modo nocturno desde el localStorage
 
 
 const form = useForm({
@@ -52,6 +54,12 @@ const form = useForm({
   scanType: "Entrada",
 });
 
+const toggleDarkMode = () => {
+    isDarkMode.value = !isDarkMode.value;
+    darkModeSwitch.value = isDarkMode.value;
+    localStorage.setItem('darkMode', isDarkMode.value); // Guardar el estado en localStorage+
+    document.documentElement.classList.toggle('dark', isDarkMode.value);
+};
 
 const getUnseenMessages = async () => {
   try {
@@ -386,6 +394,8 @@ onMounted(() => {
   setInterval(() => {
     currentTime.value = new Date().getHours();
   }, 60000); // 60000 ms = 1 minute
+
+  document.documentElement.classList.toggle('dark', isDarkMode.value);
 });
 </script>
 
@@ -396,13 +406,13 @@ onMounted(() => {
 
     <Banner />
 
-    <div class="overflow-hidden h-screen bg-[#F2F2F2] md:grid md:grid-cols-12">
+    <div class="overflow-hidden h-screen bg-[#F2F2F2] dark:bg-[#0D0D0D] md:grid md:grid-cols-12">
       <aside>
         <SideNav />
       </aside>
 
       <main class="md:col-span-11">
-        <nav class="bg-[#F2F2F2] border-b border-[#D9D9D9]">
+        <nav class="bg-[#F2F2F2] dark:bg-[#0D0D0D] border-b border-[#D9D9D9] transition-all ease-linear duration-500">
           <!-- Primary Navigation Menu -->
           <div class="w-11/12 mx-auto">
             <div class="flex items-center justify-between h-14">
@@ -429,7 +439,7 @@ onMounted(() => {
 
                   <!-- Resultados -->
                   <div v-if="showSearchResults"
-                    class="bg-white w-80 max-h-80 overflow-auto absolute top-[50px] left-0 shadow-lg rounded-md py-4 z-50">
+                    class="bg-white dark:bg-[#202020] w-80 max-h-80 overflow-auto absolute top-[50px] left-0 shadow-lg rounded-md py-4 z-50">
                     <!-- estado de carga -->
                     <div v-if="loadingSearch" class="flex justify-center items-center">
                       <i class="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
@@ -437,10 +447,10 @@ onMounted(() => {
                     <!-- Mostrar los resultados aquí -->
                     <div v-else-if="searchResults">
                       <div v-for="(results, modelName) in searchResults" :key="modelName">
-                        <h2 class="font-bold px-4">{{ modelName }}</h2>
+                        <h2 class="font-bold px-4 dark:text-white">{{ modelName }}</h2>
                         <ul>
                           <li @click="$inertia.get(route(result.model + '.show', result.id))"
-                            class="text-gray-500 hover:bg-gray-200 text-xs px-4 cursor-pointer"
+                            class="text-gray-500 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-primary text-xs px-4 cursor-pointer"
                             v-for="result in results" :key="result.id">
                             {{ result.name }} (ID: {{ result.id }}) <!-- Ajusta según tu estructura de datos -->
                           </li>
@@ -460,7 +470,7 @@ onMounted(() => {
                     </PrimaryButton>
                   </el-tooltip>
 
-                  <p class="mr-4 text-xs w-2/3">
+                  <p class="mr-4 text-xs w-2/3 dark:text-white">
                     <i :class="greeting.class"></i>
                     {{ greeting.text }}
                     <strong>{{
@@ -513,7 +523,7 @@ onMounted(() => {
                       </span>
                     </div>
                   </div>
-
+                  
                   <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear kiosco')
                   " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
                     @confirm="createKiosk">
@@ -544,7 +554,7 @@ onMounted(() => {
                       </el-tooltip>
                       <div v-if="$page.props.auth.user?.notifications?.some(notification => {
                         return notification.data.module === 'calendar';
-                      })" class="bg-primary w-[10px] h-[10px] border border-white rounded-full absolute -top-1 -right-2">
+                      })" class="bg-primary w-[10px] h-[10px] border border-white rounded-full absolute -top-1 -right-0">
                       </div>
                     </div>
 
@@ -552,16 +562,32 @@ onMounted(() => {
                     <div class="relative">
                       <el-tooltip v-if="$page.props.auth.user.permissions.includes('Chatear')" content="Chat"
                         placement="bottom">
-                        <a :href="route('chatify')" target="_blank" class="mr-12 flex justify-center items-center rounded-full border border-[#7a7a7a] size-9">
+                        <a :href="route('chatify')" target="_blank" class="mr-5 flex justify-center items-center rounded-full border border-[#7a7a7a] size-9">
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-[#7a7a7a]">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
                           </svg>
                         </a>
                       </el-tooltip>
                       <div v-if="unseenMessages > 0"
-                        class="absolute bottom-6 right-11 bg-primary text-white w-4 h-4 flex items-center justify-center text-[10px] rounded-full">
+                        class="absolute bottom-6 right-4 bg-primary text-white w-4 h-4 flex items-center justify-center text-[10px] rounded-full">
                         {{ unseenMessages }}
                       </div>
+                    </div>
+
+                    <!-- Dark mode toggle -->
+                    <div class="mr-7">
+                      <el-switch @change="darkModeSwitch = !darkModeSwitch; toggleDarkMode()" v-model="darkModeSwitch" style="--el-switch-on-color: #1e3a8a;">
+                        <template #inactive-action>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-gray-700">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                          </svg>
+                        </template>
+                        <template #active-action>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-gray-700">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+                          </svg>
+                        </template>
+                      </el-switch>
                     </div>
 
                     <!-- Settings Dropdown -->
@@ -588,8 +614,8 @@ onMounted(() => {
                         </template>
 
                         <template #content>
-                          <!-- Account Management -->
-                          <div class="block px-4 py-2 text-xs rounded-md" :class="{
+                           <!-- Account Management -->
+                          <div class="block px-4 py-2 text-xs rounded-md dark:text-white" :class="{
                             'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
                             'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
                             'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
@@ -767,11 +793,11 @@ onMounted(() => {
           </div>
         </nav>
         <header v-if="$slots.header" class="">
-          <div class="mx-auto py-2 px-4 sm:px-6 lg:px-8">
+          <div class="mx-auto py-2 px-4 sm:px-6 lg:px-8 transition-all ease-linear duration-500 dark:text-white">
             <slot name="header" />
           </div>
         </header>
-        <div class="overflow-y-auto h-[calc(100vh-6.2rem)] bg-[#F2F2F2]">
+        <div class="overflow-y-auto h-[calc(100vh-6.2rem)] bg-[#F2F2F2] dark:bg-[#0D0D0D] transition-all ease-linear duration-500">
           <slot />
         </div>
       </main>
@@ -807,7 +833,7 @@ onMounted(() => {
         <div @click="
           qrScan = false;
         form.reset();
-        " class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
+        " class="cursor-pointer w-5 h-5 hover:text-primary rounded-full flex items-center justify-center absolute top-0 right-0">
           <i class="fa-solid fa-xmark"></i>
         </div>
       </div>
