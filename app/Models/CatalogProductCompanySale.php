@@ -106,11 +106,20 @@ class CatalogProductCompanySale extends Model
 
             // Avanzar al siguiente día laboral iniciando a la hora de entrada del operador
             if ($remainingMinutes > 0) {
-                $currentDateTime->addDay();
-                $nextWorkDay = $workDays->firstWhere('day', $currentDateTime->dayOfWeek);
+                do {
+                    // Avanza un día
+                    $currentDateTime->addDay();
+
+                    // Encuentra el próximo día laboral del operador
+                    $nextWorkDay = $workDays->firstWhere('day', $currentDateTime->dayOfWeek);
+                } while (!$nextWorkDay || !$nextWorkDay['check_in']); // Repite hasta encontrar un día laboral con hora de entrada
+
                 // Configura la hora de entrada del próximo día laboral
-                $currentDateTime->setTimeFromTimeString($nextWorkDay['check_in'] ?? '00:00:00');
+                if ($nextWorkDay && $nextWorkDay['check_in']) {
+                    $currentDateTime->setTimeFromTimeString($nextWorkDay['check_in'])->subHours(6);
+                }
             }
+            // return $currentDateTime;
         }
         return $currentDateTime->addHours(6)->isoFormat('DD MMM, YYYY h:mm A');
     }
