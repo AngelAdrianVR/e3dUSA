@@ -168,9 +168,11 @@
                 <li>TIEMPO DE ENTREGA PARA LA PRIMER PRODUCCIÓN <span class="font-bold text-blue-500">{{
                     quote.data.first_production_days }}</span>.
                     EL TIEMPO CORRE UNA VEZ PAGANDO EL 100% DEL HERRAMENTAL Y EL 50% DE LOS PRODUCTOS.</li>
-                <li>FLETES Y ACARREOS CORREN POR CUENTA DEL CLIENTE: <span class="font-bold text-blue-500">{{
+                <li>FLETES Y ACARREOS CORREN POR CUENTA DEL CLIENTE: <span v-if="!quote.data.freight_cost_charged_in_product" class="font-bold text-blue-500">{{
                     quote.data.freight_cost }} {{ !isNaN(quote.data.freight_cost) ? quote.data.currency : ''
-                        }}</span></li>
+                        }}</span>
+                    <span v-else class="font-bold text-blue-500">0 {{ quote.data.currency }}</span>        
+                </li>
                 <li>PRECIOS EN <span class="font-bold text-blue-500">{{ quote.data.currency }}</span></li>
                 <li>COTIZACIÓN VÁLIDA POR 21 DÍAS. EL PRODUCTO ESTÁ SUJETO A LA REVISIÓN DEL DISEÑO FINAL, PRUEBAS Y
                     SUBSECUENTE APROBACIÓN</li>

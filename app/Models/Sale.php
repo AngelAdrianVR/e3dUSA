@@ -19,6 +19,7 @@ Sale extends Model implements HasMedia
         // 'tracking_guide',
         // 'promise_date',
         'freight_cost',
+        'freight_cost_charged_in_product',
         'status',
         'oce_name',
         'order_via',
