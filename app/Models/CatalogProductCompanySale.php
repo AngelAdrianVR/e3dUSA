@@ -88,7 +88,7 @@ class CatalogProductCompanySale extends Model
             if ($workDay && $workDay['check_in'] && $workDay['check_out']) {
                 $checkInTime = $currentDateTime->copy()->setTimeFromTimeString($workDay['check_in'])->subHours(6);
                 $checkOutTime = $currentDateTime->copy()->setTimeFromTimeString($workDay['check_out'])->subHours(6);
-                $breakMinutes = $workDay['break'];
+                $breakMinutes = $workDay['break'] ?? 0;
 
                 // Calcular el inicio del trabajo para el día, en función de la hora actual o la hora de entrada
                 $startTime = max($currentDateTime, $checkInTime);
