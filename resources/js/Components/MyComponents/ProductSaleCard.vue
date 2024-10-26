@@ -1,7 +1,9 @@
 <template>
-  <div class="rounded-xl px-7 py-3 relative text-xs shadow-lg bg-[#cccccc] dark:bg-[#202020] dark:text-white border-[3px] border-transparent" :class="{
-    '!border-primary': isHighPriority,
-  }">
+  <div
+    class="rounded-xl px-7 py-3 relative text-xs shadow-lg bg-[#cccccc] dark:bg-[#202020] dark:text-white border-[3px] border-transparent"
+    :class="{
+      '!border-primary': isHighPriority,
+    }">
     <!-- low stock message -->
     <div v-if="catalog_product_company_sale.productions.some(item => item.has_low_stock)"
       class="z-20 rounded-md absolute border-2 border-gray-100 bg-[#FDB9C9] py-2 text-primary px-2 -top-3 -right-5 flex items-center justify-center">
@@ -275,10 +277,33 @@
     </div>
 
     <!-- Notas del producto -->
-    <div class="bg-[#d9d9d9] dark:bg-[#333333] dark:text-white rounded-lg p-2 my-3">
-      <p class="font-bold">Notas: <span class="font-thin">{{ catalog_product_company_sale.notes ?? '-' }}</span></p>
+    <div class="bg-[#d9d9d9] dark:bg-[#333333] dark:text-white rounded-lg p-2 my-3 flex items-center justify-between">
+      <p class="font-bold flex items-center space-x-2">
+        <span>Fecha tentativa de término:</span>
+        <i v-if="loadingCompletionDate" class="fa-solid fa-spinner fa-spin text-xl text-primary"></i>
+        <span v-else class="font-thin">{{ estimatedCompletionDate }}</span>
+      </p>
+      <el-tooltip placement="top">
+        <template #content>
+          <p>
+            Esta fecha y hora es el cálculo estimado de finalización <br>
+            para todas las tareas de producción registradas. <br>
+            Se basa en el tiempo estimado total de las tareas, el <br>
+            horario laboral del operador (incluyendo su hora de entrada, <br>
+            salida y descansos) y omite los días en que el operador no trabaja.
+          </p>
+        </template>
+        <div class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
+          <i class="fa-solid fa-info text-primary text-[7px]"></i>
+        </div>
+      </el-tooltip>
     </div>
-
+    <div class="bg-[#d9d9d9] dark:bg-[#333333] dark:text-white rounded-lg p-2 my-3">
+      <p class="font-bold flex space-x-2">
+        <span>Notas:</span>
+        <span class="font-thin">{{ catalog_product_company_sale.notes ?? '-' }}</span>
+      </p>
+    </div>
     <!-- Historial de precios -->
     <div class="bg-[#d9d9d9] dark:bg-[#191919] dark:text-white rounded-lg p-2 grid grid-cols-2 my-3">
       <span class="">Precio Anterior:</span>
@@ -757,6 +782,7 @@ export default {
       catalogProductShippingRates: null, //catalog product con tarifas cargadas
       shippingInfo: [], //tarifa seleccionada para ese producto
       loadingShippingRate: false,
+      loadingCompletionDate: false,
       users: [],
       // paquetes
       packages: [],
@@ -766,7 +792,8 @@ export default {
         height: null,
         weight: null,
         quantity: null,
-      }
+      },
+      estimatedCompletionDate: null,
     };
   },
   emits: ['selected'],
@@ -981,6 +1008,7 @@ export default {
           if (response.data.item === null) {
             this.showInfoModal = true;
           } else {
+            this.fetchEstimatedCompletionDate();
             production.started_at = response.data.item.started_at;
             production.finished_at = response.data.item.finished_at;
             this.production = null;
@@ -1030,6 +1058,20 @@ export default {
         this.loadingShippingRate = false;
       }
     },
+    async fetchEstimatedCompletionDate() {
+      this.loadingCompletionDate = true;
+      try {
+        const response = await axios.get(route('catalog-product-company-sale.get-estimated-completion-date', this.catalog_product_company_sale.id));
+
+        if (response.status === 200) {
+          this.estimatedCompletionDate = response.data.item;
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.loadingCompletionDate = false;
+      }
+    },
     openImage(url) {
       window.open(url, '_blank');
     },
@@ -1044,6 +1086,7 @@ export default {
     this.fetchUsers();
     this.fetchCatalogProuctShippingRates(); //recupera las tarifas del catalog_product para no cargarlo desde la vista show
     this.fetchSaleInfo();
+    this.fetchEstimatedCompletionDate();
   }
 };
 </script>

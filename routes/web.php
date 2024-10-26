@@ -170,6 +170,7 @@ Route::post('catalog-product-company-sale/store-traveler-data/{cpcs}', [CatalogP
 Route::get('catalog-product-company-sale/get-traveler-data/{cpcs}', [CatalogProductCompanySaleController::class, 'getTravelerData'])->middleware('auth')->name('catalog-product-company-sale.get-traveler-data');
 Route::get('catalog-product-company-sale/get-productions/{cpcs}', [CatalogProductCompanySaleController::class, 'getProductions'])->middleware('auth')->name('catalog-product-company-sale.get-productions');
 Route::get('catalog-product-company-sale/get-raw-materials/{cpcs}', [CatalogProductCompanySaleController::class, 'getRawMaterials'])->middleware('auth')->name('catalog-product-company-sale.get-raw-materials');
+Route::get('catalog-product-company-sale/get-estimated-completion-date/{cpcs}', [CatalogProductCompanySaleController::class, 'getEstimatedCompletionDate'])->middleware('auth')->name('catalog-product-company-sale.get-estimated-completion-date');
 
 
 // ------- Catalog Products Routes ---------
