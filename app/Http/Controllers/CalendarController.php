@@ -22,8 +22,6 @@ class CalendarController extends Controller
         $pendent_invitations = Calendar::with(['user'])->where('participants', 'like', '%"user_id":' . auth()->id() . ',"status":"Pendiente"%')
             ->get();
 
-        // return $pendent_invitations;
-
         return inertia('Calendar/Index', compact('tasks', 'pendent_invitations'));
     }
 
