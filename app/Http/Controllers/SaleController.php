@@ -14,6 +14,8 @@ use App\Models\Sale;
 use App\Models\Sample;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
+use App\Notifications\ReminderPartialitiesNotification;
+use App\Notifications\SchedulePartialitiesReminder;
 use Illuminate\Http\Request;
 
 class SaleController extends Controller
@@ -264,11 +266,11 @@ class SaleController extends Controller
 
         event(new RecordEdited($sale));
 
-        //se crea el evento de calendario si se enviará por parcialidades
-        if (collect($request->partialities)->count() > 1) {
+        // cambiar || por && si se requiere crear el recordatorio solo para parcialidades mayores a 1
+        if (collect($request->partialities)->count() > 1 || $request->create_calendar_task) {
             foreach ($request->partialities as $index => $partiality) {
                 // if ($index > 0) { // Omite el primer elemento
-                    Calendar::create([
+                    $reminder = Calendar::create([
                         'type' => 'Tarea',
                         'title' => 'Envío de parcialidad N°' . ($index + 1) . ' de OV-' . $sale->id,
                         'repeater' => 'No se repite',
@@ -278,6 +280,9 @@ class SaleController extends Controller
                         'start_time' => '8:00 AM',
                         'user_id' => auth()->id(),
                     ]);
+
+                   $seller = User::find($sale->user_id);
+                   $seller->notify(new SchedulePartialitiesReminder($reminder));
                 // }
             }
         }        

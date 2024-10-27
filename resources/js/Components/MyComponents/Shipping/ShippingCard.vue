@@ -100,7 +100,7 @@
                 </table>
             </div>
         </section>
-        <div v-else class="text-center text-[#373737] px-6 mt-5 text-sm">
+        <div v-else class="text-center text-[#373737] dark:text-gray-500 px-6 mt-5 text-sm">
             Faltan datos sobre las dimensiones de las cajas para este producto. Si tienes la información da clic
             en el botón “Agregar cajas”. <br>
             <p class="bg-yellow-200">

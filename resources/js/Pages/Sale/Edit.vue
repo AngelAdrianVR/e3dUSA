@@ -11,7 +11,7 @@
             </template>
 
             <!-- Form -->
-            <form @submit.prevent="update" class="relative overflow-x-hidden dark:text-white">
+            <form @submit.prevent="handleUpdateSale" class="relative overflow-x-hidden dark:text-white">
                 <!-- company branch important notes -->
                 <div class="absolute top-5 -right-1">
                     <div v-if="importantNotes" class="text-xs border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-72">
@@ -463,6 +463,7 @@
                 </div>
             </form>
 
+            <!-- Modal para crear notas -->
             <DialogModal :show="showImportantNotesModal" @close="showImportantNotesModal = false">
                 <template #title>
                     {{ editIMportantNotes ? 'Editar' : 'Agregar' }} notas importantes para
@@ -486,6 +487,22 @@
                     <CancelButton @click="showImportantNotesModal = false">Cancelar</CancelButton>
                     <PrimaryButton @click="storeImportantNotes()" :disabled="!importantNotesToStore">Guardar notas
                     </PrimaryButton>
+                </template>
+            </DialogModal>
+            
+            <!-- Modal para crear tarea en calendario -->
+            <DialogModal :show="showCalendarTaskModal" @close="showCalendarTaskModal = false">
+                <template #title>
+                    <h1>¿Deseas crear un recordatorio de embarque en tu calendario?</h1>
+                </template>
+                <template #content>
+                    <p class="my-4 text-center">Se creará un recordatorio de la fecha de embarque de cada parcialidad de tu orden de venta. <br>
+                        Asegúrate de que las fechas de embarque esperado sean correctas, ya que es la fecha en la que se creará el recordatorio.
+                    </p>
+                </template>
+                <template #footer>
+                    <CancelButton @click="handleUpdate(false)">No crear</CancelButton>
+                    <PrimaryButton @click="handleUpdate(true)">Crear recordatorio</PrimaryButton>
                 </template>
             </DialogModal>
         </AppLayout>
@@ -525,6 +542,7 @@ export default {
             media: null,
             partialities: this.sale.partialities,
             is_sale_production: this.sale.is_sale_production,
+            create_calendar_task: false //bandera para crear tarea en calendario de embarque de venta
         });
 
         return {
@@ -532,6 +550,7 @@ export default {
             loading: false,
             importantNotes: null,
             showImportantNotesModal: false,
+            showCalendarTaskModal: false,
             importantNotesToStore: null,
             isEditImportantNotes: false,
             showCreateProjectModal: false,
@@ -576,18 +595,18 @@ export default {
         };
     },
     components: {
-        AppLayout,
-        PrimaryButton,
         SecondaryButton,
+        PrimaryButton,
+        FileUploader,
+        ShippingCard,
+        CancelButton,
+        DialogModal,
         InputError,
         InputLabel,
-        DialogModal,
-        CancelButton,
+        AppLayout,
         Checkbox,
         Back,
         Link,
-        FileUploader,
-        ShippingCard,
     },
     props: {
         company_branches: Array,
@@ -603,6 +622,17 @@ export default {
         },
     },
     methods: {
+        handleUpdateSale() {
+            if (this.form.partialities.some(item => item.promise_date !== null)) {
+                this.showCalendarTaskModal = true;
+            } else {
+                this.update();
+            }
+        },
+        handleUpdate(create_calendar_task) {
+            this.form.create_calendar_task = create_calendar_task;
+            this.update();
+        },
         handleMediaSelected(files, mediaUpdated) {
             this.form.media = files;
             this.mediaEdited = mediaUpdated;
