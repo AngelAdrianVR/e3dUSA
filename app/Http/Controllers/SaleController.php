@@ -274,7 +274,7 @@ class SaleController extends Controller
                         'type' => 'Tarea',
                         'title' => 'Envío de parcialidad N°' . ($index + 1) . ' de OV-' . $sale->id,
                         'repeater' => 'No se repite',
-                        'description' => 'Revisar envío de parcialidad agendada automáticamente para la OV-' . $sale->id,
+                        'description' => 'Revisar envío de parcialidad agendada automáticamente para la OV-' . $sale->id . '. Se te recordará 3 días antes de la fecha agendada',
                         'status' => 'Pendiente',
                         'start_date' => $partiality['promise_date'],
                         'start_time' => '8:00 AM',
