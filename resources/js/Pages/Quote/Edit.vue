@@ -174,7 +174,7 @@
                             <label class="flex items-center text-gray-600 dark:text-gray-500">
                                 <input type="checkbox" v-model="form.freight_cost_charged_in_product"
                                     class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
-                                <span class="ml-2 text-sm">Cargo de flete en precio des producto</span>
+                                <span class="ml-2 text-sm">Cargo de flete en precio del producto</span>
                                 <el-tooltip placement="top">
                                     <template #content>
                                         <p>
@@ -433,7 +433,7 @@
                             <InputError :message="prospectForm.errors.contact_email" />
                         </div>
                         <div>
-                            <InputLabel value="Teléfono" class="ml-3 mb-1" />
+                            <InputLabel value="Teléfono*" class="ml-3 mb-1" />
                             <el-input v-model="prospectForm.contact_phone" :formatter="(value) => `${value}`.replace(/(\d{2})(\d{4})(\d{4})/, '$1 $2 $3')
                                 " :parser="(value) => value.replace(/\D/g, '')" maxlength="10" clearable
                                 placeholder="Escribe el número de teléfono del contacto" />

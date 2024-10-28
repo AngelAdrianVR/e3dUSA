@@ -175,7 +175,7 @@
                             <label class="flex items-center text-gray-600 dark:text-gray-500">
                                 <input type="checkbox" v-model="form.freight_cost_charged_in_product"
                                     class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
-                                <span class="ml-2 text-sm">Cargo de flete en precio des producto</span>
+                                <span class="ml-2 text-sm">Cargo de flete en precio del producto</span>
                                 <el-tooltip placement="top">
                                     <template #content>
                                         <p>
@@ -409,32 +409,32 @@
                 <template #content>
                     <form class="grid grid-cols-2 gap-3 mt-5">
                         <div>
-                            <InputLabel value="Nombre de la empresa*" class="ml-3 mb-1" />
+                            <InputLabel value="Nombre de la empresa*" />
                             <el-input v-model="prospectForm.name" placeholder="Escribe el nombre de la empresa"
                                 :maxlength="100" clearable />
                             <InputError :message="prospectForm.errors.name" />
                         </div>
                         <div>
-                            <InputLabel value="Nombre del contacto*" class="ml-3 mb-1" />
+                            <InputLabel value="Nombre del contacto*" />
                             <el-input v-model="prospectForm.contact_name" placeholder="Escribe el nombre del contacto"
                                 :maxlength="100" clearable />
                             <InputError :message="prospectForm.errors.contact_name" />
                         </div>
                         <div>
-                            <InputLabel value="Puesto*" class="ml-3 mb-1" />
+                            <InputLabel value="Puesto*" />
                             <el-input v-model="prospectForm.contact_charge" placeholder="Ej. Supervisor"
                                 :maxlength="100" clearable />
                             <InputError :message="prospectForm.errors.contact_charge" />
                         </div>
                         <div>
-                            <InputLabel value="Correo electrónico*" class="ml-3 mb-1" />
+                            <InputLabel value="Correo electrónico*" />
                             <el-input v-model="prospectForm.contact_email"
                                 placeholder="Escribe el correo electrónico del contacto" :maxlength="100" required
                                 clearable />
                             <InputError :message="prospectForm.errors.contact_email" />
                         </div>
                         <div>
-                            <InputLabel value="Teléfono" class="ml-3 mb-1" />
+                            <InputLabel value="Teléfono*" />
                             <el-input v-model="prospectForm.contact_phone" :formatter="(value) => `${value}`.replace(/(\d{2})(\d{4})(\d{4})/, '$1 $2 $3')
                                 " :parser="(value) => value.replace(/\D/g, '')" maxlength="10" clearable
                                 placeholder="Escribe el número de teléfono del contacto" />
