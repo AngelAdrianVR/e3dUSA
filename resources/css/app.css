@@ -106,9 +106,19 @@
     border-color: #9A9A9A;
 }
 
+.el-textarea__inner {
+    background-color: #cccccc;
+    border-color: #9A9A9A;
+}
+
+.el-textarea .el-input__count {
+    background: transparent !important;
+    color: #9A9A9A;
+}
+
 .dark .el-textarea .el-input__count {
     background: transparent;
-    color: 9A9A9A;
+    color: #9A9A9A;
 }
 
 .dark .el-input-group__append,

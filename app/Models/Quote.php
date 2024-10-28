@@ -16,6 +16,7 @@ class Quote extends Model implements HasMedia
 
     protected $fillable = [
         'receiver',
+        'freight_cost_charged_in_product',
         'department',
         'tooling_cost',
         'tooling_currency',
