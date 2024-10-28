@@ -13,9 +13,10 @@
                     <div class="flex items-center space-x-2">
                         <h2 class="font-semibold text-xl leading-tight">Órdenes de venta</h2>
                     </div>
-                    <Link v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')" :href="route('sales.create')">
-                        <SecondaryButton>+ Nuevo</SecondaryButton>
-                        <!-- <p class="text-sm text-primary w-48" v-if="!$page.props.auth.user.permissions.includes('Crear ordenes de venta sin cotizacion')">Para crear una ov es necesario convertirla desde una cotización</p> -->
+                    <Link v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')"
+                        :href="route('sales.create')">
+                    <SecondaryButton>+ Nuevo</SecondaryButton>
+                    <!-- <p class="text-sm text-primary w-48" v-if="!$page.props.auth.user.permissions.includes('Crear ordenes de venta sin cotizacion')">Para crear una ov es necesario convertirla desde una cotización</p> -->
                     </Link>
                 </div>
             </template>
@@ -302,15 +303,6 @@ export default {
 
             return this.search;
         },
-        handleSelectionChange(val) {
-            this.$refs.multipleTableRef.value = val;
-
-            if (!this.$refs.multipleTableRef.value.length) {
-                this.disableMassiveActions = true;
-            } else {
-                this.disableMassiveActions = false;
-            }
-        },
         async fetchMatches(search) {
             this.search = search;
             this.loading = true;
@@ -353,7 +345,6 @@ export default {
                         type: 'error'
                     });
                 }
-
             } catch (err) {
                 this.$notify({
                     title: 'Algo salió mal',
@@ -363,7 +354,9 @@ export default {
                 console.log(err);
             }
         },
-        async deleteSelections() {
+        handleSelectionChange(val) {
+            this.$refs.multipleTableRef.value = val;
+
             if (!this.$refs.multipleTableRef.value.length) {
                 this.disableMassiveActions = true;
             } else {
@@ -391,15 +384,14 @@ export default {
                         }
                     });
 
+                    console.log(deletedIndexes);
                     // Ordenar los índices de forma descendente para evitar problemas de desplazamiento al eliminar elementos
                     deletedIndexes.sort((a, b) => b - a);
 
-                    // Eliminar OV por índice
+                    // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
                         this.sales.data.splice(index, 1);
                     }
-
-                    // location.reload();
 
                 } else {
                     this.$notify({
