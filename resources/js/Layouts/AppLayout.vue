@@ -15,7 +15,6 @@ import Modal from "@/Components/Modal.vue";
 import DialogModal from "@/Components/DialogModal.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
-import IconInput from "@/Components/MyComponents/IconInput.vue";
 import axios from "axios";
 import { ElNotification } from "element-plus";
 import dayjs from 'dayjs';
@@ -552,10 +551,9 @@ onMounted(() => {
                           </button>
                         </Link>
                       </el-tooltip>
-                      <div v-if="$page.props.auth.user?.notifications?.some(notification => {
+                      <i v-if="$page.props.auth.user?.notifications?.some(notification => {
                         return notification.data.module === 'calendar';
-                      })" class="bg-primary w-[10px] h-[10px] border border-white rounded-full absolute -top-1 -right-0">
-                      </div>
+                      })" class="fa-solid fa-circle fa-flip text-primary text-sm absolute -top-2 -right-0"></i>
                     </div>
 
                     <!-- chat -->
