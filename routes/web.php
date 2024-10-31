@@ -11,6 +11,7 @@ use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\ClientMonitorController;
 use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CustomerMeetingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DesignAuthorizationController;
@@ -568,6 +569,10 @@ Route::get('sale-analitics-get-estatistics-data/{date}', [SaleAnaliticController
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
 
 Route::post('/upload-image', [FileUploadController::class, 'upload'])->name('upload-image');
+
+
+//contact routes ----------------------------------------------------------------
+Route::put('contacts-update/{contact}', [ContactController::class, 'update'])->name('contacts.update')->middleware('auth');
 
 
 //artisan commands -------------------
