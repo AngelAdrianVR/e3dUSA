@@ -14,7 +14,11 @@ class DesignAuthorizationController extends Controller
     
     public function index()
     {
-        // return inertia('DesignAuthorization/Index');
+        $design_authorizations = DesignAuthorization::with('companyBranch:id,name', 'seller:id,name')
+            ->get(['id', 'name', 'version', 'authorized_at', 'responded_at', 'design_accepted', 'rejected_razon', 'seller_id', 'company_branch_id']);
+
+        // return $design_authorizations;
+        return inertia('DesignAuthorization/Index', compact('design_authorizations'));
     }
 
     
@@ -159,6 +163,16 @@ class DesignAuthorizationController extends Controller
         $design_authorizations = DesignAuthorization::where('company_branch_id', $company_branch_id)->where('design_accepted', 1)->get(['id', 'name']);
 
         return response()->json(['items' =>  $design_authorizations]);
+    }
+
+    public function print($design_authorization)
+    {
+        $design_authorization = DesignAuthorizationResource::make(DesignAuthorization::with(
+        ['seller:id,name', 'companyBranch:id,name', 'companyBranch.contacts'])
+            ->find($design_authorization));
+
+        // return $design_authorization;
+        return inertia('DesignAuthorization/Print', compact('design_authorization'));
     }
 
 }

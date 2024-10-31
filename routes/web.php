@@ -470,6 +470,8 @@ Route::resource('design-authorizations', DesignAuthorizationController::class)->
 Route::put('design-authorizations-authorize/{design_authorization}', [DesignAuthorizationController::class, 'AuthorizeDesign'])->name('design-authorizations.authorize')->middleware('auth');
 Route::post('design-authorizations/update-with-media/{design_authorization}', [DesignAuthorizationController::class, 'updateWithMedia'])->name('design-authorizations.update-with-media');
 Route::get('design-authorizations/fetch-for-company-brach/{company_branch_id}', [DesignAuthorizationController::class, 'fetchForCompanyBranch'])->name('design-authorizations.fetch-for-company-branch');
+Route::get('design-authorizations-print/{design_authorization}', [DesignAuthorizationController::class, 'print'])->name('design-authorizations.print');
+
 
 // ------- production department routes  ---------
 Route::resource('productions', ProductionController::class)->middleware('auth');

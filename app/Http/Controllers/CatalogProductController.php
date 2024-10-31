@@ -257,7 +257,7 @@ class CatalogProductController extends Controller
         return response()->json(['item' => $catalog_product]);
     }
 
-    public function getCatalogProductData(CatalogProduct $catalog_product)
+    public function getCatalogProductData(Request $request, CatalogProduct $catalog_product)
     {
         $catalog_product = $catalog_product->load(['media']);
         $stock = $catalog_product->storages->count() ? $catalog_product->storages[0] : null;
