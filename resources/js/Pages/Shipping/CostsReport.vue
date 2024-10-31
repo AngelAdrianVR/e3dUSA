@@ -8,22 +8,30 @@
             <caption class="text-sm">
                 <p>Total gastos cobrados: ${{ getTotalMoneyCollected?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</p>
                 <p>Total gastos reales: ${{ getTotalMoneySpent?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</p>
+                <p>Balance total de envíos: <span>{{ ( getTotalMoneyCollected - getTotalMoneySpent) > 0 ? '+' : '' }}</span> ${{ ( getTotalMoneyCollected - getTotalMoneySpent).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</p>
             </caption>
             <thead>
                 <tr>
-                    <th class="w-[13%] text-start">folio de venta</th>
-                    <th class="w-[13%] text-start">Sucursal</th>
-                    <th class="w-[13%] text-start">Gastos de envío cobrado</th>
-                    <th class="w-[13%] text-start">Gastos de envío reales</th>
-                    <th class="w-[13%] text-start">Paquetería</th>
-                    <th class="w-[13%] text-start">Fecha promesa de embarque</th>
-                    <th class="w-[13%] text-start">Fecha real de embarque</th>
-                    <th class="w-[13%] text-start">status</th>
+                    <th class="w-[9%] text-start">folio de venta</th>
+                    <th class="w-[11%] text-start">Sucursal</th>
+                    <th class="w-[11%] text-start">Gastos de envío cobrado</th>
+                    <th class="w-[11%] text-start">Gastos de envío reales</th>
+                    <th class="w-[11%] text-start">Guía</th>
+                    <th class="w-[11%] text-start">Paquetería</th>
+                    <th class="w-[11%] text-start">Fecha promesa de embarque</th>
+                    <th class="w-[11%] text-start">Fecha real de embarque</th>
+                    <th class="w-[11%] text-start">status</th>
+                    <th class="w-[17%] text-start">balance total</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(item, index) in sales" :key="index">
-                    <td>OV-{{ item.id.toString().padStart(4, '0') }}</td>
+                    <td>
+                        OV-{{ item.id.toString().padStart(4, '0') }} 
+                        <i @click="collapseIndex[index] == true ? collapseIndex[index] = false : collapseIndex[index] = true" v-if="item.partialities?.length > 1" 
+                            class="fa-solid cursor-pointer ml-2 p-1" :class="collapseIndex[index] == true ? 'fa-angle-down' : 'fa-angle-up'">
+                        </i>
+                    </td>
                     <td>
                         <p class="pb-2">{{ item.company_branch?.name }}</p>
                     </td>
@@ -31,18 +39,27 @@
                         <p class="pb-2">${{ item.freight_cost?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '-' }} {{ item.freight_cost_charged_in_product ? '(Cargado a producto)' : '' }}</p>
                     </td>
                     <td>
-                        <div v-for="partiality in item.partialities" :key="partiality">
+                        <p v-if="collapseIndex[index] !== true" class="pb-2">${{ item.partialities?.length ? item.partialities[0].shipping_cost : '-' }}</p>
+                        <div v-else v-for="(partiality, index) in item.partialities" :key="index">
                             <p class="pb-2">${{ partiality.shipping_cost ?? '-' }}</p>
                         </div>
                     </td>
                     <td>
-                        <div v-for="partiality in item.partialities" :key="partiality">
+                        <p v-if="collapseIndex[index] !== true" class="pb-2">${{ item.partialities?.length ? item.partialities[0].tracking_guide : '-' }}</p>
+                        <div v-else v-for="(partiality, index) in item.partialities" :key="index">
+                            <p class="pb-2">{{ partiality.tracking_guide ?? '-' }}</p>
+                        </div>
+                    </td>
+                    <td>
+                        <p v-if="collapseIndex[index] !== true" class="pb-2">${{ item.partialities?.length ? item.partialities[0].shipping_company : '-' }}</p>
+                        <div v-else v-for="(partiality, index) in item.partialities" :key="index">
                             <p class="pb-2">{{ partiality.shipping_company ?? '-' }}</p>
                         </div>
                     </td>
                     <td>
-                        <div v-for="partiality in item.partialities" :key="partiality">
-                            <p class="pb-2">{{ formatDate(partiality.promise_date) ?? '-' }}</p>
+                        <p v-if="collapseIndex[index] !== true" class="pb-2">${{ item.partialities?.length ? item.partialities[0].promise_date : '-' }}</p>
+                        <div v-else v-for="(partiality, index) in item.partialities" :key="index">
+                            <p class="pb-2">{{ partiality.promise_date ?? '-' }}</p>
                         </div>
                     </td>
                     <td>
@@ -52,6 +69,9 @@
                     </td>
                     <td>
                         <p class="pb-2">{{ item.status }}</p>
+                    </td>
+                    <td>
+                        <p class="pb-2 flex"><span>{{ ( item.freight_cost - realShippingCost(item)) > 0 ? '+' : '' }}</span> ${{ ( item.freight_cost - realShippingCost(item))?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</p>
                     </td>
                 </tr>
             </tbody>
@@ -65,6 +85,11 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 export default {
+data() {
+    return {
+        collapseIndex: [],
+    }
+},
 components: {
     Head,
 },
@@ -77,7 +102,12 @@ methods:{
             const parsedDate = new Date(date);
             return format(parsedDate, 'dd MMMM yyyy', { locale: es }); // Formato personalizado
         }
-    },  
+    },
+    realShippingCost(sale) {
+    return sale.partialities?.reduce((total, partiality) => {
+        return total + (partiality.shipping_cost || 0);
+    }, 0);
+}
 },
 computed:{
     getTotalMoneyCollected() {

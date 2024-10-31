@@ -1,7 +1,7 @@
 <template>
   <div class="inline">
     <figure @click="triggerImageInput"
-      class="flex items-center justify-center rounded-md border border-dashed border-gray-400 w-full h-44 cursor-pointer relative">
+      class="flex items-center justify-center rounded-md border border-dashed border-gray-400 w-full cursor-pointer relative" :class="height">
       <i v-if="image && canDelete" @click.stop="clearImage"
         class="fa-solid fa-xmark absolute p-1 top-1 right-1 z-10 text-sm"></i>
         <svg v-if="!image" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#a9a9a9" class="w-6 h-6">
@@ -36,6 +36,10 @@ export default {
     imageUrl: {
       type: String,
       default: null,
+    },
+    height: {
+      type: String,
+      default: 'h-44',
     },
   },
   watch: {

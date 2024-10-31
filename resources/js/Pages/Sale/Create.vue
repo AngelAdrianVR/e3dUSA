@@ -821,6 +821,7 @@ export default {
             const product = { ...this.form.products[index] };
             this.product = product;
             this.editIndex = index;
+            this.fetchCatalogProductData();
         },
         resetProductForm() {
             this.product.catalog_product_company_id = null;
