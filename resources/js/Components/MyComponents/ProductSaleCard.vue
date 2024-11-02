@@ -1164,8 +1164,8 @@ export default {
         const { new_date, old_date, new_updated_by } = this.catalog_product_company_sale.catalog_product_company
         const lastDate = new_date || old_date
         return lastDate 
-            ? `hace ${formatDistanceToNow(new Date(lastDate), { locale: es })} por ${new_updated_by}`
-            : 'No disponible'
+          ? `hace ${formatDistanceToNow(new Date(lastDate), { locale: es })}${new_updated_by ? ` por ${new_updated_by}` : ''}`
+          : 'No disponible';
     }
   },
   mounted() {
