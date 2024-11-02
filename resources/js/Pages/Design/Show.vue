@@ -57,7 +57,7 @@
               </button>
             </el-tooltip>
 
-            <el-tooltip v-else-if="design.data.designer.id == $page.props.auth.user.id"
+            <el-tooltip v-else-if="design.data.designer.id !== $page.props.auth.user.id"
               content="Marcar como orden terminada y subir resultados" placement="top">
               <button @click="finishOrderModal = true" class="rounded-lg bg-green-600 text-sm text-white p-2">
                 Subir resultados
@@ -111,7 +111,31 @@
           </form>
           <!-- ---------------------------------------FinishOrderModal------------------------------------------- -->
           <form v-if="finishOrderModal" @submit.prevent="finishOrder">
-            <div>
+            <div v-if="design.data.needs_authorization">
+              <InputLabel>
+                <div class="flex items-center space-x-2">
+                  <span>Imagen para formato de autorización*</span>
+                  <el-tooltip placement="top">
+                    <template #content>
+                      <p>
+                        Esta imagen se mostrará al cliente en el formato <br>
+                        de autorización. Si esta imagen es parte de los <br>
+                        resultados finales, súbela solo aquí y no en <br>
+                        "Archivos de resultado".
+                      </p>
+                    </template>
+                    <div class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
+                      <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                    </div>
+                  </el-tooltip>
+                </div>
+              </InputLabel>
+              <FileUploader @files-selected="form.af_image = $event" acceptedFormat="imagen" :multiple="false" />
+              <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
+                PNG, JPG, JPEG (MAX. 4 MB).
+              </p>
+            </div>
+            <div class="mt-3">
               <InputLabel>
                 <div class="flex items-center space-x-2">
                   <span>Archivos de resultado</span>
@@ -144,7 +168,7 @@
           </div>
           <div v-else class="flex justify-end space-x-1">
             <CancelButton @click="finishOrderModal = false; form.reset()" :disabled="loading">Cancelar</CancelButton>
-            <PrimaryButton @click="finishOrder" :disabled="loading">Subir</PrimaryButton>
+            <PrimaryButton @click="finishOrder" :disabled="loading || (design.data.needs_authorization && !form.af_image.length)">Subir</PrimaryButton>
           </div>
         </template>
       </DialogModal>
@@ -198,6 +222,7 @@ export default {
     const form = useForm({
       expected_end_at: null,
       media: null,
+      af_image: [], //af= authorization format. Imagen que se muestra en el formato de aut.
     });
 
     const modificationsForm = useForm({
@@ -301,6 +326,7 @@ export default {
         const response = await axios.post(route('designs.finish-order'), {
           expected_end_at: this.form.expected_end_at,
           media: this.form.media,
+          af_image: this.form.af_image,
           design_id: this.selectedDesign,
         }, {
           headers: {
@@ -309,7 +335,8 @@ export default {
         });
 
         if (response.status === 200) {
-          this.design.data.media = response.data.item;
+          this.design.data.media = response.data.results;
+          this.design.data.afImage = response.data.af_image;
           this.$notify({
             title: "Éxito",
             message: "Órden terminada",

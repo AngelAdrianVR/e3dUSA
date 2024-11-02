@@ -11,7 +11,8 @@
       </template>
 
       <form @submit.prevent="update">
-        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg px-9 py-5 shadow-md space-y-3">
+        <div
+          class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg px-9 py-5 shadow-md space-y-3">
           <div class="flex justify-end mb-5">
             <el-radio-group v-model="is_customer" @change="handleChangeModelId()" size="small">
               <el-radio :value="1">Para cliente</el-radio>
@@ -98,10 +99,32 @@
               <el-input v-model="form.pantones" placeholder="Ej. 2427 C" />
               <InputError :message="form.errors.pantones" />
             </div>
-            <label class="flex items-center">
-              <Checkbox v-model:checked="form.has_priority" name="priority" class="bg-transparent" />
-              <span class="ml-2 text-sm">Prioridad alta</span>
-            </label>
+            <div class="flex items-center col-span-full">
+              <label class="flex items-center col-span-full">
+                <Checkbox v-model:checked="form.has_priority" name="priority" class="bg-transparent" />
+                <span class="ml-2 text-sm">Prioridad alta</span>
+              </label>
+            </div>
+            <div class="flex items-center col-span-full">
+              <label>
+                <Checkbox v-model:checked="form.needs_authorization" name="priority" class="bg-transparent" />
+                <span class="ml-2 text-sm">Requiere formato de autorización para cliente</span>
+              </label>
+              <el-tooltip placement="top">
+                <template #content>
+                  <p>
+                    Activar esta opción obligará al diseñador/a a<br>
+                    subir una imagen del diseño final cuando se complete<br>
+                    la orden. Esta imagen se incluirá en el formato<br>
+                    de autorización para que el cliente pueda revisarla<br>
+                    y aprobarla.
+                  </p>
+                </template>
+                <div class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
+                  <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                </div>
+              </el-tooltip>
+            </div>
             <div class="col-span-full">
               <InputLabel value="Requerimientos / Especificaiones*" />
               <el-input v-model="form.specifications" :rows="3" maxlength="800" placeholder="..." show-word-limit
@@ -284,6 +307,7 @@ export default {
       measure_unit: this.design.measure_unit,
       pantones: this.design.pantones,
       has_priority: !!this.design.has_priority,
+      needs_authorization: !!this.design.needs_authorization,
       specifications: this.design.specifications,
       media_plano: null,
       media_logo: null,
@@ -358,7 +382,7 @@ export default {
         // borrar los archivos para evitar error al enviar formulario por PUT
         this.form.media_logo = null;
         this.form.media_plano = null;
-        
+
         this.form.put(route("designs.update", this.design), {
           onSuccess: () => {
             this.$notify({

@@ -6,7 +6,6 @@ use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\DesignResource;
-use App\Models\Company;
 use App\Models\CompanyBranch;
 use App\Models\Design;
 use App\Models\DesignType;
@@ -271,7 +270,6 @@ class DesignController extends Controller
         return to_route('designs.show', $design->id);
     }
 
-
     public function destroy(Design $design)
     {
         //
@@ -306,6 +304,18 @@ class DesignController extends Controller
     public function finishOrder(Request $request)
     {
         $design = Design::find($request->design_id);
+
+        // Guardar el archivo en la colección 'afImage'
+        if ($request->hasFile('af_image')) {
+            $design->clearMediaCollection('afImage');
+            $design->addMediaFromRequest('af_image')
+                ->preservingOriginal() // Preserva el archivo original
+                ->toMediaCollection('afImage');
+
+            // Eliminar 'af_image' de la solicitud para que no se añada a 'results'
+            unset($request->af_image);
+        }
+
         $design->addAllMediaFromRequest()->each(fn($file) => $file->toMediaCollection('results'));
         $design->update([
             'finished_at' => now()
@@ -315,8 +325,9 @@ class DesignController extends Controller
         $design->user->notify(new DesignCompletedNotification(auth()->user()->name, $design->name, 'design'));
 
         $media = $design->getMedia('results')->all();
+        $af_image = $design->getMedia('afImage')->all();
 
-        return response()->json(['item' => $media]);
+        return response()->json(['results' => $media, 'af_image' => $af_image]);
     }
 
     public function authorizeOrder(Design $design)

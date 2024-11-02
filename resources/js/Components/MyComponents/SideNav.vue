@@ -381,7 +381,7 @@ export default {
                     active: route().current('designs.*') || route().current('design-authorizations.*'),
                     options: [
                         {
-                            label: 'Depto. diseño',
+                            label: 'Órdenes de diseño',
                             route: 'designs.index',
                             show: true,
                             notifications: this.$page.props.auth.user?.notifications?.some(notification => {
@@ -389,7 +389,7 @@ export default {
                             }),
                         },
                         {
-                            label: 'Formatos de autorizacion de diseño',
+                            label: 'Formatos de autorización de diseño',
                             route: 'design-authorizations.index',
                             show: true,
                             notifications: false
