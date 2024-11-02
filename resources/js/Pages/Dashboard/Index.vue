@@ -133,7 +133,7 @@
                             </ul>
                             <p class="text-primary text-center mt-8">¡Es necesario dar seguimiento!</p>
                         </div>
-                        <p v-else class="text-xs text-black text-center my-6">
+                        <p v-else class="text-xs text-center my-6">
                             Nos complace informarte que todas las órdenes que has realizado están actualmente en proceso de
                             producción.
                             Para que puedas dar seguimiento detallado a tus órdenes, te invitamos a acceder a la sección

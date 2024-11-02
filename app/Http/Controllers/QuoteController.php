@@ -277,14 +277,17 @@ class QuoteController extends Controller
         $folio = 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT);
         $branch = $this->getOrCreateBranch($quote);
         $company = $branch->company;
+        $can_authorize = auth()->user()->can('Autorizar ordenes de venta');
 
         // Crear la orden de venta
         $sale = Sale::create([
             'shipping_option' => "Entrega única",
             'freight_cost' => is_numeric($quote->freight_cost) ? $quote->freight_cost : 0,
+            'freight_cost_charged_in_product' => $quote->freight_cost_charged_in_product,
             'order_via' => "Cotización folio $folio",
-            'authorized_user_name' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? auth()->user()->name : null,
-            'authorized_at' => auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin') ? now() : null,
+            'authorized_user_name' => $can_authorize ? auth()->user()->name : null,
+            'authorized_at' => $can_authorize ? now() : null,
+            'status' => $can_authorize ? 'Autorizado. Sin orden de producción' : 'Esperando autorización',
             'user_id' => auth()->id(),
             'notes' => $quote->notes,
             'company_branch_id' => $branch->id,

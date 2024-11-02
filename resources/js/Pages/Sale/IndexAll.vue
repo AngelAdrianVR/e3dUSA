@@ -248,15 +248,6 @@ export default {
 
             return this.search;
         },
-        handleSelectionChange(val) {
-            this.$refs.multipleTableRef.value = val;
-
-            if (!this.$refs.multipleTableRef.value.length) {
-                this.disableMassiveActions = true;
-            } else {
-                this.disableMassiveActions = false;
-            }
-        },
         handleCommand(command) {
             const commandName = command.split('-')[0];
             const rowId = command.split('-')[1];
@@ -325,7 +316,9 @@ export default {
                 console.log(err);
             }
         },
-        async deleteSelections() {
+        handleSelectionChange(val) {
+            this.$refs.multipleTableRef.value = val;
+
             if (!this.$refs.multipleTableRef.value.length) {
                 this.disableMassiveActions = true;
             } else {
@@ -355,12 +348,11 @@ export default {
 
                     // Ordenar los índices de forma descendente para evitar problemas de desplazamiento al eliminar elementos
                     deletedIndexes.sort((a, b) => b - a);
-
-                    // Eliminar OV por índice
+                    
+                    // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
                         this.sales.data.splice(index, 1);
                     }
-
                 } else {
                     this.$notify({
                         title: 'Algo salió mal',
@@ -379,7 +371,6 @@ export default {
             }
         },
         async fetchMatches(search) {
-            console.log('searching...')
             this.search = search;
             this.loading = true;
             try {

@@ -6,6 +6,7 @@ use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\SaleResource;
+use App\Models\Calendar;
 use App\Models\CatalogProductCompanySale;
 use App\Models\CompanyBranch;
 use App\Models\Oportunity;
@@ -13,6 +14,8 @@ use App\Models\Sale;
 use App\Models\Sample;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
+use App\Notifications\ReminderPartialitiesNotification;
+use App\Notifications\SchedulePartialitiesReminder;
 use Illuminate\Http\Request;
 
 class SaleController extends Controller
@@ -262,6 +265,27 @@ class SaleController extends Controller
         $sold_products->delete();
 
         event(new RecordEdited($sale));
+
+        // cambiar || por && si se requiere crear el recordatorio solo para parcialidades mayores a 1
+        if (collect($request->partialities)->count() > 1 || $request->create_calendar_task) {
+            foreach ($request->partialities as $index => $partiality) {
+                // if ($index > 0) { // Omite el primer elemento
+                    $reminder = Calendar::create([
+                        'type' => 'Tarea',
+                        'title' => 'Envío de parcialidad N°' . ($index + 1) . ' de OV-' . $sale->id,
+                        'repeater' => 'No se repite',
+                        'description' => 'Revisar envío de parcialidad agendada automáticamente para la OV-' . $sale->id . '. Se te recordará 3 días antes de la fecha agendada',
+                        'status' => 'Pendiente',
+                        'start_date' => $partiality['promise_date'],
+                        'start_time' => '8:00 AM',
+                        'user_id' => auth()->id(),
+                    ]);
+
+                   $seller = User::find($sale->user_id);
+                   $seller->notify(new SchedulePartialitiesReminder($reminder));
+                // }
+            }
+        }        
 
         // return to_route('sales.index');
         return to_route('sales.show', $sale->id );

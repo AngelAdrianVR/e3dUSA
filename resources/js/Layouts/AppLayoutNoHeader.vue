@@ -551,10 +551,9 @@ onMounted(() => {
                           </button>
                         </Link>
                       </el-tooltip>
-                      <div v-if="$page.props.auth.user?.notifications?.some(notification => {
+                      <i v-if="$page.props.auth.user?.notifications?.some(notification => {
                         return notification.data.module === 'calendar';
-                      })" class="bg-primary w-[10px] h-[10px] border border-white rounded-full absolute -top-1 -right-0">
-                      </div>
+                      })" class="fa-solid fa-circle fa-flip text-primary text-sm absolute -top-2 -right-0"></i>
                     </div>
 
                     <!-- chat -->
@@ -661,19 +660,36 @@ onMounted(() => {
                   </div> -->
 
                   <div class="relative">
-                      <el-tooltip v-if="$page.props.auth.user.permissions.includes('Chatear')" content="Chat"
-                        placement="bottom">
-                        <a :href="route('chatify')" target="_blank" class="mr-12 flex justify-center items-center rounded-full border border-[#7a7a7a] size-9">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-[#7a7a7a]">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
-                          </svg>
-                        </a>
-                      </el-tooltip>
-                      <div v-if="unseenMessages > 0"
-                        class="absolute bottom-4 right-5 bg-primary text-white w-4 h-4 flex items-center justify-center text-[10px] rounded-full">
-                        {{ unseenMessages }}
-                      </div>
+                    <el-tooltip v-if="$page.props.auth.user.permissions.includes('Chatear')" content="Chat"
+                      placement="bottom">
+                      <a :href="route('chatify')" target="_blank" class="mr-12 flex justify-center items-center rounded-full border border-[#7a7a7a] size-9">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-[#7a7a7a]">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+                        </svg>
+                      </a>
+                    </el-tooltip>
+                    <div v-if="unseenMessages > 0"
+                      class="absolute bottom-4 right-5 bg-primary text-white w-4 h-4 flex items-center justify-center text-[10px] rounded-full">
+                      {{ unseenMessages }}
                     </div>
+                  </div>
+
+                  <!-- darkmode toggle -->
+                  <div class="mr-7">
+                    <el-switch @change="darkModeSwitch = !darkModeSwitch; toggleDarkMode()" v-model="darkModeSwitch" style="--el-switch-on-color: #1e3a8a;">
+                      <template #inactive-action>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-gray-700">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                        </svg>
+                      </template>
+                      <template #active-action>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-gray-700">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+                        </svg>
+                      </template>
+                    </el-switch>
+                  </div>
+                  
                   <button
                     class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
                     @click="
@@ -689,7 +705,7 @@ onMounted(() => {
                         'inline-flex': showingNavigationDropdown,
                       }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                  </button>
+                  </button>                  
                 </div>
               </div>
             </div>

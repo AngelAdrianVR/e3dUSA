@@ -37,7 +37,7 @@
                      :imageUrl="design_authorization.media[0]?.original_url"
                      @imagen="saveImage($event); form.imageCleared = false" 
                      @cleared="form.image = null; form.imageCleared = true"
-                     class=""
+                     :height="'h-96'"
                       />
                 
                     <!-- información del diseño -->

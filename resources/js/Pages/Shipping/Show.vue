@@ -7,7 +7,7 @@
                 <!-- <ShippingTimeLine /> -->
 
                 <Link :href="route('shippings.index')"
-                    class="cursor-pointer size-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+                    class="cursor-pointer size-7 rounded-full hover:bg-[#D9D9D9] dark:hover:bg-[#191919] hover:!text-primary dark:text-white flex items-center justify-center">
                     <i class="fa-solid fa-xmark"></i>
                 </Link>
             </div>

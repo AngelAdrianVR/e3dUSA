@@ -51,6 +51,13 @@
                 </p>
             </div> -->
             <div class="mt-2 text-base">
+                <p class="text-primary">Última actualización de precio:
+                    <span class="text-black ml-3">
+                        {{ product.sale }}
+                    </span>
+                </p>
+            </div>
+            <div class="mt-2 text-base">
                 <p class="text-primary">Paquetería:
                     <span class="text-black ml-3">
                         {{ product.sale?.shipping_company }}
