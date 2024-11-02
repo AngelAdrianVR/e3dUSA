@@ -267,7 +267,7 @@ class SaleController extends Controller
         event(new RecordEdited($sale));
 
         // cambiar || por && si se requiere crear el recordatorio solo para parcialidades mayores a 1
-        if (collect($request->partialities)->count() > 1 || $request->create_calendar_task) {
+        if (collect($request->partialities)->count() > 1 && $request->create_calendar_task) {
             foreach ($request->partialities as $index => $partiality) {
                 // if ($index > 0) { // Omite el primer elemento
                     $reminder = Calendar::create([

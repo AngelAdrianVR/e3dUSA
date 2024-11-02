@@ -26,6 +26,9 @@
                 <p v-if="product.confusion_alert" class="text-primary font-bold">¡Riesgo de confusión! Revisar con vendedor antes de producir o empacar</p>
             </div>
             <div class="mt-2 text-xs flex justify-between">
+                <p class="text-secondary">Última actualización de precio: <span class="text-black ml-3">{{ formattedLastUpdate(product.catalog_product_company) }}</span></p>
+            </div>
+            <div class="mt-2 text-xs flex justify-between">
                 <p class="text-primary">OCE: <span class="text-black ml-3">{{ product.sale.oce ?? 'No especificado' }}</span></p>
                 <p class="text-primary">Cliente: <span class="text-black ml-3">{{ product.sale.company_branch.name }}</span></p>
             </div>
@@ -81,6 +84,9 @@
     </div>
 </template>
 <script>
+import { formatDistanceToNow } from 'date-fns'
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { Head } from '@inertiajs/vue3';
 
 export default {
@@ -90,6 +96,15 @@ export default {
     props: {
         ordered_products: Array,
         folio: Array,
+    },
+    methods:{
+        formattedLastUpdate(productData) {
+            const { new_date, old_date, new_updated_by } = productData;
+            const lastDate = new_date || old_date
+            return lastDate 
+                ? `hace ${formatDistanceToNow(new Date(lastDate), { locale: es })}${new_updated_by ? ` por ${new_updated_by}` : ''}`
+                : 'No disponible';
+        }
     }
 }
 </script>
