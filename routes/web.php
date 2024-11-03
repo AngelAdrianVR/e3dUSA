@@ -459,6 +459,7 @@ Route::post('designs/finish-order', [DesignController::class, 'finishOrder'])->n
 Route::put('designs/authorize/{design}', [DesignController::class, 'authorizeOrder'])->name('designs.authorize');
 Route::post('designs/update-with-media/{design}', [DesignController::class, 'updateWithMedia'])->name('designs.update-with-media');
 Route::get('designs-fetch-filtered/{filter}', [DesignController::class, 'fetchFiltered'])->name('designs.fetch-filtered');
+Route::get('designs-get-by-id/{id}', [DesignController::class, 'getById'])->name('designs.get-by-id');
 
 // ------- Design modifications routes  ---------
 Route::resource('design-modifications', DesignModificationController::class)->middleware('auth');

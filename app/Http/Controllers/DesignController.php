@@ -353,4 +353,11 @@ class DesignController extends Controller
 
         return response()->json($designs);
     }
+
+    public function getById($id)
+    {
+        $design = Design::with('media')->findOrFail($id);
+
+        return response()->json(['item' => $design]);
+    }
 }

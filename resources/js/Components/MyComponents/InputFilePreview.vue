@@ -46,7 +46,10 @@ export default {
     imageUrl: {
       immediate: true,
       handler(newImageUrl) {
-        this.image = newImageUrl;
+        if (newImageUrl) {
+          this.image = newImageUrl;
+          this.convertUrlToFile(newImageUrl);
+        }
       },
     },
   },
@@ -65,14 +68,25 @@ export default {
         // Emitir evento al componente padre con la imagen
         this.$emit("imagen", file);
       }
-
     },
     clearImage() {
       this.image = null;
       this.formData.file = null;
       this.$emit("cleared");
     },
+    async convertUrlToFile(url) {
+      try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const file = new File([blob], "defaultImage.jpg", { type: blob.type });
+        
+        // Guardar el archivo en formData y emitirlo
+        this.formData.file = file;
+        this.$emit("imagen", file);
+      } catch (error) {
+        console.error("Error al convertir URL a archivo:", error);
+      }
+    },
   },
 };
 </script>
-

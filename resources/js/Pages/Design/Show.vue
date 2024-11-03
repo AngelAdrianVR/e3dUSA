@@ -57,7 +57,7 @@
               </button>
             </el-tooltip>
 
-            <el-tooltip v-else-if="design.data.designer.id !== $page.props.auth.user.id"
+            <el-tooltip v-else-if="design.data.designer.id == $page.props.auth.user.id"
               content="Marcar como orden terminada y subir resultados" placement="top">
               <button @click="finishOrderModal = true" class="rounded-lg bg-green-600 text-sm text-white p-2">
                 Subir resultados

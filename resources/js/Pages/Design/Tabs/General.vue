@@ -39,7 +39,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3 text-left p-4 md:ml-10 items-center">
+        <div class="grid grid-cols-2 gap-3 text-left p-4 md:ml-10 items-center self-start">
             <span class="text-gray-500">Cliente</span>
             <span>{{ design.company_branch_name }}</span>
             <span class="text-gray-500">Contacto</span>
