@@ -153,6 +153,27 @@ class SaleController extends Controller
         }
 
         event(new RecordCreated($sale));
+
+        // cambiar || por && si se requiere crear el recordatorio solo para parcialidades mayores a 1
+        if (collect($request->partialities)->count() > 1 && $request->create_calendar_task) {
+            foreach ($request->partialities as $index => $partiality) {
+                // if ($index > 0) { // Omite el primer elemento
+                    $reminder = Calendar::create([
+                        'type' => 'Tarea',
+                        'title' => 'Envío de parcialidad N°' . ($index + 1) . ' de OV-' . $sale->id,
+                        'repeater' => 'No se repite',
+                        'description' => 'Revisar envío de parcialidad agendada automáticamente para la OV-' . $sale->id . '. Se te recordará 3 días antes de la fecha agendada',
+                        'status' => 'Pendiente',
+                        'start_date' => $partiality['promise_date'],
+                        'start_time' => '8:00 AM',
+                        'user_id' => auth()->id(),
+                    ]);
+
+                   $seller = User::find($sale->user_id);
+                   $seller->notify(new SchedulePartialitiesReminder($reminder));
+                // }
+            }
+        }
     }
 
     public function show($sale_id)
@@ -267,7 +288,7 @@ class SaleController extends Controller
         event(new RecordEdited($sale));
 
         // cambiar || por && si se requiere crear el recordatorio solo para parcialidades mayores a 1
-        if (collect($request->partialities)->count() > 1 || $request->create_calendar_task) {
+        if (collect($request->partialities)->count() > 1 && $request->create_calendar_task) {
             foreach ($request->partialities as $index => $partiality) {
                 // if ($index > 0) { // Omite el primer elemento
                     $reminder = Calendar::create([
@@ -338,6 +359,27 @@ class SaleController extends Controller
         $sold_products->delete();
 
         event(new RecordEdited($sale));
+
+        // cambiar || por && si se requiere crear el recordatorio solo para parcialidades mayores a 1
+        if (collect($request->partialities)->count() > 1 && $request->create_calendar_task) {
+            foreach ($request->partialities as $index => $partiality) {
+                // if ($index > 0) { // Omite el primer elemento
+                    $reminder = Calendar::create([
+                        'type' => 'Tarea',
+                        'title' => 'Envío de parcialidad N°' . ($index + 1) . ' de OV-' . $sale->id,
+                        'repeater' => 'No se repite',
+                        'description' => 'Revisar envío de parcialidad agendada automáticamente para la OV-' . $sale->id . '. Se te recordará 3 días antes de la fecha agendada',
+                        'status' => 'Pendiente',
+                        'start_date' => $partiality['promise_date'],
+                        'start_time' => '8:00 AM',
+                        'user_id' => auth()->id(),
+                    ]);
+
+                   $seller = User::find($sale->user_id);
+                   $seller->notify(new SchedulePartialitiesReminder($reminder));
+                // }
+            }
+        }
 
         // return to_route('sales.index');
         return to_route('sales.show', $sale->id );

@@ -63,68 +63,72 @@ use App\Models\CompanyBranch;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 // *** borrar despues de ejecutado
-Route::get('update-sale-registers-{page}', function () {
-    $page = request('page');
-    if ($page == 1) {
-        $sales = App\Models\Sale::take(500)->get();
-    } else {
-        $sales = App\Models\Sale::skip(500)->take(2000)->get();
-    }
+// Route::get('update-sale-registers-{page}', function () {
+//     $page = request('page');
+//     if ($page == 1) {
+//         $sales = App\Models\Sale::take(500)->get();
+//     } else {
+//         $sales = App\Models\Sale::skip(500)->take(2000)->get();
+//     }
 
-    $sales->each(function ($sale) {
-        // Solo si no tiene parcialidades y tiene ventas asociadas a productos
-        if (!$sale->partialities && $sale->catalogProductCompanySales) {
-            // Inicializar las parcialidades con los datos correspondientes
-            $partialities = [
-                [
-                    'promise_date' => $sale->promise_date?->toDateString(),
-                    'shipping_cost' => $sale->freight_cost,
-                    'shipping_company' => $sale->shipping_company,
-                    'tracking_guide' => $sale->tracking_guide,
-                    'sent_at' => null,
-                    'sent_by' => null,
-                    'number_of_packages' => null,
-                    'status' => $sale->getStatus()['label'] == 'Producción terminada' ? 'Enviado' : 'Pendiente de envío',
-                    'productsSelected' => [] // Inicialmente vacío
-                ]
-            ];
+//     $sales->each(function ($sale) {
+//         // Solo si no tiene parcialidades y tiene ventas asociadas a productos
+//         if (!$sale->partialities && $sale->catalogProductCompanySales) {
+//             // Inicializar las parcialidades con los datos correspondientes
+//             $partialities = [
+//                 [
+//                     'promise_date' => $sale->promise_date?->toDateString(),
+//                     'shipping_cost' => $sale->freight_cost,
+//                     'shipping_company' => $sale->shipping_company,
+//                     'tracking_guide' => $sale->tracking_guide,
+//                     'sent_at' => null,
+//                     'sent_by' => null,
+//                     'number_of_packages' => null,
+//                     'status' => $sale->getStatus()['label'] == 'Producción terminada' ? 'Enviado' : 'Pendiente de envío',
+//                     'productsSelected' => [] // Inicialmente vacío
+//                 ]
+//             ];
 
-            // Inicializar el array de productos seleccionados
-            $current_products_selected = [];
+//             // Inicializar el array de productos seleccionados
+//             $current_products_selected = [];
 
-            // Iterar sobre los productos asociados a la venta
-            $sale->catalogProductCompanySales->each(function ($product) use (&$current_products_selected) {
-                // Agregar el producto al array
-                $prd = [
-                    'id' => $product->catalogProductCompany?->catalogProduct->id,
-                    'name' => $product->catalogProductCompany?->catalogProduct->name,
-                    'selected' => true,
-                    'quantity' => $product->quantity,
-                ];
+//             // Iterar sobre los productos asociados a la venta
+//             $sale->catalogProductCompanySales->each(function ($product) use (&$current_products_selected) {
+//                 // Agregar el producto al array
+//                 $prd = [
+//                     'id' => $product->catalogProductCompany?->catalogProduct->id,
+//                     'name' => $product->catalogProductCompany?->catalogProduct->name,
+//                     'selected' => true,
+//                     'quantity' => $product->quantity,
+//                 ];
 
-                $current_products_selected[] = $prd; // Se agrega el producto al array de productos seleccionados
-            });
+//                 $current_products_selected[] = $prd; // Se agrega el producto al array de productos seleccionados
+//             });
 
-            // Asignar el array de productos seleccionados a la parcialidad
-            $partialities[0]['productsSelected'] = $current_products_selected;
+//             // Asignar el array de productos seleccionados a la parcialidad
+//             $partialities[0]['productsSelected'] = $current_products_selected;
 
-            // Actualizar el estado y la opción de envío
-            $sale->status = $sale->getStatus()['label'];
-            $sale->partialities = $partialities;
-            $sale->shipping_option = 'Entrega única';
+//             // Actualizar el estado y la opción de envío
+//             $sale->status = $sale->getStatus()['label'];
+//             $sale->partialities = $partialities;
+//             $sale->shipping_option = 'Entrega única';
 
-            // Guardar los cambios en la base de datos
-            $sale->save();
-        }
-    });
+//             // Guardar los cambios en la base de datos
+//             $sale->save();
+//         }
+//     });
 
-    return 'Registros de BDD actualizados!';
-});
+//     return 'Registros de BDD actualizados!';
+// });
 
+Route::get('/inicio', function () {
+    return Inertia::render('Auth/Inicio');
+})->name('inicio');
 
-Route::redirect('/', 'login');
+Route::redirect('/', 'inicio');
 
 Route::middleware([
     'auth:sanctum',

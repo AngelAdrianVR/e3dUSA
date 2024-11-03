@@ -51,9 +51,9 @@
                 </p>
             </div> -->
             <div class="mt-2 text-base">
-                <p class="text-primary">Última actualización de precio:
+                <p class="text-secondary">Última actualización de precio:
                     <span class="text-black ml-3">
-                        {{ product.sale }}
+                        {{ formattedLastUpdate(product.catalog_product_company) }}
                     </span>
                 </p>
             </div>
@@ -90,6 +90,9 @@
 </template>
 
 <script>
+import { formatDistanceToNow } from 'date-fns'
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { Head } from '@inertiajs/vue3';
 
 export default {
@@ -105,7 +108,13 @@ props:{
  sale: Object
 },
 methods:{
-
+    formattedLastUpdate(productData) {
+        const { new_date, old_date, new_updated_by } = productData;
+        const lastDate = new_date || old_date
+        return lastDate 
+            ? `hace ${formatDistanceToNow(new Date(lastDate), { locale: es })}${new_updated_by ? ` por ${new_updated_by}` : ''}`
+            : 'No disponible';
+    }
 },
 }
 </script>

@@ -4,12 +4,12 @@ namespace App\Console\Commands;
 
 use App\Models\Calendar;
 use App\Models\User;
-use App\Notifications\ReminderPartialitiesNotification;
+use App\Notifications\ReminderUpdateProductPriceNotification;
 use Illuminate\Console\Command;
 
-class NotifyClosePartialitiesReminders extends Command
+class NotifyCloseUpdateProductPriceReminders extends Command
 {
-    protected $signature = 'app:notify-close-partialities-reminders';
+    protected $signature = 'app:notify-close-update-product-price-reminders';
     protected $description = 'Notify calendar reminders that are 3 days away from the scheduled date';
 
     public function handle()
@@ -22,7 +22,7 @@ class NotifyClosePartialitiesReminders extends Command
         $dateThreeDaysAhead = now()->addDays(3)->toDateString();
 
         $reminders = Calendar::whereBetween('start_date', [$today, $dateThreeDaysAhead])
-            ->where('title', 'like', 'Envío de parcialidad%')
+            ->where('title', 'like', 'Cambiar precio%')
             ->where('status', 'Pendiente')
             ->get();
 
@@ -31,10 +31,10 @@ class NotifyClosePartialitiesReminders extends Command
 
             if ($user) {
                 // Notifica al usuario del recordatorio
-                $user->notify(new ReminderPartialitiesNotification($reminder));
+                $user->notify(new ReminderUpdateProductPriceNotification($reminder));
             }
         }
 
-        $this->info('Notificaciones enviadas para recordatorios que están a 3 días de la fecha agendada.');
+        $this->info('Notificaciones de cambio de precio enviadas para recordatorios que están a 3 días de la fecha agendada.');
     }
 }

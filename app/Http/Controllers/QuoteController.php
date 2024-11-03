@@ -6,6 +6,7 @@ use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\QuoteResource;
+use App\Models\Calendar;
 use App\Models\CatalogProduct;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Company;
@@ -19,6 +20,7 @@ use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
 use App\Notifications\NewQuoteNotification;
 use App\Notifications\RequestApprovedNotification;
+use App\Notifications\ScheduleUpdateProductPriceReminder;
 use Illuminate\Http\Request;
 
 class QuoteController extends Controller
@@ -567,5 +569,41 @@ class QuoteController extends Controller
 
         // Devuelve las cotizaciones encontradas
         return response()->json(['items' => $quotes], 200);
+    }
+
+    public function fetchCatalogProductsCompanyBranch($company_branch_id)
+    {
+        $company = Company::whereHas('companyBranches', function ($query) use ($company_branch_id) {
+            $query->where('id', $company_branch_id);
+        })
+        ->with('catalogProducts')
+        ->first(['id', 'business_name']);
+
+        $catalog_products_company = $company ? $company->catalogProducts : [];
+    
+        return response()->json(['items' => $catalog_products_company]);
+    }
+
+    public function scheduleUpdateProductPrice(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:100',
+            'start_date' => 'required|date|after:yesterday',
+            'description' => 'nullable|string|max:255',
+        ]);
+
+        $reminder = Calendar::create([
+            'type' => 'Tarea',
+            'title' => $request->title,
+            'repeater' => 'No se repite',
+            'description' => $request->description,
+            'status' => 'Pendiente',
+            'start_date' => $request->start_date,
+            'start_time' => '8:00 AM',
+            'user_id' => auth()->id(),
+        ]);
+
+        $user = auth()->user();
+        $user->notify(new ScheduleUpdateProductPriceReminder($reminder));
     }
 }

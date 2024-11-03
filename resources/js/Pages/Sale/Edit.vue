@@ -623,7 +623,7 @@ export default {
     },
     methods: {
         handleUpdateSale() {
-            if (this.form.partialities.some(item => item.promise_date !== null)) {
+            if (this.form.partialities.some(item => item.promise_date !== null) && this.form.partialities.length > 1) {
                 this.showCalendarTaskModal = true;
             } else {
                 this.update();
