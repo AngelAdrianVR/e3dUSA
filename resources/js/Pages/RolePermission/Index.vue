@@ -90,7 +90,7 @@
       </div>
 
       <!-- Role modal -->
-      <DialogModal :show="showRoleModal" @close="showRoleModal = false">
+      <DialogModal :show="showRoleModal" @close="showRoleModal = false" maxWidth="4xl">
         <template #title>
           <p v-if="editFlag">Rol {{ currentRole.name }}</p>
           <p v-else>Crear nuevo rol</p>
@@ -127,7 +127,7 @@
       </DialogModal>
 
       <!-- Permission modal -->
-      <DialogModal :show="showPermissionModal" @close="showPermissionModal = false">
+      <DialogModal :show="showPermissionModal" @close="showPermissionModal = false" maxWidth="4xl">
         <template #title>
           <p v-if="editFlag">Editar permiso</p>
           <p v-else>Crear nuevo permiso</p>
