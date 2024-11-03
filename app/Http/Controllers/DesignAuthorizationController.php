@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 
 class DesignAuthorizationController extends Controller
 {
-    
     public function index()
     {
         $design_authorizations = DesignAuthorization::with('companyBranch:id,name', 'seller:id,name')
@@ -20,7 +19,6 @@ class DesignAuthorizationController extends Controller
         // return $design_authorizations;
         return inertia('DesignAuthorization/Index', compact('design_authorizations'));
     }
-
     
     public function create()
     {
@@ -31,7 +29,6 @@ class DesignAuthorizationController extends Controller
         return inertia('DesignAuthorization/Create', compact('company_branches', 'company_id'));
     }
 
-    
     public function store(Request $request)
     {
         $request->validate([
@@ -59,7 +56,6 @@ class DesignAuthorizationController extends Controller
         return to_route('design-authorizations.show', ['design_authorization' => $design_authorization->id ]);
     }
 
-    
     public function show($design_authorization_id)
     {
         $design_authorization = DesignAuthorizationResource::make(DesignAuthorization::with(['seller:id,name', 'companyBranch:id,name', 'companyBranch.contacts'])->find($design_authorization_id));
@@ -68,17 +64,14 @@ class DesignAuthorizationController extends Controller
         return inertia('DesignAuthorization/Show', compact('design_authorization'));
     }
 
-    
     public function edit($design_authorization_id)
     {
         $company_branches = CompanyBranch::with('contacts')->get(['id', 'name']);
         $design_authorization = DesignAuthorization::with('media')->find($design_authorization_id);
 
-        // return $design_authorization;
         return inertia('DesignAuthorization/Edit', compact('design_authorization', 'company_branches'));
     }
 
-    
     public function update(Request $request, DesignAuthorization $design_authorization)
     {
         $request->validate([
@@ -96,7 +89,6 @@ class DesignAuthorizationController extends Controller
 
         $design_authorization->update($request->except('contact_charge'));
 
-        // media ---------------------------------------------------
         // Eliminar imágenes antiguas solo si se borró desde el input y no se agregó una nueva
         if ($request->imageCleared) {
             $design_authorization->clearMediaCollection('image');
@@ -106,7 +98,6 @@ class DesignAuthorizationController extends Controller
 
         return to_route('design-authorizations.show', ['design_authorization' => $design_authorization->id ]);
     }   
-
 
     public function updateWithMedia(Request $request, DesignAuthorization $design_authorization)
     {
@@ -141,12 +132,10 @@ class DesignAuthorizationController extends Controller
         return to_route('design-authorizations.show', ['design_authorization' => $design_authorization->id ]);
     }
 
-    
     public function destroy(DesignAuthorization $design_authorization)
     {
         $design_authorization->delete();
     }
-
 
     public function AuthorizeDesign(DesignAuthorization $design_authorization)
     {
@@ -156,7 +145,6 @@ class DesignAuthorizationController extends Controller
 
         return response()->json(['authorized_at' => $design_authorization->authorized_at]);
     }
-
 
     public function fetchForCompanyBranch($company_branch_id)
     {
@@ -171,7 +159,6 @@ class DesignAuthorizationController extends Controller
         ['seller:id,name', 'companyBranch:id,name', 'companyBranch.contacts'])
             ->find($design_authorization));
 
-        // return $design_authorization;
         return inertia('DesignAuthorization/Print', compact('design_authorization'));
     }
 

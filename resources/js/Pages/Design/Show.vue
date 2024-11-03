@@ -20,11 +20,25 @@
           <div v-if="design.data" class="flex items-center space-x-2">
             <el-tooltip content="Editar" placement="top">
               <Link :href="route('designs.edit', selectedDesign)">
-              <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
+              <button
+                class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                   stroke="currentColor" class="size-5">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                </svg>
+              </button>
+              </Link>
+            </el-tooltip>
+            <el-tooltip v-if="$page.props.auth.user.permissions.includes('Crear formatos de autorizacion') && design.data.status.label == 'Terminado'"
+              content="Crear formato de autorización" placement="top">
+              <Link :href="route('design-authorizations.create', {designId: selectedDesign})">
+              <button
+                class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="size-5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
                 </svg>
               </button>
               </Link>
@@ -143,7 +157,7 @@
                     <template #content>
                       <p>
                         Puedes subir todos los archivos que necesites <br>
-                        para dar por terminada la orden. <br> 
+                        para dar por terminada la orden. <br>
                         En caso de no requerir subir archivos solo da clic <br>
                         En "Subir" para indicar que la orden se a completado.
                       </p>
@@ -168,7 +182,8 @@
           </div>
           <div v-else class="flex justify-end space-x-1">
             <CancelButton @click="finishOrderModal = false; form.reset()" :disabled="loading">Cancelar</CancelButton>
-            <PrimaryButton @click="finishOrder" :disabled="loading || (design.data.needs_authorization && !form.af_image.length)">Subir</PrimaryButton>
+            <PrimaryButton @click="finishOrder"
+              :disabled="loading || (design.data.needs_authorization && !form.af_image.length)">Subir</PrimaryButton>
           </div>
         </template>
       </DialogModal>
