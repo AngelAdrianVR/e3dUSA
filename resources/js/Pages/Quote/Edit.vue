@@ -41,7 +41,8 @@
                         </button>
                     </div>
                 </div>
-                <div class="md:w-full lg:w-1/2 md:mx-auto mx-7 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg px-9 py-5 shadow-md">
+                <div
+                    class="md:w-full lg:w-1/2 md:mx-auto mx-7 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg px-9 py-5 shadow-md">
                     <div class="md:grid gap-3 gap-y-2 mb-6 grid-cols-2">
                         <div class="col-span-2 flex justify-between mb-7">
                             <el-radio-group v-model="form.is_spanish_template" size="small">
@@ -146,7 +147,8 @@
                         </div>
                         <div>
                             <InputLabel value="Moneda" />
-                            <el-select v-model="form.tooling_currency" placeholder="Sin moneda (texto libre)" :fit-input-width="true">
+                            <el-select v-model="form.tooling_currency" placeholder="Sin moneda (texto libre)"
+                                :fit-input-width="true">
                                 <el-option v-for="item in toolingCurrencies" :key="item.value" :label="item.label"
                                     :value="item.value">
                                     <span style="float: left">{{ item.label }}</span>
@@ -170,7 +172,15 @@
                                 {{ form.tooling_cost }} {{ form.tooling_currency }}
                             </span>
                         </div>
-                        <div class="col-span-full">
+                        <div>
+                            <InputLabel value="Pago de flete*" />
+                            <el-select v-model="form.freight_option" @change="handleFreightOption"
+                                placeholder="Seleccionar" :fit-input-width="true">
+                                <el-option v-for="item in freightOptions" :key="item" :label="item" :value="item" />
+                            </el-select>
+                            <InputError :message="form.errors.freight_option" />
+                        </div>
+                        <!-- <div class="col-span-full">
                             <label class="flex items-center text-gray-600 dark:text-gray-500">
                                 <input type="checkbox" v-model="form.freight_cost_charged_in_product"
                                     class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
@@ -189,12 +199,16 @@
                                     </div>
                                 </el-tooltip> 
                             </label>
-                        </div>
+                        </div> -->
                         <div>
                             <div class="flex items-center space-x-2">
-                                <InputLabel v-if="form.freight_cost_charged_in_product" value="Costo de flete cargado a precio de producto*" />
-                                <InputLabel v-else value="Costo de flete*" />
-                                <el-tooltip v-if="form.freight_cost_charged_in_product" placement="top">
+                                <InputLabel v-if="form.freight_option == 'Cargo del flete en precio del producto'"
+                                    value="Costo de flete cargado a precio de producto*" />
+                                <InputLabel
+                                    v-else-if="['Emblems3d absorbe el costo del flete', 'Cargo normal de costo al cliente'].includes(form.freight_option)"
+                                    value="Costo de flete*" />
+                                <el-tooltip v-if="form.freight_option == 'Cargo del flete en precio del producto'"
+                                    placement="top">
                                     <template #content>
                                         <p>
                                             Es necesario ingresar el costo del flete <br>
@@ -206,9 +220,10 @@
                                         class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
                                         <i class="fa-solid fa-info text-primary text-[7px]"></i>
                                     </div>
-                                </el-tooltip> 
+                                </el-tooltip>
                             </div>
-                            <el-input v-model="form.freight_cost" placeholder="Ej. 550" />
+                            <el-input v-model="form.freight_cost"
+                                v-if="form.freight_option != 'El cliente envía la guía'" placeholder="Ej. 550" />
                             <InputError :message="form.errors.freight_cost" />
                         </div>
                         <div>
@@ -237,9 +252,9 @@
                             <el-select v-model="product.id" clearable filterable
                                 placeholder="Busca el producto de catálogo" no-data-text="No hay productos registrados"
                                 no-match-text="No se encontraron coincidencias">
-                                <el-option class="w-[820px]" @click="handleSelectedProduct(item)" v-for="item in catalog_products"
-                                    :key="item.id" :label="item.name + ' (' + item.part_number + ')'"
-                                    :value="item.id" />
+                                <el-option class="w-[820px]" @click="handleSelectedProduct(item)"
+                                    v-for="item in catalog_products" :key="item.id"
+                                    :label="item.name + ' (' + item.part_number + ')'" :value="item.id" />
                             </el-select>
                         </div>
                         <div v-else class="col-span-full">
@@ -257,7 +272,8 @@
                                 <img v-if="product.id"
                                     :src="catalog_products.find(p => p.id == product.id).media[0].original_url"
                                     class="object-contain min-h-20 max-h-44 rounded-md">
-                                <p v-else class="flex items-center space-x-2 justify-center text-sm text-[#373737] dark:text-gray-500 mt-3">
+                                <p v-else
+                                    class="flex items-center space-x-2 justify-center text-sm text-[#373737] dark:text-gray-500 mt-3">
                                     <i class="fa-solid fa-arrow-up"></i>
                                     <span>Selecciona un producto para ver imagen</span>
                                 </p>
@@ -480,7 +496,8 @@ export default {
             tooling_cost_stroked: Boolean(this.quote.tooling_cost_stroked),
             tooling_currency: this.quote.tooling_currency,
             freight_cost: this.quote.freight_cost,
-            freight_cost_charged_in_product: !! this.quote.freight_cost_charged_in_product,
+            freight_option: this.quote.freight_option,
+            freight_cost_charged_in_product: !!this.quote.freight_cost_charged_in_product,
             first_production_days: this.quote.first_production_days,
             notes: this.quote.notes,
             currency: this.quote.currency,
@@ -545,6 +562,12 @@ export default {
                     value: '$USD'
                 }
             ],
+            freightOptions: [
+                'Cargo normal de costo al cliente',
+                'Cargo del flete en precio del producto',
+                'Emblems3d absorbe el costo del flete',
+                'El cliente envía la guía',
+            ],
             toolingCurrencies: [
                 {
                     label: 'No colocar moneda',
@@ -597,6 +620,13 @@ export default {
                 this.isKeyChain = true;
             } else {
                 this.isKeyChain = false;
+            }
+        },
+        handleFreightOption() {
+            if (this.form.freight_option == 'El cliente envía la guía') {
+                this.form.freight_cost = 0;
+            } else {
+                this.form.freight_cost = null;
             }
         },
         handleRequiredMed(requires_med) {
