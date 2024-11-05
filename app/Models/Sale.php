@@ -19,6 +19,7 @@ Sale extends Model implements HasMedia
         // 'tracking_guide',
         // 'promise_date',
         'freight_cost',
+        'freight_option', //Cargo del flete en precio del producto,Emblems3d absorbe el costo del flete,etc
         'freight_cost_charged_in_product',
         'status',
         'oce_name',
