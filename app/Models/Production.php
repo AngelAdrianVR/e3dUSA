@@ -92,46 +92,4 @@ class Production extends Model
 
         return $pausaTime;
     }
-
-    // public function getEstimatedCompletionDate()
-    // {
-    //     if (!$this->started_at) return 'Orden no iniciada aún';
-
-    //     $workDays = collect($this->operator->employee_properties["work_days"]);
-    //     $totalEstimatedMinutes = ($this->estimated_time_hours * 60) + $this->estimated_time_minutes;
-    //     $currentDateTime = $this->started_at; // Iniciar desde el momento en que se inicia la orden
-    //     $remainingMinutes = $totalEstimatedMinutes;
-
-    //     // Iterar día por día
-    //     while ($remainingMinutes > 0) {
-    //         $dayOfWeek = $currentDateTime->dayOfWeek;
-    //         $workDay = $workDays->firstWhere('day', $dayOfWeek);
-
-    //         if ($workDay && $workDay['check_in'] && $workDay['check_out']) {
-    //             $checkInTime = Carbon::parse($workDay['check_in']);
-    //             $checkOutTime = Carbon::parse($workDay['check_out']);
-    //             $breakMinutes = $workDay['break'];
-
-    //             // Calcular el inicio de la jornada según la hora actual o el horario de entrada
-    //             $startTime = $currentDateTime->greaterThan($checkInTime) ? $currentDateTime : $checkInTime;
-
-    //             // Calcular los minutos restantes de la jornada actual
-    //             $remainingDayMinutes = $startTime->diffInMinutes($checkOutTime) - $breakMinutes;
-
-    //             // Calcular los minutos trabajables en el día actual
-    //             $dailyWorkMinutes = min($remainingMinutes, $remainingDayMinutes);
-
-    //             // Restar el tiempo trabajado al tiempo restante
-    //             $remainingMinutes -= $dailyWorkMinutes;
-
-    //             // Avanzar el tiempo de finalización estimado desde la hora actual
-    //             $currentDateTime = $startTime->copy()->addMinutes($dailyWorkMinutes + $breakMinutes);
-    //         }
-
-    //         // Moverse al siguiente día si aún queda tiempo por trabajar
-    //         $currentDateTime->addDay()->startOfDay();
-    //     }
-
-    //     return $currentDateTime;
-    // }
 }

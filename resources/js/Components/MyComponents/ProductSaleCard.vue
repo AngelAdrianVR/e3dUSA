@@ -315,18 +315,29 @@
       </span>
 
       <span>Precio Actual:</span>
-      <span class="text-secondary ">{{ catalog_product_company_sale.catalog_product_company?.new_price }}
-        {{ catalog_product_company_sale.catalog_product_company?.new_currency }}</span>
+      <p class="text-secondary">
+        {{ catalog_product_company_sale.catalog_product_company?.new_price }}
+        {{ catalog_product_company_sale.catalog_product_company?.new_currency }}
+        <span v-if="priceChangePercentage !== null" :class="priceChangeClass">
+          <template v-if="priceChangePercentage !== 0">
+            (<i :class="priceChangeIcon" class="text-[10px]"></i>{{ priceChangePercentage }}%)
+          </template>
+        </span>
+      </p>
       <span>Establecido el:</span>
-      <span class="text-secondary mb-3">{{ formatDate(catalog_product_company_sale.catalog_product_company?.new_date ?? '-')}}</span>
+      <span class="text-secondary mb-3">{{ formatDate(catalog_product_company_sale.catalog_product_company?.new_date ??
+        '-') }}</span>
 
       <span>Último cambio de precio:</span>
       <span class="text-secondary">{{ formattedLastUpdate }}</span>
-      
+
       <!-- boton para cambiar el precio -->
-      <button @click="showUpdatePriceModal = true" class="rounded-full size-6 bg-gray-400  text-black flex items-center justify-center absolute top-1 right-1">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-          <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+      <button @click="showUpdatePriceModal = true"
+        class="rounded-full size-6 bg-gray-400  text-black flex items-center justify-center absolute top-1 right-1">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="size-4">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
         </svg>
       </button>
     </div><br>
@@ -370,38 +381,41 @@
   <!-- modal para actualizar precio de producto -->
   <DialogModal :show="showUpdatePriceModal" @close="showUpdatePriceModal = false" maxWidth="lg">
     <template #title>
-        <h1>Actualizar precio</h1>
+      <h1>Actualizar precio</h1>
     </template>
     <template #content>
-        <section class="grid grid-cols-2 gap-3">
-            <div>
-                <InputLabel value="Precio nuevo*" />
-                <el-input v-model="priceForm.new_price" type="text"
-                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 30.90" />
-                <InputError :message="priceForm.errors.new_price" />
-            </div>
-            <div>
-                <InputLabel value="Moneda*" />
-                <el-select v-model="priceForm.new_currency" placeholder="Seleccionar" :fit-input-width="true">
-                    <el-option v-for="item in currencies" :key="item.value" :label="item.label" :value="item.value">
-                        <span style="float: left">{{ item.label }}</span>
-                        <span style="float: right; color: #cccccc; font-size: 13px">{{ item.value }}</span>
-                    </el-option>
-                </el-select>
-                <InputError :message="priceForm.errors.new_currency" />
-            </div>
-            <p v-if="priceForm.new_price && (priceForm.new_price - catalog_product_company_sale.catalog_product_company?.new_price) < (catalog_product_company_sale.catalog_product_company?.new_price * 0.04)"
-             class="text-xs text-red-600 col-span-full">El incremento de precio no debe ser menor al 4% del precio actual</p>
-        </section>
+      <section class="grid grid-cols-2 gap-3">
+        <div>
+          <InputLabel value="Precio nuevo*" />
+          <el-input v-model="priceForm.new_price" type="text"
+            :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 30.90" />
+          <InputError :message="priceForm.errors.new_price" />
+        </div>
+        <div>
+          <InputLabel value="Moneda*" />
+          <el-select v-model="priceForm.new_currency" placeholder="Seleccionar" :fit-input-width="true">
+            <el-option v-for="item in currencies" :key="item.value" :label="item.label" :value="item.value">
+              <span style="float: left">{{ item.label }}</span>
+              <span style="float: right; color: #cccccc; font-size: 13px">{{ item.value }}</span>
+            </el-option>
+          </el-select>
+          <InputError :message="priceForm.errors.new_currency" />
+        </div>
+        <p v-if="priceForm.new_price && (priceForm.new_price - catalog_product_company_sale.catalog_product_company?.new_price) < (catalog_product_company_sale.catalog_product_company?.new_price * 0.04)"
+          class="text-xs text-red-600 col-span-full">El incremento de precio no debe ser menor al 4% del precio actual
+        </p>
+      </section>
     </template>
     <template #footer>
-        <div class="flex justify-end space-x-1">
-            <CancelButton @click="showUpdatePriceModal = false" :disabled="form.processing ">Cancelar</CancelButton>
-            <PrimaryButton @click="updatePrice" :disabled="form.processing 
-              || !priceForm.new_price 
-              || (priceForm.new_price - catalog_product_company_sale.catalog_product_company?.new_price) < (catalog_product_company_sale.catalog_product_company?.new_price * 0.04)">Actualizar precio</PrimaryButton>
-        </div>
+      <div class="flex justify-end space-x-1">
+        <CancelButton @click="showUpdatePriceModal = false" :disabled="form.processing">Cancelar</CancelButton>
+        <PrimaryButton @click="updatePrice"
+          :disabled="form.processing
+            || !priceForm.new_price
+            || (priceForm.new_price - catalog_product_company_sale.catalog_product_company?.new_price) < (catalog_product_company_sale.catalog_product_company?.new_price * 0.04)">
+          Actualizar precio</PrimaryButton>
+      </div>
     </template>
   </DialogModal>
 
@@ -810,9 +824,9 @@ export default {
     });
 
     const priceForm = useForm({
-        new_price: null,
-        new_currency: null,
-        product_company_id: this.catalog_product_company_sale.catalog_product_company?.id,
+      new_price: null,
+      new_currency: null,
+      product_company_id: this.catalog_product_company_sale.catalog_product_company?.id,
     });
 
     return {
@@ -851,8 +865,8 @@ export default {
         quantity: null,
       },
       currencies: [
-          { value: "$MXN", label: "MXN" },
-          { value: "$USD", label: "USD" },
+        { value: "$MXN", label: "MXN" },
+        { value: "$USD", label: "USD" },
       ],
       estimatedCompletionDate: null,
     };
@@ -884,7 +898,7 @@ export default {
   },
   methods: {
     formatDate(date) {
-      if ( date ) {
+      if (date) {
         const parsedDate = new Date(date);
         return format(parsedDate, 'dd \'de\' MMM, Y', { locale: es }); // Formato personalizado
       }
@@ -967,17 +981,17 @@ export default {
       this.$refs.myForm.dispatchEvent(new Event('submit', { cancelable: true }));
     },
     updatePrice() {
-        this.priceForm.put(route('company-branches.update-product-price', this.priceForm.product_company_id), {
-            onSuccess: () => {
-                this.$notify({
-                    title: "Éxito",
-                    message: "Precio actualizado",
-                    type: "success",
-                });
-                this.showUpdatePriceModal = false;
-                this.priceForm.reset();
-            },
-        });
+      this.priceForm.put(route('company-branches.update-product-price', this.priceForm.product_company_id), {
+        onSuccess: () => {
+          this.$notify({
+            title: "Éxito",
+            message: "Precio actualizado",
+            type: "success",
+          });
+          this.showUpdatePriceModal = false;
+          this.priceForm.reset();
+        },
+      });
     },
     pauseProduction(production) {
       this.form.production_id = production.id;
@@ -1161,11 +1175,32 @@ export default {
   },
   computed: {
     formattedLastUpdate() {
-        const { new_date, old_date, new_updated_by } = this.catalog_product_company_sale.catalog_product_company
-        const lastDate = new_date || old_date
-        return lastDate 
-          ? `hace ${formatDistanceToNow(new Date(lastDate), { locale: es })}${new_updated_by ? ` por ${new_updated_by}` : ''}`
-          : 'No disponible';
+      const { new_date, old_date, new_updated_by } = this.catalog_product_company_sale.catalog_product_company
+      const lastDate = new_date || old_date
+      return lastDate
+        ? `hace ${formatDistanceToNow(new Date(lastDate), { locale: es })}${new_updated_by ? ` por ${new_updated_by}` : ''}`
+        : 'No disponible';
+    },
+    priceChangePercentage() {
+      const oldPrice = this.catalog_product_company_sale.catalog_product_company?.old_price;
+      const newPrice = this.catalog_product_company_sale.catalog_product_company?.new_price;
+
+      if (oldPrice && newPrice) {
+        const percentageChange = ((newPrice - oldPrice) / oldPrice) * 100;
+        return percentageChange.toFixed(2);
+      }
+
+      return null;
+    },
+    priceChangeClass() {
+      if (this.priceChangePercentage > 0) return 'text-green-700';
+      if (this.priceChangePercentage < 0) return 'text-red-700';
+      return 'text-gray-600'; // color gris si no hay cambio en el precio
+    },
+    priceChangeIcon() {
+      if (this.priceChangePercentage > 0) return 'fa-solid fa-arrow-up-long';
+      if (this.priceChangePercentage < 0) return 'fa-solid fa-arrow-down-long';
+      return null; // sin icono si el precio no cambia
     }
   },
   mounted() {

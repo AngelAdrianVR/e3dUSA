@@ -56,6 +56,7 @@ class QuoteResource extends JsonResource
             'tooling_cost_stroked' => $this->tooling_cost_stroked,
             'freight_cost_charged_in_product' => $this->freight_cost_charged_in_product,
             'freight_cost' => $this->freight_cost,
+            'freight_option' => $this->freight_option,
             'first_production_days' => $this->first_production_days,
             'notes' => $this->notes ?? '--',
             'currency' => $this->currency,

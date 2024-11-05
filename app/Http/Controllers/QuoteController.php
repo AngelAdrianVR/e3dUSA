@@ -85,6 +85,7 @@ class QuoteController extends Controller
             'department' => 'required|string|max:191',
             'tooling_cost' => 'required|min:0',
             'freight_cost' => 'required|string',
+            'freight_option' => 'required|string',
             'first_production_days' => 'required|string|max:191',
             'notes' => 'nullable|string|max:191',
             'currency' => 'required|string|max:191',
@@ -185,6 +186,7 @@ class QuoteController extends Controller
             'department' => 'required|string|max:191',
             'tooling_cost' => 'required|min:0',
             'freight_cost' => 'required|string',
+            'freight_option' => 'required|string',
             'first_production_days' => 'required|string|max:191',
             'notes' => 'nullable|string|max:191',
             'currency' => 'required|string|max:191',
@@ -576,7 +578,7 @@ class QuoteController extends Controller
         $company = Company::whereHas('companyBranches', function ($query) use ($company_branch_id) {
             $query->where('id', $company_branch_id);
         })
-        ->with('catalogProducts')
+        ->with('catalogProducts', 'catalogProducts.media')
         ->first(['id', 'business_name']);
 
         $catalog_products_company = $company ? $company->catalogProducts : [];

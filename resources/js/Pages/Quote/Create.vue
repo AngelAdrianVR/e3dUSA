@@ -13,7 +13,8 @@
             <form @submit.prevent="store" class="relative overflow-x-hidden dark:text-white">
                 <!-- company branch important notes -->
                 <div class="absolute top-5 -right-1">
-                    <div v-if="importantNotes" class="text-sm border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-[550px]">
+                    <div v-if="importantNotes"
+                        class="text-sm border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-[550px]">
                         <div class="absolute bg-primary top-1 -left-3 h-2 w-10 transform -rotate-45"></div>
                         <div class="absolute bg-primary top-1 -right-3 h-2 w-10 transform rotate-45"></div>
                         <h3 class="flex items-center justify-center mb-2">
@@ -44,49 +45,97 @@
 
                 <!-- company branch productos -->
                 <div class="absolute top-5 -right-1 mt-36">
-                    <div v-if="catalogProductsCompanyBranchSelected?.length" class="text-sm border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-[550px]">
+                    <div v-if="catalogProductsCompanyBranchSelected?.length"
+                        class="text-sm border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-[550px]">
                         <h3 class="flex items-center justify-center mb-2 text-base font-bold">
                             Productos de este cliente
                         </h3>
-                        
+
                         <div v-if="loading" class="flex items-center justify-center mt-10">
                             <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
                         </div>
                         <section v-else class="max-h-[500px] overflow-auto">
-                            <div class="rounded-md border border-gray-400 p-2 my-2 relative" v-for="catalog_product in catalogProductsCompanyBranchSelected" :key="catalog_product">
-                                <p :title="catalog_product.name" class="truncate text-center">{{ catalog_product.name }}</p>
-                                <p class="text-gray-500 dark:text-gray-300 mt-2">Precio anterior: <span class="font-bold text-black dark:text-white ml-2">{{ catalog_product.pivot.old_price ?? '-' }} {{ catalog_product.pivot.old_currency ?? '' }}</span></p>
-                                <p class="text-gray-500 dark:text-gray-300">Fecha de cambio: <span class="font-bold text-black dark:text-white ml-2">{{ formatDate(catalog_product.pivot.old_date) ?? '-' }}</span></p>
-                                <p class="text-gray-500 dark:text-gray-300 mt-2">Precio actual: <span class="font-bold text-black dark:text-white ml-2">{{ catalog_product.pivot.new_price }} {{ catalog_product.pivot.new_currency ?? '' }}</span></p>
-                                <p class="text-gray-500 dark:text-gray-300">Fecha de cambio: <span class="font-bold text-black dark:text-white ml-2">{{ formatDate(catalog_product.pivot.new_date) }}</span></p>
-                                <p class="text-gray-500 dark:text-gray-800 bg-yellow-200 mt-2 inline-block pr-2">Último cambio de precio: <span class="font-bold text-black ml-2">{{ formattedLastUpdate(catalog_product.pivot) }}</span></p>
+                            <div class="rounded-md border border-gray-400 p-2 my-2 relative"
+                                v-for="catalog_product in catalogProductsCompanyBranchSelected" :key="catalog_product">
+                                <p :title="catalog_product.name" class="truncate text-center">{{ catalog_product.name }}
+                                </p>
+
+                                <body class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <p class="text-gray-500 dark:text-gray-300 mt-2">Precio anterior: <span
+                                                class="font-bold text-black dark:text-white ml-2">{{
+                                                    catalog_product.pivot.old_price ?? '-'
+                                                }} {{ catalog_product.pivot.old_currency ?? '' }}</span></p>
+                                        <p class="text-gray-500 dark:text-gray-300">Fecha de cambio: <span
+                                                class="font-bold text-black dark:text-white ml-2">{{
+                                                    formatDate(catalog_product.pivot.old_date) ?? '-' }}</span></p>
+                                        <p class="text-gray-500 dark:text-gray-300 mt-2">Precio actual: <span
+                                                class="font-bold text-black dark:text-white ml-2">
+                                                {{ catalog_product.pivot.new_price }}
+                                                {{ catalog_product.pivot.new_currency ?? '' }}
+                                                <span v-if="priceChangePercentage(catalog_product.pivot) !== null"
+                                                    :class="priceChangeClass(catalog_product.pivot)">
+                                                    <template v-if="priceChangePercentage(catalog_product.pivot) !== 0">
+                                                        (<i :class="priceChangeIcon(catalog_product.pivot)" class="text-[10px]"></i>{{
+                                                            priceChangePercentage(catalog_product.pivot) }}%)
+                                                    </template>
+                                                </span>
+                                            </span>
+                                        </p>
+                                        <p class="text-gray-500 dark:text-gray-300">Fecha de cambio: <span
+                                                class="font-bold text-black dark:text-white ml-2">{{
+                                                    formatDate(catalog_product.pivot.new_date) }}</span></p>
+                                    </div>
+
+                                    <figure @click="handlePictureCardPreview(catalog_product.media[0])"
+                                        class="bg-transparent m-2 h-32 cursor-zoom-in">
+                                        <img class="object-contain h-full" :src="catalog_product.media[0].original_url"
+                                            alt="">
+                                    </figure>
+                                </body>
+                                <p class="text-gray-500 dark:text-gray-800 bg-yellow-200 mt-2 inline-block pr-2">Último
+                                    cambio de
+                                    precio: <span class="font-bold text-black ml-2">{{
+                                        formattedLastUpdate(catalog_product.pivot)
+                                        }}</span></p>
 
                                 <!-- botones de acción -->
                                 <div class="absolute bottom-2 right-1 flex items-center space-x-1">
                                     <el-tooltip content="Agendar cambio de precio" placement="top">
-                                        <button type="button" @click="handleScheduleUpdateProductPrice(catalog_product)" class="rounded-full size-7 flex items-center justify-center bg-gray2 text-black">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 2.994v2.25m10.5-2.25v2.25m-14.252 13.5V7.491a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v11.251m-18 0a2.25 2.25 0 0 0 2.25 2.25h13.5a2.25 2.25 0 0 0 2.25-2.25m-18 0v-7.5a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v7.5m-6.75-6h2.25m-9 2.25h4.5m.002-2.25h.005v.006H12v-.006Zm-.001 4.5h.006v.006h-.006v-.005Zm-2.25.001h.005v.006H9.75v-.006Zm-2.25 0h.005v.005h-.006v-.005Zm6.75-2.247h.005v.005h-.005v-.005Zm0 2.247h.006v.006h-.006v-.006Zm2.25-2.248h.006V15H16.5v-.005Z" />
+                                        <button type="button" @click="handleScheduleUpdateProductPrice(catalog_product)"
+                                            class="rounded-full size-7 flex items-center justify-center bg-gray2 text-black">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="size-4">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M6.75 2.994v2.25m10.5-2.25v2.25m-14.252 13.5V7.491a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v11.251m-18 0a2.25 2.25 0 0 0 2.25 2.25h13.5a2.25 2.25 0 0 0 2.25-2.25m-18 0v-7.5a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v7.5m-6.75-6h2.25m-9 2.25h4.5m.002-2.25h.005v.006H12v-.006Zm-.001 4.5h.006v.006h-.006v-.005Zm-2.25.001h.005v.006H9.75v-.006Zm-2.25 0h.005v.005h-.006v-.005Zm6.75-2.247h.005v.005h-.005v-.005Zm0 2.247h.006v.006h-.006v-.006Zm2.25-2.248h.006V15H16.5v-.005Z" />
                                             </svg>
                                         </button>
                                     </el-tooltip>
                                     <el-tooltip content="Cambiar precio" placement="top">
-                                        <button type="button" @click="handleUpdateProductPrice(catalog_product)" class="rounded-full size-7 flex items-center justify-center bg-gray2 text-black">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                        <button type="button" @click="handleUpdateProductPrice(catalog_product)"
+                                            class="rounded-full size-7 flex items-center justify-center bg-gray2 text-black">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="size-4">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
                                             </svg>
                                         </button>
                                     </el-tooltip>
                                 </div>
                             </div>
                         </section>
+
+                        <el-dialog v-model="dialogVisible">
+                            <img class="mx-auto" w-full :src="dialogImageUrl" alt="Preview Image" />
+                        </el-dialog>
                     </div>
                 </div>
 
                 <div class="md:w-full lg:w-1/2 mx-7 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg px-9 py-5 shadow-md"
-                :class="{'md:left-auto md:ml-32': catalogProductsCompanyBranchSelected?.length,
-                         'md:mx-auto': !catalogProductsCompanyBranchSelected?.length
-                        }">
+                    :class="{
+                        'md:left-auto md:ml-32': catalogProductsCompanyBranchSelected?.length,
+                        'md:mx-auto': !catalogProductsCompanyBranchSelected?.length
+                    }">
                     <div class="md:grid gap-3 gap-y-2 mb-6 grid-cols-2">
                         <div class="col-span-2 flex justify-between mb-7">
                             <el-radio-group v-model="form.is_spanish_template" size="small">
@@ -216,7 +265,15 @@
                                 {{ form.tooling_cost }} {{ form.tooling_currency }}
                             </span>
                         </div>
-                        <div class="col-span-full">
+                        <div>
+                            <InputLabel value="Pago de flete*" />
+                            <el-select v-model="form.freight_option" @change="handleFreightOption"
+                                placeholder="Seleccionar" :fit-input-width="true">
+                                <el-option v-for="item in freightOptions" :key="item" :label="item" :value="item" />
+                            </el-select>
+                            <InputError :message="form.errors.freight_option" />
+                        </div>
+                        <!-- <div class="col-span-full">
                             <label class="flex items-center text-gray-600 dark:text-gray-500">
                                 <input type="checkbox" v-model="form.freight_cost_charged_in_product"
                                     class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
@@ -235,12 +292,16 @@
                                     </div>
                                 </el-tooltip> 
                             </label>
-                        </div>
+                        </div> -->
                         <div>
                             <div class="flex items-center space-x-2">
-                                <InputLabel v-if="form.freight_cost_charged_in_product" value="Costo de flete cargado a precio de producto*" />
-                                <InputLabel v-else value="Costo de flete*" />
-                                <el-tooltip v-if="form.freight_cost_charged_in_product" placement="top">
+                                <InputLabel v-if="form.freight_option == 'Cargo del flete en precio del producto'"
+                                    value="Costo de flete cargado a precio de producto*" />
+                                <InputLabel
+                                    v-else-if="['Emblems3d absorbe el costo del flete', 'Cargo normal de costo al cliente'].includes(form.freight_option)"
+                                    value="Costo de flete*" />
+                                <el-tooltip v-if="form.freight_option == 'Cargo del flete en precio del producto'"
+                                    placement="top">
                                     <template #content>
                                         <p>
                                             Es necesario ingresar el costo del flete <br>
@@ -252,9 +313,10 @@
                                         class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
                                         <i class="fa-solid fa-info text-primary text-[7px]"></i>
                                     </div>
-                                </el-tooltip> 
+                                </el-tooltip>
                             </div>
-                            <el-input v-model="form.freight_cost" placeholder="Ej. 550" />
+                            <el-input v-model="form.freight_cost"
+                                v-if="form.freight_option != 'El cliente envía la guía'" placeholder="Ej. 550" />
                             <InputError :message="form.errors.freight_cost" />
                         </div>
                         <div>
@@ -283,9 +345,9 @@
                             <el-select v-model="product.id" clearable filterable
                                 placeholder="Busca el producto de catálogo" no-data-text="No hay productos registrados"
                                 no-match-text="No se encontraron coincidencias">
-                                <el-option class="w-[820px]" @click="handleSelectedProduct(item)" v-for="item in catalog_products"
-                                    :key="item.id" :label="item.name + ' (' + item.part_number + ')'"
-                                    :value="item.id" />
+                                <el-option class="w-[820px]" @click="handleSelectedProduct(item)"
+                                    v-for="item in catalog_products" :key="item.id"
+                                    :label="item.name + ' (' + item.part_number + ')'" :value="item.id" />
                             </el-select>
                         </div>
                         <div v-else class="col-span-full">
@@ -299,11 +361,13 @@
                             </el-select>
                         </div>
                         <div>
-                            <figure class="flex justify-center border border-[#9a9a9a] rounded-md min-h-20 max-h-44 w-full">
+                            <figure
+                                class="flex justify-center border border-[#9a9a9a] rounded-md min-h-20 max-h-44 w-full">
                                 <img v-if="product.id"
                                     :src="catalog_products.find(p => p.id == product.id).media[0].original_url"
                                     class="object-contain min-h-20 max-h-44 rounded-md">
-                                <p v-else class="flex items-center space-x-2 justify-center text-sm text-[#373737] dark:text-gray-500 mt-3">
+                                <p v-else
+                                    class="flex items-center space-x-2 justify-center text-sm text-[#373737] dark:text-gray-500 mt-3">
                                     <i class="fa-solid fa-arrow-up"></i>
                                     <span>Selecciona un producto para ver imagen</span>
                                 </p>
@@ -416,32 +480,30 @@
                     <h1>Agendar actualización de precio</h1>
                 </template>
                 <template #content>
-                        <div class="my-3">
-                            <InputLabel value="Fecha de recordatorio*" />
-                            <el-date-picker v-model="scheduleForm.start_date" type="date" placeholder="Fecha*" :disabled-date="disabledDate" />
-                            <InputError :message="scheduleForm.errors.start_date" />
-                        </div>
-                        <div class="my-3">
-                            <InputLabel value="Título de tarea*" />
-                            <input v-model="scheduleForm.title" class="input" placeholder="Agregar título" maxlength="100" show-word-limit type="textarea" />
-                            <InputError :message="scheduleForm.errors.title" />
-                        </div>
-                        <div class="my-3">
-                            <InputLabel value="Descripción de tarea" />
-                            <el-input
-                                v-model="scheduleForm.description"
-                                maxlength="255"
-                                placeholder="Agrega una descripción (opcional)"
-                                show-word-limit
-                                type="textarea"
-                            />
-                            <InputError :message="scheduleForm.errors.description" />
-                        </div>
+                    <div class="my-3">
+                        <InputLabel value="Fecha de recordatorio*" />
+                        <el-date-picker v-model="scheduleForm.start_date" type="date" placeholder="Fecha*"
+                            :disabled-date="disabledDate" />
+                        <InputError :message="scheduleForm.errors.start_date" />
+                    </div>
+                    <div class="my-3">
+                        <InputLabel value="Título de tarea*" />
+                        <el-input v-model="scheduleForm.title" maxlength="255" placeholder="Agregar título" />
+                        <InputError :message="scheduleForm.errors.title" />
+                    </div>
+                    <div class="my-3">
+                        <InputLabel value="Descripción de tarea" />
+                        <el-input v-model="scheduleForm.description" maxlength="255"
+                            placeholder="Agrega una descripción (opcional)" show-word-limit type="textarea" />
+                        <InputError :message="scheduleForm.errors.description" />
+                    </div>
                 </template>
                 <template #footer>
                     <div class="flex justify-end space-x-1">
-                        <CancelButton @click="showScheduleUpdatingPrice = false" :disabled="scheduleForm.processing ">Cancelar</CancelButton>
-                        <PrimaryButton type="button" @click="scheduleUpdatePrice" :disabled="scheduleForm.processing">Agendar</PrimaryButton>
+                        <CancelButton @click="showScheduleUpdatingPrice = false" :disabled="scheduleForm.processing">
+                            Cancelar</CancelButton>
+                        <PrimaryButton type="button" @click="scheduleUpdatePrice" :disabled="scheduleForm.processing">
+                            Agendar</PrimaryButton>
                     </div>
                 </template>
             </DialogModal>
@@ -456,14 +518,16 @@
                         <div>
                             <InputLabel value="Precio nuevo*" />
                             <el-input v-model="priceForm.new_price" type="text"
-                            :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                            :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 30.90" />
+                                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 30.90" />
                             <InputError :message="priceForm.errors.new_price" />
                         </div>
                         <div>
                             <InputLabel value="Moneda*" />
-                            <el-select v-model="priceForm.new_currency" placeholder="Seleccionar" :fit-input-width="true">
-                                <el-option v-for="item in newPriceCurrencies" :key="item.value" :label="item.label" :value="item.value">
+                            <el-select v-model="priceForm.new_currency" placeholder="Seleccionar"
+                                :fit-input-width="true">
+                                <el-option v-for="item in newPriceCurrencies" :key="item.value" :label="item.label"
+                                    :value="item.value">
                                     <span style="float: left">{{ item.label }}</span>
                                     <span style="float: right; color: #cccccc; font-size: 13px">{{ item.value }}</span>
                                 </el-option>
@@ -471,15 +535,19 @@
                             <InputError :message="priceForm.errors.new_currency" />
                         </div>
                         <p v-if="priceForm.new_price && (priceForm.new_price - itemToUpdatePrice.pivot.new_price) < (itemToUpdatePrice.pivot.new_price * 0.04)"
-                        class="text-xs text-red-600 col-span-full">El incremento de precio no debe ser menor al 4% del precio actual</p>
+                            class="text-xs text-red-600 col-span-full">El incremento de precio no debe ser menor al 4%
+                            del precio actual</p>
                     </section>
                 </template>
                 <template #footer>
                     <div class="flex justify-end space-x-1">
-                        <CancelButton @click="showUpdatePriceModal = false" :disabled="priceForm.processing ">Cancelar</CancelButton>
-                        <PrimaryButton type="button" @click="updatePrice" :disabled="priceForm.processing 
-                        || !priceForm.new_price 
-                        || (priceForm.new_price - itemToUpdatePrice.pivot.new_price) < (itemToUpdatePrice.pivot.new_price * 0.04)">Actualizar precio</PrimaryButton>
+                        <CancelButton @click="showUpdatePriceModal = false" :disabled="priceForm.processing">Cancelar
+                        </CancelButton>
+                        <PrimaryButton type="button" @click="updatePrice"
+                            :disabled="priceForm.processing
+                                || !priceForm.new_price
+                                || (priceForm.new_price - itemToUpdatePrice.pivot.new_price) < (itemToUpdatePrice.pivot.new_price * 0.04)">Actualizar precio
+                        </PrimaryButton>
                     </div>
                 </template>
             </DialogModal>
@@ -603,6 +671,7 @@ export default {
             tooling_currency: null,
             tooling_cost_stroked: false,
             freight_cost: null,
+            freight_option: 'Cargo normal de costo al cliente',
             freight_cost_charged_in_product: false,
             first_production_days: null,
             notes: null,
@@ -654,6 +723,7 @@ export default {
             isEditImportantNotes: false,
             editIndex: null,
             showProspectFormModal: false,
+            dialogVisible: false, //imagen element-plus
             catalogProductsCompanyBranchSelected: null, //productos de cliente seleccionado
             product: {
                 id: null,
@@ -686,6 +756,12 @@ export default {
                     label: 'Dólar estadounidense',
                     value: '$USD'
                 }
+            ],
+            freightOptions: [
+                'Cargo normal de costo al cliente',
+                'Cargo del flete en precio del producto',
+                'Emblems3d absorbe el costo del flete',
+                'El cliente envía la guía',
             ],
             toolingCurrencies: [
                 {
@@ -728,11 +804,36 @@ export default {
         prospects: Array,
     },
     methods: {
+        priceChangePercentage(pivot) {
+            const oldPrice = pivot.old_price;
+            const newPrice = pivot.new_price;
+
+            if (oldPrice && newPrice) {
+                const percentageChange = ((newPrice - oldPrice) / oldPrice) * 100;
+                return percentageChange.toFixed(2);
+            }
+
+            return null;
+        },
+        priceChangeClass(pivot) {
+            if (this.priceChangePercentage(pivot) > 0) return 'text-green-700';
+            if (this.priceChangePercentage(pivot) < 0) return 'text-red-700';
+            return 'text-gray-600'; // color gris si no hay cambio en el precio
+        },
+        priceChangeIcon(pivot) {
+            if (this.priceChangePercentage(pivot) > 0) return 'fa-solid fa-arrow-up-long';
+            if (this.priceChangePercentage(pivot) < 0) return 'fa-solid fa-arrow-down-long';
+            return null; // sin icono si el precio no cambia
+        },
         formatDate(date) {
-            if ( date ) {
+            if (date) {
                 const parsedDate = new Date(date);
                 return format(parsedDate, 'dd MMMM yyyy', { locale: es }); // Formato personalizado
             }
+        },
+        handlePictureCardPreview(file) {
+            this.dialogImageUrl = file.original_url;
+            this.dialogVisible = true;
         },
         disabledDate(time) {
             const today = new Date();
@@ -753,7 +854,19 @@ export default {
         },
         handleSelectCompanyBranch() {
             this.getImportantNotes();
-            this.fetchCatalogProductsCompanyBanch();
+
+            if (this.form.company_branch_id) {
+                this.fetchCatalogProductsCompanyBanch();
+            } else {
+                this.catalogProductsCompanyBranchSelected = null;
+            }
+        },
+        handleFreightOption() {
+            if (this.form.freight_option == 'El cliente envía la guía') {
+                this.form.freight_cost = 0;
+            } else {
+                this.form.freight_cost = null;
+            }
         },
         handleSelectProspect() {
             const prospect = this.prospects.find(item => item.id === this.form.prospect_id);
@@ -836,14 +949,13 @@ export default {
         },
         getImportantNotes() {
             this.importantNotes = this.company_branches.find(item => item.id == this.form.company_branch_id)?.important_notes;
-
         },
         async fetchCatalogProductsCompanyBanch() {
             this.loading = true;
             try {
                 const response = await axios.get(route('quotes.fetch-catalog-products-company-branch', this.form.company_branch_id));
 
-                if ( response.status === 200 ) {
+                if (response.status === 200) {
                     this.catalogProductsCompanyBranchSelected = response.data.items;
                 }
             } catch (error) {
@@ -944,7 +1056,7 @@ export default {
         formattedLastUpdate(productData) {
             const { new_date, old_date, new_updated_by } = productData;
             const lastDate = new_date || old_date
-            return lastDate 
+            return lastDate
                 ? `hace ${formatDistanceToNow(new Date(lastDate), { locale: es })}${new_updated_by ? ` por ${new_updated_by}` : ''}`
                 : 'No disponible';
         }
