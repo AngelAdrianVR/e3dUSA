@@ -294,6 +294,14 @@
                                     <InputError :message="form.errors.shipping_option" />
                                 </div>
                                 <div>
+                                    <InputLabel value="Pago de flete*" />
+                                    <el-select v-model="form.freight_option" @change="handleFreightOption"
+                                        placeholder="Seleccionar" :fit-input-width="true">
+                                        <el-option v-for="item in freightOptions" :key="item" :label="item" :value="item" />
+                                    </el-select>
+                                    <InputError :message="form.errors.freight_option" />
+                                </div>
+                                <div v-if="form.freight_option == 'Cargo del flete en precio del producto' || form.freight_option == 'Cargo normal de costo al cliente'">
                                     <InputLabel>
                                         <div class="flex items-center">
                                             <span>Costo de flete cotizado*</span>
@@ -316,14 +324,6 @@
                                     </InputLabel>
                                     <el-input v-model="form.freight_cost" placeholder="Ej. 800" />
                                     <InputError :message="form.errors.freight_cost" />
-                                </div>
-                                <div>
-                                    <InputLabel value="Pago de flete*" />
-                                    <el-select v-model="form.freight_option" @change="handleFreightOption"
-                                        placeholder="Seleccionar" :fit-input-width="true">
-                                        <el-option v-for="item in freightOptions" :key="item" :label="item" :value="item" />
-                                    </el-select>
-                                    <InputError :message="form.errors.freight_option" />
                                 </div>
                             </div>
                             <div v-for="(partiality, index) in form.partialities" :key="index"
@@ -645,7 +645,7 @@ export default {
             }
         },
         handleFreightOption() {
-            if (this.form.freight_option == 'El cliente envía la guía') {
+            if (this.form.freight_option == 'El cliente envía la guía' || this.form.freight_option == 'Emblems3d absorbe el costo del flete') {
                 this.form.freight_cost = 0;
             } else {
                 this.form.freight_cost = null;

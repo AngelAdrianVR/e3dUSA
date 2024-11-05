@@ -298,7 +298,7 @@
                                 <InputLabel v-if="form.freight_option == 'Cargo del flete en precio del producto'"
                                     value="Costo de flete cargado a precio de producto*" />
                                 <InputLabel
-                                    v-else-if="['Emblems3d absorbe el costo del flete', 'Cargo normal de costo al cliente'].includes(form.freight_option)"
+                                    v-else-if="['Cargo normal de costo al cliente'].includes(form.freight_option)"
                                     value="Costo de flete*" />
                                 <el-tooltip v-if="form.freight_option == 'Cargo del flete en precio del producto'"
                                     placement="top">
@@ -316,7 +316,7 @@
                                 </el-tooltip>
                             </div>
                             <el-input v-model="form.freight_cost"
-                                v-if="form.freight_option != 'El cliente envía la guía'" placeholder="Ej. 550" />
+                                v-if="form.freight_option == 'Cargo del flete en precio del producto' || form.freight_option == 'Cargo normal de costo al cliente'" placeholder="Ej. 550" />
                             <InputError :message="form.errors.freight_cost" />
                         </div>
                         <div>
@@ -862,7 +862,7 @@ export default {
             }
         },
         handleFreightOption() {
-            if (this.form.freight_option == 'El cliente envía la guía') {
+            if (this.form.freight_option == 'El cliente envía la guía' || this.form.freight_option == 'Emblems3d absorbe el costo del flete') {
                 this.form.freight_cost = 0;
             } else {
                 this.form.freight_cost = null;

@@ -67,7 +67,8 @@
                         </div>
                     </td>
                     <td>
-                        <div v-for="partiality in item.partialities" :key="partiality">
+                        <p v-if="collapseIndex[index] !== true" class="pb-2">{{ item.partialities?.length ? formatDate(item.partialities[0].sent_at) : '-' }}</p>
+                        <div v-else v-for="(partiality, index) in item.partialities" :key="index">
                             <p class="pb-2">{{ formatDate(partiality.sent_at) ?? '-' }}</p>
                         </div>
                     </td>
