@@ -41,11 +41,8 @@
                     </div>
                 </div>
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md dark:bg-[#202020] dark:text-white">
-                    <p v-if="!form.opportunity_id" class="text-xs text-primary mb-3">
-                        Por indicaciones de dirección, sólo se puede crear una OV desde una cotización.
-                    </p>
                     <el-radio-group v-model="form.is_sale_production" size="small">
-                        <el-radio v-if="form.opportunity_id" :value="1">Orden de venta</el-radio>
+                        <el-radio :value="1">Orden de venta</el-radio>
                         <el-radio :value="0">Orden de stock</el-radio>
                     </el-radio-group>
                     <div class="grid grid-cols-2 gap-3 mt-4">
@@ -569,7 +566,7 @@ export default {
             products: [],
             media: null,
             partialities: [],
-            is_sale_production: 0, //seleccionado stock porque se necesita cotizacion para crear venta
+            is_sale_production: 1,
         });
 
         return {
