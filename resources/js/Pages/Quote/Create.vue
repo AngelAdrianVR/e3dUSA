@@ -87,10 +87,10 @@
                                                     formatDate(catalog_product.pivot.new_date) }}</span></p>
                                     </div>
 
-                                    <figure @click="handlePictureCardPreview(catalog_product.media[0])"
-                                        class="bg-transparent m-2 h-32 cursor-zoom-in">
-                                        <img class="object-contain h-full" :src="catalog_product.media[0].original_url"
-                                            alt="">
+                                    <figure
+                                        class="rounded-md m-2 h-32 cursor-zoom-in bg-[#d9d9d9] dark:bg-[#202020] flex items-center justify-center">
+                                        <img v-if="catalog_product.media?.length" class="object-contain h-full" @click="handlePictureCardPreview(catalog_product.media[0])" :src="catalog_product.media[0].original_url" alt="">
+                                        <i v-else class="fa-regular fa-image text-4xl text-gray-400"></i>
                                     </figure>
                                 </body>
                                 <p class="text-gray-500 dark:text-gray-800 bg-yellow-200 mt-2 inline-block pr-2">Último

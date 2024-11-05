@@ -41,8 +41,100 @@
                         </button>
                     </div>
                 </div>
-                <div
-                    class="md:w-full lg:w-1/2 md:mx-auto mx-7 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg px-9 py-5 shadow-md">
+
+                <!-- company branch productos -->
+                <div class="absolute top-5 -right-1 mt-36">
+                    <div v-if="catalogProductsCompanyBranchSelected?.length"
+                        class="text-sm border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-[550px]">
+                        <h3 class="flex items-center justify-center mb-2 text-base font-bold">
+                            Productos de este cliente
+                        </h3>
+
+                        <div v-if="loading" class="flex items-center justify-center mt-10">
+                            <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
+                        </div>
+                        <section v-else class="max-h-[500px] overflow-auto">
+                            <div class="rounded-md border border-gray-400 p-2 my-2 relative"
+                                v-for="catalog_product in catalogProductsCompanyBranchSelected" :key="catalog_product">
+                                <p :title="catalog_product.name" class="truncate text-center">{{ catalog_product.name }}
+                                </p>
+
+                                <body class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <p class="text-gray-500 dark:text-gray-300 mt-2">Precio anterior: <span
+                                                class="font-bold text-black dark:text-white ml-2">{{
+                                                    catalog_product.pivot.old_price ?? '-'
+                                                }} {{ catalog_product.pivot.old_currency ?? '' }}</span></p>
+                                        <p class="text-gray-500 dark:text-gray-300">Fecha de cambio: <span
+                                                class="font-bold text-black dark:text-white ml-2">{{
+                                                    formatDate(catalog_product.pivot.old_date) ?? '-' }}</span></p>
+                                        <p class="text-gray-500 dark:text-gray-300 mt-2">Precio actual: <span
+                                                class="font-bold text-black dark:text-white ml-2">
+                                                {{ catalog_product.pivot.new_price }}
+                                                {{ catalog_product.pivot.new_currency ?? '' }}
+                                                <span v-if="priceChangePercentage(catalog_product.pivot) !== null"
+                                                    :class="priceChangeClass(catalog_product.pivot)">
+                                                    <template v-if="priceChangePercentage(catalog_product.pivot) !== 0">
+                                                        (<i :class="priceChangeIcon(catalog_product.pivot)" class="text-[10px]"></i>{{
+                                                            priceChangePercentage(catalog_product.pivot) }}%)
+                                                    </template>
+                                                </span>
+                                            </span>
+                                        </p>
+                                        <p class="text-gray-500 dark:text-gray-300">Fecha de cambio: <span
+                                                class="font-bold text-black dark:text-white ml-2">{{
+                                                    formatDate(catalog_product.pivot.new_date) }}</span></p>
+                                    </div>
+
+                                    <figure
+                                        class="rounded-md m-2 h-32 cursor-zoom-in bg-[#d9d9d9] dark:bg-[#202020] flex items-center justify-center">
+                                        <img v-if="catalog_product.media?.length" class="object-contain h-full" @click="handlePictureCardPreview(catalog_product.media[0])" :src="catalog_product.media[0].original_url" alt="">
+                                        <i v-else class="fa-regular fa-image text-4xl text-gray-400"></i>
+                                    </figure>
+                                </body>
+                                <p class="text-gray-500 dark:text-gray-800 bg-yellow-200 mt-2 inline-block pr-2">Último
+                                    cambio de
+                                    precio: <span class="font-bold text-black ml-2">{{
+                                        formattedLastUpdate(catalog_product.pivot)
+                                        }}</span></p>
+
+                                <!-- botones de acción -->
+                                <div class="absolute bottom-2 right-1 flex items-center space-x-1">
+                                    <el-tooltip content="Agendar cambio de precio" placement="top">
+                                        <button type="button" @click="handleScheduleUpdateProductPrice(catalog_product)"
+                                            class="rounded-full size-7 flex items-center justify-center bg-gray2 text-black">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="size-4">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M6.75 2.994v2.25m10.5-2.25v2.25m-14.252 13.5V7.491a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v11.251m-18 0a2.25 2.25 0 0 0 2.25 2.25h13.5a2.25 2.25 0 0 0 2.25-2.25m-18 0v-7.5a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v7.5m-6.75-6h2.25m-9 2.25h4.5m.002-2.25h.005v.006H12v-.006Zm-.001 4.5h.006v.006h-.006v-.005Zm-2.25.001h.005v.006H9.75v-.006Zm-2.25 0h.005v.005h-.006v-.005Zm6.75-2.247h.005v.005h-.005v-.005Zm0 2.247h.006v.006h-.006v-.006Zm2.25-2.248h.006V15H16.5v-.005Z" />
+                                            </svg>
+                                        </button>
+                                    </el-tooltip>
+                                    <el-tooltip content="Cambiar precio" placement="top">
+                                        <button type="button" @click="handleUpdateProductPrice(catalog_product)"
+                                            class="rounded-full size-7 flex items-center justify-center bg-gray2 text-black">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="size-4">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                            </svg>
+                                        </button>
+                                    </el-tooltip>
+                                </div>
+                            </div>
+                        </section>
+
+                        <el-dialog v-model="dialogVisible">
+                            <img class="mx-auto" w-full :src="dialogImageUrl" alt="Preview Image" />
+                        </el-dialog>
+                    </div>
+                </div>
+
+                <div class="md:w-full lg:w-1/2 mx-7 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg px-9 py-5 shadow-md"
+                    :class="{
+                        'md:left-auto md:ml-32': catalogProductsCompanyBranchSelected?.length,
+                        'md:mx-auto': !catalogProductsCompanyBranchSelected?.length
+                    }">
                     <div class="md:grid gap-3 gap-y-2 mb-6 grid-cols-2">
                         <div class="col-span-2 flex justify-between mb-7">
                             <el-radio-group v-model="form.is_spanish_template" size="small">
@@ -106,7 +198,7 @@
                                         </el-tooltip>
                                     </div>
                                 </InputLabel>
-                                <el-select v-if="form.is_customer" @change="getImportantNotes()"
+                                <el-select v-if="form.is_customer" @change="handleSelectCompanyBranch()"
                                     v-model="form.company_branch_id" clearable filterable placeholder="Busca el cliente"
                                     no-data-text="No hay clientes registrados"
                                     no-match-text="No se encontraron coincidencias">
@@ -379,6 +471,84 @@
                 </div>
             </form>
 
+            <!-- modal para agendar actualización de precio de producto en calendario -->
+            <DialogModal :show="showScheduleUpdatingPrice" @close="showScheduleUpdatingPrice = false" maxWidth="2xl">
+                <template #title>
+                    <h1>Agendar actualización de precio</h1>
+                </template>
+                <template #content>
+                    <div class="my-3">
+                        <InputLabel value="Fecha de recordatorio*" />
+                        <el-date-picker v-model="scheduleForm.start_date" type="date" placeholder="Fecha*"
+                            :disabled-date="disabledDate" />
+                        <InputError :message="scheduleForm.errors.start_date" />
+                    </div>
+                    <div class="my-3">
+                        <InputLabel value="Título de tarea*" />
+                        <el-input v-model="scheduleForm.title" maxlength="255" placeholder="Agregar título" />
+                        <InputError :message="scheduleForm.errors.title" />
+                    </div>
+                    <div class="my-3">
+                        <InputLabel value="Descripción de tarea" />
+                        <el-input v-model="scheduleForm.description" maxlength="255"
+                            placeholder="Agrega una descripción (opcional)" show-word-limit type="textarea" />
+                        <InputError :message="scheduleForm.errors.description" />
+                    </div>
+                </template>
+                <template #footer>
+                    <div class="flex justify-end space-x-1">
+                        <CancelButton @click="showScheduleUpdatingPrice = false" :disabled="scheduleForm.processing">
+                            Cancelar</CancelButton>
+                        <PrimaryButton type="button" @click="scheduleUpdatePrice" :disabled="scheduleForm.processing">
+                            Agendar</PrimaryButton>
+                    </div>
+                </template>
+            </DialogModal>
+
+            <!-- modal para actualizar precio de producto -->
+            <DialogModal :show="showUpdatePriceModal" @close="showUpdatePriceModal = false" maxWidth="lg">
+                <template #title>
+                    <h1>Actualizar precio de {{ itemToUpdatePrice.name }}</h1>
+                </template>
+                <template #content>
+                    <section class="grid grid-cols-2 gap-3">
+                        <div>
+                            <InputLabel value="Precio nuevo*" />
+                            <el-input v-model="priceForm.new_price" type="text"
+                                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 30.90" />
+                            <InputError :message="priceForm.errors.new_price" />
+                        </div>
+                        <div>
+                            <InputLabel value="Moneda*" />
+                            <el-select v-model="priceForm.new_currency" placeholder="Seleccionar"
+                                :fit-input-width="true">
+                                <el-option v-for="item in newPriceCurrencies" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                    <span style="float: left">{{ item.label }}</span>
+                                    <span style="float: right; color: #cccccc; font-size: 13px">{{ item.value }}</span>
+                                </el-option>
+                            </el-select>
+                            <InputError :message="priceForm.errors.new_currency" />
+                        </div>
+                        <p v-if="priceForm.new_price && (priceForm.new_price - itemToUpdatePrice.pivot.new_price) < (itemToUpdatePrice.pivot.new_price * 0.04)"
+                            class="text-xs text-red-600 col-span-full">El incremento de precio no debe ser menor al 4%
+                            del precio actual</p>
+                    </section>
+                </template>
+                <template #footer>
+                    <div class="flex justify-end space-x-1">
+                        <CancelButton @click="showUpdatePriceModal = false" :disabled="priceForm.processing">Cancelar
+                        </CancelButton>
+                        <PrimaryButton type="button" @click="updatePrice"
+                            :disabled="priceForm.processing
+                                || !priceForm.new_price
+                                || (priceForm.new_price - itemToUpdatePrice.pivot.new_price) < (itemToUpdatePrice.pivot.new_price * 0.04)">Actualizar precio
+                        </PrimaryButton>
+                    </div>
+                </template>
+            </DialogModal>
+
             <DialogModal :show="showImportantNotesModal" @close="showImportantNotesModal = false">
                 <template #title>
                     {{ editIMportantNotes ? 'Editar' : 'Agregar' }}
@@ -485,6 +655,9 @@ import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import { Link, useForm } from "@inertiajs/vue3";
+import { formatDistanceToNow } from 'date-fns'
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import axios from "axios";
 
 export default {
@@ -519,9 +692,23 @@ export default {
             abstract: "Agregado en creación rápida en formulario de creación de cotización",
         });
 
+        const priceForm = useForm({
+            new_price: null,
+            new_currency: null,
+            product_company_id: null,
+        });
+
+        const scheduleForm = useForm({
+            title: null,
+            start_date: null,
+            description: null,
+        });
+
         return {
             form,
+            priceForm,
             prospectForm,
+            scheduleForm,
             isKeyChain: false, //bandera para saber si es llavero y activar el check de requiere medallon
             editIndex: null,
             productType: "Producto de catálogo",
@@ -530,6 +717,10 @@ export default {
             importantNotesToStore: null,
             isEditImportantNotes: false,
             showProspectFormModal: false,
+            dialogVisible: false, //imagen element-plus
+            catalogProductsCompanyBranchSelected: null, //productos de cliente seleccionado
+            showScheduleUpdatingPrice: false, //modal para agendar actualización de precio
+            showUpdatePriceModal: false, //modal para actualizar precio
             product: {
                 id: null,
                 quantity: null,
@@ -582,6 +773,10 @@ export default {
                     value: '$USD'
                 }
             ],
+            newPriceCurrencies: [
+                { value: "$MXN", label: "MXN" },
+                { value: "$USD", label: "USD" },
+            ],
         };
     },
     components: {
@@ -604,6 +799,109 @@ export default {
         prospects: Array,
     },
     methods: {
+        priceChangePercentage(pivot) {
+            const oldPrice = pivot.old_price;
+            const newPrice = pivot.new_price;
+
+            if (oldPrice && newPrice) {
+                const percentageChange = ((newPrice - oldPrice) / oldPrice) * 100;
+                return percentageChange.toFixed(2);
+            }
+
+            return null;
+        },
+        formatDate(date) {
+            if (date) {
+                const parsedDate = new Date(date);
+                return format(parsedDate, 'dd MMMM yyyy', { locale: es }); // Formato personalizado
+            }
+        },
+        priceChangeClass(pivot) {
+            if (this.priceChangePercentage(pivot) > 0) return 'text-green-700';
+            if (this.priceChangePercentage(pivot) < 0) return 'text-red-700';
+            return 'text-gray-600'; // color gris si no hay cambio en el precio
+        },
+        priceChangeIcon(pivot) {
+            if (this.priceChangePercentage(pivot) > 0) return 'fa-solid fa-arrow-up-long';
+            if (this.priceChangePercentage(pivot) < 0) return 'fa-solid fa-arrow-down-long';
+            return null; // sin icono si el precio no cambia
+        },
+        handlePictureCardPreview(file) {
+            this.dialogImageUrl = file.original_url;
+            this.dialogVisible = true;
+        },
+        disabledDate(time) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return time.getTime() < today.getTime();
+        },
+        handleUpdateProductPrice(catalogProduct) {
+            //guarda el producto al cual se actualizará el precio
+            this.itemToUpdatePrice = catalogProduct;
+            // asigna el id del producto al formulario de cambio de precio
+            this.priceForm.product_company_id = catalogProduct.pivot.id
+            this.showUpdatePriceModal = true;
+        },
+        handleScheduleUpdateProductPrice(catalogProduct) {
+            //agregar titulo predeterminado
+            this.scheduleForm.title = 'Cambiar precio a ' + catalogProduct.name
+            this.showScheduleUpdatingPrice = true;
+        },
+        handleSelectCompanyBranch() {
+            this.getImportantNotes();
+
+            if (this.form.company_branch_id) {
+                this.fetchCatalogProductsCompanyBanch();
+            } else {
+                this.catalogProductsCompanyBranchSelected = null;
+            }
+        },
+        updatePrice() {
+            this.priceForm.put(route('company-branches.update-product-price', this.priceForm.product_company_id), {
+                onSuccess: () => {
+                    this.$notify({
+                        title: "Éxito",
+                        message: "Precio actualizado",
+                        type: "success",
+                    });
+                    this.showUpdatePriceModal = false;
+                    this.priceForm.reset();
+                    this.fetchCatalogProductsCompanyBanch();
+                },
+            });
+        },
+        scheduleUpdatePrice() {
+            this.scheduleForm.post(route('quotes.schedule-update-product-price'), {
+                onSuccess: () => {
+                    this.$notify({
+                        title: "Éxito",
+                        message: "Tarea agendada",
+                        type: "success",
+                    });
+                    this.showScheduleUpdatingPrice = false;
+                    this.scheduleForm.reset();
+                },
+            });
+        },
+        async fetchCatalogProductsCompanyBanch() {
+            this.loading = true;
+            try {
+                const response = await axios.get(route('quotes.fetch-catalog-products-company-branch', this.form.company_branch_id));
+
+                if (response.status === 200) {
+                    this.catalogProductsCompanyBranchSelected = response.data.items;
+                }
+            } catch (error) {
+                console.log(error);
+                this.$notify({
+                    title: 'error',
+                    message: error,
+                    type: 'error'
+                });
+            } finally {
+                this.loading = false;
+            }
+        },
         handleSelectProspect() {
             const prospect = this.prospects.find(item => item.id === this.form.prospect_id);
             this.form.receiver = prospect.contact_name;
@@ -748,6 +1046,13 @@ export default {
             this.product.price = null;
             this.product.show_image = true;
             this.product.requires_med = false;
+        },
+        formattedLastUpdate(productData) {
+            const { new_date, old_date, new_updated_by } = productData;
+            const lastDate = new_date || old_date
+            return lastDate
+                ? `hace ${formatDistanceToNow(new Date(lastDate), { locale: es })}${new_updated_by ? ` por ${new_updated_by}` : ''}`
+                : 'No disponible';
         }
     },
     mounted() {
@@ -780,6 +1085,7 @@ export default {
             this.form.products.push(product);
         });
         this.getImportantNotes();
+        this.fetchCatalogProductsCompanyBanch();
     }
 };
 </script>

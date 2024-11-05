@@ -35,7 +35,7 @@
       </li>
     </div>
 
-    <div class="bg-[#d9d9d9] dark:bg-[#333333] rounded-lg p-2 grid grid-cols-2 my-3">
+    <div class="bg-[#d9d9d9] dark:bg-[#191919] rounded-lg p-2 grid grid-cols-2 my-3">
       <span class="text-sm">Precio Anterior:</span>
       <span class="text-secondary text-sm">{{ company_product.pivot.old_price }}
         {{ company_product.pivot.old_currency }}</span>
