@@ -119,8 +119,8 @@ class CatalogProductCompanySale extends Model
                     $currentDateTime->setTimeFromTimeString($nextWorkDay['check_in'])->subHours(6);
                 }
             }
-            // return $currentDateTime;
         }
-        return $currentDateTime->addHours(6)->isoFormat('DD MMM, YYYY h:mm A');
+        return $currentDateTime->addHours(6);
+        // return $currentDateTime->addHours(6)->isoFormat('DD MMM, YYYY h:mm A');
     }
 }

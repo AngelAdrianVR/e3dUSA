@@ -63,30 +63,41 @@
                                 <body class="grid grid-cols-2 gap-3">
                                     <div>
                                         <p class="text-gray-500 dark:text-gray-300 mt-2">Precio anterior: <span
-                                            class="font-bold text-black dark:text-white ml-2">{{
-                                            catalog_product.pivot.old_price ?? '-'
-                                        }} {{ catalog_product.pivot.old_currency ?? '' }}</span></p>
+                                                class="font-bold text-black dark:text-white ml-2">{{
+                                                    catalog_product.pivot.old_price ?? '-'
+                                                }} {{ catalog_product.pivot.old_currency ?? '' }}</span></p>
                                         <p class="text-gray-500 dark:text-gray-300">Fecha de cambio: <span
                                                 class="font-bold text-black dark:text-white ml-2">{{
                                                     formatDate(catalog_product.pivot.old_date) ?? '-' }}</span></p>
                                         <p class="text-gray-500 dark:text-gray-300 mt-2">Precio actual: <span
-                                            class="font-bold text-black dark:text-white ml-2">{{
-                                                    catalog_product.pivot.new_price }} {{
-                                                    catalog_product.pivot.new_currency ?? '' }}</span></p>
+                                                class="font-bold text-black dark:text-white ml-2">
+                                                {{ catalog_product.pivot.new_price }}
+                                                {{ catalog_product.pivot.new_currency ?? '' }}
+                                                <span v-if="priceChangePercentage(catalog_product.pivot) !== null"
+                                                    :class="priceChangeClass(catalog_product.pivot)">
+                                                    <template v-if="priceChangePercentage(catalog_product.pivot) !== 0">
+                                                        (<i :class="priceChangeIcon(catalog_product.pivot)" class="text-[10px]"></i>{{
+                                                            priceChangePercentage(catalog_product.pivot) }}%)
+                                                    </template>
+                                                </span>
+                                            </span>
+                                        </p>
                                         <p class="text-gray-500 dark:text-gray-300">Fecha de cambio: <span
-                                            class="font-bold text-black dark:text-white ml-2">{{
+                                                class="font-bold text-black dark:text-white ml-2">{{
                                                     formatDate(catalog_product.pivot.new_date) }}</span></p>
                                     </div>
 
-                                    <figure @click="handlePictureCardPreview(catalog_product.media[0])" class="bg-transparent m-2 h-32 cursor-zoom-in">
-                                        <img class="object-contain h-full" :src="catalog_product.media[0].original_url" alt="">
+                                    <figure @click="handlePictureCardPreview(catalog_product.media[0])"
+                                        class="bg-transparent m-2 h-32 cursor-zoom-in">
+                                        <img class="object-contain h-full" :src="catalog_product.media[0].original_url"
+                                            alt="">
                                     </figure>
                                 </body>
                                 <p class="text-gray-500 dark:text-gray-800 bg-yellow-200 mt-2 inline-block pr-2">Último
                                     cambio de
                                     precio: <span class="font-bold text-black ml-2">{{
                                         formattedLastUpdate(catalog_product.pivot)
-                                    }}</span></p>
+                                        }}</span></p>
 
                                 <!-- botones de acción -->
                                 <div class="absolute bottom-2 right-1 flex items-center space-x-1">
@@ -286,7 +297,8 @@
                             <div class="flex items-center space-x-2">
                                 <InputLabel v-if="form.freight_option == 'Cargo del flete en precio del producto'"
                                     value="Costo de flete cargado a precio de producto*" />
-                                <InputLabel v-else-if="['Emblems3d absorbe el costo del flete', 'Cargo normal de costo al cliente'].includes(form.freight_option)"
+                                <InputLabel
+                                    v-else-if="['Emblems3d absorbe el costo del flete', 'Cargo normal de costo al cliente'].includes(form.freight_option)"
                                     value="Costo de flete*" />
                                 <el-tooltip v-if="form.freight_option == 'Cargo del flete en precio del producto'"
                                     placement="top">
@@ -304,8 +316,7 @@
                                 </el-tooltip>
                             </div>
                             <el-input v-model="form.freight_cost"
-                                v-if="form.freight_option != 'El cliente envía la guía'"
-                                placeholder="Ej. 550" />
+                                v-if="form.freight_option != 'El cliente envía la guía'" placeholder="Ej. 550" />
                             <InputError :message="form.errors.freight_cost" />
                         </div>
                         <div>
@@ -793,6 +804,27 @@ export default {
         prospects: Array,
     },
     methods: {
+        priceChangePercentage(pivot) {
+            const oldPrice = pivot.old_price;
+            const newPrice = pivot.new_price;
+
+            if (oldPrice && newPrice) {
+                const percentageChange = ((newPrice - oldPrice) / oldPrice) * 100;
+                return percentageChange.toFixed(2);
+            }
+
+            return null;
+        },
+        priceChangeClass(pivot) {
+            if (this.priceChangePercentage(pivot) > 0) return 'text-green-700';
+            if (this.priceChangePercentage(pivot) < 0) return 'text-red-700';
+            return 'text-gray-600'; // color gris si no hay cambio en el precio
+        },
+        priceChangeIcon(pivot) {
+            if (this.priceChangePercentage(pivot) > 0) return 'fa-solid fa-arrow-up-long';
+            if (this.priceChangePercentage(pivot) < 0) return 'fa-solid fa-arrow-down-long';
+            return null; // sin icono si el precio no cambia
+        },
         formatDate(date) {
             if (date) {
                 const parsedDate = new Date(date);

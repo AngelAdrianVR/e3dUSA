@@ -46,6 +46,6 @@ class CatalogProductCompanySaleController extends Controller
     {
         $item =  $cpcs->getEstimatedCompletionDate();
 
-        return response()->json(['item' => $item]);
+        return response()->json(['item' => $item->isoFormat('DD MMM, YYYY h:mm A')]);
     }
 }
