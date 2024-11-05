@@ -578,7 +578,7 @@ class QuoteController extends Controller
         $company = Company::whereHas('companyBranches', function ($query) use ($company_branch_id) {
             $query->where('id', $company_branch_id);
         })
-        ->with('catalogProducts')
+        ->with('catalogProducts', 'catalogProducts.media')
         ->first(['id', 'business_name']);
 
         $catalog_products_company = $company ? $company->catalogProducts : [];

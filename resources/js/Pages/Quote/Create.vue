@@ -59,20 +59,29 @@
                                 v-for="catalog_product in catalogProductsCompanyBranchSelected" :key="catalog_product">
                                 <p :title="catalog_product.name" class="truncate text-center">{{ catalog_product.name }}
                                 </p>
-                                <p class="text-gray-500 dark:text-gray-300 mt-2">Precio anterior: <span
-                                        class="font-bold text-black dark:text-white ml-2">{{
+
+                                <body class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <p class="text-gray-500 dark:text-gray-300 mt-2">Precio anterior: <span
+                                            class="font-bold text-black dark:text-white ml-2">{{
                                             catalog_product.pivot.old_price ?? '-'
                                         }} {{ catalog_product.pivot.old_currency ?? '' }}</span></p>
-                                <p class="text-gray-500 dark:text-gray-300">Fecha de cambio: <span
-                                        class="font-bold text-black dark:text-white ml-2">{{
-                                            formatDate(catalog_product.pivot.old_date) ?? '-' }}</span></p>
-                                <p class="text-gray-500 dark:text-gray-300 mt-2">Precio actual: <span
-                                        class="font-bold text-black dark:text-white ml-2">{{
-                                            catalog_product.pivot.new_price }} {{
-                                            catalog_product.pivot.new_currency ?? '' }}</span></p>
-                                <p class="text-gray-500 dark:text-gray-300">Fecha de cambio: <span
-                                        class="font-bold text-black dark:text-white ml-2">{{
-                                            formatDate(catalog_product.pivot.new_date) }}</span></p>
+                                        <p class="text-gray-500 dark:text-gray-300">Fecha de cambio: <span
+                                                class="font-bold text-black dark:text-white ml-2">{{
+                                                    formatDate(catalog_product.pivot.old_date) ?? '-' }}</span></p>
+                                        <p class="text-gray-500 dark:text-gray-300 mt-2">Precio actual: <span
+                                            class="font-bold text-black dark:text-white ml-2">{{
+                                                    catalog_product.pivot.new_price }} {{
+                                                    catalog_product.pivot.new_currency ?? '' }}</span></p>
+                                        <p class="text-gray-500 dark:text-gray-300">Fecha de cambio: <span
+                                            class="font-bold text-black dark:text-white ml-2">{{
+                                                    formatDate(catalog_product.pivot.new_date) }}</span></p>
+                                    </div>
+
+                                    <figure @click="handlePictureCardPreview(catalog_product.media[0])" class="bg-transparent m-2 h-32 cursor-zoom-in">
+                                        <img class="object-contain h-full" :src="catalog_product.media[0].original_url" alt="">
+                                    </figure>
+                                </body>
                                 <p class="text-gray-500 dark:text-gray-800 bg-yellow-200 mt-2 inline-block pr-2">Último
                                     cambio de
                                     precio: <span class="font-bold text-black ml-2">{{
@@ -104,6 +113,10 @@
                                 </div>
                             </div>
                         </section>
+
+                        <el-dialog v-model="dialogVisible">
+                            <img class="mx-auto" w-full :src="dialogImageUrl" alt="Preview Image" />
+                        </el-dialog>
                     </div>
                 </div>
 
@@ -699,6 +712,7 @@ export default {
             isEditImportantNotes: false,
             editIndex: null,
             showProspectFormModal: false,
+            dialogVisible: false, //imagen element-plus
             catalogProductsCompanyBranchSelected: null, //productos de cliente seleccionado
             product: {
                 id: null,
@@ -784,6 +798,10 @@ export default {
                 const parsedDate = new Date(date);
                 return format(parsedDate, 'dd MMMM yyyy', { locale: es }); // Formato personalizado
             }
+        },
+        handlePictureCardPreview(file) {
+            this.dialogImageUrl = file.original_url;
+            this.dialogVisible = true;
         },
         disabledDate(time) {
             const today = new Date();
