@@ -16,6 +16,7 @@
                     <th class="w-[11%] text-start">Sucursal</th>
                     <th class="w-[11%] text-start">Gastos de envío cobrado</th>
                     <th class="w-[11%] text-start">Gastos de envío reales</th>
+                    <th class="w-[11%] text-start">Forma de envío</th>
                     <th class="w-[11%] text-start">Guía</th>
                     <th class="w-[11%] text-start">Paquetería</th>
                     <th class="w-[11%] text-start">Fecha promesa de embarque</th>
@@ -45,25 +46,29 @@
                         </div>
                     </td>
                     <td>
-                        <p v-if="collapseIndex[index] !== true" class="pb-2">${{ item.partialities?.length ? item.partialities[0].tracking_guide : '-' }}</p>
+                        <p class="pb-2">{{ item.freight_option ?? '-' }}</p>
+                    </td>
+                    <td>
+                        <p v-if="collapseIndex[index] !== true" class="pb-2">{{ item.partialities?.length ? item.partialities[0].tracking_guide : '-' }}</p>
                         <div v-else v-for="(partiality, index) in item.partialities" :key="index">
                             <p class="pb-2">{{ partiality.tracking_guide ?? '-' }}</p>
                         </div>
                     </td>
                     <td>
-                        <p v-if="collapseIndex[index] !== true" class="pb-2">${{ item.partialities?.length ? item.partialities[0].shipping_company : '-' }}</p>
+                        <p v-if="collapseIndex[index] !== true" class="pb-2">{{ item.partialities?.length ? item.partialities[0].shipping_company : '-' }}</p>
                         <div v-else v-for="(partiality, index) in item.partialities" :key="index">
                             <p class="pb-2">{{ partiality.shipping_company ?? '-' }}</p>
                         </div>
                     </td>
                     <td>
-                        <p v-if="collapseIndex[index] !== true" class="pb-2">${{ item.partialities?.length ? item.partialities[0].promise_date : '-' }}</p>
+                        <p v-if="collapseIndex[index] !== true" class="pb-2">{{ item.partialities?.length ? formatDate(item.partialities[0].promise_date) : '-' }}</p>
                         <div v-else v-for="(partiality, index) in item.partialities" :key="index">
-                            <p class="pb-2">{{ partiality.promise_date ?? '-' }}</p>
+                            <p class="pb-2">{{ formatDate(partiality.promise_date) ?? '-' }}</p>
                         </div>
                     </td>
                     <td>
-                        <div v-for="partiality in item.partialities" :key="partiality">
+                        <p v-if="collapseIndex[index] !== true" class="pb-2">{{ item.partialities?.length ? formatDate(item.partialities[0].sent_at) : '-' }}</p>
+                        <div v-else v-for="(partiality, index) in item.partialities" :key="index">
                             <p class="pb-2">{{ formatDate(partiality.sent_at) ?? '-' }}</p>
                         </div>
                     </td>
@@ -100,7 +105,7 @@ methods:{
     formatDate(date) {
         if ( date ) {
             const parsedDate = new Date(date);
-            return format(parsedDate, 'dd MMMM yyyy', { locale: es }); // Formato personalizado
+            return format(parsedDate, 'dd MMM yyyy', { locale: es }); // Formato personalizado
         }
     },
     realShippingCost(sale) {
@@ -124,7 +129,7 @@ computed:{
         }
         return total;
     }, 0);
-}
+    }
 }
 }
 </script>
