@@ -285,10 +285,10 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import InputError from "@/Components/InputError.vue";
-import IconInput from "@/Components/MyComponents/IconInput.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import axios from 'axios';
+import InputLabel from "@/Components/InputLabel.vue";
 
 export default {
   data() {
@@ -350,9 +350,9 @@ export default {
     SecondaryButton,
     PrimaryButton,
     InputError,
-    IconInput,
     Back,
-    Link
+    Link,
+    InputLabel
   },
   props: {
     supplier: Object,
