@@ -415,7 +415,6 @@ export default {
             }
         },
         handleRemoveImage(file, fileList) {
-            console.log('archivo:', file);
             this.$confirm('¿Estás seguro de eliminar este archivo?', 'Confirmar', {
                 confirmButtonText: 'Sí',
                 cancelButtonText: 'No',
