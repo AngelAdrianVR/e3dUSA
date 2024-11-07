@@ -9,7 +9,7 @@
                     </div>
                 </div>
             </template>
-            <form @submit.prevent="store" class="relative overflow-x-hidden dark:text-white">
+            <form @submit.prevent="handleStoreSale" class="relative overflow-x-hidden dark:text-white">
                 <!-- company branch important notes -->
                 <div class="absolute top-5 -right-1">
                     <div v-if="importantNotes" class="text-xs border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-72">
@@ -41,8 +41,11 @@
                     </div>
                 </div>
                 <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md dark:bg-[#202020] dark:text-white">
+                    <p v-if="!form.opportunity_id && !$page.props.auth.user.permissions.includes('Crear ordenes de venta sin cotizacion')" class="text-xs text-primary mb-3">
+                        Por indicaciones de dirección, sólo se puede crear una OV desde una cotización.
+                    </p>
                     <el-radio-group v-model="form.is_sale_production" size="small">
-                        <el-radio :value="1">Orden de venta</el-radio>
+                        <el-radio v-if="form.opportunity_id || $page.props.auth.user.permissions.includes('Crear ordenes de venta sin cotizacion')" :value="1">Orden de venta</el-radio>
                         <el-radio :value="0">Orden de stock</el-radio>
                     </el-radio-group>
                     <div class="grid grid-cols-2 gap-3 mt-4">
@@ -170,25 +173,25 @@
                                     <div class="col-span-full">
                                         <div class="flex items-center space-x-6 ml-5 w-full">
                                             <!-- Descomentar cuando se implenmente lo de formato de autorizacion  -->
-                                            <!-- <div v-if="selectedCatalogProductHasSale === false" class="w-full">
-                                    <div class="flex items-center space-x-3">
-                                        <span @click="$inertia.get(route('design-authorizations.create', {company_id: selectedCompanyId}))" class="text-xs text-primary cursor-pointer inline">Crear formato</span>
-                                        <el-tooltip placement="top">
-                                            <template #content>
-                                                <p>
-                                                    Es primera venta de este producto, <br>
-                                                    es necesario seleccionar el formato de autorización <br>
-                                                    de diseño para poder agregarlo a la orden de venta. <br>
-                                                    Si aún no tienes un formato creado, da clic en 'crear formato'.
-                                                </p>
-                                            </template>
-                                            <div
-                                                class="rounded-full border border-primary size-3 flex items-center justify-center">
-                                                <i class="fa-solid fa-info text-primary text-[7px]"></i>
-                                            </div>
-                                        </el-tooltip>
-                                        <span v-if="product.design_authorization_id" @click="openDesignAuthorization()" class="text-xs text-secondary cursor-pointer">Ver formato<i class="fa-regular fa-eye ml-2"></i></span>
-                                    </div>
+                                <!-- <div v-if="selectedCatalogProductHasSale === false" class="w-full">
+                                        <div class="flex items-center space-x-3">
+                                            <span @click="$inertia.get(route('design-authorizations.create', {company_id: selectedCompanyId}))" class="text-xs text-primary cursor-pointer inline">Crear formato</span>
+                                            <el-tooltip placement="top">
+                                                <template #content>
+                                                    <p>
+                                                        Es primera venta de este producto, <br>
+                                                        es necesario seleccionar el formato de autorización <br>
+                                                        de diseño para poder agregarlo a la orden de venta. <br>
+                                                        Si aún no tienes un formato creado, da clic en 'crear formato'.
+                                                    </p>
+                                                </template>
+                                                <div
+                                                    class="rounded-full border border-primary size-3 flex items-center justify-center">
+                                                    <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                                </div>
+                                            </el-tooltip>
+                                            <span v-if="product.design_authorization_id" @click="openDesignAuthorization()" class="text-xs text-secondary cursor-pointer">Ver formato<i class="fa-regular fa-eye ml-2"></i></span>
+                                        </div>
                                     <el-select v-model="product.design_authorization_id" clearable
                                         filterable placeholder="Formato de autorización de diseño" no-data-text="No hay formatos autorizados">
                                         <el-option v-for="item in design_authorizations" :key="item.id" :label="item.name"
@@ -319,6 +322,14 @@
                                     <InputError :message="form.errors.shipping_option" />
                                 </div>
                                 <div>
+                                    <InputLabel value="Pago de flete*" />
+                                    <el-select v-model="form.freight_option" @change="handleFreightOption"
+                                        placeholder="Seleccionar" :fit-input-width="true">
+                                        <el-option v-for="item in freightOptions" :key="item" :label="item" :value="item" />
+                                    </el-select>
+                                    <InputError :message="form.errors.freight_option" />
+                                </div>
+                                <div v-if="form.freight_option == 'Cargo del flete en precio del producto' || form.freight_option == 'Cargo normal de costo al cliente'">
                                     <InputLabel>
                                         <div class="flex items-center">
                                             <span>Costo de flete cotizado*</span>
@@ -406,12 +417,12 @@
 
                                 <div class="flex space-x-2 bg-yellow-200 pl-3">
                                     <p class="text-[#999999] w-48">Cantidad de cajas:</p>
-                                    <p>{{ totalBoxes[index] ?? '- Sin información -' }}</p>
+                                    <p class="text-gray-700">{{ totalBoxes[index] ?? '- Sin información -' }}</p>
                                 </div>
 
                                 <div class="flex space-x-2 bg-yellow-200 pl-3">
                                     <p class="text-[#999999] w-48">Costo total de envío:</p>
-                                    <p>${{ totalCost[index] ?? '- Sin información -' }}</p>
+                                    <p class="text-gray-700">${{ totalCost[index] ?? '- Sin información -' }}</p>
                                 </div>
 
                                 <h2 v-if="form.products.length" class="ml-2 mt-6 font-bold">
@@ -513,6 +524,7 @@
                 </template>
             </DialogModal>
 
+            <!-- modal para crear proyecto -->
             <Modal :show="showCreateProjectModal" @close="showCreateProjectModal = false">
                 <section class="mx-7 my-4 space-y-4">
                     <div>
@@ -528,6 +540,22 @@
                     </div>
                 </section>
             </Modal>
+
+            <!-- Modal para crear tarea en calendario -->
+            <DialogModal :show="showCalendarTaskModal" @close="showCalendarTaskModal = false">
+                <template #title>
+                    <h1>¿Deseas crear un recordatorio de embarque en tu calendario?</h1>
+                </template>
+                <template #content>
+                    <p class="my-4 text-center">Se creará un recordatorio de la fecha de embarque de cada parcialidad de tu orden de venta. <br>
+                        Asegúrate de que las fechas de embarque esperado sean correctas, ya que es la fecha en la que se creará el recordatorio.
+                    </p>
+                </template>
+                <template #footer>
+                    <CancelButton @click="handleStore(false)">No crear</CancelButton>
+                    <PrimaryButton @click="handleStore(true)">Crear recordatorio</PrimaryButton>
+                </template>
+            </DialogModal>
         </AppLayout>
     </div>
 </template>
@@ -566,7 +594,9 @@ export default {
             products: [],
             media: null,
             partialities: [],
-            is_sale_production: 1,
+            is_sale_production: 0, //seleccionado stock porque se necesita cotizacion para crear venta
+            create_calendar_task: false, //bandera para crear o no recordatorio en calendario
+            freight_option: null,
         });
 
         return {
@@ -574,6 +604,7 @@ export default {
             loading: false,
             importantNotes: null,
             showImportantNotesModal: false,
+            showCalendarTaskModal: false,
             importantNotesToStore: null,
             isEditImportantNotes: false,
             showCreateProjectModal: false,
@@ -616,6 +647,12 @@ export default {
                 'Resurtido programado',
                 'Otro',
             ],
+            freightOptions: [
+                'Cargo normal de costo al cliente',
+                'Cargo del flete en precio del producto',
+                'Emblems3d absorbe el costo del flete',
+                'El cliente envía la guía',
+            ],
             totalBoxes: [0],
             totalCost: [0],
         };
@@ -647,6 +684,24 @@ export default {
         },
     },
     methods: {
+        handleStoreSale() {
+            if (this.form.partialities.some(item => item.promise_date !== null) && this.form.partialities.length > 1) {
+                this.showCalendarTaskModal = true;
+            } else {
+                this.store();
+            }
+        },
+        handleFreightOption() {
+            if (this.form.freight_option == 'El cliente envía la guía' || this.form.freight_option == 'Emblems3d absorbe el costo del flete') {
+                this.form.freight_cost = 0;
+            } else {
+                this.form.freight_cost = null;
+            }
+        },
+        handleStore(create_calendar_task) {
+            this.form.create_calendar_task = create_calendar_task;
+            this.store();
+        },
         handleCompanyBranchIdChange() {
             this.getImportantNotes();
             this.getDesignAuthorizations();
@@ -694,6 +749,12 @@ export default {
             this.form.partialities.splice(index, 1);
         },
         store() {
+            // agrega el costo a cada parcialidad
+            if (this.totalCost?.length) {
+                this.form.partialities.forEach((element, index) => {
+                    element.shipping_cost = this.totalCost[index];
+                });
+            }
             this.form.post(route('sales.store'), {
                 onSuccess: () => {
                     this.$notify({
@@ -701,6 +762,7 @@ export default {
                         message: 'Orden de venta creada. Se han descontado las cantidades del stock automáticamente',
                         type: 'success'
                     });
+                    this.showCalendarTaskModal = false;
                     this.showCreateProjectModal = true;
                 }
             });
@@ -818,6 +880,7 @@ export default {
             const product = { ...this.form.products[index] };
             this.product = product;
             this.editIndex = index;
+            this.fetchCatalogProductData();
         },
         resetProductForm() {
             this.product.catalog_product_company_id = null;

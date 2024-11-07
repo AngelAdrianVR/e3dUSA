@@ -8,6 +8,7 @@ use App\Events\RecordEdited;
 use App\Http\Resources\ProductionCostResource;
 use App\Http\Resources\QualityResource;
 use App\Http\Resources\SaleResource;
+use App\Models\Calendar;
 use App\Models\CatalogProduct;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Comment;
@@ -22,6 +23,9 @@ use App\Models\User;
 use App\Notifications\LowStockToDispatchOrderNotification;
 use App\Notifications\MentionInProductionNotification;
 use App\Notifications\ProductionCompletedNotification;
+use App\Notifications\ScheduleTentativeFinishOrder;
+use App\Notifications\ScheduleUpdateProductPriceReminder;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ProductionController extends Controller
@@ -31,18 +35,18 @@ class ProductionController extends Controller
     {
         //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
         $pre_productions = Sale::with([
-            'user:id,name', 
-            'productions' => ['catalogProductCompanySale:id,catalog_product_company_id,sale_id' 
-                => ['catalogProductCompany:id,catalog_product_id' 
-                => ['catalogProduct:id,name']]], 
-            'companyBranch:id,name', 
+            'user:id,name',
+            'productions' => ['catalogProductCompanySale:id,catalog_product_company_id,sale_id'
+            => ['catalogProductCompany:id,catalog_product_id'
+            => ['catalogProduct:id,name']]],
+            'companyBranch:id,name',
             'productions.operator:id,name'
         ])
             ->whereHas('productions', function ($query) {
-            $query->where('productions.operator_id', auth()->id());
-        })->latest()
-            ->paginate(10, ['id', 'user_id', 'created_at', 'status', 'is_high_priority', 'company_branch_id', 'is_sale_production' ]);
-            
+                $query->where('productions.operator_id', auth()->id());
+            })->latest()
+            ->paginate(10, ['id', 'user_id', 'created_at', 'status', 'is_high_priority', 'company_branch_id', 'is_sale_production']);
+
         // return $pre_productions;
         $productions = $this->processDataIndex($pre_productions);
 
@@ -54,11 +58,11 @@ class ProductionController extends Controller
     {
         // Pagina 20 items por página
         $pre_productions = Sale::with([
-            'user:id,name', 
-            'productions' => ['catalogProductCompanySale:id,catalog_product_company_id,sale_id' 
-                => ['catalogProductCompany:id,catalog_product_id' 
-                => ['catalogProduct:id,name']]], 
-            'companyBranch:id,name', 
+            'user:id,name',
+            'productions' => ['catalogProductCompanySale:id,catalog_product_company_id,sale_id'
+            => ['catalogProductCompany:id,catalog_product_id'
+            => ['catalogProduct:id,name']]],
+            'companyBranch:id,name',
             'productions.operator:id,name'
         ])
             ->whereHas('productions')
@@ -66,7 +70,7 @@ class ProductionController extends Controller
             ->paginate(10); // Paginar 20 por página
 
         $productions = $this->processDataIndex($pre_productions);
-        
+
         return inertia('Production/Admin', compact('productions'));
     }
 
@@ -197,7 +201,7 @@ class ProductionController extends Controller
         $request->validate([
             'productions' => 'array|min:1',
         ]);
-        
+
         $is_automatic_assignment = Setting::where('key', 'AUTOMATIC_PRODUCTION_ASSIGNMENT')->first()->value;
 
         foreach ($request->productions as $production) {
@@ -389,8 +393,27 @@ class ProductionController extends Controller
         $sale = $production->catalogProductCompanySale->sale;
 
         if (!$production->started_at) {
+            $prefix = $production->catalogProductCompanySale->sale->is_sale_production ? 'OP-' : 'OS-';
+            $production_folio = $prefix . str_pad($production->catalogProductCompanySale->sale->id, 4, "0", STR_PAD_LEFT);
             $production->update(['started_at' => now()]);
             $message = 'Se ha registrado el inicio';
+            $cpcs = CatalogProductCompanySale::find($production['catalog_product_company_sale_id']);
+            $convertedDate = $cpcs->getEstimatedCompletionDate()->format('Y-m-d');
+            $users = User::whereIn('id', [2, 3, 37])->get(); //sherman, maribel y Adriana
+            foreach ($users as $user) {
+                $reminder = Calendar::create([
+                    'type' => 'Tarea',
+                    'title' => "Finalización tentativa de $production_folio",
+                    'repeater' => 'No se repite',
+                    'description' => "Recordatorio automático para seguimiento",
+                    'status' => 'Pendiente',
+                    'start_date' => $convertedDate,
+                    'start_time' => '8:00 AM',
+                    'user_id' => auth()->id(),
+                ]);
+
+                $user->notify(new ScheduleTentativeFinishOrder($reminder));
+            }
         } else if ($production->started_at->diffInMinutes(now()) > 4) {
             $prefix = $production->catalogProductCompanySale->sale->is_sale_production ? 'OP-' : 'OS-';
             $production_folio = $prefix . str_pad($production->catalogProductCompanySale->sale->id, 4, "0", STR_PAD_LEFT);

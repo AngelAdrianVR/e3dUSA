@@ -55,7 +55,7 @@
               <p :class="{'bg-gray-500': day}" class="absolute bottom-0 right-0 rounded-full size-6 flex items-center justify-center text-white text-center"><span>{{ day }}</span></p>
               <!-- Agregar línea para tareas y eventos -->
               <div v-for="task in tasks.data" :key="task.id">
-                <div class="" v-if="isTaskDay(task, day)">
+                <div class="mt-1" v-if="isTaskDay(task, day)">
                   <div @click.stop="selectedTask = task; selectedDay = day"
                     :class="task.status === 'Terminada' 
                     ? 'bg-[#D1FAE5] border-[#10B981] border-l-4 border' 

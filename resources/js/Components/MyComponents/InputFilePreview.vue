@@ -1,7 +1,7 @@
 <template>
   <div class="inline">
     <figure @click="triggerImageInput"
-      class="flex items-center justify-center rounded-md border border-dashed border-gray-400 w-full h-44 cursor-pointer relative">
+      class="flex items-center justify-center rounded-md border border-dashed border-gray-400 w-full cursor-pointer relative" :class="height">
       <i v-if="image && canDelete" @click.stop="clearImage"
         class="fa-solid fa-xmark absolute p-1 top-1 right-1 z-10 text-sm"></i>
         <svg v-if="!image" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#a9a9a9" class="w-6 h-6">
@@ -37,12 +37,19 @@ export default {
       type: String,
       default: null,
     },
+    height: {
+      type: String,
+      default: 'h-44',
+    },
   },
   watch: {
     imageUrl: {
       immediate: true,
       handler(newImageUrl) {
-        this.image = newImageUrl;
+        if (newImageUrl) {
+          this.image = newImageUrl;
+          this.convertUrlToFile(newImageUrl);
+        }
       },
     },
   },
@@ -61,14 +68,25 @@ export default {
         // Emitir evento al componente padre con la imagen
         this.$emit("imagen", file);
       }
-
     },
     clearImage() {
       this.image = null;
       this.formData.file = null;
       this.$emit("cleared");
     },
+    async convertUrlToFile(url) {
+      try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const file = new File([blob], "defaultImage.jpg", { type: blob.type });
+        
+        // Guardar el archivo en formData y emitirlo
+        this.formData.file = file;
+        this.$emit("imagen", file);
+      } catch (error) {
+        console.error("Error al convertir URL a archivo:", error);
+      }
+    },
   },
 };
 </script>
-

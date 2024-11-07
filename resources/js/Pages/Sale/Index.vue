@@ -378,19 +378,18 @@ export default {
 
                     // update list of sales
                     let deletedIndexes = [];
-                    this.sales.data.forEach((sale, index) => {
+                    this.filteredSales.forEach((sale, index) => {
                         if (this.$refs.multipleTableRef.value.includes(sale)) {
                             deletedIndexes.push(index);
                         }
                     });
 
-                    console.log(deletedIndexes);
                     // Ordenar los índices de forma descendente para evitar problemas de desplazamiento al eliminar elementos
                     deletedIndexes.sort((a, b) => b - a);
-
+                    
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
-                        this.sales.data.splice(index, 1);
+                        this.filteredSales.splice(index, 1);
                     }
 
                 } else {

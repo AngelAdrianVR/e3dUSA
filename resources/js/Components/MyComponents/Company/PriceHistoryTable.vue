@@ -9,7 +9,7 @@
                 </span>
             </p>
             <PrimaryButton
-                @click="showUpdatePriceModal = true; form.product_company_id = catalogProductCompany.pivot.id"
+                @click="handleUpdatePrice(catalogProductCompany)"
                 class="font-bold text-sm !py-1">Actualizar precio</PrimaryButton>
         </div>
         <!-- Encabezado de la tabla -->
@@ -85,12 +85,16 @@
                     </el-select>
                     <InputError :message="form.errors.new_currency" />
                 </div>
+                <p v-if="form.new_price && (form.new_price - catalogProductsCompanySelected.pivot.new_price) < (catalogProductsCompanySelected.pivot.new_price * 0.04)"
+                class="text-xs text-red-600 col-span-full">El incremento de precio no debe ser menor al 4% del precio actual</p>
             </section>
         </template>
         <template #footer>
             <div class="flex justify-end space-x-1">
                 <CancelButton @click="showUpdatePriceModal = false" :disabled="form.processing">Cancelar</CancelButton>
-                <PrimaryButton @click="updatePrice" :disabled="form.processing">Actualizar precio</PrimaryButton>
+                <PrimaryButton @click="updatePrice" :disabled="form.processing
+                || !form.new_price 
+                || (form.new_price - catalogProductsCompanySelected.pivot?.new_price) < (catalogProductsCompanySelected.pivot?.new_price * 0.04)">Actualizar precio</PrimaryButton>
             </div>
         </template>
     </DialogModal>
@@ -116,6 +120,7 @@ export default {
         return {
             form,
             showUpdatePriceModal: false,
+            catalogProductsCompanySelected: null,
             currencies: [
                 { value: "$MXN", label: "MXN" },
                 { value: "$USD", label: "USD" },
@@ -149,6 +154,11 @@ export default {
                     this.form.reset();
                 },
             });
+        },
+        handleUpdatePrice(catalogProductCompany) {
+            this.catalogProductsCompanySelected = catalogProductCompany;
+            this.showUpdatePriceModal = true;
+            this.form.product_company_id = catalogProductCompany.pivot.id;
         }
     }
 }

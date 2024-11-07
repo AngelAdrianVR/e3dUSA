@@ -16,6 +16,8 @@
             <span>{{ design.expected_end_at }}</span>
             <span class="text-gray-500">Iniciado el</span>
             <span>{{ design.started_at }}</span>
+            <span class="text-gray-500">¿Requiere formato de autorización para cliente?</span>
+            <span>{{ design.needs_authorization ? 'Si' : 'No' }}</span>
             <span class="text-gray-500">Estatus</span>
             <span class="rounded-full border text-center" :class="design.status['text-color'] +
                 ' ' +
@@ -25,14 +27,19 @@
             <span v-if="design.has_priority" class="text-primary"><i
                     class="fa-solid fa-triangle-exclamation mr-2"></i>{{
                         'Alta' }}</span>
-            <span v-if="design.media.length" class="text-gray-500 self-start">Archivos de resultados</span>
-            <div v-if="design.media.length" class="flex flex-col">
-                <a class="hover:underline text-primary hover:text-secondary" v-for="file in design.media"
+            <span v-if="design.results.length" class="text-gray-500 self-start">Archivos de resultados</span>
+            <div v-if="design.results.length" class="flex flex-col">
+                <a class="hover:underline text-primary hover:text-secondary" v-for="file in design.results"
+                    :key="file.id" :href="file.original_url" target="_blank">• {{ file.file_name }}</a>
+            </div>
+            <span v-if="design.afImage.length" class="text-gray-500 self-start">Imagen para formato de autorización</span>
+            <div v-if="design.afImage.length" class="flex flex-col">
+                <a class="hover:underline text-primary hover:text-secondary" v-for="file in design.afImage"
                     :key="file.id" :href="file.original_url" target="_blank">• {{ file.file_name }}</a>
             </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3 text-left p-4 md:ml-10 items-center">
+        <div class="grid grid-cols-2 gap-3 text-left p-4 md:ml-10 items-center self-start">
             <span class="text-gray-500">Cliente</span>
             <span>{{ design.company_branch_name }}</span>
             <span class="text-gray-500">Contacto</span>

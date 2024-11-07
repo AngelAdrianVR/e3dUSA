@@ -176,7 +176,7 @@ class ShippingController extends Controller
         $sales = Sale::with('companyBranch:id,name')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->where('is_sale_production', true)
-            ->get(['id', 'shipping_company', 'freight_cost', 'partialities', 'status', 'company_branch_id','freight_cost_charged_in_product']); 
+            ->get(['id', 'shipping_company', 'freight_cost', 'partialities', 'status', 'company_branch_id','freight_cost_charged_in_product', 'freight_option']); 
 
         // return $sales;
         return inertia('Shipping/CostsReport', compact('sales'));
