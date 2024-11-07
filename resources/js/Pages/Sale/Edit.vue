@@ -294,6 +294,14 @@
                                     <InputError :message="form.errors.shipping_option" />
                                 </div>
                                 <div>
+                                    <InputLabel value="Pago de flete*" />
+                                    <el-select v-model="form.freight_option" @change="handleFreightOption"
+                                        placeholder="Seleccionar" :fit-input-width="true">
+                                        <el-option v-for="item in freightOptions" :key="item" :label="item" :value="item" />
+                                    </el-select>
+                                    <InputError :message="form.errors.freight_option" />
+                                </div>
+                                <div v-if="form.freight_option == 'Cargo del flete en precio del producto' || form.freight_option == 'Cargo normal de costo al cliente'">
                                     <InputLabel>
                                         <div class="flex items-center">
                                             <span>Costo de flete cotizado*</span>
@@ -542,7 +550,8 @@ export default {
             media: null,
             partialities: this.sale.partialities,
             is_sale_production: this.sale.is_sale_production,
-            create_calendar_task: false //bandera para crear tarea en calendario de embarque de venta
+            create_calendar_task: false, //bandera para crear tarea en calendario de embarque de venta
+            freight_option: this.sale.freight_option,
         });
 
         return {
@@ -590,6 +599,12 @@ export default {
                 'Resurtido programado',
                 'Otro',
             ],
+            freightOptions: [
+                'Cargo normal de costo al cliente',
+                'Cargo del flete en precio del producto',
+                'Emblems3d absorbe el costo del flete',
+                'El cliente envía la guía',
+            ],
             totalBoxes: [0],
             totalCost: [0],
         };
@@ -627,6 +642,13 @@ export default {
                 this.showCalendarTaskModal = true;
             } else {
                 this.update();
+            }
+        },
+        handleFreightOption() {
+            if (this.form.freight_option == 'El cliente envía la guía' || this.form.freight_option == 'Emblems3d absorbe el costo del flete') {
+                this.form.freight_cost = 0;
+            } else {
+                this.form.freight_cost = null;
             }
         },
         handleUpdate(create_calendar_task) {
@@ -699,6 +721,12 @@ export default {
             }
         },
         update() {
+            // agrega el costo a cada parcialidad
+            if (this.totalCost?.length) {
+                this.form.partialities.forEach((element, index) => {
+                    element.shipping_cost = this.totalCost[index];
+                });
+            }
             if (this.mediaEdited) {
                 this.form.post(route("sales.update-with-media", this.sale), {
                     method: '_put',
@@ -722,6 +750,8 @@ export default {
                     },
                 });
             }
+            this.showCalendarTaskModal = false;
+            this.showCreateProjectModal = true;
         },
         cleanShippingData() {
             // limpiar informacion de logistica

@@ -322,6 +322,14 @@
                                     <InputError :message="form.errors.shipping_option" />
                                 </div>
                                 <div>
+                                    <InputLabel value="Pago de flete*" />
+                                    <el-select v-model="form.freight_option" @change="handleFreightOption"
+                                        placeholder="Seleccionar" :fit-input-width="true">
+                                        <el-option v-for="item in freightOptions" :key="item" :label="item" :value="item" />
+                                    </el-select>
+                                    <InputError :message="form.errors.freight_option" />
+                                </div>
+                                <div v-if="form.freight_option == 'Cargo del flete en precio del producto' || form.freight_option == 'Cargo normal de costo al cliente'">
                                     <InputLabel>
                                         <div class="flex items-center">
                                             <span>Costo de flete cotizado*</span>
@@ -409,12 +417,12 @@
 
                                 <div class="flex space-x-2 bg-yellow-200 pl-3">
                                     <p class="text-[#999999] w-48">Cantidad de cajas:</p>
-                                    <p>{{ totalBoxes[index] ?? '- Sin información -' }}</p>
+                                    <p class="text-gray-700">{{ totalBoxes[index] ?? '- Sin información -' }}</p>
                                 </div>
 
                                 <div class="flex space-x-2 bg-yellow-200 pl-3">
                                     <p class="text-[#999999] w-48">Costo total de envío:</p>
-                                    <p>${{ totalCost[index] ?? '- Sin información -' }}</p>
+                                    <p class="text-gray-700">${{ totalCost[index] ?? '- Sin información -' }}</p>
                                 </div>
 
                                 <h2 v-if="form.products.length" class="ml-2 mt-6 font-bold">
@@ -588,6 +596,7 @@ export default {
             partialities: [],
             is_sale_production: 0, //seleccionado stock porque se necesita cotizacion para crear venta
             create_calendar_task: false, //bandera para crear o no recordatorio en calendario
+            freight_option: null,
         });
 
         return {
@@ -638,6 +647,12 @@ export default {
                 'Resurtido programado',
                 'Otro',
             ],
+            freightOptions: [
+                'Cargo normal de costo al cliente',
+                'Cargo del flete en precio del producto',
+                'Emblems3d absorbe el costo del flete',
+                'El cliente envía la guía',
+            ],
             totalBoxes: [0],
             totalCost: [0],
         };
@@ -674,6 +689,13 @@ export default {
                 this.showCalendarTaskModal = true;
             } else {
                 this.store();
+            }
+        },
+        handleFreightOption() {
+            if (this.form.freight_option == 'El cliente envía la guía' || this.form.freight_option == 'Emblems3d absorbe el costo del flete') {
+                this.form.freight_cost = 0;
+            } else {
+                this.form.freight_cost = null;
             }
         },
         handleStore(create_calendar_task) {
@@ -727,6 +749,12 @@ export default {
             this.form.partialities.splice(index, 1);
         },
         store() {
+            // agrega el costo a cada parcialidad
+            if (this.totalCost?.length) {
+                this.form.partialities.forEach((element, index) => {
+                    element.shipping_cost = this.totalCost[index];
+                });
+            }
             this.form.post(route('sales.store'), {
                 onSuccess: () => {
                     this.$notify({
