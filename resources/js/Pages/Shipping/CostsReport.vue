@@ -46,7 +46,7 @@
                         </div>
                     </td>
                     <td>
-                        <p class="pb-2">{{ item.freight_option ?? '-' }}</p>
+                        <p class="pb-2">{{ item.freight_option ?? 'No especificado' }}</p>
                     </td>
                     <td>
                         <p v-if="collapseIndex[index] !== true" class="pb-2">{{ item.partialities?.length ? item.partialities[0].tracking_guide : '-' }}</p>
