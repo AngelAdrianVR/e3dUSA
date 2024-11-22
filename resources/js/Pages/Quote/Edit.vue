@@ -92,11 +92,12 @@
                                         <i v-else class="fa-regular fa-image text-4xl text-gray-400"></i>
                                     </figure>
                                 </body>
-                                <p class="text-gray-500 dark:text-gray-800 bg-yellow-200 mt-2 inline-block pr-2">Último
-                                    cambio de
-                                    precio: <span class="font-bold text-black ml-2">{{
-                                        formattedLastUpdate(catalog_product.pivot)
-                                        }}</span></p>
+                                <p class="text-gray-500 dark:text-gray-800 bg-yellow-200 mt-2 inline-block pr-2">
+                                    Último cambio de precio:
+                                    <span class="font-bold text-black ml-2">
+                                        {{ formattedLastUpdate(catalog_product.pivot) }}
+                                    </span>
+                                </p>
 
                                 <!-- botones de acción -->
                                 <div class="absolute bottom-2 right-1 flex items-center space-x-1">
@@ -294,12 +295,12 @@
                         </div> -->
                         <div>
                             <div class="flex items-center space-x-2">
-                                <InputLabel v-if="form.freight_option == 'Cargo del flete en precio del producto'"
+                                <InputLabel v-if="form.freight_option == 'Cargo del flete prorrateado en producto'"
                                     value="Costo de flete cargado a precio de producto*" />
                                 <InputLabel
-                                    v-else-if="['Cargo normal de costo al cliente'].includes(form.freight_option)"
+                                    v-else-if="['Cargo flete normal de costo al cliente'].includes(form.freight_option)"
                                     value="Costo de flete*" />
-                                <el-tooltip v-if="form.freight_option == 'Cargo del flete en precio del producto'"
+                                <el-tooltip v-if="form.freight_option == 'Cargo del flete prorrateado en producto'"
                                     placement="top">
                                     <template #content>
                                         <p>
@@ -315,13 +316,13 @@
                                 </el-tooltip>
                             </div>
                             <el-input v-model="form.freight_cost"
-                                v-if="form.freight_option == 'Cargo del flete en precio del producto' || form.freight_option == 'Cargo normal de costo al cliente'" placeholder="Ej. 550" />
+                                v-if="form.freight_option == 'Cargo del flete prorrateado en producto' || form.freight_option == 'Cargo flete normal de costo al cliente'" placeholder="Ej. 550" />
                             <InputError :message="form.errors.freight_cost" />
                         </div>
                         <div>
                             <InputLabel value="Dias para primera producción*" />
                             <el-select v-model="form.first_production_days" placeholder="Selecciona">
-                                <el-option v-for="(item, index) in firstProductionDaysList" :key="item" :label="item"
+                                <el-option v-for="(item, index) in form.is_spanish_template ? firstProductionDaysList : firstProductionDaysListEnglish" :key="item" :label="item"
                                     :value="item" />
                             </el-select>
                             <InputError :message="form.errors.first_production_days" />
@@ -656,7 +657,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import { formatDistanceToNow } from 'date-fns'
-import { format } from 'date-fns';
+import { differenceInMonths, differenceInDays, format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import axios from "axios";
 
@@ -743,6 +744,19 @@ export default {
                 '4 a 5 semanas',
                 '5 a 6 semanas',
             ],
+            firstProductionDaysListEnglish: [
+                'Immediate',
+                '1 to 2 days',
+                '2 to 3 days',
+                '3 to 4 days',
+                '4 to 5 days',
+                '5 to 6 days',
+                '1 to 2 weeks',
+                '2 to 3 weeks',
+                '3 to 4 weeks',
+                '4 to 5 weeks',
+                '5 to 6 weeks',
+            ],
             currencies: [
                 {
                     label: 'Peso mexicano',
@@ -754,8 +768,8 @@ export default {
                 }
             ],
             freightOptions: [
-                'Cargo normal de costo al cliente',
-                'Cargo del flete en precio del producto',
+                'Cargo flete normal de costo al cliente',
+                'Cargo del flete prorrateado en producto',
                 'Emblems3d absorbe el costo del flete',
                 'El cliente envía la guía',
             ],
@@ -1049,10 +1063,31 @@ export default {
         },
         formattedLastUpdate(productData) {
             const { new_date, old_date, new_updated_by } = productData;
-            const lastDate = new_date || old_date
-            return lastDate
-                ? `hace ${formatDistanceToNow(new Date(lastDate), { locale: es })}${new_updated_by ? ` por ${new_updated_by}` : ''}`
-                : 'No disponible';
+            const lastDate = new_date || old_date;
+
+            if (!lastDate) {
+                return 'No disponible';
+            }
+
+            const now = new Date();
+            const lastUpdate = new Date(lastDate);
+
+            // Calcula la diferencia en meses y días
+            const monthsDifference = differenceInMonths(now, lastUpdate);
+            const daysDifference = differenceInDays(now, lastUpdate);
+
+            let timeText = '';
+
+            if (monthsDifference > 0) {
+                // Si hay más de 0 meses, muestra solo los meses
+                timeText = `hace ${monthsDifference} mes${monthsDifference !== 1 ? 'es' : ''}`;
+            } else {
+                // Si hay menos de un mes, muestra solo los días
+                timeText = `hace ${daysDifference} día${daysDifference !== 1 ? 's' : ''}`;
+            }
+
+            // Incluye el usuario que realizó el cambio si existe
+            return new_updated_by ? `${timeText} por ${new_updated_by}` : timeText;
         }
     },
     mounted() {

@@ -27,11 +27,12 @@
             </thead>
             <tbody>
                 <tr v-for="(item, index) in sales" :key="index">
-                    <td>
-                        OV-{{ item.id.toString().padStart(4, '0') }} 
-                        <i @click="collapseIndex[index] == true ? collapseIndex[index] = false : collapseIndex[index] = true" v-if="item.partialities?.length > 1" 
-                            class="fa-solid cursor-pointer ml-2 p-1" :class="collapseIndex[index] == true ? 'fa-angle-down' : 'fa-angle-up'">
-                        </i>
+                    <td class="flex items-center space-x-3">
+                        <p>OV-{{ item.id.toString().padStart(4, '0') }}</p>
+                        <button class="size-7 rounded-full bg-gray-300 flex items-center justify-center"
+                             @click="collapseIndex[index] == true ? collapseIndex[index] = false : collapseIndex[index] = true" v-if="item.partialities?.length > 1">
+                            <i class="fa-solid" :class="collapseIndex[index] == true ? 'fa-angle-down' : 'fa-angle-up'"></i>
+                        </button>
                     </td>
                     <td>
                         <p class="pb-2">{{ item.company_branch?.name }}</p>

@@ -327,13 +327,13 @@ export default {
             const nuevaUrl = originalUrl?.replace('https://intranetemblems3d.dtw.com.mx', 'https://clientes-emblems3d.dtw.com.mx');
             return nuevaUrl;
         },
-        created() {
-            // Initialize currentImages array with default values for each product (productos de catalogo)
-            this.currentCatalogProductImages = this.quote.data.catalog_products.map(() => 0);
+    },
+    created() {
+        // Initialize currentImages array with default values for each product (productos de catalogo)
+        this.currentCatalogProductImages = this.quote.data.catalog_products.map(() => 0);
 
-            // Initialize currentImages array with default values for each product (materias primas)
-            this.currentRawMaterialImages = this.quote.data.catalog_products.map(() => 0);
-        },
+        // Initialize currentImages array with default values for each product (materias primas)
+        this.currentRawMaterialImages = this.quote.data.catalog_products.map(() => 0);
     },
     mounted() {
         window.addEventListener('beforeprint', this.handleBeforePrint);
