@@ -329,7 +329,7 @@
                                     </el-select>
                                     <InputError :message="form.errors.freight_option" />
                                 </div>
-                                <div v-if="form.freight_option == 'Cargo del flete en precio del producto' || form.freight_option == 'Cargo normal de costo al cliente'">
+                                <div v-if="form.freight_option == 'Cargo del flete prorrateado en producto' || form.freight_option == 'Cargo flete normal de costo al cliente'">
                                     <InputLabel>
                                         <div class="flex items-center">
                                             <span>Costo de flete cotizado*</span>
@@ -648,8 +648,8 @@ export default {
                 'Otro',
             ],
             freightOptions: [
-                'Cargo normal de costo al cliente',
-                'Cargo del flete en precio del producto',
+                'Cargo flete normal de costo al cliente',
+                'Cargo del flete prorrateado en producto',
                 'Emblems3d absorbe el costo del flete',
                 'El cliente envía la guía',
             ],

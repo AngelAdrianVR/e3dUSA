@@ -809,7 +809,8 @@ import InputError from "@/Components/InputError.vue";
 import RichText from "@/Components/MyComponents/RichText.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns';
+import { differenceInMonths, differenceInDays } from 'date-fns';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useForm } from "@inertiajs/vue3";
@@ -1175,12 +1176,33 @@ export default {
   },
   computed: {
     formattedLastUpdate() {
-      const { new_date, old_date, new_updated_by } = this.catalog_product_company_sale.catalog_product_company
-      const lastDate = new_date || old_date
-      return lastDate
-        ? `hace ${formatDistanceToNow(new Date(lastDate), { locale: es })}${new_updated_by ? ` por ${new_updated_by}` : ''}`
-        : 'No disponible';
-    },
+        const { new_date, old_date, new_updated_by } = this.catalog_product_company_sale.catalog_product_company;
+        const lastDate = new_date || old_date;
+
+        if (!lastDate) {
+          return 'No disponible';
+        }
+
+        const now = new Date();
+        const lastUpdate = new Date(lastDate);
+
+        // Calcula la diferencia en meses y días
+        const monthsDifference = differenceInMonths(now, lastUpdate);
+        const daysDifference = differenceInDays(now, lastUpdate);
+
+        let timeText = '';
+
+        if (monthsDifference > 0) {
+          // Si hay más de 0 meses, muestra solo los meses
+          timeText = `hace ${monthsDifference} mes${monthsDifference !== 1 ? 'es' : ''}`;
+        } else {
+          // Si hay menos de un mes, muestra solo los días
+          timeText = `hace ${daysDifference} día${daysDifference !== 1 ? 's' : ''}`;
+        }
+
+        // Incluye el usuario que realizó el cambio si existe
+        return new_updated_by ? `${timeText} por ${new_updated_by}` : timeText;
+      },
     priceChangePercentage() {
       const oldPrice = this.catalog_product_company_sale.catalog_product_company?.old_price;
       const newPrice = this.catalog_product_company_sale.catalog_product_company?.new_price;
