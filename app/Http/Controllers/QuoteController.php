@@ -160,6 +160,7 @@ class QuoteController extends Controller
                 'prev_quote' => $prevQuote->id,
             ]);
         } else {
+
             return inertia('Quote/EnglishTemplate', [
                 'quote' => $quote,
                 'next_quote' => $nextQuote->id,

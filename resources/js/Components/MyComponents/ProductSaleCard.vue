@@ -328,11 +328,15 @@
       <span class="text-secondary mb-3">{{ formatDate(catalog_product_company_sale.catalog_product_company?.new_date ??
         '-') }}</span>
 
-      <span>Último cambio de precio:</span>
-      <span class="text-secondary">{{ formattedLastUpdate }}</span>
+      <p :class="[formattedLastUpdate.bgClass, 'text-gray-500 dark:text-gray-800 mt-2 inline-block p-1 rounded-md col-span-full']">
+          Último cambio de precio:
+          <span class="font-bold text-black ml-2">
+              {{ formattedLastUpdate.text }}
+          </span>
+      </p>
 
       <!-- boton para cambiar el precio -->
-      <button @click="showUpdatePriceModal = true"
+      <button @click="handleUpdateProductPrice()"
         class="rounded-full size-6 bg-gray-400  text-black flex items-center justify-center absolute top-1 right-1">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="size-4">
@@ -379,42 +383,64 @@
   </div>
 
   <!-- modal para actualizar precio de producto -->
-  <DialogModal :show="showUpdatePriceModal" @close="showUpdatePriceModal = false" maxWidth="lg">
+  <DialogModal :show="showUpdatePriceModal" @close="showUpdatePriceModal = false" maxWidth="2xl">
     <template #title>
       <h1>Actualizar precio</h1>
     </template>
     <template #content>
-      <section class="grid grid-cols-2 gap-3">
+      <section class="grid grid-cols-3 gap-3 mt-3">
         <div>
-          <InputLabel value="Precio nuevo*" />
-          <el-input v-model="priceForm.new_price" type="text"
-            :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 30.90" />
-          <InputError :message="priceForm.errors.new_price" />
+            <InputLabel value="Precio nuevo en porcentaje*" />
+            <el-input
+                @change="calculateNewPrice"
+                v-model="new_price_percentage" type="number" :max="100" :min="5" step="0.1"
+                placeholder="Ej. 5.8%"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="(value) => value.replace(/[^\d.]/g, '')"
+                >
+                <template #prepend>
+                    %
+                </template>
+            </el-input>
+            <InputError :message="priceForm.errors.new_price" />
         </div>
         <div>
-          <InputLabel value="Moneda*" />
-          <el-select v-model="priceForm.new_currency" placeholder="Seleccionar" :fit-input-width="true">
-            <el-option v-for="item in currencies" :key="item.value" :label="item.label" :value="item.value">
-              <span style="float: left">{{ item.label }}</span>
-              <span style="float: right; color: #cccccc; font-size: 13px">{{ item.value }}</span>
-            </el-option>
-          </el-select>
-          <InputError :message="priceForm.errors.new_currency" />
+            <InputLabel value="Precio nuevo en moneda*" />
+            <el-input v-model="priceForm.new_price" type="text" disabled
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 30.90">
+                <template #prepend>
+                    $
+                </template>
+            </el-input>
+            <InputError :message="priceForm.errors.new_price" />
         </div>
-        <p v-if="priceForm.new_price && (priceForm.new_price - catalog_product_company_sale.catalog_product_company?.new_price) < (catalog_product_company_sale.catalog_product_company?.new_price * 0.04)"
-          class="text-xs text-red-600 col-span-full">El incremento de precio no debe ser menor al 4% del precio actual
-        </p>
-      </section>
+        <div>
+            <InputLabel value="Moneda*" />
+            <el-select v-model="priceForm.new_currency" placeholder="Seleccionar"
+                :fit-input-width="true">
+                <el-option v-for="item in newPriceCurrencies" :key="item.value" :label="item.label"
+                    :value="item.value">
+                    <span style="float: left">{{ item.label }}</span>
+                    <span style="float: right; color: #cccccc; font-size: 13px">{{ item.value }}</span>
+                </el-option>
+            </el-select>
+            <InputError :message="priceForm.errors.new_currency" />
+        </div>
+        <p v-if="priceForm.new_price && (priceForm.new_price - itemToUpdatePrice.new_price) < (itemToUpdatePrice.new_price * 0.04)"
+            class="text-xs text-red-600 col-span-full">El incremento de precio no debe ser menor al 4%
+            del precio actual</p>
+    </section>
     </template>
     <template #footer>
       <div class="flex justify-end space-x-1">
-        <CancelButton @click="showUpdatePriceModal = false" :disabled="form.processing">Cancelar</CancelButton>
-        <PrimaryButton @click="updatePrice"
-          :disabled="form.processing
-            || !priceForm.new_price
-            || (priceForm.new_price - catalog_product_company_sale.catalog_product_company?.new_price) < (catalog_product_company_sale.catalog_product_company?.new_price * 0.04)">
-          Actualizar precio</PrimaryButton>
+        <CancelButton @click="showUpdatePriceModal = false" :disabled="priceForm.processing">Cancelar
+        </CancelButton>
+        <PrimaryButton type="button" @click="updatePrice"
+            :disabled="priceForm.processing
+                || !priceForm.new_price
+                || (priceForm.new_price - itemToUpdatePrice.new_price) < (itemToUpdatePrice.new_price * 0.04)">Actualizar precio
+        </PrimaryButton>
       </div>
     </template>
   </DialogModal>
@@ -809,7 +835,8 @@ import InputError from "@/Components/InputError.vue";
 import RichText from "@/Components/MyComponents/RichText.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns';
+import { differenceInMonths, differenceInDays } from 'date-fns';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useForm } from "@inertiajs/vue3";
@@ -834,6 +861,8 @@ export default {
       priceForm,
       imageHovered: false, //imagen de tarjeta
       currentImage: 0, //imagen de tarjeta
+      new_price_percentage: 5, //porcentaje de aumento de precio
+      itemToUpdatePrice: this.catalog_product_company_sale.catalog_product_company, //producto seleccionado para cambiar precio
       selected: false,
       showProgressModal: false,
       showUpdatePriceModal: false,
@@ -902,6 +931,23 @@ export default {
         const parsedDate = new Date(date);
         return format(parsedDate, 'dd \'de\' MMM, Y', { locale: es }); // Formato personalizado
       }
+    },
+    calculateNewPrice() {
+        // factor para calcular porcentaje del precio
+        const factor = 1 + this.new_price_percentage * .01;
+        // guarda el precio calculado con el porcentaje seleccionado
+        this.priceForm.new_price = (factor * this.itemToUpdatePrice.new_price).toFixed(2);
+    },
+    handleUpdateProductPrice() {
+      console.log(this.itemToUpdatePrice);
+      // asigna el id del producto al formulario de cambio de precio
+      this.priceForm.product_company_id = this.itemToUpdatePrice.id;
+      // calcular el 5% del precio actual y agregarlo a nuevo precio como cantidad por defecto
+      this.priceForm.new_price = (this.itemToUpdatePrice.new_price * 1.05).toFixed(2);
+      // Agregar moneda del producto seleccionado
+      this.priceForm.new_currency = this.itemToUpdatePrice.new_currency;
+      // Abrir modal
+      this.showUpdatePriceModal = true;
     },
     confirmedChangeStatus(production) {
       if (this.getNextAction(production) == 'Finalizar') {
@@ -990,6 +1036,7 @@ export default {
           });
           this.showUpdatePriceModal = false;
           this.priceForm.reset();
+          this.new_price_percentage = 5;
         },
       });
     },
@@ -1175,11 +1222,34 @@ export default {
   },
   computed: {
     formattedLastUpdate() {
-      const { new_date, old_date, new_updated_by } = this.catalog_product_company_sale.catalog_product_company
-      const lastDate = new_date || old_date
-      return lastDate
-        ? `hace ${formatDistanceToNow(new Date(lastDate), { locale: es })}${new_updated_by ? ` por ${new_updated_by}` : ''}`
-        : 'No disponible';
+        const { new_date, old_date, new_updated_by } = this.catalog_product_company_sale.catalog_product_company;
+        const lastDate = new_date || old_date;
+
+        if (!lastDate) {
+            return { text: 'No disponible', bgClass: 'bg-gray-200' };
+        }
+
+        const now = new Date();
+        const lastUpdate = new Date(lastDate);
+
+        // Calcula la diferencia en meses
+        const monthsDifference = differenceInMonths(now, lastUpdate);
+        const daysDifference = differenceInDays(now, lastUpdate);
+
+        let timeText = '';
+        if (monthsDifference > 0) {
+            timeText = `hace ${monthsDifference} mes${monthsDifference !== 1 ? 'es' : ''}`;
+        } else {
+            timeText = `hace ${daysDifference} día${daysDifference !== 1 ? 's' : ''}`;
+        }
+
+        // Determina la clase de fondo basada en los meses
+        const bgClass = monthsDifference >= 7 ? 'bg-red-300' : 'bg-yellow-200';
+
+        return {
+            text: new_updated_by ? `${timeText} por ${new_updated_by}` : timeText,
+            bgClass,
+        };
     },
     priceChangePercentage() {
       const oldPrice = this.catalog_product_company_sale.catalog_product_company?.old_price;
