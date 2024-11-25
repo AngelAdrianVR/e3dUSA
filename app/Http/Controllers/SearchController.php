@@ -80,7 +80,7 @@ class SearchController extends Controller
 
         $company_branches = $company_branches->map(function ($company_branch) {
             return [
-                'id' => $company_branch->company_id,
+                'id' => $company_branch->id,
                 'name' => $company_branch->name,
                 'model' => 'companies',
             ];

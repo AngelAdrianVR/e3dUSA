@@ -93,10 +93,10 @@
                                         <i v-else class="fa-regular fa-image text-4xl text-gray-400"></i>
                                     </figure>
                                 </body>
-                                <p class="text-gray-500 dark:text-gray-800 bg-yellow-200 mt-2 inline-block pr-2">
+                                <p :class="[formattedLastUpdate(catalog_product.pivot).bgClass, 'text-gray-500 dark:text-gray-800 mt-2 inline-block pr-2']">
                                     Último cambio de precio:
                                     <span class="font-bold text-black ml-2">
-                                        {{ formattedLastUpdate(catalog_product.pivot) }}
+                                        {{ formattedLastUpdate(catalog_product.pivot).text }}
                                     </span>
                                 </p>
 
@@ -510,17 +510,36 @@
             </DialogModal>
 
             <!-- modal para actualizar precio de producto -->
-            <DialogModal :show="showUpdatePriceModal" @close="showUpdatePriceModal = false" maxWidth="lg">
+            <DialogModal :show="showUpdatePriceModal" @close="showUpdatePriceModal = false" maxWidth="2xl">
                 <template #title>
                     <h1>Actualizar precio de {{ itemToUpdatePrice.name }}</h1>
                 </template>
                 <template #content>
-                    <section class="grid grid-cols-2 gap-3">
+                    <section class="grid grid-cols-3 gap-3 mt-3">
                         <div>
-                            <InputLabel value="Precio nuevo*" />
-                            <el-input v-model="priceForm.new_price" type="text"
+                            <InputLabel value="Precio nuevo en porcentaje*" />
+                            <el-input
+                                @change="calculateNewPrice"
+                                v-model="new_price_percentage" type="number" :max="100" :min="5" step="0.1"
+                                placeholder="Ej. 5.8%"
                                 :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 30.90" />
+                                :parser="(value) => value.replace(/[^\d.]/g, '')"
+                                >
+                                <template #prepend>
+                                    %
+                                </template>
+                            </el-input>
+                            <InputError :message="priceForm.errors.new_price" />
+                        </div>
+                        <div>
+                            <InputLabel value="Precio nuevo en moneda*" />
+                            <el-input v-model="priceForm.new_price" type="text" disabled
+                                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 30.90">
+                                <template #prepend>
+                                    $
+                                </template>
+                            </el-input>
                             <InputError :message="priceForm.errors.new_price" />
                         </div>
                         <div>
@@ -712,6 +731,7 @@ export default {
             priceForm,
             prospectForm,
             scheduleForm,
+            new_price_percentage: 5, //porcentaje de aumento de precio
             isKeyChain: false, //bandera para saber si es llavero y activar el check de requiere medallon
             productType: "Producto de catálogo",
             importantNotes: null,
@@ -818,6 +838,12 @@ export default {
         prospects: Array,
     },
     methods: {
+        calculateNewPrice() {
+            // factor para calcular porcentaje del precio
+            const factor = 1 + this.new_price_percentage * .01;
+            // guarda el precio calculado con el porcentaje seleccionado
+            this.priceForm.new_price = (factor * this.itemToUpdatePrice.pivot.new_price).toFixed(2);
+        },
         priceChangePercentage(pivot) {
             const oldPrice = pivot.old_price;
             const newPrice = pivot.new_price;
@@ -858,7 +884,12 @@ export default {
             //guarda el producto al cual se actualizará el precio
             this.itemToUpdatePrice = catalogProduct;
             // asigna el id del producto al formulario de cambio de precio
-            this.priceForm.product_company_id = catalogProduct.pivot.id
+            this.priceForm.product_company_id = catalogProduct.pivot.id;
+            // calcular el 5% del precio actual y agregarlo a nuevo precio como cantidad por defecto
+            this.priceForm.new_price = (catalogProduct.pivot.new_price * 1.05).toFixed(2);
+            // Agregar moneda del producto seleccionado
+            this.priceForm.new_currency = catalogProduct.pivot.new_currency;
+            // Abrir modal
             this.showUpdatePriceModal = true;
         },
         handleScheduleUpdateProductPrice(catalogProduct) {
@@ -1072,29 +1103,31 @@ export default {
             const lastDate = new_date || old_date;
 
             if (!lastDate) {
-                return 'No disponible';
+                return { text: 'No disponible', bgClass: 'bg-gray-200' };
             }
 
             const now = new Date();
             const lastUpdate = new Date(lastDate);
 
-            // Calcula la diferencia en meses y días
+            // Calcula la diferencia en meses
             const monthsDifference = differenceInMonths(now, lastUpdate);
             const daysDifference = differenceInDays(now, lastUpdate);
 
             let timeText = '';
-
             if (monthsDifference > 0) {
-                // Si hay más de 0 meses, muestra solo los meses
                 timeText = `hace ${monthsDifference} mes${monthsDifference !== 1 ? 'es' : ''}`;
             } else {
-                // Si hay menos de un mes, muestra solo los días
                 timeText = `hace ${daysDifference} día${daysDifference !== 1 ? 's' : ''}`;
             }
 
-            // Incluye el usuario que realizó el cambio si existe
-            return new_updated_by ? `${timeText} por ${new_updated_by}` : timeText;
-        }
+            // Determina la clase de fondo basada en los meses
+            const bgClass = monthsDifference >= 7 ? 'bg-red-300' : 'bg-yellow-200';
+
+            return {
+                text: new_updated_by ? `${timeText} por ${new_updated_by}` : timeText,
+                bgClass,
+            };
+        },
     },
     mounted() {
         if (this.opportunity) {
