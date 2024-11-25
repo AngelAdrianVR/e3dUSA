@@ -160,6 +160,7 @@ class QuoteController extends Controller
                 'prev_quote' => $prevQuote->id,
             ]);
         } else {
+
             return inertia('Quote/EnglishTemplate', [
                 'quote' => $quote,
                 'next_quote' => $nextQuote->id,
@@ -286,6 +287,7 @@ class QuoteController extends Controller
         // Crear la orden de venta
         $sale = Sale::create([
             'shipping_option' => "Entrega única",
+            'freight_option' => $quote->freight_option,
             'freight_cost' => is_numeric($quote->freight_cost) ? $quote->freight_cost : 0,
             'freight_cost_charged_in_product' => $quote->freight_cost_charged_in_product,
             'order_via' => "Cotización folio $folio",

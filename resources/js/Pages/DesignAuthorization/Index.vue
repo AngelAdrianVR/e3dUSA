@@ -107,6 +107,7 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Link } from "@inertiajs/vue3";
@@ -126,6 +127,7 @@ data() {
 components:{
     AppLayout,
     SecondaryButton,
+    IndexSearchBar,
     Link
 },
 props: {

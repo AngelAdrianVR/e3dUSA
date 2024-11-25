@@ -7,11 +7,11 @@
             <article class="space-y-1">
                 <div class="flex space-x-2">
                     <p class="text-[#373737] dark:text-gray-400 font-bold w-24">Producto:</p>
-                    <p>{{ product.name }}</p>
+                    <p>{{ product?.name }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#373737] dark:text-gray-400 font-bold w-24">N. Parte:</p>
-                    <p>{{ product.part_number }}</p>
+                    <p>{{ product?.part_number }}</p>
                 </div>
                 <div class="flex space-x-2">
                     <p class="text-[#373737] dark:text-gray-400 font-bold w-24">Cantidad:</p>
@@ -20,8 +20,8 @@
             </article>
             <article class="flex flex-col items-end justify-end space-y-3">
                 <figure class="rounded-xl flex items-center justify-center bg-gray-200 dark:bg-[#202020] w-3/4 h-28">
-                    <img v-if="product.media?.length" class="object-contain h-full"
-                        :src="product.media[0]?.original_url">
+                    <img v-if="product?.media?.length" class="object-contain h-full"
+                        :src="product?.media[0]?.original_url">
                     <i v-else class="fa-regular fa-image text-gray-300 text-5xl"></i>
                 </figure>
 
@@ -153,7 +153,7 @@ export default {
             this.$inertia.delete(route('shipping-rates.destroy', this.shippingInfo.id));
         },
         calculateShippingData() {
-            this.shippingInfo = this.product.shipping_rates.find(item => item.quantity === this.quantity);
+            this.shippingInfo = this.product?.shipping_rates.find(item => item.quantity === this.quantity);
             const totalBoxes = this.shippingInfo?.boxes?.length;
             this.$emit('total-boxes', totalBoxes ?? 0);
             const totalCost = this.shippingInfo?.boxes?.reduce((acc, box) => {

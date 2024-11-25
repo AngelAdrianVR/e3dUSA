@@ -31,7 +31,7 @@ class CheckMachinesMaintenance extends Command
         if ($machines->isEmpty()) {
             $this->info('No machines need maintenance.');
         } else {
-            $super_admins = User::whereNull('employee_properties')->get();
+            $super_admins = User::whereNull('employee_properties')->whereNotIn('id', [35])->get();
             $others = User::whereIn('employee_properties->department', ['Ingeniería', 'Mantenimiento'])->where('is_active', 1)->get();
 
             // notify users

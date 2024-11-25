@@ -16,6 +16,7 @@
                     <th class="w-[11%] text-start">Sucursal</th>
                     <th class="w-[11%] text-start">Gastos de envío cobrado</th>
                     <th class="w-[11%] text-start">Gastos de envío reales</th>
+                    <th class="w-[11%] text-start">Forma de envío</th>
                     <th class="w-[11%] text-start">Guía</th>
                     <th class="w-[11%] text-start">Paquetería</th>
                     <th class="w-[11%] text-start">Fecha promesa de embarque</th>
@@ -26,11 +27,12 @@
             </thead>
             <tbody>
                 <tr v-for="(item, index) in sales" :key="index">
-                    <td>
-                        OV-{{ item.id.toString().padStart(4, '0') }} 
-                        <i @click="collapseIndex[index] == true ? collapseIndex[index] = false : collapseIndex[index] = true" v-if="item.partialities?.length > 1" 
-                            class="fa-solid cursor-pointer ml-2 p-1" :class="collapseIndex[index] == true ? 'fa-angle-down' : 'fa-angle-up'">
-                        </i>
+                    <td class="flex items-center space-x-3">
+                        <p>OV-{{ item.id.toString().padStart(4, '0') }}</p>
+                        <button class="size-7 rounded-full bg-gray-300 flex items-center justify-center"
+                             @click="collapseIndex[index] == true ? collapseIndex[index] = false : collapseIndex[index] = true" v-if="item.partialities?.length > 1">
+                            <i class="fa-solid" :class="collapseIndex[index] == true ? 'fa-angle-down' : 'fa-angle-up'"></i>
+                        </button>
                     </td>
                     <td>
                         <p class="pb-2">{{ item.company_branch?.name }}</p>
@@ -45,25 +47,29 @@
                         </div>
                     </td>
                     <td>
-                        <p v-if="collapseIndex[index] !== true" class="pb-2">${{ item.partialities?.length ? item.partialities[0].tracking_guide : '-' }}</p>
+                        <p class="pb-2">{{ item.freight_option ?? 'No especificado' }}</p>
+                    </td>
+                    <td>
+                        <p v-if="collapseIndex[index] !== true" class="pb-2">{{ item.partialities?.length ? item.partialities[0].tracking_guide : '-' }}</p>
                         <div v-else v-for="(partiality, index) in item.partialities" :key="index">
                             <p class="pb-2">{{ partiality.tracking_guide ?? '-' }}</p>
                         </div>
                     </td>
                     <td>
-                        <p v-if="collapseIndex[index] !== true" class="pb-2">${{ item.partialities?.length ? item.partialities[0].shipping_company : '-' }}</p>
+                        <p v-if="collapseIndex[index] !== true" class="pb-2">{{ item.partialities?.length ? item.partialities[0].shipping_company : '-' }}</p>
                         <div v-else v-for="(partiality, index) in item.partialities" :key="index">
                             <p class="pb-2">{{ partiality.shipping_company ?? '-' }}</p>
                         </div>
                     </td>
                     <td>
-                        <p v-if="collapseIndex[index] !== true" class="pb-2">${{ item.partialities?.length ? item.partialities[0].promise_date : '-' }}</p>
+                        <p v-if="collapseIndex[index] !== true" class="pb-2">{{ item.partialities?.length ? formatDate(item.partialities[0].promise_date) : '-' }}</p>
                         <div v-else v-for="(partiality, index) in item.partialities" :key="index">
-                            <p class="pb-2">{{ partiality.promise_date ?? '-' }}</p>
+                            <p class="pb-2">{{ formatDate(partiality.promise_date) ?? '-' }}</p>
                         </div>
                     </td>
                     <td>
-                        <div v-for="partiality in item.partialities" :key="partiality">
+                        <p v-if="collapseIndex[index] !== true" class="pb-2">{{ item.partialities?.length ? formatDate(item.partialities[0].sent_at) : '-' }}</p>
+                        <div v-else v-for="(partiality, index) in item.partialities" :key="index">
                             <p class="pb-2">{{ formatDate(partiality.sent_at) ?? '-' }}</p>
                         </div>
                     </td>
@@ -100,7 +106,7 @@ methods:{
     formatDate(date) {
         if ( date ) {
             const parsedDate = new Date(date);
-            return format(parsedDate, 'dd MMMM yyyy', { locale: es }); // Formato personalizado
+            return format(parsedDate, 'dd MMM yyyy', { locale: es }); // Formato personalizado
         }
     },
     realShippingCost(sale) {
@@ -124,7 +130,7 @@ computed:{
         }
         return total;
     }, 0);
-}
+    }
 }
 }
 </script>
