@@ -98,7 +98,7 @@
           </div>
           <div class="md:grid md:grid-cols-2 gap-2">
             <div>
-              <InputLabel value="Fecha tentativa de devolución*" />
+              <InputLabel value="Nombre de la muestra*" />
               <el-input v-model="form.name" placeholder="Nombre de la muestra" />
               <InputError :message="form.errors.name" />
             </div>

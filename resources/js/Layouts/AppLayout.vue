@@ -851,12 +851,11 @@ onMounted(() => {
           <div v-if="$page.props.auth.user.has_important_reminder"
             ref="draggableAlert"
             class="border border-red-600 rounded-md bg-red-50 flex justify-between items-center space-x-2 absolute md:right-1/2 py-2 px-4 !cursor-move z-30 w-full md:w-96">
-            <figure>
+            <figure class="w-24">
               <img src="@/../../public/images/alarm.png" alt="">
             </figure>
             <p class="text-sm">
-              Tienes una(s) tarea(s) atrasada(s) o por vencerse. <br>
-              <strong>Revísala(s) y complétala(s) pronto.</strong>
+              Tienes una o más tareas de actualización de precio que <strong>debes completar hoy y/o que tienen atraso.</strong>
             </p>
             <div @click="$inertia.get(route('calendars.index'));" class="text-red-600 flex items-center space-x-3 pl-2 !cursor-pointer">
               <span>Ir</span>
