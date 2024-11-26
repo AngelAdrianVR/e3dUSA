@@ -425,6 +425,7 @@ class ProductionController extends Controller
             ]);
             $production->update([
                 'finished_at' => now(),
+                'has_low_stock' => false,
                 'is_paused' => 0,
                 'scrap' => $request->scrap,
                 'scrap_reason' => $request->reason,

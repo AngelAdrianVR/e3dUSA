@@ -60,7 +60,6 @@
                                     <el-option v-for="(month, index) in months" :key="index" :label="month" :value="index" :disabled="index == 0" />
                                 </el-select>
                             </div>
-                            {{ form.birthdate_month }}
                         </div>
                     </td>
                     <td>
