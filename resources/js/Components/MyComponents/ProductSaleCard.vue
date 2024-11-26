@@ -290,7 +290,8 @@
             para todas las tareas de producción registradas. <br>
             Se basa en el tiempo estimado total de las tareas, el <br>
             horario laboral del operador (incluyendo su hora de entrada, <br>
-            salida y descansos) y omite los días en que el operador no trabaja.
+            salida y descansos), retardos, faltas y omite los días <br>
+            en que el operador no trabaja.
           </p>
         </template>
         <div class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">

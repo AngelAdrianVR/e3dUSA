@@ -102,23 +102,30 @@ class CatalogProductCompanySale extends Model
                         // Escenario para hoy
                         if (!$attendanceToday || !$attendanceToday->check_in) {
                             // Si no tiene entrada, sumar el tiempo desde la hora de entrada hasta ahora
-                            $missedMinutesToday = $checkInTime->diffInMinutes(now());
+                            $missedMinutesToday = $checkInTime->copy()->addHours(6)->diffInMinutes(now());
                             $remainingMinutes += $missedMinutesToday;
                         }
                         // Si tiene entrada pero no salida, no se toma como falta y no se suma tiempo.
                     } else {
                         // Escenario para días pasados
                         if (!$attendanceToday || !$attendanceToday->check_in || !$attendanceToday->check_out) {
-                            // Sumar el tiempo laboral completo del día al tiempo restante
+                            // Sumar el tiempo laboral completo del día al tiempo restante si es falta del operador
                             $missedDayMinutes = $checkInTime->diffInMinutes($checkOutTime) - $breakMinutes;
                             $remainingMinutes += $missedDayMinutes;
                         } else {
-                            // Verificar si el operador llegó tarde ****** VERIFICAR ******
-                            $checkInActual = $attendanceToday->check_in;
+                            // Verificar si el operador llegó tarde
+                            $checkInActual = $attendanceToday->check_in->copy()->setDate(
+                                $currentDateTime->year,
+                                $currentDateTime->month,
+                                $currentDateTime->day
+                            ); // Ajustar al día del registro
                             if ($checkInActual->greaterThan($checkInTime)) {
-                                // Calcular los minutos de tardanza
-                                $lateMinutes = $checkInActual->diffInMinutes($checkInTime);
-                                $remainingMinutes += $lateMinutes;
+                                // Si es el día en que inició la tarea, no sumar el tiempo de retardo
+                                if (!$currentDateTime->isSameDay($estimatedStart->copy()->addHours(6))) {
+                                    // Calcular los minutos de tardanza
+                                    $lateMinutes = $checkInActual->diffInMinutes($checkInTime->copy()->addHours(6));
+                                    $remainingMinutes += $lateMinutes;
+                                }
                             }
                         }
                     }
