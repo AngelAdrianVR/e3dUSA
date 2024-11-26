@@ -14,17 +14,21 @@ class NotifyCloseUpdateProductPriceReminders extends Command
 
     public function handle()
     {
-        // Calcula la fecha de 3 días desde hoy
-        $dateThreeDaysAhead = now()->addDays(3)->toDateString();
-
-        // Busca recordatorios con fecha de hoy a 3 días despues de hoy
+        // Fechas relevantes
         $today = now()->toDateString();
         $dateThreeDaysAhead = now()->addDays(3)->toDateString();
 
-        $reminders = Calendar::whereBetween('start_date', [$today, $dateThreeDaysAhead])
+        // Obtener recordatorios entre hoy y 3 días adelante o pasados con estado "Pendiente"
+        $reminders = Calendar::where(function ($query) use ($today, $dateThreeDaysAhead) {
+                $query->whereBetween('start_date', [$today, $dateThreeDaysAhead])
+                      ->orWhere('start_date', '<', $today);
+            })
             ->where('title', 'like', 'Cambiar precio%')
             ->where('status', 'Pendiente')
             ->get();
+
+        // Variable para rastrear si se encontró al menos un recordatorio importante
+        $hasImportantReminder = $reminders->isNotEmpty();
 
         foreach ($reminders as $reminder) {
             $user = User::find($reminder->user_id); // Asegúrate de que el modelo tenga una relación con el usuario
@@ -35,6 +39,14 @@ class NotifyCloseUpdateProductPriceReminders extends Command
             }
         }
 
-        $this->info('Notificaciones de cambio de precio enviadas para recordatorios que están a 3 días de la fecha agendada.');
+        // Actualizar la propiedad `has_important_reminder` en la tabla `users`
+        User::query()->update(['has_important_reminder' => $hasImportantReminder]);
+
+        // Mensaje de confirmación en la consola
+        $this->info(
+            $hasImportantReminder 
+                ? 'Notificaciones enviadas y propiedad has_important_reminder actualizada a true.'
+                : 'No se encontraron recordatorios importantes. Propiedad has_important_reminder actualizada a false.'
+        );
     }
 }
