@@ -16,7 +16,7 @@ class NotifyCloseUpdateProductPriceReminders extends Command
     {
         // Fechas relevantes
         $today = now()->toDateString();
-        $dateThreeDaysAhead = now()->addDays(3)->toDateString();
+        $dateThreeDaysAhead = now()->addDays(1)->toDateString();
 
         // Obtener recordatorios entre hoy y 3 días adelante o pasados con estado "Pendiente"
         $reminders = Calendar::where(function ($query) use ($today, $dateThreeDaysAhead) {
