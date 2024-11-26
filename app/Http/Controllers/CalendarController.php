@@ -117,11 +117,31 @@ class CalendarController extends Controller
         event(new RecordDeleted($calendar));
     }
 
-    public function taskDone(Calendar $calendar)
+    public function taskDone(Calendar $calendar) 
     {
+        // Actualiza el estado del evento a "Terminada"
         $calendar->update([
             'status' => 'Terminada'
         ]);
+
+        // Fechas relevantes
+        $today = now()->toDateString();
+        $dateThreeDaysAhead = now()->addDays(3)->toDateString();
+
+        // Obtener recordatorios entre hoy y 3 días adelante o pasados con estado "Pendiente"
+        $reminders = Calendar::where(function ($query) use ($today, $dateThreeDaysAhead) {
+                $query->whereBetween('start_date', [$today, $dateThreeDaysAhead])
+                    ->orWhere('start_date', '<', $today);
+            })
+            ->where('title', 'like', 'Cambiar precio%')
+            ->where('status', 'Pendiente')
+            ->get();
+
+        // Variable para rastrear si se encontró al menos un recordatorio importante
+        $hasImportantReminder = $reminders->isNotEmpty();
+
+        // Actualizar la propiedad `has_important_reminder` en la tabla `users`
+        User::query()->update(['has_important_reminder' => $hasImportantReminder]);
     }
 
     public function setAttendanceConfirmation(Calendar $calendar, Request $request)
