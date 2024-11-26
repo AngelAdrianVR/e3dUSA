@@ -379,7 +379,7 @@ class User extends Authenticatable
     {
         $limitDate = $startDate->copy()->addDays(7); // Fecha límite una semana después
 
-        return collect([]);
+        // return collect([]);
         return $this->productions->filter(function ($production) use ($startDate, $limitDate) {
             $promiseDate = optional($production->catalogProductCompanySale->sale)->promise_date;
 
