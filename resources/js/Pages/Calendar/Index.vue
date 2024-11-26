@@ -52,7 +52,14 @@
           </tr>
           <tr v-for="(week, index) in weeks" :key="index" class="text-sm text-right">
             <td v-for="day in week" :key="day" class="h-32 pb-4 border border-[#9A9A9A] relative">
-              <p :class="{'bg-gray-500': day}" class="absolute bottom-0 right-0 rounded-full size-6 flex items-center justify-center text-white text-center"><span>{{ day }}</span></p>
+              <p 
+                :class="{
+                  'bg-red-500 text-white': day === today,
+                  'bg-gray-500 text-white': day !== today
+                }" 
+                class="absolute bottom-0 right-0 rounded-full size-6 flex items-center justify-center text-center">
+                <span>{{ day }}</span>
+              </p>
               <!-- Agregar línea para tareas y eventos -->
               <div v-for="task in tasks.data" :key="task.id">
                 <div class="mt-1" v-if="isTaskDay(task, day)">
@@ -64,7 +71,7 @@
                         : 'bg-[#FDB9C9] border-[#D90537] border-l-4 border'"
                     class="h-7 rounded-sm text-xs justify-center items-center cursor-pointer flex relative">
 
-                    <p class="flex ">{{ task.title }}
+                    <p class="w-48 truncate">{{ task.title }}
                         <!-- <svg v-if="task.status === 'Terminada'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" 
                           class="size-4 text-green-600 ml-3">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -194,6 +201,7 @@ export default {
       selectedDay: null, // Seguinmiento del dia seleccionado
       showPendentInvitationsModal: false,
       pendent_invitations_local: this.pendent_invitations,
+      today: new Date().getDate(), // Obtiene el día actual (número)
     };
   },
   components: {

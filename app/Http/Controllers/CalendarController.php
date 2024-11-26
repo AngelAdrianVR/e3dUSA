@@ -89,6 +89,25 @@ class CalendarController extends Controller
 
         event(new RecordCreated($calendar));
 
+        // actualizar bandera de aviso invasivo de recordatorio ------------------------------
+        $today = now()->toDateString();
+        $dateOneDayAhead = now()->addDays(1)->toDateString();
+
+        // Obtener recordatorios entre hoy y 1 día adelante o pasados con estado "Pendiente"
+        $reminders = Calendar::where(function ($query) use ($today, $dateOneDayAhead) {
+                $query->whereBetween('start_date', [$today, $dateOneDayAhead])
+                    ->orWhere('start_date', '<', $today);
+            })
+            ->where('title', 'like', 'Cambiar precio%')
+            ->where('status', 'Pendiente')
+            ->get();
+
+        // Variable para rastrear si se encontró al menos un recordatorio importante
+        $hasImportantReminder = $reminders->isNotEmpty();
+
+        // Actualizar la propiedad `has_important_reminder` en la tabla `users`
+        User::query()->update(['has_important_reminder' => $hasImportantReminder]);
+
         return to_route('calendars.index');
     }
 
@@ -124,13 +143,12 @@ class CalendarController extends Controller
             'status' => 'Terminada'
         ]);
 
-        // Fechas relevantes
         $today = now()->toDateString();
-        $dateThreeDaysAhead = now()->addDays(3)->toDateString();
+        $dateOneDayAhead = now()->addDays(1)->toDateString();
 
-        // Obtener recordatorios entre hoy y 3 días adelante o pasados con estado "Pendiente"
-        $reminders = Calendar::where(function ($query) use ($today, $dateThreeDaysAhead) {
-                $query->whereBetween('start_date', [$today, $dateThreeDaysAhead])
+        // Obtener recordatorios entre hoy y 1 día adelante o pasados con estado "Pendiente"
+        $reminders = Calendar::where(function ($query) use ($today, $dateOneDayAhead) {
+                $query->whereBetween('start_date', [$today, $dateOneDayAhead])
                     ->orWhere('start_date', '<', $today);
             })
             ->where('title', 'like', 'Cambiar precio%')
