@@ -65,7 +65,8 @@
             <tbody>
                 <tr v-for="(item, index) in quote.data.catalog_products" :key="index"
                     class="bg-gray-200 text-gray-700 uppercase">
-                    <td class="px-2 py-px">{{ item.name + ' (N. de parte: ' + item.part_number + ')' }}</td>
+                    <td class="px-2 py-px">{{ item.name }}</td>
+                    <!-- <td class="px-2 py-px">{{ item.name + ' (N. de parte: ' + item.part_number + ')' }}</td> se quitó el numero de parte. descomentar si se quiere revertir cambios-->
                     <td class="px-2 py-px">{{ item.pivot.notes ?? '--' }}</td>
                     <td class="px-2 py-px">{{ item.pivot.price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
                         quote.data.currency }}</td>
@@ -81,7 +82,8 @@
             <tbody>
                 <tr v-for="(item, index) in quote.data.raw_materials" :key="index"
                     class="bg-gray-200 text-gray-700 uppercase">
-                    <td class="px-2 py-px">{{ item.name + ' (N. de parte: ' + item.part_number + ')' }}</td>
+                    <td class="px-2 py-px">{{ item.name }}</td>
+                    <!-- <td class="px-2 py-px">{{ item.name + ' (N. de parte: ' + item.part_number + ')' }}</td> -->
                     <td class="px-2 py-px">{{ item.pivot.notes ?? '--' }}</td>
                     <td class="px-2 py-px">{{ item.pivot.price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
                         quote.data.currency }}</td>
@@ -105,7 +107,7 @@
             <!-- Images de los productos de catalogo -->
             <template v-for="(item, productIndex) in quote.data.catalog_products" :key="item.id">
                 <div v-if="item.pivot.show_image" class="bg-gray-200 rounded-t-xl rounded-b-md border"
-                    style="font-size: 8px;">
+                    style="font-size: 9px;">
                     <img class="rounded-t-xl max-h-52 mx-auto"
                         :src="item.media[currentCatalogProductImages[productIndex]]?.original_url">
                     <!-- selector de imagen cuando son varias -->
@@ -116,6 +118,13 @@
                             class="fa-solid fa-circle text-[7px] cursor-pointer"></i>
                     </div>
                     <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
+                    <p v-if="item.large || item.height || item.width || item.diameter" class="py-px px-1 uppercase text-gray-600 font-bold">Dimensiones:</p>
+                    <div class="flex items-center space-x-3">
+                        <p v-if="item.large" class="py-px px-1 text-gray-600">Largo: {{ item.large }}mm</p>
+                        <p v-if="item.height" class="py-px px-1 text-gray-600">Alto: {{ item.height }}mm</p>
+                        <p v-if="item.width" class="py-px px-1 text-gray-600">Ancho: {{ item.width }}mm</p>
+                        <p v-if="item.diameter" class="py-px px-1 text-gray-600">Diámetro: {{ item.diameter }}mm</p>
+                    </div>
                 </div>
             </template>
 

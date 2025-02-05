@@ -117,6 +117,16 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="flex mb-4 space-x-2">
+                            <p class="w-1/3 text-[#9A9A9A]">Dimensiones</p>
+                            <div v-if="catalog_product.data.large || catalog_product.data.height || catalog_product.data.width || catalog_product.data.diameter">
+                                <p v-if="catalog_product.data.large">largo: {{ catalog_product.data.large }}mm</p>
+                                <p v-if="catalog_product.data.height">Alto: {{ catalog_product.data.height }}mm</p>
+                                <p v-if="catalog_product.data.width">Ancho: {{ catalog_product.data.width }}mm</p>
+                                <p v-if="catalog_product.data.diameter">Diámetro: {{ catalog_product.data.diameter }}mm</p>
+                            </div>
+                            <p v-else>- SIN INFORMACIÓN -</p>
+                        </div>
                         <div class="flex mb-6 space-x-2">
                             <p class="w-1/3 text-[#9A9A9A]">Descripción</p>
                             <p>{{ catalog_product.data.description }}</p>
