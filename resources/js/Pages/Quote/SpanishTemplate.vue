@@ -65,7 +65,8 @@
             <tbody>
                 <tr v-for="(item, index) in quote.data.catalog_products" :key="index"
                     class="bg-gray-200 text-gray-700 uppercase">
-                    <td class="px-2 py-px">{{ item.name + ' (N. de parte: ' + item.part_number + ')' }}</td>
+                    <td class="px-2 py-px">{{ item.name }}</td>
+                    <!-- <td class="px-2 py-px">{{ item.name + ' (N. de parte: ' + item.part_number + ')' }}</td> se quitó el numero de parte. descomentar si se quiere revertir cambios-->
                     <td class="px-2 py-px">{{ item.pivot.notes ?? '--' }}</td>
                     <td class="px-2 py-px">{{ item.pivot.price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
                         quote.data.currency }}</td>

@@ -46,6 +46,10 @@ class CatalogProductController extends Controller
             'min_quantity' => 'required|min:0',
             'max_quantity' => 'required|min:0',
             'description' => 'nullable',
+            'width' => 'required|numeric|min:0|max:2000',
+            'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
             'raw_materials.*.production_cost' => 'array|min:1',
             'features' => 'nullable',
         ]);
@@ -110,6 +114,10 @@ class CatalogProductController extends Controller
             'min_quantity' => 'required|min:0',
             'max_quantity' => 'required|min:0',
             'description' => 'nullable',
+            'width' => 'required|numeric|min:0|max:2000',
+            'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
             'raw_materials.*.production_cost' => 'array|min:1',
         ]);
 
@@ -146,6 +154,10 @@ class CatalogProductController extends Controller
             'min_quantity' => 'required|min:0',
             'max_quantity' => 'required|min:0',
             'description' => 'nullable',
+            'width' => 'required|numeric|min:0|max:2000',
+            'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
             'raw_materials.*.production_cost' => 'array|min:1'
         ]);
 

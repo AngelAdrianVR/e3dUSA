@@ -62,6 +62,49 @@
             :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 1,000" />
           <InputError :message="form.errors.max_quantity" />
         </div>
+        <label class="flex items-center mt-2 w-1/3 col-span-full">
+            <Checkbox @change="form.large = null; form.height = null" v-model:checked="form.is_circular" name="remember"
+            class="bg-transparent" />
+            <span class="ml-2 text-sm">Es circular</span>
+        </label>
+        <div class="col-span-full grid grid-cols-3 gap-3">
+            <div>
+            <InputLabel value="Ancho/Grosor(mm)*" />
+            <el-input v-model="form.width" type="text"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 25.5" />
+            <InputError :message="form.errors.width" />
+            </div>
+            <div v-if="!form.is_circular">
+            <InputLabel value="Largo(mm)*" />
+            <el-input v-model="form.large" type="text"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 96" />
+            <InputError :message="form.errors.large" />
+            </div>
+            <div v-if="!form.is_circular">
+            <InputLabel value="Alto(mm)*" />
+            <el-input v-model="form.height" type="text"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 10" />
+            <InputError :message="form.errors.height" />
+            </div>
+            <div v-if="form.is_circular">
+            <InputLabel value="Diámetro(mm)*" />
+            <el-input v-model="form.diameter" type="text"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 43.8" />
+            <InputError :message="form.errors.diameter" />
+            </div>
+        </div>
+        <div class="col-span-full flex items-center justify-center space-x-4">
+            <figure v-if="!form.is_circular" class="w-48 dark:bg-gray-400 rounded-lg p-2">
+                <img class="mx-auto" src="@/../../public/images/paralelepipedo.png" alt="">
+            </figure>
+            <figure v-else class="w-32">
+                <img src="@/../../public/images/diameter.png" alt="">
+            </figure>
+        </div>
         <div class="col-span-full">
           <InputLabel value="Descripción" />
           <el-input v-model="form.description" :rows="3" maxlength="800" placeholder="Descripción" show-word-limit
@@ -140,7 +183,16 @@
           cargando imagen...
         </div>
         <figure v-else-if="selectedRawMaterial" class="rounded-md border border-[#9a9a9a]">
-          <img :src="selectedRawMaterial.media[0]?.original_url" class="rounded-md object-cover w-36">
+            <img :src="selectedRawMaterial.media[0]?.original_url" class="rounded-md object-cover w-36">
+            <section class="flex items-center space-x-2">
+                <div class="text-xs mt-1 p-2 w-28">
+                    <p v-if="selectedRawMaterial.large">Largo: {{ selectedRawMaterial.large }}mm</p>
+                    <p v-if="selectedRawMaterial.height">Alto: {{ selectedRawMaterial.height }}mm</p>
+                    <p v-if="selectedRawMaterial.width">Ancho: {{ selectedRawMaterial.width }}mm</p>
+                    <p v-if="selectedRawMaterial.diameter">Diámetro: {{ selectedRawMaterial.diameter }}mm</p>
+                </div>
+                <PrimaryButton type="button" @click="setSizeToProduct()" class="!py-1 rounded-md">Utilizar estas medidas</PrimaryButton>
+            </section>
         </figure>
         <div>
           <InputLabel value="proceso(s) de producción" />
@@ -224,6 +276,7 @@ import IconInput from "@/Components/MyComponents/IconInput.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import InputFilePreview from "@/Components/MyComponents/InputFilePreview.vue";
 import Back from "@/Components/MyComponents/Back.vue";
+import Checkbox from "@/Components/Checkbox.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 
 export default {
@@ -236,6 +289,11 @@ export default {
       min_quantity: this.catalog_product.min_quantity,
       max_quantity: this.catalog_product.max_quantity,
       description: this.catalog_product.description,
+      width: this.catalog_product.width,
+      large: this.catalog_product.large,
+      height: this.catalog_product.height,
+      diameter: this.catalog_product.diameter,
+      is_circular: this.catalog_product.diameter ? true : false,
       raw_materials: [],
       media: [],
       features: this.catalog_product.features ?? [],
@@ -373,6 +431,7 @@ export default {
     InputLabel,
     InputError,
     IconInput,
+    Checkbox,
     Back,
     Link
   },
@@ -411,6 +470,17 @@ export default {
           }
         );
       }
+    },
+    setSizeToProduct() {
+        if ( !this.selectedRawMaterial.diameter ) {
+          this.form.is_circular = false;
+        } else {
+          this.form.is_circular = true;
+        }
+        this.form.large = this.selectedRawMaterial.large;
+        this.form.height = this.selectedRawMaterial.height;
+        this.form.width = this.selectedRawMaterial.width;
+        this.form.diameter = this.selectedRawMaterial.diameter;
     },
     handleChange(file, fileList) {
       this.form.media = fileList.map(item => item.raw); // Actualiza form.media con los archivos
