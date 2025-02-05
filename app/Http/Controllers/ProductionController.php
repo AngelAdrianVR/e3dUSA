@@ -56,7 +56,7 @@ class ProductionController extends Controller
     //Index que contiene todos los registros de produccion
     public function adminIndex()
     {
-        // Pagina 20 items por página
+        // Pagina 8 items por página
         $pre_productions = Sale::with([
             'user:id,name',
             'productions' => ['catalogProductCompanySale:id,catalog_product_company_id,sale_id'
@@ -67,9 +67,11 @@ class ProductionController extends Controller
         ])
             ->whereHas('productions')
             ->latest()
-            ->paginate(10); // Paginar 20 por página
+            ->paginate(10, 
+                ['id', 'promise_date', 'is_sale_production', 'is_high_priority', 'authorized_at', 'user_id', 'company_branch_id', 'contact_id', 'status', 'created_at']); // Paginar 10 por página
 
-        $productions = $this->processDataIndex($pre_productions);
+            // return $pre_productions;
+            $productions = $this->processDataIndex($pre_productions);
 
         return inertia('Production/Admin', compact('productions'));
     }
