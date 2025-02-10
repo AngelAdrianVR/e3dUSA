@@ -88,11 +88,19 @@
                 @php
                     $products_collection = collect($purchase->products);
                 @endphp
-                <article style="display: inline-block; width: 24%; margin-right: 4px; margin-bottom: 4px; font-size: 10px;">
-                    <p style="color: #525252; margin-top: 2px; margin-bottom: 0px">Producto: <span style="color: #0355B5">{{ $item->part_number . ' ' . $item->name }}</span></p>
-                    <p style="color: #525252; margin-top: 2px; margin-bottom: 0px">Piezas que quedarán pendientes: <span style="color: black">{{ $products_collection->where('id', $item->id)->first()['additional_stock'] ?? '-' }}</span></p>
-                    <p style="color: #525252; margin-top: 2px; margin-bottom: 0px">Piezas que viajan en avión: <span style="color: black">{{ $products_collection->where('id', $item->id)->first()['plane_stock'] ?? '-' }}</span></p>
-                    <p style="color: #525252; margin-top: 2px; margin-bottom: 0px">Piezas que viajan en barco: <span style="color: black">{{ $products_collection->where('id', $item->id)->first()['ship_stock'] ?? '-' }}</span></p>
+                <article
+                    style="display: inline-block; width: 24%; margin-right: 4px; margin-bottom: 4px; font-size: 10px;">
+                    <p style="color: #525252; margin-top: 2px; margin-bottom: 0px">Producto: <span
+                            style="color: #0355B5">{{ $item->part_number . ' ' . $item->name }}</span></p>
+                    <p style="color: #525252; margin-top: 2px; margin-bottom: 0px">Piezas que quedarán pendientes: <span
+                            style="color: black">{{ $products_collection->where('id', $item->id)->first()['additional_stock'] ?? '-' }}</span>
+                    </p>
+                    <p style="color: #525252; margin-top: 2px; margin-bottom: 0px">Piezas que viajan en avión: <span
+                            style="color: black">{{ $products_collection->where('id', $item->id)->first()['plane_stock'] ?? '-' }}</span>
+                    </p>
+                    <p style="color: #525252; margin-top: 2px; margin-bottom: 0px">Piezas que viajan en barco: <span
+                            style="color: black">{{ $products_collection->where('id', $item->id)->first()['ship_stock'] ?? '-' }}</span>
+                    </p>
                 </article>
             @endforeach
         </section>
@@ -196,6 +204,14 @@
             </div>
         </section>
     </main>
+
+    @if (!$purchase->authorized_user_name)
+        <div
+            style="position: absolute; left: 40px; top: 33%; color: #B91C1C; font-size: 4rem; border: 4px solid #B91C1C; padding: 10px;">
+            <i class="fas fa-exclamation"></i>
+            <span style="margin-left: 0.5rem;">SIN AUTORIZACIÓN</span>
+        </div>
+    @endif
 </body>
 
 </html>

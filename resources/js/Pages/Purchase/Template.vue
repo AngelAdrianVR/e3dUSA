@@ -274,6 +274,12 @@
                 </PrimaryButton>
             </template>
         </DialogModal>
+
+        <div v-if="!purchase.authorized_user_name"
+            class="absolute left-28 top-1/3 text-red-700 text-6xl border-4 border-red-700 p-10">
+            <i class="fas fa-exclamation"></i>
+            <span class="ml-2">SIN AUTORIZACIÓN</span>
+        </div>
     </div>
 </template>
 
