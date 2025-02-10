@@ -14,11 +14,16 @@ class ReminderUpdateProductPriceNotification extends Notification
     /**
      * Create a new notification instance.
      */
-    public int $daysRemaining;
+    public int $daysDifference;
+    public bool $isExpired;
 
     public function __construct(public $event)
     {
-        $this->daysRemaining = now()->diffInDays($this->event->start_date);
+        // Determinar si la fecha del evento ya pasó
+        $this->isExpired = now()->isAfter($this->event->start_date);
+
+        // Calcular la diferencia en días (positiva si está en el futuro, negativa si ya pasó)
+        $this->daysDifference = now()->diffInDays($this->event->start_date, false);
     }
 
     /**
@@ -37,24 +42,30 @@ class ReminderUpdateProductPriceNotification extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
+        // Calcula el mensaje de introducción
+        $daysElapsed = abs($this->daysDifference); // Siempre positivo para fechas pasadas
+        $intro = $this->isExpired
+            ? "El recordatorio <span class='text-primary'>{$this->event->title}</span> expiró hace {$daysElapsed} días."
+            : "Faltan {$this->daysDifference} días para <span class='text-primary'>{$this->event->title}</span>.";
+
         return (new MailMessage)
             ->subject('Recordatorio de cambio de precio a producto')
             ->markdown('emails.default-email-template', [
                 'greeting' => '¡Hola!',
-                'intro' => "Faltan {$this->daysRemaining} días para <span class='text-primary'>{$this->event->title}</span>.",
+                'intro' => $intro,
                 'url' => route('calendars.index'),
-                'salutation' => 'Tomar precausiones para evitar problemas con el envío. Saludos',
+                'salutation' => 'Tomar precauciones para evitar problemas con el envío. Saludos',
             ]);
     }
 
     public function toArray(object $notifiable): array
-    {   
-        if ( $this->daysRemaining == 0 ) {
-            $description = "El día de hoy es el <span class='text-primary'>{$this->event->title}</span>.";
-        } else {
-            $description = "Faltan {$this->daysRemaining} días para <span class='text-primary'>{$this->event->title}</span>.";
-        }
-        
+    {
+        // Calcula el mensaje de descripción
+        $daysElapsed = abs($this->daysDifference); // Siempre positivo para fechas pasadas
+        $description = $this->isExpired
+            ? "El recordatorio <span class='text-primary'>{$this->event->title}</span> expiró hace {$daysElapsed} días."
+            : "Faltan {$this->daysDifference} días para <span class='text-primary'>{$this->event->title}</span>.";
+
         return [
             'description' => $description,
             'additional_info' => "",
@@ -62,3 +73,4 @@ class ReminderUpdateProductPriceNotification extends Notification
         ];
     }
 }
+

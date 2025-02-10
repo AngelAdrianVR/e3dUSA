@@ -24,10 +24,10 @@ class SaleController extends Controller
     {
         $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])
             ->where('user_id', auth()->id())
-            ->latest() 
+            ->latest()
             ->paginate(20));
 
-            // return $sales;
+        // return $sales;
         return inertia('Sale/Index', compact('sales'));
     }
 
@@ -158,19 +158,19 @@ class SaleController extends Controller
         if (collect($request->partialities)->count() > 1 && $request->create_calendar_task) {
             foreach ($request->partialities as $index => $partiality) {
                 // if ($index > 0) { // Omite el primer elemento
-                    $reminder = Calendar::create([
-                        'type' => 'Tarea',
-                        'title' => 'Envío de parcialidad N°' . ($index + 1) . ' de OV-' . $sale->id,
-                        'repeater' => 'No se repite',
-                        'description' => 'Revisar envío de parcialidad agendada automáticamente para la OV-' . $sale->id . '. Se te recordará 3 días antes de la fecha agendada',
-                        'status' => 'Pendiente',
-                        'start_date' => $partiality['promise_date'],
-                        'start_time' => '8:00 AM',
-                        'user_id' => auth()->id(),
-                    ]);
+                $reminder = Calendar::create([
+                    'type' => 'Tarea',
+                    'title' => 'Envío de parcialidad N°' . ($index + 1) . ' de OV-' . $sale->id,
+                    'repeater' => 'No se repite',
+                    'description' => 'Revisar envío de parcialidad agendada automáticamente para la OV-' . $sale->id . '. Se te recordará 3 días antes de la fecha agendada',
+                    'status' => 'Pendiente',
+                    'start_date' => $partiality['promise_date'],
+                    'start_time' => '8:00 AM',
+                    'user_id' => auth()->id(),
+                ]);
 
-                   $seller = User::find($sale->user_id);
-                   $seller->notify(new SchedulePartialitiesReminder($reminder));
+                $seller = User::find($sale->user_id);
+                $seller->notify(new SchedulePartialitiesReminder($reminder));
                 // }
             }
         }
@@ -291,25 +291,25 @@ class SaleController extends Controller
         if (collect($request->partialities)->count() > 1 && $request->create_calendar_task) {
             foreach ($request->partialities as $index => $partiality) {
                 // if ($index > 0) { // Omite el primer elemento
-                    $reminder = Calendar::create([
-                        'type' => 'Tarea',
-                        'title' => 'Envío de parcialidad N°' . ($index + 1) . ' de OV-' . $sale->id,
-                        'repeater' => 'No se repite',
-                        'description' => 'Revisar envío de parcialidad agendada automáticamente para la OV-' . $sale->id . '. Se te recordará 3 días antes de la fecha agendada',
-                        'status' => 'Pendiente',
-                        'start_date' => $partiality['promise_date'],
-                        'start_time' => '8:00 AM',
-                        'user_id' => auth()->id(),
-                    ]);
+                $reminder = Calendar::create([
+                    'type' => 'Tarea',
+                    'title' => 'Envío de parcialidad N°' . ($index + 1) . ' de OV-' . $sale->id,
+                    'repeater' => 'No se repite',
+                    'description' => 'Revisar envío de parcialidad agendada automáticamente para la OV-' . $sale->id . '. Se te recordará 3 días antes de la fecha agendada',
+                    'status' => 'Pendiente',
+                    'start_date' => $partiality['promise_date'],
+                    'start_time' => '8:00 AM',
+                    'user_id' => auth()->id(),
+                ]);
 
-                   $seller = User::find($sale->user_id);
-                   $seller->notify(new SchedulePartialitiesReminder($reminder));
+                $seller = User::find($sale->user_id);
+                $seller->notify(new SchedulePartialitiesReminder($reminder));
                 // }
             }
-        }        
+        }
 
         // return to_route('sales.index');
-        return to_route('sales.show', $sale->id );
+        return to_route('sales.show', $sale->id);
     }
 
     public function updateWithMedia(Request $request, Sale $sale)
@@ -364,25 +364,25 @@ class SaleController extends Controller
         if (collect($request->partialities)->count() > 1 && $request->create_calendar_task) {
             foreach ($request->partialities as $index => $partiality) {
                 // if ($index > 0) { // Omite el primer elemento
-                    $reminder = Calendar::create([
-                        'type' => 'Tarea',
-                        'title' => 'Envío de parcialidad N°' . ($index + 1) . ' de OV-' . $sale->id,
-                        'repeater' => 'No se repite',
-                        'description' => 'Revisar envío de parcialidad agendada automáticamente para la OV-' . $sale->id . '. Se te recordará 3 días antes de la fecha agendada',
-                        'status' => 'Pendiente',
-                        'start_date' => $partiality['promise_date'],
-                        'start_time' => '8:00 AM',
-                        'user_id' => auth()->id(),
-                    ]);
+                $reminder = Calendar::create([
+                    'type' => 'Tarea',
+                    'title' => 'Envío de parcialidad N°' . ($index + 1) . ' de OV-' . $sale->id,
+                    'repeater' => 'No se repite',
+                    'description' => 'Revisar envío de parcialidad agendada automáticamente para la OV-' . $sale->id . '. Se te recordará 3 días antes de la fecha agendada',
+                    'status' => 'Pendiente',
+                    'start_date' => $partiality['promise_date'],
+                    'start_time' => '8:00 AM',
+                    'user_id' => auth()->id(),
+                ]);
 
-                   $seller = User::find($sale->user_id);
-                   $seller->notify(new SchedulePartialitiesReminder($reminder));
+                $seller = User::find($sale->user_id);
+                $seller->notify(new SchedulePartialitiesReminder($reminder));
                 // }
             }
         }
 
         // return to_route('sales.index');
-        return to_route('sales.show', $sale->id );
+        return to_route('sales.show', $sale->id);
     }
 
     public function destroy(Sale $sale)
@@ -425,12 +425,22 @@ class SaleController extends Controller
 
         $clone = $sale->replicate()->fill([
             'oce_name' => null,
-            'tracking_guide' => null,
             'authorized_user_name' => null,
             'authorized_at' => null,
             'recieved_at' => null,
+            'status' => 'Esperando autorización',
             'user_id' => auth()->id(),
         ]);
+
+        // autorizar en caso de que el usuario que clona tenga el permiso
+        $can_authorize = auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin');
+        if ($can_authorize) {
+            $clone->update(['status' => 'Autorizado. Sin orden de producción', 'authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
+        } elseif (app()->environment() === 'production') {
+            // notify to Maribel
+            $maribel = User::find(3);
+            $maribel->notify(new ApprovalRequiredNotification('orden de venta / stock', 'sales.index'));
+        }
 
         $clone->save();
 

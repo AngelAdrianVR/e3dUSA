@@ -29,6 +29,7 @@ class User extends Authenticatable
         'email_password',
         'password',
         'is_active',
+        'has_important_reminder', //bandera para mostrar aviso invasivo de recordatorio de calendario
         'employee_properties',
         'disabled_at',
     ];
@@ -381,7 +382,7 @@ class User extends Authenticatable
 
         // return collect([]);
         return $this->productions->filter(function ($production) use ($startDate, $limitDate) {
-            $promiseDate = optional($production->catalogProductCompanySale->sale)->promise_date;
+            $promiseDate = optional($production->catalogProductCompanySale?->sale)->promise_date;
 
             return $production->created_at >= $startDate &&
                 $production->created_at <= $limitDate &&

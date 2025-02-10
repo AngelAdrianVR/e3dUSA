@@ -46,6 +46,7 @@ const searchInput = ref(null); //buscador general
 const loadingSearch = ref(false); //buscador general
 const isDarkMode = ref(localStorage.getItem('darkMode') === 'true');// Obtener el estado del modo nocturno desde el localStorage
 const darkModeSwitch = ref(localStorage.getItem('darkMode') === 'true');// Obtener el estado del modo nocturno desde el localStorage
+const draggableAlert = ref(null); // Asigna el ref a una variable reactiva
 
 const form = useForm({
   barCode: null,
@@ -383,7 +384,7 @@ const searching = () => {
       console.error('Error al realizar la búsqueda:', error);
       loadingSearch.value = false;
     });
-};
+}; 
 
 onMounted(() => {
   getAttendanceTextButton();
@@ -395,7 +396,38 @@ onMounted(() => {
   }, 60000); // 60000 ms = 1 minute
   
   document.documentElement.classList.toggle('dark', isDarkMode.value);
-}); 
+
+  const alertBox = draggableAlert.value; // Accede al elemento DOM
+
+  if (!alertBox) return; // Asegúrate de que el elemento existe
+
+  let isDragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  alertBox.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    offsetX = e.clientX - alertBox.offsetLeft;
+    offsetY = e.clientY - alertBox.offsetTop;
+    alertBox.style.cursor = 'grabbing';
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const x = e.clientX - offsetX;
+    const y = e.clientY - offsetY;
+    alertBox.style.left = `${x}px`;
+    alertBox.style.top = `${y}px`;
+    alertBox.style.position = 'absolute';
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      alertBox.style.cursor = 'pointer';
+    }
+  });
+});
 </script>
 
 <template>
@@ -762,6 +794,23 @@ onMounted(() => {
           </div>
         </header>
         <div class="overflow-y-auto h-[calc(100vh-3.5rem)] bg-[#F2F2F2] dark:bg-[#0D0D0D] transition-all ease-linear duration-500">
+
+          <!-- aviso de alarma de recordatorios vencidos o próximos a vencer -->
+          <div v-if="$page.props.auth.user.has_important_reminder"
+            ref="draggableAlert"
+            class="border border-red-600 rounded-md bg-red-50 flex justify-between items-center space-x-2 absolute md:right-1/2 py-2 px-4 !cursor-move z-30 w-full md:w-96">
+            <figure class="w-24">
+              <img src="@/../../public/images/alarm.png" alt="">
+            </figure>
+            <p class="text-sm">
+              Tienes una o más tareas de actualización de precio que <strong>debes completar hoy y/o que tienen atraso.</strong>
+            </p>
+            <div @click="$inertia.get(route('calendars.index'));" class="text-red-600 flex items-center space-x-3 pl-2 !cursor-pointer">
+              <span>Ir</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </div>
+          </div>
+
           <slot />
         </div>
       </main>
