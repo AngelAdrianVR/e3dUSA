@@ -117,6 +117,7 @@
                 </div>
             </section>
         </main>
+
         <footer v-if="purchase.show_prices" class="mx-8 mt-8 grid grid-cols-4 gap-x-3 gap-y-1s">
             <section class="flex flex-col col-span-3">
                 <header v-if="purchase.is_spanish_template" class="bg-gray2 text-center py-1">Importe con letra</header>
@@ -147,6 +148,15 @@
                 </span>
             </section>
         </footer>
+
+        <!-- Firmas -->
+        <div class="grid grid-cols-4 gap-3 mt-20 mx-10 lg:mx-28 text-sm">
+            <p class="text-center border-t border-gray-500 w-64">Quién la hace</p>
+            <p class="text-center border-t border-gray-500 w-64">Quién la solicita</p>
+            <p class="text-center border-t border-gray-500 w-64">Revisión</p>
+            <p class="text-center border-t border-gray-500 w-64">Autorizacón</p>
+        </div>
+
         <DialogModal :show="showModal" @close="showModal = false">
             <template #title>
                 <h1 class="flex items-center space-x-2 font-bold">

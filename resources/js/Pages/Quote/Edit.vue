@@ -300,6 +300,9 @@
                                 <InputLabel
                                     v-else-if="['Cargo flete normal de costo al cliente'].includes(form.freight_option)"
                                     value="Costo de flete*" />
+                                <InputLabel
+                                v-else-if="['Emblems3d absorbe el costo del flete'].includes(form.freight_option)"
+                                value="Costo de flete que absorbe Emblems3d*" />
                                 <el-tooltip v-if="form.freight_option == 'Cargo del flete prorrateado en producto'"
                                     placement="top">
                                     <template #content>
@@ -316,7 +319,7 @@
                                 </el-tooltip>
                             </div>
                             <el-input v-model="form.freight_cost"
-                                v-if="form.freight_option == 'Cargo del flete prorrateado en producto' || form.freight_option == 'Cargo flete normal de costo al cliente'" placeholder="Ej. 550" />
+                                v-if="form.freight_option == 'Cargo del flete prorrateado en producto' || form.freight_option == 'Cargo flete normal de costo al cliente' || form.freight_option == 'Emblems3d absorbe el costo del flete'" placeholder="Ej. 550" />
                             <InputError :message="form.errors.freight_cost" />
                         </div>
                         <div>
@@ -516,7 +519,7 @@
                         <div>
                             <InputLabel value="Precio nuevo en porcentaje*" />
                             <el-input
-                                @change="calculateNewPrice"
+                                @change="calculateNewPrice()"
                                 v-model="new_price_percentage" type="number" :max="100" :min="5" step="0.1"
                                 placeholder="Ej. 5.8%"
                                 :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -530,7 +533,7 @@
                         </div>
                         <div>
                             <InputLabel value="Precio nuevo en moneda*" />
-                            <el-input v-model="priceForm.new_price" type="text" disabled
+                            <el-input @input="calculateNewPercentage()" v-model="priceForm.new_price" type="text"
                                 :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 30.90">
                                 <template #prepend>
@@ -838,6 +841,19 @@ export default {
             const factor = 1 + this.new_price_percentage * .01;
             // guarda el precio calculado con el porcentaje seleccionado
             this.priceForm.new_price = (factor * this.itemToUpdatePrice.pivot.new_price).toFixed(2);
+        },
+        calculateNewPercentage() {
+            if (!this.priceForm.new_price || !this.itemToUpdatePrice.pivot.new_price) {
+                this.new_price_percentage = 0;
+                return;
+            }
+
+            // Convierte los valores a número
+            const oldPrice = parseFloat(this.itemToUpdatePrice.pivot.new_price);
+            const newPrice = parseFloat(this.priceForm.new_price);
+
+            // Calcula el porcentaje de aumento
+            this.new_price_percentage = (((newPrice / oldPrice) - 1) * 100).toFixed(2);
         },
         priceChangePercentage(pivot) {
             const oldPrice = pivot.old_price;

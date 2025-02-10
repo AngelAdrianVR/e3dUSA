@@ -117,12 +117,12 @@
             </div>
           </div>
           <div class="col-span-full flex items-center justify-center space-x-4">
-            <figure v-if="!form.is_circular" class="w-48">
-              <img src="@/../../public/images/paralelepipedo.png" alt="">
-            </figure>
-            <figure v-else class="w-32">
-              <img src="@/../../public/images/diameter.png" alt="">
-            </figure>
+              <figure v-if="!form.is_circular" class="w-48 dark:bg-gray-400 rounded-lg p-2">
+                  <img class="mx-auto" src="@/../../public/images/paralelepipedo.png" alt="">
+              </figure>
+              <figure v-else class="w-32">
+                  <img src="@/../../public/images/diameter.png" alt="">
+              </figure>
           </div>
           <div>
             <InputLabel value="Ubicaión*" />
