@@ -138,6 +138,10 @@ Route::middleware([
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
+// prueba de pdf OC
+// Route::get('oc-pdf', [PurchaseController::class, 'pdfTest']);
+
+
 // -------------- project groups routes ------------
 Route::resource('project-groups', ProjectGroupController::class)->middleware('auth')->names('project-groups');
 

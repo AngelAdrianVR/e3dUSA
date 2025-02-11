@@ -24,8 +24,6 @@ use App\Notifications\LowStockToDispatchOrderNotification;
 use App\Notifications\MentionInProductionNotification;
 use App\Notifications\ProductionCompletedNotification;
 use App\Notifications\ScheduleTentativeFinishOrder;
-use App\Notifications\ScheduleUpdateProductPriceReminder;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ProductionController extends Controller
