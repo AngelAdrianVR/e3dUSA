@@ -279,6 +279,9 @@ class PurchaseController extends Controller
 
         $pdf = Pdf::loadView('pdfTemplates.purchase-order', compact('purchase', 'raw_materials'));
 
+        // ver en navegador
+        return $pdf->stream('reporte.pdf');
+
         $fileName = 'OC-' . str_pad($purchase->id, 4, "0", STR_PAD_LEFT);
         // Guardar el PDF en la carpeta storage/app/purchase-orders
         $content = $pdf->download()->getOriginalContent();
@@ -333,6 +336,31 @@ class PurchaseController extends Controller
 
         return response()->json([]);
     }
+
+    // public function pdfTest()
+    // {
+    //     // crear pdf
+    //     $purchase = Purchase::with(['supplier.contacts'])->first();
+    //     $products = $purchase->products;
+    //     $raw_materials_ids = [];
+    //     foreach ($products as $product) {
+    //         $raw_materials_ids[] = $product['id'];
+    //     }
+
+    //     $raw_materials = RawMaterial::with('media')->whereIn('id', $raw_materials_ids)->get([
+    //         'id',
+    //         'name',
+    //         'part_number',
+    //         'description',
+    //         'measure_unit',
+    //         'cost'
+    //     ]);
+
+    //     $pdf = Pdf::loadView('pdfTemplates.purchase-order', compact('purchase', 'raw_materials'));
+
+    //     // ver en navegador
+    //     return $pdf->stream('reporte.pdf');
+    // }
 
     private function getProcessedQuestions($answers)
     {
