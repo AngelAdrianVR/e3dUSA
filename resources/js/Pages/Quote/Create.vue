@@ -266,6 +266,13 @@
                                 {{ form.tooling_cost }} {{ form.tooling_currency }}
                             </span>
                         </div>
+                        <div class="flex items-center space-x-2 col-span-full">
+                            <label class="flex items-center text-gray-600 dark:text-gray-500">
+                                <input type="checkbox" v-model="form.show_breakdown"
+                                    class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
+                                <span class="ml-2 text-sm">Mostrar total sumando productos, flete y herramental</span>
+                            </label>
+                        </div>
                         <div>
                             <InputLabel value="Pago de flete*" />
                             <el-select v-model="form.freight_option" @change="handleFreightOption"
@@ -680,7 +687,6 @@ import IconInput from "@/Components/MyComponents/IconInput.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import { Link, useForm } from "@inertiajs/vue3";
-import { formatDistanceToNow } from 'date-fns';
 import { differenceInMonths, differenceInDays, format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import axios from "axios";
@@ -700,6 +706,7 @@ export default {
             notes: null,
             currency: null,
             is_spanish_template: 1,
+            show_breakdown: true,
             is_customer: 1,
             company_branch_id: null,
             prospect_id: null,

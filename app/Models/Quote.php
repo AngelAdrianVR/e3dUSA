@@ -33,7 +33,8 @@ class Quote extends Model implements HasMedia
         'company_branch_id',
         'prospect_id',
         'user_id',
-        'sale_id'
+        'sale_id',
+        'show_breakdown',
     ];
 
     protected $casts = [

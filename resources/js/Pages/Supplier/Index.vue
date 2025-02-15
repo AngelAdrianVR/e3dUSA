@@ -78,6 +78,15 @@
                                                 d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                         </svg>
                                         Editar</el-dropdown-item>
+                                    <el-dropdown-item
+                                        v-if="$page.props.auth.user.permissions.includes('Crear proveedores')"
+                                        :command="'clone-' + scope.row.id">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="size-4 mr-2">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" />
+                                        </svg>
+                                        Clonar</el-dropdown-item>
                                     <!-- <el-dropdown-item :command="'clone-' + scope.row.id"><i
                                                 class="fa-solid fa-clone"></i>
                                             Clonar</el-dropdown-item> -->
@@ -177,7 +186,7 @@ export default {
                 .map(supplier => supplier.id); // Obtener solo los IDs de los permisos
         },
         openReport() {
-            const url = this.route('suppliers.rating-report', {p: this.period, s: this.suppliersFiltered});
+            const url = this.route('suppliers.rating-report', { p: this.period, s: this.suppliersFiltered });
             window.open(url, '_blank');
         },
         handleSearch(search) {
@@ -200,6 +209,48 @@ export default {
                 this.disableMassiveActions = true;
             } else {
                 this.disableMassiveActions = false;
+            }
+        },
+        handleCommand(command) {
+            const commandName = command.split('-')[0];
+            const rowId = command.split('-')[1];
+
+            if (commandName == 'clone') {
+                this.clone(rowId);
+            } else {
+                this.$inertia.get(route('suppliers.' + commandName, rowId));
+            }
+        },
+        async clone(supplier_id) {
+            try {
+                const response = await axios.post(route('suppliers.clone', {
+                    supplier_id: supplier_id
+                }));
+
+                if (response.status == 200) {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+
+                    this.suppliers.unshift(response.data.newItem);
+
+                } else {
+                    this.$notify({
+                        title: 'Algo salió mal',
+                        message: response.data.message,
+                        type: 'error'
+                    });
+                }
+
+            } catch (err) {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
+                console.log(err);
             }
         },
         async deleteSelections() {
@@ -248,19 +299,7 @@ export default {
                 console.log(err);
             }
         },
-
-        handleCommand(command) {
-            const commandName = command.split('-')[0];
-            const rowId = command.split('-')[1];
-
-            if (commandName == 'clone') {
-                this.clone(rowId);
-            } else {
-                this.$inertia.get(route('suppliers.' + commandName, rowId));
-            }
-        },
     },
-
     computed: {
         filteredTableData() {
             return this.suppliers.filter(

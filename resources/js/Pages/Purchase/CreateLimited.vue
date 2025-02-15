@@ -24,24 +24,9 @@
             <InputLabel value="Provedor*" />
             <el-select @change="fetchSupplier" v-model="form.supplier_id" clearable filterable placeholder="Selecciona">
               <el-option v-for="item in suppliers" :key="item.id"
-                :label="item.nickname ? item.nickname + ' - ' + item.name : item.name" :value="item.id" />
+                :label="item.nickname ?? 'Alias no registrado en este proveedor'" :value="item.id" />
             </el-select>
             <InputError :message="form.errors.supplier_id" />
-          </div>
-          <div>
-            <InputLabel value="Información bancaria*" />
-            <el-select v-model="form.bank_information" clearable filterable placeholder="Selecciona">
-              <el-option v-for="(item, index) in currentSupplier?.banks" :key="item.id"
-                :label="item['beneficiary_name'] + '-' + item['bank_name']" :value="index" />
-            </el-select>
-            <InputError :message="form.errors.bank_information" />
-          </div>
-          <div>
-            <InputLabel value="Contacto*" />
-            <el-select v-model="form.contact_id" clearable filterable placeholder="Selecciona">
-              <el-option v-for="item in currentSupplier?.contacts" :key="item.id" :label="item.name" :value="item.id" />
-            </el-select>
-            <InputError :message="form.errors.contact_id" />
           </div>
           <div>
             <InputLabel value="Moneda*" />
@@ -169,12 +154,6 @@
           <p class="text-xs text-red-600" v-if="productValidation">
             No puedes agregar dos veces el mísmo producto
           </p>
-          <div>
-            <el-checkbox @change="handleCheckShowPrices" v-model="form.show_prices" label="Mostrar precios"
-              size="small" />
-            <el-checkbox v-model="form.is_iva_included" label="Calcular IVA y mostrarlo" size="small"
-              :disabled="!form.show_prices" />
-          </div>
           <div class="col-span-full">
             <InputLabel value="Notas" />
             <el-input v-model="form.notes" :rows="3" maxlength="800" placeholder="..." show-word-limit

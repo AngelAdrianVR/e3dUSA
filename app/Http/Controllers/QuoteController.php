@@ -92,7 +92,8 @@ class QuoteController extends Controller
             'company_branch_id' => 'nullable|numeric|min:1',
             'prospect_id' => 'nullable|numeric|min:1',
             'products' => 'array|min:1',
-            'tooling_currency' => 'nullable'
+            'tooling_currency' => 'nullable',
+            'show_breakdown' => 'boolean',
         ]);
 
         $quote = Quote::create($request->except('products') + ['user_id' => auth()->id()]);
@@ -193,7 +194,8 @@ class QuoteController extends Controller
             'currency' => 'required|string|max:191',
             'company_branch_id' => 'nullable|numeric|min:1',
             'prospect_id' => 'nullable|numeric|min:1',
-            'products' => 'array|min:1'
+            'products' => 'array|min:1',
+            'show_breakdown' => 'boolean',
         ]);
 
         $quote->update($request->except('products'));

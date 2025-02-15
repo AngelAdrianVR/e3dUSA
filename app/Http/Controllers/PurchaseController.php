@@ -17,7 +17,6 @@ use App\Notifications\ApprovalRequiredNotification;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class PurchaseController extends Controller
@@ -49,22 +48,32 @@ class PurchaseController extends Controller
                 'emited_at' => $purchase->emited_at?->isoFormat('DD MMM, YYYY h:mm A') ?? 'Pedido no realizado',
                 'recieved_at' => $purchase->recieved_at?->isoFormat('YYYY MMM DD') ?? 'No recibido',
                 'supplier_name' => $purchase->supplier?->name,
+                'supplier_nickname' => $purchase->supplier?->nickname,
                 'created_at' => $purchase->created_at?->isoFormat('DD MMMM YYYY, h:mm A'),
             ];
         });
 
-        return inertia('Purchase/Index', compact('purchases'));
+        if (auth()->user()->can('Ver info sensible de ordenes de compra')) {
+            return inertia('Purchase/Index', compact('purchases'));
+        } else {
+            return inertia('Purchase/IndexLimited', compact('purchases'));
+        }
     }
 
     public function create()
     {
         $suppliers = Supplier::get(['id', 'name', 'nickname']);
 
-        return inertia('Purchase/Create', compact('suppliers'));
+        if (auth()->user()->can('Ver info sensible de ordenes de compra')) {
+            return inertia('Purchase/Create', compact('suppliers'));
+        } else {
+            return inertia('Purchase/CreateLimited', compact('suppliers'));
+        }
     }
 
     public function store(Request $request)
     {
+        $high_privileges = auth()->user()->can('Ver info sensible de ordenes de compra');
         $validation = $request->validate([
             'notes' => 'nullable',
             'expected_delivery_date' => 'nullable|date|after:yesterday',
@@ -72,10 +81,10 @@ class PurchaseController extends Controller
             'is_iva_included' => 'boolean',
             'is_spanish_template' => 'boolean',
             'show_prices' => 'boolean',
-            'contact_id' => 'required',
+            'contact_id' => $high_privileges ? 'required' : 'nullable',
             'products' => 'array|min:1',
             'currency' => 'required|string',
-            'bank_information' => 'required',
+            'bank_information' => $high_privileges ? 'required' : 'nullable',
         ]);
 
         $purchase = Purchase::create($validation + ['user_id' => auth()->user()->id]);
@@ -104,21 +113,28 @@ class PurchaseController extends Controller
                 'folio' => 'OC-' . str_pad($purchase->id, 4, "0", STR_PAD_LEFT),
             ];
         });
-        
-        return inertia('Purchase/Show', compact('purchase', 'purchases'));
-    }
 
+        if (auth()->user()->can('Ver info sensible de ordenes de compra')) {
+            return inertia('Purchase/Show', compact('purchase', 'purchases'));
+        } else {
+            return inertia('Purchase/ShowLimited', compact('purchase', 'purchases'));
+        }
+    }
 
     public function edit(Purchase $purchase)
     {
         $suppliers = Supplier::get(['id', 'name', 'nickname']);
 
-        return inertia('Purchase/Edit', compact('purchase', 'suppliers'));
+        if (auth()->user()->can('Ver info sensible de ordenes de compra')) {
+            return inertia('Purchase/Edit', compact('purchase', 'suppliers'));
+        } else {
+            return inertia('Purchase/EditLimited', compact('purchase', 'suppliers'));
+        }
     }
-
 
     public function update(Request $request, Purchase $purchase)
     {
+        $high_privileges = auth()->user()->can('Ver info sensible de ordenes de compra');
         $validation = $request->validate([
             'notes' => 'nullable',
             'expected_delivery_date' => 'nullable|date|after:yesterday',
@@ -126,10 +142,10 @@ class PurchaseController extends Controller
             'is_iva_included' => 'boolean',
             'is_spanish_template' => 'boolean',
             'show_prices' => 'boolean',
-            'contact_id' => 'required',
+            'contact_id' => $high_privileges ? 'required' : 'nullable',
             'currency' => 'required|string',
             'products' => 'nullable|min:1',
-            'bank_information' => 'required',
+            'bank_information' => $high_privileges ? 'required' : 'nullable',
         ]);
 
         $purchase->update($validation);
@@ -138,7 +154,6 @@ class PurchaseController extends Controller
 
         return to_route('purchases.index');
     }
-
 
     public function destroy(Purchase $purchase)
     {
@@ -231,7 +246,7 @@ class PurchaseController extends Controller
 
         return response()->json([]);
     }
-    
+
     public function storeRating(Purchase $purchase, Request $request)
     {
         // guardar la evaluacion
@@ -365,7 +380,7 @@ class PurchaseController extends Controller
     private function getProcessedQuestions($answers)
     {
         $result = [];
-    
+
         // Pregunta 1
         $lateDays = (int) $answers['q1_days'];
         if ($lateDays == 0) {
@@ -380,7 +395,7 @@ class PurchaseController extends Controller
             $points = 0; // 6 o más días, 0 punts
         }
         $result[] = ['answer' => $answers['q1'], 'points' => $points];
-    
+
         // Pregunta 2
         if ($answers['q2'] === 'Sí, cumplió con todo') {
             $points = 15;
@@ -388,7 +403,7 @@ class PurchaseController extends Controller
             $points = 0;
         }
         $result[] = ['answer' => $answers['q2'], 'points' => $points];
-    
+
         // Pregunta 3
         if (is_null($answers['q3_2']) || $answers['q3_2'] === 'Atención inmediata') {
             $points = 15;
@@ -400,7 +415,7 @@ class PurchaseController extends Controller
             $points = 10;
         }
         $result[] = ['answer' => $answers['q3_1'], 'points' => $points];
-    
+
         // Pregunta 4
         if ($answers['q4'] === 'No se presentó ninguna urgencia') {
             $points = 15;
@@ -414,7 +429,7 @@ class PurchaseController extends Controller
             $points = 0;
         }
         $result[] = ['answer' => $answers['q4'], 'points' => $points];
-    
+
         // Pregunta 5
         if ($answers['q5'] === '0 avisos de rechazo') {
             $points = 15;
@@ -424,8 +439,7 @@ class PurchaseController extends Controller
             $points = 0;
         }
         $result[] = ['answer' => $answers['q5'], 'points' => $points];
-    
+
         return $result;
     }
-    
 }
