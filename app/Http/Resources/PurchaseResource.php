@@ -29,7 +29,7 @@ class PurchaseResource extends JsonResource
             'id' => $this->id,
             'status' =>  $status,
             'currency' =>  $this->currency,
-            'notes' => $this->notes ?? '--',
+            'notes' => $this->notes ?? '-',
             'authorized_user_name' => $this->authorized_user_name ?? 'No autorizado',
             'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:mm A') ?? 'No autorizado',
             'expected_delivery_date' => $this->expected_delivery_date?->isoFormat('YYYY MMM DD') ?? 'Pedido no realizado',

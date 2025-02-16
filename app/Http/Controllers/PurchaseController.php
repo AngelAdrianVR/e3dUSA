@@ -11,6 +11,7 @@ use App\Mail\EmailSupplierTemplateMarkdownMail;
 use App\Models\Contact;
 use App\Models\Purchase;
 use App\Models\RawMaterial;
+use App\Models\StockMovementHistory;
 use App\Models\Supplier;
 use App\Models\User;
 use App\Notifications\ApprovalRequiredNotification;
@@ -263,7 +264,24 @@ class PurchaseController extends Controller
         $purchase->invoice_folio = $request->invoice_folio;
         $purchase->save();
 
-        // return response()->json([]);
+        // hacer movimientos de etrada por cada producto
+        $products = $purchase->products;
+        foreach ($products as $product) {
+            $raw_material = RawMaterial::find($product['id']);
+            if ($raw_material) {
+                $first_storage = $raw_material->storages[0];
+                $first_storage->increment('quantity', $product['quantity']);
+                // registrar al historial de movimientos
+                $purchase_folio = 'OC-' . str_pad($purchase->id, 4, "0", STR_PAD_LEFT);
+                StockMovementHistory::create([
+                    'type' => 'Entrada',
+                    'quantity' => $product['quantity'],
+                    'notes' => "Entrada automática por recepción de mercancía en orden de compra $purchase_folio",
+                    'storage_id' => $first_storage->id,
+                    'user_id' => auth()->id()
+                ]);
+            }
+        }
     }
 
     public function sendEmail(Purchase $purchase, Request $request)
