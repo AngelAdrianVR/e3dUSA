@@ -265,6 +265,13 @@
                                 {{ form.tooling_cost }} {{ form.tooling_currency }}
                             </span>
                         </div>
+                        <div class="flex items-center space-x-2 col-span-full">
+                            <label class="flex items-center text-gray-600 dark:text-gray-500">
+                                <input type="checkbox" v-model="form.show_breakdown"
+                                    class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
+                                <span class="ml-2 text-sm">Mostrar total sumando productos, flete y herramental</span>
+                            </label>
+                        </div>
                         <div>
                             <InputLabel value="Pago de flete*" />
                             <el-select v-model="form.freight_option" @change="handleFreightOption"
@@ -698,6 +705,7 @@ export default {
             notes: this.quote.notes,
             currency: this.quote.currency,
             is_spanish_template: this.quote.is_spanish_template,
+            show_breakdown: !!this.quote.show_breakdown,
             company_branch_id: this.quote.company_branch_id,
             is_customer: this.quote.company_branch_id ? 1 : 0,
             prospect_id: this.quote.prospect_id,

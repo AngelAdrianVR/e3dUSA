@@ -1,6 +1,6 @@
 <template>
 
-    <Head :title="quote.data.folio" />
+    <Head :title="tabTitle" />
     <!-- logo -->
     <div class="text-center">
         <ApplicationLogo class="h-auto w-3/12 inline-block" />
@@ -94,13 +94,38 @@
                     </td>
                 </tr>
             </tbody>
-            <!-- <tfoot>
+            <tfoot v-if="quote.data.show_breakdown">
                 <tr>
-                    <td class="text-center border-t-2 border-gray-400 py-1 font-bold" colspan="6">
-                        TOTAL without taxes: {{ quote.data.total.number_format }} {{ quote.data.currency }}
+                    <td class="text-end pr-2 py-px" colspan="6">
+                        TOTAL PRODUCTS WITHOUT TAXES: {{ quote.data.total.number_format }} {{ quote.data.currency }}
                     </td>
                 </tr>
-            </tfoot> -->
+                <tr v-if="!isNaN(quote.data.freight_cost)">
+                    <td class="text-end pr-2 py-px" colspan="6">
+                        FREIGHT COST: {{
+                            parseFloat(quote.data.freight_cost).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
+                            quote.data.currency }}
+                    </td>
+                </tr>
+                <tr v-if="!isNaN(quote.data.tooling_cost)">
+                    <td class="text-end pr-2 py-px" colspan="6">
+                        TOOLING COSTS: {{
+                            parseFloat(quote.data.tooling_cost).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
+                            quote.data.tooling_currency }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-end pr-2 py-px font-bold" colspan="6">
+                        TOTAL WITHOUT TAXES: {{
+                            (
+                                parseFloat(quote.data.total.number_format.replace(/,/g, '')) +
+                                (!isNaN(quote.data.freight_cost) ? parseFloat(quote.data.freight_cost) : 0) +
+                                (!isNaN(quote.data.tooling_cost) ? parseFloat(quote.data.tooling_cost) : 0)
+                            ).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                        }} {{ quote.data.currency }}
+                    </td>
+                </tr>
+            </tfoot>
         </table>
 
         <!-- Images -->
@@ -119,7 +144,8 @@
                             class="fa-solid fa-circle text-[7px] cursor-pointer"></i>
                     </div>
                     <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
-                    <p v-if="item.large || item.height || item.width || item.diameter" class="py-px px-1 uppercase text-gray-600 font-bold">Dimensions:</p>
+                    <p v-if="item.large || item.height || item.width || item.diameter"
+                        class="py-px px-1 uppercase text-gray-600 font-bold">Dimensions:</p>
                     <div class="flex items-center space-x-3">
                         <p v-if="item.large" class="py-px px-1 text-gray-600">Large: {{ item.large }}mm</p>
                         <p v-if="item.height" class="py-px px-1 text-gray-600">Height: {{ item.height }}mm</p>
@@ -178,10 +204,11 @@
                     quote.data.first_production_days }}</span>.
                     TIME RUNS ONCE PAYING 100% OF THE TOOLING AND THE 50% OF THE
                     PRODUCTS.</li>
-                <li>FREIGHTS AND CARRIAGES ARE PAID BY CUSTOMER: <span v-if="!quote.data.freight_cost_charged_in_product" class="font-bold text-blue-500">{{
-                    quote.data.freight_cost }} {{ !isNaN(quote.data.freight_cost) ? quote.data.currency : ''
+                <li>FREIGHTS AND CARRIAGES ARE PAID BY CUSTOMER: <span
+                        v-if="!quote.data.freight_cost_charged_in_product" class="font-bold text-blue-500">{{
+                            quote.data.freight_cost }} {{ !isNaN(quote.data.freight_cost) ? quote.data.currency : ''
                         }}</span>
-                    <span v-else class="font-bold text-blue-500">0 {{ quote.data.currency }}</span> 
+                    <span v-else class="font-bold text-blue-500">0 {{ quote.data.currency }}</span>
                 </li>
                 <li>PRICES IN <span class="font-bold text-blue-500">{{ quote.data.currency }}</span></li>
                 <li>QUOTE VALID FOR 21 DAYS. PRODUCT IS SUBJECT TO FINAL DESIGN REVIEW, TESTING AND SUBSEQUENT APPROVAL
@@ -278,6 +305,7 @@ export default {
             currentCatalogProductImages: [], // Array to store current image index for each product
             currentRawMaterialImages: [], // Array to store current image index for each product
             labelChanged: false,
+            tabTitle: null,
         };
     },
     components: {
@@ -337,6 +365,8 @@ export default {
         },
     },
     created() {
+        const clientName = this.quote.data.companyBranch?.name ?? this.quote.data.prospect?.name;
+        this.tabTitle = this.quote.data.folio + ' - ' + clientName;
         // Initialize currentImages array with default values for each product (productos de catalogo)
         this.currentCatalogProductImages = this.quote.data.catalog_products.map(() => 0);
 

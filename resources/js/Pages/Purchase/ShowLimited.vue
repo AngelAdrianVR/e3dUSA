@@ -17,17 +17,6 @@
           </el-select>
         </div>
         <div class="flex items-center space-x-2">
-
-          <button @click="showTemplate()" class="rounded-lg bg-primary text-white p-2 text-sm">
-            Imprimir
-          </button>
-
-          <button
-            v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de compra') && purchase.data.status === 'Pendiente'"
-            @click="authorize" class="rounded-lg bg-primary text-white p-2 text-sm">
-            Autorizar
-          </button>
-
           <el-tooltip
             content="Una vez realizada la compra marcar como compra realizada para cambiar estatus y dar seguimiento"
             placement="top">
@@ -37,14 +26,12 @@
               Compra realizada
             </button>
           </el-tooltip>
-
           <el-tooltip content="Se indica al sistema que el producto o servicio ya fue recibido" placement="top">
             <button v-if="purchase.data.status === 'Emitido'" @click="showRatingModal = true"
               class="rounded-lg bg-green-500 text-white p-2 text-sm">
               Marcar como recibido
             </button>
           </el-tooltip>
-
           <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar ordenes de compra') &&
             purchase.data.user.id == $page.props.auth.user.id" content="Editar" placement="top">
             <Link :href="route('purchases.edit', selectedPurchase)">
@@ -53,26 +40,14 @@
             </button>
             </Link>
           </el-tooltip>
-
-          <Dropdown align="right" width="48"
-            v-if="$page.props.auth.user.permissions.includes('Crear ordenes de compra') && $page.props.auth.user.permissions.includes('Eliminar ordenes de compra')">
-            <template #trigger>
-              <button
-                class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center text-sm">
-                Más <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
-              </button>
-            </template>
-            <template #content>
-              <DropdownLink :href="route('purchases.create')"
-                v-if="$page.props.auth.user.permissions.includes('Crear ordenes de compra')">
-                Crear nueva órden
-              </DropdownLink>
-              <DropdownLink @click="showConfirmModal = true" as="button"
-                v-if="$page.props.auth.user.permissions.includes('Eliminar ordenes de compra')">
-                Eliminar
-              </DropdownLink>
-            </template>
-          </Dropdown>
+          <el-tooltip v-if="$page.props.auth.user.permissions.includes('Crear ordenes de compra') &&
+            purchase.data.user.id == $page.props.auth.user.id" content="Crear nueva orden" placement="top">
+            <Link :href="route('purchases.create')">
+            <button class="w-9 h-9 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
+              <i class="fa-solid fa-plus text-sm"></i>
+            </button>
+            </Link>
+          </el-tooltip>
         </div>
       </div>
     </div>
@@ -84,7 +59,7 @@
     </el-steps>
 
     <p class="text-center font-bold text-lg dark:text-white mb-4 mt-5">
-      {{ purchase.data.supplier.name }}
+      {{ purchase.data.supplier.nickname ?? 'Proveedor sin Alias registrado' }}
       <!-- <span class="py-1 p-2" :class="purchase.data.status == 'Pendiente' ? 'text-red-600 bg-red-200'
         : purchase.data.status == 'Autorizado' ? 'text-yellow-600 bg-yellow-200'
           : purchase.data.status == 'Emitido' ? 'text-blue-600 bg-blue-200' : 'text-green-600 bg-green-200'">{{
@@ -93,49 +68,21 @@
 
     <el-tabs v-model="activeTab" class="mx-5 mt-3" @tab-click="handleClickInTab">
       <el-tab-pane label="Datos de la órden" name="1">
-        <General :purchase="purchase.data" />
+        <GeneralLimited :purchase="purchase.data" />
       </el-tab-pane>
       <el-tab-pane label="Productos" name="2">
-        <Products :purchase="purchase.data" />
+        <ProductsLimited :purchase="purchase.data" />
       </el-tab-pane>
     </el-tabs>
 
-    <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
-      <template #title> Eliminar Órden de compra </template>
-      <template #content> Continuar con la eliminación? </template>
-      <template #footer>
-        <div>
-          <CancelButton @click="showConfirmModal = false" class="mr-2">Cancelar</CancelButton>
-          <PrimaryButton @click="deleteItem">Eliminar</PrimaryButton>
-        </div>
-      </template>
-    </ConfirmationModal>
-
     <DialogModal :show="showRatingModal" @close="showRatingModal = false" maxWidth="3xl">
       <template #title>
-        <h1 class="font-bold">
-          Recepción de compra
-        </h1>
-      </template>
-      <template #content>
-        <div class="grid grid-cols-2 gap-3 mt-3">
-          <div>
-            <InputLabel value="Paqueteria que llevó la mercancía" />
-            <el-select v-model="ratingForm.carrier" no-data-text="No hay opciones por mostrar"
-              no-match-text="No se encontraron coincidencias" filterable placeholder="Seleccionar">
-              <el-option v-for="item in carriers" :key="item" :label="item" :value="item" />
-            </el-select>
-          </div>
-          <div>
-            <InputLabel value="Folio de factura" />
-            <el-input v-model="ratingForm.invoice_folio" type="text">
-            </el-input>
-          </div>
-        </div>
-        <h1 class="flex items-center justify-between font-bold text-lg mt-6">
+        <h1 class="flex items-center justify-between font-bold mt-3">
           <p>Evaluación de proveedor</p>
           <p>REG-CO-07</p>
         </h1>
+      </template>
+      <template #content>
         <p class="text-[#999999]">Por favor, completa la siguiente evaluación del proveedor.</p>
         <form @submit.prevent="storeRating" class="mt-5">
           <section>
@@ -159,8 +106,7 @@
             </div>
           </section>
           <section class="mt-3">
-            <h2 class="text-[#373737] dark:text-gray-500 font-bold mb-2">¿Las características solicitadas de los
-              productos o servicio
+            <h2 class="text-[#373737] dark:text-gray-500 font-bold mb-2">¿Las características solicitadas de los productos o servicio
               fueron cubiertos?</h2>
             <div class="flex items-center space-x-2 mx-3">
               <input type="radio" id="2.1" value="Sí, cumplió con todo" v-model="ratingForm.q2"
@@ -193,8 +139,7 @@
             </div>
           </section>
           <section class="mt-3">
-            <h2 class="text-[#373737] dark:text-gray-500 font-bold mb-2">Ante alguna urgencia, ¿se ofreció apoyo en la
-              entrega?</h2>
+            <h2 class="text-[#373737] dark:text-gray-500 font-bold mb-2">Ante alguna urgencia, ¿se ofreció apoyo en la entrega?</h2>
             <div>
               <InputLabel value="Días de atraso en la urgencia" />
               <el-select v-model="ratingForm.q4" no-data-text="No hay opciones por mostrar"
@@ -224,16 +169,12 @@
 
 <script>
 import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
-import Dropdown from "@/Components/Dropdown.vue";
-import DropdownLink from "@/Components/DropdownLink.vue";
-import ConfirmationModal from "@/Components/ConfirmationModal.vue";
-import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import DialogModal from "@/Components/DialogModal.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import General from "./Tabs/General.vue";
-import Products from "./Tabs/Products.vue";
+import GeneralLimited from "./Tabs/GeneralLimited.vue";
+import ProductsLimited from "./Tabs/ProductsLimited.vue";
 
 export default {
   data() {
@@ -245,8 +186,6 @@ export default {
       q3_2: null,
       q4: 'No se presentó ninguna urgencia',
       q5: '0 avisos de rechazo',
-      carrier: null,
-      invoice_folio: null,
     });
 
     return {
@@ -278,15 +217,6 @@ export default {
         '1 aviso de rechazo',
         '2 o más avisos de rechazo',
       ],
-      carriers: [
-        'Paquetexpress',
-        'DHL',
-        'FEDEX',
-        'Tres guerras',
-        'El proveedor trajo la mercancía',
-        'Emblems3d fue a recoger la mercancía',
-        'Otro',
-      ],
     };
   },
   props: {
@@ -295,16 +225,12 @@ export default {
   },
   components: {
     AppLayoutNoHeader,
-    Dropdown,
-    DropdownLink,
-    ConfirmationModal,
     DialogModal,
-    CancelButton,
     PrimaryButton,
     Link,
     InputLabel,
-    General,
-    Products,
+    GeneralLimited,
+    ProductsLimited,
   },
   computed: {
     getCurrentStep() {

@@ -28,7 +28,9 @@ class Purchase extends Model
         'products',
         'bank_information',
         'contact_id',
-        'rating'
+        'rating',
+        'carrier',
+        'invoice_folio',
     ];
 
     protected $casts = [

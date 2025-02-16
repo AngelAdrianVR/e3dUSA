@@ -1,52 +1,53 @@
 <template>
     <div class="md:grid grid-cols-2 border-b-2 border-[#cccccc] dark:text-white text-sm">
-      <div class="grid grid-cols-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center">
+      <div class="grid grid-cols-2 gap-2 text-left p-4 md:ml-10 border-r-2 border-gray-[#cccccc] items-center self-start">
         <span class="text-gray-500">ID</span>
         <span>{{ purchase.id }}</span>
-        <span class="text-gray-500 my-2">Creado por</span>
+        <span class="text-gray-500">Creado por</span>
         <span>{{ purchase.user.name }}</span>
-        <span class="text-gray-500 my-2">Proveedor</span>
+        <span class="text-gray-500">Proveedor</span>
         <span>{{ purchase.supplier.name }}</span>
-        <span class="text-gray-500 my-2">Creado el</span>
+        <span class="text-gray-500">Creado el</span>
         <span>{{ purchase.created_at }}</span>
-        <span class="text-gray-500 my-2">Autorizado el</span>
+        <span class="text-gray-500">Autorizado el</span>
         <span>{{ purchase.authorized_at }}</span>
-        <span class="text-gray-500 my-2">Autorizado por</span>
+        <span class="text-gray-500">Autorizado por</span>
         <span>{{ purchase.authorized_user_name }}</span>
-        <span class="text-gray-500 my-2">Fecha de entrega esperada</span>
+        <span class="text-gray-500">Fecha de entrega esperada</span>
         <span>{{ purchase.expected_delivery_date }}</span>
-        <span class="text-gray-500 my-2">Fecha de realización de pedido</span>
+        <span class="text-gray-500">Fecha de realización de pedido</span>
         <span>{{ purchase.emited_at }}</span>
-        <span class="text-gray-500 my-2">Fecha de recibido</span>
+        <span class="text-gray-500">Fecha de recibido</span>
         <span>{{ purchase.recieved_at }}</span>
-        <span class="text-gray-500 my-2">Moneda</span>
+        <span class="text-gray-500">Moneda</span>
         <span>{{ purchase.currency ?? '-' }}</span>
-        <span class="text-gray-500 my-2">Notas</span>
+        <span class="text-gray-500">Entrega de mercancía</span>
+        <span>{{ purchase.carrier ?? '-' }}</span>
+        <span class="text-gray-500">Folio de factura</span>
+        <span>{{ purchase.invoice_folio ?? '-' }}</span>
+        <span class="text-gray-500">Notas</span>
         <span>{{ purchase.notes }}</span>
       </div>
-      <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center">
+      <div class="grid grid-cols-2 gap-2 text-left p-4 md:ml-10 items-center self-start">
         <p class="text-secondary col-span-2 mb-2">Datos del proveedor</p>
-
         <span class="text-gray-500">ID</span>
         <span>{{ purchase.supplier.id }}</span>
-        <span class="text-gray-500 my-2">Nombre</span>
+        <span class="text-gray-500">Nombre</span>
         <span>{{ purchase.supplier.name }}</span>
-        <span class="text-gray-500 my-2">Dirección</span>
+        <span class="text-gray-500">Dirección</span>
         <span>{{ purchase.supplier.address }}</span>
-        <span class="text-gray-500 my-2">Código postal</span>
+        <span class="text-gray-500">Código postal</span>
         <span>{{ purchase.supplier.post_code }}</span>
-        <span class="text-gray-500 my-2">Teléfono</span>
+        <span class="text-gray-500">Teléfono</span>
         <span>{{ purchase.supplier.phone }}</span>
-
         <p class="text-secondary col-span-2 mt-7">Datos Bancarios</p>
-
-        <span class="text-gray-500 my-2">Nombre del beneficiario</span>
+        <span class="text-gray-500">Nombre del beneficiario</span>
         <span>{{ purchase.supplier.banks[purchase.bank_information]?.beneficiary_name ?? '--' }}</span>
-        <span class="text-gray-500 my-2">Número de cuenta</span>
+        <span class="text-gray-500">Número de cuenta</span>
         <span>{{ purchase.supplier.banks[purchase.bank_information]?.accountNumber ?? '--' }}</span>
-        <span class="text-gray-500 my-2">Clabe</span>
+        <span class="text-gray-500">Clabe</span>
         <span>{{ purchase.supplier.banks[purchase.bank_information]?.clabe ?? '--' }}</span>
-        <span class="text-gray-500 my-2">Banco</span>
+        <span class="text-gray-500">Banco</span>
         <span>{{ purchase.supplier.banks[purchase.bank_information]?.bank_name ?? '--' }}</span>
       </div>
     </div>

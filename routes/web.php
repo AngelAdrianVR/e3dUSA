@@ -190,6 +190,7 @@ Route::post('catalog-products/update-with-media/{catalog_product}', [CatalogProd
 Route::post('catalog-products/QR-search-catalog-product', [CatalogProductController::class, 'QRSearchCatalogProduct'])->name('catalog-products.QR-search-catalog-product');
 Route::get('catalog-products/{catalog_product}/get-data', [CatalogProductController::class, 'getCatalogProductData'])->name('catalog-products.get-data');
 Route::get('catalog-products-fetch-shipping-rates/{catalog_product}', [CatalogProductController::class, 'fetchShippingRates'])->name('catalog-products.fetch-shipping-rates');
+Route::get('catalog-products-prices-report', [CatalogProductController::class, 'pricesReport'])->name('catalog-products.prices-report');
 
 
 // ------- Ventas(Clients Routes)  ---------
@@ -314,6 +315,7 @@ Route::get('fetch-supplier/{supplier_id}', [SupplierController::class, 'fetchSup
 Route::get('supplier-get-orders/{supplier}', [SupplierController::class, 'getOrders'])->name('suppliers.get-orders');
 Route::get('supplier-rating-report/{p}', [SupplierController::class, 'ratingReport'])->name('suppliers.rating-report');
 Route::post('suppliers/massive-delete', [SupplierController::class, 'massiveDelete'])->name('suppliers.massive-delete');
+Route::post('suppliers/clone', [SupplierController::class, 'clone'])->name('suppliers.clone');
 
 
 // ------- Compras(purchases Routes)  ---------

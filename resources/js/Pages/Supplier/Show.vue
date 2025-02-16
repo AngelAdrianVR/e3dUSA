@@ -21,7 +21,8 @@
             <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar proveedores')" content="Editar"
               placement="top">
               <Link :href="route('suppliers.edit', selectedSupplier)">
-              <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
+              <button
+                class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                   stroke="currentColor" class="size-5">
                   <path stroke-linecap="round" stroke-linejoin="round"
@@ -33,7 +34,8 @@
             <Dropdown align="right" width="48"
               v-if="$page.props.auth.user.permissions.includes('Crear proveedores') && $page.props.auth.user.permissions.includes('Eliminar proveedores')">
               <template #trigger>
-                <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center justify-center text-sm">
+                <button
+                  class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center justify-center text-sm">
                   Más <i class="fa-solid fa-chevron-down text-[10px] ml-2 pb-[2px]"></i>
                 </button>
               </template>
@@ -41,6 +43,10 @@
                 <DropdownLink v-if="$page.props.auth.user.permissions.includes('Crear proveedores')"
                   :href="route('suppliers.create')">
                   Crear nuevo proveedor
+                </DropdownLink>
+                <DropdownLink v-if="$page.props.auth.user.permissions.includes('Crear proveedores')" @click="clone"
+                  as="button">
+                  Clonar
                 </DropdownLink>
                 <DropdownLink v-if="$page.props.auth.user.permissions.includes('Eliminar proveedores')"
                   @click="showConfirmModal = true" as="button">
@@ -180,6 +186,39 @@ export default {
       } finally {
         this.showConfirmModal = false;
         this.$inertia.get(route('suppliers.index'));
+      }
+    },
+    async clone() {
+      try {
+        const response = await axios.post(route('suppliers.clone', {
+          supplier_id: this.supplier.data.id
+        }));
+
+        if (response.status == 200) {
+          this.$notify({
+            title: 'Éxito',
+            message: response.data.message,
+            type: 'success'
+          });
+
+          // redirigir a los detalles del elemento nuevo
+          this.$inertia.visit(route('suppliers.show', response.data.newItem.id));
+
+        } else {
+          this.$notify({
+            title: 'Algo salió mal',
+            message: response.data.message,
+            type: 'error'
+          });
+        }
+
+      } catch (err) {
+        this.$notify({
+          title: 'Algo salió mal',
+          message: err.message,
+          type: 'error'
+        });
+        console.log(err);
       }
     },
   },

@@ -29,6 +29,8 @@ return new class extends Migration
             $table->json('products')->nullable();
             $table->json('bank_information')->nullable();
             $table->json('rating')->nullable();
+            $table->string('carrier')->nullable();
+            $table->string('invoice_folio')->nullable();
             $table->timestamps();
         });
     }

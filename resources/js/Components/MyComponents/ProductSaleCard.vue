@@ -420,7 +420,7 @@
             <InputLabel value="Moneda*" />
             <el-select v-model="priceForm.new_currency" placeholder="Seleccionar"
                 :fit-input-width="true">
-                <el-option v-for="item in newPriceCurrencies" :key="item.value" :label="item.label"
+                <el-option v-for="item in currencies" :key="item.value" :label="item.label"
                     :value="item.value">
                     <span style="float: left">{{ item.label }}</span>
                     <span style="float: right; color: #cccccc; font-size: 13px">{{ item.value }}</span>
@@ -953,7 +953,6 @@ export default {
         this.new_price_percentage = (((newPrice / oldPrice) - 1) * 100).toFixed(2);
     },
     handleUpdateProductPrice() {
-      console.log(this.itemToUpdatePrice);
       // asigna el id del producto al formulario de cambio de precio
       this.priceForm.product_company_id = this.itemToUpdatePrice.id;
       // calcular el 5% del precio actual y agregarlo a nuevo precio como cantidad por defecto
