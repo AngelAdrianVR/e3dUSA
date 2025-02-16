@@ -17,6 +17,7 @@ use App\Models\Quote;
 use App\Models\RawMaterial;
 use App\Models\Sale;
 use App\Models\User;
+use App\Notifications\ApprovalOkNotification;
 use App\Notifications\ApprovalRequiredNotification;
 use App\Notifications\NewQuoteNotification;
 use App\Notifications\RequestApprovedNotification;
@@ -92,7 +93,8 @@ class QuoteController extends Controller
             'company_branch_id' => 'nullable|numeric|min:1',
             'prospect_id' => 'nullable|numeric|min:1',
             'products' => 'array|min:1',
-            'tooling_currency' => 'nullable'
+            'tooling_currency' => 'nullable',
+            'show_breakdown' => 'boolean',
         ]);
 
         $quote = Quote::create($request->except('products') + ['user_id' => auth()->id()]);
@@ -193,7 +195,8 @@ class QuoteController extends Controller
             'currency' => 'required|string|max:191',
             'company_branch_id' => 'nullable|numeric|min:1',
             'prospect_id' => 'nullable|numeric|min:1',
-            'products' => 'array|min:1'
+            'products' => 'array|min:1',
+            'show_breakdown' => 'boolean',
         ]);
 
         $quote->update($request->except('products'));
@@ -517,9 +520,16 @@ class QuoteController extends Controller
             'authorized_user_name' => auth()->user()->name,
         ]);
 
-        // notify to requester user
-        $quote_folio = 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT);
-        $quote->user->notify(new RequestApprovedNotification('Cotización', $quote_folio, "Cliente {$quote->companyBranch->name}", 'quote'));
+        // notificar a creador de la orden si quien autoriza no es el mismo usuario
+        if (auth()->id() != $quote->user->id) {
+            $quote_folio = 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT);
+            $quote->user->notify(new ApprovalOkNotification(
+                'Cotización',
+                $quote_folio,
+                'quote',
+                route('quotes.show', $quote->id)
+            ));
+        }
 
         return response()->json(['message' => 'Cotizacion autorizadda', 'item' => $quote]); //en caso de actualizar en la misma vista descomentar
         // return to_route('quotes.index'); // en caso de mandar al index, descomentar.

@@ -1,18 +1,18 @@
 <template>
   <div>
-    <AppLayout title="Órdenes de compra - Crear">
+    <AppLayout title="Órdenes de compra - Editar">
       <template #header>
         <div class="flex justify-between">
           <Back />
           <div class="flex items-center space-x-2">
             <h2 class="font-semibold text-xl leading-tight">
-              Crear órden de compra
+              Editar órden de compra
             </h2>
           </div>
         </div>
       </template>
       <!-- Form -->
-      <form @submit.prevent="store">
+      <form @submit.prevent="update">
         <div class="md:w-1/2 md:mx-auto grid grid-cols-2 gap-3 mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md">
           <div class="col-span-full">
             <el-radio-group v-model="form.is_spanish_template" size="small">
@@ -27,21 +27,6 @@
                 :label="item.nickname ? item.nickname + ' - ' + item.name : item.name" :value="item.id" />
             </el-select>
             <InputError :message="form.errors.supplier_id" />
-          </div>
-          <div>
-            <InputLabel value="Información bancaria*" />
-            <el-select v-model="form.bank_information" clearable filterable placeholder="Selecciona">
-              <el-option v-for="(item, index) in currentSupplier?.banks" :key="item.id"
-                :label="item['beneficiary_name'] + '-' + item['bank_name']" :value="index" />
-            </el-select>
-            <InputError :message="form.errors.bank_information" />
-          </div>
-          <div>
-            <InputLabel value="Contacto*" />
-            <el-select v-model="form.contact_id" clearable filterable placeholder="Selecciona">
-              <el-option v-for="item in currentSupplier?.contacts" :key="item.id" :label="item.name" :value="item.id" />
-            </el-select>
-            <InputError :message="form.errors.contact_id" />
           </div>
           <div>
             <InputLabel value="Moneda*" />
@@ -169,12 +154,6 @@
           <p class="text-xs text-red-600" v-if="productValidation">
             No puedes agregar dos veces el mísmo producto
           </p>
-          <div>
-            <el-checkbox @change="handleCheckShowPrices" v-model="form.show_prices" label="Mostrar precios"
-              size="small" />
-            <el-checkbox v-model="form.is_iva_included" label="Calcular IVA y mostrarlo" size="small"
-              :disabled="!form.show_prices" />
-          </div>
           <div class="col-span-full">
             <InputLabel value="Notas" />
             <el-input v-model="form.notes" :rows="3" maxlength="800" placeholder="..." show-word-limit
@@ -184,7 +163,7 @@
           <div class="col-span-full flex justify-end">
             <PrimaryButton :disabled="form.processing">
               <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
-              Crear orden
+              Guardar cambios
             </PrimaryButton>
           </div>
         </div>
@@ -208,19 +187,19 @@ import InputLabel from "@/Components/InputLabel.vue";
 export default {
   data() {
     const form = useForm({
-      notes: null,
-      is_spanish_template: 1,
-      expected_delivery_date: null,
-      is_iva_included: false,
-      show_prices: false,
-      supplier_id: null,
-      contact_id: null,
-      bank_information: null,
-      additional_stock: null,
-      plane_stock: null,
-      ship_stock: null,
-      currency: null,
-      products: [],
+      notes: this.purchase.notes,
+      is_spanish_template: this.purchase.is_spanish_template,
+      expected_delivery_date: this.purchase.expected_delivery_date,
+      is_iva_included: Boolean(this.purchase.is_iva_included),
+      show_prices: Boolean(this.purchase.show_prices),
+      supplier_id: this.purchase.supplier_id,
+      contact_id: this.purchase.contact_id,
+      bank_information: this.purchase.bank_information,
+      additional_stock: this.purchase.additional_stock,
+      plane_stock: this.purchase.plane_stock,
+      ship_stock: this.purchase.ship_stock,
+      currency: this.purchase.currency,
+      products: this.purchase.products,
     });
 
     return {
@@ -231,6 +210,7 @@ export default {
       productSelectedObj: null,
       editProductIndex: null,
       productValidation: false,
+      loading: false,
       rawMaterials: [],
       currencies: [
         { value: "$MXN", label: "MXN" },
@@ -251,28 +231,31 @@ export default {
   },
   props: {
     suppliers: Array,
+    raw_materials: Array,
+    contacts: Array,
+    purchase: Object,
   },
   methods: {
-    saveBankObj() {
-      this.form.bank_information = this.currentSupplier.banks[this.bank_index];
-    },
-    handleCheckShowPrices() {
-      if (!this.form.show_prices) {
-        this.form.is_iva_included = false;
-      }
-    },
-    store() {
-      this.form.post(route("purchases.store"), {
+    update() {
+      this.form.put(route("purchases.update", this.purchase.id), {
         onSuccess: () => {
           this.$notify({
             title: "Éxito",
-            message: "Órden de compra creada",
+            message: "Órden de compra editada",
             type: "success",
           });
 
           this.form.reset();
         },
       });
+    },
+    handleCheckShowPrices() {
+      if (!this.form.show_prices) {
+        this.form.is_iva_included = false;
+      }
+    },
+    saveBankObj() {
+      this.form.bank_information = this.currentSupplier?.banks[this.bank_index];
     },
     disabledDate(time) {
       const today = new Date();
@@ -295,6 +278,7 @@ export default {
       } else {
         this.form.products.push(product);
       }
+
       this.resetProductForm();
     },
     resetProductForm() {
@@ -335,26 +319,38 @@ export default {
       }
     },
     async fetchSupplier() {
-      //resetea el formulario cuando se cambia de proveedor
-      this.form.products = [];
-      this.form.bank_information = null;
-      this.form.contact_id = null;
-      this.bank_index = null;
+      this.loading = true;
       try {
         const response = await axios.get(route('suppliers.fetch-supplier', this.form.supplier_id));
-
+        
         if (response.status === 200) {
           this.currentSupplier = response.data.item;
-          this.fetchSupplierItems();
+          this.getBank(); //recupera el el banco de la compra
+          this.fetchSupplierItems(); //recupera los productos registrados del proveedor
         }
       } catch (error) {
         console.log(error);
       } finally {
+        this.loading = false;
       }
     },
     getProductSelected() {
       this.productSelectedObj = this.rawMaterials.find(item => item.id === this.productSelectedId);
+    },
+    getBank() {
+      // Encontrar el índice del elemento en "banks" que coincide con la "clabe" de "bank_information"
+      const index = this.currentSupplier.banks.findIndex(item => item.clabe === this.purchase.bank_information?.clabe);
+
+      // El resultado será el índice del elemento o -1 si no se encuentra
+      if (index != -1) {
+        this.bank_index = index;
+      } else {
+        this.bank_index = null;
+      }
     }
   },
+  async mounted() {
+    await this.fetchSupplier();
+  }
 };
 </script>

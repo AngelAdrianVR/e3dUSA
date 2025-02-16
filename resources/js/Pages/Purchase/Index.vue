@@ -118,7 +118,6 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
-import TextInput from "@/Components/TextInput.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from "axios";
 
@@ -138,7 +137,6 @@ export default {
     AppLayout,
     SecondaryButton,
     Link,
-    TextInput,
     IndexSearchBar,
   },
   props: {
@@ -180,9 +178,7 @@ export default {
 
     handleRowClick(row) {
       this.$inertia.get(route('purchases.show', row));
-      console.log(row)
     },
-
     async clone(purchase_id) {
       try {
         const response = await axios.post(

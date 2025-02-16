@@ -32,7 +32,11 @@ class SupplierController extends Controller
             ];
         });
 
-        return inertia('Supplier/Index', compact('suppliers'));
+        if (auth()->user()->can('Ver info sensible de proveedores')) {
+            return inertia('Supplier/Index', compact('suppliers'));
+        } else {
+            return inertia('Supplier/IndexLimited', compact('suppliers'));
+        }
     }
 
     public function create()
@@ -81,9 +85,13 @@ class SupplierController extends Controller
     public function show($supplier_id)
     {
         $supplier = SupplierResource::make(Supplier::with('contacts')->find($supplier_id));
-        $suppliers = Supplier::latest()->get(['id', 'name']);
+        $suppliers = Supplier::latest()->get(['id', 'name', 'nickname']);
 
-        return inertia('Supplier/Show', compact('supplier', 'suppliers'));
+        if (auth()->user()->can('Ver info sensible de proveedores')) {
+            return inertia('Supplier/Show', compact('supplier', 'suppliers'));
+        } else {
+            return inertia('Supplier/ShowLimited', compact('supplier', 'suppliers'));
+        }
     }
 
     public function edit($supplier_id)
@@ -258,5 +266,32 @@ class SupplierController extends Controller
             'data' => $groupedResults,
             'period' => Carbon::parse($p)->isoFormat('MMMM YYYY'),
         ]);
+    }
+
+    public function clone(Request $request)
+    {
+        $supplier = Supplier::find($request->supplier_id);
+
+        $clone = $supplier->replicate()->fill([
+            'name' => $supplier->name . ' (Clonado)',
+            'nickname' => $supplier->nickname . ' (Clonado)',
+            'part_number' => $supplier->part_number . '-Clonado',
+            'user_id' => auth()->id(),
+            'sale_id' => null,
+        ]);
+
+        $clone->save();
+        
+        // Clonar contactos y relacionarlos con el proveedor clonado
+        foreach ($supplier->contacts as $contact) {
+            $clone_contact = $contact->replicate()->fill([
+                'contactable_id' => $clone->id,
+                'contactable_type' => Supplier::class,
+            ]);
+
+            $clone_contact->save();
+        }
+
+        return response()->json(['message' => "Proveedor clonado: {$clone->nickname}", 'newItem' => $clone->load('contacts')]);
     }
 }

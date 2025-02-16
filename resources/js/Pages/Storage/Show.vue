@@ -148,7 +148,7 @@
                   </ul>
                   <p v-if="!storage.data.salesInProcess.length">No hay ordenes de venta en proceso</p>
                 </template>
-                <p class="px-5">
+                <p class="px-5 text-secondary cursor-help">
                   {{ storage.data.quantityCommited.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0" }}
                   {{ storage.data.storageable.measure_unit ?? "" }}
                   <i class="fa-solid fa-minus ml-3"></i>

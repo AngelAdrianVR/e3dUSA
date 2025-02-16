@@ -80,9 +80,10 @@ class QuoteResource extends JsonResource
             'raw_materials' => RawMaterialResource::collection($this->whenLoaded('rawMaterials')),
             'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'total' => [
-               'raw' => $total_without_taxes,
-               'number_format' => number_format($total_without_taxes, 2),
+                'raw' => $total_without_taxes,
+                'number_format' => number_format($total_without_taxes, 2),
             ],
+            'show_breakdown' => $this->show_breakdown,
         ];
     }
 }
