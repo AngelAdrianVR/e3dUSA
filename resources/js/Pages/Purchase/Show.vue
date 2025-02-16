@@ -57,7 +57,8 @@
           <Dropdown align="right" width="48"
             v-if="$page.props.auth.user.permissions.includes('Crear ordenes de compra') && $page.props.auth.user.permissions.includes('Eliminar ordenes de compra')">
             <template #trigger>
-              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center text-sm">
+              <button
+                class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center text-sm">
                 Más <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
               </button>
             </template>
@@ -112,12 +113,29 @@
 
     <DialogModal :show="showRatingModal" @close="showRatingModal = false" maxWidth="3xl">
       <template #title>
-        <h1 class="flex items-center justify-between font-bold mt-3">
-          <p>Evaluación de proveedor</p>
-          <p>REG-CO-07</p>
+        <h1 class="font-bold">
+          Recepción de compra
         </h1>
       </template>
       <template #content>
+        <div class="grid grid-cols-2 gap-3 mt-3">
+          <div>
+            <InputLabel value="Paqueteria que llevó la mercancía" />
+            <el-select v-model="ratingForm.carrier" no-data-text="No hay opciones por mostrar"
+              no-match-text="No se encontraron coincidencias" filterable placeholder="Seleccionar">
+              <el-option v-for="item in carriers" :key="item" :label="item" :value="item" />
+            </el-select>
+          </div>
+          <div>
+            <InputLabel value="Folio de factura" />
+            <el-input v-model="ratingForm.invoice_folio" type="text">
+            </el-input>
+          </div>
+        </div>
+        <h1 class="flex items-center justify-between font-bold text-lg mt-6">
+          <p>Evaluación de proveedor</p>
+          <p>REG-CO-07</p>
+        </h1>
         <p class="text-[#999999]">Por favor, completa la siguiente evaluación del proveedor.</p>
         <form @submit.prevent="storeRating" class="mt-5">
           <section>
@@ -141,7 +159,8 @@
             </div>
           </section>
           <section class="mt-3">
-            <h2 class="text-[#373737] dark:text-gray-500 font-bold mb-2">¿Las características solicitadas de los productos o servicio
+            <h2 class="text-[#373737] dark:text-gray-500 font-bold mb-2">¿Las características solicitadas de los
+              productos o servicio
               fueron cubiertos?</h2>
             <div class="flex items-center space-x-2 mx-3">
               <input type="radio" id="2.1" value="Sí, cumplió con todo" v-model="ratingForm.q2"
@@ -174,7 +193,8 @@
             </div>
           </section>
           <section class="mt-3">
-            <h2 class="text-[#373737] dark:text-gray-500 font-bold mb-2">Ante alguna urgencia, ¿se ofreció apoyo en la entrega?</h2>
+            <h2 class="text-[#373737] dark:text-gray-500 font-bold mb-2">Ante alguna urgencia, ¿se ofreció apoyo en la
+              entrega?</h2>
             <div>
               <InputLabel value="Días de atraso en la urgencia" />
               <el-select v-model="ratingForm.q4" no-data-text="No hay opciones por mostrar"
@@ -225,6 +245,8 @@ export default {
       q3_2: null,
       q4: 'No se presentó ninguna urgencia',
       q5: '0 avisos de rechazo',
+      carrier: null,
+      invoice_folio: null,
     });
 
     return {
@@ -255,6 +277,15 @@ export default {
         '0 avisos de rechazo',
         '1 aviso de rechazo',
         '2 o más avisos de rechazo',
+      ],
+      carriers: [
+        'Paquetexpress',
+        'DHL',
+        'FEDEX',
+        'Tres guerras',
+        'El proveedor trajo la mercancía',
+        'Emblems3d fue a recoger la mercancía',
+        'Otro',
       ],
     };
   },

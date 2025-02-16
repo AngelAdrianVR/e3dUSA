@@ -253,12 +253,14 @@ class PurchaseController extends Controller
         $rating = [];
         $rating["created_by"] = auth()->user()->name;
         $rating["created_at"] = now()->toDateTimeString();
-        $rating["questions"] = $this->getProcessedQuestions($request->all());
+        $rating["questions"] = $this->getProcessedQuestions($request->except(['carrier', 'invoice_folio']));
         $purchase->rating = $rating;
 
         // marcar como recibio
         $purchase->recieved_at = now();
         $purchase->status = 3;
+        $purchase->carrier = $request->carrier;
+        $purchase->invoice_folio = $request->invoice_folio;
         $purchase->save();
 
         // return response()->json([]);

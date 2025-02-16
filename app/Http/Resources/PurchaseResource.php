@@ -41,6 +41,8 @@ class PurchaseResource extends JsonResource
             'plane_stock' => $this->plane_stock,
             'ship_stock' => $this->ship_stock,
             'products' => $this->products,
+            'carrier' => $this->carrier,
+            'invoice_folio' => $this->invoice_folio,
             'user' => $this->whenLoaded('user'),
             'supplier' => $this->whenLoaded('supplier'),
             'contact' => $this->whenLoaded('contact'),
