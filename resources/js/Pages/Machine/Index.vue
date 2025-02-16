@@ -79,7 +79,6 @@
                     </el-table>
                 </div>
             </div>
-            <!-- tabla -->
         </AppLayout>
     </div>
 </template>
