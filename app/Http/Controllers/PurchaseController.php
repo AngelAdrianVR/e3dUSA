@@ -14,6 +14,7 @@ use App\Models\RawMaterial;
 use App\Models\StockMovementHistory;
 use App\Models\Supplier;
 use App\Models\User;
+use App\Notifications\ApprovalOkNotification;
 use App\Notifications\ApprovalRequiredNotification;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -190,9 +191,10 @@ class PurchaseController extends Controller
     public function clone(Request $request)
     {
         $purchase = Purchase::find($request->purchase_id);
+        $purchase_folio = 'OC-' . str_pad($purchase->id, 4, "0", STR_PAD_LEFT);
 
         $clone = $purchase->replicate()->fill([
-            'folio' => $purchase->folio . ' (Copia)',
+            'folio' => $purchase_folio . ' (Copia)',
         ]);
 
         $clone->save();
@@ -207,6 +209,17 @@ class PurchaseController extends Controller
             'authorized_user_name' => auth()->user()->name,
             'status' => 1,
         ]);
+
+        // notificar a creador de la orden si quien autoriza no es el mismo usuario
+        if (auth()->id() != $purchase->user->id) {
+            $purchase_folio = 'OC-' . str_pad($purchase->id, 4, "0", STR_PAD_LEFT);
+            $purchase->user->notify(new ApprovalOkNotification(
+                'Órden de compra',
+                $purchase_folio,
+                'po',
+                route('purchases.show', $purchase->id)
+            ));
+        }
 
         return response()->json(['message' => 'Compra autorizadda', 'item' => $purchase]); //en caso de actualizar en la misma vista descomentar
         // return to_route('quotes.index'); // en caso de mandar al index, descomentar.
