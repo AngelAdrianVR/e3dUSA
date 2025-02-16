@@ -190,6 +190,7 @@ Route::post('catalog-products/update-with-media/{catalog_product}', [CatalogProd
 Route::post('catalog-products/QR-search-catalog-product', [CatalogProductController::class, 'QRSearchCatalogProduct'])->name('catalog-products.QR-search-catalog-product');
 Route::get('catalog-products/{catalog_product}/get-data', [CatalogProductController::class, 'getCatalogProductData'])->name('catalog-products.get-data');
 Route::get('catalog-products-fetch-shipping-rates/{catalog_product}', [CatalogProductController::class, 'fetchShippingRates'])->name('catalog-products.fetch-shipping-rates');
+Route::get('catalog-products-prices-report', [CatalogProductController::class, 'pricesReport'])->name('catalog-products.prices-report');
 
 
 // ------- Ventas(Clients Routes)  ---------

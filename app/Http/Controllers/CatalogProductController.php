@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 
 class CatalogProductController extends Controller
 {
-
     public function index()
     {
         $catalog_products = CatalogProduct::latest()->get(['id', 'part_number', 'name', 'cost', 'description']);
@@ -88,7 +87,7 @@ class CatalogProductController extends Controller
     public function show($catalog_product_id)
     {
         $catalog_product = CatalogProductResource::make(CatalogProduct::with(['rawMaterials:id,name,part_number' 
-            => ['storages:id,storageable_type,storageable_id' => ['storageable:id,name']], 'storages'])->find($catalog_product_id));
+            => ['storages:id,storageable_type,storageable_id' => ['storageable:id,name']], 'storages', 'companies:id,business_name'])->find($catalog_product_id));
         $catalog_products = CatalogProduct::latest()->get(['id', 'name']);
         
         return inertia('CatalogProduct/Show', compact('catalog_products', 'catalog_product'));
@@ -287,5 +286,12 @@ class CatalogProductController extends Controller
         $catalog_product->load('shippingRates:id,catalog_product_id');
 
         return response()->json(['item' => $catalog_product]);
+    }
+    
+    public function pricesReport()
+    {
+        $catalog_products = CatalogProduct::with(['companies'])->get();
+
+        return inertia('CatalogProduct/PricesReport', compact('catalog_products'));
     }
 }
