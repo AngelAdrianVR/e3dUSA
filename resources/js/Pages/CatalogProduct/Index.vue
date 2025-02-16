@@ -24,7 +24,7 @@
                     </div>
                     <!-- buttons -->
                     <div class="flex items-center space-x-2">
-                        <PrimaryButton @click="openReport" type="primary" plain>Reporte PDF</PrimaryButton>
+                        <PrimaryButton @click="openReport" type="primary" plain>Reporte de precios</PrimaryButton>
                         <div v-if="$page.props.auth.user.permissions.includes('Eliminar catalogo de productos')"
                             class="mt-2 lg:mt-0">
                             <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
