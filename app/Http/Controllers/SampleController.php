@@ -10,6 +10,7 @@ use App\Http\Resources\SampleResource;
 use App\Models\CatalogProduct;
 use App\Models\CompanyBranch;
 use App\Models\User;
+use App\Notifications\ApprovalOkNotification;
 use App\Notifications\ApprovalRequiredNotification;
 use App\Notifications\RequestApprovedNotification;
 use Illuminate\Http\Request;
@@ -349,11 +350,17 @@ class SampleController extends Controller
             'authorized_user_name' => auth()->user()->name,
         ]);
 
-        // notify to requester user
-        $sample->user->notify(new RequestApprovedNotification('Muestra', $sample->id, "Cliente {$sample->companyBranch->name}", 'sample'));
+        // notificar a creador de la orden si quien autoriza no es el mismo usuario
+        if (auth()->id() != $sample->user->id) {
+            $sample->user->notify(new ApprovalOkNotification(
+                'Muestra',
+                $sample->id,
+                'sample',
+                route('samples.show', $sample->id)
+            ));
+        }
 
-        return response()->json(['message' => 'Cotizacion autorizadda', 'authorized_at' => $sample->authorized_at?->isoFormat('DD MMM YYYY')]); //en caso de actualizar en la misma vista descomentar
-        // return to_route('samples.index'); // en caso de mandar al index, descomentar.
+        return response()->json(['message' => 'Muestra autorizadda', 'authorized_at' => $sample->authorized_at?->isoFormat('DD MMM YYYY')]); //en caso de actualizar en la misma vista descomentar
     }
 
     public function getMatches(Request $request)
