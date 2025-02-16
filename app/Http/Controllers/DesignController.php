@@ -11,6 +11,7 @@ use App\Models\Design;
 use App\Models\DesignType;
 use App\Models\Prospect;
 use App\Models\User;
+use App\Notifications\ApprovalOkNotification;
 use App\Notifications\ApprovalRequiredNotification;
 use App\Notifications\DesignCompletedNotification;
 use App\Notifications\RequestApprovedNotification;
@@ -337,8 +338,15 @@ class DesignController extends Controller
             'authorized_user_name' => auth()->user()->name,
         ]);
 
-        // notify to requester user
-        $design->user->notify(new RequestApprovedNotification('Diseño', $design->name, "", 'design'));
+        // notificar a creador de la orden si quien autoriza no es el mismo usuario
+        if (auth()->id() != $design->user->id) {
+            $design->user->notify(new ApprovalOkNotification(
+                'Diseño',
+                $design->id,
+                'design',
+                route('designs.show', $design->id)
+            ));
+        }
 
         return response()->json(['item' => DesignResource::make($design)]);
     }

@@ -13,6 +13,7 @@ use App\Models\Oportunity;
 use App\Models\Sale;
 use App\Models\Sample;
 use App\Models\User;
+use App\Notifications\ApprovalOkNotification;
 use App\Notifications\ApprovalRequiredNotification;
 use App\Notifications\ReminderPartialitiesNotification;
 use App\Notifications\SchedulePartialitiesReminder;
@@ -415,6 +416,18 @@ class SaleController extends Controller
             'authorized_user_name' => auth()->user()->name,
             'status' => 'Autorizado. Sin orden de producción',
         ]);
+
+        // notificar a creador de la orden si quien autoriza no es el mismo usuario
+        if (auth()->id() != $sale->user->id) {
+            $prefix = $sale->is_sale_production ? 'OV-' : 'OS-';
+            $sale_folio = $prefix . str_pad($sale->id, 4, "0", STR_PAD_LEFT);
+            $sale->user->notify(new ApprovalOkNotification(
+                'Órden de venta/stock',
+                $sale_folio,
+                'sales',
+                route('sales.show', $sale->id)
+            ));
+        }
 
         return response()->json(['item' => SaleResource::make($sale)]);
     }

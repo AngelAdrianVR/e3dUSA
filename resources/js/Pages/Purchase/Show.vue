@@ -24,7 +24,8 @@
 
           <button
             v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de compra') && purchase.data.status === 'Pendiente'"
-            @click="authorize" class="rounded-lg bg-primary text-white p-2 text-sm">
+            @click="authorize" class="rounded-lg bg-primary text-white p-2 text-sm" :disabled="authorizing">
+            <i v-if="authorizing" class="fa-solid fa-circle-notch fa-spin mr-1"></i>
             Autorizar
           </button>
 
@@ -255,6 +256,8 @@ export default {
       activeTab: '1',
       showConfirmModal: false,
       showRatingModal: false,
+      // cargas
+      authorizing: false,
       // respuestas de seleccion
       a3_1: [
         'No se requirió soporte',
@@ -412,6 +415,7 @@ export default {
       }
     },
     async authorize() {
+      this.authorizing = true;
       try {
         const response = await axios.put(route('purchases.authorize', this.purchase.data.id));
 
