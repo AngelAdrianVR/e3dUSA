@@ -223,6 +223,9 @@
                         </p>
                     </div>
                 </article>
+                <p v-if="!Object.keys(todays_design_orders).length" class="text-center text-sm mt-3">
+                    No se ha iniciado ninguna orden de diseño el día de hoy
+                </p>
             </section>
 
             <!-- Collaborators -->
