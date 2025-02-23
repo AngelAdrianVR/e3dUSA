@@ -22,6 +22,7 @@ return new class extends Migration
             $table->timestamp('recieved_at')->nullable();
             $table->boolean('is_iva_included')->default(false);
             $table->boolean('is_spanish_template')->default(true);
+            $table->boolean('is_for_production')->default(true);
             $table->boolean('show_prices')->default(false);
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('supplier_id')->constrained()->cascadeOnDelete();

@@ -48,6 +48,12 @@
           </div>
           <!-- --------------- Products to buy ----------------------------- -->
           <el-divider content-position="left" class="col-span-full">Productos</el-divider>
+          <div class="col-span-full">
+            <el-radio-group v-model="form.is_for_production" size="small">
+              <el-radio :value="1">Para producción</el-radio>
+              <el-radio :value="0">Para muestras</el-radio>
+            </el-radio-group>
+          </div>
           <div>
             <InputLabel value="Producto*" />
             <el-select v-model="productSelectedId" @change="getProductSelected" clearable filterable
@@ -66,7 +72,7 @@
               :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 300" />
             <InputError :message="form.errors.quantity" />
           </div>
-          <div>
+          <div v-if="form.is_for_production">
             <InputLabel>
               <div class="flex items-center space-x-2">
                 <span>Stock a favor</span>
@@ -85,14 +91,14 @@
               :parser="(value) => value.replace(/\D/g, '')" />
             <InputError :message="form.errors.additional_stock" />
           </div>
-          <div>
+          <div v-if="form.is_for_production">
             <InputLabel value="Piezas en avión" />
             <el-input v-model="form.plane_stock" placeholder="(opcional)"
               :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
               :parser="(value) => value.replace(/\D/g, '')" />
             <InputError :message="form.errors.plane_stock" />
           </div>
-          <div>
+          <div v-if="form.is_for_production">
             <InputLabel value="Piezas en barco" />
             <el-input v-model="form.ship_stock" placeholder="(opcional)"
               :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -189,6 +195,7 @@ export default {
     const form = useForm({
       notes: this.purchase.notes,
       is_spanish_template: this.purchase.is_spanish_template,
+      is_for_production: this.purchase.is_for_production,
       expected_delivery_date: this.purchase.expected_delivery_date,
       is_iva_included: Boolean(this.purchase.is_iva_included),
       show_prices: Boolean(this.purchase.show_prices),

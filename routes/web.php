@@ -60,69 +60,27 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WhatsappMonitorController;
 use App\Models\CompanyBranch;
+use App\Models\RawMaterial;
+use App\Models\Supplier;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// *** borrar despues de ejecutado
-// Route::get('update-sale-registers-{page}', function () {
-//     $page = request('page');
-//     if ($page == 1) {
-//         $sales = App\Models\Sale::take(500)->get();
-//     } else {
-//         $sales = App\Models\Sale::skip(500)->take(2000)->get();
-//     }
+Route::get('register-keychains', function () {
+    // editar productos de proveedor con id 9
+    $supplier = Supplier::find(9);
+    $products = $supplier->raw_materials_id;
 
-//     $sales->each(function ($sale) {
-//         // Solo si no tiene parcialidades y tiene ventas asociadas a productos
-//         if (!$sale->partialities && $sale->catalogProductCompanySales) {
-//             // Inicializar las parcialidades con los datos correspondientes
-//             $partialities = [
-//                 [
-//                     'promise_date' => $sale->promise_date?->toDateString(),
-//                     'shipping_cost' => $sale->freight_cost,
-//                     'shipping_company' => $sale->shipping_company,
-//                     'tracking_guide' => $sale->tracking_guide,
-//                     'sent_at' => null,
-//                     'sent_by' => null,
-//                     'number_of_packages' => null,
-//                     'status' => $sale->getStatus()['label'] == 'Producción terminada' ? 'Enviado' : 'Pendiente de envío',
-//                     'productsSelected' => [] // Inicialmente vacío
-//                 ]
-//             ];
+    // obtener toda la materia prima que pertenece a la categoria de llaveros
+    $keychains = RawMaterial::where('part_number', 'LIKE', 'LL-%')->get(['id'])->pluck('id');
+    
+    // registrar todo a productos del proveedor
+    $products = array_merge($products,$keychains->toArray());
+    $supplier->update(['raw_materials_id' => $products]);
 
-//             // Inicializar el array de productos seleccionados
-//             $current_products_selected = [];
-
-//             // Iterar sobre los productos asociados a la venta
-//             $sale->catalogProductCompanySales->each(function ($product) use (&$current_products_selected) {
-//                 // Agregar el producto al array
-//                 $prd = [
-//                     'id' => $product->catalogProductCompany?->catalogProduct->id,
-//                     'name' => $product->catalogProductCompany?->catalogProduct->name,
-//                     'selected' => true,
-//                     'quantity' => $product->quantity,
-//                 ];
-
-//                 $current_products_selected[] = $prd; // Se agrega el producto al array de productos seleccionados
-//             });
-
-//             // Asignar el array de productos seleccionados a la parcialidad
-//             $partialities[0]['productsSelected'] = $current_products_selected;
-
-//             // Actualizar el estado y la opción de envío
-//             $sale->status = $sale->getStatus()['label'];
-//             $sale->partialities = $partialities;
-//             $sale->shipping_option = 'Entrega única';
-
-//             // Guardar los cambios en la base de datos
-//             $sale->save();
-//         }
-//     });
-
-//     return 'Registros de BDD actualizados!';
-// });
+    return 'Todos los llaveros registrados!';
+});
 
 Route::get('/inicio', function () {
     return Inertia::render('Auth/Inicio');
@@ -470,6 +428,7 @@ Route::put('designs/authorize/{design}', [DesignController::class, 'authorizeOrd
 Route::post('designs/update-with-media/{design}', [DesignController::class, 'updateWithMedia'])->name('designs.update-with-media');
 Route::get('designs-fetch-filtered/{filter}', [DesignController::class, 'fetchFiltered'])->name('designs.fetch-filtered');
 Route::get('designs-get-by-id/{id}', [DesignController::class, 'getById'])->name('designs.get-by-id');
+Route::get('designs-activities-report/{p}', [DesignController::class, 'activitiesReport'])->name('designs.activities-report');
 
 // ------- Design modifications routes  ---------
 Route::resource('design-modifications', DesignModificationController::class)->middleware('auth');
