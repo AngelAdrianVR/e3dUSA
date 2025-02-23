@@ -46,8 +46,7 @@ class DashboardController extends Controller
 
         // Diseños iniciados hoy por cada diseñador
         $todays_design_orders = Design::with(['designer:id,name'])
-            ->whereMonth('started_at', today()->month)
-            ->whereYear('started_at', today()->year)
+            ->whereDate('started_at', today())
             ->get()
             ->groupBy('designer.name');
 
