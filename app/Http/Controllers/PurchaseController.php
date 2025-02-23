@@ -6,7 +6,6 @@ use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\PurchaseResource;
-use App\Http\Resources\RawMaterialResource;
 use App\Mail\EmailSupplierTemplateMarkdownMail;
 use App\Models\Contact;
 use App\Models\Purchase;
@@ -47,6 +46,7 @@ class PurchaseController extends Controller
                 'authorized_user_name' => $purchase->authorized_user_name ?? 'No autorizado',
                 'status' => $status,
                 'products' => $purchase->products,
+                'is_for_production' => $purchase->is_for_production,
                 'emited_at' => $purchase->emited_at?->isoFormat('DD MMM, YYYY h:mm A') ?? 'Pedido no realizado',
                 'recieved_at' => $purchase->recieved_at?->isoFormat('YYYY MMM DD') ?? 'No recibido',
                 'supplier_name' => $purchase->supplier?->name,
@@ -82,6 +82,7 @@ class PurchaseController extends Controller
             'supplier_id' => 'required',
             'is_iva_included' => 'boolean',
             'is_spanish_template' => 'boolean',
+            'is_for_production' => 'boolean',
             'show_prices' => 'boolean',
             'contact_id' => $high_privileges ? 'required' : 'nullable',
             'products' => 'array|min:1',
@@ -143,6 +144,7 @@ class PurchaseController extends Controller
             'supplier_id' => 'required',
             'is_iva_included' => 'boolean',
             'is_spanish_template' => 'boolean',
+            'is_for_production' => 'boolean',
             'show_prices' => 'boolean',
             'contact_id' => $high_privileges ? 'required' : 'nullable',
             'currency' => 'required|string',
