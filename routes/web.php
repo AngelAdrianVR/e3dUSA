@@ -75,8 +75,11 @@ Route::get('register-keychains', function () {
     // obtener toda la materia prima que pertenece a la categoria de llaveros
     $keychains = RawMaterial::where('part_number', 'LIKE', 'LL-%')->get(['id'])->pluck('id');
     
-    // return array_merge([$products, $keychains])[0];
+    // registrar todo a productos del proveedor
+    $products = array_merge($products,$keychains->toArray());
+    $supplier->update(['raw_materials_id' => $products]);
 
+    return 'Todos los llaveros registrados!';
 });
 
 Route::get('/inicio', function () {
@@ -425,6 +428,7 @@ Route::put('designs/authorize/{design}', [DesignController::class, 'authorizeOrd
 Route::post('designs/update-with-media/{design}', [DesignController::class, 'updateWithMedia'])->name('designs.update-with-media');
 Route::get('designs-fetch-filtered/{filter}', [DesignController::class, 'fetchFiltered'])->name('designs.fetch-filtered');
 Route::get('designs-get-by-id/{id}', [DesignController::class, 'getById'])->name('designs.get-by-id');
+Route::get('designs-activities-report/{p}', [DesignController::class, 'activitiesReport'])->name('designs.activities-report');
 
 // ------- Design modifications routes  ---------
 Route::resource('design-modifications', DesignModificationController::class)->middleware('auth');

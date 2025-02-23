@@ -41,11 +41,12 @@
                                 :total="designs.length" />
                         </div>
                         <!-- buttons -->
-                        <div>
+                        <div class="flex items-center space-x-2">
+                            <PrimaryButton @click="showReportModal = true">Reporte de actividades</PrimaryButton>
                             <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
                                 title="¿Continuar?" @confirm="deleteSelections">
                                 <template #reference>
-                                    <el-button type="danger" plain class="mb-3"
+                                    <el-button type="danger" plain
                                         :disabled="disableMassiveActions">Eliminar</el-button>
                                 </template>
                             </el-popconfirm>
@@ -54,7 +55,7 @@
                         <IndexSearchBar @search="handleSearch" />
                     </div>
                     <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
-                        @selection-change="handleSelectionChange" ref="multipleTableRef"
+                        class="mt-2" @selection-change="handleSelectionChange" ref="multipleTableRef"
                         :row-class-name="tableRowClassName">
                         <el-table-column type="selection" width="30" />
                         <el-table-column prop="id" label="ID" width="80" />
@@ -131,10 +132,46 @@
                     </el-table>
                 </div>
             </div>
-            <!-- tabla -->
-
         </AppLayout>
     </div>
+
+    <DialogModal :show="showReportModal" @close="showReportModal = false" maxWidth="lg">
+        <template #title>
+            <h1 class="font-bold">Filtro para reporte</h1>
+        </template>
+        <template #content>
+            <div>
+                <InputLabel value="Mes" />
+                <el-date-picker v-model="period" type="month" placeholder="Selecciona el mes" format="MMM, YYYY"
+                    class="!w-full" value-format="YYYY-MM" />
+            </div>
+            <div class="mt-3">
+                <div class="flex items-center justify-between">
+                    <span class="font-semibold">Diseñador(es)</span>
+                    <button v-if="designersFiltered.length == designers.length" @click="cleanFilter"
+                        class="text-primary underline" type="button">
+                        Limpiar selecciones
+                    </button>
+                    <button v-else @click="grantAllDesigners" class="text-primary underline" type="button">
+                        Seleccionar todos
+                    </button>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mt-3">
+                    <label v-for="designer in designers" :key="designer.id" class="flex items-center">
+                        <input type="checkbox" v-model="designersFiltered" :value="designer.id"
+                            class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent size-4" />
+                        <span class="ml-2 text-xs">{{ designer.name }}</span>
+                    </label>
+                </div>
+            </div>
+        </template>
+        <template #footer>
+            <CancelButton @click="showReportModal = false">Cancelar</CancelButton>
+            <PrimaryButton @click="openReport" :disabled="!period || !designersFiltered.length">
+                Ver reporte
+            </PrimaryButton>
+        </template>
+    </DialogModal>
 </template>
 
 <script>
@@ -145,6 +182,9 @@ import { Link } from "@inertiajs/vue3";
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import axios from 'axios';
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import DialogModal from "@/Components/DialogModal.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 
 
 export default {
@@ -155,6 +195,9 @@ export default {
             disableMassiveActions: true,
             inputSearch: '',
             search: '',
+            showReportModal: false,
+            period: null,
+            designersFiltered: [],
             // pagination
             itemsPerPage: 10,
             start: 0,
@@ -167,12 +210,28 @@ export default {
         IndexSearchBar,
         AppLayout,
         TextInput,
-        Link
+        Link,
+        PrimaryButton,
+        CancelButton,
+        DialogModal,
     },
     props: {
-        designs: Array
+        designs: Array,
+        designers: Array,
     },
     methods: {
+        cleanFilter() {
+            this.designersFiltered = [];
+        },
+        grantAllDesigners() {
+            this.designersFiltered = this.designers
+                .flat() // Aplanar los arrays de permisos por guard
+                .map(designer => designer.id); // Obtener solo los IDs de los permisos
+        },
+        openReport() {
+            const url = this.route('designs.activities-report', { p: this.period, s: this.designersFiltered });
+            window.open(url, '_blank');
+        },
         getStatusColor(row) {
             if (row.status['label'] == 'Esperando Autorización') {
                 return 'cursor-pointer text-amber-500';
@@ -260,7 +319,7 @@ export default {
             if (commandName == 'clone') {
                 this.clone(rowId);
             } else if (commandName == 'af') {
-                this.$inertia.get(route('design-authorizations.create', {designId: rowId}));
+                this.$inertia.get(route('design-authorizations.create', { designId: rowId }));
             } else {
                 this.$inertia.get(route('designs.' + commandName, rowId));
             }

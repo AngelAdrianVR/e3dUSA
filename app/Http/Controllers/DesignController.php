@@ -15,6 +15,7 @@ use App\Notifications\ApprovalOkNotification;
 use App\Notifications\ApprovalRequiredNotification;
 use App\Notifications\DesignCompletedNotification;
 use App\Notifications\RequestApprovedNotification;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DesignController extends Controller
@@ -29,8 +30,12 @@ class DesignController extends Controller
                 ->get(['id', 'name', 'created_at', 'user_id', 'designer_id', 'design_type_id', 'authorized_at', 'started_at', 'finished_at', 'has_priority']);
 
             $designs = $this->processDataIndex($pre_designs);
+            $designers = User::where([
+                'employee_properties->department' => 'Diseño',
+                'is_active' => true
+            ])->get();
 
-            return inertia('Design/Admin', compact('designs'));
+            return inertia('Design/Admin', compact('designs', 'designers'));
         } else if (auth()->user()->can('Ordenes de diseño personal')) {
 
             //trae diseños de creadores y trabajadores
@@ -367,5 +372,77 @@ class DesignController extends Controller
         $design = Design::with('media')->findOrFail($id);
 
         return response()->json(['item' => $design]);
+    }
+
+    public function activitiesReport($p)
+    {
+        $designers = request('s'); //obtiene id de diseñadores. Ej. [1,5,9,12,32]
+        $year = explode('-', $p)[0];
+        $month = explode('-', $p)[1];
+
+        // Obtener las órdenes de diseño, junto con la información del diseñador
+        $orders = Design::with(['designer'])
+            ->whereMonth('started_at', $month)
+            ->whereYear('started_at', $year)
+            ->whereNotNull('finished_at')
+            ->whereIn('designer_id', $designers)
+            ->get();
+
+        // Inicializamos un array para agrupar los resultados por diseñador
+        $groupedResults = [];
+
+        // Iteramos sobre las órdenes para agruparlas por diseñador
+        foreach ($orders as $order) {
+            $designerId = $order->designer->id;
+            $designerName = $order->designer->name;
+
+            // Inicializamos el diseñador en el array si aún no existe
+            if (!isset($groupedResults[$designerId])) {
+                $groupedResults[$designerId] = [
+                    'designer_name' => $designerName,
+                    'designer_id' => $designerId,
+                    'total_designs' => 0,
+                    'total_time' => 0,
+                    'orders' => [],
+                ];
+            }
+
+            // Incrementamos el contador de diseños para este diseñador
+            $groupedResults[$designerId]['total_designs']++;
+
+            // Calculamos el tiempo trabajado en horas y minutos
+            $start = Carbon::parse($order->started_at);
+            $end = Carbon::parse($order->finished_at);
+            $totalMinutes = $end->diffInMinutes($start);
+
+            // Sumamos el tiempo total trabajado
+            $groupedResults[$designerId]['total_time'] += $totalMinutes;
+
+            // Guardamos el tiempo trabajado en formato 4h 33m para cada orden
+            $hours = floor($totalMinutes / 60);
+            $minutes = $totalMinutes % 60;
+            $formattedTime = "{$hours}h {$minutes}m";
+
+            // Añadimos la orden al array de órdenes del diseñador
+            $groupedResults[$designerId]['orders'][] = [
+                'id' => $order->id,
+                'name' => $order->name,
+                'started_at' => $order->started_at->isoFormat('DD MMM, YYYY h:mm A'),
+                'finished_at' => $order->finished_at->isoFormat('DD MMM, YYYY h:mm A'),
+                'time_spent' => $formattedTime,
+            ];
+        }
+
+        // Convertimos el tiempo total trabajado a formato tipo 4h 33m
+        foreach ($groupedResults as &$designer) {
+            $hours = floor($designer['total_time'] / 60);
+            $minutes = $designer['total_time'] % 60;
+            $designer['total_time'] = "{$hours}h {$minutes}m";
+        }
+
+        return inertia('Design/ActivitiesReport', [
+            'data' => $groupedResults,
+            'period' => Carbon::parse($p)->isoFormat('MMMM YYYY'),
+        ]);
     }
 }
