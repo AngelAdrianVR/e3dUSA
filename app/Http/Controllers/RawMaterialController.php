@@ -201,8 +201,10 @@ class RawMaterialController extends Controller
         ]);
 
         // update image
-        $raw_material->clearMediaCollection();
-        $raw_material->addMediaFromRequest('media')->toMediaCollection();
+        if ( $request->media ) {
+            $raw_material->clearMediaCollection();
+            $raw_material->addMediaFromRequest('media')->toMediaCollection();
+        }
 
         event(new RecordEdited($raw_material));
 

@@ -19,7 +19,8 @@
                 </div>
                 <div>
                     <p>{{ product.catalog_product_company.catalog_product.part_number }}</p>
-                    <p>DA{{ product.catalog_product_company.new_price.toString().replace('.', '-') }}GT</p>
+                    <!-- <p>DA{{ product.catalog_product_company.new_price.toString().replace('.', '-') }}GT</p> -->
+                    <p>Precio del producto ${{ product.catalog_product_company.new_price }}</p>
                 </div>
             </div>
             <div class="mt-2 text-base">
@@ -42,11 +43,11 @@
             </div>
             <div class="mt-2 text-xs">
                 <p class="text-primary">Operadores asignados:
-                    <p v-for="task in product.productions" :key="task.id" class="text-black ml-3 text-xs flex items-center">
+                    <span v-for="task in product.productions" :key="task.id" class="text-black ml-3 text-xs flex items-center">
                         -{{ task.operator.name }} <i class="fa-solid fa-circle text-[3px] mx-2"></i>
                         Estimado de {{ task.estimated_time_hours }}h {{ task.estimated_time_minutes }}m <i class="fa-solid fa-circle text-[3px] mx-2"></i>
                         Tareas {{ task.tasks }}
-                    </p>
+                    </span>
                 </p>
             </div>
             <div class="mt-2 text-xs">
