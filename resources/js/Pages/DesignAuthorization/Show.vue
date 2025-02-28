@@ -3,7 +3,7 @@
 
         <Back class="mt-4 ml-4" />
 
-        <div class="lg:mx-20 mx-2 mt-5">
+        <div class="lg:mx-20 mx-2 mt-5 dark:text-white">
 
             <!-- formario -->
             <div class="border border-[#9A9A9A] rounded-md my-4">
@@ -17,7 +17,12 @@
                         <p class="font-bold">Versión</p>
                         <p>{{ design_authorization.data.version }}</p>
                         <i v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de diseño')" @click="authorizeDesign" :title="design_authorization.data.authorized_at ? 'Diseño autorizado' : 'Autorizar diseño'" :class="design_authorization.data.authorized_at ? 'text-green-500' : 'hover:text-green-500 cursor-pointer'" class="fa-solid fa-check text-sm pl-4"></i>
-                        <i v-if="!design_authorization.data.responded_at && !design_authorization.data.authorized_at" @click.stop="$inertia.get(route('design-authorizations.edit', design_authorization.data.id))" class="fa-solid fa-pencil text-xs py-2 px-[10px] rounded-full hover:bg-gray-200 cursor-pointer"></i>
+                        <i v-if="!design_authorization.data.responded_at && !design_authorization.data.authorized_at" @click.stop="$inertia.get(route('design-authorizations.edit', design_authorization.data.id))" class="fa-solid fa-pencil text-xs py-2 px-[10px] rounded-full hover:bg-gray-200 dark:hover:bg-gray-500 cursor-pointer"></i>
+                        <button @click="print()" class="size-8 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
@@ -60,7 +65,7 @@
 
                         <div class="w-96 relative">
                             <p class="text-[#9A9A9A] mt-16">Firma de autorización: __________________________</p>
-                            <figure class="w-32 absolute right-20 top-4">
+                            <figure class="w-32 absolute right-20 top-4 bg-gray-100">
                                 <img :src="procesarUrlImagen(design_authorization.data.signature_media[0]?.original_url)" alt="">
                             </figure>
                         </div>
@@ -123,6 +128,10 @@ methods:{
         const nuevaUrl = originalUrl?.replace('https://intranetemblems3d.dtw.com.mx', 'https://clientes-emblems3d.dtw.com.mx');
         return nuevaUrl;
     },
+    print() {
+        const url = route('design-authorizations.print', this.design_authorization.data.id);
+        window.open(url, '_blank');
+    }
 },
 mounted() {
     //Guardar la informacion del contacto

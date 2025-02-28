@@ -6,7 +6,7 @@
     <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
   </div>
   <AppLayoutNoHeader title="Gestor de proyectos">
-    <div class="flex justify-between text-lg mx-14 mt-11">
+    <div class="flex justify-between text-lg mx-14 mt-11 dark:text-white">
       <span>Proyectos</span>
     </div>
 
@@ -25,16 +25,16 @@
     <div v-if="!search" class="overflow-auto mx-1 lg:mx-14">
       <Pagination :pagination="projects" class="mt-6 py-2" />
     </div>
-    <div class="lg:px-14 pb-7 pt-10 text-sm overflow-x-scroll">
+    <div class="lg:px-14 pb-7 pt-10 text-sm overflow-x-scroll dark:text-white">
       <table v-if="projects.data.length > 0" class="w-full mx-auto">
         <thead>
-          <tr class="text-left">
-            <th class="font-bold pb-5">Nombre del proyecto <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
-            <th class="font-bold pb-5">Estatus <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
-            <th class="font-bold pb-5">Tareas <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
-            <th class="font-bold pb-5">Fecha de inicio <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
-            <th class="font-bold pb-5">Fecha final <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
-            <th class="font-bold pb-5">Completa <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
+          <tr class="text-left border-b border-primary *:pb-2">
+            <th class="font-bold">Nombre del proyecto</th>
+            <th class="font-bold">Estatus</th>
+            <th class="font-bold">Tareas</th>
+            <th class="font-bold">Fecha de inicio</th>
+            <th class="font-bold">Fecha final</th>
+            <th class="font-bold">Completa</th>
             <th></th>
           </tr>
         </thead>

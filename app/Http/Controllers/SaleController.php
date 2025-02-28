@@ -6,28 +6,31 @@ use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\SaleResource;
+use App\Models\Calendar;
 use App\Models\CatalogProductCompanySale;
 use App\Models\CompanyBranch;
 use App\Models\Oportunity;
 use App\Models\Sale;
 use App\Models\Sample;
-use App\Models\StockMovementHistory;
-use App\Models\Storage;
 use App\Models\User;
+use App\Notifications\ApprovalOkNotification;
 use App\Notifications\ApprovalRequiredNotification;
+use App\Notifications\ReminderPartialitiesNotification;
+use App\Notifications\SchedulePartialitiesReminder;
 use Illuminate\Http\Request;
-use Nette\Utils\Strings;
 
 class SaleController extends Controller
 {
-
     public function index()
     {
-        $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->latest()->paginate(20));
+        $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])
+            ->where('user_id', auth()->id())
+            ->latest()
+            ->paginate(20));
 
+        // return $sales;
         return inertia('Sale/Index', compact('sales'));
     }
-
 
     public function create()
     {
@@ -77,6 +80,7 @@ class SaleController extends Controller
 
             return [
                 'id' => $company_branch->id,
+                'company_id' => $company_branch->company_id,
                 'name' => $company_branch->name,
                 'important_notes' => $company_branch->important_notes,
                 'contacts' => $contacts,
@@ -84,31 +88,46 @@ class SaleController extends Controller
             ];
         });
 
-
         return inertia('Sale/Create', compact('company_branches', 'opportunityId', 'sample'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'shipping_company' => 'nullable',
+            // 'shipping_company' => 'nullable',
+            // 'order_via' => 'nullable',
+            // 'tracking_guide' => 'nullable',
             'freight_cost' => 'nullable|numeric|min:0',
-            'order_via' => 'nullable',
-            'tracking_guide' => 'nullable',
             'notes' => 'nullable',
             'is_high_priority' => 'boolean',
             'is_sale_production' => 'boolean',
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
             'products' => 'array|min:1',
-            'partialities' => 'nullable'
+            'partialities' => 'nullable|array'
         ]);
+
+        // // Eliminar de productos seleccionados en parcialidades aquellos que no se fueron en el envio
+        // $partialities = $request->input('partialities');
+        // // Iterar sobre las parcialidades y filtrar los productos seleccionados
+        // foreach ($partialities as &$partiality) {
+        //     // Filtrar los productos cuyo 'selected' sea true
+        //     $partiality['productsSelected'] = array_filter($partiality['productsSelected'], function ($product) {
+        //         return $product['selected'] === true;
+        //     });
+
+        //     // Eliminar la clave 'selected' de cada producto
+        //     $partiality['productsSelected'] = array_map(function ($product) {
+        //         unset($product['selected']); // Eliminar la clave 'selected'
+        //         return $product;
+        //     }, $partiality['productsSelected']);
+        // }
 
         $sale = Sale::create($request->except('products') + ['user_id' => auth()->id()]);
         $can_authorize = auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin');
 
         if ($can_authorize) {
-            $sale->update(['authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
+            $sale->update(['status' => 'Autorizado. Sin orden de producción', 'authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
         } elseif (app()->environment() === 'production') {
             // notify to Maribel
             $maribel = User::find(3);
@@ -116,7 +135,7 @@ class SaleController extends Controller
         }
 
         // store media
-        $sale->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection('oce'));
+        $sale->addAllMediaFromRequest()->each(fn($file) => $file->toMediaCollection('oce'));
 
         foreach ($request->products as $product) {
             $cpcs = CatalogProductCompanySale::create($product + ['sale_id' => $sale->id]);
@@ -135,19 +154,34 @@ class SaleController extends Controller
         }
 
         event(new RecordCreated($sale));
+
+        // cambiar || por && si se requiere crear el recordatorio solo para parcialidades mayores a 1
+        if (collect($request->partialities)->count() > 1 && $request->create_calendar_task) {
+            foreach ($request->partialities as $index => $partiality) {
+                // if ($index > 0) { // Omite el primer elemento
+                $reminder = Calendar::create([
+                    'type' => 'Tarea',
+                    'title' => 'Envío de parcialidad N°' . ($index + 1) . ' de OV-' . $sale->id,
+                    'repeater' => 'No se repite',
+                    'description' => 'Revisar envío de parcialidad agendada automáticamente para la OV-' . $sale->id . '. Se te recordará 3 días antes de la fecha agendada',
+                    'status' => 'Pendiente',
+                    'start_date' => $partiality['promise_date'],
+                    'start_time' => '8:00 AM',
+                    'user_id' => auth()->id(),
+                ]);
+
+                $seller = User::find($sale->user_id);
+                $seller->notify(new SchedulePartialitiesReminder($reminder));
+                // }
+            }
+        }
     }
 
     public function show($sale_id)
     {
+        // $sale = Sale::find($sale_id, ['id', 'is_sale_production', 'authorized_at', 'user_id']);
         $sale = SaleResource::make(Sale::with(['user:id,name', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator:id,name', 'comments.user'], 'productions' => ['user:id,name', 'operator:id,name']])->find($sale_id));
-        $pre_sales = Sale::latest()->get();
-        $sales = $pre_sales->map(function ($sale) {
-            $prefix = $sale->is_sale_production ? 'OV-' : 'OS-';
-            return [
-                'id' => $sale->id,
-                'folio' => $prefix . str_pad($sale->id, 4, "0", STR_PAD_LEFT),
-            ];
-        });
+        $sales = Sale::latest()->get(['id']);
 
         // return $sale;
         return inertia('Sale/Show', compact('sale', 'sales'));
@@ -156,8 +190,9 @@ class SaleController extends Controller
     public function edit(Sale $sale)
     {
         $sale = Sale::find($sale->id);
-        $catalog_products_company_sale = CatalogProductCompanySale::with('catalogProductCompany')->where('sale_id', $sale->id)->get();
+        $catalog_products_company_sale = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')->where('sale_id', $sale->id)->get();
         $media = $sale->getMedia('oce')->all();
+        $media_oce_url = $sale->getFirstMediaUrl('oce');
 
         //optimizacion de datos en vista para reducir el tiempo de carga
         $pre_company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
@@ -187,8 +222,6 @@ class SaleController extends Controller
                     'raw_materials' => $raw_materials,
                 ];
             });
-
-
             $contacts = $company_branch->contacts->map(function ($contact) {
                 return [
                     'id' => $contact->id,
@@ -199,7 +232,6 @@ class SaleController extends Controller
                     'additional_phones' => $contact->additional_phones,
                 ];
             });
-
             return [
                 'id' => $company_branch->id,
                 'name' => $company_branch->name,
@@ -209,16 +241,16 @@ class SaleController extends Controller
             ];
         });
 
-        return inertia('Sale/Edit', compact('company_branches', 'sale', 'catalog_products_company_sale', 'media'));
+        return inertia('Sale/Edit', compact('company_branches', 'sale', 'catalog_products_company_sale', 'media', 'media_oce_url'));
     }
 
     public function update(Request $request, Sale $sale)
     {
         $request->validate([
-            'shipping_company' => 'nullable',
+            // 'shipping_company' => 'nullable',
+            // 'order_via' => 'nullable',
+            // 'tracking_guide' => 'nullable',
             'freight_cost' => 'nullable|numeric|min:0',
-            'order_via' => 'nullable',
-            'tracking_guide' => 'nullable',
             'invoice' => 'nullable',
             'notes' => 'nullable',
             'is_high_priority' => 'nullable',
@@ -226,12 +258,11 @@ class SaleController extends Controller
             'company_branch_id' => 'required|numeric|min:1',
             'contact_id' => 'required|numeric|min:1',
             'products' => 'array|min:1',
-            'partialities' => 'nullable'
+            'partialities' => 'array|min:1',
         ]);
 
         $updatedProductIds = [];
         $sale->update($request->except('products'));
-
 
         foreach ($request->products as $product) {
             $productData = $product + ['sale_id' => $sale->id];
@@ -257,16 +288,38 @@ class SaleController extends Controller
 
         event(new RecordEdited($sale));
 
-        return to_route('sales.index');
+        // cambiar || por && si se requiere crear el recordatorio solo para parcialidades mayores a 1
+        if (collect($request->partialities)->count() > 1 && $request->create_calendar_task) {
+            foreach ($request->partialities as $index => $partiality) {
+                // if ($index > 0) { // Omite el primer elemento
+                $reminder = Calendar::create([
+                    'type' => 'Tarea',
+                    'title' => 'Envío de parcialidad N°' . ($index + 1) . ' de OV-' . $sale->id,
+                    'repeater' => 'No se repite',
+                    'description' => 'Revisar envío de parcialidad agendada automáticamente para la OV-' . $sale->id . '. Se te recordará 3 días antes de la fecha agendada',
+                    'status' => 'Pendiente',
+                    'start_date' => $partiality['promise_date'],
+                    'start_time' => '8:00 AM',
+                    'user_id' => auth()->id(),
+                ]);
+
+                $seller = User::find($sale->user_id);
+                $seller->notify(new SchedulePartialitiesReminder($reminder));
+                // }
+            }
+        }
+
+        // return to_route('sales.index');
+        return to_route('sales.show', $sale->id);
     }
 
     public function updateWithMedia(Request $request, Sale $sale)
     {
         $request->validate([
-            'shipping_company' => 'nullable',
+            // 'shipping_company' => 'nullable',
+            // 'order_via' => 'nullable',
+            // 'tracking_guide' => 'nullable',
             'freight_cost' => 'nullable|numeric|min:0',
-            'order_via' => 'nullable',
-            'tracking_guide' => 'nullable',
             'invoice' => 'nullable',
             'notes' => 'nullable',
             'is_high_priority' => 'boolean',
@@ -281,14 +334,14 @@ class SaleController extends Controller
         $sale->update($request->except('products'));
 
         // media
-        $sale->clearMediaCollection();
-        $sale->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+        $sale->clearMediaCollection('oce');
+        $sale->addAllMediaFromRequest()->each(fn($file) => $file->toMediaCollection('oce'));
 
         foreach ($request->products as $product) {
             $productData = $product + ['sale_id' => $sale->id];
 
             if (isset($product['id'])) {
-                // Actualizar la relaci贸n existente en catalogProductCompanySales
+                // Actualizar la relacion existente en catalogProductCompanySales
                 $existingRelation = CatalogProductCompanySale::findOrFail($product['id']);
                 $existingRelation->update($productData);
                 $updatedProductIds[] = $product['id'];
@@ -308,7 +361,29 @@ class SaleController extends Controller
 
         event(new RecordEdited($sale));
 
-        return to_route('sales.index');
+        // cambiar || por && si se requiere crear el recordatorio solo para parcialidades mayores a 1
+        if (collect($request->partialities)->count() > 1 && $request->create_calendar_task) {
+            foreach ($request->partialities as $index => $partiality) {
+                // if ($index > 0) { // Omite el primer elemento
+                $reminder = Calendar::create([
+                    'type' => 'Tarea',
+                    'title' => 'Envío de parcialidad N°' . ($index + 1) . ' de OV-' . $sale->id,
+                    'repeater' => 'No se repite',
+                    'description' => 'Revisar envío de parcialidad agendada automáticamente para la OV-' . $sale->id . '. Se te recordará 3 días antes de la fecha agendada',
+                    'status' => 'Pendiente',
+                    'start_date' => $partiality['promise_date'],
+                    'start_time' => '8:00 AM',
+                    'user_id' => auth()->id(),
+                ]);
+
+                $seller = User::find($sale->user_id);
+                $seller->notify(new SchedulePartialitiesReminder($reminder));
+                // }
+            }
+        }
+
+        // return to_route('sales.index');
+        return to_route('sales.show', $sale->id);
     }
 
     public function destroy(Sale $sale)
@@ -339,7 +414,20 @@ class SaleController extends Controller
         $sale->update([
             'authorized_at' => now(),
             'authorized_user_name' => auth()->user()->name,
+            'status' => 'Autorizado. Sin orden de producción',
         ]);
+
+        // notificar a creador de la orden si quien autoriza no es el mismo usuario
+        if (auth()->id() != $sale->user->id) {
+            $prefix = $sale->is_sale_production ? 'OV-' : 'OS-';
+            $sale_folio = $prefix . str_pad($sale->id, 4, "0", STR_PAD_LEFT);
+            $sale->user->notify(new ApprovalOkNotification(
+                'Órden de venta/stock',
+                $sale_folio,
+                'sales',
+                route('sales.show', $sale->id)
+            ));
+        }
 
         return response()->json(['item' => SaleResource::make($sale)]);
     }
@@ -349,14 +437,23 @@ class SaleController extends Controller
         $sale = Sale::find($request->sale_id);
 
         $clone = $sale->replicate()->fill([
-            'status' => 0,
             'oce_name' => null,
-            'tracking_guide' => null,
             'authorized_user_name' => null,
             'authorized_at' => null,
             'recieved_at' => null,
+            'status' => 'Esperando autorización',
             'user_id' => auth()->id(),
         ]);
+
+        // autorizar en caso de que el usuario que clona tenga el permiso
+        $can_authorize = auth()->user()->can('Autorizar ordenes de venta') || auth()->user()->hasRole('Super admin');
+        if ($can_authorize) {
+            $clone->update(['status' => 'Autorizado. Sin orden de producción', 'authorized_at' => now(), 'authorized_user_name' => auth()->user()->name]);
+        } elseif (app()->environment() === 'production') {
+            // notify to Maribel
+            $maribel = User::find(3);
+            $maribel->notify(new ApprovalRequiredNotification('orden de venta / stock', 'sales.index'));
+        }
 
         $clone->save();
 
@@ -377,7 +474,8 @@ class SaleController extends Controller
 
         return response()
             ->json([
-                'message' => "Orden clonada: $new_item_folio", 'newItem' => saleResource::make(Sale::with('companyBranch', 'user')->find($clone->id))
+                'message' => "Orden clonada: $new_item_folio",
+                'newItem' => saleResource::make(Sale::with('companyBranch', 'user')->find($clone->id))
             ]);
     }
 
@@ -425,7 +523,32 @@ class SaleController extends Controller
     {
         $sale = SaleResource::make(Sale::with(['user:id,name', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator:id,name', 'comments.user'], 'productions' => ['user:id,name', 'operator:id,name']])->find($sale_id));
 
-        // return $sale;
         return inertia('Sale/QualityCertificate', compact('sale'));
+    }
+
+
+    public function fetchFiltered($filter)
+    {
+        if ($filter == 'Mis órdenes') {
+            $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->where('user_id', auth()->id())->latest()->paginate(20));
+            return inertia('Sale/Index', compact('sales'));
+        } else {
+            $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->latest()->paginate(20));
+            return inertia('Sale/IndexAll', compact('sales'));
+        }
+    }
+
+
+    public function checkIfHasSale($catalog_product_company_id)
+    {
+        $catalog_product_company_sale = CatalogProductCompanySale::where('catalog_product_company_id', $catalog_product_company_id)->first();
+
+        if ($catalog_product_company_sale) {
+            $has_sale = true;
+        } else {
+            $has_sale = false;
+        }
+
+        return response()->json(compact('has_sale'));
     }
 }

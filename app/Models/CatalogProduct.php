@@ -19,6 +19,10 @@ class CatalogProduct extends Model implements HasMedia
         'description',
         'part_number',
         'measure_unit',
+        'width',
+        'large',
+        'height',
+        'diameter',
         'cost',
         'min_quantity',
         'max_quantity',
@@ -55,6 +59,7 @@ class CatalogProduct extends Model implements HasMedia
                 'quantity',
                 'price',
                 'show_image',
+                'requires_med',
                 'notes',
             ])->withTimestamps();
     }
@@ -81,6 +86,11 @@ class CatalogProduct extends Model implements HasMedia
     public function samples():HasMany 
     {
         return $this->hasMany(Sample::class);
+    }
+
+    public function shippingRates():HasMany 
+    {
+        return $this->hasMany(ShippingRate::class);
     }
 
     public function getCommitedUnits() 

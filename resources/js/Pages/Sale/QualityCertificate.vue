@@ -11,7 +11,7 @@
     </figure>
 
     <!-- Contenido del certificado -->
-    <section class="lg:px-28 mt-10">
+    <section class="lg:px-28 mt-1">
       <!-- Header  -->
       <h1 class="text-right font-bold mb-2">CERTIFICADO DE CALIDAD</h1>
       <div class="border-b border-black mb-3"></div>
@@ -80,16 +80,16 @@
         <li>• Aplique el emblema cuidadosamente sobre la superficie y presione sobre toda la pieza sacando el aire atrapado. </li>
       </ul>
 
-      <p class="mt-7 mb-9">Vo.Bo</p>
+      <p class="mt-2 mb-9">Vo.Bo</p>
       <span class="border-t border-black pt-1">Ing. Gustavo Gómez. Encargado de Producción</span>
     </section>
 
-    <figure class="mt-5">
+    <figure class="mt-3">
         <img class="lg:w-[60%] mx-auto" src="../../../../public/images/contacto.png" alt="">
     </figure>
 
     <!-- footer -->
-    <footer class="lg:flex items-center border-t-4 border-black mt-4 py-2 lg:px-4 text-base">
+    <footer class="flex items-center border-t-4 border-black mt-4 py-2 lg:px-4 text-base">
         <p class="text-gray-400 w-11/12">Emblemas de alta calidad. Somos los mejores fabricantes ramo automotriz, electrodomésticos, electrónica, mueble y juguetes.
             En división automotriz somos fabricantesespecialistas en emblemas cromados, porta placas, llaveros, porta documentos, placas de estireno y tapetes de hule.
         </p>
@@ -97,7 +97,7 @@
             <img class="mx-auto m-3 lg:m-0 w-[30%]" src="../../../../public/images/qrPagina.png" alt="">
         </figure>
         <figure>
-            <img class="mx-auto m-3 lg:m-0 w-1/2 lg:w-full" src="../../../../public/images/escudoSherman.png" alt="">
+            <img class="mx-auto m-3 lg:m-0 w-full lg:w-full" src="../../../../public/images/escudoSherman.png" alt="">
         </figure>
     </footer>
   </div>

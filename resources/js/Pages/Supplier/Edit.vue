@@ -11,196 +11,228 @@
           </div>
         </div>
       </template>
-
       <!-- Form -->
       <form @submit.prevent="update">
-        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4">
+        <div class="md:w-1/2 md:mx-auto grid grid-cols-2 gap-3 mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md">
           <div>
-            <IconInput v-model="form.name" inputPlaceholder="Nombre *" inputType="text">
-              <el-tooltip content="Nombre del proveedor" placement="top">
-                A
-              </el-tooltip>
-            </IconInput>
+            <InputLabel value="Nombre del proveedor*" />
+            <el-input v-model="form.name" placeholder="Ej. Proveedora de cajas sa de cv" />
             <InputError :message="form.errors.name" />
           </div>
           <div>
-            <IconInput v-model="form.nickname" inputPlaceholder="Alias *" inputType="text">
-              <el-tooltip content="Nombre con el que conoces a este proveedor" placement="top">
-                N
-              </el-tooltip>
-            </IconInput>
+            <InputLabel>
+              <div class="flex items-center space-x-2">
+                <span>Alias</span>
+                <el-tooltip placement="top">
+                  <template #content>
+                    <p>Nombre con el que conoces a este proveedor</p>
+                  </template>
+                  <div class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
+                    <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                  </div>
+                </el-tooltip>
+              </div>
+            </InputLabel>
+            <el-input v-model="form.nickname" placeholder="Ej. Cajas de cartón" />
+            <InputError :message="form.errors.nickname" />
           </div>
-          <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-3">
-            <div class="col-span-2">
-              <IconInput v-model="form.address" inputPlaceholder="Dirección" inputType="text">
-                <el-tooltip content="Dirección del proveedor" placement="top">
-                  <i class="fa-solid fa-map-location-dot"></i>
-                </el-tooltip>
-              </IconInput>
-              <InputError :message="form.errors.address" />
-            </div>
-            <div class="col-span-1">
-              <IconInput v-model="form.post_code" inputPlaceholder="C.P." inputType="text">
-                <el-tooltip content="Código postal" placement="top">
-                  <i class="fa-solid fa-envelopes-bulk"></i>
-                </el-tooltip>
-              </IconInput>
-              <InputError :message="form.errors.post_code" />
-            </div>
-            <div class="col-span-2">
-              <IconInput v-model="form.phone" inputPlaceholder="Teléfono *" inputType="text">
-                <el-tooltip content="Teléfono" placement="top">
-                  <i class="fa-solid fa-phone"></i>
-                </el-tooltip>
-              </IconInput>
-              <InputError :message="form.errors.phone" />
-            </div>
+          <div>
+            <InputLabel value="Dirección" />
+            <el-input v-model="form.address" placeholder="Ej. Av Manuel Avila #555" />
+            <InputError :message="form.errors.address" />
+          </div>
+          <div>
+            <InputLabel value="C.P." />
+            <el-input v-model="form.post_code" placeholder="Ej. 49500" />
+            <InputError :message="form.errors.post_code" />
+          </div>
+          <div>
+            <InputLabel value="Télefono*" />
+            <el-input v-model="form.phone" type="text"
+              :formatter="(value) => `${value}`.replace(/(\d{2})(\d{4})(\d{4})/, '$1 $2 $3')"
+              :parser="(value) => value.replace(/\D/g, '')" maxlength="10" clearable placeholder="Ej. 3312479856" />
+            <InputError :message="form.errors.phone" />
           </div>
 
           <!-- ---------------- Datos bancarios starts ----------------- -->
-          <el-divider content-position="left">Datos bancarios</el-divider>
+          <el-divider content-position="left" class="col-span-full">Datos bancarios</el-divider>
+          <div>
+            <InputLabel value="Nombre del beneficiario*" />
+            <el-input v-model="bank.beneficiary_name" placeholder="Ej. José Rodriguez" />
+          </div>
+          <div>
+            <InputLabel value="Número de cuenta*" />
+            <el-input v-model="bank.accountNumber" placeholder="Ej. 112233445566" />
+          </div>
+          <div>
+            <InputLabel value="CLABE*" />
+            <el-input v-model="bank.clabe" placeholder="18 digitos" />
+          </div>
+          <div>
+            <InputLabel value="Banco*" />
+            <el-input v-model="bank.bank_name" placeholder="Ej. BBVA" />
+          </div>
+          <div class="col-span-full">
+            <SecondaryButton @click="addBank" :disabled="!bank.beneficiary_name ||
+              !bank.accountNumber ||
+              !bank.clabe ||
+              !bank.bank_name
+              " type="button">
+              {{
+                editIndex !== null
+                  ? "Actualizar datos bancarios"
+                  : "Agregar banco a lista"
+              }}
+            </SecondaryButton>
+          </div>
           <InputError :message="form.errors.banks" />
-
-          <ol v-if="form.banks.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
+          <ol v-if="form.banks.length" class="rounded-lg bg-[#CCCCCC] text-black px-5 py-3 col-span-full space-y-1 divide-y-[1px]">
             <template v-for="(item, index) in form.banks" :key="index">
-              <li class="flex justify-between items-center">
-                <p class="text-sm">
+              <li class="flex justify-between items-center border-[#999999] py-1">
+                <p class="text-xs">
                   <span class="text-primary">{{ index + 1 }}.</span>
                   {{ item.beneficiary_name }} - {{ item.bank_name }}
                 </p>
                 <div class="flex space-x-2 items-center">
-                  <el-tag v-if="editIndex == index">En edición</el-tag>
-                  <el-button @click="editBank(index)" type="primary" circle>
-                    <i class="fa-sharp fa-solid fa-pen-to-square"></i>
-                  </el-button>
-                  <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
-                    @confirm="deleteBank(index)">
+                  <el-tag v-if="editIndex == index" @close="editIndex = null; resetBankForm()" closable>
+                    En edición
+                  </el-tag>
+                  <button @click="editBank(index)" type="button"
+                    class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                    </svg>
+                  </button>
+                  <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                    title="¿Continuar?" @confirm="deleteBank(index)">
                     <template #reference>
-                      <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>
+                      <button type="button"
+                        class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                          stroke="currentColor" class="size-4">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                        </svg>
+                      </button>
                     </template>
                   </el-popconfirm>
                 </div>
               </li>
             </template>
           </ol>
-
-          <div class="p-4">
-            <div class="rounded-lg p-5">
-              <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
-                <div>
-                  <IconInput v-model="bank.beneficiary_name" inputPlaceholder="Nombre del beneficiario *"
-                    inputType="text">
-                    <el-tooltip content="Nombre del beneficiario" placement="top">
-                      A
-                    </el-tooltip>
-                  </IconInput>
-                </div>
-                <div>
-                  <IconInput v-model="bank.accountNumber" inputPlaceholder="Número de cuenta *" inputType="text">
-                    <el-tooltip content="Número de cuenta" placement="top">
-                      <i class="fa-solid fa-money-check-dollar"></i>
-                    </el-tooltip>
-                  </IconInput>
-                </div>
-                <div>
-                  <IconInput v-model="bank.clabe" inputPlaceholder="Clabe *" inputType="text">
-                    <el-tooltip content="Clabe" placement="top"> # </el-tooltip>
-                  </IconInput>
-                </div>
-                <div>
-                  <IconInput v-model="bank.bank_name" inputPlaceholder="Banco *" inputType="text">
-                    <el-tooltip content="Nombre del banco" placement="top">
-                      <i class="fa-solid fa-building-columns"></i>
-                    </el-tooltip>
-                  </IconInput>
-                </div>
-              </div>
-              <SecondaryButton @click="addBank" :disabled="!bank.beneficiary_name ||
-                !bank.accountNumber ||
-                !bank.clabe ||
-                !bank.bank_name
-                " type="button">
-                {{
-                  editIndex !== null
-                  ? "Actualizar datos bancarios"
-                  : "Agregar banco a lista"
-                }}
-              </SecondaryButton>
-            </div>
-            <!-- ---------------- Datos bancarios ends ----------------- -->
-
-            <!-- ---------------- contacts starts ----------------- -->
-            <el-divider content-position="left">Contactos</el-divider>
-            <InputError :message="form.errors.contacts" />
-
-            <ol v-if="form.contacts.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
-              <template v-for="(item, index) in form.contacts" :key="index">
-                <li class="flex justify-between items-center">
-                  <p class="text-sm">
-                    <span class="text-primary">{{ index + 1 }}.</span>
-                    {{ item.name }} | {{ item.email }}
-                  </p>
-                  <div class="flex space-x-2 items-center">
-                    <el-tag v-if="editContactIndex == index">En edición</el-tag>
-                    <el-button @click="editContact(index)" type="primary" circle>
-                      <i class="fa-sharp fa-solid fa-pen-to-square"></i>
-                    </el-button>
-                    <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
-                      title="¿Continuar?" @confirm="deleteContact(index)">
-                      <template #reference>
-                        <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>
-                      </template>
-                    </el-popconfirm>
-                  </div>
-                </li>
-              </template>
-            </ol>
-
-            <div class="rounded-lg p-5">
-              <div class="md:grid gap-x-6 gap-y-2 mb-6 grid-cols-2">
-                <div class="col-span-2">
-                  <IconInput v-model="contact.name" inputPlaceholder="Nombre *" inputType="text">
-                    <el-tooltip content="Nombre del contacto" placement="top">
-                      A
-                    </el-tooltip>
-                  </IconInput>
-                </div>
-                <div>
-                  <IconInput v-model="contact.email" inputPlaceholder="Correo *" inputType="text">
-                    <el-tooltip content="Correo electrónico" placement="top">
-                      <i class="fa-solid fa-envelope"></i>
-                    </el-tooltip>
-                  </IconInput>
-                </div>
-                <div>
-                  <IconInput v-model="contact.phone" inputPlaceholder="Teléfono *" inputType="text">
-                    <el-tooltip content="Teléfono" placement="top">
-                      <i class="fa-solid fa-phone"></i>
-                    </el-tooltip>
-                  </IconInput>
-                </div>
-              </div>
-              <SecondaryButton @click="addContact" :disabled="!this.contact.name ||
-                !this.contact.email ||
-                !this.contact.phone
-                ">
-                {{
-                  editContactIndex !== null
+          <!-- ---------------- contacts starts ----------------- -->
+          <el-divider content-position="left" class="col-span-full">Contactos</el-divider>
+          <div>
+            <InputLabel value="Nombre del contacto*" />
+            <el-input v-model="contact.name" placeholder="Ej. Francisco Navarrete" />
+          </div>
+          <div>
+            <InputLabel value="Correo*" />
+            <el-input v-model="contact.email" placeholder="Ej. franciasco@cajas.com" />
+          </div>
+          <div>
+            <InputLabel value="Télefono*" />
+            <el-input v-model="contact.phone" type="text"
+              :formatter="(value) => `${value}`.replace(/(\d{2})(\d{4})(\d{4})/, '$1 $2 $3')"
+              :parser="(value) => value.replace(/\D/g, '')" maxlength="10" clearable placeholder="Ej. 3312479856" />
+          </div>
+          <div class="col-span-full">
+            <SecondaryButton @click="addContact" :disabled="!this.contact.name ||
+              !this.contact.email ||
+              !this.contact.phone
+              ">
+              {{
+                editContactIndex !== null
                   ? "Actualizar contacto"
                   : "Agregar Contacto a lista"
-                }}
-              </SecondaryButton>
-            </div>
+              }}
+            </SecondaryButton>
           </div>
-          <!-- ---------------- contacts ends ----------------- -->
-
+          <InputError :message="form.errors.contacts" />
+          <ol v-if="form.contacts.length"
+            class="rounded-lg bg-[#CCCCCC] text-black px-5 py-3 col-span-full space-y-1 divide-y-[1px]">
+            <template v-for="(item, index) in form.contacts" :key="index">
+              <li class="flex justify-between items-center border-[#999999] py-1">
+                <p class="text-xs">
+                  <span class="text-primary">{{ index + 1 }}.</span>
+                  {{ item.name }} | {{ item.email }}
+                </p>
+                <div class="flex space-x-2 items-center">
+                  <el-tag v-if="editContactIndex == index" @close="editContactIndex = null; resetContactForm()" closable>
+                    En edición
+                  </el-tag>
+                  <button @click="editContact(index)" type="button"
+                    class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                    </svg>
+                  </button>
+                  <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                    title="¿Continuar?" @confirm="deleteContact(index)">
+                    <template #reference>
+                      <button type="button"
+                        class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                          stroke="currentColor" class="size-4">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                        </svg>
+                      </button>
+                    </template>
+                  </el-popconfirm>
+                </div>
+              </li>
+            </template>
+          </ol>
           <!-- ---------------- supplier rawMaterials starts ----------------- -->
-          <el-divider content-position="left">Productos del proveedor</el-divider>
-
-          <ol v-if="form.rawMaterials.length" class="rounded-lg bg-[#CCCCCC] px-5 py-3 col-span-full space-y-1">
+          <el-divider content-position="left" class="col-span-full">Productos del proveedor</el-divider>
+          <div>
+            <InputLabel value="Materia prima*" />
+            <el-select @change="fetchRawMaterial" v-model="rawMaterialId" clearable filterable placeholder="Selecciona">
+              <el-option v-for="item in raw_materials" :key="item.id" :label="item.name" :value="item.id" />
+            </el-select>
+          </div>
+          <div v-if="loading" class="rounded-md bg-[#CCCCCC] text-xs text-gray-500 text-center p-4">
+            cargando imagen...
+          </div>
+          <figure v-else-if="selectedRawaterial" class="rounded-md">
+            <img :src="selectedRawaterial.media[0]?.original_url" class="rounded-md">
+          </figure>
+          <div v-if="selectedRawaterial">
+            <InputLabel value="Precio unitario*" />
+            <el-input v-model="selectedRawaterialCost" type="text"
+              :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 36.85" />
+          </div>
+          <div v-if="selectedRawaterial">
+            <InputLabel value="Cantidad mínima de pedido" />
+            <el-input v-model="selectedRawaterialMinQuantity" type="text"
+              :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 50" />
+          </div>
+          <div class="col-span-full">
+            <InputLabel value="Notas" />
+            <el-input v-model="selectedRawaterialNotes" :rows="3" maxlength="800" placeholder="..." show-word-limit
+              type="textarea" />
+          </div>
+          <div class="col-span-full">
+            <SecondaryButton @click="addProduct" :disabled="!rawMaterialId">
+              {{
+                editRawMaterialIndex !== null
+                  ? "Actualizar producto"
+                  : "Agregar producto a lista"
+              }}
+            </SecondaryButton>
+          </div>
+          <ol v-if="form.rawMaterials.length"
+            class="rounded-lg bg-[#CCCCCC] text-black px-5 py-3 col-span-full space-y-1 divide-y-[1px]">
             <template v-for="(item, index) in form.rawMaterials" :key="index">
-              <li class="flex justify-between items-center">
-                <p class="text-sm">
+              <li class="flex justify-between items-center border-[#999999] py-1">
+                <p class="text-xs">
                   <span class="text-primary">{{ index + 1 }}.</span>
                   {{
                     item.name
@@ -208,84 +240,37 @@
                   (${{ item.cost?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} / unidad)
                 </p>
                 <div class="flex space-x-2 items-center">
-                  <el-tag v-if="editRawMaterialIndex == index">En edición</el-tag>
-                  <el-button @click="editProduct(index)" type="primary" circle>
-                    <i class="fa-sharp fa-solid fa-pen-to-square"></i>
-                  </el-button>
-                  <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
-                    @confirm="deleteProduct(index)">
+                  <el-tag v-if="editRawMaterialIndex == index" @close="editRawMaterialIndex = null; resetRawMaterialForm()" closable>
+                    En edición
+                  </el-tag>
+                  <button @click="editProduct(index)" type="button"
+                    class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                    </svg>
+                  </button>
+                  <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                    title="¿Continuar?" @confirm="deleteProduct(index)">
                     <template #reference>
-                      <el-button type="danger" circle><i class="fa-sharp fa-solid fa-trash"></i></el-button>
+                      <button type="button"
+                        class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                          stroke="currentColor" class="size-4">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                        </svg>
+                      </button>
                     </template>
                   </el-popconfirm>
                 </div>
               </li>
             </template>
           </ol>
-
-          <div class="lg:grid grid-cols-3 gap-x-5 space-y-3 rounded-lg p-5">
-            <div class="flex items-center col-span-2">
-              <el-tooltip content="Producto de catálogo" placement="top">
-                <span
-                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md ">
-                  <i class="fa-solid fa-magnifying-glass"></i>
-                </span>
-              </el-tooltip>
-              <el-select @change="fetchRawMaterial" v-model="rawMaterialId" clearable filterable
-                placeholder="Buscar producto">
-                <el-option v-for="item in raw_materials" :key="item.id" :label="item.name" :value="item.id" />
-              </el-select>
-            </div>
-            <div v-if="loading" class="rounded-md bg-[#CCCCCC] text-xs text-gray-500 text-center p-4">
-              cargando imagen...
-            </div>
-            <figure v-else-if="selectedRawaterial" class="rounded-md">
-              <img :src="selectedRawaterial.media[0]?.original_url" class="rounded-md">
-            </figure>
-            <div></div>
-
-            <div class="col-span-full flex space-x-3" v-if="selectedRawaterial">
-              <div class="w-1/2">
-                <IconInput v-model="selectedRawaterialCost" inputPlaceholder="Precio *" inputType="number"
-                  inputStep="0.01">
-                  <el-tooltip content="Precio unitario de la materia prima" placement="top">
-                    <i class="fa-solid fa-money-bill"></i>
-                  </el-tooltip>
-                </IconInput>
-              </div>
-              <div class="w-1/2">
-                <IconInput v-model="selectedRawaterialMinQuantity" inputPlaceholder="Cantidad mínima de pedido"
-                  inputType="number" inputStep="0.1">
-                  <el-tooltip content="Cantidad mínima de pedido" placement="top">
-                    #
-                  </el-tooltip>
-                </IconInput>
-              </div>
-            </div>
-            <div class="w-full flex items-center col-span-full">
-              <el-tooltip content="Notas" placement="top">
-                <span
-                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600">
-                  ...
-                </span>
-              </el-tooltip>
-              <textarea v-model="selectedRawaterialNotes" class="textarea" autocomplete="off" placeholder="Notas">
-                </textarea>
-            </div>
-
-            <div class="col-start-1 pt-2">
-              <SecondaryButton @click="addProduct" :disabled="!rawMaterialId">
-                {{
-                  editRawMaterialIndex !== null
-                  ? "Actualizar producto"
-                  : "Agregar producto a lista"
-                }}
-              </SecondaryButton>
-            </div>
-          </div>
-          <!-- ---------------- supplier Products ends ----------------- -->
-          <div class="mt-2 mx-3 md:text-right">
+          <div class="col-span-full flex justify-end">
             <PrimaryButton :disabled="form.processing">
+              <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
               Guardar cambios
             </PrimaryButton>
           </div>
@@ -300,10 +285,10 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import InputError from "@/Components/InputError.vue";
-import IconInput from "@/Components/MyComponents/IconInput.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import axios from 'axios';
+import InputLabel from "@/Components/InputLabel.vue";
 
 export default {
   data() {
@@ -365,9 +350,9 @@ export default {
     SecondaryButton,
     PrimaryButton,
     InputError,
-    IconInput,
     Back,
-    Link
+    Link,
+    InputLabel
   },
   props: {
     supplier: Object,
@@ -428,6 +413,9 @@ export default {
         this.form.contacts.push(contact);
       }
 
+      this.resetContactForm();
+    },
+    resetContactForm() {
       this.contact.name = null;
       this.contact.email = null;
       this.contact.phone = null;
@@ -441,10 +429,7 @@ export default {
       const contact = { ...this.form.contacts[index] };
       this.contact = contact;
       this.editContactIndex = index;
-
-      console.log(this.form.contacts);
     },
-
     //products
     async fetchRawMaterial() {
       this.loading = true;
@@ -478,6 +463,9 @@ export default {
       }
 
       // reset rawMaterialId and selectedrawmaterial price form
+      this.resetRawMaterialForm();
+    },
+    resetRawMaterialForm() {
       this.rawMaterialId = null;
       this.selectedRawaterialCost = null;
       this.selectedRawaterialMinQuantity = null;

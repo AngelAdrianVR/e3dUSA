@@ -1,7 +1,7 @@
 <template>
-    <div class="lg:h-64 h-52 bg-[#D9D9D9] rounded-[30px] lg:rounded-xl lg:p-5 py-2 px-4 relative text-xs lg:text-sm">
+    <div class="lg:h-64 h-52 bg-[#D9D9D9] dark:bg-[#202020] rounded-[30px] lg:rounded-xl lg:p-5 py-2 px-4 relative text-xs lg:text-sm transition-all ease-linear duration-500">
         <img class="lg:h-16 h-6 absolute top-4 left-14 lg:top-2 lg:left-32" src="@/../../public/images/star.png">
-        <h3 class="text-center text-gray-700 my-3">
+        <h3 class="text-center text-gray-700 dark:text-white my-3">
             Desempeño de Ventas<i class="fa-solid fa-shop ml-2"></i>
         </h3>
         <div v-if="users?.length" class="mb-28 px-2 w-full h-full">
@@ -16,7 +16,7 @@
                     <div class="w-1/2">
                         <div v-if="user.percentage > 0" :style="{
                             width: user.percentage + '%',
-                            backgroundColor: index === 0 ? '#44E536' : index === users.length - 1 ? '#D90537' : '#EC8B1F'
+                            backgroundColor: index === 0 ? '#4ade80' : index === users.length - 1 ? '#D90537' : '#fb923c'
                         }" class="h-5 bg-[#44E536] rounded-tr-full rounded-br-full"></div>
                         <div v-else class="h-5 w-[1%] bg-[#D90537] rounded-tr-full rounded-br-full"></div>
                     </div>

@@ -1,6 +1,14 @@
 <template>
+    <!-- <div v-if="loading" 
+        class="absolute z-30 left-0 top-0 inset-0 bg-gradient-to-r from-blue-400 to-pink-500 flex items-center justify-center transition-opacity duration-1000"
+        :class="{'opacity-0': !loading}">
+        <figure class="mt-20 mx-auto w-[40%] lg:w-[25%]">
+        <img src="@/../../public/images/logo.png" alt="logo">
+        </figure>
+    </div> -->
     <AppLayoutNoHeader title="Inicio">
-        <div class="px-9 pt-3 lg:px-14 lg:pt-8">
+        <div
+            class="px-9 pt-3 lg:px-14 lg:pt-8 dark:bg-[#0D0D0D] dark:text-white transition-all ease-linear duration-500">
             <h1>Inicio</h1>
 
             <!-- <div class="my-5">
@@ -20,12 +28,14 @@
             </div> -->
 
             <!-- attendance -->
-            <div class="lg:hidden mx-auto w-4/5 rounded-[20px] bg-[#d9d9d9] py-3 px-5 flex flex-col space-y-2 mt-4">
+            <div
+                class="lg:hidden mx-auto w-4/5 rounded-[20px] bg-[#d9d9d9] dark:bg-[#202020] py-3 px-5 flex flex-col space-y-2 mt-4">
                 <div class="flex flex-col items-center space-y-2">
                     <p class="text-center">{{ greeting?.text }} <strong>{{ $page.props.auth.user.name }}</strong></p>
                     <i :class="greeting?.class"></i>
                 </div>
-                <el-popconfirm v-if="nextAttendance && $page.props.auth.user.permissions.includes('Registrar asistencia')"
+                <el-popconfirm
+                    v-if="nextAttendance && $page.props.auth.user.permissions.includes('Registrar asistencia')"
                     confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
                     @confirm="setAttendance">
                     <template #reference>
@@ -37,8 +47,9 @@
                         </span>
                     </template>
                 </el-popconfirm>
-                <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear kiosco')" confirm-button-text="Si"
-                    cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?" @confirm="createKiosk">
+                <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear kiosco')"
+                    confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
+                    @confirm="createKiosk">
                     <template #reference>
                         <el-tooltip v-if="$page.props.isKiosk || temporalFlag"
                             content="Se puede registrar asistencias desde este dispositivo">
@@ -97,14 +108,14 @@
                 this.$page.props.auth.user.permissions.includes('Ordenes de diseño todas') ||
                 this.$page.props.auth.user.permissions.includes('Crear ordenes de venta') ||
                 this.$page.props.auth.user.permissions.includes('Autorizar solicitudes de tiempo adicional')
-                ">
+            ">
                 <h2 class="text-primary lg:text-xl text-lg lg:mt-16 mt-6">Operativo</h2>
 
-                <div class="grid lg:grid-cols-4 grid-cols-2 gap-3 mt-4">
+                <div class="grid lg:grid-cols-4 grid-cols-2 gap-3 mt-4 transition-all ease-linear duration-500">
                     <!-- sellers -->
                     <div v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')"
-                        class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] py-4 px-6 text-sm col-span-2">
-                        <h2 class="text-black font-bold flex items-center">
+                        class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] dark:bg-[#202020] py-4 px-6 text-sm col-span-2 transition-all ease-linear duration-500">
+                        <h2 class="text-black dark:text-white font-bold flex items-center">
                             <p>Órdenes de venta hechas por ti sin
                                 producción</p>
                             <i class="fa-solid fa-triangle-exclamation ml-3"></i>
@@ -119,24 +130,27 @@
                                     class="grid grid-cols-3 gap-3 mt-4">
                                     <span>{{ sale.folio }}</span>
                                     <span>{{ sale.created_at }}</span>
-                                    <Link :href="route('sales.show', sale.id)" class="text-primary underline ml-auto">Ver
+                                    <Link :href="route('sales.show', sale.id)" class="text-primary underline ml-auto">
+                                    Ver
                                     orden
                                     </Link>
                                 </li>
                             </ul>
                             <p class="text-primary text-center mt-8">¡Es necesario dar seguimiento!</p>
                         </div>
-                        <p v-else class="text-xs text-black text-center my-6">
-                            Nos complace informarte que todas las órdenes que has realizado están actualmente en proceso de
+                        <p v-else class="text-xs text-center my-6">
+                            Nos complace informarte que todas las órdenes que has realizado están actualmente en proceso
+                            de
                             producción.
                             Para que puedas dar seguimiento detallado a tus órdenes, te invitamos a acceder a la sección
                             "ventas"<br>
                             <span class="text-2xl">&#128521;</span>
                         </p>
                     </div>
+
                     <!-- oportunidad de tiempo extra -->
                     <div v-if="extra_time_request"
-                        class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] py-4 px-6 text-sm col-span-2">
+                        class="rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] dark:bg-[#202020] py-4 px-6 text-sm col-span-2 transition-all ease-linear duration-500">
                         <h2 class="text-black font-bold text-center">
                             Oportunidad de tiempo extra
                         </h2>
@@ -145,11 +159,14 @@
                             <strong class="text-secondary">{{ formatDate(extra_time_request.date) }}</strong> por
                             <strong class="text-secondary">{{ extra_time_request.hours }} hora(s)</strong>.
                             Apreciamos tu disposición para ayudar, por lo que se otorgarán
-                            <strong class="text-secondary">{{ extra_time_request.points }} puntos</strong> adicionales en tu desempeño semanal y 
+                            <strong class="text-secondary">{{ extra_time_request.points }} puntos</strong> adicionales
+                            en tu
+                            desempeño semanal y
                             <strong class="text-secondary">${{ extra_time_request.bonus }} de bono</strong>.
                             Gracias por tu flexibilidad!
                         </p>
-                        <div v-if="extra_time_request.is_accepted === null" class="flex items-center justify-center space-x-1 mt-8">
+                        <div v-if="extra_time_request.is_accepted === null"
+                            class="flex items-center justify-center space-x-1 mt-8">
                             <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
                                 title="¿Continuar?" @confirm="setExtraTimeRequestResponse(true)">
                                 <template #reference>
@@ -165,17 +182,19 @@
                         </div>
                         <div v-else class="mt-10 text-center">
                             <p class="bg-[#61f453] text-green-800" v-if="extra_time_request.is_accepted">
-                                Solicitud aceptada 
+                                Solicitud aceptada
                                 <i class="fa-solid fa-check ml-2"></i>
                             </p>
                             <p class="bg-primary text-white" v-else>
-                                Solicitud rechazada 
+                                Solicitud rechazada
                                 <i class="fa-solid fa-xmark ml-2"></i>
                             </p>
                         </div>
                     </div>
                     <!-- lista de OV sin autorizar -->
-                    <PendentProductionsList v-if="$page.props.auth.user.employee_properties === null || $page.props.auth.user.employee_properties?.department == 'Producción'" class="col-span-2" />
+                    <PendentProductionsList
+                        v-if="$page.props.auth.user.employee_properties === null || $page.props.auth.user.employee_properties?.department == 'Producción'"
+                        class="col-span-2" />
                     <!-- crear oportunidad de tiempo extra -->
                     <ExtraTimeRequestCreator
                         v-if="$page.props.auth.user.permissions.includes('Crear oportunidad de tiempo extra')"
@@ -189,6 +208,25 @@
                     </template>
                 </div>
             </div>
+            <!-- actividades de diseños de hoy -->
+            <section class="mt-4 rounded-[30px] lg:rounded-[20px] bg-[#D9D9D9] dark:bg-[#202020] py-4 px-6 text-sm">
+                <h1 class="font-bold">Actividades de diseño para hoy</h1>
+                <article v-for="(designer, index) in Object.keys(todays_design_orders)" :key="index" class="mt-2">
+                    <h2 class="font-semibold text-[#575757]">{{ designer }}</h2>
+                    <div v-for="(order, index2) in todays_design_orders[designer]" :key="index2" class="flex space-x-3">
+                        <p class="w-[35%]"><strong class="text-primary lining-nums ">{{ (index2 + 1) }}.</strong> {{
+                            order.id }}: {{
+                            order.name }}</p>
+                        <p class="w-[18%]">Iniciado a las: {{ formatTime(order.started_at) }}</p>
+                        <p class="w-[18%]">
+                            Terminado a las: {{ order.finished_at ? formatTime(order.finished_at) : 'No se ha terminado' }}
+                        </p>
+                    </div>
+                </article>
+                <p v-if="!Object.keys(todays_design_orders).length" class="text-center text-sm mt-3">
+                    No se ha iniciado ninguna orden de diseño el día de hoy
+                </p>
+            </section>
 
             <!-- Collaborators -->
             <h2 class="text-primary lg:text-xl text-lg lg:mt-16 mt-6">Colaboradores</h2>
@@ -281,7 +319,8 @@
                         </div>
 
                         <div class="flex items-center">
-                            <IconInput v-model="form.subject" inputPlaceholder="Recordario" inputType="text" class="w-1/5">
+                            <IconInput v-model="form.subject" inputPlaceholder="Recordario" inputType="text"
+                                class="w-1/5">
                                 <el-tooltip content="Recordatorios" placement="top">
                                     <i class="fa-solid fa-stopwatch text-gray-700"></i>
                                 </el-tooltip>
@@ -364,6 +403,7 @@ export default {
         });
 
         return {
+            // loading: true,
             quickCards: [
                 {
                     title: 'Cotizaciones por autorizar',
@@ -428,6 +468,13 @@ export default {
                     url: route('admin-additional-times.index'),
                     show: this.$page.props.auth.user.permissions.includes('Autorizar solicitudes de tiempo adicional')
                 },
+                {
+                    title: 'Envio de Muestras por autorizar',
+                    counter: this.counts[9],
+                    icon: 'fa-solid fa-box',
+                    url: route('samples.index'),
+                    show: this.$page.props.auth.user.permissions.includes('Autorizar solicitudes de envios de muestras')
+                },
             ],
             nextAttendance: null,
             temporalFlag: false,
@@ -452,6 +499,7 @@ export default {
         customers_birthdays: Array,
         current_user_sales_without_production: Object,
         extra_time_request: Object,
+        todays_design_orders: Object,
     },
     components: {
         ThirthButton,
@@ -502,6 +550,10 @@ export default {
         formatDate(date) {
             const parsedDate = new Date(date);
             return format(parsedDate, 'dd \'de\' MMMM', { locale: es }); // Formato personalizado
+        },
+        formatTime(date) {
+            const parsedDate = new Date(date);
+            return format(parsedDate, 'h:mm a', { locale: es }); // Formato personalizado
         },
         async getAttendanceTextButton() {
             try {
@@ -574,6 +626,10 @@ export default {
         },
     },
     mounted() {
+        // setTimeout(() => {
+        //     this.loading = false;
+        // }, 3000); // 3 segundos
+
         // Actualizar el saludo inicial
         this.updateGreeting();
 
@@ -587,3 +643,9 @@ export default {
     }
 }
 </script>
+
+<style>
+.transition-opacity {
+    transition: opacity 1s ease;
+}
+</style>

@@ -14,7 +14,7 @@
 
       <!-- Form -->
       <form @submit.prevent="store">
-        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md md:space-y-4">
+        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md md:space-y-4">
           <div>
             <IconInput v-model="brand" @change="generatePartNumber" inputPlaceholder="Marca del producto *" inputType="text">
               <el-tooltip content="Marca del producto (si no tiene marca colocar 'Generico')" placement="top">
@@ -142,7 +142,10 @@
           </div>
 
           <div class="mt-2 mx-3 md:text-right">
-            <PrimaryButton :disabled="form.processing"> Agregar </PrimaryButton>
+            <PrimaryButton :disabled="form.processing">
+              <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
+              Agregar
+            </PrimaryButton>
           </div>
         </div>
       </form>

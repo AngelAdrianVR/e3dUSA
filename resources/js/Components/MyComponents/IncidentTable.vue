@@ -5,7 +5,7 @@
     class="absolute z-20 top-1/2 left-1/2 w-32 h-32 rounded-lg bg-white flex items-center justify-center">
     <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
   </div>
-  <div class="bg-[#D9D9D9] rounded-lg lg:w-4/5 mx-auto py-6 px-10">
+  <div class="bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg lg:w-4/5 mx-auto py-6 px-10">
     <div>
       <div class="flex items-center justify-between">
         <span class="text-secondary">Incidencias</span>

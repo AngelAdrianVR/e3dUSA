@@ -42,7 +42,7 @@
                         class="px-2 mx-3 mt-1 mb-2 py-1 hover:bg-[#cccccc] rounded-[10px] relative">
                         <label class="flex cursor-pointer ml-3">
                             <i v-if="!notification.read_at"
-                                class="absolute top-1 left-1 fa-solid fa-circle text-primary text-[8px] mt-1"></i>
+                                class="absolute top-1 left-1 fa-solid fa-circle text-primary text-[8px] mt-1 fa-flip"></i>
                             <input type="checkbox" v-model="selectedNotifications" :value="notification.id"
                                 class="rounded border-gray-600 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
                             <div class="ml-3" :class="!notification.read_at ? 'font-bold' : ''">

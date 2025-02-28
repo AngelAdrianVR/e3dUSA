@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="dark:text-white">
         <AppLayout title="Departamento de producción">
             <template #header>
                 <div class="flex justify-between">
@@ -14,6 +14,15 @@
                 <p class="text-red-500"><i class="fa-solid fa-circle mr-1"></i>Falta de materia prima</p>
                 <p class="text-blue-500"><i class="fa-solid fa-circle mr-1"></i>Producción en proceso</p>
                 <p class="text-green-500"><i class="fa-solid fa-circle mr-1"></i>Producción terminada</p>
+            </div>
+
+            <!-- Filtro por propietario -->
+            <div class="w-1/4 flex flex-col">
+                <label class="text-sm ml-2 mb-1">Filtro por propietario</label>
+                <el-select @change="fetchItemsFiltered" v-model="filter" class="!w-full"
+                    placeholder="Selecciona una opción">
+                    <el-option v-for="item in options" :key="item" :label="item" :value="item" />
+                </el-select>
             </div>
 
             <!-- tabla -->
@@ -53,11 +62,16 @@
                                     </span>
                                     <template #dropdown>
                                         <el-dropdown-menu>
-                                            <el-dropdown-item :command="'show-' + scope.row.id"><i
-                                                    class="fa-solid fa-eye"></i>
+                                            <el-dropdown-item :command="'show-' + scope.row.id">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 mr-2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                </svg>
                                                 Ver</el-dropdown-item>
-                                            <el-dropdown-item :command="'edit-' + scope.row.id"><i
-                                                    class="fa-solid fa-pen"></i>
+                                            <el-dropdown-item :command="'edit-' + scope.row.id">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 mr-2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                                </svg>
                                                 Editar</el-dropdown-item>
                                         </el-dropdown-menu>
                                     </template>
@@ -91,6 +105,7 @@ export default {
             itemsPerPage: 10,
             start: 0,
             end: 10,
+            options: ['Mis órdenes', 'Todas las órdenes'], //opciones de filtro
         };
     },
     components: {

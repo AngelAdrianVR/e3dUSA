@@ -15,33 +15,64 @@ class NotifyInactiveClients extends Command
 
     public function handle()
     {
-        $inactiveClients = CompanyBranch::where('days_to_reactivate', '>', 0)
-            ->get()
-            ->filter(function ($customerBranch) {
-                return !$this->hasRecentActivity($customerBranch);
-            });
+        // Obtener todos los vendedores activos
+        $salesUsers = $this->getSalesUsers();
 
-        if ($inactiveClients->count()) {
-            foreach ($this->getSalesUsers() as $user) {
+        // Iterar sobre cada vendedor para notificarles sobre sus clientes inactivos
+        foreach ($salesUsers as $user) {
+            // Obtener los clientes inactivos del vendedor actual
+            $inactiveClients = $this->getInactiveClientsForUser($user);
+
+            // Si hay clientes inactivos, enviar notificación al vendedor
+            if ($inactiveClients->count()) {
                 $user->notify(new InactiveClientsNotification($inactiveClients));
+                $this->info('Inactive clients notification sent successfully to user: ' . $user->name);
+                Log::info('Inactive clients notification sent to user ' . $user->name . '. There were ' . $inactiveClients->count() . ' inactive client(s)');
             }
         }
 
-        $this->info('Inactive clients notification sent successfully.');
-        Log::info('app:inactive-clients executed successfully. There where ' . $inactiveClients->count() . ' inactive client(s)');
+        $this->info('Inactive clients notification process completed.');
     }
-    
+
     protected function getSalesUsers()
     {
         return User::whereIn('id', [1, 2, 3])->orWhere('employee_properties->department', 'Ventas')->get();
     }
 
-    protected function hasRecentActivity(CompanyBranch $customerBranch)
+    protected function getInactiveClientsForUser(User $user)
     {
-        $threshold = now()->subDays($customerBranch->days_to_reactivate);
-        
-        return $customerBranch->quotes()->whereDate('created_at', '>=', $threshold)->get()->count()
-            || $customerBranch->sales()->whereDate('created_at', '>=', $threshold)->get()->count()
-            || $customerBranch->samples()->whereDate('created_at', '>=', $threshold)->get()->count();
+        $inactiveClients = collect();
+
+        // Obtener todas las sucursales del vendedor
+        $companies = $user->companiesAsSeller ?? [];
+
+        // Iterar sobre cada cliente
+        foreach ($companies as $company) {
+            $companyBranches = $company->companyBranches;
+            
+            // Iterar sobre cada sucursal y verificar la inactividad
+            foreach ($companyBranches as $branch) {
+                $days_to_reactivate = $branch->days_to_reactivate;
+    
+                // Verificar la inactividad de la sucursal actual
+                if (
+                    $days_to_reactivate > 0 &&
+                    !$this->hasRecentActivity($branch, $days_to_reactivate)
+                ) {
+                    $inactiveClients->push($branch);
+                }
+            }
+        }
+
+        return $inactiveClients;
+    }
+
+    protected function hasRecentActivity(CompanyBranch $customerBranch, $days_to_reactivate)
+    {
+        $threshold = now()->subDays($days_to_reactivate);
+
+        return $customerBranch->quotes()->whereDate('created_at', '>=', $threshold)->exists()
+            || $customerBranch->sales()->whereDate('created_at', '>=', $threshold)->exists()
+            || $customerBranch->samples()->whereDate('created_at', '>=', $threshold)->exists();
     }
 }

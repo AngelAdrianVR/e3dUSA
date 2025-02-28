@@ -11,73 +11,67 @@
 
     <!-- Form -->
     <form @submit.prevent="store">
-      <div class="md:w-1/2 md:mx-auto text-sm my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4">
-
-        <div class="w-1/2">
-          <label>Folio de la oportunidad *</label>
-          <el-select @change="getCompany" class="w-full" v-model="form.oportunity_id" clearable filterable
-            placeholder="Seleccione" no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
+      <div class="md:w-1/2 md:mx-auto grid grid-cols-2 gap-3 text-sm my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg lg:p-9 p-4 shadow-md">
+        <div>
+          <InputLabel value="Folio de la oportunidad*" />
+          <el-select @change="getCompany" v-model="form.oportunity_id" clearable filterable placeholder="Selecciona"
+            no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
             <el-option v-for="oportunity in oportunities" :key="oportunity"
               :label="oportunity.folio + ' - ' + oportunity.name" :value="oportunity.id" />
           </el-select>
           <InputError :message="form.errors.oportunity_id" />
         </div>
 
-        <h2 class="text-secondary">Datos del cliente</h2>
-        <div class="flex space-x-7 justify-between">
-          <div class="w-1/2">
-            <label>Cliente *</label> <br>
-            <el-select disabled v-model="form.company_id" clearable filterable placeholder="Seleccione"
-              no-data-text="No hay clientes registrados" no-match-text="No se encontraron coincidencias">
-              <el-option v-for="company in companies" :key="company" :label="company.business_name" :value="company.id" />
-            </el-select>
-            <InputError :message="form.errors.company_id" />
-          </div>
-          <div class="w-1/2">
-            <label>Sucursal *</label> <br>
-            <el-select @change="saveCompanyBranchAddress" v-model="form.company_branch_id" clearable filterable
-              placeholder="Seleccione" no-data-text="No hay sucursales registradas"
-              no-match-text="No se encontraron coincidencias">
-              <el-option v-for="company_branch in companies.find((item) => item.id == form.company_id)?.company_branches"
-                :key="company_branch" :label="company_branch.name" :value="company_branch.id" />
-            </el-select>
-            <InputError :message="form.errors.company_branch" />
-          </div>
-        </div>
-        <div class="flex space-x-7 justify-between">
-          <div v-if="!has_contact" class="w-1/2">
-            <label>Contacto</label>
-            <el-select @change="getContactEmail" v-model="form.contact_id" clearable filterable placeholder="Seleccione"
-              no-data-text="No hay contactos registrados" no-match-text="No se encontraron coincidencias">
-              <el-option v-for="contact in company_branch_obj?.contacts" :key="contact" style="font-size: 11px"
-              :label="contact.name + ' (' + contact.email + ')'"
-                :value="contact.id" />
-            </el-select>
-            <InputError :message="form.errors.contact_id" />
-          </div>
-          <div class="w-1/2">
-            <label>Email</label>
-            <input v-model="form.contact_email" class="input" type="text">
-            <InputError :message="form.errors.contact_email" />
-          </div>
-        </div>
-
+        <h2 class="text-[#373737] dark:text-gray-300 font-bold col-span-full">Datos del cliente</h2>
         <div>
-          <label>Asunto</label>
-          <input v-model="form.subject" class="input" type="text">
+          <InputLabel value="Cliente*" />
+          <el-select disabled v-model="form.company_id" clearable filterable placeholder="Selección automática"
+            no-data-text="No hay clientes registrados" no-match-text="Selecciona primero la oportiunidad">
+            <el-option v-for="company in companies" :key="company" :label="company.business_name" :value="company.id" />
+          </el-select>
+          <InputError :message="form.errors.company_id" />
+        </div>
+        <div>
+          <InputLabel value="Sucursal*" />
+          <el-select @change="saveCompanyBranchAddress" v-model="form.company_branch_id" clearable filterable
+            placeholder="Selecciona" no-data-text="Selecciona primero la oportiunidad"
+            no-match-text="No se encontraron coincidencias">
+            <el-option v-for="company_branch in companies.find((item) => item.id == form.company_id)?.company_branches"
+              :key="company_branch" :label="company_branch.name" :value="company_branch.id" />
+          </el-select>
+          <InputError :message="form.errors.company_branch_id" />
+        </div>
+        <div v-if="!has_contact">
+          <InputLabel value="Contacto*" />
+          <el-select @change="getContactEmail" v-model="form.contact_id" clearable filterable placeholder="Seleccione"
+            no-data-text="Selecciona primero la sucursal" no-match-text="No se encontraron coincidencias">
+            <el-option v-for="contact in company_branch_obj?.contacts" :key="contact" style="font-size: 11px"
+              :label="contact.name + ' (' + contact.email + ')'" :value="contact.id" />
+          </el-select>
+          <InputError :message="form.errors.contact_id" />
+        </div>
+        <div>
+          <InputLabel value="Email*" />
+          <el-input v-model="form.contact_email" type="text" placeholder="Ej. contacto@ejemplo.com" />
+          <InputError :message="form.errors.contact_email" />
+        </div>
+        <div class="col-span-full">
+          <InputLabel value="Asunto*" />
+          <el-input v-model="form.subject" type="text" placeholder="Confirmación de reunión" />
           <InputError :message="form.errors.subject" />
         </div>
-        <div>
-          <label>Contenido</label>
-          <textarea v-model="form.content" class="textarea" rows="4">
-                </textarea>
+        <div class="col-span-full">
+          <InputLabel value="Contenido*" />
+          <el-input v-model="form.content" :rows="3" maxlength="800" placeholder="..." show-word-limit
+            type="textarea" />
           <InputError :message="form.errors.content" />
         </div>
         <!-- <div class="ml-2 mt-2 col-span-full flex">
               <FileUploader @files-selected="this.form.media = $event" />
             </div> -->
-        <div class="flex justify-end items-center">
+        <div class="col-span-full flex justify-end items-center">
           <PrimaryButton :disabled="form.processing">
+            <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
             Guardar
           </PrimaryButton>
 
@@ -94,6 +88,7 @@ import InputError from "@/Components/InputError.vue";
 import FileUploader from "@/Components/MyComponents/FileUploader.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import { Link, useForm } from "@inertiajs/vue3";
+import InputLabel from "@/Components/InputLabel.vue";
 
 export default {
   data() {
@@ -122,7 +117,8 @@ export default {
     InputError,
     AppLayout,
     Back,
-    Link
+    Link,
+    InputLabel,
   },
   props: {
     oportunities: Object,
@@ -190,4 +186,3 @@ export default {
   }
 };
 </script>
-

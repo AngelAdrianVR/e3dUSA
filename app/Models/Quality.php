@@ -31,6 +31,6 @@ class Quality extends Model implements HasMedia
 
     public function production () :BelongsTo
     {
-        return $this->belongsTo(sale::class);
+        return $this->belongsTo(Sale::class);
     }
 }

@@ -15,85 +15,86 @@ class SampleResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        if ($this->will_back) {
-
+        if (!$this->authorized_at) {
             $status = [
-            'label' => 'Enviado. Esperando regreso de muestra',
-            'bg-color' => 'bg-amber-600',
-            'text-color' => 'text-amber-600',
-            'border-color' => 'border-amber-600', 
-            'description' => 'Esperando a que la muestra sea devuelta y obtengas retroalimentación',        
-            'progress' => 'w-1/4'        
+                'label' => 'Muestra no enviada aún',
+                'bg-color' => 'bg-gray-500',
+                'text-color' => 'text-gray-500',
+                'border-color' => 'border-gray-500',
+                'description' => 'Muestra no enviada aún',
             ];
+        } else {
+            if ($this->will_back) {
+                $status = [
+                    'label' => 'Enviado. Esperando respuesta',
+                    'bg-color' => 'bg-amber-600',
+                    'text-color' => 'text-amber-600',
+                    'border-color' => 'border-amber-600',
+                    'description' => 'Esperando a que la muestra sea devuelta y obtengas retroalimentación',
+                    'progress' => 'w-1/4'
+                ];
 
-            if ($this->returned_at) {
-
-                $status = ['label' => 'Muestra devuelta',
-                    'bg-color' => 'bg-blue-600',
-                    'text-color' => 'text-blue-600',
-                    'border-color' => 'border-blue-600', 
-                    'description' => 'Muestra devuelta. Da seguimiento para concretar venta',
-                    'progress' => 'w-1/2'        
+                if ($this->returned_at) {
+                    $status = [
+                        'label' => 'Muestra devuelta',
+                        'bg-color' => 'bg-blue-600',
+                        'text-color' => 'text-blue-600',
+                        'border-color' => 'border-blue-600',
+                        'description' => 'Muestra devuelta. Da seguimiento para concretar venta',
+                        'progress' => 'w-1/2'
                     ];
 
+                    if ($this->requires_modification) {
+
+                        $status = [
+                            'label' => 'Muestra enviada con modificaciones',
+                            'bg-color' => 'bg-sky-500',
+                            'text-color' => 'text-sky-600',
+                            'border-color' => 'border-sky-600',
+                            'description' => 'Muestra enviada de nuevo con modificaciones. Espera retroalimentación para finalizar con el seguimiento',
+                            'progress' => 'w-3/4'
+                        ];
+                    }
+                }
+            } else {
+                $status = [
+                    'label' => 'Enviado. Esperando respuesta',
+                    'bg-color' => 'bg-amber-600',
+                    'text-color' => 'text-amber-600',
+                    'border-color' => 'border-amber-500',
+                    'description' => 'Muestra enviada. Esperando respuesta',
+                    'progress' => 'w-1/2'
+                ];
                 if ($this->requires_modification) {
-
-                    $status = ['label' => 'Muestra enviada de nuevo con modificación',
-                    'bg-color' => 'bg-sky-500',
-                    'text-color' => 'text-sky-600',
-                    'border-color' => 'border-sky-600', 
-                    'description' => 'Muestra enviada de nuevo con modificaciones. Espera retroalimentación para finalizar con el seguimiento',
-                    'progress' => 'w-3/4'        
+                    $status = [
+                        'label' => 'Muestra enviada con modificaciones',
+                        'bg-color' => 'bg-sky-500',
+                        'text-color' => 'text-sky-600',
+                        'border-color' => 'border-sky-600',
+                        'description' => 'Muestra enviada de nuevo con modificaciones. Espera retroalimentación para finalizar con el seguimiento',
+                        'progress' => 'w-3/4'
                     ];
-
                 }
             }
-        } else {
-
-            $status = [
-            'label' => 'Enviado. Esperando respuesta',
-            'bg-color' => 'bg-amber-600',
-            'text-color' => 'text-amber-600',
-            'border-color' => 'border-amber-500', 
-            'description' => 'Muestra enviada. Esperando respuesta',
-            'progress' => 'w-1/2'        
-            ];
-
-            if ($this->requires_modification) {
-
-                $status = ['label' => 'Muestra enviada de nuevo con modificación',
-                    'bg-color' => 'bg-sky-500',
-                    'text-color' => 'text-sky-600',
-                    'border-color' => 'border-sky-600', 
-                    'description' => 'Muestra enviada de nuevo con modificaciones. Espera retroalimentación para finalizar con el seguimiento',
-                    'progress' => 'w-3/4'        
-                    ];
-
+            if ($this->sale_order_at) {
+                $status = [
+                    'label' => 'Venta cerrada',
+                    'bg-color' => 'bg-green-500',
+                    'text-color' => 'text-green-500',
+                    'border-color' => 'border-green-500',
+                    'description' => 'Orden generada. Venta exitosa',
+                    'progress' => 'w-full'
+                ];
+            } else if ($this->denied_at) {
+                $status = [
+                    'label' => 'Venta no concretada',
+                    'bg-color' => 'bg-primary',
+                    'text-color' => 'text-primary',
+                    'border-color' => 'border-primary',
+                    'description' => 'Venta no concretada',
+                ];
             }
         }
-
-        if ($this->sale_order_at) {
-
-            $status = [
-            'label' => 'Orden generada. Venta exitosa',
-            'bg-color' => 'bg-green-500',
-            'text-color' => 'text-green-500',
-            'border-color' => 'border-green-500', 
-            'description' => '¡Venta cerrada!',
-            'progress' => 'w-full'        
-            ];
-
-        } elseif ($this->denied_at) {
-
-            $status = [
-            'label' => 'Venta no concretada',
-            'bg-color' => 'bg-primary',
-            'text-color' => 'text-primary',
-            'border-color' => 'border-primary', 
-            'description' => 'Venta no concretada',       
-            ];
-
-        }       
 
         return [
             'id' => $this->id,
@@ -115,6 +116,8 @@ class SampleResource extends JsonResource
             'company_branch' => $this->whenLoaded('companyBranch'),
             'user' => $this->whenLoaded('user'),
             'contact' => Contact::find($this->contact_id),
+            'authorized_user_name' => $this->authorized_user_name,
+            'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'updated_at' => $this->updated_at?->isoFormat('DD MMM, YYYY h:mm A'),
         ];

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="dark:text-white">
     <AppLayout title="Solicitud de tiempo adicional - RH">
       <template #header>
         <div class="flex justify-between">
@@ -17,8 +17,8 @@
       </template>
 
       <div class="flex space-x-6 items-center justify-center text-xs mt-2">
-        <p class="text-amber-500"> <i class="fa-regular fa-clock mr-1"></i>Esperando autorización </p>
-        <p class="text-green-500"><i class="fa-regular fa-circle-check mr-1"></i>Autorizado</p>
+        <p> <i class="fa-regular fa-clock mr-1 text-amber-500"></i>Esperando autorización </p>
+        <p><i class="fa-regular fa-circle-check mr-1 text-green-500"></i>Autorizado</p>
       </div>
 
       <!-- tabla -->
@@ -105,7 +105,7 @@
             form.reset();
             editFlag = false;
             "
-              class="fa-solid fa-xmark cursor-pointer w-5 h-5 rounded-full border border-black flex items-center justify-center absolute right-3"></i>
+              class="fa-solid fa-xmark cursor-pointer w-5 h-5 rounded-full hover:text-primary dark:hover:bg-[#333333] flex items-center justify-center absolute right-3"></i>
             <i v-if="!helpDialog" @click="helpDialog = true"
               class="fa-solid fa-question text-[9px] text-secondary h-3 w-3 bg-sky-300 rounded-full text-center absolute left-3 top-3 cursor-pointer"></i>
 

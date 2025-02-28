@@ -54,7 +54,9 @@ class QuoteResource extends JsonResource
             'tooling_cost' => $this->tooling_cost,
             'tooling_currency' => $this->tooling_currency,
             'tooling_cost_stroked' => $this->tooling_cost_stroked,
+            'freight_cost_charged_in_product' => $this->freight_cost_charged_in_product,
             'freight_cost' => $this->freight_cost,
+            'freight_option' => $this->freight_option,
             'first_production_days' => $this->first_production_days,
             'notes' => $this->notes ?? '--',
             'currency' => $this->currency,
@@ -74,12 +76,14 @@ class QuoteResource extends JsonResource
                 'email' => $this->user->email,
             ],
             'sale' => $this->sale,
-            'products' => CatalogProductResource::collection($this->whenLoaded('catalogProducts')),
+            'catalog_products' => CatalogProductResource::collection($this->whenLoaded('catalogProducts')),
+            'raw_materials' => RawMaterialResource::collection($this->whenLoaded('rawMaterials')),
             'created_at' => $this->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'total' => [
-               'raw' => $total_without_taxes,
-               'number_format' => number_format($total_without_taxes, 2),
+                'raw' => $total_without_taxes,
+                'number_format' => number_format($total_without_taxes, 2),
             ],
+            'show_breakdown' => $this->show_breakdown,
         ];
     }
 }

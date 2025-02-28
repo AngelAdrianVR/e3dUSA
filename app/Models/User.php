@@ -26,9 +26,12 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'email_password',
         'password',
         'is_active',
+        'has_important_reminder', //bandera para mostrar aviso invasivo de recordatorio de calendario
         'employee_properties',
+        'disabled_at',
     ];
 
     protected $hidden = [
@@ -40,6 +43,7 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'disabled_at' => 'date',
         'employee_properties' => 'array',
     ];
 
@@ -85,6 +89,11 @@ class User extends Authenticatable
     public function companies()
     {
         return $this->hasMany(Company::class, 'user_id', 'id');
+    }
+
+    public function companiesAsSeller()
+    {
+        return $this->hasMany(Company::class, 'seller_id', 'id');
     }
 
     public function catalogProductsCompany()
@@ -151,14 +160,15 @@ class User extends Authenticatable
 
         return false;
     }
-    
+
     public function getPendentProductions()
     {
         $pendent_productions = $this->productions()
-        ->where('is_paused', true)
-        ->whereNotNull('started_at')
-        ->whereNull('finished_at')
-        ->get()->count();
+            ->where('is_paused', true)
+            ->whereNotNull('started_at')
+            ->whereNull('finished_at')
+            ->where('has_low_stock', false)
+            ->get()->count();
 
         return $pendent_productions;
     }
@@ -213,10 +223,16 @@ class User extends Authenticatable
             ]);
             $next = 'Registrar salida';
         } elseif (is_null($today_attendance->check_out)) {
-            $today_attendance->update([
-                'check_out' => $now_time,
-            ]);
-            $next = 'Dia terminado';
+            // registrar salida solo si ha pasado al menos 1 minuto del registro de entrada para evitar registrar 2 veces
+            // $carbon_check_in = Carbon::parse($today_attendance->check_in);
+            if ($today_attendance->check_in->diffInMinutes(now()) > 1) {
+                $today_attendance->update([
+                    'check_out' => $now_time,
+                ]);
+                $next = 'Dia terminado';
+            } else {
+                $next = 'Registrar salida';
+            }
         }
 
         return $next;
@@ -359,4 +375,44 @@ class User extends Authenticatable
             return 'Super admin';
         }
     }
+
+    public function getLateProductions($startDate)
+    {
+        $limitDate = $startDate->copy()->addDays(7); // Fecha límite una semana después
+
+        // return collect([]);
+        return $this->productions->filter(function ($production) use ($startDate, $limitDate) {
+            $promiseDate = optional($production->catalogProductCompanySale?->sale)->promise_date;
+
+            return $production->created_at >= $startDate &&
+                $production->created_at <= $limitDate &&
+                $promiseDate !== null &&
+                (
+                    ($production->finished_at === null && $promiseDate < $limitDate) ||
+                    ($production->finished_at !== null && $production->finished_at > $promiseDate->addDay())
+                );
+        });
+    }
+
+    // public function getLateProductions($startDate)
+    // {
+    //     $limitDate = $startDate->copy()->addDays(7); // Fecha límite una semana después
+
+    //     $filteredProductions = $this->productions->filter(function ($production) use ($startDate, $limitDate) {
+    //         $promiseDate = optional($production->catalogProductCompanySale->sale)->promise_date;
+
+    //         return $production->created_at >= $startDate &&
+    //             $production->created_at <= $limitDate &&
+    //             $promiseDate !== null &&
+    //             (
+    //                 ($production->finished_at === null && $promiseDate < $limitDate) ||
+    //                 ($production->finished_at !== null && $production->finished_at > $promiseDate->addDay())
+    //             );
+    //     });
+
+    //     // Ordenar los resultados por el campo 'created_at'
+    //     $sortedProductions = $filteredProductions->sortBy('created_at');
+
+    //     return $sortedProductions;
+    // }
 }

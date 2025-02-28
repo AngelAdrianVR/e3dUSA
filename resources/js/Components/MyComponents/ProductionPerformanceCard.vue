@@ -1,7 +1,7 @@
 <template>
-    <div class="lg:h-64 h-52 bg-[#D9D9D9] rounded-[30px] lg:rounded-xl lg:p-5 py-2 px-4 relative text-xs lg:text-sm">
+    <div class="lg:h-64 h-52 bg-[#D9D9D9] dark:bg-[#202020] rounded-[30px] lg:rounded-xl lg:p-5 py-2 px-4 relative text-xs lg:text-sm transition-all ease-linear duration-500">
         <img class="lg:h-16 h-6 absolute top-4 left-14 lg:top-2 lg:left-24" src="@/../../public/images/star.png">
-        <h3 class="text-center text-gray-700 my-3">
+        <h3 class="text-center text-gray-700 dark:text-white my-3">
             Desempeño de Producción <i class="fa-solid fa-helmet-safety ml-2"></i>
         </h3>
         <div v-if="users?.length" class="mb-28 px-2 w-full h-full">
@@ -16,8 +16,8 @@
                     <div class="w-1/2">
                         <div v-if="user.percentage > 0" :style="{
                             width: user.percentage + '%',
-                            backgroundColor: index === 0 ? '#44E536' : index === users.length - 1 ? '#D90537' : '#EC8B1F'
-                        }" class="h-5 bg-[#44E536] rounded-tr-full rounded-br-full"></div>
+                            backgroundColor: index === 0 ? '#4ade80' : index === users.length - 1 ? '#D90537' : '#fb923c'
+                        }" class="h-5 rounded-tr-full rounded-br-full"></div>
                         <div v-else class="h-5 w-[1%] bg-[#D90537] rounded-tr-full rounded-br-full"></div>
                     </div>
                 </li>
@@ -61,7 +61,7 @@
                             dayPoints.time }}</td>
                         <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.scrap < 0 }">{{
                             dayPoints.scrap }}</td>
-                        <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.day_completed < 0, 'text-green-500':dayPoints.day_completed == 0 }">
+                        <td class="bg-white py-1 px-2 text-xs" :class="{ 'text-red-500': dayPoints.day_completed < 0, 'text-green-200':dayPoints.day_completed == 0 }">
                             {{ dayPoints.day_completed < 0 ? dayPoints.day_completed : '' }}
                             <i v-if="dayPoints.day_completed >= 0" class="fa-solid fa-check"></i>
                         </td>

@@ -37,7 +37,7 @@ class RawMaterial extends Model implements HasMedia
         'features' => 'array'
     ];
 
-    // relationships
+    // relationships---------------------------------------
 
     /**
      * Get the RawMaterial's sorage in warehose.
@@ -55,10 +55,35 @@ class RawMaterial extends Model implements HasMedia
             ])->withTimestamps();
     }
 
-    // methods
+    public function quotes(): BelongsToMany
+    {
+        return $this->belongsToMany(Quote::class)
+            ->withPivot([
+                'quantity',
+                'price',
+                'show_image',
+                'notes',
+            ])->withTimestamps();
+    }
+
+    // methods----------------------------------------------
     public function isInCatalogProduct()
     {
-        return $this->catalogProducts()->exists();
+        // Obtener todos los productos de catálogo en los que está esta materia prima
+        $catalogProducts = $this->catalogProducts;
+
+        if ($catalogProducts->isEmpty()) {
+            return false; // No está en ningún producto de catálogo
+        }
+
+        // Verificar en cada producto de catálogo si esta es la única materia prima
+        foreach ($catalogProducts as $catalogProduct) {
+            if ($catalogProduct->rawMaterials()->count() == 1) {
+                return $catalogProduct; // ya hay un producto de catalogo con solo esta materia prima como componente
+            }
+        }
+
+        return false; // No hay producto de catalogo con solo este componente
     }
 
     public function getSalesCommited()
@@ -94,7 +119,7 @@ class RawMaterial extends Model implements HasMedia
             $statusLabel = $sale->getStatus()['label'];
             if ($statusLabel != 'Producción terminada') {
                 $product = $sale->catalogProductCompanySales->first(function ($cpcs) {
-                    return $cpcs->catalogProductCompany->catalogProduct->rawMaterials->contains('id', $this->id);
+                    return $cpcs->catalogProductCompany?->catalogProduct->rawMaterials->contains('id', $this->id);
                 });
 
                 // Obtener la relación rawMaterials del elemento encontrado

@@ -12,7 +12,7 @@
 
       <!-- Form -->
       <form @submit.prevent="update">
-        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4">
+        <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md space-y-4">
           <div>
             <IconInput v-model="form.name" inputPlaceholder="Nombre *" inputType="text">
               <el-tooltip content="Nombre *" placement="top"> A </el-tooltip>
@@ -55,7 +55,8 @@
 
           <div class="mt-9 mx-3 md:text-right">
             <PrimaryButton :disabled="form.processing">
-              Actualizar costo de producción
+              <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
+              Guardar cambios
             </PrimaryButton>
           </div>
         </div>

@@ -53,8 +53,8 @@ const alignmentClasses = computed(() => {
 
 const classes = computed(() => {
     return props.active
-        ? 'flex flex-col items-center py-3 px-2 bg-[#CCCCCC] font-medium text-[10px] w-full text-[#D90537] rounded-lg relative'
-        : 'flex flex-col items-center text-[10px] font-medium py-3 px-2 hover:bg-[#CCCCCC] rounded-lg focus:bg-[#CCCCCC] outline-none w-full cursor-pointer relative';
+        ? 'flex flex-col items-center py-3 px-2 bg-[#CCCCCC] dark:bg-[#191919] font-medium text-[10px] w-full text-[#D90537] dark:text-primary rounded-lg relative'
+        : 'flex flex-col items-center text-[10px] font-medium py-3 px-2 hover:bg-[#CCCCCC] dark:hover:bg-[#191919] rounded-lg focus:bg-[#CCCCCC] dark:text-[#D9D9D9] outline-none w-full cursor-pointer relative';
 });
 </script>
 
@@ -75,7 +75,7 @@ const classes = computed(() => {
                 leave-to-class="transform opacity-0 scale-95">
                 <div v-show="open" class="absolute z-50 rounded-tr-xl rounded-br-xl origin-top-right -right-[192px] translate-y-[-48px]" :class="[widthClass, alignmentClasses]"
                     style="display: none;" @click="open = false">
-                    <div class="rounded-tr-xl rounded-br-xl" :class="contentClasses">
+                    <div class="rounded-tr-xl rounded-br-xl dark:bg-[#202020]" :class="contentClasses">
                         <slot name="content" />
                     </div>
                 </div>

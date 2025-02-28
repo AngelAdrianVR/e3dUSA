@@ -21,6 +21,8 @@ return new class extends Migration
             $table->unsignedBigInteger('catalog_product_company_id');
             $table->unsignedBigInteger('sale_id');
             $table->boolean('is_new_design')->default(false);
+            $table->boolean('confusion_alert')->default(false);
+            $table->boolean('requires_medallion')->default(false);
             $table->json('traveler_data')->nullable();
             $table->timestamps();
         });

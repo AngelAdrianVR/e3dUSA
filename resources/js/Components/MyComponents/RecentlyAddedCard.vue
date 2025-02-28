@@ -1,7 +1,7 @@
 <template>
-    <div class="lg:h-52 h-44 bg-[#D9D9D9] rounded-[30px] lg:rounded-xl lg:p-5 py-2 px-4 text-xs lg:text-sm grid grid-cols-3 relative">
+    <div class="lg:h-52 h-44 bg-[#D9D9D9] dark:bg-[#202020] rounded-[30px] lg:rounded-xl lg:p-5 py-2 px-4 text-xs lg:text-sm grid grid-cols-3 relative transition-all ease-linear duration-500">
         <div class="my-3 col-start-2 col-span-2 h-full">
-            <h3 class="text-center text-gray-700">Agregados Recientemente <i class="fa-solid fa-user-plus ml-2"></i></h3>
+            <h3 class="text-center text-gray-700 dark:text-white">Agregados Recientemente <i class="fa-solid fa-user-plus ml-2"></i></h3>
         </div>
         <div v-if="users?.length" class="mb-28 lg:px-2 overflow-y-scroll h-full w-full col-start-2 col-span-2">
             <p class="font-bold text-center">¡Bienvenid@ a nuestro equipo Emblems 3D!</p>

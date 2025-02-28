@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="dark:text-white">
     <AppLayoutNoHeader title="Roles y permisos">
       <div class="flex justify-between text-lg mx-14 mt-11">
         <span>Roles y permisos</span>
@@ -29,31 +29,31 @@
           <div v-if="tabs == 1" class="px-7 py-7 text-sm">
             <table class="w-full">
               <thead>
-                <tr class="text-left">
-                  <th class="font-normal pb-5"># <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
-                  <th class="font-normal pb-5">Roles <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
-                  <th class="font-normal pb-5">Fecha de creación <i class="fa-solid fa-arrow-down-long ml-3"></i></th>
+                <tr class="text-left border-b border-primary *:pb-2 *:font-bold">
+                  <th class="font-normal">#</th>
+                  <th class="font-normal">Roles</th>
+                  <th class="font-normal">Fecha de creación</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(role, index) in roles.data" :key="role.id" class="mb-4">
-                  <td class="text-left pb-3">
+                  <td class="text-left pt-3">
                     {{ role.id }}
                   </td>
-                  <td @click="editRole(role, index)" class="text-left pb-3">
+                  <td @click="editRole(role, index)" class="text-left pt-3">
                     <span class="hover:underline cursor-pointer">{{ role.name }}</span>
                   </td>
-                  <td class="text-left pb-3">
+                  <td class="text-left pt-3">
                     {{ role.created_at }}
                   </td>
-                  <td class="text-left pb-3">
+                  <td class="text-left pt-3">
                     <div>
                       <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar roles y permisos')"
                         confirm-button-text="Si" cancel-button-text="No" icon-color="#FFFFFF" title="¿Continuar?"
                         @confirm="deleteRole(role, index)">
                         <template #reference>
-                          <i class="fa-solid fa-trash-can text-red-600 cursor-pointer"></i>
+                          <i class="fa-regular fa-trash-can hover:text-red-600 p-2 cursor-pointer"></i>
                         </template>
                       </el-popconfirm>
                     </div>
@@ -65,10 +65,10 @@
           <!-- --------------------- Tab 1 roles ends------------------ -->
 
           <!-- --------------------- Tab 2 permissions starts------------------ -->
-          <div v-if="tabs == 2" class="px-7 py-7 text-sm overflow-scroll">
+          <div v-if="tabs == 2" class="p-2 text-sm overflow-scroll">
             <div class="lg:grid grid-cols-4">
-              <div v-for="(guard, index) in Object.keys(permissions.data)" :key="index" class="border p-3">
-                <h1 class="text-secondary">{{ guard.replace(/_/g, " ") }}</h1>
+              <div v-for="(guard, index) in Object.keys(permissions.data)" :key="index" class="border border-gray2 p-2">
+                <h1 class="text-secondary bg-gray2 p-2">{{ guard.replace(/_/g, " ") }}</h1>
                 <div v-for="(permission, index2) in permissions.data[guard]" :key="index"
                   class="flex justify-between items-center mt-1">
                   <p @click="editPermission(permission, index2)" class="hover:underline cursor-pointer">{{ permission.name
@@ -77,7 +77,7 @@
                     confirm-button-text="Si" cancel-button-text="No" icon-color="#FFFFFF" title="¿Continuar?"
                     @confirm="deletePermission(permission, index2)">
                     <template #reference>
-                      <i class="fa-solid fa-trash-can text-red-600 cursor-pointer"></i>
+                      <i class="fa-regular fa-trash-can hover:text-red-600 p-1 cursor-pointer"></i>
                     </template>
                   </el-popconfirm>
                 </div>
@@ -90,7 +90,7 @@
       </div>
 
       <!-- Role modal -->
-      <DialogModal :show="showRoleModal" @close="showRoleModal = false">
+      <DialogModal :show="showRoleModal" @close="showRoleModal = false" maxWidth="4xl">
         <template #title>
           <p v-if="editFlag">Rol {{ currentRole.name }}</p>
           <p v-else>Crear nuevo rol</p>
@@ -127,7 +127,7 @@
       </DialogModal>
 
       <!-- Permission modal -->
-      <DialogModal :show="showPermissionModal" @close="showPermissionModal = false">
+      <DialogModal :show="showPermissionModal" @close="showPermissionModal = false" maxWidth="4xl">
         <template #title>
           <p v-if="editFlag">Editar permiso</p>
           <p v-else>Crear nuevo permiso</p>
@@ -143,7 +143,7 @@
                 </IconInput>
                 <InputError :message="permissionForm.errors.name" />
               </div>
-              <div class="mt-3">
+              <div @keyup.enter="submitPermissionForm" class="mt-3">
                 <IconInput v-model="permissionForm.category" inputPlaceholder="Categoria del permiso *" inputType="text">
                   <el-tooltip content="Categoria del permiso *" placement="top">
                     A
@@ -157,8 +157,9 @@
         <template #footer>
           <CancelButton @click="showPermissionModal = false; permissionForm.reset(); editFlag = false;"
             :disabled="permissionForm.processing">Cancelar</CancelButton>
-          <PrimaryButton @click="submitPermissionForm" :disabled="permissionForm.processing">{{ editFlag ? 'Actualizar' :
-            'Crear' }}
+          <PrimaryButton @click="submitPermissionForm" :disabled="permissionForm.processing">
+            <i v-if="permissionForm.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
+            {{ editFlag ? 'Actualizar' : 'Crear' }}
           </PrimaryButton>
         </template>
       </DialogModal>

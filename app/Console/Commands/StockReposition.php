@@ -32,13 +32,13 @@ class StockReposition extends Command
             $purchasesData = $this->createSuppliersWithRawMaterialsList($suppliers, $rawMaterials);
 
             // crear ordenes de compra por proveedor
-            foreach ($purchasesData as $data) {
-                Purchase::create([
-                    'user_id' => 1, //super admin
-                    'supplier_id' => $data['supplier_id'],
-                    'products' => $data['raw_materials'],
-                ]);
-            }
+            // foreach ($purchasesData as $data) {
+            //     Purchase::create([
+            //         'user_id' => 1, //super admin
+            //         'supplier_id' => $data['supplier_id'],
+            //         'products' => $data['raw_materials'],
+            //     ]);
+            // }
 
             if (app()->environment() === 'production') {
                 // notify users

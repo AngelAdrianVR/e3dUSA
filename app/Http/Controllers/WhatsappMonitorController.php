@@ -16,47 +16,45 @@ use Illuminate\Http\Request;
 
 class WhatsappMonitorController extends Controller
 {
-    
     public function index()
     {
         //
     }
 
-    
     public function create()
     {
         // $companies = Company::with('companyBranches.contacts')->get();
         $companies = Company::with(['companyBranches.contacts'])
-        ->get(['id', 'business_name'])
-        ->map(function ($company) {
-            $company['company_branches'] = $company['companyBranches']->map(function ($branch) {
-                $branch['contacts'] = $branch['contacts']->map(function ($contact) {
+            ->get(['id', 'business_name'])
+            ->map(function ($company) {
+                $company['company_branches'] = $company['companyBranches']->map(function ($branch) {
+                    $branch['contacts'] = $branch['contacts']->map(function ($contact) {
+                        return [
+                            'id' => $contact['id'],
+                            'name' => $contact['name'],
+                            'phone' => $contact['phone'],
+                        ];
+                    });
                     return [
-                        'id' => $contact['id'],
-                        'name' => $contact['name'],
-                        'phone' => $contact['phone'],
+                        'id' => $branch['id'],
+                        'name' => $branch['name'],
+                        'contacts' => $branch['contacts'],
                     ];
                 });
-                return [
-                    'id' => $branch['id'],
-                    'name' => $branch['name'],
-                    'contacts' => $branch['contacts'],
-                ];
+                unset($company['companyBranches']); // Eliminar la relación original después de la transformación
+                return $company;
             });
-            unset($company['companyBranches']); // Eliminar la relación original después de la transformación
-            return $company;
-        });
 
         // $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
         $oportunities = Oportunity::with('company:id,business_name')->latest()->get()
-        ->map(function ($oportunity) {
-            return [
-                'id' => $oportunity->id,
-                'folio' => 'OP-' . strtoupper(substr($oportunity->name, 0, 3)) . '-' . str_pad($oportunity->id, 3, '0', STR_PAD_LEFT),
-                'name' => $oportunity->name,
-                'company' => $oportunity->company,
-            ];
-        });
+            ->map(function ($oportunity) {
+                return [
+                    'id' => $oportunity->id,
+                    'folio' => 'OP-' . strtoupper(substr($oportunity->name, 0, 3)) . '-' . str_pad($oportunity->id, 3, '0', STR_PAD_LEFT),
+                    'name' => $oportunity->name,
+                    'company' => $oportunity->company,
+                ];
+            });
 
         $users = User::where('is_active', true)->whereNot('id', 1)->where('employee_properties->department', 'Ventas')->get();
 
@@ -72,25 +70,24 @@ class WhatsappMonitorController extends Controller
         return inertia('WhatsappMonitor/Create', compact('companies', 'oportunities', 'users', 'opportunity'));
     }
 
-    
     public function store(Request $request)
     {
         $request->validate([
             'oportunity_id' => 'required',
-            'company_id' => 'nullable',
+            'company_id' => 'required',
             'company_name' => 'nullable',
             'seller_id' => 'required',
             'contact_phone' => 'required',
             'date' => 'required|date',
             'notes' => 'nullable',
             'company_id' => 'nullable',
-            'contact_id' => 'nullable',
-            'company_branch_id' => 'nullable',
+            'contact_id' => 'required',
+            'company_branch_id' => 'required',
         ]);
 
         $whatsapp_monitor = WhatsappMonitor::create($request->all());
 
-        $whatsapp_monitor->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+        $whatsapp_monitor->addAllMediaFromRequest()->each(fn($file) => $file->toMediaCollection());
 
 
         $client_monitor = ClientMonitor::create([
@@ -108,79 +105,77 @@ class WhatsappMonitorController extends Controller
 
         event(new RecordCreated($whatsapp_monitor));
 
-        
+
         return to_route('client-monitors.index');
     }
 
-    
     public function show($whatsapp_monitor_id)
     {
         $whatsapp_monitor = WhatsappMonitorResource::make(WhatsappMonitor::with('seller', 'oportunity', 'media', 'contact', 'companyBranch')->find($whatsapp_monitor_id));
 
-        // return $whatsapp_monitor;
-        
         return inertia('WhatsappMonitor/Show', compact('whatsapp_monitor'));
     }
 
-    
     public function edit($whatsapp_monitor_id)
     {
         $whatsapp_monitor = WhatsappMonitorResource::make(WhatsappMonitor::with('oportunity', 'company', 'companyBranch', 'contact', 'seller')->find($whatsapp_monitor_id));
 
         // $companies = Company::with('companyBranches.contacts')->get();
         $companies = Company::with(['companyBranches.contacts'])
-        ->get(['id', 'business_name'])
-        ->map(function ($company) {
-            $company['company_branches'] = $company['companyBranches']->map(function ($branch) {
-                $branch['contacts'] = $branch['contacts']->map(function ($contact) {
+            ->get(['id', 'business_name'])
+            ->map(function ($company) {
+                $company['company_branches'] = $company['companyBranches']->map(function ($branch) {
+                    $branch['contacts'] = $branch['contacts']->map(function ($contact) {
+                        return [
+                            'id' => $contact['id'],
+                            'name' => $contact['name'],
+                            'phone' => $contact['phone'],
+                        ];
+                    });
                     return [
-                        'id' => $contact['id'],
-                        'name' => $contact['name'],
-                        'phone' => $contact['phone'],
+                        'id' => $branch['id'],
+                        'name' => $branch['name'],
+                        'contacts' => $branch['contacts'],
                     ];
                 });
-                return [
-                    'id' => $branch['id'],
-                    'name' => $branch['name'],
-                    'contacts' => $branch['contacts'],
-                ];
+                unset($company['companyBranches']); // Eliminar la relación original después de la transformación
+                return $company;
             });
-            unset($company['companyBranches']); // Eliminar la relación original después de la transformación
-            return $company;
-        });
 
         // $oportunities = OportunityResource::collection(Oportunity::with('company')->latest()->get());
         $oportunities = Oportunity::with('company')->latest()->get()
-        ->map(function ($oportunity) {
-            return [
-                'id' => $oportunity->id,
-                'folio' => 'OP-' . strtoupper(substr($oportunity->name, 0, 3)) . '-' . str_pad($oportunity->id, 3, '0', STR_PAD_LEFT),
-                'name' => $oportunity->name,
-                'company' => $oportunity->company,
-            ];
-        });
+            ->map(function ($oportunity) {
+                return [
+                    'id' => $oportunity->id,
+                    'folio' => 'OP-' . strtoupper(substr($oportunity->name, 0, 3)) . '-' . str_pad($oportunity->id, 3, '0', STR_PAD_LEFT),
+                    'name' => $oportunity->name,
+                    'company' => $oportunity->company,
+                ];
+            });
 
         $users = User::where('is_active', true)->whereNot('id', 1)->where('employee_properties->department', 'Ventas')->get();
 
-        // return $whatsapp_monitor;
+        $mediaFiles = $whatsapp_monitor->getMedia(); // Obtiene todos los archivos de la colección 'logo'
+        $media_urls = $mediaFiles->map(function ($media) {
+            return $media->getUrl(); // Obtiene la URL de cada archivo
+        })->toArray(); // Lo convierte en un array de URLs
 
-        return inertia('WhatsappMonitor/Edit', compact('whatsapp_monitor', 'companies', 'oportunities', 'users'));
+        return inertia('WhatsappMonitor/Edit', compact('whatsapp_monitor', 'companies', 'oportunities', 'users', 'media_urls'));
     }
 
-    
     public function update(Request $request, WhatsappMonitor $whatsapp_monitor)
     {
         $request->validate([
             'oportunity_id' => 'required',
-            'company_id' => 'nullable',
+            'company_id' => 'required',
             'company_name' => 'nullable',
             'seller_id' => 'required',
             'contact_phone' => 'required',
             'date' => 'required|date',
             'notes' => 'nullable',
             'company_id' => 'nullable',
-            'contact_id' => 'nullable',
-            'company_branch_id' => 'nullable',
+            'contact_id' => 'required',
+            'company_branch_id' => 'required',
         ]);
 
         $whatsapp_monitor->update($request->all());
@@ -200,8 +195,8 @@ class WhatsappMonitorController extends Controller
 
         event(new RecordCreated($whatsapp_monitor));
 
-        
-        return to_route('whatsapp-monitors.show', ['whatsapp_monitor'=> $whatsapp_monitor]);
+
+        return to_route('whatsapp-monitors.show', ['whatsapp_monitor' => $whatsapp_monitor]);
     }
 
     public function updateWithMedia(Request $request, WhatsappMonitor $whatsapp_monitor)
@@ -222,7 +217,7 @@ class WhatsappMonitorController extends Controller
         $whatsapp_monitor->update($request->all());
 
         $whatsapp_monitor->clearMediaCollection();
-        $whatsapp_monitor->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+        $whatsapp_monitor->addAllMediaFromRequest()->each(fn($file) => $file->toMediaCollection());
 
         event(new RecordCreated($whatsapp_monitor));
 
@@ -240,11 +235,10 @@ class WhatsappMonitorController extends Controller
         $whatsapp_monitor->save();
 
 
-        
-        return to_route('whatsapp-monitors.show', ['whatsapp_monitor'=> $whatsapp_monitor]);
+
+        return to_route('whatsapp-monitors.show', ['whatsapp_monitor' => $whatsapp_monitor]);
     }
 
-    
     public function destroy($whatsapp_monitor_id)
     {
         $whatsapp_monitor = WhatsappMonitor::find($whatsapp_monitor_id);

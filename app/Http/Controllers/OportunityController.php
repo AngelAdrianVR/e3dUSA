@@ -19,61 +19,11 @@ use Illuminate\Support\Str;
 
 class OportunityController extends Controller
 {
-
     public function index()
     {
-        // descomentar y comentar la logica de abajo si hay algun fallo en el index-------------
-        // $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks')->whereHas('users', function ($query) {
-        //     $query->where('users.id', auth()->id());
-        // })->latest()->get());
-
-        // // return $oportunities;
-
-        // return inertia('Oportunity/Index',  compact('oportunities'));
-
-
-        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
-        $pre_oportunities = Oportunity::with('oportunityTasks')->whereHas('users', function ($query) {
+        $oportunities = Oportunity::with('oportunityTasks:id,oportunity_id')->whereHas('users', function ($query) {
             $query->where('users.id', auth()->id());
-        })->latest()->get();
-        $oportunities = $pre_oportunities->map(function ($oportunity) {
-
-            if ($oportunity->priority == 'Baja') {
-                $priority = [
-                    'label' => 'Baja',
-                    'color' => 'text-[#87CEEB]'
-                ];
-            } else if ($oportunity->priority == 'Media') {
-                $priority = [
-                    'label' => 'Media',
-                    'color' => 'text-orange-500'
-                ];
-            } else if ($oportunity->priority == 'Alta') {
-                $priority = [
-                    'label' => 'Alta',
-                    'color' => 'text-red-600'
-                ];
-            }
-
-            return [
-                'id' => $oportunity->id,
-                'name' => $oportunity->name,
-                'contact' => $oportunity->contact,
-                'amount' => $oportunity->amount,
-                'status' => $oportunity->status,
-                'priority' => $priority,
-                'tasks_quantity' => $oportunity->oportunityTasks?->count(),
-                'start_date' => $oportunity->start_date?->isoFormat('DD MMM, YYYY h:mm A'),
-                'estimated_finish_date' => $oportunity->estimated_finish_date?->isoFormat('DD MMM, YYYY h:mm A'),
-                'finished_at' => $oportunity->finished_at?->isoFormat('DD MMM, YYYY h:mm A'),
-                'created_at' => [
-                    'diffForHumans' => $oportunity->created_at?->diffForHumans(),
-                    'isoFormat' => $oportunity->created_at?->isoFormat('DD MMMM YYYY'),
-                ],
-            ];
-        });
-
-        // return $oportunities;
+        })->latest()->get(['id', 'name', 'contact', 'amount', 'priority', 'status', 'finished_at', 'created_at', 'estimated_finish_date']);
 
         return inertia('Oportunity/Index',  compact('oportunities'));
     }
@@ -82,14 +32,15 @@ class OportunityController extends Controller
     public function create()
     {
         $users = User::where('is_active', true)->get();
-        $companies = Company::with('companyBranches.contacts')->latest()->get();
+        $companies = Company::with(['companyBranches:id,company_id,name,address' => ['contacts:id,name,email,phone,contactable_id,contactable_type,additional_emails']])
+            ->latest()
+            ->get(['id', 'business_name']);
+        // $companies = Company::with('companyBranches.contacts')->latest()->get();
         $tags = TagResource::collection(Tag::where('type', 'crm')->get());
 
-        // return $users;
-
+        // return $companies;
         return inertia('Oportunity/Create', compact('users', 'companies', 'tags'));
     }
-
 
     public function store(Request $request)
     {
@@ -132,7 +83,6 @@ class OportunityController extends Controller
                 'asigned_id' => $request->seller_id,
             ]);
         } else {
-
             $oportunity = Oportunity::create($validated + ['user_id' => auth()->id()]);
             $time = \Carbon\Carbon::createFromFormat('h A', '7 PM')->format('H:i:s'); //tiempo limite de realización de tarea en formato am y pm
             //Tarea 1. Contactar al cliente
@@ -235,18 +185,14 @@ class OportunityController extends Controller
         return to_route('oportunities.index');
     }
 
-
     public function show($oportunity_id)
     {
         // $oportunities = OportunityResource::collection(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller', 'users', 'company', 'companyBranch')->latest()->get());
         $oportunity = OportunityResource::make(Oportunity::with('oportunityTasks.asigned', 'oportunityTasks.media', 'oportunityTasks.oportunity', 'oportunityTasks.user', 'user', 'clientMonitors.seller', 'clientMonitors.emailMonitor', 'clientMonitors.paymentMonitor', 'clientMonitors.mettingMonitor', 'clientMonitors.whatsappMonitor', 'oportunityTasks.comments.user', 'tags', 'media', 'survey', 'seller', 'users', 'company', 'companyBranch')->latest()->find($oportunity_id));
         $oportunities = Oportunity::latest()->get(['id', 'name']);
         $users = User::where('is_active', true)->whereNot('id', 1)->get(['id', 'name']);
-        $defaultTab = request('defaultTab');
 
-        // return $users;
-
-        return inertia('Oportunity/Show', compact('oportunity', 'oportunities', 'users', 'defaultTab'));
+        return inertia('Oportunity/Show', compact('oportunity', 'oportunities', 'users'));
     }
 
 

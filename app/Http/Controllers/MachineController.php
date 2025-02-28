@@ -19,12 +19,10 @@ class MachineController extends Controller
         return inertia('Machine/Index', compact('machines'));
     }
 
-    
     public function create()
     {
         return inertia('Machine/Create');
     }
-
     
     public function store(Request $request)
     {
@@ -56,7 +54,6 @@ class MachineController extends Controller
 
         // return $machines;
         return inertia('Machine/Show', compact('machine', 'machines'));
-        
     }
 
     public function edit(Machine $machine)

@@ -5,24 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Sale extends Model implements HasMedia
+class
+Sale extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
-        'shipping_company',
+        // 'shipping_company',
+        // 'tracking_guide',
+        // 'promise_date',
         'freight_cost',
+        'freight_option', //Cargo del flete en precio del producto,Emblems3d absorbe el costo del flete,etc
+        'freight_cost_charged_in_product',
         'status',
         'oce_name',
         'order_via',
-        'tracking_guide',
-        'promise_date',
         'invoice',
         'notes',
         'is_high_priority',
@@ -30,17 +31,22 @@ class Sale extends Model implements HasMedia
         'authorized_user_name',
         'authorized_at',
         'recieved_at',
+        'sent_at',
+        'sent_by',
+        'shipping_type',
         'user_id',
         'company_branch_id',
         'contact_id',
         'oportunity_id',
         'partialities',
         'is_sale_production',
+        'shipping_option',
     ];
 
     protected $casts = [
         'authorized_at' => 'datetime',
         'recieved_at' => 'datetime',
+        'sent_at' => 'datetime',
         'partialities' => 'array',
         'promise_date' => 'date',
     ];
@@ -152,5 +158,41 @@ class Sale extends Model implements HasMedia
         }
 
         return $status;
+    }
+
+    public function getProfit()
+    {
+        $cpcs = $this->catalogProductCompanySales;
+
+        $totalSale = 0;
+        $totalCost = 0;
+        $currency = '';
+
+        // Calcular el total de la venta y el costo total
+        foreach ($cpcs as $cpc) {
+            $totalSale += $cpc->quantity * $cpc->catalogProductCompany?->new_price;
+            // el producto de catalogo ya toma en cuenta el precio de materia prima y costos de produccion
+            $totalCost += $cpc->quantity * $cpc->catalogProductCompany?->catalogProduct?->cost;
+            $currency = $cpc->catalogProductCompany?->new_currency;
+        }
+
+        // Calcular la ganancia en dinero
+        $profit = $totalSale - $totalCost;
+
+        // Calcular la ganancia en porcentaje
+        if ($totalCost > 0) {
+            $profitPercentage = round(($profit / $totalCost) * 100);
+        } else {
+            $profit = 0;
+            $profitPercentage = 0;
+        }
+
+        return [
+            'money' => $profit,
+            'percentage' => $profitPercentage,
+            'total_sale' => $totalSale,
+            'total_cost' => $totalCost,
+            'currency' => $currency
+        ];
     }
 }

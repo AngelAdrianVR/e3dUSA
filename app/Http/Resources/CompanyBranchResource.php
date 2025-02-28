@@ -20,6 +20,7 @@ class CompanyBranchResource extends JsonResource
         'address' => $this->address,
         'post_code' => $this->post_code,
         'meet_way' => $this->meet_way,
+        'state' => $this->state,
         'sat_method' => $this->sat_method,
         'sat_type' => $this->sat_type,
         'sat_way' => $this->sat_way,
