@@ -17,18 +17,15 @@
           </el-select>
         </div>
         <div class="flex items-center space-x-2">
-
           <button @click="showTemplate()" class="rounded-lg bg-primary text-white p-2 text-sm">
             Imprimir
           </button>
-
           <button
             v-if="$page.props.auth.user.permissions.includes('Autorizar ordenes de compra') && purchase.data.status === 'Pendiente'"
             @click="authorize" class="rounded-lg bg-primary text-white p-2 text-sm" :disabled="authorizing">
             <i v-if="authorizing" class="fa-solid fa-circle-notch fa-spin mr-1"></i>
             Autorizar
           </button>
-
           <el-tooltip
             content="Una vez realizada la compra marcar como compra realizada para cambiar estatus y dar seguimiento"
             placement="top">
@@ -38,14 +35,12 @@
               Compra realizada
             </button>
           </el-tooltip>
-
           <el-tooltip content="Se indica al sistema que el producto o servicio ya fue recibido" placement="top">
             <button v-if="purchase.data.status === 'Emitido'" @click="showRatingModal = true"
               class="rounded-lg bg-green-500 text-white p-2 text-sm">
               Marcar como recibido
             </button>
           </el-tooltip>
-
           <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar ordenes de compra') &&
             purchase.data.user.id == $page.props.auth.user.id" content="Editar" placement="top">
             <Link :href="route('purchases.edit', selectedPurchase)">
@@ -54,7 +49,6 @@
             </button>
             </Link>
           </el-tooltip>
-
           <Dropdown align="right" width="48"
             v-if="$page.props.auth.user.permissions.includes('Crear ordenes de compra') && $page.props.auth.user.permissions.includes('Eliminar ordenes de compra')">
             <template #trigger>
@@ -77,21 +71,28 @@
         </div>
       </div>
     </div>
-
     <el-steps :active="getCurrentStep" finish-status="success" class="w-2/3 mx-auto">
       <el-step title="Autorizado.Compra no realizada" />
       <el-step title="Compra realizada" />
       <el-step title="Producto/servicio recibido" />
     </el-steps>
-
-    <p class="text-center font-bold text-lg dark:text-white mb-4 mt-5">
-      {{ purchase.data.supplier.name }}
-      <!-- <span class="py-1 p-2" :class="purchase.data.status == 'Pendiente' ? 'text-red-600 bg-red-200'
-        : purchase.data.status == 'Autorizado' ? 'text-yellow-600 bg-yellow-200'
-          : purchase.data.status == 'Emitido' ? 'text-blue-600 bg-blue-200' : 'text-green-600 bg-green-200'">{{
-            purchase.data.status }}</span> -->
+    <p class="justify-center flex items-center space-x-3 font-bold text-lg dark:text-white mb-4 mt-5">
+      <el-tooltip v-if="purchase.data.is_for_production" content="Para producción" placement="top">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="size-6 text-purple-500">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+        </svg>
+      </el-tooltip>
+      <el-tooltip v-else content="Para muestras" placement="top">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="size-6 text-rose-500">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+        </svg>
+      </el-tooltip>
+      <span>{{ purchase.data.supplier.name }}</span>
     </p>
-
     <el-tabs v-model="activeTab" class="mx-5 mt-3" @tab-click="handleClickInTab">
       <el-tab-pane label="Datos de la órden" name="1">
         <General :purchase="purchase.data" />
@@ -100,7 +101,6 @@
         <Products :purchase="purchase.data" />
       </el-tab-pane>
     </el-tabs>
-
     <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
       <template #title> Eliminar Órden de compra </template>
       <template #content> Continuar con la eliminación? </template>

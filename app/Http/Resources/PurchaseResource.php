@@ -36,6 +36,7 @@ class PurchaseResource extends JsonResource
             'emited_at' => $this->emited_at?->isoFormat('DD MMM, YYYY h:mm A') ?? 'Pedido no realizado',
             'recieved_at' => $this->recieved_at?->isoFormat('YYYY MMM DD') ?? 'No recibido',
             'is_iva_included' => $this->is_iva_included,
+            'is_for_production' => $this->is_for_production,
             'bank_information' => $this->bank_information,
             'additional_stock' => $this->additional_stock,
             'plane_stock' => $this->plane_stock,

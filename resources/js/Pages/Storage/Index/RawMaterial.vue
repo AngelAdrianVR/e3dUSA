@@ -34,15 +34,11 @@
                             :total="raw_materials.data.length" />
                     </div>
                     <!-- buttons -->
-                    <div class="mb-3">
-                        <el-popconfirm
-                            v-if="$page.props.auth.user.permissions.includes('Generar reportes materia prima')"
-                            confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
-                            @confirm="generatePdf">
-                            <template #reference>
-                                <el-button type="primary" plain>Reporte PDF</el-button>
-                            </template>
-                        </el-popconfirm>
+                    <div class="flex items-center space-x-2">
+                        <PrimaryButton @click="generatePdf"
+                            v-if="$page.props.auth.user.permissions.includes('Generar reportes materia prima')">Reporte
+                            PDF
+                        </PrimaryButton>
                         <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Eliminar materia prima')"
                             confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
                             @confirm="deleteSelections">
@@ -54,7 +50,7 @@
                     <!-- buscador -->
                     <IndexSearchBar @search="handleSearch" />
                 </div>
-                <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%"
+                <el-table :data="filteredTableData" @row-click="handleRowClick" max-height="670" style="width: 100%" class="mt-2"
                     @selection-change="handleSelectionChange" ref="multipleTableRef"
                     :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="30" />
@@ -64,13 +60,13 @@
                     <el-table-column prop="storageable.min_quantity" label="Min. Stock">
                         <template #default="scope">
                             <span>{{ scope.row.storageable.min_quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                                }}</span>
+                            }}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="storageable.max_quantity" label="Max. Stock">
                         <template #default="scope">
                             <span>{{ scope.row.storageable.max_quantity.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                                }}</span>
+                            }}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="quantity" label="Stock">
@@ -140,6 +136,7 @@ import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import TextInput from '@/Components/TextInput.vue';
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 export default {
     data() {
@@ -159,6 +156,7 @@ export default {
         Link,
         TextInput,
         IndexSearchBar,
+        PrimaryButton,
     },
     props: {
         raw_materials: Array,
@@ -201,7 +199,7 @@ export default {
 
             if (commandName == 'turn') {
                 this.turnIntoCatalogProduct(storageableId);
-            } 
+            }
         },
         async turnIntoCatalogProduct(rawMaterialId) {
             try {

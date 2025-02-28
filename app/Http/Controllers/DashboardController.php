@@ -44,6 +44,12 @@ class DashboardController extends Controller
         $counts[] = Sample::whereNull('authorized_at')->get()->count();
         $current_user_sales_without_production = SaleResource::collection(Sale::where('user_id', auth()->id())->whereDoesntHave('productions')->get());
 
+        // Diseños iniciados hoy por cada diseñador
+        $todays_design_orders = Design::with(['designer:id,name'])
+            ->whereDate('started_at', today())
+            ->get()
+            ->groupBy('designer.name');
+
         // production performance
         $collaborators_production_performance = $this->getProductionPerformance();
         $collaborators_design_performance = $this->getDesignPerformance();
@@ -88,6 +94,7 @@ class DashboardController extends Controller
             'customers_birthdays',
             'current_user_sales_without_production',
             'extra_time_request',
+            'todays_design_orders',
         ));
     }
 
