@@ -83,6 +83,27 @@
             <span>Observaciones: </span>
             <span>{{ $purchase->notes ?? '-' }}</span>
         </section>
+        <section style="margin-top: 15px">
+            @foreach ($raw_materials as $item)
+                @php
+                    $products_collection = collect($purchase->products);
+                @endphp
+                <article
+                    style="display: inline-block; width: 24%; margin-right: 4px; margin-bottom: 4px; font-size: 10px;">
+                    <p style="color: #525252; margin-top: 2px; margin-bottom: 0px">Producto: <span
+                            style="color: #0355B5">{{ $item->part_number . ' ' . $item->name }}</span></p>
+                    <p style="color: #525252; margin-top: 2px; margin-bottom: 0px">Piezas que quedarán pendientes: <span
+                            style="color: black">{{ $products_collection->where('id', $item->id)->first()['additional_stock'] ?? '-' }}</span>
+                    </p>
+                    <p style="color: #525252; margin-top: 2px; margin-bottom: 0px">Piezas que viajan en avión: <span
+                            style="color: black">{{ $products_collection->where('id', $item->id)->first()['plane_stock'] ?? '-' }}</span>
+                    </p>
+                    <p style="color: #525252; margin-top: 2px; margin-bottom: 0px">Piezas que viajan en barco: <span
+                            style="color: black">{{ $products_collection->where('id', $item->id)->first()['ship_stock'] ?? '-' }}</span>
+                    </p>
+                </article>
+            @endforeach
+        </section>
     </header>
     <main style="margin-top: 5px">
         <table style="width: 100%">
@@ -93,8 +114,10 @@
                     <th>Descripción</th>
                     <th>Cantidad</th>
                     <th>Unidad</th>
-                    <th>Valor unit.</th>
-                    <th>Importe</th>
+                    @if ($purchase->show_prices)
+                        <th>Valor unit.</th>
+                        <th>Importe</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -113,39 +136,46 @@
                         @endphp
                         <td><span>{{ $current_product['quantity'] }}</span></td>
                         <td>{{ $item->measure_unit }}</td>
-                        <td>${{ number_format($item->cost, 2) }}</td>
-                        <td>${{ number_format($item->cost * $current_product['quantity'], 2) }}</td>
+                        @if ($purchase->show_prices)
+                            <td>${{ number_format($item->cost, 2) }}</td>
+                            <td>${{ number_format($item->cost * $current_product['quantity'], 2) }}</td>
+                        @endif
                     </tr>
                 @endforeach
             </tbody>
         </table>
-        <section class="footer">
-            <section style="width: 40%; margin-right: 8px; margin-left: auto; text-align: right">
-                @php
-                    $subtotal = $raw_materials
-                        ->map(function ($item) use ($purchase) {
-                            $quantity = optional(collect($purchase->products)->firstWhere('id', $item['id']))['quantity'] ?? 0;
-                            return $item['cost'] * $quantity;
-                        })
-                        ->sum();
-                @endphp
-                @if ($purchase->is_iva_included)
-                    <span>Subtotal</span>
-                    <span>{{ number_format($subtotal, 2) }}</span> <br>
-                    <span>IVA</span>
-                    <span>{{ number_format($subtotal * 0.16, 2) }}</span> <br>
-                @endif
-                <span>Total</span>
-                <span
-                    style="font-weight: bold; border-top-width: 2px; border-bottom-width: 2px; border-color: rgb(154 154 154 / var(--tw-border-opacity));">
+        @if ($purchase->show_prices)
+            <section class="footer">
+                <section style="width: 40%; margin-right: 8px; margin-left: auto; text-align: right">
+                    @php
+                        $subtotal = $raw_materials
+                            ->map(function ($item) use ($purchase) {
+                                $quantity =
+                                    optional(collect($purchase->products)->firstWhere('id', $item['id']))['quantity'] ??
+                                    0;
+                                return $item['cost'] * $quantity;
+                            })
+                            ->sum();
+                    @endphp
                     @if ($purchase->is_iva_included)
-                        {{ number_format($subtotal * 1.16, 2) }}
-                    @else
-                        {{ number_format($subtotal, 2) }}
+                        <span>Subtotal</span>
+                        <span>{{ number_format($subtotal, 2) }}</span> <br>
+                        <span>IVA</span>
+                        <span>{{ number_format($subtotal * 0.16, 2) }}</span> <br>
                     @endif
-                </span> <br>
+                    <span>Total</span>
+                    <span
+                        style="font-weight: bold; border-top-width: 2px; border-bottom-width: 2px; border-color: rgb(154 154 154 / var(--tw-border-opacity));">
+                        @if ($purchase->is_iva_included)
+                            {{ number_format($subtotal * 1.16, 2) }}
+                        @else
+                            {{ number_format($subtotal, 2) }}
+                        @endif
+                    </span> <br>
+                </section>
             </section>
-        </section>
+        @endif
+
         <!-- imagenes -->
         <section>
             <div style="margin-top: 32px; margin-bottom: 12px">
@@ -174,6 +204,14 @@
             </div>
         </section>
     </main>
+
+    @if (!$purchase->authorized_user_name)
+        <div
+            style="position: absolute; left: 40px; top: 33%; color: #B91C1C; font-size: 4rem; border: 4px solid #B91C1C; padding: 10px;">
+            <i class="fas fa-exclamation"></i>
+            <span style="margin-left: 0.5rem;">SIN AUTORIZACIÓN</span>
+        </div>
+    @endif
 </body>
 
 </html>

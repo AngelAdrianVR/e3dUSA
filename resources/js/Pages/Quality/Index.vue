@@ -1,6 +1,6 @@
 <template>
   <AppLayoutNoHeader title="Calidad">
-    <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
+    <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1 dark:text-white">
       <div class="flex justify-between">
         <label class="text-lg">Departamento de calidad</label>
       </div>
@@ -29,24 +29,24 @@
     </div>
 
 
-    <div class="w-11/12 mx-8 my-16">
+    <div class="w-11/12 mx-8 my-16 dark:text-white">
       <table v-if="filteredTableData.length" class="w-full mx-auto text-sm">
         <thead>
           <tr class="text-center">
             <th class="font-bold pb-3 pl-2 text-left">
-              ID <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              ID
             </th>
             <th class="font-bold pb-3 text-left">
-              Supervisor <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Supervisor
             </th>
             <th class="font-bold pb-3 text-left">
-              Fecha y hora <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Fecha y hora
             </th>
             <th class="font-bold pb-3 text-left">
-              Folio inspeccionado <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Folio inspeccionado
             </th>
             <th class="font-bold pb-3 text-left">
-              Estado de folio <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Estado de folio
             </th>
             <th></th>
           </tr>

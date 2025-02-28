@@ -11,9 +11,9 @@
       </template>
 
       <!-- Form -->
-      <form @submit.prevent="update" class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md">
+      <form @submit.prevent="update" class="md:w-1/2 md:mx-auto my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg lg:p-9 p-4 shadow-md transition-all ease-linear duration-500">
         <h1 class="my-4 font-bold">Editar prospecto</h1>
-        <div class="grid grid-cols-2 gap-x-3">
+        <div class="grid grid-cols-2 gap-3">
           <div class="self-end">
             <label class="flex items-center text-sm ml-2 space-x-2">
               <span>Nombre de la empresa *</span>
@@ -87,6 +87,16 @@
             <InputError :message="form.errors.status" />
           </div>
           <div>
+            <div class="flex items-center space-x-5">
+              <label class="text-sm ml-2">Whatsapp</label>
+              <label @click="getWhatsapp" class="text-xs ml-2 hover:underline text-primary cursor-pointer">Es el mismo número de teléfono</label>
+            </div>
+              <el-input v-model="form.contact_whatsapp" placeholder="Escribe el whatsapp"
+                :formatter="(value) => `${value}`.replace(/(\d{2})(\d{4})(\d{4})/, '$1 $2 $3')"
+                :parser="(value) => value.replace(/\D/g, '')" maxlength="10" clearable />
+              <InputError :message="form.errors.contact_whatsapp" />
+          </div>
+          <div>
             <label class="text-sm ml-2">Número de sucursales</label>
             <el-input v-model="form.branches_number" placeholder="Escribe el numero de sucursales "
               :formatter="(value) => `${value}`.replace(/(\d{2})(\d{4})(\d{4})/, '$1 $2 $3')"
@@ -116,6 +126,7 @@
         </div>
         <div class="mt-5 md:text-right">
           <PrimaryButton :disabled="form.processing">
+            <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
             Actualizar prospecto
           </PrimaryButton>
         </div>
@@ -145,6 +156,7 @@ export default {
       contact_email: this.prospect.contact_email,
       contact_phone: this.prospect.contact_phone,
       contact_phone_extension: this.prospect.contact_phone_extension,
+      contact_whatsapp: this.prospect.contact_whatsapp,
       status: this.prospect.status,
       branches_number: this.prospect.branches_number,
       abstract: this.prospect.abstract,
@@ -242,6 +254,9 @@ export default {
         },
       });
     },
+    getWhatsapp() {
+      this.form.contact_whatsapp = this.form.contact_phone;
+    }
   },
   mounted() {
 

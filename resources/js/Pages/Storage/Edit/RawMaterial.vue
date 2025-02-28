@@ -11,316 +11,176 @@
           </div>
         </div>
       </template>
-
       <!-- Form -->
       <form @submit.prevent="update">
-        <div
-          class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md md:space-y-4"
-        >
-          <div class="flex items-center">
-            <el-tooltip
-              content="Tipo de producto (necesario para generar el número de parte)"
-              placement="top"
-            >
-              <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"
-              >
-                <i class="fa-solid fa-tag"></i>
-              </span>
-            </el-tooltip>
-            <el-select
-              @change="generatePartNumber"
-              v-model="productType"
-              placeholder="Tipo de producto *"
-            >
-              <el-option
-                v-for="item in productTypes"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
+        <div class="md:w-1/2 md:mx-auto mx-3 grid grid-cols-2 gap-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md">
+          <div>
+            <InputLabel value="Tipo de producto*" />
+            <el-select @change="generatePartNumber" v-model="productType" placeholder="Selecciona">
+              <el-option v-for="item in productTypes" :key="item.value" :label="item.label" :value="item.value">
                 <span style="float: left">{{ item.label }}</span>
-                <span style="float: right; color: #cccccc; font-size: 13px">{{
-                  item.value
-                }}</span>
+                <span style="float: right; color: #cccccc; font-size: 13px">
+                  {{ item.value }}
+                </span>
               </el-option>
             </el-select>
           </div>
           <div>
-            <IconInput
-              v-model="form.brand"
-              @change="generatePartNumber"
-              inputPlaceholder="Marca del producto *"
-              inputType="text"
-            >
-              <el-tooltip
-                content="Marca del producto (si no tiene marca colocar 'Generico')"
-                placement="top"
-              >
-                <i class="fa-solid fa-copyright"></i>
-              </el-tooltip>
-            </IconInput>
+            <InputLabel value="Marca del producto*" />
+            <el-input v-model="form.brand" @change="generatePartNumber" placeholder="Ej. Chevrolet" />
+            <InputError :message="form.errors.brand" />
           </div>
-          <div class="md:grid gap-x-6 gap-y-2 md:mb-6 grid-cols-2">
-            <div>
-              <IconInput
-                v-model="form.name"
-                inputPlaceholder="Nombre *"
-                inputType="text"
-              >
-                <el-tooltip content="Nombre" placement="top"> A </el-tooltip>
-              </IconInput>
-              <InputError :message="form.errors.name" />
-            </div>
-            <div class="flex items-center">
-              <el-tooltip content="Número de parte *" placement="top">
-                <span
-                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"
-                >
-                  #
-                </span>
-              </el-tooltip>
-              <input
-                v-model="form.part_number"
-                type="text"
-                class="input disabled:cursor-not-allowed disabled:opacity-80"
-                placeholder="Número de parte *"
-                disabled
-              />
-              <InputError :message="form.errors.part_number" />
-            </div>
-            <div>
-              <IconInput
-                v-model="form.min_quantity"
-                inputPlaceholder="Stock mínimo"
-                inputType="number"
-                inputStep="0.01"
-              >
-                <el-tooltip
-                  content="Cantidad mínima que puede haber en stock"
-                  placement="top"
-                >
-                  <i class="fa-solid fa-minus"></i>
-                </el-tooltip>
-              </IconInput>
-              <InputError :message="form.errors.min_quantity" />
-            </div>
-            <div>
-              <IconInput
-                v-model="form.max_quantity"
-                inputPlaceholder="Stock máximo"
-                inputType="number"
-                inputStep="0.01"
-              >
-                <el-tooltip
-                  content="Cantidad máxima que puede haber en stock"
-                  placement="top"
-                >
-                  <i class="fa-solid fa-plus"></i>
-                </el-tooltip>
-              </IconInput>
-              <InputError :message="form.errors.max_quantity" />
-            </div>
-            <div>
-              <IconInput
-                v-model="form.initial_stock"
-                inputPlaceholder="Stock de apertura"
-                inputType="number"
-                inputStep="0.01"
-              >
-                <el-tooltip content="Stock inicial" placement="top">
-                  123
-                </el-tooltip>
-              </IconInput>
-              <InputError :message="form.errors.initial_stock" />
-            </div>
-            <div>
-              <IconInput
-                v-model="form.cost"
-                inputPlaceholder="Costo *"
-                inputType="number"
-                inputStep="0.01"
-              >
-                <el-tooltip
-                  content="Cuánto le cuesta a e3d adquirir esta materia prima"
-                  placement="top"
-                >
-                  <i class="fa-solid fa-dollar"></i>
-                </el-tooltip>
-              </IconInput>
-              <InputError :message="form.errors.cost" />
-            </div>
-            <div class="flex items-center my-2">
-              <el-tooltip content="Unidad de medida" placement="top">
-                <span
-                  class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md"
-                >
-                  <i class="fa-solid fa-ruler-vertical"></i>
-                </span>
-              </el-tooltip>
-              <el-select
-                v-model="form.measure_unit"
-                clearable
-                placeholder="Busca unidad de medida"
-                no-data-text="No hay unidades de medida registradas"
-                no-match-text="No se encontraron coincidencias"
-              >
-                <el-option
-                  v-for="(item, index) in mesureUnits"
-                  :key="index"
-                  :label="item"
-                  :value="item"
-                />
-              </el-select>
-              <InputError :message="form.errors.measure_unit" />
-            </div>
-            <div>
-              <IconInput
-                v-model="form.material"
-                inputPlaceholder="Material *"
-                inputType="text"
-              >
-                <el-tooltip content="flex chrome, solid chrome, aluminio, etc..." placement="top"> M </el-tooltip>
-              </IconInput>
-              <InputError :message="form.errors.material" />
-            </div>
-            <label class="flex items-center w-1/3">
-              <Checkbox @change="form.large = null; form.height = null" v-model:checked="form.is_circular" name="remember" class="bg-transparent"/>
-              <span class="ml-2 text-sm text-[#9A9A9A]">Es circular</span>
-            </label>
+          <div>
+            <InputLabel value="Nombre*" />
+            <el-input v-model="form.name" placeholder="Ej. Rollo de estireno blanco" />
+            <InputError :message="form.errors.name" />
           </div>
-            <div class="flex items-center space-x-3">
-              <div>
-                <IconInput v-model="form.width" inputPlaceholder="Ancho(mm)*" inputType="number" inputStep="0.01">
-                  <el-tooltip content="Ancho(mm)*" placement="top">
-                    <i class="fa-solid fa-text-width"></i>
-                  </el-tooltip>
-                </IconInput>
-                <InputError :message="form.errors.width" />
-              </div>
-              <div v-if="!form.is_circular">
-                <IconInput v-model="form.large" inputPlaceholder="Largo(mm)*" inputType="number" inputStep="0.01">
-                  <el-tooltip content="Largo(mm)*" placement="top">
-                    <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
-                  </el-tooltip>
-                </IconInput>
-                <InputError :message="form.errors.large" />
-              </div>
-              <div v-if="!form.is_circular">
-                <IconInput v-model="form.height" inputPlaceholder="Alto(mm)*" inputType="number" inputStep="0.01">
-                  <el-tooltip content="Alto(mm)*" placement="top">
-                    <i class="fa-solid fa-arrows-up-down"></i>
-                  </el-tooltip>
-                </IconInput>
-                <InputError :message="form.errors.height" />
-              </div>
-              <div v-if="form.is_circular">
-                <IconInput v-model="form.diameter" inputPlaceholder="Diámetro(mm)*" inputType="number" inputStep="0.01">
-                  <el-tooltip content="Diámetro(mm)*" placement="top">
-                    <i class="fa-regular fa-circle"></i>
-                  </el-tooltip>
-                </IconInput>
-                <InputError :message="form.errors.diameter" />
-              </div>
+          <div>
+            <InputLabel value="Número de parte" />
+            <el-input v-model="form.part_number" placeholder="Llenado automático" disabled />
+            <InputError :message="form.errors.part_number" />
+          </div>
+          <div>
+            <InputLabel value="Cantidad mínima" />
+            <el-input v-model="form.min_quantity" type="text"
+              :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 50" />
+            <InputError :message="form.errors.min_quantity" />
+          </div>
+          <div>
+            <InputLabel value="Cantidad máxima" />
+            <el-input v-model="form.max_quantity" type="text"
+              :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 500" />
+            <InputError :message="form.errors.max_quantity" />
+          </div>
+          <div>
+            <InputLabel value="Stock de apertura o actual" />
+            <el-input v-model="form.initial_stock" type="text"
+              :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 290" />
+            <InputError :message="form.errors.initial_stock" />
+          </div>
+          <div>
+            <InputLabel value="Costo de compra a proveedor*" />
+            <el-input v-model="form.cost" type="text"
+              :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 19.90" />
+            <InputError :message="form.errors.cost" />
+          </div>
+          <div>
+            <InputLabel value="Unidad de medida" />
+            <el-select v-model="form.measure_unit" clearable placeholder="Selecciona"
+              no-data-text="No hay unidades de medida registradas" no-match-text="No se encontraron coincidencias">
+              <el-option v-for="(item, index) in mesureUnits" :key="index" :label="item" :value="item" />
+            </el-select>
+            <InputError :message="form.errors.measure_unit" />
+          </div>
+          <div>
+            <InputLabel value="Material*" />
+            <el-input v-model="form.material" placeholder="Ej. flex chrome, solid chrome, aluminio, etc." />
+            <InputError :message="form.errors.material" />
+          </div>
+          <label class="flex items-center w-1/3">
+            <Checkbox @change="form.large = null; form.height = null" v-model:checked="form.is_circular" name="remember"
+              class="bg-transparent" />
+            <span class="ml-2 text-sm">Es circular</span>
+          </label>
+          <div class="col-span-full grid grid-cols-3 gap-3">
+            <div>
+              <InputLabel value="Ancho(mm)*" />
+              <el-input v-model="form.width" type="text"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 25.5" />
+              <InputError :message="form.errors.width" />
             </div>
-            <div class="flex items-center justify-center space-x-4">
-              <figure v-if="!form.is_circular" class="w-48">
-                <img src="@/../../public/images/paralelepipedo.png" alt="">
+            <div v-if="!form.is_circular">
+              <InputLabel value="Largo(mm)*" />
+              <el-input v-model="form.large" type="text"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 96" />
+              <InputError :message="form.errors.large" />
+            </div>
+            <div v-if="!form.is_circular">
+              <InputLabel value="Alto(mm)*" />
+              <el-input v-model="form.height" type="text"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 10" />
+              <InputError :message="form.errors.height" />
+            </div>
+            <div v-if="form.is_circular">
+              <InputLabel value="Diámetro(mm)*" />
+              <el-input v-model="form.diameter" type="text"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 43.8" />
+              <InputError :message="form.errors.diameter" />
+            </div>
+          </div>
+          <div class="col-span-full flex items-center justify-center space-x-4">
+              <figure v-if="!form.is_circular" class="w-48 dark:bg-gray-400 rounded-lg p-2">
+                  <img class="mx-auto" src="@/../../public/images/paralelepipedo.png" alt="">
               </figure>
               <figure v-else class="w-32">
-                <img src="@/../../public/images/diameter.png" alt="">
+                  <img src="@/../../public/images/diameter.png" alt="">
               </figure>
-            </div>
+          </div>
           <div>
-            <IconInput
-              v-model="form.location"
-              inputPlaceholder="Ubicaión *"
-              inputType="text"
-            >
-              <el-tooltip content="Ubicación en almacén" placement="top">
-                <i class="fa-solid fa-box"></i>
-              </el-tooltip>
-            </IconInput>
+            <InputLabel value="Ubicaión*" />
+            <el-input v-model="form.location" placeholder="Ej. S-10" />
             <InputError :message="form.errors.location" />
           </div>
-
-          <div class="flex mb-1">
-            <span
-              class="font-bold text-xl inline-flex items-center px-3 text-gray-600 bg-bg-[#CCCCCC]border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
-            >
-              <el-tooltip content="Descripción del producto" placement="top">
-                ...
-              </el-tooltip>
-            </span>
-            <textarea
-              v-model="form.description"
-              class="textarea"
-              autocomplete="off"
-              placeholder="Descripción"
-              required
-            ></textarea>
+          <div class="col-span-full">
+            <InputLabel value="Descripción del producto" />
+            <el-input v-model="form.description" :rows="3" maxlength="800" placeholder="..." show-word-limit
+              type="textarea" />
             <InputError :message="form.errors.description" />
           </div>
-          <!-- <div class="col-span-full">
-            <div class="flex space-x-2 mb-1">
-              <IconInput
-                v-model="newFeature"
-                inputPlaceholder="Ingresa una caracteristica"
-                inputType="text"
-                class="w-full"
-              >
-                <el-tooltip content="Caracteristicas" placement="top">
-                  <i class="fa-solid fa-palette"></i>
-                </el-tooltip>
-              </IconInput>
-              <SecondaryButton @click="addFeature" type="button">
-                Agregar
-                <i class="fa-solid fa-arrow-down ml-2"></i>
-              </SecondaryButton>
-            </div>
-            <el-select
-              v-model="form.features"
-              multiple
-              clearable
-              placeholder="Caracteristicas"
-              no-data-text="Agrega primero una caracteristica"
-            >
-              <el-option
-                v-for="feature in features"
-                :key="feature"
-                :label="feature"
-                :value="feature"
-              ></el-option>
-            </el-select>
-          </div> -->
           <div class="col-span-full">
-            <div class="flex items-center">
-              <span
-                class="font-bold text-[16px] inline-flex items-center text-gray-600 border border-r-8 border-transparent rounded-l-md h-9 darkk:bg-gray-600 darkk:text-gray-400 darkk:border-gray-600"
-              >
-                <el-tooltip content="Imagen del producto" placement="top">
-                  <i class="fa-solid fa-images"></i>
-                </el-tooltip>
-              </span>
-              <input
-                @input="form.media = $event.target.files[0]"
-                class="input h-12 rounded-lg file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white file:cursor-pointer hover:file:bg-red-600"
-                aria-describedby="file_input_help"
-                id="file_input"
-                type="file"
-              />
-            </div>
-            <p
-              class="mt-1 text-xs text-right text-gray-500"
-              id="file_input_help"
-            >
-              SVG, PNG, JPG o GIF (MAX. 4 MB).
-            </p>
+            <InputLabel value="Imagen" />
+            <el-upload action="#" list-type="picture-card" :auto-upload="false" :on-change="handleChange"
+              class="col-span-full" :on-remove="handleRemoveImage" v-model:file-list="fileList" ref="upload">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="size-7 text-black">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <template #file="{ file }">
+                <div>
+                  <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
+                  <span class="el-upload-list__item-actions">
+                    <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file)">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6 text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                          d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
+                      </svg>
+                    </span>
+                    <span class="el-upload-list__item-delete" @click="handleDownloadImage(file)">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6 text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                      </svg>
+                    </span>
+                    <span class="el-upload-list__item-delete" @click="handleRemoveImage(file)">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                          d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                      </svg>
+                    </span>
+                  </span>
+                </div>
+              </template>
+            </el-upload>
+            <el-dialog v-model="dialogVisible">
+              <img class="mx-auto" w-full :src="dialogImageUrl" alt="Vista previa" />
+            </el-dialog>
           </div>
-
-          <el-divider />
-          <div class="mx-3 md:text-right">
-            <PrimaryButton :disabled="form.processing"> Guardar cambios </PrimaryButton>
+          <div class="col-span-full text-right">
+            <PrimaryButton :disabled="form.processing">
+              <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
+              Guardar cambios
+            </PrimaryButton>
           </div>
         </div>
       </form>
@@ -337,7 +197,7 @@ import IconInput from "@/Components/MyComponents/IconInput.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import { Link, useForm } from "@inertiajs/vue3";
-import { ref } from "vue";
+import InputLabel from "@/Components/InputLabel.vue";
 
 export default {
   data() {
@@ -359,14 +219,16 @@ export default {
       type: 'materia-prima',
       description: this.raw_material.data.description,
       // features: this.raw_material.data.features,
-      media: null,
+      media: [],
       is_circular: this.raw_material.data.diameter ? true : false,
     });
 
     return {
       form,
-      // newFeature: null,
-      // features: [],
+      // upload de E+
+      dialogVisible: false,
+      dialogImageUrl: '',
+      fileList: [],
       mesureUnits: [
         'Pieza(s)',
         'Paquete(s)',
@@ -407,16 +269,16 @@ export default {
           value: 'PD',
         },
         {
-            label: 'Manta',
-            value: 'MT',
+          label: 'Manta',
+          value: 'MT',
         },
         {
-            label: 'Carpeta',
-            value: 'CP',
+          label: 'Carpeta',
+          value: 'CP',
         },
         {
-            label: 'Separador',
-            value: 'SP',
+          label: 'Separador',
+          value: 'SP',
         },
         {
           label: 'Termo',
@@ -489,10 +351,12 @@ export default {
     IconInput,
     Checkbox,
     Back,
-    Link
+    Link,
+    InputLabel,
   },
   props: {
     raw_material: Object,
+    media: Array,
   },
   methods: {
     update() {
@@ -519,17 +383,62 @@ export default {
         });
       }
     },
+    handleChange(file, fileList) {
+      this.form.media = fileList.map(item => item.raw); // Actualiza form.media con los archivos
+    },
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
+    },
+    handleDownloadImage(file) {
+      // Verifica si el archivo tiene una URL válida
+      if (file.url) {
+        // Crea un enlace temporal para descargar el archivo
+        const link = document.createElement('a');
+        link.href = file.url;
+        link.download = file.name || 'download'; // nombre del archivo a descargar
+        link.click();
+      } else {
+        console.error('No hay URL disponible para descargar el archivo.');
+      }
+    },
+    handleRemoveImage(file, fileList) {
+      this.$confirm('¿Estás seguro de eliminar este archivo?', 'Confirmar', {
+        confirmButtonText: 'Sí',
+        cancelButtonText: 'No',
+        type: 'warning'
+      }).then(() => {
+
+        // Remover de form.media
+        const mediaIndex = this.form.media.indexOf(file.raw);
+        if (mediaIndex !== -1) {
+          this.form.media.splice(mediaIndex, 1); // Elimina el archivo de form.media
+        }
+        // Remover del componente
+        const mediaUploadIndex = this.fileList.indexOf(file);
+        if (mediaUploadIndex !== -1) {
+          this.fileList.splice(mediaUploadIndex, 1); // Elimina el archivo de form.media
+        }
+
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: 'Eliminación cancelada'
+        });
+      });
+    },
     generatePartNumber() {
-      const partNumber = this.productType + '-' + this.form.brand?.toUpperCase().substr(0,3) + '-';
+      const partNumber = this.productType + '-' + this.form.brand?.toUpperCase().substr(0, 3) + '-';
       this.form.part_number = partNumber;
     },
-    // addFeature() {
-    //   if (this.newFeature.trim() !== "") {
-    //     this.form.features.push(this.newFeature);
-    //     this.features.push(this.newFeature);
-    //     this.newFeature = "";
-    //   }
-    // },
   },
+  mounted() {
+    // Transformar media para que sea compatible con el-upload
+    this.fileList = this.media.map(item => ({
+      name: item.file_name, // Nombre del archivo
+      url: item.original_url, // URL de la imagen
+      id: item.id // ID del archivo
+    }));
+  }
 };
 </script>

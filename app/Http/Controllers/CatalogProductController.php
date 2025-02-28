@@ -7,55 +7,31 @@ use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\CatalogProductResource;
 use App\Models\CatalogProduct;
-use App\Models\CatalogProductCompany;
 use App\Models\ProductionCost;
 use App\Models\RawMaterial;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class CatalogProductController extends Controller
 {
-
     public function index()
     {
-        // $catalog_products = CatalogProductResource::collection(CatalogProduct::latest()->get());
-        // return $catalog_products;
-        // return inertia('CatalogProduct/Index', compact('catalog_products'));
+        $catalog_products = CatalogProduct::latest()->get(['id', 'part_number', 'name', 'cost', 'description']);
 
-        //Optimizacion para rapidez. No carga todos los datos, sólo los siguientes para hacer la busqueda y mostrar la tabla en index
-        $pre_catalog_products = CatalogProduct::latest()->get();
-        $catalog_products = $pre_catalog_products->map(function ($catalog_product) {
-            return [
-                'id' => $catalog_product->id,
-                'part_number' => $catalog_product->part_number,
-                'name' => strtoupper($catalog_product->name),
-                'cost' => [
-                'raw' => $catalog_product->cost,
-                'number_format' => number_format($catalog_product->cost, 2) . ' ' . '$MXN'
-                ],
-                'description' => $catalog_product->description ?? '--',
-                   ];
-               });
-        // return $catalog_products;
         return inertia('CatalogProduct/Index', compact('catalog_products'));
     }
-
 
     public function create()
     {
         $raw_materials = RawMaterial::all(['id', 'name']);
-        $production_costs = ProductionCost::all();
+        $production_costs = ProductionCost::all(['id', 'name', 'cost']);
 
         // consecutive
         $last = CatalogProduct::latest()->first();
         $next_id = $last ? $last->id + 1 : 1;
         $consecutive = str_pad($next_id, 4, "0", STR_PAD_LEFT);
 
-        // return $raw_materials;
-
         return inertia('CatalogProduct/Create', compact('raw_materials', 'production_costs', 'consecutive'));
     }
-
 
     public function store(Request $request)
     {
@@ -63,13 +39,18 @@ class CatalogProductController extends Controller
         $total_cost = 0;
 
         $validated = $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:254',
             'part_number' => 'required|string|unique:catalog_products,part_number',
             'measure_unit' => 'required|string',
             'min_quantity' => 'required|min:0',
             'max_quantity' => 'required|min:0',
             'description' => 'nullable',
-            'raw_materials.*.production_cost' => 'array|min:1'
+            'width' => 'required|numeric|min:0|max:2000',
+            'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
+            'raw_materials.*.production_cost' => 'array|min:1',
+            'features' => 'nullable',
         ]);
 
         // consecutive
@@ -86,6 +67,7 @@ class CatalogProductController extends Controller
         foreach ($request->raw_materials as $product) {
             $total_cost += RawMaterial::find($product['raw_material_id'])?->cost * $product['quantity'];
 
+            // costo de produccion
             $costs = $product['production_costs'] ?? [];
             foreach ($costs as $process_id) {
                 $total_cost += ProductionCost::find($process_id)->cost * $product['quantity'];
@@ -98,41 +80,44 @@ class CatalogProductController extends Controller
 
         event(new RecordCreated($catalog_product));
 
-        return to_route('catalog-products.index');
+        // return to_route('catalog-products.index');
+        return to_route('catalog-products.show', $catalog_product->id);
     }
-
 
     public function show($catalog_product_id)
     {
-        $catalog_product = CatalogProductResource::make(CatalogProduct::with('rawMaterials.storages.storageable', 'storages')->find($catalog_product_id));
+        $catalog_product = CatalogProductResource::make(CatalogProduct::with(['rawMaterials:id,name,part_number' 
+            => ['storages:id,storageable_type,storageable_id' => ['storageable:id,name']], 'storages', 'companies:id,business_name'])->find($catalog_product_id));
         $catalog_products = CatalogProduct::latest()->get(['id', 'name']);
         
-        // return $catalog_product;
         return inertia('CatalogProduct/Show', compact('catalog_products', 'catalog_product'));
     }
-
 
     public function edit(CatalogProduct $catalog_product)
     {
         $catalog_product = CatalogProduct::with('rawMaterials')->find($catalog_product->id);
         $production_costs = ProductionCost::all();
-        $raw_materials = RawMaterial::all();
+        $raw_materials = RawMaterial::all(['id', 'name']);
         $media = $catalog_product->getFirstMedia();
 
         return inertia('CatalogProduct/Edit', compact('catalog_product', 'production_costs', 'raw_materials', 'media'));
     }
 
-
     public function update(Request $request, CatalogProduct $catalog_product)
     {
         $total_cost = 0;
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:254',
             'part_number' => 'required|string',
             'measure_unit' => 'required|string',
             'min_quantity' => 'required|min:0',
             'max_quantity' => 'required|min:0',
-            'description' => 'nullable'
+            'description' => 'nullable',
+            'width' => 'required|numeric|min:0|max:2000',
+            'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
+            'raw_materials.*.production_cost' => 'array|min:1',
         ]);
 
         $catalog_product->update($request->all());
@@ -141,6 +126,7 @@ class CatalogProductController extends Controller
         foreach ($request->raw_materials as $product) {
             $total_cost += RawMaterial::find($product['raw_material_id'])?->cost * $product['quantity'];
 
+            // costo de produccion
             $costs = $product['production_costs'] ?? [];
             foreach ($costs as $process_id) {
                 $total_cost += ProductionCost::find($process_id)->cost * $product['quantity'];
@@ -153,19 +139,25 @@ class CatalogProductController extends Controller
 
         event(new RecordEdited($catalog_product));
 
-        return to_route('catalog-products.index');
+        // return to_route('catalog-products.index');
+        return to_route('catalog-products.show', $catalog_product->id);
     }
 
     public function updateWithMedia(Request $request, CatalogProduct $catalog_product)
     {
         $total_cost = 0;
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:254',
             'part_number' => 'required|string',
             'measure_unit' => 'required|string',
             'min_quantity' => 'required|min:0',
             'max_quantity' => 'required|min:0',
-            'description' => 'nullable'
+            'description' => 'nullable',
+            'width' => 'required|numeric|min:0|max:2000',
+            'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
+            'raw_materials.*.production_cost' => 'array|min:1'
         ]);
 
         $catalog_product->update($request->all());
@@ -185,14 +177,13 @@ class CatalogProductController extends Controller
         $catalog_product->clearMediaCollection();
         $catalog_product->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
 
-
         $catalog_product->update(['cost' => $total_cost]);
 
         event(new RecordEdited($catalog_product));
 
-        return to_route('catalog-products.index');
+        // return to_route('catalog-products.index');
+        return to_route('catalog-products.show', $catalog_product->id);
     }
-
 
     public function destroy(CatalogProduct $catalog_product)
     {
@@ -277,7 +268,7 @@ class CatalogProductController extends Controller
         return response()->json(['item' => $catalog_product]);
     }
 
-    public function getCatalogProductData(CatalogProduct $catalog_product)
+    public function getCatalogProductData(Request $request, CatalogProduct $catalog_product)
     {
         $catalog_product = $catalog_product->load(['media']);
         $stock = $catalog_product->storages->count() ? $catalog_product->storages[0] : null;
@@ -288,5 +279,19 @@ class CatalogProductController extends Controller
         }
 
         return response()->json(['item' => $catalog_product, 'stock' => $stock, 'commited_units' => $commited_units]);
+    }
+    
+    public function fetchShippingRates(CatalogProduct $catalog_product)
+    {
+        $catalog_product->load('shippingRates:id,catalog_product_id');
+
+        return response()->json(['item' => $catalog_product]);
+    }
+    
+    public function pricesReport()
+    {
+        $catalog_products = CatalogProduct::with(['companies'])->get();
+
+        return inertia('CatalogProduct/PricesReport', compact('catalog_products'));
     }
 }

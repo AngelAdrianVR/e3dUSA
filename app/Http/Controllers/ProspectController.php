@@ -15,7 +15,8 @@ class ProspectController extends Controller
 
     public function index()
     {
-        $prospects = ProspectResource::collection(Prospect::paginate(20));
+        $prospects = Prospect::with('user:id,name', 'seller:id,name')
+            ->paginate(30, ['id', 'name', 'created_at', 'contact_name', 'contact_phone', 'status', 'user_id', 'seller_id']);
 
         return inertia('Prospect/Index', compact('prospects'));
     }
@@ -38,15 +39,18 @@ class ProspectController extends Controller
             'contact_charge' => 'required|string|max:255',
             'contact_phone' => 'required|string',
             'contact_phone_extension' => 'nullable|string|max:5',
+            'contact_whatsapp' => 'nullable|string',
             'status' => 'required|string|max:255',
-            'branches_number' => 'required|numeric|min:1',
+            'branches_number' => 'nullable|numeric|min:1',
             'abstract' => 'required|string|max:800',
             'seller_id' => 'nullable|numeric|min:1',
         ]);
 
-        $prospect = Prospect::create($validated + ['user_id' => auth()->id()]);
+        $prospect = Prospect::create($validated + ['user_id' => auth()->id(), 'seller_id' => auth()->id()]);
 
-        return to_route('prospects.show', $prospect);
+        if ( !$request->quick_creation ) {
+            return to_route('prospects.show', $prospect);
+        }
     }
 
     public function show(Prospect $prospect)
@@ -78,8 +82,9 @@ class ProspectController extends Controller
             'contact_charge' => 'required|string|max:255',
             'contact_phone' => 'required|string',
             'contact_phone_extension' => 'nullable|string|max:5',
+            'contact_whatsapp' => 'nullable|string',
             'status' => 'required|string|max:255',
-            'branches_number' => 'required|numeric|min:1',
+            'branches_number' => 'nullable|numeric|min:1',
             'abstract' => 'required|string|max:800',
             'seller_id' => 'nullable|numeric|min:1',
         ]);
@@ -137,7 +142,7 @@ class ProspectController extends Controller
             'post_code' => '12345',
             'fiscal_address' => $prospect->address ?? 'No especificado',
             'branches_number' => $prospect->branches_number,
-            'seller_id' => $prospect->seller_id ?? $prospect->seller_id,
+            'seller_id' => $prospect->seller_id ?? auth()->id(),
         ];
         $company = Company::create($customer_data + ['user_id' => auth()->id()]);
 
@@ -145,7 +150,7 @@ class ProspectController extends Controller
         $branch = [
             'company_id' => $company->id,
             'name' => $prospect->name,
-            'password' => '$2y$10$HOl.Lb1BpPJbGrUZUA4OQu0dTziq/jWOOkLNuUI8RGf5dtrr.dovC',
+            'password' => bcrypt('e3d'),
             'address' => $prospect->address ?? 'No especificado',
             'state' => $prospect->state,
             'post_code' => '12345',

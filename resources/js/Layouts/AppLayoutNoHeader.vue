@@ -44,12 +44,21 @@ const showSearchResults = ref(false); //buscador general
 const searchResults = ref(null); //buscador general
 const searchInput = ref(null); //buscador general
 const loadingSearch = ref(false); //buscador general
+const isDarkMode = ref(localStorage.getItem('darkMode') === 'true');// Obtener el estado del modo nocturno desde el localStorage
+const darkModeSwitch = ref(localStorage.getItem('darkMode') === 'true');// Obtener el estado del modo nocturno desde el localStorage
+const draggableAlert = ref(null); // Asigna el ref a una variable reactiva
 
 const form = useForm({
   barCode: null,
   scanType: "Entrada",
 });
 
+const toggleDarkMode = () => {
+    isDarkMode.value = !isDarkMode.value;
+    darkModeSwitch.value = isDarkMode.value;
+    localStorage.setItem('darkMode', isDarkMode.value); // Guardar el estado en localStorage+
+    document.documentElement.classList.toggle('dark', isDarkMode.value);
+};
 
 const getUnseenMessages = async () => {
   try {
@@ -273,11 +282,19 @@ const setAttendance = async () => {
   try {
     const response = await axios.get(route("users.set-attendance"));
     if (response.status === 200) {
-      nextAttendance.value = response.data.next;
-      ElNotification.success({
-        title: "Éxito",
-        message: "Registro correcto",
-      });
+      // evitar registro multiple por muchos clicks
+      if (nextAttendance.value != response.data.next) {
+        nextAttendance.value = response.data.next;
+        ElNotification.success({
+          title: "Éxito",
+          message: "Registro correcto",
+        });
+      } else {
+        ElNotification.info({
+          title: "Debes de esperar por lo menos 1 minuto para registrar salida",
+          message: "",
+        });
+      }
     }
   } catch (error) {
     console.error(error);
@@ -367,7 +384,7 @@ const searching = () => {
       console.error('Error al realizar la búsqueda:', error);
       loadingSearch.value = false;
     });
-};
+}; 
 
 onMounted(() => {
   getAttendanceTextButton();
@@ -377,7 +394,40 @@ onMounted(() => {
   setInterval(() => {
     currentTime.value = new Date().getHours();
   }, 60000); // 60000 ms = 1 minute
-}); 
+  
+  document.documentElement.classList.toggle('dark', isDarkMode.value);
+
+  const alertBox = draggableAlert.value; // Accede al elemento DOM
+
+  if (!alertBox) return; // Asegúrate de que el elemento existe
+
+  let isDragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  alertBox.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    offsetX = e.clientX - alertBox.offsetLeft;
+    offsetY = e.clientY - alertBox.offsetTop;
+    alertBox.style.cursor = 'grabbing';
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const x = e.clientX - offsetX;
+    const y = e.clientY - offsetY;
+    alertBox.style.left = `${x}px`;
+    alertBox.style.top = `${y}px`;
+    alertBox.style.position = 'absolute';
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      alertBox.style.cursor = 'pointer';
+    }
+  });
+});
 </script>
 
 <template>
@@ -387,13 +437,13 @@ onMounted(() => {
 
     <Banner />
 
-    <div class="overflow-hidden h-screen bg-[#F2F2F2] md:grid md:grid-cols-12">
+    <div class="overflow-hidden h-screen bg-[#F2F2F2] dark:bg-[#0D0D0D] md:grid md:grid-cols-12">
       <aside>
         <SideNav />
       </aside>
 
       <main class="md:col-span-11">
-        <nav class="bg-[#F2F2F2] border-b border-[#D9D9D9]">
+        <nav class="bg-[#F2F2F2] dark:bg-[#0D0D0D] border-b border-[#D9D9D9] transition-all ease-linear duration-500">
           <!-- Primary Navigation Menu -->
           <div class="w-11/12 mx-auto">
             <div class="flex items-center justify-between h-14">
@@ -406,8 +456,8 @@ onMounted(() => {
                 </div>
               </div>
 
-             <!-- Buscador general -->
-             <div class="w-full mx-5 lg:mx-0 lg:w-1/4 text-xs lg:text-sm">
+              <!-- Buscador general -->
+              <div class="w-full mx-5 lg:mx-0 lg:w-1/4 text-xs lg:text-sm">
                 <button v-if="!showSearchInput" @click="searchStart"
                   class="rounded-full size-9 flex justify-center items-center border border-[#9A9A9A]">
                   <i class="fa-solid fa-magnifying-glass text-sm text-[#9A9A9A]"></i>
@@ -420,7 +470,7 @@ onMounted(() => {
 
                   <!-- Resultados -->
                   <div v-if="showSearchResults"
-                    class="bg-white w-80 max-h-80 overflow-auto absolute top-[50px] left-0 shadow-lg rounded-md py-4 z-50">
+                    class="bg-white dark:bg-[#202020] w-80 max-h-80 overflow-auto absolute top-[50px] left-0 shadow-lg rounded-md py-4 z-50">
                     <!-- estado de carga -->
                     <div v-if="loadingSearch" class="flex justify-center items-center">
                       <i class="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
@@ -428,12 +478,12 @@ onMounted(() => {
                     <!-- Mostrar los resultados aquí -->
                     <div v-else-if="searchResults">
                       <div v-for="(results, modelName) in searchResults" :key="modelName">
-                        <h2 class="font-bold px-4">{{ modelName }}</h2>
+                        <h2 class="font-bold px-4 dark:text-white">{{ modelName }}</h2>
                         <ul>
                           <li @click="$inertia.get(route(result.model + '.show', result.id))"
-                            class="text-gray-500 hover:bg-gray-200 text-xs px-4 cursor-pointer"
+                            class="text-gray-500 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-primary text-xs px-4 cursor-pointer"
                             v-for="result in results" :key="result.id">
-                            {{ result.name }} <!-- Ajusta según tu estructura de datos -->
+                            {{ result.name }} (ID: {{ result.id }}) <!-- Ajusta según tu estructura de datos -->
                           </li>
                         </ul>
                       </div>
@@ -451,21 +501,21 @@ onMounted(() => {
                     </PrimaryButton>
                   </el-tooltip>
 
-                  <p class="mr-4 text-xs w-2/3">
+                  <p class="mr-4 text-xs w-2/3 dark:text-white">
                     <i :class="greeting.class"></i>
                     {{ greeting.text }}
                     <strong>{{
-      $page.props.auth.user.name.split(" ")[0]
-    }}</strong>
+                      $page.props.auth.user.name.split(" ")[0]
+                      }}</strong>
                   </p>
 
                   <!-- pause work time -->
                   <el-popconfirm v-if="$page.props.isKiosk && isPaused !== null &&
-      nextAttendance &&
-      $page.props.auth.user.permissions.includes(
-        'Registrar asistencia'
-      )
-      " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
+                    nextAttendance &&
+                    $page.props.auth.user.permissions.includes(
+                      'Registrar asistencia'
+                    )
+                  " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
                     :title="isPaused ? '¿Reanudar tiempo?' : 'Pausar tiempo?'" @confirm="setPause">
                     <template #reference>
                       <button v-if="nextAttendance == 'Registrar salida'"
@@ -476,11 +526,11 @@ onMounted(() => {
                     </template>
                   </el-popconfirm>
 
-                  <div class="w-1/3" v-if="$page.props.isKiosk &&
-      nextAttendance &&
-      $page.props.auth.user.permissions.includes(
-        'Registrar asistencia'
-      ) && !isPaused">
+                  <div class="w-2/3" v-if="$page.props.isKiosk &&
+                    nextAttendance &&
+                    $page.props.auth.user.permissions.includes(
+                      'Registrar asistencia'
+                    ) && !isPaused">
                     <div v-if="nextAttendance == 'Registrar salida' && $page.props.auth.user.has_pendent_production">
                       <SecondaryButton @click="openPasswordModal = true" v-if="nextAttendance != 'Dia terminado'"
                         class="mr-14">
@@ -490,21 +540,23 @@ onMounted(() => {
                         {{ nextAttendance }}
                       </span>
                     </div>
-                    <el-popconfirm v-else confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
-                      title="¿Continuar?" @confirm="setAttendance">
-                      <template #reference>
-                        <SecondaryButton v-if="nextAttendance != 'Dia terminado'" class="mr-14">
-                          {{ nextAttendance }}
-                        </SecondaryButton>
-                        <span v-else class="bg-[#75b3f9] text-[#0355B5] mr-14 rounded-md px-3 py-1">
-                          {{ nextAttendance }}
-                        </span>
-                      </template>
-                    </el-popconfirm>
+                    <div v-else>
+                      <el-popconfirm v-if="nextAttendance != 'Dia terminado'" confirm-button-text="Si"
+                        cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?" @confirm="setAttendance">
+                        <template #reference>
+                          <SecondaryButton class="mr-14">
+                            {{ nextAttendance }}
+                          </SecondaryButton>
+                        </template>
+                      </el-popconfirm>
+                      <span v-else class="w-full bg-[#75b3f9] text-[#0355B5] text-xs px-1 mr-14 rounded-md py-1">
+                        {{ nextAttendance }}
+                      </span>
+                    </div>
                   </div>
 
                   <el-popconfirm v-if="$page.props.auth.user.permissions.includes('Crear kiosco')
-      " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
+                  " confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5" title="¿Continuar?"
                     @confirm="createKiosk">
                     <template #reference>
                       <el-tooltip v-if="$page.props.isKiosk || temporalFlag"
@@ -521,31 +573,51 @@ onMounted(() => {
 
                   <div class="w-full flex items-center justify-end">
                     <!-- calendario -->
-                    <div class="mr-9 relative">
+                    <div class="mr-3 relative">
                       <el-tooltip content="Calendario">
                         <Link :href="route('calendars.index')">
-                        <i class="fa-solid fa-calendar-days text-[#9A9A9A]"></i>
+                          <button class="flex justify-center items-center rounded-full border border-[#7a7a7a] size-9">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-[#7a7a7a]">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                            </svg>
+                          </button>
                         </Link>
                       </el-tooltip>
-                      <div v-if="$page.props.auth.user?.notifications?.some(notification => {
-      return notification.data.module === 'calendar';
-    })"
-                        class="bg-primary w-[10px] h-[10px] border border-white rounded-full absolute -top-1 -right-2">
-                      </div>
+                      <i v-if="$page.props.auth.user?.notifications?.some(notification => {
+                        return notification.data.module === 'calendar';
+                      })" class="fa-solid fa-circle fa-flip text-primary text-sm absolute -top-2 -right-0"></i>
                     </div>
 
                     <!-- chat -->
                     <div class="relative">
                       <el-tooltip v-if="$page.props.auth.user.permissions.includes('Chatear')" content="Chat"
                         placement="bottom">
-                        <a :href="route('chatify')" target="_blank" class="mr-8">
-                          <i class="fa-solid fa-comments text-[#9A9A9A]"></i>
+                        <a :href="route('chatify')" target="_blank" class="mr-5 flex justify-center items-center rounded-full border border-[#7a7a7a] size-9">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-[#7a7a7a]">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+                          </svg>
                         </a>
                       </el-tooltip>
                       <div v-if="unseenMessages > 0"
-                        class="absolute bottom-4 right-5 bg-primary text-white w-4 h-4 flex items-center justify-center text-[10px] rounded-full">
+                        class="absolute bottom-6 right-4 bg-primary text-white w-4 h-4 flex items-center justify-center text-[10px] rounded-full">
                         {{ unseenMessages }}
                       </div>
+                    </div>
+
+                    <!-- Dark mode toggle -->
+                    <div class="mr-7">
+                      <el-switch @change="darkModeSwitch = !darkModeSwitch; toggleDarkMode()" v-model="darkModeSwitch" style="--el-switch-on-color: #1e3a8a;">
+                        <template #inactive-action>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-gray-700">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                          </svg>
+                        </template>
+                        <template #active-action>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-gray-700">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+                          </svg>
+                        </template>
+                      </el-switch>
                     </div>
 
                     <!-- Settings Dropdown -->
@@ -553,7 +625,7 @@ onMounted(() => {
                       <Dropdown align="right" width="48">
                         <template #trigger>
                           <button v-if="$page.props.jetstream.managesProfilePhotos"
-                            class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
+                            class="flex text-sm border-2 border-transparent dark:border-gray-300 rounded-full focus:outline-none focus:border-gray-300 transition">
                             <img class="h-8 w-8 rounded-full object-cover"
                               :src="$page.props.auth.user.profile_photo_url" :alt="$page.props.auth.user.name" />
                           </button>
@@ -573,11 +645,11 @@ onMounted(() => {
 
                         <template #content>
                           <!-- Account Management -->
-                          <div class="block px-4 py-2 text-xs rounded-md" :class="{
-      'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
-      'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
-      'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
-    }">
+                          <div class="block px-4 py-2 text-xs rounded-md dark:text-white" :class="{
+                            'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
+                            'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
+                            'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
+                          }">
                             Nivel {{ $page.props.auth.user.experience }}
                           </div>
                           <div class="block px-4 py-2 text-xs text-gray-400">
@@ -602,11 +674,30 @@ onMounted(() => {
                 </div>
                 <!-- Hamburger -->
                 <div class="flex items-center justify-end sm:hidden w-full">
+                  <!-- calendario -->
+                  <!-- <div class="mr-3 relative">
+                    <el-tooltip content="Calendario">
+                      <Link :href="route('calendars.index')">
+                        <button class="flex justify-center items-center rounded-full border border-[#7a7a7a] size-9">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-[#7a7a7a]">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                          </svg>
+                        </button>
+                      </Link>
+                    </el-tooltip>
+                    <div v-if="$page.props.auth.user?.notifications?.some(notification => {
+                      return notification.data.module === 'calendar';
+                    })" class="bg-primary w-[10px] h-[10px] border border-white rounded-full absolute -top-1 -right-2">
+                    </div>
+                  </div> -->
+
                   <div class="relative">
                     <el-tooltip v-if="$page.props.auth.user.permissions.includes('Chatear')" content="Chat"
                       placement="bottom">
-                      <a :href="route('chatify')" target="_blank" class="mr-8">
-                        <i class="fa-solid fa-comments text-[#9A9A9A]"></i>
+                      <a :href="route('chatify')" target="_blank" class="mr-12 flex justify-center items-center rounded-full border border-[#7a7a7a] size-9">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-[#7a7a7a]">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+                        </svg>
                       </a>
                     </el-tooltip>
                     <div v-if="unseenMessages > 0"
@@ -614,41 +705,57 @@ onMounted(() => {
                       {{ unseenMessages }}
                     </div>
                   </div>
+
+                  <!-- darkmode toggle -->
+                  <div class="mr-7">
+                    <el-switch @change="darkModeSwitch = !darkModeSwitch; toggleDarkMode()" v-model="darkModeSwitch" style="--el-switch-on-color: #1e3a8a;">
+                      <template #inactive-action>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-gray-700">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                        </svg>
+                      </template>
+                      <template #active-action>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-gray-700">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+                        </svg>
+                      </template>
+                    </el-switch>
+                  </div>
+                  
                   <button
                     class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
                     @click="
-      showingNavigationDropdown = !showingNavigationDropdown
-      ">
+                      showingNavigationDropdown = !showingNavigationDropdown
+                      ">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                       <path :class="{
-      hidden: showingNavigationDropdown,
-      'inline-flex': !showingNavigationDropdown,
-    }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        hidden: showingNavigationDropdown,
+                        'inline-flex': !showingNavigationDropdown,
+                      }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                       <path :class="{
-      hidden: !showingNavigationDropdown,
-      'inline-flex': showingNavigationDropdown,
-    }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        hidden: !showingNavigationDropdown,
+                        'inline-flex': showingNavigationDropdown,
+                      }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                  </button>
+                  </button>                  
                 </div>
               </div>
             </div>
           </div>
           <!-- Responsive Navigation Menu -->
           <div :class="{
-      block: showingNavigationDropdown,
-      hidden: !showingNavigationDropdown,
-    }"
-            class="sm:hidden bg-[#d9d9d9] w-4/6 absolute right-0 top-14 z-40 max-h-[90%] overflow-y-scroll overflow-x-hidden shadow-lg border border-[#cccccc] pt-4">
+            block: showingNavigationDropdown,
+            hidden: !showingNavigationDropdown,
+          }" class="sm:hidden bg-[#d9d9d9] w-4/6 absolute right-0 top-14 z-40 max-h-[90%] overflow-y-scroll overflow-x-hidden shadow-lg border border-[#cccccc] pt-4">
             <MobileSideNav />
 
             <!-- Responsive Settings Options -->
             <div class="pt-4 pb-1 border-t border-gray-200">
               <div class="block px-4 py-1 text-xs" :class="{
-      'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
-      'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
-      'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
-    }">
+                'bg-secondarylight text-secondary': $page.props.auth.user.experience == 'Novato',
+                'text-[#FD8827] bg-[#FEDBBD]': $page.props.auth.user.experience == 'Intermedio',
+                'text-[#9E0FA9] bg-[#F7B7FC]': $page.props.auth.user.experience == 'Experto',
+              }">
                 Nivel {{ $page.props.auth.user.experience }}
               </div>
               <div class="flex items-center px-4">
@@ -686,7 +793,24 @@ onMounted(() => {
             <slot name="header" />
           </div>
         </header>
-        <div class="overflow-y-auto h-[calc(100vh-3.5rem)] bg-[#F2F2F2]">
+        <div class="overflow-y-auto h-[calc(100vh-3.5rem)] bg-[#F2F2F2] dark:bg-[#0D0D0D] transition-all ease-linear duration-500">
+
+          <!-- aviso de alarma de recordatorios vencidos o próximos a vencer -->
+          <div v-if="$page.props.auth.user.has_important_reminder"
+            ref="draggableAlert"
+            class="border border-red-600 rounded-md bg-red-50 flex justify-between items-center space-x-2 absolute md:right-1/2 py-2 px-4 !cursor-move z-30 w-full md:w-96">
+            <figure class="w-24">
+              <img src="@/../../public/images/alarm.png" alt="">
+            </figure>
+            <p class="text-sm">
+              Tienes una o más tareas de actualización de precio que <strong>debes completar hoy y/o que tienen atraso.</strong>
+            </p>
+            <div @click="$inertia.get(route('calendars.index'));" class="text-red-600 flex items-center space-x-3 pl-2 !cursor-pointer">
+              <span>Ir</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </div>
+          </div>
+
           <slot />
         </div>
       </main>
@@ -700,9 +824,9 @@ onMounted(() => {
         <h2 v-if="is_product" class="font-bold text-center mr-2">Movimientos y detalles de producto</h2>
         <h2 v-else class="font-bold text-center mr-2">Búsqueda de maquinaria</h2>
         <div @click="
-      qrScan = false;
-    form.reset();
-    " class="cursor-pointer w-5 h-5 rounded-full border-2 border-black flex items-center justify-center absolute top-0 right-0">
+          qrScan = false;
+        form.reset();
+        " class="cursor-pointer w-5 h-5 rounded-full hover:text-primary flex items-center justify-center absolute top-0 right-0">
           <i class="fa-solid fa-xmark"></i>
         </div>
       </div>
@@ -711,13 +835,13 @@ onMounted(() => {
         <div style="margin-top: 20px">
           <el-radio-group v-model="form.scanType">
             <el-radio-button v-if="$page.props.auth.user.permissions.includes('Crear entradas')
-      " label="Entrada" />
+            " label="Entrada" />
             <el-radio-button v-if="$page.props.auth.user.permissions.includes('Crear salidas')" label="Salida" />
             <el-radio-button label="Buscar materia prima" />
             <el-radio-button v-if="$page.props.auth.user.permissions.includes(
-      'QR producto de catalogo'
-    )
-      " label="Producto de catalogo" />
+              'QR producto de catalogo'
+            )
+            " label="Producto de catalogo" />
           </el-radio-group>
         </div>
 
@@ -770,18 +894,18 @@ onMounted(() => {
               <li>
                 <label class="text-primary">Stock: </label>
                 {{
-      productFound.quantity
-        .toFixed(2)
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-    }}
+                  productFound.quantity
+                    .toFixed(2)
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }}
                 {{ productFound.storageable?.measure_unit }}
               </li>
               <li>
                 <label class="text-primary">costo: </label> ${{
-      productFound.storageable?.cost
-        .toFixed(2)
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-    }}
+                  productFound.storageable?.cost
+                    .toFixed(2)
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }}
               </li>
             </ul>
             <Link class="text-center mt-5" :href="route('storages.show', productFound.id)">
@@ -830,8 +954,8 @@ onMounted(() => {
               </li>
               <li>
                 <label class="text-primary">costo: </label> ${{
-      catalogProductFound.cost.number_format
-    }}
+                  catalogProductFound.cost.number_format
+                }}
               </li>
             </ul>
             <Link class="text-center my-5" :href="route('catalog-products.show', catalogProductFound.id)">
@@ -847,17 +971,17 @@ onMounted(() => {
               <div v-for="company_info in catalogProductFound.companies" :key="company_info"
                 class="p-3 flex flex-col border rounde-lg">
                 <p class="text-secondary font-bold">Razon social: <span class="text-gray-600 font-thin">{{
-      company_info.business_name }}</span></p>
+                  company_info.business_name }}</span></p>
                 <p class="text-secondary font-bold">Precio anterior: <span class="text-gray-600 font-thin">{{
-      company_info.pivot.old_price }} {{ company_info.pivot.new_currency
+                  company_info.pivot.old_price }} {{ company_info.pivot.new_currency
                     }}</span></p>
                 <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{
-      company_info.pivot.old_date }}</span></p>
+                  company_info.pivot.old_date }}</span></p>
                 <p class="text-secondary font-bold">Precio actual: <span class="text-gray-600 font-thin">{{
-      company_info.pivot.new_price }} {{ company_info.pivot.new_currency
+                  company_info.pivot.new_price }} {{ company_info.pivot.new_currency
                     }}</span></p>
                 <p class="text-secondary font-bold">Fecha de cambio: <span class="text-gray-600 font-thin">{{
-      company_info.pivot.new_date }}</span></p>
+                  company_info.pivot.new_date }}</span></p>
                 <p class="text-secondary font-bold">Último ajuste de precio hace:
                   <span class="text-gray-600 font-thin">{{ timeSinceNewPrice(company_info) }}</span>
                 </p>
@@ -873,10 +997,10 @@ onMounted(() => {
             máquinas
             <i class="fa-solid fa-arrow-right-long ml-2 mt-1"></i></button>
           <div class="flex justify-end space-x-3 pt-5 pb-1">
-            <CancelButton @click="
-      qrScan = false;
-    form.reset();
-    ">Cancelar</CancelButton>
+            <CancelButton type="button" @click="
+              qrScan = false;
+            form.reset();
+            ">Cancelar</CancelButton>
             <PrimaryButton :disabled="form.processing">Buscar</PrimaryButton>
           </div>
         </div>
@@ -956,10 +1080,10 @@ onMounted(() => {
               </li>
               <li>
                 <label class="text-primary">costo: </label> ${{
-      machineFound.cost
-        .toFixed(2)
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-    }}
+                  machineFound.cost
+                    .toFixed(2)
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }}
               </li>
               <li>
                 <label class="text-primary mt-2">Archivos: </label>
@@ -982,10 +1106,10 @@ onMounted(() => {
           <button @click="QRScan()" class="text-primary text-sm flex items-center"><i
               class="fa-solid fa-arrow-left-long mr-2 mt-1"></i> Escanear productos</button>
           <div class="flex justify-end space-x-3 pt-5 pb-1">
-            <CancelButton @click="
-      qrScan = false;
-    form.reset();
-    ">Cancelar</CancelButton>
+            <CancelButton type="button" @click="
+              qrScan = false;
+            form.reset();
+            ">Cancelar</CancelButton>
             <PrimaryButton :disabled="form.processing">Buscar</PrimaryButton>
           </div>
         </div>
@@ -998,7 +1122,7 @@ onMounted(() => {
   <!-- Password modal -->
   <DialogModal :show="openPasswordModal" @close="openPasswordModal = false">
     <template #title>
-      Contraseña de supervisor
+      Contraseña de supervisor. Tienes {{ $page.props.auth.user.has_pendent_production }} orden(es) pausadas.
     </template>
     <template #content>
       <p class="text-center text-sm my-4">Para garantizar la precisión en nuestros registros de producción, se solicita

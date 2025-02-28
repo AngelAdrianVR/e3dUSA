@@ -17,7 +17,9 @@ class ClientMonitorController extends Controller
     public function index()
     {
         // $client_monitors = ClientMonitorResource::collection(ClientMonitor::with('company', 'seller', 'oportunity', 'emailMonitor', 'paymentMonitor', 'mettingMonitor', 'whatsappMonitor')->latest()->get());
-        $pre_client_monitors = ClientMonitorResource::collection(ClientMonitor::with('company', 'seller', 'oportunity', 'emailMonitor', 'paymentMonitor', 'mettingMonitor', 'whatsappMonitor', 'callMonitor')->latest()->get());
+        $pre_client_monitors = ClientMonitorResource::collection(ClientMonitor::with('company:id,business_name', 'seller:id,name', 'oportunity:id,name', 'emailMonitor:id,client_monitor_id', 'paymentMonitor:id,client_monitor_id', 'mettingMonitor:id,client_monitor_id', 'whatsappMonitor:id,client_monitor_id', 'callMonitor:id,client_monitor_id')
+                ->latest()->get());
+
         $client_monitors = $pre_client_monitors->map(function ($client_monitor) {
             if ($client_monitor->oportunity) {
                 $folio = 'S-' . strtoupper(substr($client_monitor->oportunity?->name, 0, 3)) . '-' . strtoupper(substr($client_monitor->type, 0, 1)) . str_pad($client_monitor->id, 4, '0', STR_PAD_LEFT);
@@ -41,7 +43,6 @@ class ClientMonitorController extends Controller
                });
 
         // return $client_monitors;
-
         return inertia('ClientMonitor/Index', compact('client_monitors'));
     }
 

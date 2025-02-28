@@ -23,6 +23,8 @@ class Design extends Model implements HasMedia
         'design_data',
         'specifications',
         'pantones',
+        'has_priority',
+        'needs_authorization',
         'designer_id',
         'design_type_id',
         'user_id',

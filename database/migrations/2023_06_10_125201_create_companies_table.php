@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('business_name');
             $table->string('phone');
-            $table->string('rfc');
+            $table->string('rfc')->unique();
             $table->string('post_code');
             $table->text('fiscal_address');
             $table->unsignedTinyInteger('branches_number')->nullable();

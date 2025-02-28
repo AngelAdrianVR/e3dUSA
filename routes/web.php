@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdditionalTimeRequestController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BonusController;
+use App\Http\Controllers\BoxController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CallMonitorController;
 use App\Http\Controllers\CatalogProductCompanySaleController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\CatalogProductController;
 use App\Http\Controllers\ClientMonitorController;
 use App\Http\Controllers\CompanyBranchController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CustomerMeetingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DesignAuthorizationController;
@@ -47,6 +49,8 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SampleController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\ShippingController;
+use App\Http\Controllers\ShippingRateController;
 use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\SupplierController;
@@ -56,31 +60,75 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WhatsappMonitorController;
 use App\Models\CompanyBranch;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+// *** borrar despues de ejecutado
+// Route::get('update-sale-registers-{page}', function () {
+//     $page = request('page');
+//     if ($page == 1) {
+//         $sales = App\Models\Sale::take(500)->get();
+//     } else {
+//         $sales = App\Models\Sale::skip(500)->take(2000)->get();
+//     }
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+//     $sales->each(function ($sale) {
+//         // Solo si no tiene parcialidades y tiene ventas asociadas a productos
+//         if (!$sale->partialities && $sale->catalogProductCompanySales) {
+//             // Inicializar las parcialidades con los datos correspondientes
+//             $partialities = [
+//                 [
+//                     'promise_date' => $sale->promise_date?->toDateString(),
+//                     'shipping_cost' => $sale->freight_cost,
+//                     'shipping_company' => $sale->shipping_company,
+//                     'tracking_guide' => $sale->tracking_guide,
+//                     'sent_at' => null,
+//                     'sent_by' => null,
+//                     'number_of_packages' => null,
+//                     'status' => $sale->getStatus()['label'] == 'Producción terminada' ? 'Enviado' : 'Pendiente de envío',
+//                     'productsSelected' => [] // Inicialmente vacío
+//                 ]
+//             ];
+
+//             // Inicializar el array de productos seleccionados
+//             $current_products_selected = [];
+
+//             // Iterar sobre los productos asociados a la venta
+//             $sale->catalogProductCompanySales->each(function ($product) use (&$current_products_selected) {
+//                 // Agregar el producto al array
+//                 $prd = [
+//                     'id' => $product->catalogProductCompany?->catalogProduct->id,
+//                     'name' => $product->catalogProductCompany?->catalogProduct->name,
+//                     'selected' => true,
+//                     'quantity' => $product->quantity,
+//                 ];
+
+//                 $current_products_selected[] = $prd; // Se agrega el producto al array de productos seleccionados
+//             });
+
+//             // Asignar el array de productos seleccionados a la parcialidad
+//             $partialities[0]['productsSelected'] = $current_products_selected;
+
+//             // Actualizar el estado y la opción de envío
+//             $sale->status = $sale->getStatus()['label'];
+//             $sale->partialities = $partialities;
+//             $sale->shipping_option = 'Entrega única';
+
+//             // Guardar los cambios en la base de datos
+//             $sale->save();
+//         }
+//     });
+
+//     return 'Registros de BDD actualizados!';
+// });
+
+Route::get('/inicio', function () {
+    return Inertia::render('Auth/Inicio');
+})->name('inicio');
+
+Route::redirect('/', 'inicio');
 
 Route::middleware([
     'auth:sanctum',
@@ -89,6 +137,10 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
+
+// prueba de pdf OC
+// Route::get('oc-pdf', [PurchaseController::class, 'pdfTest']);
+
 
 // -------------- project groups routes ------------
 Route::resource('project-groups', ProjectGroupController::class)->middleware('auth')->names('project-groups');
@@ -121,11 +173,14 @@ Route::get('customers-report', function () {
 // ----------- Search routes --------
 Route::get('/search', [SearchController::class, 'index'])->name('search');
 
+
 // ------- Catalog Products Routes ---------
 Route::post('catalog-product-company-sale/store-traveler-data/{cpcs}', [CatalogProductCompanySaleController::class, 'storeTravelerData'])->middleware('auth')->name('catalog-product-company-sale.store-traveler-data');
 Route::get('catalog-product-company-sale/get-traveler-data/{cpcs}', [CatalogProductCompanySaleController::class, 'getTravelerData'])->middleware('auth')->name('catalog-product-company-sale.get-traveler-data');
 Route::get('catalog-product-company-sale/get-productions/{cpcs}', [CatalogProductCompanySaleController::class, 'getProductions'])->middleware('auth')->name('catalog-product-company-sale.get-productions');
 Route::get('catalog-product-company-sale/get-raw-materials/{cpcs}', [CatalogProductCompanySaleController::class, 'getRawMaterials'])->middleware('auth')->name('catalog-product-company-sale.get-raw-materials');
+Route::get('catalog-product-company-sale/get-estimated-completion-date/{cpcs}', [CatalogProductCompanySaleController::class, 'getEstimatedCompletionDate'])->middleware('auth')->name('catalog-product-company-sale.get-estimated-completion-date');
+
 
 // ------- Catalog Products Routes ---------
 Route::resource('catalog-products', CatalogProductController::class)->middleware('auth');
@@ -134,6 +189,8 @@ Route::post('catalog-products/clone', [CatalogProductController::class, 'clone']
 Route::post('catalog-products/update-with-media/{catalog_product}', [CatalogProductController::class, 'updateWithMedia'])->name('catalog-products.update-with-media');
 Route::post('catalog-products/QR-search-catalog-product', [CatalogProductController::class, 'QRSearchCatalogProduct'])->name('catalog-products.QR-search-catalog-product');
 Route::get('catalog-products/{catalog_product}/get-data', [CatalogProductController::class, 'getCatalogProductData'])->name('catalog-products.get-data');
+Route::get('catalog-products-fetch-shipping-rates/{catalog_product}', [CatalogProductController::class, 'fetchShippingRates'])->name('catalog-products.fetch-shipping-rates');
+Route::get('catalog-products-prices-report', [CatalogProductController::class, 'pricesReport'])->name('catalog-products.prices-report');
 
 
 // ------- Ventas(Clients Routes)  ---------
@@ -142,13 +199,40 @@ Route::post('companies/massive-delete', [CompanyController::class, 'massiveDelet
 Route::post('companies/clone', [CompanyController::class, 'clone'])->name('companies.clone');
 Route::post('companies/get-all-companies', [CompanyController::class, 'getAllCompanies'])->name('companies.get-all-companies')->middleware('auth');
 Route::get('companies-get-exclusive-designs/{company}', [CompanyController::class, 'getExclusiveDesigns'])->name('companies.get-exclusive-designs')->middleware('auth');
+Route::get('companies-contacts-report', [CompanyController::class, 'contactsReport'])->name('companies.contacts-report')->middleware('auth');
+
+
+// ------- shippings routes  ---------
+Route::resource('shippings', ShippingController::class)->middleware('auth');
+Route::post('shippings/massive-delete', [ShippingController::class, 'massiveDelete'])->name('shippings.massive-delete');
+Route::post('shippings-get-matches', [ShippingController::class, 'getMatches'])->name('shippings.get-matches');
+Route::get('shippings-index-all', [ShippingController::class, 'indexAll'])->name('shippings.index-all');
+Route::get('shippings-fetch-filtered/{filter}', [ShippingController::class, 'fetchFiltered'])->name('shippings.fetch-filtered');
+Route::post('shippings-update-status/{shipping}', [ShippingController::class, 'updateStatus'])->name('shippings.update-status');
+Route::post('shippings-partiality-sent/{shipping}', [ShippingController::class, 'updateSent'])->name('shippings.partiality-sent');
+Route::post('shippings-costs-report', [ShippingController::class, 'costsReport'])->name('shippings.costs-report');
+Route::get('shippings/fetch-catalog-product-info/{catalog_product}', [ShippingController::class, 'fetchCatalogProductInfo'])->name('shippings.fetch-catalog-product-info');
+
+
+// ------- boxes routes  ---------
+Route::resource('boxes', BoxController::class)->middleware('auth');
+Route::post('boxes/massive-delete', [BoxController::class, 'massiveDelete'])->name('boxes.massive-delete');
+
+
+// ------- shipping-rates routes  ---------
+Route::resource('shipping-rates', ShippingRateController::class)->middleware('auth');
+Route::post('shipping-rates/massive-delete', [ShippingRateController::class, 'massiveDelete'])->name('shipping-rates.massive-delete');
+Route::post('shipping-rates-get-matches', [ShippingRateController::class, 'getMatches'])->name('shipping-rates.get-matches');
+Route::get('shipping-rates/fetch-catalog-product-info/{catalog_product}', [ShippingRateController::class, 'fetchCatalogProductInfo'])->name('shipping-rates.fetch-catalog-product-info');
 
 
 // ------- CRM (Clients Routes)  ---------
 Route::get('crm', [DashboardController::class, 'crmDashboard'])->middleware('auth')->name('crm.dashboard');
 
+
 // ------- CRM (exclusive customer designs Routes)  ---------
 Route::resource('exclusive-designs', ExclusiveDesignController::class)->middleware('auth');
+
 
 // ------- CRM (oportunities Routes)  ---------
 Route::resource('oportunities', OportunityController::class)->middleware('auth');
@@ -156,9 +240,11 @@ Route::put('/oportunities/update-status/{oportunity_id}', [OportunityController:
 Route::put('/oportunities/create-sale/{oportunity_id}', [OportunityController::class, 'createSale'])->name('oportunities.create-sale')->middleware('auth');
 Route::post('oportunities/update-with-media/{oportunity}', [OportunityController::class, 'updateWithMedia'])->name('oportunities.update-with-media')->middleware('auth');
 
+
 // ------- CRM (surveys Routes)  ---------
 Route::get('/surveys/create/{oportunity_id}', [SurveyController::class, 'create'])->name('surveys.create');
 Route::post('/surveys/store/{oportunity_id}', [SurveyController::class, 'store'])->name('surveys.store');
+
 
 // ------- CRM (oportunityTasks Routes)  ---------
 Route::resource('oportunity-tasks', OportunityTaskController::class)->except(['store', 'create'])->middleware('auth');
@@ -167,31 +253,39 @@ Route::post('oportunity-tasks/store/{oportunity_id}', [OportunityTaskController:
 Route::post('oportunity-tasks/{oportunity_task}/comment', [OportunityTaskController::class, 'comment'])->name('oportunity-tasks.comment')->middleware('auth');
 Route::put('oportunity-tasks/mark-as-done/{oportunityTask}', [OportunityTaskController::class, 'markAsDone'])->name('oportunity-tasks.mark-as-done')->middleware('auth');
 
+
 // ------- CRM (prospectos Routes)  ---------
 Route::resource('prospects', ProspectController::class)->middleware('auth');
 Route::get('prospects-get-matches/{query}', [ProspectController::class, 'getMatches'])->name('prospects.get-matches');
 Route::get('prospects-get-quotes/{prospect}', [ProspectController::class, 'getQuotes'])->name('prospects.get-quotes');
 Route::post('prospects/turn-into-customer/{prospect}', [ProspectController::class, 'turnIntoCustomer'])->name('prospects.turn-into-customer');
 
+
 // ------- CRM (Client monior Routes)  ---------
 Route::resource('client-monitors', ClientMonitorController::class)->middleware('auth');
+
 
 // ------- CRM (Payment monior Routes)  ---------
 Route::resource('payment-monitors', PaymentMonitorController::class)->middleware('auth');
 Route::post('payment-monitors/update-with-media/{payment_monitor}', [PaymentMonitorController::class, 'updateWithMedia'])->name('payment-monitors.update-with-media')->middleware('auth');
 
+
 // ------- CRM (meeting monior Routes)  ---------
 Route::resource('meeting-monitors', MettingMonitorController::class)->middleware('auth');
+
 
 // ------- CRM (email monior Routes)  ---------
 Route::resource('email-monitors', EmailMonitorController::class)->middleware('auth');
 
+
 // ------- CRM (Call monior Routes)  ---------
 Route::resource('call-monitors', CallMonitorController::class)->middleware('auth');
+
 
 // ------- CRM (whatsapp monior Routes)  ---------
 Route::resource('whatsapp-monitors', WhatsappMonitorController::class)->middleware('auth');
 Route::post('whatsapp-monitors/update-with-media/{whatsapp_monitor}', [WhatsappMonitorController::class, 'updateWithMedia'])->name('whatsapp-monitors.update-with-media')->middleware('auth');
+
 
 // ------- CRM(sale orders Routes)  ---------
 Route::resource('sales', SaleController::class)->middleware('auth');
@@ -203,20 +297,30 @@ Route::post('sales/update-with-media/{sale}', [SaleController::class, 'updateWit
 Route::get('sales-get-unauthorized', [SaleController::class, 'getUnauthorized'])->name('sales.get-unauthorized');
 Route::get('sales-get-matches/{query}', [SaleController::class, 'getMatches'])->name('sales.get-matches');
 Route::get('sales-quality-certificate/{sale_id}', [SaleController::class, 'QualityCertificate'])->name('sales.quality-certificate');
+Route::get('sales-fetch-filtered/{filter}', [SaleController::class, 'fetchFiltered'])->name('sales.fetch-filtered');
+Route::get('sales-check-if-has-sale/{catalog_prroduct_company_id}', [SaleController::class, 'checkIfHasSale'])->name('sales.check-if-has-sale');
+
 
 // ------- CRM(Companybranches sucursales Routes)  ---------
 Route::resource('company-branches', CompanyBranchController::class)->middleware('auth');
 Route::put('company-branches/clear-important-notes/{company_branch}', [CompanyBranchController::class, 'clearImportantNotes'])->name('company-branches.clear-important-notes')->middleware('auth');
 Route::put('company-branches/store-important-notes/{company_branch}', [CompanyBranchController::class, 'storeImportantNotes'])->name('company-branches.store-important-notes')->middleware('auth');
 Route::put('company-branches/update-product-price/{product_company}', [CompanyBranchController::class, 'updateProductPrice'])->name('company-branches.update-product-price')->middleware('auth');
+Route::get('company-branches/fetch-design-info/{company_branch}', [CompanyBranchController::class, 'fetchDesignInfo'])->name('company-branches.fetch-design-info')->middleware('auth');
+
 
 // ------- Compras(Suppliers Routes)  ---------
 Route::resource('suppliers', SupplierController::class)->middleware('auth');
-Route::post('suppliers/massive-delete', [SupplierController::class, 'massiveDelete'])->name('suppliers.massive-delete');
 Route::get('fetch-supplier/{supplier_id}', [SupplierController::class, 'fetchSupplier'])->name('suppliers.fetch-supplier');
+Route::get('supplier-get-orders/{supplier}', [SupplierController::class, 'getOrders'])->name('suppliers.get-orders');
+Route::get('supplier-rating-report/{p}', [SupplierController::class, 'ratingReport'])->name('suppliers.rating-report');
+Route::post('suppliers/massive-delete', [SupplierController::class, 'massiveDelete'])->name('suppliers.massive-delete');
+Route::post('suppliers/clone', [SupplierController::class, 'clone'])->name('suppliers.clone');
+
 
 // ------- Compras(purchases Routes)  ---------
 Route::resource('purchases', PurchaseController::class)->middleware('auth');
+Route::get('purchases-show-template/{purchase_id}', [PurchaseController::class, 'showTemplate'])->name('purchases.show-template')->middleware('auth');
 Route::post('purchases/massive-delete', [PurchaseController::class, 'massiveDelete'])->name('purchases.massive-delete');
 Route::post('purchases/clone', [PurchaseController::class, 'clone'])->name('purchases.clone');
 Route::post('purchases/send-email/{purchase}', [PurchaseController::class, 'sendEmail'])->name('purchases.send-email');
@@ -224,8 +328,9 @@ Route::put('purchases/mark-order-done/{currentPurchase}', [PurchaseController::c
 Route::put('purchases/mark-order-recieved/{currentPurchase}', [PurchaseController::class, 'markOrderRecieved'])->name('purchases.recieved');
 Route::put('purchases/authorize/{purchase}', [PurchaseController::class, 'authorizePurchase'])->name('purchases.authorize');
 Route::put('purchases/update-quantity/{purchase}', [PurchaseController::class, 'updateQuantity'])->name('purchases.update-quantity');
-Route::get('purchases-show-template/{purchase_id}', [PurchaseController::class, 'showTemplate'])->name('purchases.show-template')->middleware('auth');
+Route::put('purchases/store-rating/{purchase}', [PurchaseController::class, 'storeRating'])->name('purchases.store-rating');
 // Route::get('develop-template', [PurchaseController::class, 'developTemplate'])->name('develop.template');
+
 
 //-------------- Projects routes ------------------
 Route::resource('projects', ProjectController::class)->middleware('auth');
@@ -353,6 +458,8 @@ Route::put('samples/sale-order-sample/{sample}', [SampleController::class, 'sale
 Route::put('samples/finish-sample/{sample}', [SampleController::class, 'finishSample'])->name('samples.finish-sample');
 Route::put('samples/resent-sample/{sample}', [SampleController::class, 'resentSample'])->name('samples.resent-sample');
 Route::post('samples/update-with-media/{sample}', [SampleController::class, 'updateWithMedia'])->name('samples.update-with-media')->middleware('auth');
+Route::put('samples/authorize/{sample}', [SampleController::class, 'authorizeSample'])->name('samples.authorize');
+Route::post('samples/get-matches', [SampleController::class, 'getMatches'])->name('samples.get-matches');
 
 // ------- Design department routes  ---------
 Route::resource('designs', DesignController::class)->middleware('auth');
@@ -361,6 +468,8 @@ Route::put('designs/start-order/{design}', [DesignController::class, 'startOrder
 Route::post('designs/finish-order', [DesignController::class, 'finishOrder'])->name('designs.finish-order');
 Route::put('designs/authorize/{design}', [DesignController::class, 'authorizeOrder'])->name('designs.authorize');
 Route::post('designs/update-with-media/{design}', [DesignController::class, 'updateWithMedia'])->name('designs.update-with-media');
+Route::get('designs-fetch-filtered/{filter}', [DesignController::class, 'fetchFiltered'])->name('designs.fetch-filtered');
+Route::get('designs-get-by-id/{id}', [DesignController::class, 'getById'])->name('designs.get-by-id');
 
 // ------- Design modifications routes  ---------
 Route::resource('design-modifications', DesignModificationController::class)->middleware('auth');
@@ -371,10 +480,13 @@ Route::post('design-modifications/upload-results', [DesignModificationController
 Route::resource('design-authorizations', DesignAuthorizationController::class)->middleware('auth');
 Route::put('design-authorizations-authorize/{design_authorization}', [DesignAuthorizationController::class, 'AuthorizeDesign'])->name('design-authorizations.authorize')->middleware('auth');
 Route::post('design-authorizations/update-with-media/{design_authorization}', [DesignAuthorizationController::class, 'updateWithMedia'])->name('design-authorizations.update-with-media');
+Route::get('design-authorizations/fetch-for-company-brach/{company_branch_id}', [DesignAuthorizationController::class, 'fetchForCompanyBranch'])->name('design-authorizations.fetch-for-company-branch');
+Route::get('design-authorizations-print/{design_authorization}', [DesignAuthorizationController::class, 'print'])->name('design-authorizations.print');
 
 
 // ------- production department routes  ---------
 Route::resource('productions', ProductionController::class)->middleware('auth');
+Route::get('productions-admin-index', [ProductionController::class, 'adminIndex'])->name('productions.admin-index');
 Route::post('productions/massive-delete', [ProductionController::class, 'massiveDelete'])->name('productions.massive-delete');
 Route::get('productions/print/{productions}', [ProductionController::class, 'print'])->name('productions.print');
 Route::put('productions/change-status/{production}', [ProductionController::class, 'changeStatus'])->name('productions.change-status');
@@ -382,6 +494,10 @@ Route::put('productions/change-stock-status/{production}', [ProductionController
 Route::put('productions/continue-production/{production}', [ProductionController::class, 'continueProduction'])->name('productions.continue-production');
 Route::post('productions-{cpcs}-comment', [ProductionController::class, 'comment'])->name('productions.comment')->middleware('auth');
 Route::get('productions-{cpcs}-show-traveler', [ProductionController::class, 'showTravelerTemplate'])->name('productions.show-traveler-template')->middleware('auth');
+Route::post('productions-generate-box-label', [ProductionController::class, 'generateBoxLabel'])->name('productions.generate-box-label')->middleware('auth');
+Route::post('productions-get-matches', [ProductionController::class, 'getMatches'])->name('productions.get-matches');
+Route::get('productions-fetch-catalog-product-shipping-rates/{catalog_product}', [ProductionController::class, 'fetchCatalogProductShippingRates'])->name('productions.fetch-catalog-product-shipping-rates');
+Route::get('productions-fetch-sale-info/{sale}', [ProductionController::class, 'fetchSaleInfo'])->name('productions.fetch-sale-info');
 
 // ------- Quality department routes  ---------
 Route::resource('qualities', QualityController::class)->middleware('auth');
@@ -415,6 +531,7 @@ Route::get('/raw-material-info', [PdfController::class, 'RawMaterialInfo'])->nam
 Route::resource('maintenances', MaintenanceController::class)->except('create')->middleware('auth');
 Route::get('maintenances/create/{selectedMachine}', [MaintenanceController::class, 'create'])->name('maintenances.create')->middleware('auth');
 Route::post('maintenances/update-with-media/{maintenance}', [MaintenanceController::class, 'updateWithMedia'])->name('maintenances.update-with-media')->middleware('auth');
+Route::put('maintenances/validate/{maintenance}', [MaintenanceController::class, 'validateWork'])->name('maintenances.validate')->middleware('auth');
 
 
 // ------- tutorials & manuals routes  -------------
@@ -455,13 +572,20 @@ Route::post('customer-meetings/get-soon-dates', [CustomerMeetingController::clas
 
 //------------------ sale analisis routes ----------------
 Route::resource('sale-analitics', SaleAnaliticController::class)->middleware('auth');
-Route::get('sale-analitics-fetch-top-products/{family}/{range}', [SaleAnaliticController::class, 'fetchTopProducts'])->name('sale-analitics.fetch-top-products')->middleware('auth');
+Route::get('sale-analitics-fetch-top-products/{family}/{range}/{type}', [SaleAnaliticController::class, 'fetchTopProducts'])->name('sale-analitics.fetch-top-products')->middleware('auth');
 Route::get('sale-analitics-fetch-product-info/{part_number}', [SaleAnaliticController::class, 'fetchProductInfo'])->name('sale-analitics.fetch-product-info')->middleware('auth');
+Route::get('sale-analitics-fetch-raw-material-info/{part_number}', [SaleAnaliticController::class, 'fetchRawMaterialInfo'])->name('sale-analitics.fetch-raw-material-info')->middleware('auth');
+Route::get('sale-analitics-fetch-catalog-product-sales/{part_number}/{range}', [SaleAnaliticController::class, 'fetchCatalogProductSales'])->name('sale-analitics.fetch-catalog-product-sales')->middleware('auth');
+Route::get('sale-analitics-get-estatistics-data/{date}', [SaleAnaliticController::class, 'getEstatisticsData'])->name('sale-analitics.get-estatistics-data')->middleware('auth');
 
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
 
 Route::post('/upload-image', [FileUploadController::class, 'upload'])->name('upload-image');
+
+
+//contact routes ----------------------------------------------------------------
+Route::put('contacts-update/{contact}', [ContactController::class, 'update'])->name('contacts.update')->middleware('auth');
 
 
 //artisan commands -------------------
@@ -496,10 +620,3 @@ Route::get('mail-test', function () {
 
     return "Correo de prueba enviado a $destinatario.";
 });
-
-
-
-
-// Route::get('/sorry-miss-u', function () {
-//     return inertia('Cin/so');
-// });

@@ -1,6 +1,6 @@
 <template>
   <AppLayoutNoHeader title="Oportunidades">
-    <div class="relative overflow-hidden">
+    <div class="relative overflow-hidden dark:text-white">
       <div @click="show_type_view = false" class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
         <div class="flex justify-between">
           <label class="text-lg">Oportunidades</label>
@@ -198,13 +198,13 @@
                 <span class="py-1 px-4 rounded-full" :class="getStatusStyles(oportunity)">{{ oportunity.status }}</span>
               </td>
               <td class="text-left py-2 px-2">
-                <span class="py-1 px-2 rounded-full">{{ oportunity.created_at.isoFormat }}</span>
+                <span class="py-1 px-2 rounded-full">{{  formatDate(oportunity.created_at) }}</span>
               </td>
               <td class="text-left py-2 px-2">
-                {{ oportunity.estimated_finish_date }}
+                {{  formatDate(oportunity.estimated_finish_date) }}
               </td>
               <td class="text-left py-2 px-2">
-                {{ oportunity.finished_at ?? "--" }}
+                {{  formatDate(oportunity.finished_at) ?? "--" }}
               </td>
               <td v-if="$page.props.auth.user.permissions.includes('Eliminar oportunidades')"
                 class="text-left py-2 px-2 rounded-r-full">
@@ -279,9 +279,11 @@ import OportunityCard from "@/Components/MyComponents/OportunityCard.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 import draggable from 'vuedraggable';
-import Modal from "@/Components/Modal.vue";
-import { Link } from "@inertiajs/vue3";
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
+import Modal from "@/Components/Modal.vue";
+import { format, parseISO } from 'date-fns';
+import es from 'date-fns/locale/es';
+import { Link } from "@inertiajs/vue3";
 
 export default {
   data() {
@@ -311,15 +313,15 @@ export default {
     };
   },
   components: {
-    AppLayoutNoHeader,
     NotificationCenter,
-    Dropdown,
-    DropdownLink,
-    PrimaryButton,
+    AppLayoutNoHeader,
     SecondaryButton,
-    CancelButton,
     OportunityCard,
+    PrimaryButton,
+    DropdownLink,
+    CancelButton,
     draggable,
+    Dropdown,
     Modal,
     Link,
   },
@@ -327,6 +329,12 @@ export default {
     oportunities: Object,
   },
   methods: {
+    formatDate(dateString) {
+      if (!dateString) {
+          return '';
+      }
+      return format(parseISO(dateString), 'dd MMMM yyyy', { locale: es });
+    },
     cancelUpdating() {
       window.location.reload()
     },

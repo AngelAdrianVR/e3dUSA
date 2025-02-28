@@ -17,8 +17,8 @@ class PayrollUser extends Pivot
     protected $fillable = [
         'date',
         'check_in',
-        'pausas',
         'check_out',
+        'pausas',
         'late',
         'extras_enabled',
         'extra_hours',

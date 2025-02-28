@@ -124,7 +124,7 @@ class StorageController extends Controller
         if ($existingStorage) {
             // Si existe, incrementar la cantidad existente
             $existingStorage->increment('quantity', $request->quantity);
-            StockMovementHistory::Create([
+            StockMovementHistory::create([
                 'storage_id' => $existingStorage->id,
                 'user_id' => auth()->id(),
                 'type' => 'Entrada',
@@ -146,7 +146,7 @@ class StorageController extends Controller
             $quantity_needed = $raw_material->pivot->quantity * $request->quantity;
             $storage = Storage::where('storageable_id', $raw_material->id)->where('storageable_type', 'App\Models\RawMaterial')->first();
             $storage->decrement('quantity', $quantity_needed);
-            StockMovementHistory::Create([
+            StockMovementHistory::create([
                 'storage_id' => $storage->id,
                 'user_id' => auth()->id(),
                 'type' => 'Salida',
@@ -183,7 +183,7 @@ class StorageController extends Controller
             if ($existingStorage) {
                 // Si existe, incrementar la cantidad existente
                 $existingStorage->increment('quantity', $request->quantity);
-                StockMovementHistory::Create([
+                StockMovementHistory::create([
                     'storage_id' => $existingStorage->id,
                     'user_id' => auth()->id(),
                     'type' => 'Salida',
@@ -212,7 +212,7 @@ class StorageController extends Controller
             if ($existingStorage) {
                 // Si existe, incrementar la cantidad existente
                 $existingStorage->increment('quantity', $request->quantity);
-                StockMovementHistory::Create([
+                StockMovementHistory::create([
                     'storage_id' => $existingStorage->id,
                     'user_id' => auth()->id(),
                     'type' => 'Salida',
@@ -387,7 +387,7 @@ class StorageController extends Controller
                 $quantity_needed = $raw_material->pivot->quantity * $finished_product->quantity;
                 $storage = Storage::where('storageable_id', $raw_material->id)->where('storageable_type', 'App\Models\RawMaterial')->first();
                 $storage->increment('quantity', $quantity_needed);
-                StockMovementHistory::Create([
+                StockMovementHistory::create([
                     'storage_id' => $storage->id,
                     'user_id' => auth()->id(),
                     'type' => 'Entrada',
@@ -464,7 +464,7 @@ class StorageController extends Controller
         ]);
 
         // Add movement to history
-        $history = StockMovementHistory::Create($validated + ['storage_id' => $storage->id, 'user_id' => auth()->id()]);
+        $history = StockMovementHistory::create($validated + ['storage_id' => $storage->id, 'user_id' => auth()->id()]);
         $history = StockMovementHistory::with('user')->find($history->id);
 
         // update stock
@@ -485,7 +485,7 @@ class StorageController extends Controller
         ]);
 
         // Add movement to history
-        $history = StockMovementHistory::Create($validated + ['storage_id' => $storage->id, 'user_id' => auth()->id()]);
+        $history = StockMovementHistory::create($validated + ['storage_id' => $storage->id, 'user_id' => auth()->id()]);
         $history = StockMovementHistory::with('user')->find($history->id);
 
         // update stock
@@ -536,7 +536,7 @@ class StorageController extends Controller
             }
         }
 
-        $history = StockMovementHistory::Create([
+        $history = StockMovementHistory::create([
             'storage_id' => $storage->id, 'user_id' => auth()->id(),
             'quantity' => $quantity,
             'type' => $request->scanType,

@@ -151,7 +151,7 @@
               <span style="float: left"><i :class="item.color" class="fa-solid fa-circle"></i></span>
               <span style="float: center; margin-left: 5px; font-size: 13px">{{
                 item.label
-              }}</span>
+                }}</span>
             </el-option>
           </el-select>
           <InputError :message="form.errors.priority" />
@@ -163,11 +163,6 @@
           <InputError :message="form.errors.start_date" />
           <InputError :message="form.errors.limit_date" />
         </div>
-        <!-- <div class="w-1/2 mt-3">
-          <label>Recordatorio</label>
-          <textarea v-model="form.reminder" disabled class="textarea w-full"> </textarea>
-          <InputError :message="form.errors.reminder" />
-        </div> -->
         <!-- --------------------- TABS -------------------- -->
         <section class="mt-9">
           <div class="flex items-center justify-center">
@@ -205,12 +200,11 @@
                     :alt="$page.props.auth.user.name" />
                 </div>
                 <RichText @submitComment="storeComment(taskComponentLocal)" @content="updateComment($event)"
-                  ref="commentEditor" class="flex-1" withFooter :userList="users" :disabled="sendingComments" />
+                  ref="commentEditor" class="flex-1" withFooter :userList="users"
+                  :disabled="sendingComments || !form.comment" />
               </div>
             </div>
           </div>
-          <!-- ---------------- tab 1 comentarios ends  -------------->
-
           <!-- -------------- Tab 2 documentos starts ----------------->
           <div v-if="tabs == 2" class="mt-7 min-h-[170px]">
             <a :href="file?.original_url" target="_blank" v-for="file in taskComponentLocal?.media" :key="file"
@@ -222,11 +216,8 @@
               <i class="fa-solid fa-download text-right text-sm text-[#9a9a9a]"></i>
             </a>
           </div>
-          <!-- ---------------- tab 2 documentos ends  -------------->
-
           <!-- -------------- Tab 3 historial starts ----------------->
           <div v-if="tabs == 3" class="mt-7 min-h-[170px]"></div>
-          <!-- ---------------- tab 3 historial ends  -------------->
         </section>
       </div>
       <!-- {{ form }} -->
@@ -392,19 +383,6 @@ export default {
         this.canSelectTime = false;
         this.enabledTime = false;
       }
-
-    },
-    async updateStatus() {
-      try {
-        const response = await axios.put(route('tasks.update-status', this.taskComponentLocal.id), { status: this.form.status });
-
-        if (response.status === 200) {
-          this.taskComponentLocal.status = this.form.status;
-          this.$emit('updated-status', this.taskComponentLocal);
-        }
-      } catch (error) {
-        console.log(error);
-      }
     },
     toBool(value) {
       if (value == 1 || value == true) return true;
@@ -412,6 +390,47 @@ export default {
     },
     updateDescription(content) {
       this.form.description = content;
+    },
+    updateComment(content) {
+      this.form.comment = content;
+    },
+    getColorStatus(taskStatus) {
+      if (taskStatus === "Por hacer") {
+        return "text-[#9A9A9A]";
+      } else if (taskStatus === "En curso") {
+        return "text-[#0355B5]";
+      } else {
+        return "text-green-500";
+      }
+    },
+    getColorPriority(taskPriority) {
+      if (taskPriority === "Baja") {
+        return "text-[#87CEEB]";
+      } else if (taskPriority === "Media") {
+        return "text-orange-500";
+      } else {
+        return "text-red-600";
+      }
+    },
+    getFileTypeIcon(fileName) {
+      // Asocia extensiones de archivo a iconos
+      const fileExtension = fileName.split('.').pop().toLowerCase();
+      switch (fileExtension) {
+        case 'pdf':
+          return 'fa-regular fa-file-pdf text-red-700';
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+        case 'gif':
+          return 'fa-regular fa-image text-blue-300';
+        default:
+          return 'fa-regular fa-file-lines';
+      }
+    },
+    deleteProjectTask() {
+      this.$emit('delete-task', this.taskComponent.id);
+      this.taskInformationModal = false;
+      this.showConfirmModal = false;
     },
     async playPauseTask(task) {
       try {
@@ -461,6 +480,7 @@ export default {
             message: "Se ha actualizado la tarea",
             type: "success",
           });
+          this.canEdit = false;
           this.taskComponentLocal = response.data.item;
           this.taskInformationModal = false;
           this.$emit('updated-status', this.taskComponentLocal);
@@ -468,9 +488,6 @@ export default {
       } catch (error) {
         console.log(error);
       }
-    },
-    updateComment(content) {
-      this.form.comment = content;
     },
     async storeComment() {
       const editor = this.$refs.commentEditor;
@@ -493,43 +510,17 @@ export default {
         }
       }
     },
-    getColorStatus(taskStatus) {
-      if (taskStatus === "Por hacer") {
-        return "text-[#9A9A9A]";
-      } else if (taskStatus === "En curso") {
-        return "text-[#0355B5]";
-      } else {
-        return "text-green-500";
+    async updateStatus() {
+      try {
+        const response = await axios.put(route('tasks.update-status', this.taskComponentLocal.id), { status: this.form.status });
+
+        if (response.status === 200) {
+          this.taskComponentLocal.status = this.form.status;
+          this.$emit('updated-status', this.taskComponentLocal);
+        }
+      } catch (error) {
+        console.log(error);
       }
-    },
-    getColorPriority(taskPriority) {
-      if (taskPriority === "Baja") {
-        return "text-[#87CEEB]";
-      } else if (taskPriority === "Media") {
-        return "text-orange-500";
-      } else {
-        return "text-red-600";
-      }
-    },
-    getFileTypeIcon(fileName) {
-      // Asocia extensiones de archivo a iconos
-      const fileExtension = fileName.split('.').pop().toLowerCase();
-      switch (fileExtension) {
-        case 'pdf':
-          return 'fa-regular fa-file-pdf text-red-700';
-        case 'jpg':
-        case 'jpeg':
-        case 'png':
-        case 'gif':
-          return 'fa-regular fa-image text-blue-300';
-        default:
-          return 'fa-regular fa-file-lines';
-      }
-    },
-    deleteProjectTask() {
-      this.$emit('delete-task', this.taskComponent.id);
-      this.taskInformationModal = false;
-      this.showConfirmModal = false;
     },
   },
   mounted() {

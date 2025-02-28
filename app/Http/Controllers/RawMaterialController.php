@@ -16,7 +16,6 @@ use Illuminate\Support\Str;
 
 class RawMaterialController extends Controller
 {
-
     public function index()
     {
     }
@@ -36,9 +35,9 @@ class RawMaterialController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string',
-            'brand' => 'required|string',
-            'material' => 'required|string',
+            'name' => 'required|string|max:255',
+            'brand' => 'required|string|max:255',
+            'material' => 'required|string|max:255',
             'width' => 'required|numeric|min:0|max:2000',
             'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
             'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
@@ -49,7 +48,7 @@ class RawMaterialController extends Controller
             'max_quantity' => 'required|numeric|min:0',
             'cost' => 'required|numeric|min:0',
             'description' => 'nullable|string',
-            'location' => 'required|string',
+            'location' => 'required|string|max:255',
         ]);
 
         // consecutive
@@ -120,7 +119,6 @@ class RawMaterialController extends Controller
             return to_route('storages.consumables.index');
     }
 
-
     public function show(RawMaterial $rawMaterial)
     {
         //
@@ -129,16 +127,15 @@ class RawMaterialController extends Controller
     public function edit($raw_material)
     {
         $raw_material = RawMaterialResource::make(RawMaterial::with('storages')->find($raw_material));
-        // return $raw_material;
+        $media = $raw_material->getMedia();
 
-        return inertia('Storage/Edit/RawMaterial', compact('raw_material'));
+        return inertia('Storage/Edit/RawMaterial', compact('raw_material', 'media'));
     }
 
     public function editConsumable($raw_material)
     {
-
         $raw_material = RawMaterialResource::make(RawMaterial::with('storages')->find($raw_material));
-        // return $raw_material;
+
         return inertia('Storage/Edit/Consumable', compact('raw_material'));
     }
 
@@ -148,10 +145,10 @@ class RawMaterialController extends Controller
             'name' => 'required|string',
             'brand' => 'required|string',
             'material' => 'required|string',
-            // 'width' => 'required|numeric|min:0|max:2000',
-            // 'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
-            // 'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
-            // 'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
+            'width' => 'required|numeric|min:0|max:2000',
+            'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
             // 'part_number' => 'required|string', Se eliminaba el co nsecutivo, no descomentar
             'measure_unit' => 'required',
             'min_quantity' => 'required|numeric|min:0',
@@ -183,10 +180,10 @@ class RawMaterialController extends Controller
             'name' => 'required|string',
             'brand' => 'required|string',
             'material' => 'required|string',
-            // 'width' => 'required|numeric|min:0|max:2000',
-            // 'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
-            // 'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
-            // 'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
+            'width' => 'required|numeric|min:0|max:2000',
+            'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
+            'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
             // 'part_number' => 'required|string', Se eliminaba el consecutivo, no descomentar
             'measure_unit' => 'required',
             'min_quantity' => 'required|numeric|min:0',
@@ -204,8 +201,10 @@ class RawMaterialController extends Controller
         ]);
 
         // update image
-        $raw_material->clearMediaCollection();
-        $raw_material->addMediaFromRequest('media')->toMediaCollection();
+        if ( $request->media ) {
+            $raw_material->clearMediaCollection();
+            $raw_material->addMediaFromRequest('media')->toMediaCollection();
+        }
 
         event(new RecordEdited($raw_material));
 
@@ -263,7 +262,7 @@ class RawMaterialController extends Controller
             // Clonar la imagen si existe
             $rawMaterialImage = $rawMaterial->getFirstMedia();
 
-            if ($rawMaterialImage) {
+            if ($rawMaterialImage && file_exists($rawMaterialImage->getPath())) {
                 // Crear una nueva instancia de Media
                 $clonedImage = $catalogProduct
                     ->addMedia($rawMaterialImage->getPath())
@@ -285,7 +284,6 @@ class RawMaterialController extends Controller
         return response()->json(['message' => 'Este producto ya existe en el catalogo', 'type' => 'info', 'title' => '']);
     }
 
-
     public function fetchItem($raw_material_id)
     {
         $raw_material = RawMaterial::with('media')->find($raw_material_id);
@@ -300,7 +298,7 @@ class RawMaterialController extends Controller
         $ids_array = explode(',', $raw_materials_ids);
 
         foreach ($ids_array as $raw_material_id) {
-            $raw_material = RawMaterial::with('media')->find($raw_material_id);
+            $raw_material = RawMaterial::with('media', 'storages')->find($raw_material_id);
 
             if ($raw_material) {
                 $raw_materials[] = $raw_material;

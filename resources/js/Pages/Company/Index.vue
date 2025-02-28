@@ -6,9 +6,10 @@
                     <div class="flex items-center space-x-2">
                         <h2 class="font-semibold text-xl leading-tight">Cartera de Clientes</h2>
                     </div>
-                    <div v-if="$page.props.auth.user.permissions.includes('Crear clientes')">
+                    <div class="flex items-center space-x-2" v-if="$page.props.auth.user.permissions.includes('Crear clientes')">
+                        <ThirthButton @click="openReport()" class="text-secondary border-secondary focus:ring-secondary">Reporte de contactos</ThirthButton>
                         <Link :href="route('companies.create')">
-                        <SecondaryButton>+ Nuevo</SecondaryButton>
+                            <SecondaryButton>+ Nuevo</SecondaryButton>
                         </Link>
                     </div>
                 </div>
@@ -22,7 +23,7 @@
                         <!-- pagination -->
                         <div>
                             <el-pagination @current-change="handlePagination" layout="prev, pager, next"
-                                :total="companies.length" />
+                                :total="companies.data.length" />
                         </div>
                         <!-- buttons -->
                         <div v-if="$page.props.auth.user.permissions.includes('Eliminar clientes')">
@@ -50,10 +51,10 @@
                         <el-table-column label="Vendedor" width="180">
                             <template #default="scope">
                                 <div class="flex items-center">
-                                    <p class="mr-2" :style="{ color: getColorHex(scope.row.seller_id) }">
+                                    <p class="mr-2" :style="{ color: getColorHex(scope.row.seller?.id) }">
                                         <i class="fa-solid fa-star"></i>
                                     </p>
-                                    <p class="flex-0 w-[80%]">{{ scope.row.seller_name }}</p>
+                                    <p class="flex-0 w-[80%]">{{ scope.row.seller?.name }}</p>
                                 </div>
                             </template>
                         </el-table-column>
@@ -67,16 +68,25 @@
                                     </button>
                                     <template #dropdown>
                                         <el-dropdown-menu>
-                                            <el-dropdown-item :command="'show-' + scope.row.id"><i
-                                                    class="fa-solid fa-eye"></i>
+                                            <el-dropdown-item :command="'show-' + scope.row.id">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 mr-2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                </svg>
                                                 Ver</el-dropdown-item>
                                             <el-dropdown-item
                                                 v-if="$page.props.auth.user.permissions.includes('Editar clientes')"
-                                                :command="'edit-' + scope.row.id"><i class="fa-solid fa-pen"></i>
+                                                :command="'edit-' + scope.row.id">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 mr-2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                                </svg>
                                                 Editar</el-dropdown-item>
                                             <el-dropdown-item
                                                 v-if="$page.props.auth.user.permissions.includes('Crear clientes')"
-                                                :command="'clone-' + scope.row.id"><i class="fa-solid fa-clone"></i>
+                                                :command="'clone-' + scope.row.id">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 mr-2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" />
+                                                </svg>
                                                 Clonar</el-dropdown-item>
                                         </el-dropdown-menu>
                                     </template>
@@ -94,12 +104,13 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import ThirthButton from "@/Components/MyComponents/ThirthButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
-import { Link } from "@inertiajs/vue3";
-import axios from 'axios';
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
+import { Link } from "@inertiajs/vue3";
+import axios from 'axios';
 
 
 export default {
@@ -117,18 +128,23 @@ export default {
         };
     },
     components: {
-        AppLayout,
-        PrimaryButton,
-        SecondaryButton,
-        Link,
-        TextInput,
         NotificationCenter,
+        SecondaryButton,
         IndexSearchBar,
+        PrimaryButton,
+        ThirthButton,
+        AppLayout,
+        TextInput,
+        Link,
     },
     props: {
         companies: Object
     },
     methods: {
+        openReport() {
+            const url = this.route('companies.contacts-report');
+            window.open(url, '_blank');
+        },
         getColorHex(number) {
             if (number) {
                 // Ajusta el tono (hue) en función del número proporcionado
@@ -219,7 +235,7 @@ export default {
                         type: 'success'
                     });
 
-                    this.companies.unshift(response.data.newItem);
+                    this.companies.data.unshift(response.data.newItem);
 
                 } else {
                     this.$notify({
@@ -253,7 +269,7 @@ export default {
 
                     // update list of companies
                     let deletedIndexes = [];
-                    this.companies.forEach((company, index) => {
+                    this.companies.data.forEach((company, index) => {
                         if (this.$refs.multipleTableRef.value.includes(company)) {
                             deletedIndexes.push(index);
                         }
@@ -264,7 +280,7 @@ export default {
 
                     // Eliminar clientes por índice
                     for (const index of deletedIndexes) {
-                        this.companies.splice(index, 1);
+                        this.companies.data.splice(index, 1);
                     }
 
                 } else {
@@ -301,9 +317,9 @@ export default {
     computed: {
         filteredTableData() {
             if (!this.search) {
-                return this.companies.filter((item, index) => index >= this.start && index < this.end);
+                return this.companies.data.filter((item, index) => index >= this.start && index < this.end);
             } else {
-                return this.companies.filter(
+                return this.companies.data.filter(
                     (company) =>
                         company.business_name.toLowerCase().includes(this.search.toLowerCase()) ||
                         company.rfc.toLowerCase().includes(this.search.toLowerCase()) ||

@@ -17,6 +17,10 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('part_number');
             $table->string('measure_unit');
+            $table->unsignedSmallInteger('width')->nullable(); //dimension o medida del producto
+            $table->unsignedSmallInteger('large')->nullable(); //dimension o medida del producto
+            $table->unsignedSmallInteger('height')->nullable(); //dimension o medida del producto
+            $table->unsignedSmallInteger('diameter')->nullable(); //dimension o medida del producto
             $table->unsignedFloat('cost')->nullable();
             $table->unsignedFloat('min_quantity')->nullable();
             $table->unsignedFloat('max_quantity')->nullable();

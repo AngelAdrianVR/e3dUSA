@@ -220,5 +220,13 @@ return [
         'contact_charge' => 'puesto del contacto',
         'branches_number' => 'número de sucursales',
         'abstract' => 'resumen',
+        'email_password' => 'contraseña de correo',
+        'length' => 'largo',
+        'height' => 'alto',
+        'width' => 'ancho',
+        'catalog_product_id' => 'producto',
+        'new_price' => 'precio nuevo',
+        'new_currency' => 'moneda',
+        'brand' => 'marca',
     ],
 ];

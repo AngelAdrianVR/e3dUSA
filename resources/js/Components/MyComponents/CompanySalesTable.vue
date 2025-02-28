@@ -13,7 +13,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="sale in company_sales" :key="sale" class="mb-4">
+        <tr v-for="sale in company_sales" :key="sale" class="mb-4 hover:bg-[#d9d9d9]">
           <td class="text-center text-secondary py-2 px-2 rounded-l-full hover:underline">
             <a :href="'/sales/' + sale.id"> {{ sale.folio }} </a>
           </td>

@@ -1,10 +1,10 @@
 <template>
   <AppLayoutNoHeader title="Detalles de prospecto">
     <AllPageLoading v-if="loading" />
-    <div class="flex justify-between text-lg mx-2 lg:mx-14 mt-11">
+    <div class="flex justify-between text-lg mx-2 lg:mx-14 mt-11 dark:text-white">
       <span>Prospectos</span>
       <Link :href="route('prospects.index')"
-        class="cursor-pointer size-7 rounded-full hover:bg-[#D9D9D9] flex items-center justify-center">
+        class="cursor-pointer size-7 rounded-full hover:bg-[#D9D9D9] dark:hover:bg-[#191919] hover:text-primary flex items-center justify-center">
       <i class="fa-solid fa-xmark"></i>
       </Link>
     </div>
@@ -19,8 +19,10 @@
       </div>
       <div class="flex space-x-2 w-full justify-end">
         <button @click="$inertia.get(route('prospects.edit', prospect.data.id))"
-          class="size-9 rounded-[10px] bg-[#D9D9D9]">
-          <i class="fa-solid fa-pen text-sm"></i>
+          class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+          </svg>
         </button>
         <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#D90537" title="Se eliminará este prospecto y se creará un cliente con esta información. ¿Continuar?"
           @confirm="turnIntoCustomer()">
@@ -33,8 +35,9 @@
         <Dropdown align="right" width="48" v-if="$page.props.auth.user.permissions.includes('Crear prospectos')
           || $page.props.auth.user.permissions.includes('Eliminar prospectos')">
           <template #trigger>
-            <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">Más <i
-                class="fa-solid fa-chevron-down text-[11px] ml-2"></i></button>
+            <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center justify-center text-sm">
+              Más <i class="fa-solid fa-chevron-down text-[10px] ml-2 pb-[2px]"></i>
+            </button>
           </template>
           <template #content>
             <DropdownLink :href="route('prospects.create')"
@@ -50,7 +53,7 @@
       </div>
     </div>
 
-    <h1 class="text-center font-bold text-xl mt-8 mb-4">{{ prospect.data.name }}</h1>
+    <h1 class="text-center font-bold text-xl mt-8 mb-4 dark:text-white">{{ prospect.data.name }}</h1>
     <!-- tabs -->
     <el-tabs v-model="activeTab" class="mx-5" @tab-click="handleClick">
       <el-tab-pane label="Información general" name="1">

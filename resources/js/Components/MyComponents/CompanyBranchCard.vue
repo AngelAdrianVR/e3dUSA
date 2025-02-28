@@ -5,6 +5,8 @@
 
         <p class="my-3 px-4">Datos</p>
         <div class="grid grid-cols-3 text-left items-center px-4">
+            <span class="text-gray-500">ID</span>
+            <span class="col-span-2 bg-green-200 text-black">{{ company_branch.id }}</span>
             <span class="text-gray-500">Método de pago</span>
             <span class="col-span-2">{{ company_branch.sat_method }}</span>
             <span class="text-gray-500 my-2">Medio de pago</span>
@@ -13,10 +15,12 @@
             <span class="col-span-2">{{ company_branch.sat_type }}</span>
             <span class="text-gray-500 my-2">Dirección</span>
             <span class="col-span-2">{{ company_branch.address }}</span>
+            <span class="text-gray-500 my-2">Estado</span>
+            <span class="col-span-2">{{ company_branch.state ?? 'No especificado' }}</span>
             <span class="text-gray-500 my-2">Cómo nos conocieron</span>
             <span class="col-span-2">{{ company_branch.meet_way ?? '* No especificado' }}</span>
         </div>
-        <div v-if="company_branch.important_notes" class="bg-[#FED1DC] py-1 border-l-2 border-[#D90537] grid grid-cols-3 text-left items-center px-4">
+        <div v-if="company_branch.important_notes" class="bg-[#FED1DC] dark:bg-red-400 py-1 border-l-2 border-[#D90537] grid grid-cols-3 text-left items-center px-4">
             <span class="text-black my-2 font-bold ">Notas importantes</span>
             <span style="white-space: pre-line;">{{ company_branch.important_notes }}</span>
         </div>

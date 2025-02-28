@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Mail;
 
 class EmailMonitorController extends Controller
 {
-
     public function index()
     {
         //
@@ -70,15 +69,14 @@ class EmailMonitorController extends Controller
         return inertia('EmailMonitor/Create', compact('companies', 'oportunities', 'users', 'opportunity'));
     }
 
-
     public function store(Request $request)
     {
         $request->validate([
             'oportunity_id' => 'required',
             'company_id' => 'nullable',
-            'company_branch_id' => 'nullable',
-            'contact_id' => 'nullable',
-            'contact_email' => 'required',
+            'company_branch_id' => 'required|numeric|min:1',
+            'contact_id' => 'required|numeric|min:1',
+            'contact_email' => 'required|string|max:255',
             'subject' => 'required',
             'content' => 'required',
         ]);

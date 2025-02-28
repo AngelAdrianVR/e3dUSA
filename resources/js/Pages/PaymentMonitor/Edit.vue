@@ -11,111 +11,68 @@
 
     <!-- Form -->
     <form @submit.prevent="update">
-      <div
-        class="md:w-1/2 md:mx-auto text-sm my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md space-y-4"
-      >
-        <h2 class="text-secondary">Datos del cliente</h2>
-
-        <div class="flex items-center space-x-2">
-          <div class="w-1/2">
-            <label>Folio de la oportunidad *</label>
-            <el-select
-              @change="getCompany"
-              disabled
-              class="w-full"
-              v-model="form.oportunity_id"
-              clearable
-              filterable
-              placeholder="Seleccione"
-              no-data-text="No hay registros"
-              no-match-text="No se encontraron coincidencias"
-            >
-              <el-option
-                v-for="oportunity in oportunities"
-                :key="oportunity"
-                :label="oportunity.folio"
-                :value="oportunity.id"
-              />
-            </el-select>
-            <InputError :message="form.errors.oportunity_id" />
-          </div>
-          <div class="w-1/2">
-            <label>Cliente</label>
-            <input
-              v-model="company_name"
-              disabled
-              class="input cursor-not-allowed"
-              type="text"
-            />
-          </div>
-        </div>
-        <div class="w-1/2">
-          <label>Vendedor</label>
-          <input
-            v-model="seller_name"
-            disabled
-            class="input cursor-not-allowed"
-            type="text"
-          />
-        </div>
-
-        <h2 class="text-secondary pt-4">Detalles del pago</h2>
-
-        <div class="lg:flex items-center pt-3">
-          <div class="lg:w-1/2 lg:mt-0">
-            <label class="block">Fecha de pago *</label>
-            <el-date-picker
-              v-model="form.paid_at"
-              type="date"
-              placeholder="Fecha de pago *"
-              format="YYYY/MM/DD"
-              value-format="YYYY-MM-DD"
-            />
-            <InputError :message="form.errors.paid_at" />
-          </div>
-          <div class="w-1/2">
-            <label>Monto pagado *</label>
-            <input v-model="form.amount" class="input" type="number" min="0" />
-            <InputError :message="form.errors.amount" />
-          </div>
-        </div>
-        <div class="flex items-center space-x-2">
-          <div class="w-1/2">
-            <label>Método de pago *</label>
-            <el-select
-              class="w-full"
-              v-model="form.payment_method"
-              clearable
-              filterable
-              placeholder="Seleccione"
-              no-data-text="No hay registros"
-              no-match-text="No se encontraron coincidencias"
-            >
-              <el-option
-                v-for="payment_method in payment_methods"
-                :key="payment_method"
-                :label="payment_method"
-                :value="payment_method"
-              />
-            </el-select>
-            <InputError :message="form.errors.payment_method" />
-          </div>
-          <div class="w-1/2">
-            <label>Concepto</label>
-            <input v-model="form.concept" class="input" type="text" />
-            <InputError :message="form.errors.concept" />
-          </div>
+      <div class="md:w-1/2 md:mx-auto grid grid-cols-2 gap-3 text-sm my-5 bg-[#D9D9D9] rounded-lg lg:p-9 p-4 shadow-md">
+        <h2 class="text-[#373737] font-bold col-span-full">Datos del cliente</h2>
+        <div>
+          <InputLabel value="Folio de la oportunidad*" />
+          <el-select @change="getCompany" class="w-full" v-model="form.oportunity_id" clearable filterable
+            placeholder="Seleccione" no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
+            <el-option v-for="oportunity in oportunities" :key="oportunity"
+              :label="oportunity.folio + ' - ' + oportunity.name" :value="oportunity.id" />
+          </el-select>
+          <InputError :message="form.errors.oportunity_id" />
         </div>
         <div>
-          <label>Observaciones</label>
-          <textarea v-model="form.notes" class="textarea" rows="2"> </textarea>
+          <InputLabel value="Cliente*" />
+          <el-input v-model="company_name" type="text" disabled placeholder="Llenado automático" />
+        </div>
+        <div>
+          <InputLabel value="Vendedor*" />
+          <el-input v-model="seller_name" type="text" disabled placeholder="Llenado automático" />
+        </div>
+        <h2 class="text-[#373737] font-bold col-span-full">Detalles del pago</h2>
+        <div>
+          <InputLabel value="Fecha de pago*" />
+          <el-date-picker v-model="form.paid_at" type="date" placeholder="Fecha de pago *" format="YYYY/MM/DD"
+            class="!w-full" value-format="YYYY-MM-DD" />
+          <InputError :message="form.errors.paid_at" />
+        </div>
+        <div>
+          <InputLabel value="Monto pagado*" />
+          <el-input v-model="form.amount" type="text"
+            :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 5,000" />
+          <InputError :message="form.errors.amount" />
+        </div>
+        <div>
+          <InputLabel value="Método de pago*" />
+          <el-select class="w-full" v-model="form.payment_method" clearable filterable placeholder="Selecciona"
+            no-data-text="No hay registros" no-match-text="No se encontraron coincidencias">
+            <el-option v-for="payment_method in payment_methods" :key="payment_method" :label="payment_method"
+              :value="payment_method" />
+          </el-select>
+          <InputError :message="form.errors.payment_method" />
+        </div>
+        <div>
+          <InputLabel value="Concepto*" />
+          <el-input v-model="form.concept" type="text" placeholder="Ej. Anticipo" />
+          <InputError :message="form.errors.concept" />
+        </div>
+        <div class="col-span-full">
+          <InputLabel value="Observaciones" />
+          <el-input v-model="form.notes" :rows="3" maxlength="800" placeholder="..." show-word-limit type="textarea" />
           <InputError :message="form.errors.notes" />
         </div>
-        <div class="ml-2 mt-2 col-span-full flex">
-          <FileUploader @files-selected="this.form.media = $event" />
+        <div class="col-span-full">
+          <InputLabel value="Evidencias" />
+          <FileUploader @files-selected="handleMediaSelected"
+            :existingFileUrls="media_urls" />
         </div>
-        <div class="flex justify-end items-center">
-          <PrimaryButton :disabled="form.processing"> Actualizar </PrimaryButton>
+        <div class="col-span-full flex justify-end items-center">
+          <PrimaryButton :disabled="form.processing">
+            <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
+            Guardar cambios
+          </PrimaryButton>
         </div>
       </div>
     </form>
@@ -129,28 +86,28 @@ import InputError from "@/Components/InputError.vue";
 import FileUploader from "@/Components/MyComponents/FileUploader.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import { Link, useForm } from "@inertiajs/vue3";
+import InputLabel from "@/Components/InputLabel.vue";
 
 export default {
   data() {
     const form = useForm({
       oportunity_id: this.payment_monitor.data.oportunity?.id,
-      company_id: null,
-      seller_id: this.payment_monitor.data.seller_id,
+      company_id: this.payment_monitor.data.clientMonitor.company_id,
       paid_at: this.payment_monitor.data.paid_at_raw,
       amount: this.payment_monitor.data.amount,
       payment_method: this.payment_monitor.data.payment_method,
       concept: this.payment_monitor.data.concept,
-      priority: null,
       notes: this.payment_monitor.data.notes,
       media: [],
     });
 
     return {
       form,
-      company_name: null,
+      company_name: this.payment_monitor.data.clientMonitor.company.business_name,
       seller_name: this.$page.props.auth.user.name,
       mediaNames: [], // Agrega esta propiedad para almacenar los nombres de los archivos
       payment_methods: ["Transferencia electrónica", "Otro"],
+      mediaEdited: false,
     };
   },
   components: {
@@ -159,15 +116,24 @@ export default {
     InputError,
     AppLayout,
     Back,
-    Link
+    Link,
+    InputLabel,
   },
   props: {
     payment_monitor: Object,
     oportunities: Object,
+    media_urls: {
+      type: Array,
+      default: []
+    },
   },
   methods: {
+    handleMediaSelected(files, mediaUpdated) {
+      this.form.media = files;
+      this.mediaEdited = mediaUpdated;
+    },
     update() {
-      if (this.form.media.length > 0) {
+      if (this.mediaEdited) {
         this.form.post(route("payment-monitors.update-with-media", this.payment_monitor.data.id), {
           method: '_put',
           onSuccess: () => {
@@ -179,6 +145,7 @@ export default {
           },
         });
       } else {
+        this.form.media = null;
         this.form.put(route("payment-monitors.update", this.payment_monitor.data.id), {
           onSuccess: () => {
             this.$notify({
@@ -195,16 +162,16 @@ export default {
       document.getElementById("fileInput").click();
     },
     getCompany() {
-    const oportunity = this.oportunities.find(oportunity => oportunity.id === this.payment_monitor.data.oportunity?.id );
+      const oportunity = this.oportunities.find(oportunity => oportunity.id === this.payment_monitor.data.oportunity?.id);
 
-    // if (oportunity.company) {
+      // if (oportunity.company) {
       this.form.company_id = oportunity.company.id;
       this.company_name = oportunity.company.business_name;
       // } else {
       //   this.company_name = 'Nuevo cliente. Contacto: ' + oportunity.contact; 
       //   this.form.company_id = null;
       // }
-  },
+    },
     handleFileUpload(event) {
       // Este método se llama cuando se selecciona un archivo en el input file
       const selectedFiles = event.target.files;
@@ -221,25 +188,16 @@ export default {
       this.form.mediaNames = fileNames;
     },
     mounted() {
-     const oportunity = this.oportunities.find(oportunity => oportunity.id === this.form.oportunity_id);
+      const oportunity = this.oportunities.find(oportunity => oportunity.id === this.form.oportunity_id);
 
-    if (oportunity.company) {
-      this.form.company_id = oportunity.company.id;
-      this.company_name = oportunity.company.business_name;
+      if (oportunity.company) {
+        this.form.company_id = oportunity.company.id;
+        this.company_name = oportunity.company.business_name;
       } else {
-        this.company_name = 'Nuevo cliente. Contacto: ' + oportunity.contact; 
+        this.company_name = 'Nuevo cliente. Contacto: ' + oportunity.contact;
         this.form.company_id = null;
       }
     },
   },
 };
 </script>
-
-<style scoped>
-/* Estilo para el hover de las opciones */
-.el-select-dropdown .el-select-dropdown__item:hover {
-  background-color: #d90537; /* Color de fondo al hacer hover */
-  color: white; /* Color del texto al hacer hover */
-  border-radius: 20px; /* Redondeo */
-}
-</style>

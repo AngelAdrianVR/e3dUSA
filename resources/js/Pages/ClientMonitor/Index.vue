@@ -1,6 +1,6 @@
 <template>
 <AppLayoutNoHeader title="(CRM) Seguimiento integral">
-    <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1">
+    <div class="flex flex-col md:mx-9 md:my-7 space-y-3 m-1 dark:text-white">
         <div class="flex justify-between">
           <label class="text-lg">Seguimiento integral</label>
         </div>
@@ -29,8 +29,8 @@
             $page.props.auth.user.permissions.includes('Agendar citas en seguimiento integral')"
           >
             <template #trigger>
-              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] flex items-center text-sm">
-                Más <i class="fa-solid fa-chevron-down text-[11px] ml-2"></i>
+              <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center justify-center text-sm">
+                  Más <i class="fa-solid fa-chevron-down text-[10px] ml-2 pb-[2px]"></i>
               </button>
             </template>
             <template #content>
@@ -73,27 +73,27 @@
     </div>
 
     <!-- ----------- Client monitor table ----------- -->
-    <div class="w-11/12 mx-8 my-16">
+    <div class="w-11/12 mx-8 my-16  dark:text-white">
       <table v-if="filteredTableData.length" class="w-full mx-auto text-sm">
         <thead>
           <tr class="text-center">
             <th class="font-bold pb-3 pl-2 text-left">
-              Folio <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Folio
             </th>
             <th class="font-bold pb-3 text-left">
-              Cliente <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Cliente
             </th>
             <th class="font-bold pb-3 text-left">
-              Tipo que interacciones <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Tipo que interacciones
             </th>
             <th class="font-bold pb-3 text-left">
-              Fecha <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Fecha
             </th>
             <th class="font-bold pb-3 text-left">
-              Concepto <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Concepto
             </th>
             <th class="font-bold pb-3 text-left">
-              Vededor <i class="fa-solid fa-arrow-down-long ml-3"></i>
+              Vededor
             </th>
             <th></th>
           </tr>

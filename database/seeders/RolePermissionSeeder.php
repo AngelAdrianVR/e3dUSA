@@ -24,6 +24,8 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Crear catalogo de productos', 'category' => 'Catalogo_de_productos']);
         Permission::create(['name' => 'Editar catalogo de productos', 'category' => 'Catalogo_de_productos']);
         Permission::create(['name' => 'Eliminar catalogo de productos', 'category' => 'Catalogo_de_productos']);
+        
+        Permission::create(['name' => 'Ver reporte de envios', 'category' => 'Embarques']);
 
         Permission::create(['name' => 'Ver cotizaciones','category' => 'Ventas']);
         Permission::create(['name' => 'Crear cotizaciones','category' => 'Ventas']);
@@ -41,6 +43,12 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Editar ordenes de venta', 'category' => 'Ventas']);
         Permission::create(['name' => 'Eliminar ordenes de venta', 'category' => 'Ventas']);
         Permission::create(['name' => 'Autorizar ordenes de venta', 'category' => 'Ventas']);
+        Permission::create(['name' => 'Crear ordenes de venta sin cotizacion', 'category' => 'Ventas']);
+
+        Permission::create(['name' => 'Ver logistica', 'category' => 'Ventas']);
+        Permission::create(['name' => 'Crear logistica', 'category' => 'Ventas']);
+        Permission::create(['name' => 'Editar logistica', 'category' => 'Ventas']);
+        Permission::create(['name' => 'Eliminar logistica', 'category' => 'Ventas']);
 
         Permission::create(['name' => 'Ver oportunidades', 'category' => 'CRM']); //oportunidades (CRM)
         Permission::create(['name' => 'Crear oportunidades', 'category' => 'CRM']); //oportunidades (CRM)
@@ -191,6 +199,7 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Ordenes de produccion todas', 'category' => 'Produccion']);
         Permission::create(['name' => 'Autorizar ordenes de produccion', 'category' => 'Produccion']);
         Permission::create(['name' => 'Ordenes de produccion personal', 'category' => 'Produccion']);
+        Permission::create(['name' => 'Cambiar estatus a produccion', 'category' => 'Produccion']);
         Permission::create(['name' => 'Ver costos de produccion', 'category' => 'Produccion']);
         Permission::create(['name' => 'Crear costos de produccion', 'category' => 'Produccion']);
         Permission::create(['name' => 'Editar costos de produccion', 'category' => 'Produccion']);

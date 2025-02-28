@@ -23,7 +23,7 @@
         </div>
       </figure>
       <div class="flex items-center justify-between mt-3">
-        <p :class="oportunityTask?.deadline_status === 'Atrasadas' ? 'bg-[#FEB2C4]' : 'bg-[#F6F89E]'"
+        <p :class="oportunityTask?.deadline_status === 'Atrasadas' ? 'bg-[#FEB2C4] dark:bg-[#d4607b]' : 'bg-[#F6F89E] dark:bg-[#d9db51]'"
           class="rounded-full px-3 text-sm">{{ oportunityTask?.deadline_status !== 'Terminar hoy' ?
             oportunityTask?.limit_date + ', ' + oportunityTask?.time : oportunityTask?.time }}</p>
         <div class="flex items-center space-x-3">
@@ -38,10 +38,11 @@
       Hecho
     </button>
   </div>
+
   <Modal :show="taskInformationModal" @close="taskInformationModal = false">
     <form @submit.prevent="update" class="mx-7 my-4 space-y-4 relative">
       <div @click="taskInformationModal = false"
-        class="cursor-pointer w-5 h-5 rounded-full flex items-center justify-center absolute top-0 right-0 border border-black">
+        class="cursor-pointer w-5 h-5 rounded-full flex items-center justify-center absolute top-0 right-0 hover:text-primary hover:bg-[#333333]">
         <i class="fa-solid fa-xmark"></i>
       </div>
       <h1 class="font-bold">{{ oportunityTask?.name }}</h1>
@@ -103,10 +104,10 @@
         <textarea v-model="form.reminder" disabled class="textarea w-3/4 cursor-not-allowed"> </textarea>
         <InputError :message="form.errors.reminder" />
       </div> -->
-      <div class="flex justify-between items-center space-x-2">
+      <div class="flex justify-between">
         <label class="text-sm">Descripción</label>
       <RichText v-if="canEdit" @content="updateDescription($event)" :defaultValue="form.description" />
-        <div v-else class="rounded-[10px] bg-[#cccccc] px-3 py-2 min-h-[100px] text-sm w-3/4">{{ form.description }}</div>
+        <div v-else class="rounded-[10px] bg-[#cccccc] dark:bg-transparent border disabled:cursor-not-allowed px-3 py-2 min-h-[100px] text-sm w-3/4">{{ form.description }}</div>
         <InputError :message="form.errors.description" />
       </div>
 
@@ -146,12 +147,12 @@
               :alt="$page.props.auth.user.name" />
           </div>
           <RichText @submitComment="storeComment(taskComponentLocal)" @content="updateComment($event)" ref="commentEditor"
-            class="flex-1" withFooter :userList="users" :disabled="sendingComments" />
+            class="flex-1" withFooter :userList="users" :disabled="sendingComments || !form.comment" />
         </div>
       </div>
 
-      <div class="flex justify-start space-x-3 pt-5 pb-1">
-        <el-dropdown v-if="taskComponentLocal.finished_at === null" split-button type="primary" @click="handleClick" class="custom-dropdown" :disabled="(!toBool(authUserPermissions[2]) && !authUserIsParticipant) || canEdit">
+      <div class="flex justify-end space-x-1 pt-5 pb-1">
+        <el-dropdown v-if="!canEdit && taskComponentLocal.finished_at === null" split-button type="primary" @click="handleClick" class="custom-dropdown" :disabled="(!toBool(authUserPermissions[2]) && !authUserIsParticipant) || canEdit">
           Marcar como hecho
           <template #dropdown>
             <el-dropdown-menu>
@@ -160,7 +161,7 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <CancelButton v-if="canEdit" @click="canEdit = false">
+        <CancelButton v-if="canEdit" @click="canEdit = false; form.reset()">
           Cancelar edición
         </CancelButton>
         <PrimaryButton v-if="canEdit" type="button" @click="update()">Guardar cambios</PrimaryButton>
@@ -286,6 +287,7 @@ export default {
           });
           this.taskComponentLocal = response.data.item;
           this.taskInformationModal = false;
+          this.canEdit = false;
           this.$emit('updated-oportunityTask', this.taskComponentLocal);
         }
       } catch (error) {

@@ -15,7 +15,7 @@
       <!-- Form -->
       <form @submit.prevent="update">
         <div
-          class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] rounded-lg p-9 shadow-md space-y-4"
+          class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md space-y-4"
         >
           <div class="flex items-center">
           <span
@@ -109,7 +109,10 @@
             </ul>
           </div>
           <div class="mt-2 mx-3 md:text-right">
-            <PrimaryButton :disabled="form.processing"> Guardar cambios </PrimaryButton>
+            <PrimaryButton :disabled="form.processing">
+              <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
+              Guardar cambios
+            </PrimaryButton>
           </div>
         </div>
       </form>

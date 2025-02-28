@@ -6,7 +6,7 @@
         <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
     </div>
     <AppLayoutNoHeader title="Prospectos">
-        <div class="flex justify-between text-lg mx-14 mt-11">
+        <div class="flex justify-between text-lg mx-14 mt-11 dark:text-white">
             <span>Prospectos</span>
         </div>
 
@@ -25,7 +25,7 @@
         <div v-if="!search" class="overflow-auto mx-1 lg:mx-14">
             <Pagination :pagination="prospects" class="mt-6 py-2" />
         </div>
-        <div class="lg:px-14 pb-7 pt-10 text-sm overflow-x-scroll">
+        <div class="lg:px-14 pb-7 pt-10 text-sm overflow-x-scroll dark:text-white">
             <table v-if="prospects.data.length > 0" class="w-full mx-auto">
                 <thead>
                     <tr class="text-left">
@@ -65,7 +65,7 @@
                             </el-tooltip>
                         </td>
                         <td class="text-left py-2">
-                            {{ prospect.seller?.name }}
+                            {{ prospect.seller?.name ?? prospect.user?.name }}
                         </td>
                         <td v-if="$page.props.auth.user.permissions.includes('Eliminar prospectos')"
                             class="text-left pr-2 rounded-r-full">

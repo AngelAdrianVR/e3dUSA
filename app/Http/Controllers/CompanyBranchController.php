@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Events\RecordCreated;
 use App\Models\CatalogProductCompany;
+use App\Models\Company;
 use App\Models\CompanyBranch;
+use App\Models\Design;
 use Illuminate\Http\Request;
 
 class CompanyBranchController extends Controller
@@ -44,7 +46,6 @@ class CompanyBranchController extends Controller
         ]);
 
         event(new RecordCreated($company_branch));
-
     }
 
     public function clearImportantNotes(CompanyBranch $company_branch)
@@ -63,9 +64,13 @@ class CompanyBranchController extends Controller
         return response()->json(['message' => 'Notas guardadas']);
     }
 
-
     public function updateProductPrice(CatalogProductCompany $product_company, Request $request)
     {
+        $request->validate([
+            'new_price' => 'required|numeric|min:0',
+            'new_currency' => 'required|string|max:255',
+        ]);
+
         $product_company->update([
             'oldest_date' => $product_company->old_date,
             'oldest_price' => $product_company->old_price,
@@ -73,11 +78,24 @@ class CompanyBranchController extends Controller
             'old_date' => $product_company->new_date,
             'old_price' => $product_company->new_price,
             'old_currency' => $product_company->new_currency,
+            'oldest_updated_by' => $product_company->old_updated_by,
+            'old_updated_by' => $product_company->new_updated_by,
+            'new_updated_by' => auth()->user()->name,
             'new_date' => now(),
             'new_price' => $request->new_price,
             'new_currency' => $request->new_currency,
-            'user_id' => auth()->id()
         ]);
+    }
+
+    public function fetchDesignInfo(CompanyBranch $company_branch)
+    {   
+        //recupero todos los diseños de esa sucursal
+        $company_branch_designs = Design::with(['user:id,name', 'designType:id,name'])->where('company_branch_name', $company_branch->name)
+            ->get(['id', 'name', 'created_at', 'design_type_id', 'finished_at', 'started_at', 'user_id']);
+        
+        $company_products = CatalogProductCompany::with('catalogProduct:id,name,part_number')->where('company_id', $company_branch->company_id)->get();
+
+        return response()->json(compact('company_branch_designs', 'company_products'));
     }
 
 }

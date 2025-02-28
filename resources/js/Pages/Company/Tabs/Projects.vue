@@ -1,5 +1,5 @@
 <template>
-    <section class="p-7 w-full mx-auto my-4">
+    <section class="p-7 w-full mx-auto my-4 dark:text-white">
         <div v-if="company.projects?.length">
             <ProjectTable :projects="company.projects" />
         </div>
@@ -10,7 +10,7 @@
     </section>
 </template>
 <script>
-import CompanyQuoteTable from "@/Components/MyComponents/CompanyQuoteTable.vue";
+import ProjectTable from "@/Components/MyComponents/ProjectTable.vue";
 
 export default {
     data() {
@@ -22,7 +22,7 @@ export default {
         company: Object,
     },
     components: {
-        CompanyQuoteTable,
+        ProjectTable,
     },
     methods: {
     },

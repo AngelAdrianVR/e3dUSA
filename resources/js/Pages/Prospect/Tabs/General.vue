@@ -1,5 +1,5 @@
 <template>
-    <section class="flex justify-between mt-3 text-sm">
+    <section class="flex justify-between mt-3 text-sm dark:text-white">
         <div class="w-[45%] grid grid-cols-3 gap-x-6 gap-y-2">
             <span class="text-[#9a9a9a]">ID</span>
             <span class="col-span-2">{{ String(prospect.id).padStart(2, '0') }}</span>
@@ -18,12 +18,14 @@
             <span class="text-[#9a9a9a]">Correo electrónico</span>
             <span class="col-span-2">{{ prospect.contact_email }}</span>
             <span class="text-[#9a9a9a]">Teléfono</span>
-            <p>
+            <p class="col-span-2">
                 {{ prospect.contact_phone }}
                 <span v-if="prospect.contact_phone_extension">
                     <span class="text-[#9a9a9a] mx-2">ext.</span> {{ prospect.contact_phone_extension }}
                 </span>
             </p>
+            <span class="text-[#9a9a9a]">WhatsApp</span>
+            <p>{{ prospect.contact_whatsapp ?? '-' }}</p>
         </div>
         <div class="w-px border border-[#9a9a9a]"></div>
         <div class="w-[45%] grid grid-cols-3 gap-x-6 gap-y-2 self-start">
