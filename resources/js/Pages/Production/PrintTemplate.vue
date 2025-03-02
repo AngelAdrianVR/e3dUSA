@@ -20,7 +20,7 @@
                 <div>
                     <p>{{ product.catalog_product_company.catalog_product.part_number }}</p>
                     <!-- <p>DA{{ product.catalog_product_company.new_price.toString().replace('.', '-') }}GT</p> -->
-                    <p>Precio del producto ${{ product.catalog_product_company.new_price }}</p>
+                    <p>Precio del producto ${{ product.catalog_product_company.catalog_product.part_number.startsWith('PP') ? product.catalog_product_company.new_price.toFixed(2) : product.catalog_product_company.new_price }}</p>
                 </div>
             </div>
             <div class="mt-2 text-base">
