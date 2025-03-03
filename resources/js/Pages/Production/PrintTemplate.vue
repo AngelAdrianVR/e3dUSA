@@ -30,7 +30,7 @@
                         {{
                             product.catalog_product_company.catalog_product.part_number.startsWith('C-PP')
                                 ? product.catalog_product_company.new_price.toFixed(2) :
-                                product.catalog_product_company.new_price.toFixed(0)
+                                parseInt(product.catalog_product_company.new_price)
                         }}
                     </p>
                 </div>
