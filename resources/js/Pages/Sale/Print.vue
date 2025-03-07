@@ -37,9 +37,15 @@
                 <p class="text-primary">Solicitado por: <span class="text-black ml-3">{{ product.sale.user?.name }}</span></p>
                 <p class="text-primary">Solicitado el: <span class="text-black ml-3">{{ product.created_at?.split('T')[0] }}</span></p>
             </div>
+            
             <div class="mt-2 text-base flex justify-between">
                 <p class="text-primary">Folio de orden: <span class="text-black ml-3">{{ sale.data.folio }}</span></p>
                 <p class="text-primary">Unidades ordenadas: <span class="text-black ml-3">{{ product.quantity?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span></p>
+            </div>
+
+            <div class="mt-2 text-base flex justify-between">
+                <span></span>
+                <p class="text-primary">Autorizado el: <span class="text-green-600 ml-3">{{ product.sale.authorized_at.split('T')[0] }}</span></p>
             </div>
             <!-- <div class="mt-2 text-base">
                 <p class="text-primary">Operadores asignados:
@@ -67,7 +73,7 @@
             <div class="mt-2 text-base mb-2">
                 <p class="text-primary">Notas:
                     <span class="text-black ml-3">
-                        {{ product.notes }}
+                        {{ product.notes ?? '-' }}
                     </span>
                 </p>
             </div>
