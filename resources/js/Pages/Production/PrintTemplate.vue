@@ -57,7 +57,7 @@
             </div>
             <div class="mt-2 text-xs flex justify-between">
                 <span></span>
-                <p class="text-primary">Autorizado el: <span class="text-green-600 ml-3">{{ product.sale.authorized_at.split('T')[0] }}</span></p>
+                <p class="text-primary">Autorizado el: <span class="text-green-600 ml-3">{{ product.sale.authorized_at?.split('T')[0] ?? '-' }}</span></p>
             </div>
             <div class="mt-2 text-xs flex justify-between">
                 <p class="text-primary">Folio de orden: <span class="text-black ml-3">{{ folio }}</span></p>

@@ -61,7 +61,7 @@
                 </div>
                 <div class="mt-2 text-base flex justify-between">
                     <span></span>
-                    <p class="text-primary">Autorizado el: <span class="text-green-600 ml-3">{{ product.sale.authorized_at.split('T')[0] }}</span></p>
+                    <p class="text-primary">Autorizado el: <span class="text-green-600 ml-3">{{ product.sale.authorized_at?.split('T')[0] ?? '-' }}</span></p>
                 </div>
                 <!-- <div class="mt-2 text-base">
                 <p class="text-primary">Operadores asignados:

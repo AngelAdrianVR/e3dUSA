@@ -43,7 +43,7 @@ class ProductionController extends Controller
             ->whereHas('productions', function ($query) {
                 $query->where('productions.operator_id', auth()->id());
             })->latest()
-            ->paginate(10, ['id', 'user_id', 'created_at', 'status', 'is_high_priority', 'company_branch_id', 'is_sale_production']);
+            ->paginate(10, ['id', 'user_id', 'created_at', 'status', 'is_high_priority', 'company_branch_id', 'is_sale_production', 'authorized_at']);
 
         // return $pre_productions;
         $productions = $this->processDataIndex($pre_productions);
