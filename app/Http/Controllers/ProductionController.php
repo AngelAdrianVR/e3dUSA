@@ -43,7 +43,7 @@ class ProductionController extends Controller
             ->whereHas('productions', function ($query) {
                 $query->where('productions.operator_id', auth()->id());
             })->latest()
-            ->paginate(10, ['id', 'user_id', 'created_at', 'status', 'is_high_priority', 'company_branch_id', 'is_sale_production']);
+            ->paginate(10, ['id', 'user_id', 'created_at', 'status', 'is_high_priority', 'company_branch_id', 'is_sale_production', 'authorized_at']);
 
         // return $pre_productions;
         $productions = $this->processDataIndex($pre_productions);
@@ -68,7 +68,6 @@ class ProductionController extends Controller
             ->paginate(10, 
                 ['id', 'promise_date', 'is_sale_production', 'is_high_priority', 'authorized_at', 'user_id', 'company_branch_id', 'contact_id', 'status', 'created_at']); // Paginar 10 por página
 
-            // return $pre_productions;
             $productions = $this->processDataIndex($pre_productions);
 
         return inertia('Production/Admin', compact('productions'));
@@ -179,6 +178,7 @@ class ProductionController extends Controller
                 'promise_date' => $production->promise_date?->isoFormat('DD MMMM YYYY') ?? '--',
                 // 'delivery_status' => $delivery_status,
                 'created_at' => $production->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+                'authorized_at' => $production->authorized_at?->isoFormat('DD MMM, YYYY h:mm A'),
                 'is_sale_production' => $production->is_sale_production,
             ];
         });

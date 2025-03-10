@@ -97,6 +97,7 @@
                         <el-table-column prop="user.name" label="Vendedor" />
                         <el-table-column prop="company_branch.name" label="Cliente" />
                         <el-table-column prop="created_at" label="Creada el" />
+                        <el-table-column prop="authorized_at" label="Autorizado el" />
                         <el-table-column label="Estatus">
                             <template #default="scope">
                                 <div class="flex">
