@@ -13,7 +13,8 @@
       </template>
       <!-- Form -->
       <form @submit.prevent="store">
-        <div class="md:w-1/2 md:mx-auto grid grid-cols-2 gap-3 mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md">
+        <div
+          class="md:w-1/2 md:mx-auto grid grid-cols-2 gap-3 mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md">
           <div class="col-span-full">
             <el-radio-group v-model="form.is_spanish_template" size="small">
               <el-radio :value="1">Plantilla en español</el-radio>
@@ -69,15 +70,16 @@
               <el-radio :value="0">Para muestras</el-radio>
             </el-radio-group>
           </div>
-          <div>
+          <div class="col-span-full">
             <InputLabel value="Producto*" />
-            <el-select v-model="productSelectedId" @change="getProductSelected" clearable filterable
-              placeholder="Selecciona">
-              <el-option v-for="item in rawMaterials" :key="item.id" :label="item.name + ' (' + item.part_number + ')'"
-                :value="item.id" />
-            </el-select>
+            <el-select-v2 v-model="productSelectedId" @change="getProductSelected" filterable placeholder="Selecciona"
+              :options="rawMaterials?.map(item => ({ label: item.name + ' (' + item.part_number + ')', value: item.id })) ?? []" />
+            <!-- <el-select v-model="productSelectedId" @change="getProductSelected" filterable placeholder="Selecciona">
+                <el-option v-for="item in rawMaterials" :key="item.id" :label="item.name + ' (' + item.part_number + ')'"
+                :value="item.part_number" /> -->
+            <!-- </el-select> -->
           </div>
-          <p v-if="productSelectedObj" class="text-sm ml-5">
+          <p v-if="productSelectedObj" class="text-sm ml-5 col-span-full">
             Stock actual: {{ productSelectedObj?.storages[0].quantity }} unidades
           </p>
           <div>
