@@ -15,6 +15,7 @@ import Modal from "@/Components/Modal.vue";
 import DialogModal from "@/Components/DialogModal.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
+import ThemeToggleSwitch from "@/Components/MyComponents/ThemeToggleSwitch.vue";
 import axios from "axios";
 import { ElNotification } from "element-plus";
 import dayjs from 'dayjs';
@@ -606,6 +607,7 @@ onMounted(() => {
 
                     <!-- Dark mode toggle -->
                     <div class="mr-7">
+                      <!-- <ThemeToggleSwitch v-model="darkMode" @update:modelValue="toggleDarkMode" /> -->
                       <el-switch @change="darkModeSwitch = !darkModeSwitch; toggleDarkMode()" v-model="darkModeSwitch" style="--el-switch-on-color: #1e3a8a;">
                         <template #inactive-action>
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-gray-700">

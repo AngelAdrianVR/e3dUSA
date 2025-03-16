@@ -123,6 +123,14 @@
                             </template>
                         </el-table-column>
                         <el-table-column prop="promise_date" label="Fecha de entrega" width="180" />
+                        <el-table-column label="Cotización">
+                            <template #default="scope">
+                                <div>
+                                    <p v-if="scope.row.quote_id" @click.stop="handleShowQuote(scope.row.quote_id)" class="text-blue-300 hover:underline">COT-{{ scope.row.quote_id }}</p>
+                                    <p v-else>N/A</p>
+                                </div>
+                            </template>
+                        </el-table-column>
                         <el-table-column align="right">
                             <template #default="scope">
                                 <el-dropdown trigger="click" @command="handleCommand">
@@ -248,6 +256,10 @@ export default {
         company_branches: Array
     },
     methods: {
+        handleShowQuote(quoteId) {
+            const url = this.route('quotes.show', quoteId);
+            window.open(url, '_blank');
+        },
         applyStatusFilter() {
             // Convertir el array de arrays a un array plano de strings
             const flatSelectedStatuses = this.statusfilter.flat();
