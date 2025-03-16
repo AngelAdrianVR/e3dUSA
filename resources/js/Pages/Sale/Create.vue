@@ -953,6 +953,7 @@ export default {
                         this.form.notes = this.quote.notes;
                         this.form.freight_cost = this.quote.freight_cost;
                         this.resetProductForm();
+                        this.store();
                     }
                 }
             } catch (error) {
