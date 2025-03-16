@@ -17,6 +17,7 @@ class SaleResource extends JsonResource
             'p_folio' => 'OP-' . str_pad($this->id, 4, "0", STR_PAD_LEFT),
             'shipping_option' => $this->shipping_option,
             'freight_cost' => $this->freight_cost,
+            'quote_id' => $this->quote_id,
             // 'shipping_company' => $this->shipping_company,
             // 'tracking_guide' => $this->tracking_guide,
             // 'promise_date' => $this->promise_date?->isoFormat('DD MMMM YYYY') ?? '--',

@@ -35,6 +35,7 @@ return new class extends Migration
             $table->foreignId('prospect_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('sale_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('quote_id')->nullable()->constrained()->cascadeOnDelete(); // cotización relacionada a la ov
             $table->timestamps();
         });
     }

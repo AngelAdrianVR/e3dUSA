@@ -8,6 +8,7 @@ use App\Events\RecordEdited;
 use App\Http\Resources\QuoteResource;
 use App\Models\Calendar;
 use App\Models\CatalogProduct;
+use App\Models\CatalogProductCompany;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Company;
 use App\Models\CompanyBranch;
@@ -639,4 +640,15 @@ class QuoteController extends Controller
         // Actualizar la propiedad `has_important_reminder` en la tabla `users`
         User::query()->update(['has_important_reminder' => $hasImportantReminder]);
     }
+
+    public function fetchQuoteData(Quote $quote) 
+    {
+        $quote->load([
+            'companyBranch', // Carga la relación company dentro de companyBranch
+            'catalogProducts'
+        ]);
+
+        return response()->json(['quote' => $quote]);
+    }
+
 }

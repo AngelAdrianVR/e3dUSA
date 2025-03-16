@@ -10,6 +10,7 @@ use App\Models\Calendar;
 use App\Models\CatalogProductCompanySale;
 use App\Models\CompanyBranch;
 use App\Models\Oportunity;
+use App\Models\Quote;
 use App\Models\Sale;
 use App\Models\Sample;
 use App\Models\User;
@@ -36,6 +37,7 @@ class SaleController extends Controller
     {
         $opportunityId = Oportunity::find(request('opportunityId'));
         $sample = Sample::find(request('sampleId'));
+        $quotes = Quote::with('CompanyBranch:id,name')->whereNotNull('authorized_at')->latest()->get(['id','company_branch_id'])->take(100);
 
         //optimizacion de datos en vista para reducir el tiempo de carga
         $pre_company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
@@ -88,7 +90,7 @@ class SaleController extends Controller
             ];
         });
 
-        return inertia('Sale/Create', compact('company_branches', 'opportunityId', 'sample'));
+        return inertia('Sale/Create', compact('company_branches', 'opportunityId', 'sample', 'quotes'));
     }
 
     public function store(Request $request)
@@ -97,6 +99,7 @@ class SaleController extends Controller
             // 'shipping_company' => 'nullable',
             // 'order_via' => 'nullable',
             // 'tracking_guide' => 'nullable',
+            'quote_id' => 'nullable',
             'freight_cost' => 'nullable|numeric|min:0',
             'notes' => 'nullable',
             'is_high_priority' => 'boolean',
