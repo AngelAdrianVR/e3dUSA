@@ -143,7 +143,7 @@
                         <el-radio :value="0">Orden de stock</el-radio>
                     </el-radio-group>
                     <div class="grid grid-cols-2 gap-3 mt-4">
-                        <div class="col-span-full">
+                        <div v-if="form.is_sale_production" class="col-span-full">
                             <InputLabel value="Selecciona la cotización relacionada a la OV en caso de tenerla (sólo cot autorizadas)" />
                             <el-select @change="fetchQuoteInfo" v-model="form.quote_id"
                                 filterable placeholder="Selecciona una cotización">
