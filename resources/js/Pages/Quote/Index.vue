@@ -57,7 +57,30 @@
                     @selection-change="handleSelectionChange" ref="multipleTableRef"
                     :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
-                    <el-table-column prop="folio" label="Folio" width="100" />
+                    <el-table-column prop="folio" label="Folio" width="100">
+                        <template #default="scope">
+                            <el-tooltip v-if="scope.row.quote_acepted" placement="top">
+                                <template #content>
+                                    <p>
+                                        El cliente firmó la cotización <br>
+                                        el {{ scope.row.responded_at }}
+                                    </p>
+                                </template>
+                                <i class="fa-solid fa-check text-[9px] text-green-700 mr-1"></i>
+                            </el-tooltip>
+                            <el-tooltip v-else-if="scope.row.rejected_razon" placement="top">
+                                <template #content>
+                                    <p>
+                                        El cliente rechazó la cotización <br>
+                                        el {{ scope.row.responded_at }} <br>
+                                        Motivo: {{ scope.row.rejected_razon }}
+                                    </p>
+                                </template>
+                                <i class="fa-solid fa-check text-[9px] text-green-700 mr-1"></i>
+                            </el-tooltip>
+                            <span>{{ scope.row.folio }}</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column v-if="$page.props.auth.user.permissions.includes('Ver utilidades')"
                         label="Utilidad" width="140">
                         <template #default="scope">
@@ -80,7 +103,7 @@
                     <el-table-column prop="authorized_user_name" label="Autorizado por" />
                     <el-table-column label="Productos" width="210">
                         <template v-slot="scope">
-                            <span>{{ scope.row.catalog_products.map(product => product.name).join(', ') }}</span>
+                            <span>{{scope.row.catalog_products.map(product => product.name).join(', ')}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="created_at" label="Creado el" width="180" />
@@ -193,6 +216,8 @@ import axios from 'axios';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import CancelButton from '@/Components/MyComponents/CancelButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default {
     components: {
@@ -228,6 +253,10 @@ export default {
         },
     },
     methods: {
+        formatDate(date) {
+            const parsedDate = new Date(date);
+            return format(parsedDate, 'dd \'de\' MMM, Y', { locale: es }); // Formato personalizado
+        },
         async handleSearch(search) {
             this.search = search;
             this.loading = true;

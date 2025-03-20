@@ -31,6 +31,7 @@ return new class extends Migration
             $table->timestamp('responded_at')->nullable();
             $table->boolean('is_spanish_template')->default(true);
             $table->boolean('show_breakdown')->default(false);
+            $table->json('approved_products')->nullable();
             $table->foreignId('company_branch_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('prospect_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();

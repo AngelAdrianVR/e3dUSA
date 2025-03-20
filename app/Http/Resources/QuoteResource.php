@@ -84,6 +84,7 @@ class QuoteResource extends JsonResource
                 'number_format' => number_format($total_without_taxes, 2),
             ],
             'show_breakdown' => $this->show_breakdown,
+            'approved_products' => $this->approved_products,
         ];
     }
 }
