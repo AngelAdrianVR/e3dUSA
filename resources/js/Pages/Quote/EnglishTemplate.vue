@@ -64,9 +64,12 @@
             </thead>
             <!-- Información de los productos de catalogo cotizados -->
             <tbody>
-                <tr v-for="(item, index) in quote.data.catalog_products" :key="index"
-                    class="bg-gray-200 text-gray-700 uppercase">
-                    <td class="px-2 py-px">{{ item.name }}</td>
+                <tr v-for="(item, index) in quote.data.catalog_products" :key="index" class="text-gray-700 uppercase"
+                    :class="quote.data.approved_products.includes(item.id) ? 'bg-green-200' : 'bg-gray-200'">
+                    <td class="px-2 py-px">
+                        <b>{{ quote.data.approved_products.includes(item.id) ? '(ACEPTADO)' : '' }}</b>
+                        {{ item.name }}
+                    </td>
                     <td class="px-2 py-px">{{ item.pivot.notes ?? '--' }}</td>
                     <td class="px-2 py-px">{{ item.pivot.price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
                         quote.data.currency }}</td>

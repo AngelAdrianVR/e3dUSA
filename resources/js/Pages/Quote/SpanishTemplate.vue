@@ -63,9 +63,12 @@
             </thead>
             <!-- Información de los productos de catalogo cotizados -->
             <tbody>
-                <tr v-for="(item, index) in quote.data.catalog_products" :key="index"
-                    class="bg-gray-200 text-gray-700 uppercase">
-                    <td class="px-2 py-px">{{ item.name }}</td>
+                <tr v-for="(item, index) in quote.data.catalog_products" :key="index" class="text-gray-700 uppercase"
+                    :class="quote.data.approved_products.includes(item.id) ? 'bg-green-200' : 'bg-gray-200'">
+                    <td class="px-2 py-px">
+                        <b>{{ quote.data.approved_products.includes(item.id) ? '(ACEPTADO)' : '' }}</b>
+                        {{ item.name }}
+                    </td>
                     <!-- <td class="px-2 py-px">{{ item.name + ' (N. de parte: ' + item.part_number + ')' }}</td> se quitó el numero de parte. descomentar si se quiere revertir cambios-->
                     <td class="px-2 py-px">{{ item.pivot.notes ?? '--' }}</td>
                     <td class="px-2 py-px">{{ item.pivot.price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
@@ -104,7 +107,7 @@
                     <td class="text-end pr-2 py-px" colspan="6">
                         COSTO DE FLETE: {{
                             parseFloat(quote.data.freight_cost).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} {{
-                        quote.data.currency }}
+                            quote.data.currency }}
                     </td>
                 </tr>
                 <tr v-if="!isNaN(quote.data.tooling_cost)">
@@ -127,7 +130,6 @@
                 </tr>
             </tfoot>
         </table>
-
         <div class="w-11/12 mx-auto my-3 grid grid-cols-3 gap-4 ">
             <!-- Images de los productos de catalogo -->
             <template v-for="(item, productIndex) in quote.data.catalog_products" :key="item.id">
@@ -153,7 +155,6 @@
                     </div>
                 </div>
             </template>
-
             <!-- Images de las materias primas -->
             <template v-for="(item, productIndex) in quote.data.raw_materials" :key="item.id">
                 <div v-if="item.pivot.show_image" class="bg-gray-200 rounded-t-xl rounded-b-md border"
@@ -171,7 +172,6 @@
                 </div>
             </template>
         </div>
-
         <div class="md:flex justify-between items-center mx-10 mt-9">
             <!-- goodbyes -->
             <p class="w-11/12 mx-auto my-2 pb-2 text-gray-700">
@@ -179,7 +179,6 @@
                 quedo a sus órdenes para cualquier duda o comentario.
                 Folio de cotización: <span class="font-bold bg-yellow-100">{{ quote.data.folio }}</span>
             </p>
-
             <!-- signature -->
             <div class="mr-7 flex space-x-4 w-96 relative mt-20 md:mt-0">
                 <p class="text-gray-500">Firma de autorización: </p>
@@ -188,7 +187,6 @@
                 </figure>
             </div>
         </div>
-
         <!-- Notes -->
         <div class="w-11/12 mx-auto border border-gray-500 px-3 pb-1 mt-1 rounded-xl text-gray-500 leading-normal uppercase"
             style="font-size: 10.5px;">
@@ -203,10 +201,17 @@
                 <li>TIEMPO DE ENTREGA PARA LA PRIMER PRODUCCIÓN <span class="font-bold text-blue-500">{{
                     quote.data.first_production_days }}</span>.
                     EL TIEMPO CORRE UNA VEZ PAGANDO EL 100% DEL HERRAMENTAL Y EL 50% DE LOS PRODUCTOS.</li>
-                <li>FLETES Y ACARREOS CORREN POR CUENTA DEL CLIENTE: <span
-                        v-if="!quote.data.freight_cost_charged_in_product" class="font-bold text-blue-500">{{
+                <li>FLETES Y ACARREOS: 
+                    <span v-if="quote.data.freight_option !== 'Cargo del flete prorrateado en producto'" class="font-bold text-blue-500">
+                        {{ quote.data.freight_option }} &nbsp;
+                    </span>
+                    <span
+                        v-if="quote.data.freight_option !== 'Cargo del flete prorrateado en producto'" class="font-bold text-blue-500"
+                        :class="quote.data.freight_cost_stroked ? 'line-through' : ''">
+                        ({{
                             quote.data.freight_cost }} {{ !isNaN(quote.data.freight_cost) ? quote.data.currency : ''
-                        }}</span>
+                        }})
+                        </span>
                     <span v-else class="font-bold text-blue-500">0 {{ quote.data.currency }}</span>
                 </li>
                 <li>PRECIOS EN <span class="font-bold text-blue-500">{{ quote.data.currency }}</span></li>
@@ -218,7 +223,6 @@
             NO SE ACEPTAN PAGOS EN EFECTIVO, TODOS LOS CHEQUES DEBEN USAR NOMBRE DE: EMBLEMS 3D USA
             SA DE CV. Y SELLO PARA ABONO EN CUENTA DEL BENEFICIARIO
         </div>
-
         <!-- banks -->
         <div class="grid grid-cols-2 gap-0 text-xs mt-1 font-semibold" style="font-size: 10px;">
             <div class="bg-sky-600 text-white p-1 flex justify-between rounded-l-xl">
@@ -232,7 +236,6 @@
                 <span>CLABE: 072 320 011811038560</span>
             </div>
         </div>
-
         <!-- Author -->
         <div class="mt-1 text-gray-700 flex justify-around" style="font-size: 11px;">
             <div>
@@ -255,7 +258,6 @@
 
             </div>
         </div>
-
         <!-- footer -->
         <footer class="text-gray-400 w-11/12 mx-auto mt-3" style="font-size: 11px;">
             <div class="grid grid-cols-3 gap-x-4">
