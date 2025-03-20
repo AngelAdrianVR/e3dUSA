@@ -126,7 +126,8 @@
                         <el-table-column label="Cotización">
                             <template #default="scope">
                                 <div>
-                                    <p v-if="scope.row.quote_id" @click.stop="handleShowQuote(scope.row.quote_id)" class="text-blue-300 hover:underline">COT-{{ scope.row.quote_id }}</p>
+                                    <p v-if="scope.row.quote_id" @click.stop="handleShowQuote(scope.row.quote_id)"
+                                        class="text-blue-300 hover:underline">COT-{{ String(scope.row.quote_id).padStart('0', 4) }}</p>
                                     <p v-else>N/A</p>
                                 </div>
                             </template>
@@ -399,7 +400,7 @@ export default {
 
                     // Ordenar los índices de forma descendente para evitar problemas de desplazamiento al eliminar elementos
                     deletedIndexes.sort((a, b) => b - a);
-                    
+
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
                         this.filteredSales.splice(index, 1);

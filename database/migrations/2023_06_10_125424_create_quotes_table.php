@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('freight_cost')->nullable();
             $table->string('freight_option')->default('Cargo flete normal de costo al cliente');
             $table->boolean('tooling_cost_stroked')->default(0);
+            $table->boolean('freight_cost_stroked')->default(0);
             $table->string('first_production_days');
             $table->text('notes')->nullable();
             $table->string('currency');

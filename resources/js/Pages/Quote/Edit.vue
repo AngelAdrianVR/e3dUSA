@@ -265,13 +265,6 @@
                                 {{ form.tooling_cost }} {{ form.tooling_currency }}
                             </span>
                         </div>
-                        <div class="flex items-center space-x-2 col-span-full">
-                            <label class="flex items-center text-gray-600 dark:text-gray-500">
-                                <input type="checkbox" v-model="form.show_breakdown"
-                                    class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
-                                <span class="ml-2 text-sm">Mostrar total sumando productos, flete y herramental</span>
-                            </label>
-                        </div>
                         <div>
                             <InputLabel value="Pago de flete*" />
                             <el-select v-model="form.freight_option" @change="handleFreightOption"
@@ -280,26 +273,6 @@
                             </el-select>
                             <InputError :message="form.errors.freight_option" />
                         </div>
-                        <!-- <div class="col-span-full">
-                            <label class="flex items-center text-gray-600 dark:text-gray-500">
-                                <input type="checkbox" v-model="form.freight_cost_charged_in_product"
-                                    class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
-                                <span class="ml-2 text-sm">Cargo de flete en precio del producto</span>
-                                <el-tooltip placement="top">
-                                    <template #content>
-                                        <p>
-                                            Activar si el precio de flete será cargado al precio <br>
-                                            de algún(os) producto(s) para que no aparezca visible <br>
-                                            en la cotización.
-                                        </p>
-                                    </template>
-                                    <div
-                                        class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
-                                        <i class="fa-solid fa-info text-primary text-[7px]"></i>
-                                    </div>
-                                </el-tooltip> 
-                            </label>
-                        </div> -->
                         <div>
                             <div class="flex items-center space-x-2">
                                 <InputLabel v-if="form.freight_option == 'Cargo del flete prorrateado en producto'"
@@ -329,6 +302,17 @@
                                 v-if="form.freight_option == 'Cargo del flete prorrateado en producto' || form.freight_option == 'Cargo flete normal de costo al cliente' || form.freight_option == 'Emblems3d absorbe el costo del flete'" placeholder="Ej. 550" />
                             <InputError :message="form.errors.freight_cost" />
                         </div>
+                        <div class="flex items-center space-x-2 col-span-full">
+                            <label class="flex items-center text-gray-600 dark:text-gray-500">
+                                <input type="checkbox" v-model="form.freight_cost_stroked"
+                                    class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
+                                <span class="ml-2 text-sm">Tachar:</span>
+                            </label>
+                            <span class="text-gray-700 dark:text-gray-400 text-xs mt-1"
+                                :class="form.freight_cost_stroked ? 'line-through' : ''">
+                                {{ form.freight_cost }} {{ form.tooling_currency }}
+                            </span>
+                        </div>
                         <div>
                             <InputLabel value="Dias para primera producción*" />
                             <el-select v-model="form.first_production_days" placeholder="Selecciona">
@@ -342,6 +326,13 @@
                             <el-input v-model="form.notes" :rows="3" maxlength="800" placeholder="..." show-word-limit
                                 type="textarea" />
                             <InputError :message="form.errors.notes" />
+                        </div>
+                        <div class="flex items-center space-x-2 col-span-full">
+                            <label class="flex items-center text-gray-600 dark:text-gray-500">
+                                <input type="checkbox" v-model="form.show_breakdown"
+                                    class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
+                                <span class="ml-2 text-sm">Mostrar total sumando productos, flete y herramental</span>
+                            </label>
                         </div>
                         <el-divider content-position="left" class="col-span-full">Productos</el-divider>
                         <!-- products -->
@@ -697,6 +688,7 @@ export default {
             department: this.quote.department,
             tooling_cost: this.quote.tooling_cost,
             tooling_cost_stroked: Boolean(this.quote.tooling_cost_stroked),
+            freight_cost_stroked: Boolean(this.quote.freight_cost_stroked),
             tooling_currency: this.quote.tooling_currency,
             freight_cost: this.quote.freight_cost,
             freight_option: this.quote.freight_option,

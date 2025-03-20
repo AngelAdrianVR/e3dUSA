@@ -21,6 +21,7 @@ class Quote extends Model implements HasMedia
         'tooling_cost',
         'tooling_currency',
         'tooling_cost_stroked',
+        'freight_cost_stroked',
         'freight_cost',
         'freight_option',
         'first_production_days',

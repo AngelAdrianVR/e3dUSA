@@ -29,7 +29,7 @@ class QuoteController extends Controller
 {
     public function index()
     {
-        $pre_quotes = Quote::with(['catalogProducts:id,name', 'user:id,name'])
+        $pre_quotes = Quote::with(['catalogProducts:id,name', 'user:id,name', 'media'])
             ->latest()
             ->paginate(20); // Pagina primero
 
@@ -37,6 +37,11 @@ class QuoteController extends Controller
             return [
                 'id' => $quote->id,
                 'folio' => 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT),
+                'quote_acepted' => $quote->quote_acepted,
+                'responded_at' => $quote->responded_at,
+                'rejected_razon' => $quote->rejected_razon,
+                'sale_id' => $quote->sale_id,
+                'media' => $quote->media,
                 'user' => [
                     'id' => $quote->user->id,
                     'name' => $quote->user->name
@@ -89,7 +94,7 @@ class QuoteController extends Controller
             'freight_cost' => 'required|string',
             'freight_option' => 'required|string',
             'first_production_days' => 'required|string|max:191',
-            'notes' => 'nullable|string|max:191',
+            'notes' => 'nullable|string|max:800',
             'currency' => 'required|string|max:191',
             'company_branch_id' => 'nullable|numeric|min:1',
             'prospect_id' => 'nullable|numeric|min:1',
@@ -192,7 +197,7 @@ class QuoteController extends Controller
             'freight_cost' => 'required|string',
             'freight_option' => 'required|string',
             'first_production_days' => 'required|string|max:191',
-            'notes' => 'nullable|string|max:191',
+            'notes' => 'nullable|string|max:800',
             'currency' => 'required|string|max:191',
             'company_branch_id' => 'nullable|numeric|min:1',
             'prospect_id' => 'nullable|numeric|min:1',
@@ -303,6 +308,9 @@ class QuoteController extends Controller
             'company_branch_id' => $branch->id,
             'partialities' => [], // Inicialmente vacío
         ]);
+
+        // relacionar venta con cotizacion
+        $quote->update(['sale_id' => $sale->id]);
 
         $sale_folio = 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT);
 
