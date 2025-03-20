@@ -18,6 +18,7 @@ Sale extends Model implements HasMedia
         // 'shipping_company',
         // 'tracking_guide',
         // 'promise_date',
+        'quote_id',
         'freight_cost',
         'freight_option', //Cargo del flete en precio del producto,Emblems3d absorbe el costo del flete,etc
         'freight_cost_charged_in_product',
@@ -55,6 +56,11 @@ Sale extends Model implements HasMedia
     public function contact(): BelongsTo
     {
         return $this->belongsTo(Contact::class);
+    }
+
+    public function quote(): BelongsTo
+    {
+        return $this->belongsTo(Quote::class);
     }
 
     public function oportunity(): BelongsTo
