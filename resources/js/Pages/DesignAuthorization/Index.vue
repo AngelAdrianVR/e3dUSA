@@ -18,6 +18,7 @@
 
         <!-- tabla -->
         <div class="relative overflow-hidden min-h-[60vh]">
+            <NotificationCenter module="design-authorization" />
             <div class="lg:w-5/6 mx-auto mt-6">
                 <div class="flex justify-between">
                     <!-- pagination -->
@@ -111,6 +112,7 @@ import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Link } from "@inertiajs/vue3";
+import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 
 export default {
 data() {
@@ -128,7 +130,8 @@ components:{
     AppLayout,
     SecondaryButton,
     IndexSearchBar,
-    Link
+    Link,
+    NotificationCenter,
 },
 props: {
     design_authorizations: Array,
