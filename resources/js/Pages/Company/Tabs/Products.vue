@@ -5,15 +5,17 @@
             <CompanyProductCard v-for="company_product in company.catalogProducts" :key="company_product.id"
                 :company_product="company_product" />
         </div>
-        <p class="text-secondary mt-8 text-lg">Productos sugeridos ({{ company.suggested_products?.length }})</p>
+        <p v-else class="text-sm text-center text*gray-600">
+            No se le vende ningún producto aún a este cliente
+        </p>
+        <p class="text-secondary mt-8 text-lg">Productos sugeridos ({{ company.suggested_products?.length ?? 0 }})</p>
         <div v-if="company.suggested_products?.length" class="grid lg:grid-cols-4 md:grid-cols-2 mt-7 gap-10">
             <SuggestedProductCard v-for="suggested in suggestedProducts" :key="suggested"
-                :suggested="suggested" />
+            :suggested="suggested" />
         </div>
-        <div class="flex flex-col text-center justify-center" v-else>
-            <p class="text-sm text-center text-gray-400">No hay productos registrados en este cliente</p>
-            <i class="fa-regular fa-folder-open text-9xl mt-16 text-gray-300"></i>
-        </div>
+        <p v-else class="text-sm text-center text*gray-600 my-3 bg-gray-200">
+            No se han registrado sugerencias de productos a este cliente
+        </p>
     </section>
 </template>
 <script>
