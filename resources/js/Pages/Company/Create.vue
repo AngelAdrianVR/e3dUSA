@@ -15,7 +15,8 @@
       <!-- Form -->
       <form @submit.prevent="store">
         <!-- ---------------- Company starts ----------------- -->
-        <div class="md:w-1/2 md:mx-auto mx-3 my-3 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md transition-all ease-linear duration-500">
+        <div
+          class="md:w-1/2 md:mx-auto mx-3 my-3 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md transition-all ease-linear duration-500">
           <div class="md:grid gap-3 mb-6 grid-cols-2 pb-4">
             <div>
               <InputLabel value="Razon social*" />
@@ -251,7 +252,8 @@
                     {{ item.name }} | {{ item.email }}
                   </p>
                   <div class="flex space-x-2 items-center">
-                    <el-tag v-if="editContactIndex == index" @close="editContactIndex = null; resetContactForm()" closable>En edición</el-tag>
+                    <el-tag v-if="editContactIndex == index" @close="editContactIndex = null; resetContactForm()"
+                      closable>En edición</el-tag>
                     <button @click="editContact(index)" type="button"
                       class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -303,7 +305,8 @@
                   {{ item.name }}
                 </p>
                 <div class="flex space-x-2 items-center">
-                  <el-tag v-if="editBranchIndex == index" @close="editBranchIndex = null; resetBranchForm()" closable>En edición</el-tag>
+                  <el-tag v-if="editBranchIndex == index" @close="editBranchIndex = null; resetBranchForm()" closable>En
+                    edición</el-tag>
                   <button @click="editBranch(index)" type="button"
                     class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -407,7 +410,8 @@
                   ({{ item.new_price }} {{ item.new_currency }} / unidad)
                 </p>
                 <div class="flex space-x-2 items-center">
-                  <el-tag v-if="editProductIndex == index" @close="editProductIndex = null; resetProductForm()" closable>En edición</el-tag>
+                  <el-tag v-if="editProductIndex == index" @close="editProductIndex = null; resetProductForm()"
+                    closable>En edición</el-tag>
                   <button @click="editProduct(index)" type="button"
                     class="size-7 bg-[#B7B4B4] rounded-full flex items-center justify-center text-primary">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -433,9 +437,21 @@
               </li>
             </template>
           </ol>
-
+          <!-- ---------------- Productos sugeridos ----------------- -->
+          <el-divider content-position="left">Productos sugeridos</el-divider>
+          <p class="text-sm text-gray-600">Estos productos se mostrarán en el portal de clientes</p>
+          <div class="mt-3">
+            <InputLabel value="Productos de catálogo *" />
+            <el-select v-model="form.suggested_products" @change="showSelectedProductImage" multiple filterable
+              placeholder="Buscar producto">
+              <el-option v-for="item in catalog_products" :key="item.id" :label="item.name" :value="item.id" />
+            </el-select>
+          </div>
+          <figure v-if="selectedProductImageUrl" class="h-36 flex items-center justify-center border border-gray-400 rounded-md my-2">
+            <img :src="selectedProductImageUrl" class="object-contain">
+          </figure>
           <el-divider />
-          <div class="md:text-right">
+          <div class="md:text-right mt-4">
             <PrimaryButton :disabled="form.processing">
               <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
               Agregar Cliente
@@ -469,6 +485,7 @@ export default {
       seller_id: null,
       company_branches: [],
       products: [],
+      suggested_products: [],
     });
 
     return {
@@ -477,6 +494,7 @@ export default {
       editContactIndex: null,
       editProductIndex: null,
       editBranchIndex: null,
+      selectedProductImageUrl: null,
       contact: {
         name: null,
         email: null,
@@ -666,6 +684,13 @@ export default {
     sellers: Array,
   },
   methods: {
+    showSelectedProductImage() {
+      const productId = this.form.suggested_products[this.form.suggested_products.length - 1];
+      const product = this.catalog_products.find(cp => cp.id == productId);
+      if (product) {
+        this.selectedProductImageUrl = product.media[0].original_url;
+      }
+    },
     removeAdditionalEmail(index) {
       this.contact.additional_emails.splice(index, 1);
     },

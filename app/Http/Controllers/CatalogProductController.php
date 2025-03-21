@@ -294,4 +294,13 @@ class CatalogProductController extends Controller
 
         return inertia('CatalogProduct/PricesReport', compact('catalog_products'));
     }
+
+    public function getByIds(Request $request)
+    {
+        $ids_array = $request->ids;
+
+        $items = CatalogProduct::with('media')->whereIn('id', $request->ids)->get();
+
+        return response()->json(compact('items'));
+    }
 }

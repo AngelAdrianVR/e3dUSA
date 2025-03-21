@@ -29,7 +29,7 @@ class CompanyController extends Controller
 
     public function create()
     {
-        $catalog_products = CatalogProduct::all(['id', 'name']);
+        $catalog_products = CatalogProduct::with(['media'])->get(['id', 'name']);
         $sellers = User::where('is_active', true)
             ->where(function ($query) {
                 $query->whereIn('id', [2, 3])
@@ -54,6 +54,7 @@ class CompanyController extends Controller
             'seller_id' => 'required|numeric|min:0',
             'company_branches' => 'array|min:1',
             'products' => 'array|min:0',
+            'suggested_products' => 'array|min:0',
         ]);
 
         $company = Company::create($request->except(['company_branches', 'products'] + ['user_id' => auth()->id()]));
@@ -98,7 +99,7 @@ class CompanyController extends Controller
     public function edit(Company $company)
     {
         $company = Company::with('catalogProducts', 'companyBranches.contacts')->find($company->id);
-        $catalog_products = CatalogProduct::all(['id', 'name']);
+        $catalog_products = CatalogProduct::with(['media'])->get(['id', 'name']);
         $sellers = User::where('is_active', true)
             ->where(function ($query) {
                 $query->whereIn('id', [2, 3])
@@ -123,6 +124,7 @@ class CompanyController extends Controller
             'seller_id' => 'required|numeric|min:0',
             'company_branches' => 'array|min:1',
             'products' => 'array|min:0',
+            'suggested_products' => 'array|min:0',
         ]);
 
         $company->update($request->except(['company_branches', 'products']));
