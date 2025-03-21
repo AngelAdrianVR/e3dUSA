@@ -21,6 +21,7 @@ class CompanyResource extends JsonResource
             'post_code' => $this->post_code,
             'fiscal_address' => $this->fiscal_address,
             'branches_number' => $this->branches_number,
+            'suggested_products' => $this->suggested_products,
             'seller' => $this->seller,
             'user' => $this->whenLoaded('user'),
             'company_branches' => CompanyBranchResource::collection($this->whenLoaded('companyBranches')),
