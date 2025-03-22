@@ -43,8 +43,8 @@ class QuoteController extends Controller
                 'sale_id' => $quote->sale_id,
                 'media' => $quote->media,
                 'user' => [
-                    'id' => $quote->user->id,
-                    'name' => $quote->user->name
+                    'id' => $quote->user?->id,
+                    'name' => $quote->user?->name
                 ],
                 'receiver' => $quote->receiver,
                 'companyBranch' => [
@@ -223,6 +223,12 @@ class QuoteController extends Controller
             } else {
                 $quote->rawMaterials()->attach($product['id'], $quoted_product);
             }
+        }
+
+        if ( !$quote->user_id ) {
+            $quote->update([
+                'user_id' => auth()->id()
+            ]);
         }
 
         event(new RecordEdited($quote));

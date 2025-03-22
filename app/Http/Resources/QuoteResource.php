@@ -72,9 +72,9 @@ class QuoteResource extends JsonResource
             'companyBranch' => $this->companyBranch,
             'prospect' => $this->prospect,
             'user' => [
-                'id' => $this->user->id,
-                'name' => $this->user->name,
-                'email' => $this->user->email,
+                'id' => $this->user?->id,
+                'name' => $this->user?->name,
+                'email' => $this->user?->email,
             ],
             'sale' => $this->sale,
             'catalog_products' => CatalogProductResource::collection($this->whenLoaded('catalogProducts')),
