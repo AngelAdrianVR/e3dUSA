@@ -96,7 +96,13 @@
                             <SaleProfit :profit="scope.row.profit" />
                         </template>
                     </el-table-column>
-                    <el-table-column prop="user.name" label="Creado por" />
+                    <el-table-column prop="user.name" label="Creado por">
+                        <template #default="scope">
+                            <div class="flex">
+                                <p>{{ scope.row.user?.name ?? 'Solicitado desde portal de clientes' }}</p>
+                            </div>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="receiver" label="Receptor" />
                     <el-table-column prop="companyBranch.name" label="Cliente / Prospecto">
                         <template #default="scope">
@@ -352,7 +358,12 @@ export default {
             window.open(url, '_blank');
         },
         tableRowClassName({ row, rowIndex }) {
-            return 'cursor-pointer text-xs';
+            console.log(row);
+            if ( !row.user?.id ) {
+                return 'cursor-pointer text-xs dark:!bg-orange-500 !bg-orange-200'
+            } else {
+                return 'cursor-pointer text-xs';
+            }
         },
         async clone(quote_id) {
             try {

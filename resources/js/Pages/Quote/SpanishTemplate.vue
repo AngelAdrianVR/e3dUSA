@@ -14,7 +14,7 @@
                 Guadalajara, Jalisco {{ quote.data.created_at }}
                 <i v-show="showAdditionalElements" @click="authorize"
                     :title="quote.data.authorized_at ? 'Cotización autorizada' : 'Autorizar cotización'"
-                    v-if="$page.props.auth.user.permissions.includes('Autorizar cotizaciones')"
+                    v-if="$page.props.auth.user?.permissions.includes('Autorizar cotizaciones')"
                     class="fa-solid fa-check ml-3"
                     :class="quote.data.authorized_at ? 'text-green-500' : 'hover:text-green-500 cursor-pointer'">
                 </i>
@@ -64,9 +64,9 @@
             <!-- Información de los productos de catalogo cotizados -->
             <tbody>
                 <tr v-for="(item, index) in quote.data.catalog_products" :key="index" class="text-gray-700 uppercase"
-                    :class="quote.data.approved_products.includes(item.id) ? 'bg-green-200' : 'bg-gray-200'">
+                    :class="quote.data.approved_products?.includes(item.id) ? 'bg-green-200' : 'bg-gray-200'">
                     <td class="px-2 py-px">
-                        <b>{{ quote.data.approved_products.includes(item.id) ? '(ACEPTADO)' : '' }}</b>
+                        <b>{{ quote.data.approved_products?.includes(item.id) ? '(ACEPTADO)' : '' }}</b>
                         {{ item.name }}
                     </td>
                     <!-- <td class="px-2 py-px">{{ item.name + ' (N. de parte: ' + item.part_number + ')' }}</td> se quitó el numero de parte. descomentar si se quiere revertir cambios-->
