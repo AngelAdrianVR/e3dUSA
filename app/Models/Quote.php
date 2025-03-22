@@ -21,6 +21,7 @@ class Quote extends Model implements HasMedia
         'tooling_cost',
         'tooling_currency',
         'tooling_cost_stroked',
+        'freight_cost_stroked',
         'freight_cost',
         'freight_option',
         'first_production_days',
@@ -35,11 +36,13 @@ class Quote extends Model implements HasMedia
         'user_id',
         'sale_id',
         'show_breakdown',
+        'approved_products',
     ];
 
     protected $casts = [
         'authorized_at' => 'datetime',
         'responded_at' => 'datetime',
+        'approved_products' => 'array',
     ];
 
     //relationships

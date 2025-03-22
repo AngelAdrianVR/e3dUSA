@@ -123,6 +123,15 @@
                             </template>
                         </el-table-column>
                         <el-table-column prop="promise_date" label="Fecha de entrega" width="180" />
+                        <el-table-column label="Cotización">
+                            <template #default="scope">
+                                <div>
+                                    <p v-if="scope.row.quote_id" @click.stop="handleShowQuote(scope.row.quote_id)"
+                                        class="text-blue-300 hover:underline">COT-{{ String(scope.row.quote_id).padStart('0', 4) }}</p>
+                                    <p v-else>N/A</p>
+                                </div>
+                            </template>
+                        </el-table-column>
                         <el-table-column align="right">
                             <template #default="scope">
                                 <el-dropdown trigger="click" @command="handleCommand">
@@ -248,6 +257,10 @@ export default {
         company_branches: Array
     },
     methods: {
+        handleShowQuote(quoteId) {
+            const url = this.route('quotes.show', quoteId);
+            window.open(url, '_blank');
+        },
         applyStatusFilter() {
             // Convertir el array de arrays a un array plano de strings
             const flatSelectedStatuses = this.statusfilter.flat();
@@ -387,7 +400,7 @@ export default {
 
                     // Ordenar los índices de forma descendente para evitar problemas de desplazamiento al eliminar elementos
                     deletedIndexes.sort((a, b) => b - a);
-                    
+
                     // Eliminar cotizaciones por índice
                     for (const index of deletedIndexes) {
                         this.filteredSales.splice(index, 1);

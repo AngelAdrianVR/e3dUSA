@@ -57,14 +57,52 @@
                     @selection-change="handleSelectionChange" ref="multipleTableRef"
                     :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
-                    <el-table-column prop="folio" label="Folio" width="100" />
+                    <el-table-column prop="folio" label="Folio" width="120">
+                        <template #default="scope">
+                            <el-tooltip v-if="scope.row.quote_acepted" placement="top">
+                                <template #content>
+                                    <p>
+                                        El cliente firmó la cotización <br>
+                                        el {{ formatDate(scope.row.responded_at) }}
+                                    </p>
+                                </template>
+                                <i class="fa-solid fa-check text-xs text-green-700 mr-2"></i>
+                            </el-tooltip>
+                            <el-tooltip v-else-if="scope.row.rejected_razon" placement="top">
+                                <template #content>
+                                    <p>
+                                        El cliente rechazó la cotización <br>
+                                        el {{ formatDate(scope.row.responded_at) }} <br>
+                                        Motivo: <b>{{ scope.row.rejected_razon }}</b>
+                                    </p>
+                                </template>
+                                <i class="fa-solid fa-xmark text-xs text-red-700 mr-2"></i>
+                            </el-tooltip>
+                            <span>{{ scope.row.folio }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Orden de venta">
+                        <template #default="scope">
+                            <div>
+                                <p v-if="scope.row.sale_id" @click.stop="handleShowSale(scope.row.sale_id)"
+                                    class="text-blue-400 hover:underline">OV-{{ String(scope.row.sale_id).padStart('0', 4) }}</p>
+                                <p v-else>N/A</p>
+                            </div>
+                        </template>
+                    </el-table-column>
                     <el-table-column v-if="$page.props.auth.user.permissions.includes('Ver utilidades')"
                         label="Utilidad" width="140">
                         <template #default="scope">
                             <SaleProfit :profit="scope.row.profit" />
                         </template>
                     </el-table-column>
-                    <el-table-column prop="user.name" label="Creado por" />
+                    <el-table-column prop="user.name" label="Creado por">
+                        <template #default="scope">
+                            <div class="flex">
+                                <p>{{ scope.row.user?.name ?? 'Solicitado desde portal de clientes' }}</p>
+                            </div>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="receiver" label="Receptor" />
                     <el-table-column prop="companyBranch.name" label="Cliente / Prospecto">
                         <template #default="scope">
@@ -80,7 +118,10 @@
                     <el-table-column prop="authorized_user_name" label="Autorizado por" />
                     <el-table-column label="Productos" width="210">
                         <template v-slot="scope">
-                            <span>{{ scope.row.catalog_products.map(product => product.name).join(', ') }}</span>
+                            <p v-for="(p, index) in scope.row.catalog_products.map(product => product.name)"
+                                :key="index">
+                                • {{ p }}
+                            </p>
                         </template>
                     </el-table-column>
                     <el-table-column prop="created_at" label="Creado el" width="180" />
@@ -121,8 +162,8 @@
                                             </svg>
                                             Clonar</el-dropdown-item>
                                         <el-dropdown-item
-                                            v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta')"
-                                            :command="'make_so-' + scope.row.id">
+                                            v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta') && !scope.row.sale_id"
+                                            :command="'make_so-' + scope.row.id" :disabled="!scope.row.authorized_at">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                 stroke-width="1.5" stroke="currentColor" class="size-4 mr-2">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -193,6 +234,8 @@ import axios from 'axios';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import CancelButton from '@/Components/MyComponents/CancelButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default {
     components: {
@@ -228,6 +271,14 @@ export default {
         },
     },
     methods: {
+        handleShowSale(saleId) {
+            const url = this.route('sales.show', saleId);
+            window.open(url, '_blank');
+        },
+        formatDate(date) {
+            const parsedDate = new Date(date);
+            return format(parsedDate, 'dd \'de\' MMM, Y  • H:mm a', { locale: es }); // Formato personalizado
+        },
         async handleSearch(search) {
             this.search = search;
             this.loading = true;
@@ -307,7 +358,12 @@ export default {
             window.open(url, '_blank');
         },
         tableRowClassName({ row, rowIndex }) {
-            return 'cursor-pointer text-xs';
+            console.log(row);
+            if ( !row.user?.id ) {
+                return 'cursor-pointer text-xs dark:!bg-orange-500 !bg-orange-200'
+            } else {
+                return 'cursor-pointer text-xs';
+            }
         },
         async clone(quote_id) {
             try {

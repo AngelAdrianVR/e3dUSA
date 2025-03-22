@@ -8,6 +8,7 @@ use App\Events\RecordEdited;
 use App\Http\Resources\QuoteResource;
 use App\Models\Calendar;
 use App\Models\CatalogProduct;
+use App\Models\CatalogProductCompany;
 use App\Models\CatalogProductCompanySale;
 use App\Models\Company;
 use App\Models\CompanyBranch;
@@ -28,7 +29,7 @@ class QuoteController extends Controller
 {
     public function index()
     {
-        $pre_quotes = Quote::with(['catalogProducts:id,name', 'user:id,name'])
+        $pre_quotes = Quote::with(['catalogProducts:id,name', 'user:id,name', 'media'])
             ->latest()
             ->paginate(20); // Pagina primero
 
@@ -36,9 +37,14 @@ class QuoteController extends Controller
             return [
                 'id' => $quote->id,
                 'folio' => 'COT-' . str_pad($quote->id, 4, "0", STR_PAD_LEFT),
+                'quote_acepted' => $quote->quote_acepted,
+                'responded_at' => $quote->responded_at,
+                'rejected_razon' => $quote->rejected_razon,
+                'sale_id' => $quote->sale_id,
+                'media' => $quote->media,
                 'user' => [
-                    'id' => $quote->user->id,
-                    'name' => $quote->user->name
+                    'id' => $quote->user?->id,
+                    'name' => $quote->user?->name
                 ],
                 'receiver' => $quote->receiver,
                 'companyBranch' => [
@@ -88,7 +94,7 @@ class QuoteController extends Controller
             'freight_cost' => 'required|string',
             'freight_option' => 'required|string',
             'first_production_days' => 'required|string|max:191',
-            'notes' => 'nullable|string|max:191',
+            'notes' => 'nullable|string|max:800',
             'currency' => 'required|string|max:191',
             'company_branch_id' => 'nullable|numeric|min:1',
             'prospect_id' => 'nullable|numeric|min:1',
@@ -191,7 +197,7 @@ class QuoteController extends Controller
             'freight_cost' => 'required|string',
             'freight_option' => 'required|string',
             'first_production_days' => 'required|string|max:191',
-            'notes' => 'nullable|string|max:191',
+            'notes' => 'nullable|string|max:800',
             'currency' => 'required|string|max:191',
             'company_branch_id' => 'nullable|numeric|min:1',
             'prospect_id' => 'nullable|numeric|min:1',
@@ -217,6 +223,12 @@ class QuoteController extends Controller
             } else {
                 $quote->rawMaterials()->attach($product['id'], $quoted_product);
             }
+        }
+
+        if ( !$quote->user_id ) {
+            $quote->update([
+                'user_id' => auth()->id()
+            ]);
         }
 
         event(new RecordEdited($quote));
@@ -302,6 +314,9 @@ class QuoteController extends Controller
             'company_branch_id' => $branch->id,
             'partialities' => [], // Inicialmente vacío
         ]);
+
+        // relacionar venta con cotizacion
+        $quote->update(['sale_id' => $sale->id]);
 
         $sale_folio = 'OV-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT);
 
@@ -639,4 +654,15 @@ class QuoteController extends Controller
         // Actualizar la propiedad `has_important_reminder` en la tabla `users`
         User::query()->update(['has_important_reminder' => $hasImportantReminder]);
     }
+
+    public function fetchQuoteData(Quote $quote) 
+    {
+        $quote->load([
+            'companyBranch', // Carga la relación company dentro de companyBranch
+            'catalogProducts'
+        ]);
+
+        return response()->json(['quote' => $quote]);
+    }
+
 }

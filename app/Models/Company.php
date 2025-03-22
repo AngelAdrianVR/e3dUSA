@@ -21,6 +21,11 @@ class Company extends Model
         'user_id',
         'seller_id',
         'branches_number',
+        'suggested_products',
+    ];
+
+    protected $casts = [
+        'suggested_products' => 'array',
     ];
 
     //relationships

@@ -76,8 +76,9 @@
                                                 <span v-if="priceChangePercentage(catalog_product.pivot) !== null"
                                                     :class="priceChangeClass(catalog_product.pivot)">
                                                     <template v-if="priceChangePercentage(catalog_product.pivot) !== 0">
-                                                        (<i :class="priceChangeIcon(catalog_product.pivot)" class="text-[10px]"></i>{{
-                                                            priceChangePercentage(catalog_product.pivot) }}%)
+                                                        (<i :class="priceChangeIcon(catalog_product.pivot)"
+                                                            class="text-[10px]"></i>{{
+                                                                priceChangePercentage(catalog_product.pivot) }}%)
                                                     </template>
                                                 </span>
                                             </span>
@@ -89,11 +90,14 @@
 
                                     <figure
                                         class="rounded-md m-2 h-32 cursor-zoom-in bg-[#d9d9d9] dark:bg-[#202020] flex items-center justify-center">
-                                        <img v-if="catalog_product.media?.length" class="object-contain h-full" @click="handlePictureCardPreview(catalog_product.media[0])" :src="catalog_product.media[0].original_url" alt="">
+                                        <img v-if="catalog_product.media?.length" class="object-contain h-full"
+                                            @click="handlePictureCardPreview(catalog_product.media[0])"
+                                            :src="catalog_product.media[0].original_url" alt="">
                                         <i v-else class="fa-regular fa-image text-4xl text-gray-400"></i>
                                     </figure>
                                 </body>
-                                <p :class="[formattedLastUpdate(catalog_product.pivot).bgClass, 'text-gray-500 dark:text-gray-800 mt-2 inline-block pr-2']">
+                                <p
+                                    :class="[formattedLastUpdate(catalog_product.pivot).bgClass, 'text-gray-500 dark:text-gray-800 mt-2 inline-block pr-2']">
                                     Último cambio de precio:
                                     <span class="font-bold text-black ml-2">
                                         {{ formattedLastUpdate(catalog_product.pivot).text }}
@@ -266,13 +270,6 @@
                                 {{ form.tooling_cost }} {{ form.tooling_currency }}
                             </span>
                         </div>
-                        <div class="flex items-center space-x-2 col-span-full">
-                            <label class="flex items-center text-gray-600 dark:text-gray-500">
-                                <input type="checkbox" v-model="form.show_breakdown"
-                                    class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
-                                <span class="ml-2 text-sm">Mostrar total sumando productos, flete y herramental</span>
-                            </label>
-                        </div>
                         <div>
                             <InputLabel value="Pago de flete*" />
                             <el-select v-model="form.freight_option" @change="handleFreightOption"
@@ -281,26 +278,6 @@
                             </el-select>
                             <InputError :message="form.errors.freight_option" />
                         </div>
-                        <!-- <div class="col-span-full">
-                            <label class="flex items-center text-gray-600 dark:text-gray-500">
-                                <input type="checkbox" v-model="form.freight_cost_charged_in_product"
-                                    class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
-                                <span class="ml-2 text-sm">Cargo de flete en precio del producto</span>
-                                <el-tooltip placement="top">
-                                    <template #content>
-                                        <p>
-                                            Activar si el precio de flete será cargado al precio <br>
-                                            de algún(os) producto(s) para que no aparezca visible <br>
-                                            en la cotización.
-                                        </p>
-                                    </template>
-                                    <div
-                                        class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
-                                        <i class="fa-solid fa-info text-primary text-[7px]"></i>
-                                    </div>
-                                </el-tooltip> 
-                            </label>
-                        </div> -->
                         <div>
                             <div class="flex items-center space-x-2">
                                 <InputLabel v-if="form.freight_option == 'Cargo del flete prorrateado en producto'"
@@ -327,14 +304,27 @@
                                 </el-tooltip>
                             </div>
                             <el-input v-model="form.freight_cost"
-                                v-if="form.freight_option == 'Cargo del flete prorrateado en producto' || form.freight_option == 'Cargo flete normal de costo al cliente' || form.freight_option == 'Emblems3d absorbe el costo del flete'" placeholder="Ej. 550" />
+                                v-if="form.freight_option == 'Cargo del flete prorrateado en producto' || form.freight_option == 'Cargo flete normal de costo al cliente' || form.freight_option == 'Emblems3d absorbe el costo del flete'"
+                                placeholder="Ej. 550" />
                             <InputError :message="form.errors.freight_cost" />
+                        </div>
+                        <div class="flex items-center space-x-2 col-span-full">
+                            <label class="flex items-center text-gray-600 dark:text-gray-500">
+                                <input type="checkbox" v-model="form.freight_cost_stroked"
+                                    class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
+                                <span class="ml-2 text-sm">Tachar:</span>
+                            </label>
+                            <span class="text-gray-700 dark:text-gray-400 text-xs mt-1"
+                                :class="form.freight_cost_stroked ? 'line-through' : ''">
+                                {{ form.freight_cost }} {{ form.tooling_currency }}
+                            </span>
                         </div>
                         <div>
                             <InputLabel value="Dias para primera producción*" />
                             <el-select v-model="form.first_production_days" placeholder="Selecciona">
-                                <el-option v-for="(item, index) in form.is_spanish_template ? firstProductionDaysList : firstProductionDaysListEnglish" :key="item" :label="item"
-                                    :value="item" />
+                                <el-option
+                                    v-for="(item, index) in form.is_spanish_template ? firstProductionDaysList : firstProductionDaysListEnglish"
+                                    :key="item" :label="item" :value="item" />
                             </el-select>
                             <InputError :message="form.errors.first_production_days" />
                         </div>
@@ -343,6 +333,13 @@
                             <el-input v-model="form.notes" :rows="3" maxlength="800" placeholder="..." show-word-limit
                                 type="textarea" />
                             <InputError :message="form.errors.notes" />
+                        </div>
+                        <div class="flex items-center space-x-2 col-span-full">
+                            <label class="flex items-center text-gray-600 dark:text-gray-500">
+                                <input type="checkbox" v-model="form.show_breakdown"
+                                    class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
+                                <span class="ml-2 text-sm">Mostrar total sumando productos, flete y herramental</span>
+                            </label>
                         </div>
                         <el-divider content-position="left" class="col-span-full">Productos</el-divider>
                         <!-- products -->
@@ -431,14 +428,14 @@
                                     <!-- Si es producto de catalogo lo busca en esos productos -->
                                     <p v-if="item.isCatalogProduct" class="text-xs">
                                         <span class="text-primary">{{ index + 1 }}.</span>
-                                        {{ catalog_products.find(prd => prd.id === item.id)?.name }}
+                                        {{catalog_products.find(prd => prd.id === item.id)?.name}}
                                         (x{{ item.quantity }} unidades) <span class="text-gray1">-> Producto de
                                             catálogo</span>
                                     </p>
                                     <!-- Si es materia prima lo busca en materias primas -->
                                     <p v-else class="text-sm">
                                         <span class="text-primary">{{ index + 1 }}.</span>
-                                        {{ raw_materials.find(prd => prd.id === item.id)?.name }}
+                                        {{raw_materials.find(prd => prd.id === item.id)?.name}}
                                         (x{{ item.quantity }} unidades) <span class="text-gray1">-> Materia prima
                                         </span>
                                     </p>
@@ -528,13 +525,10 @@
                     <section class="grid grid-cols-3 gap-3 mt-3">
                         <div>
                             <InputLabel value="Precio nuevo en porcentaje*" />
-                            <el-input
-                                @change="calculateNewPrice()"
-                                v-model="new_price_percentage" type="number" :max="100" :min="5" step="0.1"
-                                placeholder="Ej. 5.8%"
+                            <el-input @change="calculateNewPrice()" v-model="new_price_percentage" type="number"
+                                :max="100" :min="5" step="0.1" placeholder="Ej. 5.8%"
                                 :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                                :parser="(value) => value.replace(/[^\d.]/g, '')"
-                                >
+                                :parser="(value) => value.replace(/[^\d.]/g, '')">
                                 <template #prepend>
                                     %
                                 </template>
@@ -586,7 +580,7 @@
                 <template #title>
                     {{ editIMportantNotes ? 'Editar' : 'Agregar' }}
                     notas importantes para
-                    {{ company_branches.find(item => item.id == form.company_branch_id).name }}
+                    {{company_branches.find(item => item.id == form.company_branch_id).name}}
                 </template>
                 <template #content>
                     <div>
@@ -699,6 +693,7 @@ export default {
             tooling_cost: null,
             tooling_currency: null,
             tooling_cost_stroked: false,
+            freight_cost_stroked: false,
             freight_cost: null,
             freight_option: 'Cargo flete normal de costo al cliente',
             freight_cost_charged_in_product: false,

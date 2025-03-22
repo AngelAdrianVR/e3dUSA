@@ -49,7 +49,7 @@
                             Productos de este cliente
                         </h3>
 
-                        <div v-if="loading" class="flex items-center justify-center mt-10">
+                        <div v-if="loadingCompanyBranchProducts" class="flex items-center justify-center mt-10">
                             <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
                         </div>
                         <section v-else class="max-h-[500px] overflow-auto">
@@ -143,6 +143,14 @@
                         <el-radio :value="0">Orden de stock</el-radio>
                     </el-radio-group>
                     <div class="grid grid-cols-2 gap-3 mt-4">
+                        <div v-if="form.is_sale_production" class="col-span-full">
+                            <InputLabel value="Selecciona la cotización relacionada a la OV en caso de tenerla (sólo cot autorizadas)" />
+                            <el-select @change="fetchQuoteInfo" v-model="form.quote_id"
+                                filterable placeholder="Selecciona una cotización">
+                                <el-option v-for="item in quotes" :key="item.id" :label="'C-' + item.id + ' - ' + item.company_branch?.name"
+                                    :value="item.id" />
+                            </el-select>
+                        </div>
                         <div>
                             <InputLabel value="Cliente*" />
                             <el-select @change="handleCompanyBranchIdChange" v-model="form.company_branch_id"
@@ -394,10 +402,15 @@
                                     </li>
                                 </template>
                             </ol>
+                            <div v-if="loading"
+                                class="text-primary text-center p-4 min-h-24">
+                                <i class="fa-solid fa-circle-notch fa-spin mr-2 text-xl"></i>
+                                Cargando productos de cotización...
+                            </div>
                         </div>
                     </section>
                     <!-- logistica -->
-                    <section v-if="form.is_sale_production">
+                    <section v-if="form.is_sale_production && !loading">
                         <el-divider content-position="left">Logistica</el-divider>
                         <p v-if="!form.products.length"
                             class="flex items-center justify-center space-x-3 text-[#373737] py-2">
@@ -533,7 +546,7 @@
                         </div>
                     </section>
                     <!-- Datos de la orden -->
-                    <section v-if="form.is_sale_production">
+                    <section v-if="form.is_sale_production && !loading">
                         <el-divider content-position="left">Datos de la órden</el-divider>
                         <div class="grid gap-3 md:grid-cols-2">
                             <div>
@@ -790,6 +803,7 @@ export default {
             is_sale_production: 0, //seleccionado stock porque se necesita cotizacion para crear venta
             create_calendar_task: false, //bandera para crear o no recordatorio en calendario
             freight_option: null,
+            quote_id: null //cotizacion relacionada con la ov
         });
 
         const priceForm = useForm({
@@ -808,6 +822,8 @@ export default {
             form,
             priceForm,
             scheduleForm,
+            quote: null, // informacion de la cotizacion seleccionada relacionada a la ov.
+            loadingCompanyBranchProducts: false,
             loading: false,
             importantNotes: null,
             showImportantNotesModal: false,
@@ -889,6 +905,7 @@ export default {
         company_branches: Array,
         opportunityId: Number,
         sample: Object,
+        quotes: Array,
     },
     watch: {
         'form.partialities'() {
@@ -897,6 +914,52 @@ export default {
         },
     },
     methods: {
+        async fetchQuoteInfo() {
+            try {
+                const response = await axios.get(route('quotes.fetch-data', this.form.quote_id));
+                if (response.status === 200) {
+                    this.quote = response.data.quote;
+
+                    if (this.quote) {
+                        this.form.company_branch_id = this.quote.company_branch.id;
+                        this.handleCompanyBranchIdChange();
+
+                        // Obtener los productos de la sucursal
+                        const companyProducts = this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.catalog_products || [];
+
+                        // Agregar productos de la cotización a la orden de venta
+                        for (const product of this.quote.catalog_products) {
+                            // Buscar el producto en el catálogo de la sucursal
+                            const item = companyProducts.find(p => p.name === product.name);
+                            
+                            if (item) {
+                                this.product = {
+                                    catalog_product_company_id: item.pivot.id,
+                                    catalogProduct: null,
+                                    quantity: product.pivot.quantity,
+                                    notes: product.pivot.notes,
+                                    part_number: product.part_number,
+                                    is_new_design: false,
+                                    confusion_alert: false,
+                                    requires_medallion: product.pivot.requires_med,
+                                };
+                                await this.fetchCatalogProductData(); // Ahora sí esperará a que se ejecute
+                                this.addProduct();
+                            }
+                        }
+
+                        // Agregar información general de cotización
+                        this.form.freight_option = this.quote.freight_option;
+                        this.form.notes = this.quote.notes;
+                        this.form.freight_cost = this.quote.freight_cost;
+                        this.resetProductForm();
+                        this.store();
+                    }
+                }
+            } catch (error) {
+                console.error("Error al obtener la cotización:", error);
+            }
+        },
         handleStoreSale() {
             if (this.form.partialities.some(item => item.promise_date !== null) && this.form.partialities.length > 1) {
                 this.showCalendarTaskModal = true;
@@ -1034,9 +1097,10 @@ export default {
         },
         handleChangeShippingOption() {
             this.form.partialities = [];
-            const numberOfShippings = this.shippingOptions.findIndex(i => i === this.form.shipping_option) + 1;
+            const numberOfShippings = this.shippingOptions?.findIndex(i => i === this.form.shipping_option) + 1;
             for (let index = 0; index < numberOfShippings; index++) {
                 this.addPartial(numberOfShippings == 1);
+                console.log(numberOfShippings);
             }
         },
         openDesignAuthorization() {
@@ -1105,18 +1169,6 @@ export default {
             //obtiene el id de la matriz para pasarla como parametro en creacion de formato de autorización de diseño.
             this.selectedCompanyId = this.company_branches.find(item => item.id == this.form.company_branch_id).company_id;
         },
-        // getImportantNotes() {
-        //     // limpiar informacion de logistica
-        //     this.form.contact_id = null;
-        //     this.form.products = [];
-        //     this.form.partialities = [];
-        //     this.form.shipping_option = null;
-        //     this.resetProductForm();
-
-        //     this.importantNotes = this.company_branches.find(item => item.id == this.form.company_branch_id)?.important_notes;
-        //     //obtiene el id de la matriz para pasarla como parametro en creacion de formato de autorización de diseño.
-        //     this.selectedCompanyId = this.company_branches.find(item => item.id == this.form.company_branch_id).company_id;
-        // },
         editImportantNotes() {
             this.isEditImportantNotes = true;
             this.showImportantNotesModal = true;
@@ -1324,7 +1376,7 @@ export default {
             }
         },
         async fetchCatalogProductsCompanyBanch() {
-            this.loading = true;
+            this.loadingCompanyBranchProducts = true;
             try {
                 const response = await axios.get(route('quotes.fetch-catalog-products-company-branch', this.form.company_branch_id));
 
@@ -1339,7 +1391,7 @@ export default {
                     type: 'error'
                 });
             } finally {
-                this.loading = false;
+                this.loadingCompanyBranchProducts = false;
             }
         },
     },

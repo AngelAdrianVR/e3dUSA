@@ -54,6 +54,7 @@ class QuoteResource extends JsonResource
             'tooling_cost' => $this->tooling_cost,
             'tooling_currency' => $this->tooling_currency,
             'tooling_cost_stroked' => $this->tooling_cost_stroked,
+            'freight_cost_stroked' => $this->freight_cost_stroked,
             'freight_cost_charged_in_product' => $this->freight_cost_charged_in_product,
             'freight_cost' => $this->freight_cost,
             'freight_option' => $this->freight_option,
@@ -71,9 +72,9 @@ class QuoteResource extends JsonResource
             'companyBranch' => $this->companyBranch,
             'prospect' => $this->prospect,
             'user' => [
-                'id' => $this->user->id,
-                'name' => $this->user->name,
-                'email' => $this->user->email,
+                'id' => $this->user?->id,
+                'name' => $this->user?->name,
+                'email' => $this->user?->email,
             ],
             'sale' => $this->sale,
             'catalog_products' => CatalogProductResource::collection($this->whenLoaded('catalogProducts')),
@@ -84,6 +85,7 @@ class QuoteResource extends JsonResource
                 'number_format' => number_format($total_without_taxes, 2),
             ],
             'show_breakdown' => $this->show_breakdown,
+            'approved_products' => $this->approved_products,
         ];
     }
 }
