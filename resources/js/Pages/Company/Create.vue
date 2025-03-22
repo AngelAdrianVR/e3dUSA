@@ -448,7 +448,7 @@
             </el-select>
           </div>
           <figure v-if="selectedProductImageUrl" class="h-36 flex items-center justify-center border border-gray-400 rounded-md my-2">
-            <img :src="selectedProductImageUrl" class="object-contain">
+            <img :src="selectedProductImageUrl" class="object-contain h-36">
           </figure>
           <el-divider />
           <div class="md:text-right mt-4">
