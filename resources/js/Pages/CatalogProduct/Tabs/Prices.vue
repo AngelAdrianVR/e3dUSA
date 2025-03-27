@@ -1,11 +1,11 @@
 <template>
     <section class="py-3 text-sm">
         <div v-for="company in product.companies" :key="company.id"
-            class="grid grid-cols-4 gap-3 uppercase odd:bg-gray-200">
+            class="grid grid-cols-4 gap-3 uppercase odd:bg-gray-200 dark:odd:bg-gray-600 p-1 rounded-md">
             <p class="col-span-3">{{ company.business_name }}</p>
             <div class="flex items-center space-x-2">
                 <button @click="handleUpdateProductPrice(company)"
-                    class="rounded-full size-4 bg-gray-200 text-black flex items-center justify-center">
+                    class="rounded-full size-5 dark:hover:bg-gray-200 text-black flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-4">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -60,6 +60,15 @@
                     </el-select>
                     <InputError :message="priceForm.errors.new_currency" />
                 </div>
+                <div>
+                    <InputLabel value="Fecha de cambio*" />
+                    <el-date-picker
+                        v-model="priceForm.new_date"
+                        type="date"
+                        placeholder="Selecciona una fecha"
+                    />
+                    <InputError :message="priceForm.errors.new_date" />
+                </div>
                 <p v-if="priceForm.new_price && (priceForm.new_price - itemToUpdatePrice.new_price) < (itemToUpdatePrice.new_price * 0.04)"
                     class="text-xs text-red-600 col-span-full">El incremento de precio no debe ser menor al 4%
                     del precio actual</p>
@@ -93,6 +102,7 @@ export default {
         const priceForm = useForm({
             new_price: null,
             new_currency: null,
+            new_date: new Date().toISOString().split('T')[0], // Fecha actual en formato YYYY-MM-DD,
             product_company_id: null,
         });
 
