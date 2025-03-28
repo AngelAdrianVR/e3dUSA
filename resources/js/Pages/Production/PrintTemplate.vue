@@ -52,8 +52,12 @@
             <div class="mt-2 text-xs flex justify-between">
                 <p class="text-primary">Solicitado por: <span class="text-black ml-3">{{ product.sale.user.name
                         }}</span></p>
-                <p class="text-primary">Solicitado el: <span class="text-black ml-3">{{
-                    product.sale.created_at.split('T')[0] }}</span></p>
+                <p class="text-primary">
+                    Solicitado el: 
+                    <span class="text-black ml-3">
+                        {{ formatDate(product.sale.created_at) }}
+                    </span>
+                </p>
             </div>
             <div class="mt-2 text-xs flex justify-between">
                 <span></span>
@@ -132,6 +136,16 @@ export default {
             return lastDate
                 ? `hace ${formatDistanceToNow(new Date(lastDate), { locale: es })}${new_updated_by ? ` por ${new_updated_by}` : ''}`
                 : 'No disponible';
+        },
+        formatDate(dateString) {
+            if (!dateString) return '';
+
+            const date = new Date(dateString);
+            return new Intl.DateTimeFormat('es-ES', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            }).format(date).replace('.', '');
         }
     }
 }

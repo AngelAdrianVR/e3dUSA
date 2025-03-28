@@ -358,7 +358,6 @@ export default {
             window.open(url, '_blank');
         },
         tableRowClassName({ row, rowIndex }) {
-            console.log(row);
             if ( !row.user?.id ) {
                 return 'cursor-pointer text-xs dark:!bg-orange-500 !bg-orange-200'
             } else {
