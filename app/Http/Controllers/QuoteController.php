@@ -63,6 +63,7 @@ class QuoteController extends Controller
                 }),
                 'authorized_user_name' => $quote->authorized_user_name ?? '--',
                 'authorized_at' => $quote->authorized_at,
+                'created_by_customer' => $quote->created_by_customer,
                 'created_at' => $quote->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
                 'profit' => $quote->getProfit(), // Añadir el profit
             ];
