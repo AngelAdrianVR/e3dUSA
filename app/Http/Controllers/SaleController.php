@@ -37,7 +37,7 @@ class SaleController extends Controller
     {
         $opportunityId = Oportunity::find(request('opportunityId'));
         $sample = Sample::find(request('sampleId'));
-        $quotes = Quote::with('CompanyBranch:id,name')->whereNotNull('authorized_at')->latest()->get(['id','company_branch_id'])->take(100);
+        $quotes = Quote::with('CompanyBranch:id,name')->whereNotNull('authorized_at')->whereNull('sale_id')->latest()->get(['id','company_branch_id'])->take(100);
 
         //optimizacion de datos en vista para reducir el tiempo de carga
         $pre_company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
@@ -177,6 +177,12 @@ class SaleController extends Controller
                 $seller->notify(new SchedulePartialitiesReminder($reminder));
                 // }
             }
+        }
+
+        // Agregar el id de la venta a la cotizacion.
+        if ($request->quote_id) {
+            $quote = Quote::find($request->quote_id);
+            $quote->update(['sale_id' => $sale->id]);
         }
     }
 

@@ -2,16 +2,15 @@
 
     <Head :title="tabTitle" />
     <!-- logo -->
-    <div class="text-center">
+    <div class="text-center dark:bg-slate-800">
         <ApplicationLogo class="h-auto w-3/12 inline-block" />
     </div>
 
     <!-- content -->
-    <div class="text-xs">
-
+    <div class="text-xs dark:bg-slate-800">
         <!-- header -->
         <div>
-            <p class="flex items-center justify-end ml-auto font-bold mr-6 text-xs text-gray-700">
+            <p class="flex items-center justify-end ml-auto font-bold mr-6 text-xs text-gray-700 dark:text-white">
                 San Antonio TX {{ quote.data.created_at }}
                 <i v-show="showAdditionalElements" @click="authorize"
                     :title="quote.data.authorized_at ? 'Cotización autorizada' : 'Autorizar cotización'"
@@ -21,7 +20,7 @@
                 </i>
             </p>
             <!-- botones para cambiar de cot -->
-            <div v-show="showAdditionalElements" class="flex items-center justify-center space-x-8 mt-5">
+            <div v-show="showAdditionalElements" class="flex items-center justify-center space-x-8 mt-5 dark:text-white">
                 <button @click="$inertia.visit(route('quotes.show', prev_quote))"
                     class="bg-gray-300 text-gray-800 size-5 text-[9px] rounded-full">
                     <i class="fa-solid fa-chevron-left"></i>
@@ -32,13 +31,13 @@
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
-            <p class="w-11/12 text-lg mx-auto font-bold text-gray-700">
+            <p class="w-11/12 text-lg mx-auto font-bold text-gray-700 dark:text-white">
                 {{ quote.data.companyBranch?.name ?? quote.data.prospect?.name }}
             </p>
-            <p class="w-11/12 mx-auto font-bold mt-2 text-gray-700">
+            <p class="w-11/12 mx-auto font-bold mt-2 text-gray-700 dark:text-white">
                 Dear {{ quote.data.receiver }} - {{ quote.data.department }}
-            </p>
-            <p class="w-11/12 mx-auto my-2 pb-2 text-gray-700">
+            </p> 
+            <p class="w-11/12 mx-auto my-2 pb-2 text-gray-700 dark:text-white">
                 By means of this letter receive a cordial greeting and also I provide you with the quote that you
                 requested, based on the
                 conversation held with you and knowing your conditions of the product to apply:
@@ -46,7 +45,7 @@
         </div>
 
         <!-- table -->
-        <table class="rounded-t-lg m-2 w-11/12 mx-auto bg-gray-300 text-gray-800" style="font-size: 10.2px;">
+        <table class="rounded-t-lg m-2 w-11/12 mx-auto bg-gray-300 dark:bg-gray-600 dark:text-white text-gray-800" style="font-size: 10.2px;">
             <thead>
                 <tr class="text-left border-b-2 border-gray-400">
                     <th class="px-2 py-1">Concept</th>
@@ -64,8 +63,8 @@
             </thead>
             <!-- Información de los productos de catalogo cotizados -->
             <tbody>
-                <tr v-for="(item, index) in quote.data.catalog_products" :key="index" class="text-gray-700 uppercase"
-                    :class="quote.data.approved_products.includes(item.id) ? 'bg-green-200' : 'bg-gray-200'">
+                <tr v-for="(item, index) in quote.data.catalog_products" :key="index" class="text-gray-700 uppercase dark:bg-gray-300"
+                    :class="quote.data.approved_products.includes(item.id) ? 'bg-green-200 dark:bg-green-400' : 'bg-gray-200'">
                     <td class="px-2 py-px">
                         <b>{{ quote.data.approved_products.includes(item.id) ? '(ACEPTADO)' : '' }}</b>
                         {{ item.name }}
@@ -84,7 +83,7 @@
             <!-- Información de las materias primas cotizadas -->
             <tbody>
                 <tr v-for="(item, index) in quote.data.raw_materials" :key="index"
-                    class="bg-gray-200 text-gray-700 uppercase">
+                    class="bg-gray-200 text-gray-700 dark:bg-gray-500 uppercase">
                     <td class="px-2 py-px">{{ item.name }}</td>
                     <!-- <td class="px-2 py-px">{{ item.name + ' (N. de parte: ' + item.part_number + ')' }}</td> -->
                     <td class="px-2 py-px">{{ item.pivot.notes ?? '--' }}</td>
@@ -135,7 +134,7 @@
         <div class="w-11/12 mx-auto my-3 grid grid-cols-3 gap-4 ">
             <!-- Images de los productos de catalogo -->
             <template v-for="(item, productIndex) in quote.data.catalog_products" :key="item.id">
-                <div v-if="item.pivot.show_image" class="bg-gray-200 rounded-t-xl rounded-b-md border"
+                <div v-if="item.pivot.show_image" class="bg-gray-200 dark:bg-gray-500 rounded-t-xl rounded-b-md border"
                     style="font-size: 9px;">
                     <img class="rounded-t-xl max-h-52 mx-auto"
                         :src="item.media[currentCatalogProductImages[productIndex]]?.original_url">
@@ -146,10 +145,10 @@
                             :class="index == currentCatalogProductImages[productIndex] ? 'text-black' : 'text-white'"
                             class="fa-solid fa-circle text-[7px] cursor-pointer"></i>
                     </div>
-                    <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
+                    <p class="py-px px-1 uppercase text-gray-600 dark:bg-gray-300">{{ item.name }}</p>
                     <p v-if="item.large || item.height || item.width || item.diameter"
-                        class="py-px px-1 uppercase text-gray-600 font-bold">Dimensions:</p>
-                    <div class="flex items-center space-x-3">
+                        class="py-px px-1 uppercase text-gray-600 dark:bg-gray-300 font-bold">Dimensions:</p>
+                    <div class="flex items-center space-x-3 *:dark:bg-gray-300">
                         <p v-if="item.large" class="py-px px-1 text-gray-600">Large: {{ item.large }}mm</p>
                         <p v-if="item.height" class="py-px px-1 text-gray-600">Height: {{ item.height }}mm</p>
                         <p v-if="item.width" class="py-px px-1 text-gray-600">Width: {{ item.width }}mm</p>
@@ -171,21 +170,21 @@
                             :class="index == currentRawMaterialImages[productIndex] ? 'text-black' : 'text-white'"
                             class="fa-solid fa-circle text-[7px] cursor-pointer"></i>
                     </div>
-                    <p class="py-px px-1 uppercase text-gray-600">{{ item.name }}</p>
+                    <p class="py-px px-1 uppercase text-gray-600 dark:bg-gray-300">{{ item.name }}</p>
                 </div>
             </template>
         </div>
 
         <div class="flex justify-between items-center mx-10 mt-9">
             <!-- goodbyes -->
-            <p class="w-11/12 mx-auto my-2 pb-2 text-gray-700">
+            <p class="w-11/12 mx-auto my-2 pb-2 text-gray-700 dark:text-white">
                 Nothing more for the moment and awaiting your preference, I remain at your service for any questions or
-                comments. Quotation sheet: <span class="font-bold bg-yellow-100">{{ quote.data.folio }}</span>
+                comments. Quotation sheet: <span class="font-bold bg-yellow-100 dark:bg-yellow-900">{{ quote.data.folio }}</span>
             </p>
 
             <!-- signature -->
             <div class="mr-7 flex space-x-4 w-96 relative mt-20 md:mt-0">
-                <p class="text-gray-500">Firma de autorización: </p>
+                <p class="text-gray-500 dark:text-white">Firma de autorización: </p>
                 <figure class="w-32 absolute md:right-24 lg:right-16 -top-[55px]">
                     <img :src="procesarUrlImagen(quote.data.signature_media[0]?.original_url)" alt="">
                 </figure>

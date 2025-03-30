@@ -19,7 +19,7 @@
         </template>
 
         <div class="relative overflow-hidden min-h-[60vh] dark:text-white">
-            <div class="flex justify-center space-x-5 mt-5">
+            <div class="flex justify-center space-x-5">
                 <p class="mr-2 text-xs flex items-center space-x-2">
                     <i class="fa-solid fa-circle text-green-500"></i>
                     <span>Clilentes</span>
@@ -29,8 +29,26 @@
                     <span>Prospectos</span>
                 </p>
             </div>
+            <div class="flex justify-center space-x-5 mt-1">
+                <p class="mr-2 text-xs flex items-center space-x-2">
+                    <i class="fa-solid fa-square text-orange-400"></i>
+                    <span>Creado por el cliente sin autorización</span>
+                </p>
+                <p class="mr-2 text-xs flex items-center space-x-2">
+                    <i class="fa-solid fa-square text-green-400"></i>
+                    <span>Creado por el cliente autorizado</span>
+                </p>
+            </div>
+            <div class="flex justify-center space-x-5 mt-1">
+                <p class="mr-2 text-xs flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-amber-500">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                    </svg>
+                    <span>Editar cotización para autorizar</span>
+                </p>
+            </div>
             <NotificationCenter module="quote" />
-            <div class="lg:w-5/6 mx-auto mt-6">
+            <div class="lg:w-[90%] mx-auto mt-6">
 
                 <div class="flex justify-between">
                     <!-- pagination -->
@@ -85,7 +103,7 @@
                         <template #default="scope">
                             <div>
                                 <p v-if="scope.row.sale_id" @click.stop="handleShowSale(scope.row.sale_id)"
-                                    class="text-blue-400 hover:underline">OV-{{ String(scope.row.sale_id).padStart('0', 4) }}</p>
+                                    class="text-blue-400 dark:text-blue-800 hover:underline">OV-{{ String(scope.row.sale_id).padStart('0', 4) }}</p>
                                 <p v-else>N/A</p>
                             </div>
                         </template>
@@ -96,15 +114,38 @@
                             <SaleProfit :profit="scope.row.profit" />
                         </template>
                     </el-table-column>
-                    <el-table-column prop="user.name" label="Creado por">
+                    <el-table-column width="180" prop="user.name" label="Creado por">
                         <template #default="scope">
-                            <div class="flex">
-                                <p>{{ scope.row.user?.name ?? 'Solicitado desde portal de clientes' }}</p>
+                            <div v-if="scope.row.created_by_customer" class="flex items-center space-x-2">
+                                <el-tooltip v-if="scope.row.user?.name" placement="top">
+                                    <template #content>
+                                        <p v-if="scope.row.authorized_at">
+                                            Revisado por: {{ scope.row.user?.name }} y autorizado
+                                        </p>
+                                        <p v-else>
+                                            Revisado por: {{ scope.row.user?.name }} sin autorización
+                                        </p>
+                                    </template>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 mr-2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    </svg>
+                                </el-tooltip>
+                                <el-tooltip v-else placement="top">
+                                    <template #content>
+                                        <p>
+                                           Editar cotización para autorizar 
+                                        </p>
+                                    </template>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                                    </svg>
+                                </el-tooltip>
+                                <p>{{ 'Solicitado desde portal de clientes' }}</p>
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="receiver" label="Receptor" />
-                    <el-table-column prop="companyBranch.name" label="Cliente / Prospecto">
+                    <el-table-column width="100" prop="receiver" label="Receptor" />
+                    <el-table-column width="180" prop="companyBranch.name" label="Cliente/Prospecto">
                         <template #default="scope">
                             <div class="flex">
                                 <p class="mr-2 mt-px text-[6px]"
@@ -115,7 +156,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="authorized_user_name" label="Autorizado por" />
+                    <el-table-column width="120" prop="authorized_user_name" label="Autorizado por" />
                     <el-table-column label="Productos" width="210">
                         <template v-slot="scope">
                             <p v-for="(p, index) in scope.row.catalog_products.map(product => product.name)"
@@ -124,7 +165,7 @@
                             </p>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="created_at" label="Creado el" width="180" />
+                    <el-table-column prop="created_at" label="Creado el" width="150" />
                     <el-table-column align="right">
                         <template #default="scope">
                             <el-dropdown trigger="click" @command="handleCommand">
@@ -173,6 +214,7 @@
                                         </el-dropdown-item>
                                         <el-dropdown-item
                                             v-if="$page.props.auth.user.permissions.includes('Autorizar cotizaciones') && !scope.row.authorized_at"
+                                            :disabled="!scope.row.user?.name"
                                             :command="'authorize-' + scope.row.id">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                 stroke-width="1.5" stroke="currentColor" class="size-4 mr-2">
@@ -358,8 +400,12 @@ export default {
             window.open(url, '_blank');
         },
         tableRowClassName({ row, rowIndex }) {
-            if ( !row.user?.id ) {
-                return 'cursor-pointer text-xs dark:!bg-orange-500 !bg-orange-200'
+            if ( row.created_by_customer ) {
+                if ( row.authorized_at ) {
+                    return 'cursor-pointer text-xs dark:!bg-green-600 !bg-green-200'
+                }  else {
+                    return 'cursor-pointer text-xs dark:!bg-orange-500 !bg-orange-200'
+                }
             } else {
                 return 'cursor-pointer text-xs';
             }
