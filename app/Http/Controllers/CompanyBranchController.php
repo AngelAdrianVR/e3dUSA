@@ -69,6 +69,7 @@ class CompanyBranchController extends Controller
         $request->validate([
             'new_price' => 'required|numeric|min:0',
             'new_currency' => 'required|string|max:255',
+            'new_date' => 'required|date',
         ]);
 
         $product_company->update([
@@ -81,7 +82,7 @@ class CompanyBranchController extends Controller
             'oldest_updated_by' => $product_company->old_updated_by,
             'old_updated_by' => $product_company->new_updated_by,
             'new_updated_by' => auth()->user()->name,
-            'new_date' => now(),
+            'new_date' => $request->new_date,
             'new_price' => $request->new_price,
             'new_currency' => $request->new_currency,
         ]);

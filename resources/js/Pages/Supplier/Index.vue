@@ -302,13 +302,16 @@ export default {
     },
     computed: {
         filteredTableData() {
-            return this.suppliers.filter(
-                (supplier) =>
+            return this.suppliers.filter((supplier) => {
+                const address = supplier.address ? supplier.address.toString().toLowerCase() : "";
+                return (
                     !this.search ||
                     supplier.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                    supplier.address.toLowerCase().includes(this.search.toLowerCase())
-            )
+                    supplier.nickname.toLowerCase().includes(this.search.toLowerCase()) ||
+                    address.includes(this.search.toLowerCase())
+                );
+            });
         }
-    },
+    }
 };
 </script>

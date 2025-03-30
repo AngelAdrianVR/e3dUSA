@@ -33,6 +33,7 @@ return new class extends Migration
             $table->boolean('is_spanish_template')->default(true);
             $table->boolean('show_breakdown')->default(false);
             $table->json('approved_products')->nullable();
+            $table->boolean('created_by_customer')->default(0)->nullable();
             $table->foreignId('company_branch_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('prospect_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
