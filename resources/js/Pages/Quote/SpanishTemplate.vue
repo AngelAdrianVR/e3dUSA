@@ -353,7 +353,7 @@ export default {
                     });
                     console.log(err);
                 } finally {
-                    this.$inertia.get(route('quotes.index'));
+                    // this.$inertia.get(route('quotes.index'));
                 }
             }
         },

@@ -48,7 +48,7 @@
                 </p>
             </div>
             <NotificationCenter module="quote" />
-            <div class="lg:w-[90%] mx-auto mt-6">
+            <div class="lg:w-[93%] mx-auto mt-6">
 
                 <div class="flex justify-between">
                     <!-- pagination -->
@@ -75,7 +75,7 @@
                     @selection-change="handleSelectionChange" ref="multipleTableRef"
                     :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="45" />
-                    <el-table-column prop="folio" label="Folio" width="120">
+                    <el-table-column prop="folio" label="Folio" width="100">
                         <template #default="scope">
                             <el-tooltip v-if="scope.row.quote_acepted" placement="top">
                                 <template #content>
@@ -99,7 +99,7 @@
                             <span>{{ scope.row.folio }}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="Orden de venta">
+                    <el-table-column label="Orden de venta" width="100">
                         <template #default="scope">
                             <div>
                                 <p v-if="scope.row.sale_id" @click.stop="handleShowSale(scope.row.sale_id)"
@@ -109,12 +109,12 @@
                         </template>
                     </el-table-column>
                     <el-table-column v-if="$page.props.auth.user.permissions.includes('Ver utilidades')"
-                        label="Utilidad" width="140">
+                        label="Utilidad" width="130">
                         <template #default="scope">
                             <SaleProfit :profit="scope.row.profit" />
                         </template>
                     </el-table-column>
-                    <el-table-column width="180" prop="user.name" label="Creado por">
+                    <el-table-column width="160" prop="user.name" label="Creado por">
                         <template #default="scope">
                             <div v-if="scope.row.created_by_customer" class="flex items-center space-x-2">
                                 <el-tooltip v-if="scope.row.user?.name" placement="top">
@@ -145,7 +145,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column width="100" prop="receiver" label="Receptor" />
-                    <el-table-column width="180" prop="companyBranch.name" label="Cliente/Prospecto">
+                    <el-table-column width="175" prop="companyBranch.name" label="Cliente/Prospecto">
                         <template #default="scope">
                             <div class="flex">
                                 <p class="mr-2 mt-px text-[6px]"
@@ -396,8 +396,9 @@ export default {
             }
         },
         handleRowClick(row) {
-            const url = this.route('quotes.show', row);
-            window.open(url, '_blank');
+            // const url = this.route('quotes.show', row);
+            // window.open(url, '_blank');
+            this.$inertia.get(route('quotes.show', row.id));
         },
         tableRowClassName({ row, rowIndex }) {
             if ( row.created_by_customer ) {
