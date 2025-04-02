@@ -782,7 +782,7 @@
                             cargando imagen...
                         </div>
 
-                        <figure v-else class="border rounded-xl flex items-center justify-center">
+                        <figure v-else class="rounded-xl flex items-center justify-center h-40">
                             <img v-if="missingProduct?.media?.length"
                                 class="h-full object-contain rounded-lg" :src="missingProduct?.media[0].original_url" :alt="missingProduct?.name">
 
