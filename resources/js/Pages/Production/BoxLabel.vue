@@ -11,7 +11,7 @@
             <PrimaryButton v-if="index == 0 && !printing" @click="print" class="!py-1">Imprimir</PrimaryButton>
         </section>
 
-        <p class="mt-2">{{ formattedDate }}</p>
+        <p class="mt-2 font-bold">{{ formattedDate }}</p>
         
         <main class="mt-9">
             <h1 class="font-bold ml-4">CLIENTE</h1>
@@ -44,33 +44,13 @@
             <section class="grid grid-cols-2 border border-[#CCCCCC] mt-3">
                 <!-- Lado izquierdo -->
                 <div class="px-4 py-2 border-r border-[#CCCCCC] space-y-1">
-                    <div class="flex">
+                    <!-- <div class="flex">
                         <p class="font-bold w-40">Guía:</p>
                         <p>{{ data.guide ?? '-' }}</p>
-                    </div>
+                    </div> -->
                     <div class="flex">
                         <p class="font-bold w-40">Orden de compra:</p>
                         <p>{{ data.ov ?? '-' }}</p>
-                    </div>
-                    <div class="flex">
-                        <p class="font-bold w-40">Folio:</p>
-                        <p>{{ data.folio ?? '-' }}</p>
-                    </div>
-                    <div class="flex">
-                        <p class="font-bold w-40">Factura:</p>
-                        <p>{{ data.invoice ?? '-' }}</p>
-                    </div>
-                </div>
-
-                <!-- Lado derecho -->
-                <div class="px-4 py-2 border-r border-[#CCCCCC] space-y-1">
-                    <div class="flex">
-                        <p class="font-bold w-40">No. de parte:</p>
-                        <p>{{ data.part_number ?? '-' }}</p>
-                    </div>
-                    <div class="flex">
-                        <p class="font-bold w-40">Caja:</p>
-                        <p>{{ (index + 1) + ' de ' + data.boxes.length }}</p>
                     </div>
                     <div class="flex">
                         <p class="font-bold w-40">Producto:</p>
@@ -79,6 +59,26 @@
                     <div class="flex">
                         <p class="font-bold w-40">Piezas:</p>
                         <p>{{ box.quantity?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? '-' }}</p>
+                    </div>
+                    <!-- <div class="flex">
+                        <p class="font-bold w-40">Folio:</p>
+                        <p>{{ data.folio ?? '-' }}</p>
+                    </div> -->
+                    <!-- <div class="flex">
+                        <p class="font-bold w-40">Factura:</p>
+                        <p>{{ data.invoice ?? '-' }}</p>
+                    </div> -->
+                </div>
+
+                <!-- Lado derecho -->
+                <div class="px-4 py-2 border-r border-[#CCCCCC] space-y-1">
+                    <!-- <div class="flex">
+                        <p class="font-bold w-40">No. de parte:</p>
+                        <p>{{ data.part_number ?? '-' }}</p>
+                    </div> -->
+                    <div class="flex">
+                        <p class="font-bold w-40">Caja:</p>
+                        <p>{{ (index + 1) + ' de ' + data.boxes.length }}</p>
                     </div>
                 </div>
             </section>
@@ -147,17 +147,17 @@ methods:{
     handleAfterPrint() {
       this.printing = false;
     },
-    stopLoading() {
-        setTimeout(() => {
-            if (document.readyState === 'interactive' || document.readyState === 'complete') {
-                window.stop();
-            }
-        }, 3000);
-    }
+    // stopLoading() {
+    //     setTimeout(() => {
+    //         if (document.readyState === 'interactive' || document.readyState === 'complete') {
+    //             window.stop();
+    //         }
+    //     }, 2000);
+    // }
 },
 mounted() {
     window.addEventListener('afterprint', this.handleAfterPrint);
-    this.stopLoading();
+    // this.stopLoading();
 },
 beforeDestroy() {
     window.removeEventListener('afterprint', this.handleAfterPrint);
