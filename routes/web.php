@@ -457,6 +457,7 @@ Route::put('productions/continue-production/{production}', [ProductionController
 Route::post('productions-{cpcs}-comment', [ProductionController::class, 'comment'])->name('productions.comment')->middleware('auth');
 Route::get('productions-{cpcs}-show-traveler', [ProductionController::class, 'showTravelerTemplate'])->name('productions.show-traveler-template')->middleware('auth');
 Route::post('productions-generate-box-label', [ProductionController::class, 'generateBoxLabel'])->name('productions.generate-box-label')->middleware('auth');
+Route::post('productions.generate-local-box-label', [ProductionController::class, 'generateLocalBoxLabel'])->name('productions.generate-local-box-label')->middleware('auth');
 Route::post('productions-get-matches', [ProductionController::class, 'getMatches'])->name('productions.get-matches');
 Route::get('productions-fetch-catalog-product-shipping-rates/{catalog_product}', [ProductionController::class, 'fetchCatalogProductShippingRates'])->name('productions.fetch-catalog-product-shipping-rates');
 Route::get('productions-fetch-sale-info/{sale}', [ProductionController::class, 'fetchSaleInfo'])->name('productions.fetch-sale-info');

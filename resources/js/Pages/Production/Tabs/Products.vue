@@ -8,6 +8,9 @@
                         <el-dropdown-item @click="showPackageLabelForm = true">
                             Generador de etiqueta para envío
                         </el-dropdown-item>
+                        <el-dropdown-item @click="showPackageLabelForm = true; isLocalLabel = true">
+                            Generador de etiqueta local
+                        </el-dropdown-item>
                     </el-dropdown-menu>
                 </template>
             </el-dropdown>
@@ -138,6 +141,7 @@ export default {
 
         return {
             labelForm,
+            isLocalLabel: false, //true si es etiqueta local
             boxIndex: 1, //cuenta el index de cada caja del arreglo en labelForm
             orderedProductsSelected: [],
             showPackageLabelForm: false, //muestra formulario para imprir etiqueta de envío
@@ -171,7 +175,11 @@ export default {
             }
         },
         createBoxLabel() {
-            this.$inertia.post(route('productions.generate-box-label'), { data: this.labelForm });
+            if ( this.isLocalLabel ) {
+                this.$inertia.post(route('productions.generate-local-box-label'), { data: this.labelForm });
+            } else {
+                this.$inertia.post(route('productions.generate-box-label'), { data: this.labelForm });
+            }
         },
         addBox() {
             this.labelForm.boxes.push({ name: 'Caja ' + (this.boxIndex + 1), quantity: null });
