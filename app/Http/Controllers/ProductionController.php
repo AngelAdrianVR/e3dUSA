@@ -612,6 +612,11 @@ class ProductionController extends Controller
         return inertia('Production/BoxLabel', ['data' => $request->data]);
     }
 
+    public function generateLocalBoxLabel(Request $request)
+    {
+        return inertia('Production/LocalBoxLabel', ['data' => $request->data]);
+    }
+
     public function getMatches(Request $request)
     {
         $query = $request->input('query');
