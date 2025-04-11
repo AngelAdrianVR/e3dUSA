@@ -454,7 +454,7 @@
                             </div>
                             <div>
                                 <InputLabel value="Archivo" />
-                                <FileUploader @files-selected="handleMediaSelected" :multiple="false"
+                                <FileUploader @files-selected="handleMediaSelected" :multiple="true"
                                     :existingFileUrls="media_oce_url ? [media_oce_url] : []" />
                                 <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
                                     PDF, PNG, JPG,(MAX 4 GB)

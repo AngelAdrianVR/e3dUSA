@@ -589,7 +589,7 @@
                             </div>
                             <div>
                                 <InputLabel value="Archivo" />
-                                <FileUploader @files-selected="this.form.media = $event" :multiple="false" />
+                                <FileUploader @files-selected="this.form.media = $event" :multiple="true" />
                                 <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
                                     PDF, PNG, JPG,(MAX 4 GB)
                                 </p>
