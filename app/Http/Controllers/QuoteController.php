@@ -611,7 +611,7 @@ class QuoteController extends Controller
 
         $catalog_products_company = $company ? $company->catalogProducts : [];
     
-        return response()->json(['items' => $catalog_products_company]);
+        return response()->json(['items' => $catalog_products_company, 'companyId' => $company->id]);
     }
 
     public function scheduleUpdateProductPrice(Request $request)
