@@ -9,6 +9,7 @@
                     </div>
                 </div>
             </template>
+            
             <form @submit.prevent="handleStoreSale" class="relative overflow-x-hidden dark:text-white h-screen">
                 <!-- company branch important notes -->
                 <div class="absolute top-5 -right-1">
@@ -44,10 +45,22 @@
                 <!-- company branch productos -->
                 <div class="absolute top-5 -right-1 mt-36">
                     <div v-if="catalogProductsCompanyBranchSelected?.length"
-                        class="text-sm border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-[550px]">
+                        class="text-sm border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-[550px] relative">
                         <h3 class="flex items-center justify-center mb-2 text-base font-bold">
                             Productos de este cliente
                         </h3>
+                        
+                        <!-- Boton para crear nuevo producto al cliente -->
+                        <button @click="openCompanyEdit" type="button" title="Agregar nuevo producto al cliente" class="absolute top-3 right-7 border border-primary rounded-full size-5 flex items-center justify-center text-primary">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+
+                        <!-- Refrescar productos del cliente -->
+                        <button @click="fetchCatalogProductsCompanyBanch" type="button" title="Refrescar productos" class="absolute top-3 left-7 border border-primary rounded-full size-5 flex items-center justify-center text-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                        </button>
 
                         <div v-if="loadingCompanyBranchProducts" class="flex items-center justify-center mt-10">
                             <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
@@ -502,6 +515,13 @@
                                     <el-input v-model="partiality.tracking_guide" placeholder="Ingresa la guía" />
                                     <InputError :message="form.errors.tracking_guide" />
                                 </div>
+                                <div>
+                                    <InputLabel value="Acuse" />
+                                    <FileUploader @files-selected="this.form.acuse = $event" :multiple="false" />
+                                    <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
+                                        PDF, PNG, JPG,(MAX 50MB)
+                                    </p>
+                                </div>
                                 <br>
                                 <InputLabel v-if="form.shipping_option != 'Entrega única'"
                                     value="Productos para esta parcialidad" />
@@ -588,10 +608,17 @@
                                 <InputError :message="form.errors.oce_name" />
                             </div>
                             <div>
-                                <InputLabel value="Archivo" />
+                                <InputLabel value="Archivo(s)" />
                                 <FileUploader @files-selected="this.form.media = $event" :multiple="true" />
                                 <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
-                                    PDF, PNG, JPG,(MAX 4 GB)
+                                    PDF, PNG, JPG,(MAX 50 MB)
+                                </p>
+                            </div>
+                            <div>
+                                <InputLabel value="Otros" />
+                                <FileUploader @files-selected="this.form.anotherFiles = $event" :multiple="true" />
+                                <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
+                                    PDF, PNG, JPG,(MAX 50 MB)
                                 </p>
                             </div>
                         </div>
@@ -663,7 +690,7 @@
                         </div>
                         <div>
                             <InputLabel value="Precio nuevo en moneda*" />
-                            <el-input v-model="priceForm.new_price" type="text" disabled
+                            <el-input @input="calculateNewPercentage()" v-model="priceForm.new_price" type="text"
                                 :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 30.90">
                                 <template #prepend>
@@ -750,6 +777,21 @@
                             <CancelButton>No crear proyecto</CancelButton>
                         </a>
                         <PrimaryButton @click="$inertia.get(route('projects.create'))">Crear proyecto</PrimaryButton>
+                    </div>
+                </section>
+            </Modal>
+
+            <!-- modal para agregar nuevo producto al cliente -->
+            <Modal :show="showCreateNewCatalogProductCompanyModal" @close="showCreateNewCatalogProductCompanyModal = false">
+                <section class="mx-7 my-4 space-y-4">
+                    <div>
+                        <p class="text-secondary text-center text-lg font-bold">
+                            Agregar nuevo producto al catálogo del cliente
+                        </p>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-5 pb-1">
+                        <CancelButton @click="showCreateNewCatalogProductCompanyModal = false">Cancelar</CancelButton>
+                        <PrimaryButton @click="storeCatalogProductCompany">Agregar producto</PrimaryButton>
                     </div>
                 </section>
             </Modal>
@@ -884,7 +926,9 @@ export default {
             notes: null,
             is_high_priority: false,
             products: [],
-            media: null,
+            acuse: null, //archivo de acuse en sección de logística
+            media: null, //archivo OCE
+            anotherFiles: null, //otros archivos 
             partialities: [],
             is_sale_production: 0, //seleccionado stock porque se necesita cotizacion para crear venta
             create_calendar_task: false, //bandera para crear o no recordatorio en calendario
@@ -922,13 +966,16 @@ export default {
             importantNotesToStore: null,
             isEditImportantNotes: false,
             showCreateProjectModal: false,
+            showCreateNewCatalogProductCompanyModal: false, //Modal para agregar nuevo producto al cliente
             availableStock: null,
             new_price_percentage: 5, //porcentaje de aumento de precio
             showUpdatePriceModal: false, //modal para actualizar precio
             showScheduleUpdatingPrice: false, //modal para agendar actualización de precio
             itemToUpdatePrice: null, //producto seleccionado para cambiar precio
+            dialogImageUrl: null,
             dialogVisible: false, //imagen element-plus
             catalogProductsCompanyBranchSelected: null, //productos de cliente seleccionado
+            company_id : null, //id de la empresa seleccionada
             product: {
                 design_authorization_id: null, //formato de autorización seleccionado
                 catalogProduct: null,
@@ -947,7 +994,10 @@ export default {
             selectedCatalogProductHasSale: null, //valida si Producto seleccionado tiene al menos una venta. (bool)
             design_authorizations: null, //formatos de autorizaión de diseño del cliente
             selectedCompanyId: null, //guarda el id de la matriz que contiene la sucursal seleccionada
-            newPriceCurrencies: ['$MXN', '$USD'],
+            newPriceCurrencies: [
+                { value: "$MXN", label: "MXN" },
+                { value: "$USD", label: "USD" },
+            ],
             shippingCompanies: [
                 'PAQUETEXPRESS',
                 'LOCAL',
@@ -1135,6 +1185,20 @@ export default {
             const factor = 1 + this.new_price_percentage * .01;
             // guarda el precio calculado con el porcentaje seleccionado
             this.priceForm.new_price = (factor * this.itemToUpdatePrice.pivot.new_price).toFixed(2);
+        },
+        calculateNewPercentage() {
+            if (!this.priceForm.new_price || !this.itemToUpdatePrice.pivot.new_price) {
+                this.new_price_percentage = 0;
+                console.log(this.itemToUpdatePrice);
+                return;
+            }
+
+            // Convierte los valores a número
+            const oldPrice = parseFloat(this.itemToUpdatePrice.pivot.new_price);
+            const newPrice = parseFloat(this.priceForm.new_price);
+
+            // Calcula el porcentaje de aumento
+            this.new_price_percentage = (((newPrice / oldPrice) - 1) * 100).toFixed(2);
         },
         handlePictureCardPreview(file) {
             this.dialogImageUrl = file.original_url;
@@ -1449,6 +1513,10 @@ export default {
                 this.form.is_sale_production = 1;
             }
         },
+        openCompanyEdit() {
+            const url = route('companies.edit', this.company_id);
+            window.open(url, '_blank');
+        },
         async fetchCatalogProductData(productId = null) {
             if (productId) {
                 try {
@@ -1557,6 +1625,7 @@ export default {
 
                 if (response.status === 200) {
                     this.catalogProductsCompanyBranchSelected = response.data.items;
+                    this.company_id = response.data.companyId;
                 }
             } catch (error) {
                 console.log(error);
