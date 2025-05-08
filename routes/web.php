@@ -150,6 +150,7 @@ Route::get('catalog-products/{catalog_product}/get-data', [CatalogProductControl
 Route::get('catalog-products-fetch-shipping-rates/{catalog_product}', [CatalogProductController::class, 'fetchShippingRates'])->name('catalog-products.fetch-shipping-rates');
 Route::get('catalog-products-prices-report', [CatalogProductController::class, 'pricesReport'])->name('catalog-products.prices-report');
 Route::post('catalog-products-get-by-ids', [CatalogProductController::class, 'getByIds'])->name('catalog-products.get-by-ids');
+Route::get('catalog-products/{catalog_product}/get-info', [CatalogProductController::class, 'getInfo'])->name('catalog-products.get-info');
 
 
 // ------- Ventas(Clients Routes)  ---------
@@ -159,6 +160,7 @@ Route::post('companies/clone', [CompanyController::class, 'clone'])->name('compa
 Route::post('companies/get-all-companies', [CompanyController::class, 'getAllCompanies'])->name('companies.get-all-companies')->middleware('auth');
 Route::get('companies-get-exclusive-designs/{company}', [CompanyController::class, 'getExclusiveDesigns'])->name('companies.get-exclusive-designs')->middleware('auth');
 Route::get('companies-contacts-report', [CompanyController::class, 'contactsReport'])->name('companies.contacts-report')->middleware('auth');
+Route::post('companies-attach-catalog-product', [CompanyController::class, 'attachCatalogProduct'])->name('companies.attach-catalog-product')->middleware('auth');
 
 
 // ------- shippings routes  ---------
@@ -455,6 +457,7 @@ Route::put('productions/continue-production/{production}', [ProductionController
 Route::post('productions-{cpcs}-comment', [ProductionController::class, 'comment'])->name('productions.comment')->middleware('auth');
 Route::get('productions-{cpcs}-show-traveler', [ProductionController::class, 'showTravelerTemplate'])->name('productions.show-traveler-template')->middleware('auth');
 Route::post('productions-generate-box-label', [ProductionController::class, 'generateBoxLabel'])->name('productions.generate-box-label')->middleware('auth');
+Route::post('productions.generate-local-box-label', [ProductionController::class, 'generateLocalBoxLabel'])->name('productions.generate-local-box-label')->middleware('auth');
 Route::post('productions-get-matches', [ProductionController::class, 'getMatches'])->name('productions.get-matches');
 Route::get('productions-fetch-catalog-product-shipping-rates/{catalog_product}', [ProductionController::class, 'fetchCatalogProductShippingRates'])->name('productions.fetch-catalog-product-shipping-rates');
 Route::get('productions-fetch-sale-info/{sale}', [ProductionController::class, 'fetchSaleInfo'])->name('productions.fetch-sale-info');

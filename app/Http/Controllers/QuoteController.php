@@ -43,8 +43,8 @@ class QuoteController extends Controller
                 'sale_id' => $quote->sale_id,
                 'media' => $quote->media,
                 'user' => [
-                    'id' => $quote->user->id,
-                    'name' => $quote->user->name
+                    'id' => $quote->user?->id,
+                    'name' => $quote->user?->name
                 ],
                 'receiver' => $quote->receiver,
                 'companyBranch' => [
@@ -63,6 +63,7 @@ class QuoteController extends Controller
                 }),
                 'authorized_user_name' => $quote->authorized_user_name ?? '--',
                 'authorized_at' => $quote->authorized_at,
+                'created_by_customer' => $quote->created_by_customer,
                 'created_at' => $quote->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
                 'profit' => $quote->getProfit(), // Añadir el profit
             ];
@@ -223,6 +224,12 @@ class QuoteController extends Controller
             } else {
                 $quote->rawMaterials()->attach($product['id'], $quoted_product);
             }
+        }
+
+        if ( !$quote->user_id ) {
+            $quote->update([
+                'user_id' => auth()->id()
+            ]);
         }
 
         event(new RecordEdited($quote));
@@ -604,7 +611,7 @@ class QuoteController extends Controller
 
         $catalog_products_company = $company ? $company->catalogProducts : [];
     
-        return response()->json(['items' => $catalog_products_company]);
+        return response()->json(['items' => $catalog_products_company, 'companyId' => $company->id]);
     }
 
     public function scheduleUpdateProductPrice(Request $request)

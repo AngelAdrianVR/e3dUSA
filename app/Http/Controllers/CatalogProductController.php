@@ -303,4 +303,11 @@ class CatalogProductController extends Controller
 
         return response()->json(compact('items'));
     }
+
+    public function getInfo(CatalogProduct $catalog_product)
+    {
+        $catalog_product = $catalog_product->load(['media']);
+
+        return response()->json(['item' => $catalog_product]);
+    }
 }

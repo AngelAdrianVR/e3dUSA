@@ -42,7 +42,113 @@
                         </button>
                     </div>
                 </div>
-                <div class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] rounded-lg p-9 shadow-md">
+
+                <!-- company branch productos -->
+                <div class="absolute top-5 -right-1 mt-36">
+                    <div v-if="catalogProductsCompanyBranchSelected?.length"
+                        class="text-sm border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-[550px] relative">
+                        <h3 class="flex items-center justify-center mb-2 text-base font-bold">
+                            Productos de este cliente
+                        </h3>
+                        
+                        <!-- Boton para crear nuevo producto al cliente -->
+                        <button @click="openCompanyEdit" type="button" title="Agregar nuevo producto al cliente" class="absolute top-3 right-7 border border-primary rounded-full size-5 flex items-center justify-center text-primary">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+
+                        <!-- Refrescar productos del cliente -->
+                        <button @click="fetchCatalogProductsCompanyBanch" type="button" title="Refrescar productos" class="absolute top-3 left-7 border border-primary rounded-full size-5 flex items-center justify-center text-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                        </button>
+
+                        <div v-if="loadingCompanyBranchProducts" class="flex items-center justify-center mt-10">
+                            <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
+                        </div>
+                        <section v-else class="max-h-[500px] overflow-auto">
+                            <div class="rounded-md border border-gray-400 p-2 my-2 relative"
+                                v-for="catalog_product in catalogProductsCompanyBranchSelected" :key="catalog_product">
+                                <p :title="catalog_product.name" class="truncate text-center">{{ catalog_product.name }}
+                                </p>
+
+                                <body class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <p class="text-gray-500 dark:text-gray-300 mt-2">Precio anterior: <span
+                                                class="font-bold text-black dark:text-white ml-2">{{
+                                                    catalog_product.pivot.old_price ?? '-'
+                                                }} {{ catalog_product.pivot.old_currency ?? '' }}</span></p>
+                                        <p class="text-gray-500 dark:text-gray-300">Fecha de cambio: <span
+                                                class="font-bold text-black dark:text-white ml-2">{{
+                                                    formatDate(catalog_product.pivot.old_date) ?? '-' }}</span></p>
+                                        <p class="text-gray-500 dark:text-gray-300 mt-2">Precio actual: <span
+                                                class="font-bold text-black dark:text-white ml-2">
+                                                {{ catalog_product.pivot.new_price }}
+                                                {{ catalog_product.pivot.new_currency ?? '' }}
+                                                <span v-if="priceChangePercentage(catalog_product.pivot) !== null"
+                                                    :class="priceChangeClass(catalog_product.pivot)">
+                                                    <template v-if="priceChangePercentage(catalog_product.pivot) !== 0">
+                                                        (<i :class="priceChangeIcon(catalog_product.pivot)" class="text-[10px]"></i>{{
+                                                            priceChangePercentage(catalog_product.pivot) }}%)
+                                                    </template>
+                                                </span>
+                                            </span>
+                                        </p>
+                                        <p class="text-gray-500 dark:text-gray-300">Fecha de cambio: <span
+                                                class="font-bold text-black dark:text-white ml-2">{{
+                                                    formatDate(catalog_product.pivot.new_date) }}</span></p>
+                                    </div>
+
+                                    <figure
+                                        class="rounded-md m-2 h-32 cursor-zoom-in bg-[#d9d9d9] dark:bg-[#202020] flex items-center justify-center">
+                                        <img v-if="catalog_product.media?.length" class="object-contain h-full" @click="handlePictureCardPreview(catalog_product.media[0])" :src="catalog_product.media[0].original_url" alt="">
+                                        <i v-else class="fa-regular fa-image text-4xl text-gray-400"></i>
+                                    </figure>
+                                </body>
+                                <p :class="[formattedLastUpdate(catalog_product.pivot).bgClass, 'text-gray-500 dark:text-gray-800 mt-2 inline-block pr-2']">
+                                    Último cambio de precio:
+                                    <span class="font-bold text-black ml-2">
+                                        {{ formattedLastUpdate(catalog_product.pivot).text }}
+                                    </span>
+                                </p>
+
+                                <!-- botones de acción -->
+                                <div class="absolute bottom-2 right-1 flex items-center space-x-1">
+                                    <el-tooltip content="Agendar cambio de precio" placement="top">
+                                        <button type="button" @click="handleScheduleUpdateProductPrice(catalog_product)"
+                                            class="rounded-full size-7 flex items-center justify-center bg-gray2 text-black">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="size-4">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M6.75 2.994v2.25m10.5-2.25v2.25m-14.252 13.5V7.491a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v11.251m-18 0a2.25 2.25 0 0 0 2.25 2.25h13.5a2.25 2.25 0 0 0 2.25-2.25m-18 0v-7.5a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v7.5m-6.75-6h2.25m-9 2.25h4.5m.002-2.25h.005v.006H12v-.006Zm-.001 4.5h.006v.006h-.006v-.005Zm-2.25.001h.005v.006H9.75v-.006Zm-2.25 0h.005v.005h-.006v-.005Zm6.75-2.247h.005v.005h-.005v-.005Zm0 2.247h.006v.006h-.006v-.006Zm2.25-2.248h.006V15H16.5v-.005Z" />
+                                            </svg>
+                                        </button>
+                                    </el-tooltip>
+                                    <el-tooltip content="Cambiar precio" placement="top">
+                                        <button type="button" @click="handleUpdateProductPrice(catalog_product)"
+                                            class="rounded-full size-7 flex items-center justify-center bg-gray2 text-black">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="size-4">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                            </svg>
+                                        </button>
+                                    </el-tooltip>
+                                </div>
+                            </div>
+                        </section>
+
+                        <el-dialog v-model="dialogVisible">
+                            <img class="mx-auto w-full object-contain" :src="dialogImageUrl" alt="Preview Image" />
+                        </el-dialog>
+                    </div>
+                </div>
+
+                <div class="md:w-full lg:w-1/2 mx-7 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg px-9 py-5 shadow-md"
+                    :class="{
+                        'md:left-auto md:ml-32': catalogProductsCompanyBranchSelected?.length,
+                        'md:mx-auto': !catalogProductsCompanyBranchSelected?.length
+                    }">
                     <el-radio-group v-model="form.is_sale_production" size="small">
                         <el-radio :value="1">Orden de venta</el-radio>
                         <el-radio :value="0">Orden de stock</el-radio>
@@ -367,7 +473,14 @@
                                     <el-input v-model="partiality.tracking_guide" placeholder="Ingresa la guía" />
                                     <InputError :message="form.errors.tracking_guide" />
                                 </div>
-                                <br>
+                                <div>
+                                    <InputLabel value="Acuse" />
+                                    <FileUploader @files-selected="handleMediaAcuseSelected" :multiple="true"
+                                        :existingFileUrls="media_acuse_url ? [media_acuse_url] : []" />
+                                    <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
+                                        PDF, PNG, JPG,(MAX 50 MB)
+                                    </p>
+                                </div>
                                 <InputLabel v-if="form.shipping_option != 'Entrega única'"
                                     value="Productos para esta parcialidad" />
                                 <InputLabel v-if="form.shipping_option != 'Entrega única'"
@@ -397,7 +510,7 @@
                                     <p class="text-black">${{ totalCost[index] ?? '- Sin información -' }}</p>
                                 </div>
 
-                                <h2 v-if="form.products.length" class="ml-2 mt-6 font-bold">
+                                <h2 v-if="form.products.length" class="ml-2 mt-6 font-bold col-span-full">
                                     Detalles sobre las cajas
                                 </h2>
                                 <ShippingCard class="col-span-full"
@@ -453,11 +566,19 @@
                                 <InputError :message="form.errors.oce_name" />
                             </div>
                             <div>
-                                <InputLabel value="Archivo" />
-                                <FileUploader @files-selected="handleMediaSelected" :multiple="false"
+                                <InputLabel value="Archivo(s)" />
+                                <FileUploader @files-selected="handleMediaOCESelected" :multiple="true"
                                     :existingFileUrls="media_oce_url ? [media_oce_url] : []" />
                                 <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
-                                    PDF, PNG, JPG,(MAX 4 GB)
+                                    PDF, PNG, JPG,(MAX 50 MB)
+                                </p>
+                            </div>
+                            <div>
+                                <InputLabel value="Otros" />
+                                <FileUploader @files-selected="handleMediaAnotherFilesSelected" :multiple="true"
+                                    :existingFileUrls="media_anotherFiles_url ? [media_anotherFiles_url] : []" />
+                                <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
+                                    PDF, PNG, JPG,(MAX 50 MB)
                                 </p>
                             </div>
                         </div>
@@ -497,6 +618,112 @@
                     </PrimaryButton>
                 </template>
             </DialogModal>
+
+            <!-- modal para agendar actualización de precio de producto en calendario -->
+            <DialogModal :show="showScheduleUpdatingPrice" @close="showScheduleUpdatingPrice = false" maxWidth="2xl">
+                <template #title>
+                    <h1>Agendar actualización de precio</h1>
+                </template>
+                <template #content>
+                    <div class="my-3">
+                        <InputLabel value="Fecha de recordatorio*" />
+                        <el-date-picker v-model="scheduleForm.start_date" type="date" placeholder="Fecha*"
+                            :disabled-date="disabledDate" />
+                        <InputError :message="scheduleForm.errors.start_date" />
+                    </div>
+                    <div class="my-3">
+                        <InputLabel value="Título de tarea*" />
+                        <el-input v-model="scheduleForm.title" maxlength="255" placeholder="Agregar título" />
+                        <InputError :message="scheduleForm.errors.title" />
+                    </div>
+                    <div class="my-3">
+                        <InputLabel value="Descripción de tarea" />
+                        <el-input v-model="scheduleForm.description" maxlength="255"
+                            placeholder="Agrega una descripción (opcional)" show-word-limit type="textarea" />
+                        <InputError :message="scheduleForm.errors.description" />
+                    </div>
+                </template>
+                <template #footer>
+                    <div class="flex justify-end space-x-1">
+                        <CancelButton @click="showScheduleUpdatingPrice = false" :disabled="scheduleForm.processing">
+                            Cancelar</CancelButton>
+                        <PrimaryButton type="button" @click="scheduleUpdatePrice" :disabled="scheduleForm.processing">
+                            Agendar</PrimaryButton>
+                    </div>
+                </template>
+            </DialogModal>
+
+            <!-- modal para actualizar precio de producto -->
+            <DialogModal :show="showUpdatePriceModal" @close="showUpdatePriceModal = false" maxWidth="2xl">
+                <template #title>
+                    <h1>Actualizar precio de {{ itemToUpdatePrice.name }}</h1>
+                </template>
+                <template #content>
+                    <section class="grid grid-cols-3 gap-3 mt-3">
+                        <div>
+                            <InputLabel value="Precio nuevo en porcentaje*" />
+                            <el-input
+                                @change="calculateNewPrice"
+                                v-model="new_price_percentage" type="number" :max="100" :min="5" step="0.1"
+                                placeholder="Ej. 5.8%"
+                                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="(value) => value.replace(/[^\d.]/g, '')"
+                                >
+                                <template #prepend>
+                                    %
+                                </template>
+                            </el-input>
+                            <InputError :message="priceForm.errors.new_price" />
+                        </div>
+                        <div>
+                            <InputLabel value="Precio nuevo en moneda*" />
+                            <el-input @input="calculateNewPercentage()" v-model="priceForm.new_price" type="text"
+                                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 30.90">
+                                <template #prepend>
+                                    $
+                                </template>
+                            </el-input>
+                            <InputError :message="priceForm.errors.new_price" />
+                        </div>
+                        <div>
+                            <InputLabel value="Moneda*" />
+                            <el-select v-model="priceForm.new_currency" placeholder="Seleccionar"
+                                :fit-input-width="true">
+                                <el-option v-for="item in newPriceCurrencies" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                    <span style="float: left">{{ item.label }}</span>
+                                    <span style="float: right; color: #cccccc; font-size: 13px">{{ item.value }}</span>
+                                </el-option>
+                            </el-select>
+                            <InputError :message="priceForm.errors.new_currency" />
+                        </div>
+                        <div>
+                            <InputLabel value="Fecha de cambio*" />
+                            <el-date-picker
+                                v-model="priceForm.new_date"
+                                type="date"
+                                placeholder="Selecciona una fecha"
+                            />
+                            <InputError :message="priceForm.errors.new_date" />
+                        </div>
+                        <p v-if="priceForm.new_price && (priceForm.new_price - itemToUpdatePrice.pivot.new_price) < (itemToUpdatePrice.pivot.new_price * 0.04)"
+                            class="text-xs text-red-600 col-span-full">El incremento de precio no debe ser menor al 4%
+                            del precio actual</p>
+                    </section>
+                </template>
+                <template #footer>
+                    <div class="flex justify-end space-x-1">
+                        <CancelButton @click="showUpdatePriceModal = false" :disabled="priceForm.processing">Cancelar
+                        </CancelButton>
+                        <PrimaryButton type="button" @click="updatePrice"
+                            :disabled="priceForm.processing
+                                || !priceForm.new_price
+                                || (priceForm.new_price - itemToUpdatePrice.pivot.new_price) < (itemToUpdatePrice.pivot.new_price * 0.04)">Actualizar precio
+                        </PrimaryButton>
+                    </div>
+                </template>
+            </DialogModal>
             
             <!-- Modal para crear tarea en calendario -->
             <DialogModal :show="showCalendarTaskModal" @close="showCalendarTaskModal = false">
@@ -530,6 +757,8 @@ import { Link, useForm } from "@inertiajs/vue3";
 import FileUploader from "@/Components/MyComponents/FileUploader.vue";
 import ShippingCard from "@/Components/MyComponents/Shipping/ShippingCard.vue";
 import InputLabel from "@/Components/InputLabel.vue";
+import { differenceInMonths, differenceInDays, format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default {
     data() {
@@ -547,15 +776,34 @@ export default {
             notes: this.sale.notes,
             is_high_priority: Boolean(this.sale.is_high_priority),
             products: [],
-            media: null,
+            acuse: null, //archivo de acuse en sección de logística
+            media: null, //archivo OCE
+            anotherFiles: null, //otros archivos
             partialities: this.sale.partialities,
             is_sale_production: this.sale.is_sale_production,
             create_calendar_task: false, //bandera para crear tarea en calendario de embarque de venta
             freight_option: this.sale.freight_option,
         });
 
+        const priceForm = useForm({
+            new_price: null,
+            new_currency: null,
+            new_date: new Date().toISOString().split('T')[0], // Fecha actual en formato YYYY-MM-DD,
+            product_company_id: null,
+            catalog_product_id: null, //para agregar un nuevo prudcto de catalogo al cliente
+            company_branch_id: null, //para agregar un nuevo prudcto de catalogo al cliente
+        });
+
+        const scheduleForm = useForm({
+            title: null,
+            start_date: null,
+            description: null,
+        });
+
         return {
             form,
+            priceForm,
+            scheduleForm,
             loading: false,
             importantNotes: null,
             showImportantNotesModal: false,
@@ -575,10 +823,24 @@ export default {
                 requires_medallion: false,
             },
             editIndex: null,
+            catalogProductsCompanyBranchSelected: null, //productos de cliente seleccionado
+            loadingCompanyBranchProducts: false,
+            company_id: null, //id de la compañia seleccionada
+            design_authorizations: null, //formatos de autorizaión de diseño del cliente
+            showUpdatePriceModal: false, //modal para actualizar precios
+            itemToUpdatePrice: null, //producto seleccionado para cambiar precio
+            new_price_percentage: 5, //porcentaje de aumento de precio
+            showScheduleUpdatingPrice: false, //modal para agendar actualización de precio
+            dialogImageUrl: null,
+            dialogVisible: false,
             alertMaxQuantity: 0,
             selectedCatalogProduct: null,
             commitedUnits: null,
             mediaEdited: false,
+            newPriceCurrencies: [
+                { value: "$MXN", label: "MXN" },
+                { value: "$USD", label: "USD" },
+            ],
             shippingCompanies: [
                 'PAQUETEXPRESS',
                 'LOCAL',
@@ -627,8 +889,12 @@ export default {
         company_branches: Array,
         catalog_products_company_sale: Array,
         sale: Object,
-        media: Array,
+        mediaOCE: Array,
         media_oce_url: String,
+        acuse: Array, 
+        media_acuse_url: String,
+        anotherFiles: Array, 
+        media_anotherFiles_url: String,
     },
     watch: {
         'form.partialities'() {
@@ -655,13 +921,106 @@ export default {
             this.form.create_calendar_task = create_calendar_task;
             this.update();
         },
-        handleMediaSelected(files, mediaUpdated) {
+        handleMediaAcuseSelected(files, mediaUpdated) {
+            this.form.acuse = files;
+            this.mediaEdited = mediaUpdated;
+        },
+        handleMediaOCESelected(files, mediaUpdated) {
             this.form.media = files;
+            this.mediaEdited = mediaUpdated;
+        },
+        calculateNewPrice() {
+            // factor para calcular porcentaje del precio
+            const factor = 1 + this.new_price_percentage * .01;
+            // guarda el precio calculado con el porcentaje seleccionado
+            this.priceForm.new_price = (factor * this.itemToUpdatePrice.pivot.new_price).toFixed(2);
+        },
+        calculateNewPercentage() {
+            if (!this.priceForm.new_price || !this.itemToUpdatePrice.pivot.new_price) {
+                this.new_price_percentage = 0;
+                return;
+            }
+
+            // Convierte los valores a número
+            const oldPrice = parseFloat(this.itemToUpdatePrice.pivot.new_price);
+            const newPrice = parseFloat(this.priceForm.new_price);
+
+            // Calcula el porcentaje de aumento
+            this.new_price_percentage = (((newPrice / oldPrice) - 1) * 100).toFixed(2);
+        },
+        updatePrice() {
+            this.priceForm.put(route('company-branches.update-product-price', this.priceForm.product_company_id), {
+                onSuccess: () => {
+                    this.$notify({
+                        title: "Éxito",
+                        message: "Precio actualizado",
+                        type: "success",
+                    });
+                    this.showUpdatePriceModal = false;
+                    this.priceForm.reset();
+                    this.fetchCatalogProductsCompanyBanch();
+                },
+            });
+        },
+        priceChangePercentage(pivot) {
+            const oldPrice = pivot.old_price;
+            const newPrice = pivot.new_price;
+
+            if (oldPrice && newPrice) {
+                const percentageChange = ((newPrice - oldPrice) / oldPrice) * 100;
+                return percentageChange.toFixed(2);
+            }
+
+            return null;
+        },
+        priceChangeClass(pivot) {
+            if (this.priceChangePercentage(pivot) > 0) return 'text-green-700';
+            if (this.priceChangePercentage(pivot) < 0) return 'text-red-700';
+            return 'text-gray-600'; // color gris si no hay cambio en el precio
+        },
+        priceChangeIcon(pivot) {
+            if (this.priceChangePercentage(pivot) > 0) return 'fa-solid fa-arrow-up-long';
+            if (this.priceChangePercentage(pivot) < 0) return 'fa-solid fa-arrow-down-long';
+            return null; // sin icono si el precio no cambia
+        },
+        formattedLastUpdate(productData) {
+            const { new_date, old_date, new_updated_by } = productData;
+            const lastDate = new_date || old_date;
+
+            if (!lastDate) {
+                return { text: 'No disponible', bgClass: 'bg-gray-200' };
+            }
+
+            const now = new Date();
+            const lastUpdate = new Date(lastDate);
+
+            // Calcula la diferencia en meses
+            const monthsDifference = differenceInMonths(now, lastUpdate);
+            const daysDifference = differenceInDays(now, lastUpdate);
+
+            let timeText = '';
+            if (monthsDifference > 0) {
+                timeText = `hace ${monthsDifference} mes${monthsDifference !== 1 ? 'es' : ''}`;
+            } else {
+                timeText = `hace ${daysDifference} día${daysDifference !== 1 ? 's' : ''}`;
+            }
+
+            // Determina la clase de fondo basada en los meses
+            const bgClass = monthsDifference >= 7 ? 'bg-red-300' : 'bg-yellow-200';
+
+            return {
+                text: new_updated_by ? `${timeText} por ${new_updated_by}` : timeText,
+                bgClass,
+            };
+        },
+        handleMediaAnotherFilesSelected(files, mediaUpdated) {
+            this.form.anotherFiles = files;
             this.mediaEdited = mediaUpdated;
         },
         handleCompanyBranchIdChange() {
             this.getImportantNotes();
             this.getDesignAuthorizations();
+            this.fetchCatalogProductsCompanyBanch();
             this.cleanShippingData();
         },
         handleChangeShippingOption() {
@@ -669,6 +1028,12 @@ export default {
             const numberOfShippings = this.shippingOptions.findIndex(i => i === this.form.shipping_option) + 1;
             for (let index = 0; index < numberOfShippings; index++) {
                 this.addPartial(numberOfShippings == 1);
+            }
+        },
+        formatDate(date) {
+            if (date) {
+                const parsedDate = new Date(date);
+                return format(parsedDate, 'dd MMMM yyyy', { locale: es }); // Formato personalizado
             }
         },
         addPartial(fillAllProducts = false) {
@@ -727,7 +1092,7 @@ export default {
                     element.shipping_cost = this.totalCost[index];
                 });
             }
-            if (this.mediaEdited) {
+            if (this.mediaEdited || this.form.media || this.form.anotherFiles || this.form.acuse) {
                 this.form.post(route("sales.update-with-media", this.sale), {
                     method: '_put',
                     onSuccess: () => {
@@ -853,6 +1218,74 @@ export default {
             today.setHours(0, 0, 0, 0); // Establece la hora a las 00:00:00.000
             return time < today;
         },
+        openCompanyEdit() {
+            const url = route('companies.edit', this.company_id);
+            window.open(url, '_blank');
+        },
+        handlePictureCardPreview(file) {
+            this.dialogImageUrl = file.original_url;
+            this.dialogVisible = true;
+        },
+        handleScheduleUpdateProductPrice(catalogProduct) {
+            //agregar titulo predeterminado
+            this.scheduleForm.title = 'Cambiar precio a ' + catalogProduct.name
+            this.showScheduleUpdatingPrice = true;
+        },
+        handleUpdateProductPrice(catalogProduct) {
+            //guarda el producto al cual se actualizará el precio
+            this.itemToUpdatePrice = catalogProduct;
+            // asigna el id del producto al formulario de cambio de precio
+            this.priceForm.product_company_id = catalogProduct.pivot.id;
+            // calcular el 5% del precio actual y agregarlo a nuevo precio como cantidad por defecto
+            this.priceForm.new_price = (catalogProduct.pivot.new_price * 1.05).toFixed(2);
+            // Agregar moneda del producto seleccionado
+            this.priceForm.new_currency = catalogProduct.pivot.new_currency;
+            // Abrir modal
+            this.showUpdatePriceModal = true;
+        },
+        scheduleUpdatePrice() {
+            this.scheduleForm.post(route('quotes.schedule-update-product-price'), {
+                onSuccess: () => {
+                    this.$notify({
+                        title: "Éxito",
+                        message: "Tarea agendada",
+                        type: "success",
+                    });
+                    this.showScheduleUpdatingPrice = false;
+                    this.scheduleForm.reset();
+                },
+            });
+        },
+        async getDesignAuthorizations() {
+            try {
+                const response = await axios.get(route('design-authorizations.fetch-for-company-branch', this.form.company_branch_id));
+                if (response.status === 200) {
+                    this.design_authorizations = response.data.items;
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async fetchCatalogProductsCompanyBanch() {
+            this.loadingCompanyBranchProducts = true;
+            try {
+                const response = await axios.get(route('quotes.fetch-catalog-products-company-branch', this.form.company_branch_id));
+
+                if (response.status === 200) {
+                    this.catalogProductsCompanyBranchSelected = response.data.items;
+                    this.company_id = response.data.companyId;
+                }
+            } catch (error) {
+                console.log(error);
+                this.$notify({
+                    title: 'error',
+                    message: error,
+                    type: 'error'
+                });
+            } finally {
+                this.loadingCompanyBranchProducts = false;
+            }
+        },
         //Check if catalog product company has sales. if dont, ask for design authorization.
         async checkIfProductHasSale() {
             try {
@@ -963,7 +1396,7 @@ export default {
             });
         });
 
-        this.getImportantNotes();
+        this.handleCompanyBranchIdChange();
     }
 };
 </script>

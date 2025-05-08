@@ -54,7 +54,7 @@ class CompanyController extends Controller
             'seller_id' => 'required|numeric|min:0',
             'company_branches' => 'array|min:1',
             'products' => 'array|min:0',
-            'suggested_products' => 'array|min:0',
+            'suggested_products' => 'nullable|array|min:0',
         ]);
 
         $company = Company::create($request->except(['company_branches', 'products'] + ['user_id' => auth()->id()]));
@@ -124,7 +124,7 @@ class CompanyController extends Controller
             'seller_id' => 'required|numeric|min:0',
             'company_branches' => 'array|min:1',
             'products' => 'array|min:0',
-            'suggested_products' => 'array|min:0',
+            'suggested_products' => 'nullable|array|min:0',
         ]);
 
         $company->update($request->except(['company_branches', 'products']));
@@ -270,5 +270,48 @@ class CompanyController extends Controller
             ->get(['id', 'name']);
 
         return inertia('Company/ContactsTemplate', compact('company_branches'));
+    }
+
+    // lo utilizo en el create de ov para agregar productos nuevos que cotizó el cliente desde el portal de clientes
+    public function attachCatalogProduct(Request $request)
+    {
+        // Validación del request
+        $validated = $request->validate([
+            'new_price' => 'required|numeric|min:0',
+            'new_currency' => 'required|string',
+            'new_date' => 'required|date',
+            'company_branch_id' => 'required|exists:company_branches,id',
+        ]);
+
+        // Obtener la sucursal y la empresa en una sola consulta
+        $company_branch = CompanyBranch::with('company')->findOrFail($request->company_branch_id);
+        $company = $company_branch->company;
+
+        if (!$company) {
+            return response()->json(['error' => 'La empresa no fue encontrada.'], 404);
+        }
+
+        // Datos para la relación
+        $productData = [
+            'new_price' => $validated['new_price'],
+            'new_currency' => $validated['new_currency'],
+            'new_date' => $validated['new_date'],
+            'new_updated_by' => auth()->user()->name,
+        ];
+
+        // Agregar el producto a la empresa
+        $company->catalogProducts()->attach($request->catalog_product_id, $productData);
+
+        // Retirar el ID del producto de suggested_products si existe
+        $suggestedProducts = $company->suggested_products ?? [];
+
+        if (($key = array_search($request->catalog_product_id, $suggestedProducts)) !== false) {
+            unset($suggestedProducts[$key]);
+    
+            // Guardar el array actualizado en la base de datos
+            $company->update([
+                'suggested_products' => array_values($suggestedProducts), // Reindexar el array
+            ]);
+        }
     }
 }
