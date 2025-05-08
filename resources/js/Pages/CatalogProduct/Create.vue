@@ -10,7 +10,8 @@
         </template>
 
         <!-- Form -->
-        <form @submit.prevent="store" class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md transition-all ease-linear duration-500">
+        <form @submit.prevent="store"
+            class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md transition-all ease-linear duration-500">
             <div class="my-2">
                 <InputLabel value="Tipo de producto (necesario para generar el número de parte)" />
                 <el-select @change="generatePartNumber" v-model="productType" placeholder="Tipo de producto *">
@@ -24,8 +25,18 @@
             </div>
             <div class="md:grid gap-x-6 gap-y-2 grid-cols-2 my-3">
                 <div>
-                    <InputLabel value="Marca del producto *" />
-                    <el-input v-model="brand" @change="generatePartNumber" placeholder="Ej. Toyota" />
+                    <InputLabel>
+                        <div class="flex items-center justify-between">
+                            <span>Marca del producto *</span>
+                            <button></button>
+                        </div>
+                    </InputLabel>
+                    <el-select v-model="brand" @change="generatePartNumber" clearable
+                        placeholder="Selecciona"
+                        no-data-text="No hay unidades de medida registradas"
+                        no-match-text="No se encontraron coincidencias">
+                        <el-option v-for="(item, index) in brands" :key="item.id" :label="item.name" :value="item.name" />
+                    </el-select>
                 </div>
                 <div>
                     <InputLabel value="Nombre del producto *" />
@@ -62,38 +73,38 @@
                     <InputError :message="form.errors.max_quantity" />
                 </div>
                 <label class="flex items-center mt-2 w-1/3 col-span-full">
-                    <Checkbox @change="form.large = null; form.height = null" v-model:checked="form.is_circular" name="remember"
-                    class="bg-transparent" />
+                    <Checkbox @change="form.large = null; form.height = null" v-model:checked="form.is_circular"
+                        name="remember" class="bg-transparent" />
                     <span class="ml-2 text-sm">Es circular</span>
                 </label>
                 <div class="col-span-full grid grid-cols-3 gap-3">
                     <div>
-                    <InputLabel value="Ancho/Grosor(mm)*" />
-                    <el-input v-model="form.width" type="text"
-                        :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                        :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 25.5" />
-                    <InputError :message="form.errors.width" />
+                        <InputLabel value="Ancho/Grosor(mm)*" />
+                        <el-input v-model="form.width" type="text"
+                            :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                            :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 25.5" />
+                        <InputError :message="form.errors.width" />
                     </div>
                     <div v-if="!form.is_circular">
-                    <InputLabel value="Largo(mm)*" />
-                    <el-input v-model="form.large" type="text"
-                        :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                        :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 96" />
-                    <InputError :message="form.errors.large" />
+                        <InputLabel value="Largo(mm)*" />
+                        <el-input v-model="form.large" type="text"
+                            :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                            :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 96" />
+                        <InputError :message="form.errors.large" />
                     </div>
                     <div v-if="!form.is_circular">
-                    <InputLabel value="Alto(mm)*" />
-                    <el-input v-model="form.height" type="text"
-                        :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                        :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 10" />
-                    <InputError :message="form.errors.height" />
+                        <InputLabel value="Alto(mm)*" />
+                        <el-input v-model="form.height" type="text"
+                            :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                            :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 10" />
+                        <InputError :message="form.errors.height" />
                     </div>
                     <div v-if="form.is_circular">
-                    <InputLabel value="Diámetro(mm)*" />
-                    <el-input v-model="form.diameter" type="text"
-                        :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                        :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 43.8" />
-                    <InputError :message="form.errors.diameter" />
+                        <InputLabel value="Diámetro(mm)*" />
+                        <el-input v-model="form.diameter" type="text"
+                            :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                            :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 43.8" />
+                        <InputError :message="form.errors.diameter" />
                     </div>
                 </div>
                 <div class="col-span-full flex items-center justify-center space-x-4">
@@ -114,7 +125,8 @@
                     <InputLabel value="Caracteristicas" />
                     <div class="flex mb-1">
                         <el-input v-model="newFeature" type="text" placeholder="Ej. Color cromado" />
-                        <SecondaryButton @click="addFeature" type="button" class="!rounded-r-full !rounded-l-none" :disabled="!newFeature">
+                        <SecondaryButton @click="addFeature" type="button" class="!rounded-r-full !rounded-l-none"
+                            :disabled="!newFeature">
                             Agregar
                             <i class="fa-solid fa-arrow-down ml-2"></i>
                         </SecondaryButton>
@@ -190,7 +202,9 @@
                             <p v-if="selectedRawMaterial.width">Ancho: {{ selectedRawMaterial.width }}mm</p>
                             <p v-if="selectedRawMaterial.diameter">Diámetro: {{ selectedRawMaterial.diameter }}mm</p>
                         </div>
-                        <PrimaryButton type="button" @click="setSizeToProduct()" class="!py-1 rounded-md">Utilizar estas medidas</PrimaryButton>
+                        <PrimaryButton type="button" @click="setSizeToProduct()" class="!py-1 rounded-md">Utilizar estas
+                            medidas
+                        </PrimaryButton>
                     </section>
                 </figure>
                 <div>
@@ -222,11 +236,12 @@
                         <li class="flex justify-between border-[#999999] items-center py-1">
                             <p class="text-xs text-black">
                                 <span class="text-primary">{{ index + 1 }}.</span>
-                                {{ raw_materials.find(prd => prd.id === item.raw_material_id)?.name }}
+                                {{raw_materials.find(prd => prd.id === item.raw_material_id)?.name}}
                                 (x{{ item.quantity }} unidades)
                             </p>
                             <div class="flex space-x-2 items-center">
-                                <el-tag v-if="editIndex == index" @close="editIndex = null; resetProductForm()" closable>
+                                <el-tag v-if="editIndex == index" @close="editIndex = null; resetProductForm()"
+                                    closable>
                                     En edición
                                 </el-tag>
                                 <button @click="editProduct(index)" type="button"
@@ -439,6 +454,7 @@ export default {
         raw_materials: Array,
         production_costs: Array,
         consecutive: String,
+        brands: Array,
     },
     methods: {
         store() {
@@ -455,10 +471,10 @@ export default {
             });
         },
         setSizeToProduct() {
-            if ( !this.selectedRawMaterial.diameter ) {
-            this.form.is_circular = false;
+            if (!this.selectedRawMaterial.diameter) {
+                this.form.is_circular = false;
             } else {
-            this.form.is_circular = true;
+                this.form.is_circular = true;
             }
             this.form.large = this.selectedRawMaterial.large;
             this.form.height = this.selectedRawMaterial.height;

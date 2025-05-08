@@ -541,18 +541,15 @@
                                             :disabled="!partiality.productsSelected[index2]?.selected" />
                                     </div>
                                 </div>
-
-                                <div class="flex space-x-2 bg-yellow-200 pl-3">
+                                <div class="flex space-x-2 bg-yellow-200 pl-3 col-span-full">
                                     <p class="text-[#999999] w-48">Cantidad de cajas:</p>
                                     <p class="text-gray-700">{{ totalBoxes[index] ?? '- Sin información -' }}</p>
                                 </div>
-
-                                <div class="flex space-x-2 bg-yellow-200 pl-3">
+                                <div class="flex space-x-2 bg-yellow-200 pl-3 col-span-full">
                                     <p class="text-[#999999] w-48">Costo total de envío:</p>
                                     <p class="text-gray-700">${{ totalCost[index] ?? '- Sin información -' }}</p>
                                 </div>
-
-                                <h2 v-if="form.products.length" class="ml-2 mt-6 font-bold">
+                                <h2 v-if="form.products.length" class="ml-2 mt-6 font-bold col-span-full">
                                     Detalles sobre las cajas
                                 </h2>
                                 <ShippingCard class="col-span-full"
