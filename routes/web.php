@@ -4,6 +4,7 @@ use App\Http\Controllers\AdditionalTimeRequestController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\BoxController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CallMonitorController;
 use App\Http\Controllers\CatalogProductCompanySaleController;
@@ -547,6 +548,9 @@ Route::resource('settings', SettingController::class)->middleware('auth');
 
 //------------------ Production progress routes ----------------
 Route::resource('production-progress', ProductionProgressController::class)->middleware('auth');
+
+//------------------ brand routes ----------------
+Route::resource('brands', BrandController::class)->middleware('auth');
 
 //------------------ Customer dates routes ----------------
 Route::resource('customer-meetings', CustomerMeetingController::class)->middleware('auth');

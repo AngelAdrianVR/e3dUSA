@@ -28,14 +28,20 @@
                     <InputLabel>
                         <div class="flex items-center justify-between">
                             <span>Marca del producto *</span>
-                            <button></button>
+                            <button class="text-primary mr-2" type="button" @click="showCreateBrandModal = true">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="size-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                            </button>
                         </div>
                     </InputLabel>
-                    <el-select v-model="brand" @change="generatePartNumber" clearable
-                        placeholder="Selecciona"
+                    <el-select v-model="form.brand" @change="generatePartNumber" filterable clearable placeholder="Selecciona"
                         no-data-text="No hay unidades de medida registradas"
                         no-match-text="No se encontraron coincidencias">
-                        <el-option v-for="(item, index) in brands" :key="item.id" :label="item.name" :value="item.name" />
+                        <el-option v-for="item in brands" :key="item.id" :label="item.name"
+                            :value="item.name" />
                     </el-select>
                 </div>
                 <div>
@@ -280,6 +286,24 @@
             </div>
         </form>
     </AppLayout>
+    <DialogModal :show="showCreateBrandModal" @close="showCreateBrandModal = false" maxWidth="lg">
+        <template #title>
+            Crear nueva marca
+        </template>
+        <template #content>
+            <InputLabel value="Nombre *" />
+            <el-input v-model="brandForm.name" placeholder="Escribe el nombre de la marca" />
+            <InputError :message="brandForm.errors.name" />
+            <label class="flex items-center mt-2 w-1/3 col-span-full">
+                <Checkbox v-model:checked="brandForm.is_luxury" class="bg-transparent" />
+                <span class="ml-2 text-sm">Es marca de lujo</span>
+            </label>
+        </template>
+        <template #footer>
+            <CancelButton @click="showCreateBrandModal = false" :disabled="brandForm.processing">Cancelar</CancelButton>
+            <PrimaryButton @click="storeBrand()" class="bg-primary" :disabled="brandForm.processing">Crear</PrimaryButton>
+        </template>
+    </DialogModal>
 </template>
 
 <script>
@@ -293,11 +317,14 @@ import InputFilePreview from "@/Components/MyComponents/InputFilePreview.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import { Link, useForm } from "@inertiajs/vue3";
+import DialogModal from "@/Components/DialogModal.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 
 export default {
     data() {
         const form = useForm({
             name: null,
+            brand: null,
             part_number: null,
             measure_unit: null,
             min_quantity: null,
@@ -312,13 +339,20 @@ export default {
             features: [],
             media: [],
         });
+        
+        const brandForm = useForm({
+            name: null,
+            is_luxury: false,
+        });
 
         return {
             form,
+            brandForm,
             dialogVisible: false, //imagen element-plus
             dialogImageUrl: '', //imagen element-plus
             fileList: [], // Archivos para el componente el-upload
             editIndex: null,
+            showCreateBrandModal: false,
             loading: false,
             rawMaterial: {
                 raw_material_id: null,
@@ -340,7 +374,6 @@ export default {
                 'Bote(s)',
             ],
             productType: 'PP',
-            brand: null,
             productTypes: [
                 {
                     label: 'Porta-placa',
@@ -443,12 +476,14 @@ export default {
         InputFilePreview,
         SecondaryButton,
         PrimaryButton,
+        CancelButton,
         InputLabel,
         InputError,
         IconInput,
         Checkbox,
         Back,
-        Link
+        Link,
+        DialogModal,
     },
     props: {
         raw_materials: Array,
@@ -467,6 +502,22 @@ export default {
                     });
 
                     this.form.reset();
+                }
+            });
+        },
+        storeBrand() {
+            this.brandForm.post(route('brands.store'), {
+                onSuccess: () => {
+                    this.$notify({
+                        title: 'Éxito',
+                        message: 'Marca agregada correctamente',
+                        type: 'success'
+                    });
+
+                    this.form.brand = this.brandForm.name;
+                    this.brandForm.reset();
+                    this.showCreateBrandModal = false;
+                    this.generatePartNumber();
                 }
             });
         },
@@ -526,7 +577,7 @@ export default {
             });
         },
         generatePartNumber() {
-            const partNumber = 'C-' + this.productType + '-' + this.brand?.toUpperCase().substr(0, 3) + '-';
+            const partNumber = 'C-' + this.productType + '-' + this.form.brand?.toUpperCase().substr(0, 3) + '-';
             this.form.part_number = partNumber;
         },
         addProduct() {
