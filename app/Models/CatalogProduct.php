@@ -16,6 +16,7 @@ class CatalogProduct extends Model implements HasMedia
   
   protected $fillable = [
         'name',
+        'brand',
         'description',
         'part_number',
         'measure_unit',

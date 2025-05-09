@@ -4,6 +4,7 @@ use App\Http\Controllers\AdditionalTimeRequestController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\BoxController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CallMonitorController;
 use App\Http\Controllers\CatalogProductCompanySaleController;
@@ -59,6 +60,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WhatsappMonitorController;
+use App\Models\Brand;
 use App\Models\CompanyBranch;
 use App\Models\RawMaterial;
 use App\Models\Supplier;
@@ -80,6 +82,24 @@ Route::get('register-keychains', function () {
     $supplier->update(['raw_materials_id' => $products]);
 
     return 'Todos los llaveros registrados!';
+});
+
+Route::get('/unique-brands', function() {
+    // Opción 1: Usando Eloquent (recomendado)
+    $uniqueBrands = RawMaterial::select('brand')
+                      ->distinct()
+                      ->orderBy('brand')
+                      ->whereNotNull('brand')
+                      ->pluck('brand');
+
+    // REGISTRAR MARCAS EN LA BASE DE DATOS
+    foreach ($uniqueBrands as $brand) {
+        Brand::create([
+            'name' => $brand,
+        ]);
+    }
+        
+    return 'Listo!';
 });
 
 Route::get('/inicio', function () {
@@ -528,6 +548,9 @@ Route::resource('settings', SettingController::class)->middleware('auth');
 
 //------------------ Production progress routes ----------------
 Route::resource('production-progress', ProductionProgressController::class)->middleware('auth');
+
+//------------------ brand routes ----------------
+Route::resource('brands', BrandController::class)->middleware('auth');
 
 //------------------ Customer dates routes ----------------
 Route::resource('customer-meetings', CustomerMeetingController::class)->middleware('auth');

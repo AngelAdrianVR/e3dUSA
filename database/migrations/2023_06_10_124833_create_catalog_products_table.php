@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('catalog_products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('brand')->nullable();
             $table->text('description')->nullable();
             $table->string('part_number');
             $table->string('measure_unit');
