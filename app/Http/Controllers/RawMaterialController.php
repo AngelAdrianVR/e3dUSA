@@ -6,6 +6,7 @@ use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\RawMaterialResource;
+use App\Models\Brand;
 use App\Models\CatalogProduct;
 use App\Models\RawMaterial;
 use App\Models\Storage;
@@ -16,9 +17,7 @@ use Illuminate\Support\Str;
 
 class RawMaterialController extends Controller
 {
-    public function index()
-    {
-    }
+    public function index() {}
 
     public function create()
     {
@@ -26,7 +25,8 @@ class RawMaterialController extends Controller
         $next_id = $last ? $last->id + 1 : 1;
 
         if (Route::currentRouteName() == 'raw-materials.create') {
-            return inertia('Storage/Create/RawMaterial');
+            $brands = Brand::all();
+            return inertia('Storage/Create/RawMaterial', compact('brands'));
         } elseif (Route::currentRouteName() == 'consumables.create') {
             return inertia('Storage/Create/Consumable');
         }
@@ -58,7 +58,7 @@ class RawMaterialController extends Controller
         $validated['part_number'] .= $consecutive;
 
         $raw_material = RawMaterial::create($validated);
-        $raw_material->addAllMediaFromRequest()->each(fn ($file) => $file->toMediaCollection());
+        $raw_material->addAllMediaFromRequest()->each(fn($file) => $file->toMediaCollection());
 
         $raw_material->storages()->create([
             'quantity' => $request->initial_stock,
@@ -78,6 +78,7 @@ class RawMaterialController extends Controller
             $partNumbe = "C-{$exploded[0]}-{$exploded[1]}-" . $consecutive;
             $data = [
                 'name' => $request->name,
+                'brand' => $request->brand,
                 'part_number' => $partNumbe,
                 'measure_unit' => $request->measure_unit,
                 'min_quantity' => $request->min_quantity,
@@ -128,8 +129,9 @@ class RawMaterialController extends Controller
     {
         $raw_material = RawMaterialResource::make(RawMaterial::with('storages')->find($raw_material));
         $media = $raw_material->getMedia();
+        $brands = Brand::all();
 
-        return inertia('Storage/Edit/RawMaterial', compact('raw_material', 'media'));
+        return inertia('Storage/Edit/RawMaterial', compact('raw_material', 'media', 'brands'));
     }
 
     public function editConsumable($raw_material)
@@ -149,7 +151,6 @@ class RawMaterialController extends Controller
             'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
             'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
             'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
-            // 'part_number' => 'required|string', Se eliminaba el co nsecutivo, no descomentar
             'measure_unit' => 'required',
             'min_quantity' => 'required|numeric|min:0',
             'max_quantity' => 'required|numeric|min:0',
@@ -158,6 +159,11 @@ class RawMaterialController extends Controller
             'location' => 'required|string',
         ]);
 
+        // editar marca del numero de parte por si se cambió
+        $part_number = explode('-', $raw_material->part_number);
+        $part_number[1] = substr($request->brand, 0, 3);
+        $part_number = implode('-', $part_number);
+        $validated['part_number'] = $part_number;
 
         $raw_material->update($validated);
         $raw_material->storages()->update([
@@ -184,7 +190,6 @@ class RawMaterialController extends Controller
             'large' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
             'height' => $request->is_circular ? 'nullable' : 'required|numeric|min:0|max:2000',
             'diameter' => $request->is_circular ? 'required|numeric|min:0|max:2000' : 'nullable',
-            // 'part_number' => 'required|string', Se eliminaba el consecutivo, no descomentar
             'measure_unit' => 'required',
             'min_quantity' => 'required|numeric|min:0',
             'max_quantity' => 'required|numeric|min:0',
@@ -193,6 +198,11 @@ class RawMaterialController extends Controller
             'location' => 'required|string',
         ]);
 
+        // editar marca del numero de parte por si se cambió
+        $part_number = explode('-', $raw_material->part_number);
+        $part_number[1] = substr($request->brand, 0, 3);
+        $part_number = implode('-', $part_number);
+        $validated['part_number'] = $part_number;
 
         $raw_material->update($validated);
         $raw_material->storages()->update([
@@ -201,7 +211,7 @@ class RawMaterialController extends Controller
         ]);
 
         // update image
-        if ( $request->media ) {
+        if ($request->media) {
             $raw_material->clearMediaCollection();
             $raw_material->addMediaFromRequest('media')->toMediaCollection();
         }
@@ -213,7 +223,6 @@ class RawMaterialController extends Controller
         else
             return to_route('storages.consumables.index');
     }
-
 
     public function destroy(RawMaterial $raw_material)
     {
@@ -250,6 +259,7 @@ class RawMaterialController extends Controller
             // Crear un nuevo producto de catálogo
             $catalogProduct = CatalogProduct::create([
                 'name' => $rawMaterial->name,
+                'brand' => $rawMaterial->brand,
                 'description' => $rawMaterial->description,
                 'part_number' => $part_number,
                 'measure_unit' => $rawMaterial->measure_unit,

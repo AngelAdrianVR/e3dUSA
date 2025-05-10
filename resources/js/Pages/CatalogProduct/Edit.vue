@@ -12,7 +12,8 @@
     </template>
 
     <!-- Form -->
-    <form @submit.prevent="update" class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md transition-all ease-linear duration-500">
+    <form @submit.prevent="update"
+      class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md transition-all ease-linear duration-500">
       <div class="my-2">
         <InputLabel value="Tipo de producto (necesario para generar el número de parte)" />
         <el-select @change="generatePartNumber" v-model="productType" placeholder="Tipo de producto *">
@@ -26,8 +27,22 @@
       </div>
       <div class="md:grid gap-x-6 gap-y-2 grid-cols-2 my-3">
         <div>
-          <InputLabel value="Marca del producto *" />
-          <el-input v-model="brand" @change="generatePartNumber" placeholder="Ej. Toyota" />
+          <InputLabel>
+            <div class="flex items-center justify-between">
+              <span>Marca del producto *</span>
+              <button class="text-primary mr-2" type="button" @click="showCreateBrandModal = true">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="size-5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+              </button>
+            </div>
+          </InputLabel>
+          <el-select v-model="form.brand" @change="generatePartNumber" filterable clearable placeholder="Selecciona"
+            no-data-text="No hay unidades de medida registradas" no-match-text="No se encontraron coincidencias">
+            <el-option v-for="item in brands" :key="item.id" :label="item.name" :value="item.name" />
+          </el-select>
         </div>
         <div>
           <InputLabel value="Nombre del producto *" />
@@ -63,47 +78,47 @@
           <InputError :message="form.errors.max_quantity" />
         </div>
         <label class="flex items-center mt-2 w-1/3 col-span-full">
-            <Checkbox @change="form.large = null; form.height = null" v-model:checked="form.is_circular" name="remember"
+          <Checkbox @change="form.large = null; form.height = null" v-model:checked="form.is_circular" name="remember"
             class="bg-transparent" />
-            <span class="ml-2 text-sm">Es circular</span>
+          <span class="ml-2 text-sm">Es circular</span>
         </label>
         <div class="col-span-full grid grid-cols-3 gap-3">
-            <div>
+          <div>
             <InputLabel value="Ancho/Grosor(mm)*" />
             <el-input v-model="form.width" type="text"
-                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 25.5" />
+              :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 25.5" />
             <InputError :message="form.errors.width" />
-            </div>
-            <div v-if="!form.is_circular">
+          </div>
+          <div v-if="!form.is_circular">
             <InputLabel value="Largo(mm)*" />
             <el-input v-model="form.large" type="text"
-                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 96" />
+              :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 96" />
             <InputError :message="form.errors.large" />
-            </div>
-            <div v-if="!form.is_circular">
+          </div>
+          <div v-if="!form.is_circular">
             <InputLabel value="Alto(mm)*" />
             <el-input v-model="form.height" type="text"
-                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 10" />
+              :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 10" />
             <InputError :message="form.errors.height" />
-            </div>
-            <div v-if="form.is_circular">
+          </div>
+          <div v-if="form.is_circular">
             <InputLabel value="Diámetro(mm)*" />
             <el-input v-model="form.diameter" type="text"
-                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 43.8" />
+              :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 43.8" />
             <InputError :message="form.errors.diameter" />
-            </div>
+          </div>
         </div>
         <div class="col-span-full flex items-center justify-center space-x-4">
-            <figure v-if="!form.is_circular" class="w-48 dark:bg-gray-400 rounded-lg p-2">
-                <img class="mx-auto" src="@/../../public/images/paralelepipedo.png" alt="">
-            </figure>
-            <figure v-else class="w-32">
-                <img src="@/../../public/images/diameter.png" alt="">
-            </figure>
+          <figure v-if="!form.is_circular" class="w-48 dark:bg-gray-400 rounded-lg p-2">
+            <img class="mx-auto" src="@/../../public/images/paralelepipedo.png" alt="">
+          </figure>
+          <figure v-else class="w-32">
+            <img src="@/../../public/images/diameter.png" alt="">
+          </figure>
         </div>
         <div class="col-span-full">
           <InputLabel value="Descripción" />
@@ -183,16 +198,17 @@
           cargando imagen...
         </div>
         <figure v-else-if="selectedRawMaterial" class="rounded-md border border-[#9a9a9a]">
-            <img :src="selectedRawMaterial.media[0]?.original_url" class="rounded-md object-cover w-36">
-            <section class="flex items-center space-x-2">
-                <div class="text-xs mt-1 p-2 w-28">
-                    <p v-if="selectedRawMaterial.large">Largo: {{ selectedRawMaterial.large }}mm</p>
-                    <p v-if="selectedRawMaterial.height">Alto: {{ selectedRawMaterial.height }}mm</p>
-                    <p v-if="selectedRawMaterial.width">Ancho: {{ selectedRawMaterial.width }}mm</p>
-                    <p v-if="selectedRawMaterial.diameter">Diámetro: {{ selectedRawMaterial.diameter }}mm</p>
-                </div>
-                <PrimaryButton type="button" @click="setSizeToProduct()" class="!py-1 rounded-md">Utilizar estas medidas</PrimaryButton>
-            </section>
+          <img :src="selectedRawMaterial.media[0]?.original_url" class="rounded-md object-cover w-36">
+          <section class="flex items-center space-x-2">
+            <div class="text-xs mt-1 p-2 w-28">
+              <p v-if="selectedRawMaterial.large">Largo: {{ selectedRawMaterial.large }}mm</p>
+              <p v-if="selectedRawMaterial.height">Alto: {{ selectedRawMaterial.height }}mm</p>
+              <p v-if="selectedRawMaterial.width">Ancho: {{ selectedRawMaterial.width }}mm</p>
+              <p v-if="selectedRawMaterial.diameter">Diámetro: {{ selectedRawMaterial.diameter }}mm</p>
+            </div>
+            <PrimaryButton type="button" @click="setSizeToProduct()" class="!py-1 rounded-md">Utilizar estas medidas
+            </PrimaryButton>
+          </section>
         </figure>
         <div>
           <InputLabel value="proceso(s) de producción" />
@@ -222,7 +238,7 @@
             <li class="flex justify-between border-[#999999] items-center py-1">
               <p class="text-xs text-black">
                 <span class="text-primary">{{ index + 1 }}.</span>
-                {{ raw_materials.find(prd => prd.id === item.raw_material_id)?.name }}
+                {{raw_materials.find(prd => prd.id === item.raw_material_id)?.name}}
                 (x{{ item.quantity }} unidades)
               </p>
               <div class="flex space-x-2 items-center">
@@ -265,6 +281,24 @@
       </div>
     </form>
   </AppLayout>
+  <DialogModal :show="showCreateBrandModal" @close="showCreateBrandModal = false" maxWidth="lg">
+    <template #title>
+      Crear nueva marca
+    </template>
+    <template #content>
+      <InputLabel value="Nombre *" />
+      <el-input v-model="brandForm.name" placeholder="Escribe el nombre de la marca" />
+      <InputError :message="brandForm.errors.name" />
+      <label class="flex items-center mt-2 w-1/3 col-span-full">
+        <Checkbox v-model:checked="brandForm.is_luxury" class="bg-transparent" />
+        <span class="ml-2 text-sm">Es marca de lujo</span>
+      </label>
+    </template>
+    <template #footer>
+      <CancelButton @click="showCreateBrandModal = false" :disabled="brandForm.processing">Cancelar</CancelButton>
+      <PrimaryButton @click="storeBrand()" class="bg-primary" :disabled="brandForm.processing">Crear</PrimaryButton>
+    </template>
+  </DialogModal>
 </template>
 
 <script>
@@ -278,11 +312,14 @@ import InputFilePreview from "@/Components/MyComponents/InputFilePreview.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import { Link, useForm } from "@inertiajs/vue3";
+import DialogModal from "@/Components/DialogModal.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 
 export default {
   data() {
     const form = useForm({
       name: this.catalog_product.name,
+      brand: this.catalog_product.brand,
       part_number: this.catalog_product.part_number,
       measure_unit: this.catalog_product.measure_unit,
       cost: this.catalog_product.cost,
@@ -299,14 +336,21 @@ export default {
       features: this.catalog_product.features ?? [],
     });
 
+    const brandForm = useForm({
+      name: null,
+      is_luxury: false,
+    });
+
     return {
       form,
+      brandForm,
       dialogVisible: false, //imagen element-plus
       dialogImageUrl: '', //imagen element-plus
       fileList: [], // Archivos para el componente el-upload
       editIndex: null,
       loading: false,
       selectedRawMaterial: null,
+      showCreateBrandModal: false,
       rawMaterial: {
         raw_material_id: null,
         quantity: null,
@@ -326,7 +370,6 @@ export default {
         "Bote(s)",
       ],
       productType: this.catalog_product.part_number.split('-')[1],
-      brand: this.catalog_product.part_number.split('-')[2],
       productTypes: [
         {
           label: 'Porta-placa',
@@ -428,18 +471,21 @@ export default {
     InputFilePreview,
     SecondaryButton,
     PrimaryButton,
+    CancelButton,
     InputLabel,
     InputError,
     IconInput,
     Checkbox,
     Back,
-    Link
+    Link,
+    DialogModal,
   },
   props: {
     catalog_product: Object,
     production_costs: Array,
     raw_materials: Array,
     media: Object,
+    brands: Array,
   },
   methods: {
     update() {
@@ -471,16 +517,32 @@ export default {
         );
       }
     },
-    setSizeToProduct() {
-        if ( !this.selectedRawMaterial.diameter ) {
-          this.form.is_circular = false;
-        } else {
-          this.form.is_circular = true;
+    storeBrand() {
+      this.brandForm.post(route('brands.store'), {
+        onSuccess: () => {
+          this.$notify({
+            title: 'Éxito',
+            message: 'Marca agregada correctamente',
+            type: 'success'
+          });
+
+          this.form.brand = this.brandForm.name;
+          this.brandForm.reset();
+          this.showCreateBrandModal = false;
+          this.generatePartNumber();
         }
-        this.form.large = this.selectedRawMaterial.large;
-        this.form.height = this.selectedRawMaterial.height;
-        this.form.width = this.selectedRawMaterial.width;
-        this.form.diameter = this.selectedRawMaterial.diameter;
+      });
+    },
+    setSizeToProduct() {
+      if (!this.selectedRawMaterial.diameter) {
+        this.form.is_circular = false;
+      } else {
+        this.form.is_circular = true;
+      }
+      this.form.large = this.selectedRawMaterial.large;
+      this.form.height = this.selectedRawMaterial.height;
+      this.form.width = this.selectedRawMaterial.width;
+      this.form.diameter = this.selectedRawMaterial.diameter;
     },
     handleChange(file, fileList) {
       this.form.media = fileList.map(item => item.raw); // Actualiza form.media con los archivos
@@ -530,7 +592,7 @@ export default {
     generatePartNumber() {
       const partNumber = this.form.part_number.split("-");
       partNumber[1] = this.productType;
-      partNumber[2] = this.brand?.toUpperCase().substr(0, 3);
+      partNumber[2] = this.form.brand?.toUpperCase().substr(0, 3);
 
       this.form.part_number = partNumber.join("-");
     },
@@ -621,4 +683,3 @@ export default {
   },
 };
 </script>
-
