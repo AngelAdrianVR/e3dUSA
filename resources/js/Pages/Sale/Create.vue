@@ -13,7 +13,7 @@
             <form @submit.prevent="handleStoreSale" class="relative overflow-x-hidden dark:text-white h-screen">
                 <!-- company branch important notes -->
                 <div class="absolute top-5 -right-1">
-                    <div v-if="importantNotes" class="text-sm border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-[550px]">
+                    <div v-if="importantNotes && catalogProductsCompanyBranchSelected?.length" class="text-sm border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-[550px]">
                         <div class="absolute bg-primary top-1 -left-3 h-2 w-10 transform -rotate-45"></div>
                         <div class="absolute bg-primary top-1 -right-3 h-2 w-10 transform rotate-45"></div>
                         <h3 class="flex items-center justify-center mb-2">
@@ -51,13 +51,13 @@
                         </h3>
                         
                         <!-- Boton para crear nuevo producto al cliente -->
-                        <button @click="openCompanyEdit" type="button" title="Agregar nuevo producto al cliente" class="absolute top-3 right-7 border border-primary rounded-full size-5 flex items-center justify-center text-primary">
+                        <button @click="openCompanyEdit" type="button" title="Agregar nuevo producto al cliente" class="absolute top-3 right-7 border border-primary rounded-full size-6 flex items-center justify-center text-primary">
                             <i class="fa-solid fa-plus"></i>
                         </button>
 
                         <!-- Refrescar productos del cliente -->
-                        <button @click="fetchCatalogProductsCompanyBanch" type="button" title="Refrescar productos" class="absolute top-3 left-7 border border-primary rounded-full size-5 flex items-center justify-center text-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3">
+                        <button @click="fetchCatalogProductsCompanyBanch" type="button" title="Refrescar productos" class="absolute top-3 left-7 border border-primary rounded-full size-6 flex items-center justify-center text-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                             </svg>
                         </button>
@@ -143,7 +143,7 @@
                     </div>
                 </div>
                 
-                <div class="md:w-full lg:w-1/2 mx-7 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg px-9 py-5 shadow-md"
+                <div ref="formContainer" class="md:w-full lg:w-1/2 mx-7 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg px-9 py-5 shadow-md"
                     :class="{
                         'md:left-auto md:ml-32': catalogProductsCompanyBranchSelected?.length,
                         'md:mx-auto': !catalogProductsCompanyBranchSelected?.length
@@ -211,7 +211,7 @@
                                                 no-data-text="No hay productos registrados a este cliente"
                                                 placeholder="Selecciona un producto *">
                                                 <el-option
-                                                    v-for="item in company_branches.find(cb => cb.id == form.company_branch_id)?.catalog_products"
+                                                    v-for="item in catalogProductsCompanyBranchSelected"
                                                     :key="item.pivot.id" :label="item.name" :value="item.pivot.id" />
                                             </el-select>
                                         </div>
@@ -380,10 +380,7 @@
                                     <li class="flex justify-between items-center border-[#999999] py-1">
                                         <p class="text-[13px]">
                                             <span class="text-primary">{{ index + 1 }}.</span>
-                                            {{ company_branches.find(cb => cb.id ==
-                                                form.company_branch_id)?.catalog_products?.find(prd => prd.pivot.id ===
-                                                    item.catalog_product_company_id)?.name
-                                            }}
+                                            {{ catalogProductsCompanyBranchSelected?.find(cp => cp.pivot.id == item.catalog_product_company_id)?.name                                    }}
                                             ({{ item.quantity?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
                                             unidades)
                                         </p>
@@ -415,7 +412,7 @@
                                     </li>
                                 </template>
                             </ol>
-                            <div v-if="loading"
+                            <div v-if="loadingQuoteProducts"
                                 class="text-primary text-center p-4 min-h-24">
                                 <i class="fa-solid fa-circle-notch fa-spin mr-2 text-xl"></i>
                                 Cargando productos de cotización...
@@ -848,8 +845,8 @@
                             <InputLabel value="Moneda*" />
                             <el-select v-model="priceForm.new_currency" placeholder="Seleccionar"
                                 :fit-input-width="true">
-                                <el-option v-for="item in newPriceCurrencies" :key="item" :label="item"
-                                    :value="item" />
+                                <el-option v-for="item in newPriceCurrencies" :key="item.value" :label="item.label"
+                                    :value="item.value" />
                             </el-select>
                             <InputError :message="priceForm.errors.new_currency" />
                         </div>
@@ -957,6 +954,7 @@ export default {
             quote: null, // informacion de la cotizacion seleccionada relacionada a la ov.
             loadingCompanyBranchProducts: false,
             loading: false,
+            loadingQuoteProducts: false, //cargando productos de la cotizacion
             importantNotes: null,
             showImportantNotesModal: false,
             showCalendarTaskModal: false,
@@ -1097,6 +1095,7 @@ export default {
             await this.fetchQuoteInfo();
         },
         async fetchQuoteInfo() {
+            this.loadingQuoteProducts = true;
             try {
                 const response = await axios.get(route('quotes.fetch-data', this.form.quote_id));
                 if (response.status === 200) {
@@ -1106,6 +1105,8 @@ export default {
                         this.form.company_branch_id = this.quote.company_branch.id; //guarda el id del cliente
                         this.priceForm.company_branch_id = this.quote.company_branch.id; //guarda el id del cliente
                         this.handleCompanyBranchIdChange();
+                        await this.fetchCatalogProductsCompanyBanch();
+                        console.log(this.catalogProductsCompanyBranchSelected);
 
                         // Obtener los productos de la sucursal
                         const companyProducts = this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.catalog_products || [];
@@ -1141,11 +1142,13 @@ export default {
                         this.form.notes = this.quote.notes;
                         this.form.freight_cost = this.quote.freight_cost;
                         this.resetProductForm();
-                        this.store(); // ejecuta el metodo para resaltar las validaciones en los campos obligatorios
+                        // this.store(); // ejecuta el metodo para resaltar las validaciones en los campos obligatorios
                     }
                 }
             } catch (error) {
                 console.error("Error al obtener la cotización:", error);
+            } finally {
+                this.loadingQuoteProducts = false;
             }
         },
         waitForUserResponse() {
@@ -1186,7 +1189,6 @@ export default {
         calculateNewPercentage() {
             if (!this.priceForm.new_price || !this.itemToUpdatePrice.pivot.new_price) {
                 this.new_price_percentage = 0;
-                console.log(this.itemToUpdatePrice);
                 return;
             }
 
@@ -1317,7 +1319,6 @@ export default {
             const numberOfShippings = this.shippingOptions?.findIndex(i => i === this.form.shipping_option) + 1;
             for (let index = 0; index < numberOfShippings; index++) {
                 this.addPartial(numberOfShippings == 1);
-                // console.log(numberOfShippings);
             }
         },
         openDesignAuthorization() {
@@ -1370,6 +1371,10 @@ export default {
                     });
                     this.showCalendarTaskModal = false;
                     this.showCreateProjectModal = true;
+                },
+                onError: () => {
+                    // Hacer scroll al principio de la página si hay errores
+                    this.$refs.formContainer.scrollIntoView({ behavior: 'smooth' });
                 }
             });
         },
@@ -1392,7 +1397,7 @@ export default {
             this.importantNotesToStore = this.importantNotes;
         },
         validateQuantity() {
-            const catalogProducts = this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.catalog_products;
+            const catalogProducts = this.catalogProductsCompanyBranchSelected;
             const components = catalogProducts.find(item => this.product.catalog_product_company_id == item.pivot.id)?.raw_materials;
 
             let maxQuantity = null;
@@ -1536,8 +1541,10 @@ export default {
                 this.alertMaxQuantity = 0;
                 try {
                     this.loading = true;
-                    const catalogProductId =
-                        this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.catalog_products?.find(cp => cp.pivot.id == this.product.catalog_product_company_id)?.id;
+                    const catalogProduct =
+                        this.catalogProductsCompanyBranchSelected.find(item => item.pivot.id == this.product.catalog_product_company_id);
+                    const catalogProductId = catalogProduct?.pivot.catalog_product_id;
+                    
                     const response = await axios.get(route('catalog-products.get-data', catalogProductId));
 
                     if (response.status === 200) {
