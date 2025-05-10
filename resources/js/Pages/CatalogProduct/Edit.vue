@@ -289,10 +289,16 @@
       <InputLabel value="Nombre *" />
       <el-input v-model="brandForm.name" placeholder="Escribe el nombre de la marca" />
       <InputError :message="brandForm.errors.name" />
-      <label class="flex items-center mt-2 w-1/3 col-span-full">
+      <label class="flex items-center mt-2">
         <Checkbox v-model:checked="brandForm.is_luxury" class="bg-transparent" />
         <span class="ml-2 text-sm">Es marca de lujo</span>
       </label>
+      <div class="mt-6 flex justify-end">
+        <a :href="route('brands.index')" target="_blank" class="text-sm text-secondary">
+          Editar o eliminar marcas
+          <i class="fa-solid fa-arrow-right text-xs ml-2 mt-px"></i>
+        </a>
+      </div>
     </template>
     <template #footer>
       <CancelButton @click="showCreateBrandModal = false" :disabled="brandForm.processing">Cancelar</CancelButton>

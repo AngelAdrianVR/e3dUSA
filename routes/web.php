@@ -84,23 +84,23 @@ Route::get('register-keychains', function () {
     return 'Todos los llaveros registrados!';
 });
 
-Route::get('/unique-brands', function() {
-    // Opción 1: Usando Eloquent (recomendado)
-    $uniqueBrands = RawMaterial::select('brand')
-                      ->distinct()
-                      ->orderBy('brand')
-                      ->whereNotNull('brand')
-                      ->pluck('brand');
+// Route::get('/unique-brands', function() {
+//     // Opción 1: Usando Eloquent (recomendado)
+//     $uniqueBrands = RawMaterial::select('brand')
+//                       ->distinct()
+//                       ->orderBy('brand')
+//                       ->whereNotNull('brand')
+//                       ->pluck('brand');
 
-    // REGISTRAR MARCAS EN LA BASE DE DATOS
-    foreach ($uniqueBrands as $brand) {
-        Brand::create([
-            'name' => $brand,
-        ]);
-    }
+//     // REGISTRAR MARCAS EN LA BASE DE DATOS
+//     foreach ($uniqueBrands as $brand) {
+//         Brand::create([
+//             'name' => $brand,
+//         ]);
+//     }
         
-    return 'Listo!';
-});
+//     return 'Listo!';
+// });
 
 Route::get('/inicio', function () {
     return Inertia::render('Auth/Inicio');
