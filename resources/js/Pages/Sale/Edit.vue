@@ -1,4 +1,5 @@
 <template>
+    <FullScreenLoader :visible="loadingCompanyBranchProducts" />
     <div>
         <AppLayout title="Editar órden de venta">
             <template #header>
@@ -52,13 +53,13 @@
                         </h3>
                         
                         <!-- Boton para crear nuevo producto al cliente -->
-                        <button @click="openCompanyEdit" type="button" title="Agregar nuevo producto al cliente" class="absolute top-3 right-7 border border-primary rounded-full size-5 flex items-center justify-center text-primary">
+                        <button @click="openCompanyEdit" type="button" title="Agregar nuevo producto al cliente" class="absolute top-3 right-7 border border-primary rounded-full size-6 flex items-center justify-center text-primary">
                             <i class="fa-solid fa-plus"></i>
                         </button>
 
                         <!-- Refrescar productos del cliente -->
-                        <button @click="fetchCatalogProductsCompanyBanch" type="button" title="Refrescar productos" class="absolute top-3 left-7 border border-primary rounded-full size-5 flex items-center justify-center text-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3">
+                        <button @click="fetchCatalogProductsCompanyBanch" type="button" title="Refrescar productos" class="absolute top-3 left-7 border border-primary rounded-full size-6 flex items-center justify-center text-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                             </svg>
                         </button>
@@ -144,7 +145,7 @@
                     </div>
                 </div>
 
-                <div class="md:w-full lg:w-1/2 mx-7 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg px-9 py-5 shadow-md"
+                <div ref="formContainer" class="md:w-full lg:w-1/2 mx-7 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg px-9 py-5 shadow-md"
                     :class="{
                         'md:left-auto md:ml-32': catalogProductsCompanyBranchSelected?.length,
                         'md:mx-auto': !catalogProductsCompanyBranchSelected?.length
@@ -201,7 +202,7 @@
                                                 no-data-text="No hay productos registrados a este cliente"
                                                 placeholder="Selecciona un producto *">
                                                 <el-option
-                                                    v-for="item in company_branches.find(cb => cb.id == form.company_branch_id)?.catalog_products"
+                                                    v-for="item in catalogProductsCompanyBranchSelected"
                                                     :key="item.pivot.id" :label="item.name" :value="item.pivot.id" />
                                             </el-select>
                                         </div>
@@ -341,10 +342,7 @@
                                     <li class="flex justify-between items-center border-[#999999] py-1">
                                         <p class="text-[13px]">
                                             <span class="text-primary">{{ index + 1 }}.</span>
-                                            {{ company_branches.find(cb => cb.id ==
-                                                form.company_branch_id)?.catalog_products?.find(prd => prd.pivot.id ===
-                                                    item.catalog_product_company_id)?.name
-                                            }}
+                                            {{ catalogProductsCompanyBranchSelected?.find(cp => cp.pivot.id == item.catalog_product_company_id)?.name                                    }}
                                             ({{ item.quantity?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
                                             unidades)
                                         </p>
@@ -757,6 +755,7 @@ import { Link, useForm } from "@inertiajs/vue3";
 import FileUploader from "@/Components/MyComponents/FileUploader.vue";
 import ShippingCard from "@/Components/MyComponents/Shipping/ShippingCard.vue";
 import InputLabel from "@/Components/InputLabel.vue";
+import FullScreenLoader from "@/Components/MyComponents/FullScreenLoader.vue";
 import { differenceInMonths, differenceInDays, format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -872,6 +871,7 @@ export default {
         };
     },
     components: {
+        FullScreenLoader,
         SecondaryButton,
         PrimaryButton,
         FileUploader,
@@ -1021,7 +1021,7 @@ export default {
             this.getImportantNotes();
             this.getDesignAuthorizations();
             this.fetchCatalogProductsCompanyBanch();
-            this.cleanShippingData();
+            // this.cleanShippingData();
         },
         handleChangeShippingOption() {
             this.form.partialities = [];
@@ -1067,7 +1067,7 @@ export default {
             this.form.partialities.splice(index, 1);
         },
         validateQuantity() {
-            const catalogProducts = this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.catalog_products;
+            const catalogProducts = this.catalogProductsCompanyBranchSelected;
             const components = catalogProducts.find(item => this.product.catalog_product_company_id == item.pivot.id)?.raw_materials;
 
             let maxQuantity = null;
@@ -1113,6 +1113,10 @@ export default {
                             type: "success",
                         });
                     },
+                    onError: () => {
+                        // Hacer scroll al principio de la página si hay errores
+                        this.$refs.formContainer.scrollIntoView({ behavior: 'smooth' });
+                    }
                 });
             }
             this.showCalendarTaskModal = false;
@@ -1300,9 +1304,10 @@ export default {
         async fetchCatalogProductData() {
             try {
                 this.loading = true;
-                const catalogProductId =
-                    this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.catalog_products?.find(cp => cp.pivot.id == this.product.catalog_product_company_id)?.id;
-                const response = await axios.get(route('catalog-products.get-data', catalogProductId));
+                const catalogProduct =
+                    this.catalogProductsCompanyBranchSelected.find(item => item.pivot.id == this.product.catalog_product_company_id);
+                    const catalogProductId = catalogProduct?.pivot.catalog_product_id;
+                    const response = await axios.get(route('catalog-products.get-data', catalogProductId));
 
                 if (response.status === 200) {
                     this.commitedUnits = response.data.commited_units;
@@ -1389,13 +1394,11 @@ export default {
             }
             this.form.products.push(product);
         });
-
         this.form.partialities.forEach(partiality => {
             partiality.productsSelected.forEach(prd => {
                 prd.selected = prd.selected == '1' ? true : false
             });
         });
-
         this.handleCompanyBranchIdChange();
     }
 };
