@@ -46,7 +46,8 @@
               v-if="$page.props.auth.user.permissions.includes('Editar materia prima') && storage.data.type != 'producto-terminado'"
               content="Editar" placement="top">
               <Link :href="route('raw-materials.edit', selectedRawMaterial)">
-              <button class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
+              <button
+                class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                   stroke="currentColor" class="size-5">
                   <path stroke-linecap="round" stroke-linejoin="round"
@@ -71,7 +72,8 @@
               )
             ">
               <template #trigger>
-                <button class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center justify-center text-sm">
+                <button
+                  class="h-9 px-3 rounded-lg bg-[#D9D9D9] dark:bg-[#202020] dark:text-white flex items-center justify-center text-sm">
                   Más <i class="fa-solid fa-chevron-down text-[10px] ml-2 pb-[2px]"></i>
                 </button>
               </template>
@@ -228,7 +230,10 @@
               </div>
               <div class="flex mb-2 space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">Marca</p>
-                <p>{{ storage.data.storageable.brand }}</p>
+                <p class="flex space-x-2 items-center">
+                  <span>{{ storage.data.storageable.brand }}</span>
+                  <el-tag v-if="brands.find(i => i.name == storage.data.storageable.brand)?.is_luxury" type="info">Marca de lujo</el-tag>
+                </p>
               </div>
               <div class="flex mb-6 space-x-2">
                 <p class="w-1/3 text-[#9A9A9A]">Material</p>
@@ -521,7 +526,8 @@ export default {
   props: {
     storage: Object,
     storages: Array,
-    totalStorageMoney: Number
+    totalStorageMoney: Number,
+    brands: Array,
   },
   methods: {
     async reactivateObsolete() {

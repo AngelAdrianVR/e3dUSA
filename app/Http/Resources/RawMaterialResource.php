@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,6 +19,7 @@ class RawMaterialResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'brand' => $this->brand,
+            'is_luxury' => Brand::where('name', $this->brand)->first()->is_luxury,
             'material' => $this->material,
             'width' => $this->width,
             'large' => $this->large,

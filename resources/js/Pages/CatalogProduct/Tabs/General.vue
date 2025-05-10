@@ -18,6 +18,13 @@
             <p class="w-1/3 text-[#9A9A9A]">Número parte</p>
             <p>{{ product.part_number }}</p>
         </div>
+        <div class="flex mb-2 space-x-2">
+            <p class="w-1/3 text-[#9A9A9A]">Marca</p>
+            <p class="flex space-x-2 items-center">
+                <span>{{ product.brand }}</span>
+                <el-tag v-if="product.is_luxury" type="info">Marca de lujo</el-tag>
+            </p>
+        </div>
         <div class="flex mb-6 space-x-2">
             <p class="w-1/3 text-[#9A9A9A]">Unidad de medida</p>
             <p>{{ product.measure_unit }}</p>

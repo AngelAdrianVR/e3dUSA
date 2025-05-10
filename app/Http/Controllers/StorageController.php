@@ -6,6 +6,7 @@ use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Http\Resources\StorageResource;
 use App\Http\Resources\StorageResource2;
+use App\Models\Brand;
 use App\Models\CatalogProduct;
 use App\Models\RawMaterial;
 use App\Models\StockMovementHistory;
@@ -313,6 +314,7 @@ class StorageController extends Controller
     public function show($storage_id)
     {
         $storage = StorageResource::make(Storage::with('storageable.media', 'movements.user')->find($storage_id));
+        $brands = Brand::all();
 
         // obtener solo registros de almacen actual ingresado
         $storages = Storage::with('storageable:id,name')->where('type', $storage->type)->get();
@@ -324,7 +326,7 @@ class StorageController extends Controller
 
         // return $storage;
 
-        return inertia('Storage/Show', compact('storage', 'storages', 'totalStorageMoney'));
+        return inertia('Storage/Show', compact('storage', 'storages', 'totalStorageMoney', 'brands'));
     }
 
     public function showConsumable($storage_id)
