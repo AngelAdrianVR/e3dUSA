@@ -610,6 +610,8 @@ class QuoteController extends Controller
         ->first(['id', 'business_name']);
 
         $catalog_products_company = $company ? $company->catalogProducts : [];
+
+        $catalog_products_company->load('rawMaterials.storages');
     
         return response()->json(['items' => $catalog_products_company, 'companyId' => $company->id]);
     }
