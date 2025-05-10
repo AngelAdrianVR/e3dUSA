@@ -19,7 +19,7 @@ class RawMaterialResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'brand' => $this->brand,
-            'is_luxury' => Brand::where('name', $this->brand)->first()->is_luxury,
+            'is_luxury' => Brand::where('name', $this->brand)->first()?->is_luxury,
             'material' => $this->material,
             'width' => $this->width,
             'large' => $this->large,
