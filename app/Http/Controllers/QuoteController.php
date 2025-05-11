@@ -24,6 +24,7 @@ use App\Notifications\NewQuoteNotification;
 use App\Notifications\RequestApprovedNotification;
 use App\Notifications\ScheduleUpdateProductPriceReminder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class QuoteController extends Controller
 {
@@ -278,12 +279,36 @@ class QuoteController extends Controller
         }
 
         foreach ($quote->catalogProducts as $product) {
+            $company_id = $clone->companyBranch->company_id;
+            $catalog_product_company = CatalogProductCompany::where('company_id', $company_id)
+                ->where('catalog_product_id', $product->id)
+                ->first();
+
             $pivot = [
                 'quantity' => $product->pivot->quantity,
-                'price' => $product->pivot->price,
+                // obtiene el precio mayor entre el precio de la cotización y el nuevo precio del producto catalogado
+                'price' => $catalog_product_company ? max($product->pivot->price, $catalog_product_company->new_price) : $product->pivot->price,
                 'notes' => $product->pivot->notes,
                 'show_image' => $product->pivot->show_image,
             ];
+            
+            // revisar si new_date tiene mas de 1 año a la fecha actual. De ser asi, actualizamos new_price a +7.9%
+             if ($catalog_product_company && $catalog_product_company->new_date->diffInDays(now()) >= 365) {
+                $pivot['price'] = $product->pivot->price * 1.079;
+                $catalog_product_company->update([
+                    'oldest_date' => $catalog_product_company->old_date,
+                    'oldest_price' => $catalog_product_company->old_price,
+                    'oldest_currency' => $catalog_product_company->old_currency,
+                    'old_date' => $catalog_product_company->new_date,
+                    'old_price' => $catalog_product_company->new_price,
+                    'old_currency' => $catalog_product_company->new_currency,
+                    'oldest_updated_by' => $catalog_product_company->old_updated_by,
+                    'old_updated_by' => $catalog_product_company->new_updated_by,                    
+                    'new_price' => $pivot['price'],
+                    'new_date' => today(),
+                    'new_updated_by' => 'Automáticamente por el sistema',
+                ]);
+            }
 
             $clone->catalogProducts()->attach($product->pivot->catalog_product_id, $pivot);
         }

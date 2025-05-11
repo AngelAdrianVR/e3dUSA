@@ -14,6 +14,7 @@ use App\Models\Contact;
 use App\Models\RawMaterial;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class CompanyController extends Controller
@@ -22,7 +23,7 @@ class CompanyController extends Controller
     {
         $companies = CompanyResource::collection(Company::with(['companyBranches', 'seller:id,name'])
             ->latest()
-            ->get(['id','business_name','phone','rfc','post_code', 'fiscal_address','seller_id']));
+            ->get(['id', 'business_name', 'phone', 'rfc', 'post_code', 'fiscal_address', 'seller_id']));
 
         return inertia('Company/Index', compact('companies'));
     }
@@ -38,7 +39,7 @@ class CompanyController extends Controller
                     });
             })
             ->get(['id', 'name', 'profile_photo_path']);
-        
+
         return inertia('Company/Create', compact('catalog_products', 'sellers'));
     }
 
@@ -60,7 +61,7 @@ class CompanyController extends Controller
         $company = Company::create($request->except(['company_branches', 'products'] + ['user_id' => auth()->id()]));
         foreach ($request->company_branches as $branch) {
             // valor por defecto a dias para reactivar cliente para evitar error de base de datos si lo dejan nulo
-            $branch['days_to_reactivate'] = $branch['days_to_reactivate'] ?? 30; 
+            $branch['days_to_reactivate'] = $branch['days_to_reactivate'] ?? 30;
             $branch['company_id'] = $company->id;
             $compay_branch = CompanyBranch::create($branch);
             foreach ($branch['contacts'] as $contact) {
@@ -72,6 +73,26 @@ class CompanyController extends Controller
                 $product['old_updated_by'] = $product['old_price'] ? auth()->user()->name : null;
                 $company->catalogProducts()->attach($product['catalog_product_id'], $product);
             }
+        }
+
+        // Registrar productos sugeridos de acuerdo a las marcas que ya maneja
+        // Obtener marcas únicas de los productos actuales
+        $brands = $company->catalogProducts->pluck('brand')->unique()->filter();
+        if (!$brands->isEmpty()) {
+            // Obtener IDs de productos actuales para excluirlos
+            $currentProductIds = $company->catalogProducts->pluck('id')->toArray();
+            // Buscar productos sugeridos (misma marca pero no registrados)
+            $suggestedProducts = CatalogProduct::whereIn('brand', $brands)
+                ->whereNotIn('id', $currentProductIds)
+                ->pluck('id')
+                ->toArray();
+
+            // Combinar con sugerencias existentes (sin duplicados)
+            $existingSuggestions = $company->suggested_products ?? [];
+            $mergedSuggestions = array_unique(array_merge($existingSuggestions, $suggestedProducts));
+
+            // Actualizar la compañía
+            $company->update(['suggested_products' => $mergedSuggestions]);
         }
 
         event(new RecordCreated($company));
@@ -182,6 +203,27 @@ class CompanyController extends Controller
             if (!$company->catalogProducts->contains($catalogProductId)) {
                 $company->catalogProducts()->attach($catalogProductId, $productData);
             }
+        }
+
+        // volver a cargar los productos para obtener los cambios
+        $company->load('catalogProducts');
+        // Registrar productos sugeridos de acuerdo a las marcas que ya maneja
+        // Obtener marcas únicas de los productos actuales
+        $brands = $company->catalogProducts->pluck('brand')->unique()->filter();
+        if (!$brands->isEmpty()) {
+            // Buscar productos sugeridos (misma marca pero no registrados)
+            $suggestedProducts = CatalogProduct::whereIn('brand', $brands)
+            ->pluck('id')
+            ->toArray();
+            
+            // Combinar con sugerencias existentes
+            $existingSuggestions = $company->suggested_products ?? [];
+            $mergedSuggestions = array_unique(array_merge($existingSuggestions, $suggestedProducts));
+            // eliminar duplicados
+            $mergedSuggestions = array_values(array_unique($mergedSuggestions));
+
+            // Actualizar la compañía
+            $company->update(['suggested_products' => $mergedSuggestions]);
         }
 
         event(new RecordEdited($company));
@@ -307,7 +349,7 @@ class CompanyController extends Controller
 
         if (($key = array_search($request->catalog_product_id, $suggestedProducts)) !== false) {
             unset($suggestedProducts[$key]);
-    
+
             // Guardar el array actualizado en la base de datos
             $company->update([
                 'suggested_products' => array_values($suggestedProducts), // Reindexar el array
