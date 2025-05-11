@@ -69,23 +69,22 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('register-keychains', function () {
-    // editar productos de proveedor con id 9
-    $supplier = Supplier::find(9);
-    $products = $supplier->raw_materials_id;
+// Route::get('register-keychains', function () {
+//     // editar productos de proveedor con id 9
+//     $supplier = Supplier::find(9);
+//     $products = $supplier->raw_materials_id;
 
-    // obtener toda la materia prima que pertenece a la categoria de llaveros
-    $keychains = RawMaterial::where('part_number', 'LIKE', 'LL-%')->get(['id'])->pluck('id');
+//     // obtener toda la materia prima que pertenece a la categoria de llaveros
+//     $keychains = RawMaterial::where('part_number', 'LIKE', 'LL-%')->get(['id'])->pluck('id');
 
-    // registrar todo a productos del proveedor
-    $products = array_merge($products, $keychains->toArray());
-    $supplier->update(['raw_materials_id' => $products]);
+//     // registrar todo a productos del proveedor
+//     $products = array_merge($products, $keychains->toArray());
+//     $supplier->update(['raw_materials_id' => $products]);
 
-    return 'Todos los llaveros registrados!';
-});
+//     return 'Todos los llaveros registrados!';
+// });
 
-// En routes/api.php o en un controlador
-
+//**** */ agregar sugerencias a las compañias
 // use App\Models\Company;
 // use App\Models\CatalogProduct;
 
@@ -102,19 +101,16 @@ Route::get('register-keychains', function () {
 //             continue;
 //         }
 
-//         // Obtener IDs de productos actuales para excluirlos
-//         $currentProductIds = $company->catalogProducts->pluck('id')->toArray();
-
 //         // Buscar productos sugeridos (misma marca pero no registrados)
 //         $suggestedProducts = CatalogProduct::whereIn('brand', $brands)
-//             // ->whereNotIn('id', $currentProductIds)
-//             ->pluck('id')
-//             ->toArray();
-
-
-//         // Combinar con sugerencias existentes (sin duplicados)
+//         ->pluck('id')
+//         ->toArray();
+        
+//         // Combinar con sugerencias existentes
 //         $existingSuggestions = $company->suggested_products ?? [];
 //         $mergedSuggestions = array_unique(array_merge($existingSuggestions, $suggestedProducts));
+//         // eliminar duplicados
+//         $mergedSuggestions = array_values(array_unique($mergedSuggestions));
 
 //         // Actualizar la compañía
 //         $company->update(['suggested_products' => $mergedSuggestions]);
