@@ -76,13 +76,52 @@ Route::get('register-keychains', function () {
 
     // obtener toda la materia prima que pertenece a la categoria de llaveros
     $keychains = RawMaterial::where('part_number', 'LIKE', 'LL-%')->get(['id'])->pluck('id');
-    
+
     // registrar todo a productos del proveedor
-    $products = array_merge($products,$keychains->toArray());
+    $products = array_merge($products, $keychains->toArray());
     $supplier->update(['raw_materials_id' => $products]);
 
     return 'Todos los llaveros registrados!';
 });
+
+// En routes/api.php o en un controlador
+
+// use App\Models\Company;
+// use App\Models\CatalogProduct;
+
+// Route::get('/update-suggestions', function () {
+//     $companies = Company::with(['catalogProducts' => function ($query) {
+//         $query->select('brand')->distinct();
+//     }])->get();
+
+//     foreach ($companies as $company) {
+//         // Obtener marcas únicas de los productos actuales
+//         $brands = $company->catalogProducts->pluck('brand')->unique()->filter();
+
+//         if ($brands->isEmpty()) {
+//             continue;
+//         }
+
+//         // Obtener IDs de productos actuales para excluirlos
+//         $currentProductIds = $company->catalogProducts->pluck('id')->toArray();
+
+//         // Buscar productos sugeridos (misma marca pero no registrados)
+//         $suggestedProducts = CatalogProduct::whereIn('brand', $brands)
+//             // ->whereNotIn('id', $currentProductIds)
+//             ->pluck('id')
+//             ->toArray();
+
+
+//         // Combinar con sugerencias existentes (sin duplicados)
+//         $existingSuggestions = $company->suggested_products ?? [];
+//         $mergedSuggestions = array_unique(array_merge($existingSuggestions, $suggestedProducts));
+
+//         // Actualizar la compañía
+//         $company->update(['suggested_products' => $mergedSuggestions]);
+//     }
+
+//     return 'Suggestions updated successfully';
+// });
 
 // Route::get('/unique-brands', function() {
 //     // Opción 1: Usando Eloquent (recomendado)
@@ -98,7 +137,7 @@ Route::get('register-keychains', function () {
 //             'name' => $brand,
 //         ]);
 //     }
-        
+
 //     return 'Listo!';
 // });
 
