@@ -64,9 +64,9 @@
             <!-- Información de los productos de catalogo cotizados -->
             <tbody>
                 <tr v-for="(item, index) in quote.data.catalog_products" :key="index" class="text-gray-700 uppercase dark:bg-gray-300"
-                    :class="quote.data.approved_products.includes(item.id) ? 'bg-green-200 dark:bg-green-400' : 'bg-gray-200'">
+                    :class="quote.data.approved_products?.includes(item.id) ? 'bg-green-200 dark:bg-green-400' : 'bg-gray-200'">
                     <td class="px-2 py-px">
-                        <b>{{ quote.data.approved_products.includes(item.id) ? '(ACEPTADO)' : '' }}</b>
+                        <b>{{ quote.data.approved_products?.includes(item.id) ? '(ACEPTADO)' : '' }}</b>
                         {{ item.name }}
                     </td>
                     <td class="px-2 py-px">{{ item.pivot.notes ?? '--' }}</td>
