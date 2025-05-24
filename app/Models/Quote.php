@@ -38,6 +38,8 @@ class Quote extends Model implements HasMedia
         'show_breakdown',
         'approved_products',
         'created_by_customer',
+        'early_payment_discount',
+        'discount',
     ];
 
     protected $casts = [
