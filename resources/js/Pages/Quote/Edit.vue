@@ -467,9 +467,9 @@
 
                     <div class="grid grid-cols-2 gap-3">
                         <label class="inline-flex items-center text-gray-600 dark:text-gray-500">
-                            <input type="checkbox" @change="handleEarlyPaymentDiscount" v-model="form.early_payment_discount"
-                                class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
-                            <span class="ml-2 text-sm dark:text-white">Descuento pago por adelantado</span>
+                            <input :disabled="quote.early_paid_at" type="checkbox" @change="handleEarlyPaymentDiscount" v-model="form.early_payment_discount"
+                                class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent disabled:cursor-not-allowed disabled:opacity-65" />
+                            <span :class="{'opacity-50' : quote.early_paid_at}" class="ml-2 text-sm dark:text-white">Descuento pago por adelantado</span>
                             <el-tooltip placement="top">
                                 <template #content>
                                     <p>
@@ -494,12 +494,13 @@
                                 :max="100"
                                 type="number"
                                 prefix-icon="el-icon-percent"
+                                :disabled="quote.early_paid_at"
                             >
                                 <template #prefix>%</template>
                             </el-input>
                             <InputError :message="form.errors.discount" />
                         </div>
-
+                        <p v-if="quote.early_paid_at" class="col-span-full text-sm text-red-500">No puedes editar el descuento de pago anticipado porque ya se realizó</p>
                     </div>
                     <!-- buttons -->
                     <div class="md:text-right mt-5">
