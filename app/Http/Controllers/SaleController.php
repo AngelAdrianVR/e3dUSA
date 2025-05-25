@@ -138,7 +138,22 @@ class SaleController extends Controller
         }
 
         // store media
-        $sale->addAllMediaFromRequest()->each(fn($file) => $file->toMediaCollection('oce'));
+        // Guardar el archivo de acuse de logística en la colección 'acuse'
+        if ($request->hasFile('acuse')) {
+            $sale->addMediaFromRequest('acuse')->toMediaCollection('acuse');
+        }
+        // Guardar los archivos en la colección 'OCE'
+        if ($request->hasFile('media')) {
+            foreach ($request->file('media') as $uploadedFile) {
+                $sale->addMedia($uploadedFile)->toMediaCollection('oce');
+            }
+        }
+        // Guardar los archivos en la colección 'anotherFiles'
+        if ($request->hasFile('anotherFiles')) {
+            foreach ($request->file('anotherFiles') as $uploadedFile) {
+                $sale->addMedia($uploadedFile)->toMediaCollection('anotherFiles');
+            }
+        }
 
         foreach ($request->products as $product) {
             $cpcs = CatalogProductCompanySale::create($product + ['sale_id' => $sale->id]);
@@ -189,7 +204,7 @@ class SaleController extends Controller
     public function show($sale_id)
     {
         // $sale = Sale::find($sale_id, ['id', 'is_sale_production', 'authorized_at', 'user_id']);
-        $sale = SaleResource::make(Sale::with(['user:id,name', 'contact', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator:id,name', 'comments.user'], 'productions' => ['user:id,name', 'operator:id,name']])->find($sale_id));
+        $sale = SaleResource::make(Sale::with(['user:id,name', 'contact', 'media', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator:id,name', 'comments.user'], 'productions' => ['user:id,name', 'operator:id,name']])->find($sale_id));
         $sales = Sale::latest()->get(['id']);
 
         // return $sale;
@@ -200,8 +215,12 @@ class SaleController extends Controller
     {
         $sale = Sale::find($sale->id);
         $catalog_products_company_sale = CatalogProductCompanySale::with('catalogProductCompany.catalogProduct')->where('sale_id', $sale->id)->get();
-        $media = $sale->getMedia('oce')->all();
+        $mediaOCE = $sale->getMedia('oce')->all();
         $media_oce_url = $sale->getFirstMediaUrl('oce');
+        $acuse = $sale->getMedia('acuse')->all();
+        $media_acuse_url = $sale->getFirstMediaUrl('acuse');
+        $anotherFiles = $sale->getMedia('anotherFiles')->all();
+        $media_anotherFiles_url = $sale->getFirstMediaUrl('anotherFiles');
 
         //optimizacion de datos en vista para reducir el tiempo de carga
         $pre_company_branches = CompanyBranch::with('company.catalogProducts.rawMaterials.storages', 'contacts')->latest()->get();
@@ -250,7 +269,7 @@ class SaleController extends Controller
             ];
         });
 
-        return inertia('Sale/Edit', compact('company_branches', 'sale', 'catalog_products_company_sale', 'media', 'media_oce_url'));
+        return inertia('Sale/Edit', compact('company_branches', 'sale', 'catalog_products_company_sale', 'mediaOCE', 'media_oce_url', 'acuse', 'media_acuse_url', 'anotherFiles', 'media_anotherFiles_url'));
     }
 
     public function update(Request $request, Sale $sale)
@@ -342,9 +361,26 @@ class SaleController extends Controller
         $updatedProductIds = [];
         $sale->update($request->except('products'));
 
-        // media
-        $sale->clearMediaCollection('oce');
-        $sale->addAllMediaFromRequest()->each(fn($file) => $file->toMediaCollection('oce'));
+        // media ---------------------------------------------------------
+        // Guardar el archivo de acuse de logística en la colección 'acuse'
+        if ($request->hasFile('acuse')) {
+            $sale->clearMediaCollection('acuse');
+            $sale->addMediaFromRequest('acuse')->toMediaCollection('acuse');
+        }
+        // Guardar los archivos en la colección 'OCE'
+        if ($request->hasFile('media')) {
+            $sale->clearMediaCollection('oce');
+            foreach ($request->file('media') as $uploadedFile) {
+                $sale->addMedia($uploadedFile)->toMediaCollection('oce');
+            }
+        }
+        // Guardar los archivos en la colección 'anotherFiles'
+        if ($request->hasFile('anotherFiles')) {
+            $sale->clearMediaCollection('anotherFiles');
+            foreach ($request->file('anotherFiles') as $uploadedFile) {
+                $sale->addMedia($uploadedFile)->toMediaCollection('anotherFiles');
+            }
+        }
 
         foreach ($request->products as $product) {
             $productData = $product + ['sale_id' => $sale->id];

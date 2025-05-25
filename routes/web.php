@@ -4,6 +4,7 @@ use App\Http\Controllers\AdditionalTimeRequestController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\BoxController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CallMonitorController;
 use App\Http\Controllers\CatalogProductCompanySaleController;
@@ -59,6 +60,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WhatsappMonitorController;
+use App\Models\Brand;
 use App\Models\CompanyBranch;
 use App\Models\RawMaterial;
 use App\Models\Supplier;
@@ -67,20 +69,73 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('register-keychains', function () {
-    // editar productos de proveedor con id 9
-    $supplier = Supplier::find(9);
-    $products = $supplier->raw_materials_id;
+// Route::get('register-keychains', function () {
+//     // editar productos de proveedor con id 9
+//     $supplier = Supplier::find(9);
+//     $products = $supplier->raw_materials_id;
 
-    // obtener toda la materia prima que pertenece a la categoria de llaveros
-    $keychains = RawMaterial::where('part_number', 'LIKE', 'LL-%')->get(['id'])->pluck('id');
-    
-    // registrar todo a productos del proveedor
-    $products = array_merge($products,$keychains->toArray());
-    $supplier->update(['raw_materials_id' => $products]);
+//     // obtener toda la materia prima que pertenece a la categoria de llaveros
+//     $keychains = RawMaterial::where('part_number', 'LIKE', 'LL-%')->get(['id'])->pluck('id');
 
-    return 'Todos los llaveros registrados!';
-});
+//     // registrar todo a productos del proveedor
+//     $products = array_merge($products, $keychains->toArray());
+//     $supplier->update(['raw_materials_id' => $products]);
+
+//     return 'Todos los llaveros registrados!';
+// });
+
+//**** */ agregar sugerencias a las compañias
+// use App\Models\Company;
+// use App\Models\CatalogProduct;
+
+// Route::get('/update-suggestions', function () {
+//     $companies = Company::with(['catalogProducts' => function ($query) {
+//         $query->select('brand')->distinct();
+//     }])->get();
+
+//     foreach ($companies as $company) {
+//         // Obtener marcas únicas de los productos actuales
+//         $brands = $company->catalogProducts->pluck('brand')->unique()->filter();
+
+//         if ($brands->isEmpty()) {
+//             continue;
+//         }
+
+//         // Buscar productos sugeridos (misma marca pero no registrados)
+//         $suggestedProducts = CatalogProduct::whereIn('brand', $brands)
+//         ->pluck('id')
+//         ->toArray();
+        
+//         // Combinar con sugerencias existentes
+//         $existingSuggestions = $company->suggested_products ?? [];
+//         $mergedSuggestions = array_unique(array_merge($existingSuggestions, $suggestedProducts));
+//         // eliminar duplicados
+//         $mergedSuggestions = array_values(array_unique($mergedSuggestions));
+
+//         // Actualizar la compañía
+//         $company->update(['suggested_products' => $mergedSuggestions]);
+//     }
+
+//     return 'Suggestions updated successfully';
+// });
+
+// Route::get('/unique-brands', function() {
+//     // Opción 1: Usando Eloquent (recomendado)
+//     $uniqueBrands = RawMaterial::select('brand')
+//                       ->distinct()
+//                       ->orderBy('brand')
+//                       ->whereNotNull('brand')
+//                       ->pluck('brand');
+
+//     // REGISTRAR MARCAS EN LA BASE DE DATOS
+//     foreach ($uniqueBrands as $brand) {
+//         Brand::create([
+//             'name' => $brand,
+//         ]);
+//     }
+
+//     return 'Listo!';
+// });
 
 Route::get('/inicio', function () {
     return Inertia::render('Auth/Inicio');
@@ -528,6 +583,9 @@ Route::resource('settings', SettingController::class)->middleware('auth');
 
 //------------------ Production progress routes ----------------
 Route::resource('production-progress', ProductionProgressController::class)->middleware('auth');
+
+//------------------ brand routes ----------------
+Route::resource('brands', BrandController::class)->middleware('auth');
 
 //------------------ Customer dates routes ----------------
 Route::resource('customer-meetings', CustomerMeetingController::class)->middleware('auth');

@@ -6,6 +6,7 @@ use App\Events\RecordCreated;
 use App\Events\RecordDeleted;
 use App\Events\RecordEdited;
 use App\Http\Resources\CatalogProductResource;
+use App\Models\Brand;
 use App\Models\CatalogProduct;
 use App\Models\ProductionCost;
 use App\Models\RawMaterial;
@@ -24,13 +25,14 @@ class CatalogProductController extends Controller
     {
         $raw_materials = RawMaterial::all(['id', 'name']);
         $production_costs = ProductionCost::all(['id', 'name', 'cost']);
+        $brands = Brand::all();
 
         // consecutive
         $last = CatalogProduct::latest()->first();
         $next_id = $last ? $last->id + 1 : 1;
         $consecutive = str_pad($next_id, 4, "0", STR_PAD_LEFT);
 
-        return inertia('CatalogProduct/Create', compact('raw_materials', 'production_costs', 'consecutive'));
+        return inertia('CatalogProduct/Create', compact('raw_materials', 'production_costs', 'consecutive', 'brands'));
     }
 
     public function store(Request $request)
@@ -39,7 +41,8 @@ class CatalogProductController extends Controller
         $total_cost = 0;
 
         $validated = $request->validate([
-            'name' => 'required|string|max:254',
+            'name' => 'required|string|max:255',
+            'brand' => 'required|string|max:255',
             'part_number' => 'required|string|unique:catalog_products,part_number',
             'measure_unit' => 'required|string',
             'min_quantity' => 'required|min:0',
@@ -98,9 +101,10 @@ class CatalogProductController extends Controller
         $catalog_product = CatalogProduct::with('rawMaterials')->find($catalog_product->id);
         $production_costs = ProductionCost::all();
         $raw_materials = RawMaterial::all(['id', 'name']);
+        $brands = Brand::all();
         $media = $catalog_product->getFirstMedia();
 
-        return inertia('CatalogProduct/Edit', compact('catalog_product', 'production_costs', 'raw_materials', 'media'));
+        return inertia('CatalogProduct/Edit', compact('catalog_product', 'production_costs', 'raw_materials', 'media', 'brands'));
     }
 
     public function update(Request $request, CatalogProduct $catalog_product)
@@ -108,6 +112,7 @@ class CatalogProductController extends Controller
         $total_cost = 0;
         $request->validate([
             'name' => 'required|string|max:254',
+            'brand' => 'required|string|max:255',
             'part_number' => 'required|string',
             'measure_unit' => 'required|string',
             'min_quantity' => 'required|min:0',
@@ -148,6 +153,7 @@ class CatalogProductController extends Controller
         $total_cost = 0;
         $request->validate([
             'name' => 'required|string|max:254',
+            'brand' => 'required|string|max:255',
             'part_number' => 'required|string',
             'measure_unit' => 'required|string',
             'min_quantity' => 'required|min:0',

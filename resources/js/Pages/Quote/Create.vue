@@ -471,8 +471,49 @@
                     </div>
 
                     <el-divider />
+
+                    <el-divider content-position="left" class="col-span-full">Promociones</el-divider>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="inline-flex items-center text-gray-600 dark:text-gray-500">
+                            <input type="checkbox" @change="handleEarlyPaymentDiscount" v-model="form.early_payment_discount"
+                                class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent" />
+                            <span class="ml-2 text-sm dark:text-white">Descuento pago por adelantado</span>
+                            <el-tooltip placement="top">
+                                <template #content>
+                                    <p>
+                                        Al activar esta opción, el cliente verá <br>
+                                        el beneficio de descuento por pago <br>
+                                        por adelantado en el portal.
+                                    </p>
+                                </template>
+                                <div
+                                    class="rounded-full border border-primary size-3 flex items-center justify-center ml-2">
+                                    <i class="fa-solid fa-info text-primary text-[7px]"></i>
+                                </div>
+                            </el-tooltip>
+                        </label>
+
+                        <div v-if="form.early_payment_discount">
+                            <InputLabel value="Porcentaje de descuento*" />
+                            <el-input
+                                v-model.number="form.discount"
+                                placeholder="Ej. 10"
+                                :min="1"
+                                :max="100"
+                                type="number"
+                                prefix-icon="el-icon-percent"
+                            >
+                                <template #prefix>%</template>
+                            </el-input>
+                            <InputError :message="form.errors.discount" />
+                        </div>
+
+                    </div>
+
+
                     <!-- buttons -->
-                    <div class="md:text-right">
+                    <div class="md:text-right mt-5">
                         <PrimaryButton :disabled="form.processing">
                             <i v-if="form.processing"
                                 class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
@@ -715,6 +756,8 @@ export default {
             company_branch_id: null,
             prospect_id: null,
             products: [],
+            early_payment_discount: false, // bandera para mostrar descuento por pronto pago en portal de clientes
+            discount: null, // porcentaje de descuento por pronto pago
         });
 
         const prospectForm = useForm({
@@ -853,6 +896,11 @@ export default {
         prospects: Array,
     },
     methods: {
+        handleEarlyPaymentDiscount()  {
+            if (!this.form.early_payment_discount) {
+                this.form.discount = null;
+            }
+        },
         calculateNewPrice() {
             // factor para calcular porcentaje del precio
             const factor = 1 + this.new_price_percentage * .01;
