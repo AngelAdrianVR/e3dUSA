@@ -67,6 +67,9 @@ class QuoteController extends Controller
                 'created_by_customer' => $quote->created_by_customer,
                 'created_at' => $quote->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
                 'profit' => $quote->getProfit(), // Añadir el profit
+                'early_payment_discount' => $quote->early_payment_discount, // Añadir el descuento por pronto pago
+                'early_paid_at' => $quote->early_paid_at, // Añadir el descuento por pronto pago
+                'discount' => $quote->discount, // Añadir el descuento
             ];
         });
 
@@ -103,6 +106,13 @@ class QuoteController extends Controller
             'products' => 'array|min:1',
             'tooling_currency' => 'nullable',
             'show_breakdown' => 'boolean',
+            'early_payment_discount' => 'boolean',
+            'discount' => [
+                $request->earlyPaymentDiscount ? 'required' : 'nullable',
+                'numeric',
+                'min:1',
+                'max:100',
+            ],
         ]);
 
         $quote = Quote::create($request->except('products') + ['user_id' => auth()->id()]);
@@ -162,7 +172,7 @@ class QuoteController extends Controller
 
         // Preparar los recursos de la cotización actual
         $quote = QuoteResource::make(Quote::with(['catalogProducts', 'rawMaterials', 'prospect'])->findOrFail($quote->id));
-
+        
         if ($quote->is_spanish_template) {
             return inertia('Quote/SpanishTemplate', [
                 'quote' => $quote,
@@ -205,6 +215,13 @@ class QuoteController extends Controller
             'prospect_id' => 'nullable|numeric|min:1',
             'products' => 'array|min:1',
             'show_breakdown' => 'boolean',
+            'early_payment_discount' => 'boolean',
+            'discount' => [
+                $request->earlyPaymentDiscount ? 'required' : 'nullable',
+                'numeric',
+                'min:1',
+                'max:100',
+            ],
         ]);
 
         $quote->update($request->except('products'));
@@ -619,6 +636,9 @@ class QuoteController extends Controller
                 'authorized_at' => $quote->authorized_at,
                 'created_at' => $quote->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
                 'profit' => $quote->getProfit(),
+                'early_payment_discount' => $quote->early_payment_discount, // Añadir el descuento por pronto pago
+                'early_paid_at' => $quote->early_paid_at, // Añadir el descuento por pronto pago
+                'discount' => $quote->discount, // Añadir el descuento
             ];
         });
 
@@ -688,6 +708,15 @@ class QuoteController extends Controller
         $quote->load([
             'companyBranch', // Carga la relación company dentro de companyBranch
             'catalogProducts'
+        ]);
+
+        return response()->json(['quote' => $quote]);
+    }
+
+    public function markEarlyPayment(Quote $quote) 
+    {
+        $quote->update([
+            'early_paid_at' => now(),
         ]);
 
         return response()->json(['quote' => $quote]);
