@@ -13,7 +13,8 @@
       </template>
       <!-- Form -->
       <form @submit.prevent="store">
-        <div class="md:w-1/2 md:mx-auto mx-3 grid grid-cols-2 gap-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md">
+        <div
+          class="md:w-1/2 md:mx-auto mx-3 grid grid-cols-2 gap-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md">
           <div>
             <InputLabel value="Tipo de producto*" />
             <el-select @change="generatePartNumber" v-model="productType" placeholder="Selecciona">
@@ -26,9 +27,22 @@
             </el-select>
           </div>
           <div>
-            <InputLabel value="Marca del producto*" />
-            <el-input v-model="form.brand" @change="generatePartNumber" placeholder="Ej. Chevrolet" />
-            <InputError :message="form.errors.brand" />
+            <InputLabel>
+              <div class="flex items-center justify-between">
+                <span>Marca del producto *</span>
+                <button class="text-primary mr-2" type="button" @click="showCreateBrandModal = true">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                  </svg>
+                </button>
+              </div>
+            </InputLabel>
+            <el-select v-model="form.brand" @change="generatePartNumber" filterable clearable placeholder="Selecciona"
+              no-data-text="No hay unidades de medida registradas" no-match-text="No se encontraron coincidencias">
+              <el-option v-for="item in brands" :key="item.id" :label="item.name" :value="item.name" />
+            </el-select>
           </div>
           <div>
             <InputLabel value="Nombre*" />
@@ -117,12 +131,12 @@
             </div>
           </div>
           <div class="col-span-full flex items-center justify-center space-x-4">
-              <figure v-if="!form.is_circular" class="w-48 dark:bg-gray-400 rounded-lg p-2">
-                  <img class="mx-auto" src="@/../../public/images/paralelepipedo.png" alt="">
-              </figure>
-              <figure v-else class="w-32">
-                  <img src="@/../../public/images/diameter.png" alt="">
-              </figure>
+            <figure v-if="!form.is_circular" class="w-48 dark:bg-gray-400 rounded-lg p-2">
+              <img class="mx-auto" src="@/../../public/images/paralelepipedo.png" alt="">
+            </figure>
+            <figure v-else class="w-32">
+              <img src="@/../../public/images/diameter.png" alt="">
+            </figure>
           </div>
           <div>
             <InputLabel value="Ubicaión*" />
@@ -205,6 +219,32 @@
         </div>
       </form>
     </AppLayout>
+    <DialogModal :show="showCreateBrandModal" @close="showCreateBrandModal = false" maxWidth="lg">
+      <template #title>
+        Crear nueva marca
+      </template>
+      <template #content>
+        <div>
+          <InputLabel value="Nombre *" />
+          <el-input v-model="brandForm.name" placeholder="Escribe el nombre de la marca" />
+          <InputError :message="brandForm.errors.name" />
+        </div>
+        <label class="flex items-center mt-2">
+          <Checkbox v-model:checked="brandForm.is_luxury" class="bg-transparent" />
+          <span class="ml-2 text-sm">Es marca de lujo</span>
+        </label>
+        <div class="mt-6 flex justify-end">
+          <a :href="route('brands.index')" target="_blank" class="text-sm text-secondary">
+            Editar o eliminar marcas
+            <i class="fa-solid fa-arrow-right text-xs ml-2 mt-px"></i>
+          </a>
+        </div>
+      </template>
+      <template #footer>
+        <CancelButton @click="showCreateBrandModal = false" :disabled="brandForm.processing">Cancelar</CancelButton>
+        <PrimaryButton @click="storeBrand()" class="bg-primary" :disabled="brandForm.processing">Crear</PrimaryButton>
+      </template>
+    </DialogModal>
   </div>
 </template>
 
@@ -218,6 +258,8 @@ import Checkbox from "@/Components/Checkbox.vue";
 import Back from "@/Components/MyComponents/Back.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import InputLabel from "@/Components/InputLabel.vue";
+import DialogModal from "@/Components/DialogModal.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
 
 export default {
   data() {
@@ -243,10 +285,17 @@ export default {
       is_catalog_product: false,
     });
 
+    const brandForm = useForm({
+      name: null,
+      is_luxury: false,
+    });
+
     return {
       form,
+      brandForm,
       // upload de E+
       dialogVisible: false,
+      showCreateBrandModal: false,
       dialogImageUrl: '',
       fileList: [],
       mesureUnits: [
@@ -366,14 +415,18 @@ export default {
     AppLayout,
     SecondaryButton,
     PrimaryButton,
+    CancelButton,
     InputError,
     IconInput,
     Checkbox,
     Back,
     Link,
     InputLabel,
+    DialogModal,
   },
-  props: {},
+  props: {
+    brands: Array,
+  },
   methods: {
     store() {
       this.form.post(route("raw-materials.store"), {
@@ -384,6 +437,22 @@ export default {
             type: "success",
           });
         },
+      });
+    },
+    storeBrand() {
+      this.brandForm.post(route('brands.store'), {
+        onSuccess: () => {
+          this.$notify({
+            title: 'Éxito',
+            message: 'Marca agregada correctamente',
+            type: 'success'
+          });
+
+          this.form.brand = this.brandForm.name;
+          this.brandForm.reset();
+          this.showCreateBrandModal = false;
+          this.generatePartNumber();
+        }
       });
     },
     generatePartNumber() {

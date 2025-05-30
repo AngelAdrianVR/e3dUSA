@@ -8,6 +8,9 @@
                         <el-dropdown-item @click="showPackageLabelForm = true">
                             Generador de etiqueta para envío
                         </el-dropdown-item>
+                        <el-dropdown-item @click="showPackageLabelForm = true; isLocalLabel = true">
+                            Generador de etiqueta local
+                        </el-dropdown-item>
                     </el-dropdown-menu>
                 </template>
             </el-dropdown>
@@ -22,17 +25,17 @@
 
         <!-- ----------------- etiqueta de envío modal ----------- -->
         <Modal :show="showPackageLabelForm" @close="showPackageLabelForm = false">
-            <form @submit.stop="createBoxLabel" class="p-5 grid grid-cols-2 gap-x-3">
+            <form @submit.prevent="createBoxLabel" class="p-5 grid grid-cols-2 gap-x-3">
                 <h1 class="col-span-full font-bold mb-1">Generar etiqueta</h1>
                 <p class="text-xs col-span-full mb-3">Este sólo es un generador de etiquetas, por lo tanto no se
                     guardan en el
                     sistema.</p>
 
-                <div class="mt-2">
+                <!-- <div class="mt-2">
                     <InputLabel value="Guía*" class="ml-2" />
                     <input v-model="labelForm.guide" type="text" class="input" placeholder="Agrega la guía" />
                     <InputError :message="labelForm.errors.guide" />
-                </div>
+                </div> -->
 
                 <div class="mt-2">
                     <InputLabel value="Orden de compra" class="ml-2" />
@@ -40,38 +43,38 @@
                     <InputError :message="labelForm.errors.ov" />
                 </div>
 
-                <div class="mt-2">
+                <!-- <div class="mt-2">
                     <InputLabel value="Folio" class="ml-2" />
                     <input v-model="labelForm.folio" type="text" class="input" placeholder="Escriba el folio" />
                     <InputError :message="labelForm.errors.folio" />
-                </div>
+                </div> -->
 
-                <div class="mt-2">
+                <!-- <div class="mt-2">
                     <InputLabel value="Factura" class="ml-2" />
                     <input v-model="labelForm.invoice" type="text" class="input" placeholder="Escriba la factura" />
                     <InputError :message="labelForm.errors.invoice" />
-                </div>
+                </div> -->
 
-                <div class="my-2">
+                <!-- <div class="my-2">
                     <InputLabel value="No. de parte" class="ml-2" />
                     <input v-model="labelForm.part_number" type="text" class="input"
                         placeholder="Agregue el número de parte" />
-                </div>
+                </div> -->
 
                 <!-- ----- Número de cajas ----- -->
                 <section v-for="(box, index) in labelForm.boxes" :key="index"
                     class="col-span-full flex items-center space-x-3 mt-2">
-                    <div class="w-1/4">
+                    <div class="w-1/3">
                         <InputLabel value="Caja" class="ml-2" />
                         <input v-model="labelForm.boxes[index].name" disabled type="text" class="input"
                             placeholder="Nombre de caja" />
                     </div>
-                    <div class="w-1/4">
+                    <div class="w-1/3">
                         <InputLabel value="Producto" class="ml-2" />
                         <input v-model="labelForm.boxes[index].product_name" type="text" class="input"
                             placeholder="Escribe el nombre del producto" />
                     </div>
-                    <div class="w-1/4">
+                    <div class="w-1/3">
                         <InputLabel value="Piezas" class="ml-2" />
                         <input v-model="labelForm.boxes[index].quantity" type="text" class="input"
                             placeholder="Escribe la cantidad de piezas"
@@ -138,6 +141,7 @@ export default {
 
         return {
             labelForm,
+            isLocalLabel: false, //true si es etiqueta local
             boxIndex: 1, //cuenta el index de cada caja del arreglo en labelForm
             orderedProductsSelected: [],
             showPackageLabelForm: false, //muestra formulario para imprir etiqueta de envío
@@ -171,7 +175,11 @@ export default {
             }
         },
         createBoxLabel() {
-            this.$inertia.post(route('productions.generate-box-label'), { data: this.labelForm });
+            if ( this.isLocalLabel ) {
+                this.$inertia.post(route('productions.generate-local-box-label'), { data: this.labelForm });
+            } else {
+                this.$inertia.post(route('productions.generate-box-label'), { data: this.labelForm });
+            }
         },
         addBox() {
             this.labelForm.boxes.push({ name: 'Caja ' + (this.boxIndex + 1), quantity: null });

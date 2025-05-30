@@ -33,6 +33,10 @@ return new class extends Migration
             $table->boolean('is_spanish_template')->default(true);
             $table->boolean('show_breakdown')->default(false);
             $table->json('approved_products')->nullable();
+            $table->boolean('created_by_customer')->default(0)->nullable(); 
+            $table->boolean('early_payment_discount')->default(0)->nullable(); // descuento por pago anticipado
+            $table->timestamp('early_paid_at')->nullable(); // fecha de pago anticipado
+            $table->float('discount')->unsigned(); // cantidad de descuento por pago anticipado
             $table->foreignId('company_branch_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('prospect_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();

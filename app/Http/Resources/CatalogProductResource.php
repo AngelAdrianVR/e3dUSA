@@ -2,21 +2,19 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CatalogProductResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
             'name' => strtoupper($this->name),
+            'brand' => $this->brand,
+            'is_luxury' => Brand::where('name', $this->brand)->first()?->is_luxury,
             'description' => $this->description ?? '--',
             'part_number' => $this->part_number,
             'measure_unit' => $this->measure_unit,

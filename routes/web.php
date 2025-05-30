@@ -4,6 +4,7 @@ use App\Http\Controllers\AdditionalTimeRequestController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\BoxController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CallMonitorController;
 use App\Http\Controllers\CatalogProductCompanySaleController;
@@ -59,6 +60,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WhatsappMonitorController;
+use App\Models\Brand;
 use App\Models\CompanyBranch;
 use App\Models\RawMaterial;
 use App\Models\Supplier;
@@ -67,20 +69,73 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('register-keychains', function () {
-    // editar productos de proveedor con id 9
-    $supplier = Supplier::find(9);
-    $products = $supplier->raw_materials_id;
+// Route::get('register-keychains', function () {
+//     // editar productos de proveedor con id 9
+//     $supplier = Supplier::find(9);
+//     $products = $supplier->raw_materials_id;
 
-    // obtener toda la materia prima que pertenece a la categoria de llaveros
-    $keychains = RawMaterial::where('part_number', 'LIKE', 'LL-%')->get(['id'])->pluck('id');
-    
-    // registrar todo a productos del proveedor
-    $products = array_merge($products,$keychains->toArray());
-    $supplier->update(['raw_materials_id' => $products]);
+//     // obtener toda la materia prima que pertenece a la categoria de llaveros
+//     $keychains = RawMaterial::where('part_number', 'LIKE', 'LL-%')->get(['id'])->pluck('id');
 
-    return 'Todos los llaveros registrados!';
-});
+//     // registrar todo a productos del proveedor
+//     $products = array_merge($products, $keychains->toArray());
+//     $supplier->update(['raw_materials_id' => $products]);
+
+//     return 'Todos los llaveros registrados!';
+// });
+
+//**** */ agregar sugerencias a las compañias
+// use App\Models\Company;
+// use App\Models\CatalogProduct;
+
+// Route::get('/update-suggestions', function () {
+//     $companies = Company::with(['catalogProducts' => function ($query) {
+//         $query->select('brand')->distinct();
+//     }])->get();
+
+//     foreach ($companies as $company) {
+//         // Obtener marcas únicas de los productos actuales
+//         $brands = $company->catalogProducts->pluck('brand')->unique()->filter();
+
+//         if ($brands->isEmpty()) {
+//             continue;
+//         }
+
+//         // Buscar productos sugeridos (misma marca pero no registrados)
+//         $suggestedProducts = CatalogProduct::whereIn('brand', $brands)
+//         ->pluck('id')
+//         ->toArray();
+        
+//         // Combinar con sugerencias existentes
+//         $existingSuggestions = $company->suggested_products ?? [];
+//         $mergedSuggestions = array_unique(array_merge($existingSuggestions, $suggestedProducts));
+//         // eliminar duplicados
+//         $mergedSuggestions = array_values(array_unique($mergedSuggestions));
+
+//         // Actualizar la compañía
+//         $company->update(['suggested_products' => $mergedSuggestions]);
+//     }
+
+//     return 'Suggestions updated successfully';
+// });
+
+// Route::get('/unique-brands', function() {
+//     // Opción 1: Usando Eloquent (recomendado)
+//     $uniqueBrands = RawMaterial::select('brand')
+//                       ->distinct()
+//                       ->orderBy('brand')
+//                       ->whereNotNull('brand')
+//                       ->pluck('brand');
+
+//     // REGISTRAR MARCAS EN LA BASE DE DATOS
+//     foreach ($uniqueBrands as $brand) {
+//         Brand::create([
+//             'name' => $brand,
+//         ]);
+//     }
+
+//     return 'Listo!';
+// });
 
 Route::get('/inicio', function () {
     return Inertia::render('Auth/Inicio');
@@ -150,6 +205,7 @@ Route::get('catalog-products/{catalog_product}/get-data', [CatalogProductControl
 Route::get('catalog-products-fetch-shipping-rates/{catalog_product}', [CatalogProductController::class, 'fetchShippingRates'])->name('catalog-products.fetch-shipping-rates');
 Route::get('catalog-products-prices-report', [CatalogProductController::class, 'pricesReport'])->name('catalog-products.prices-report');
 Route::post('catalog-products-get-by-ids', [CatalogProductController::class, 'getByIds'])->name('catalog-products.get-by-ids');
+Route::get('catalog-products/{catalog_product}/get-info', [CatalogProductController::class, 'getInfo'])->name('catalog-products.get-info');
 
 
 // ------- Ventas(Clients Routes)  ---------
@@ -159,6 +215,7 @@ Route::post('companies/clone', [CompanyController::class, 'clone'])->name('compa
 Route::post('companies/get-all-companies', [CompanyController::class, 'getAllCompanies'])->name('companies.get-all-companies')->middleware('auth');
 Route::get('companies-get-exclusive-designs/{company}', [CompanyController::class, 'getExclusiveDesigns'])->name('companies.get-exclusive-designs')->middleware('auth');
 Route::get('companies-contacts-report', [CompanyController::class, 'contactsReport'])->name('companies.contacts-report')->middleware('auth');
+Route::post('companies-attach-catalog-product', [CompanyController::class, 'attachCatalogProduct'])->name('companies.attach-catalog-product')->middleware('auth');
 
 
 // ------- shippings routes  ---------
@@ -455,6 +512,7 @@ Route::put('productions/continue-production/{production}', [ProductionController
 Route::post('productions-{cpcs}-comment', [ProductionController::class, 'comment'])->name('productions.comment')->middleware('auth');
 Route::get('productions-{cpcs}-show-traveler', [ProductionController::class, 'showTravelerTemplate'])->name('productions.show-traveler-template')->middleware('auth');
 Route::post('productions-generate-box-label', [ProductionController::class, 'generateBoxLabel'])->name('productions.generate-box-label')->middleware('auth');
+Route::post('productions.generate-local-box-label', [ProductionController::class, 'generateLocalBoxLabel'])->name('productions.generate-local-box-label')->middleware('auth');
 Route::post('productions-get-matches', [ProductionController::class, 'getMatches'])->name('productions.get-matches');
 Route::get('productions-fetch-catalog-product-shipping-rates/{catalog_product}', [ProductionController::class, 'fetchCatalogProductShippingRates'])->name('productions.fetch-catalog-product-shipping-rates');
 Route::get('productions-fetch-sale-info/{sale}', [ProductionController::class, 'fetchSaleInfo'])->name('productions.fetch-sale-info');
@@ -525,6 +583,9 @@ Route::resource('settings', SettingController::class)->middleware('auth');
 
 //------------------ Production progress routes ----------------
 Route::resource('production-progress', ProductionProgressController::class)->middleware('auth');
+
+//------------------ brand routes ----------------
+Route::resource('brands', BrandController::class)->middleware('auth');
 
 //------------------ Customer dates routes ----------------
 Route::resource('customer-meetings', CustomerMeetingController::class)->middleware('auth');

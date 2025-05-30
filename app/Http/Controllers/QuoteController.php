@@ -24,6 +24,7 @@ use App\Notifications\NewQuoteNotification;
 use App\Notifications\RequestApprovedNotification;
 use App\Notifications\ScheduleUpdateProductPriceReminder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class QuoteController extends Controller
 {
@@ -63,8 +64,12 @@ class QuoteController extends Controller
                 }),
                 'authorized_user_name' => $quote->authorized_user_name ?? '--',
                 'authorized_at' => $quote->authorized_at,
+                'created_by_customer' => $quote->created_by_customer,
                 'created_at' => $quote->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
                 'profit' => $quote->getProfit(), // Añadir el profit
+                'early_payment_discount' => $quote->early_payment_discount, // Añadir el descuento por pronto pago
+                'early_paid_at' => $quote->early_paid_at, // Añadir el descuento por pronto pago
+                'discount' => $quote->discount, // Añadir el descuento
             ];
         });
 
@@ -101,6 +106,13 @@ class QuoteController extends Controller
             'products' => 'array|min:1',
             'tooling_currency' => 'nullable',
             'show_breakdown' => 'boolean',
+            'early_payment_discount' => 'boolean',
+            'discount' => [
+                $request->earlyPaymentDiscount ? 'required' : 'nullable',
+                'numeric',
+                'min:1',
+                'max:100',
+            ],
         ]);
 
         $quote = Quote::create($request->except('products') + ['user_id' => auth()->id()]);
@@ -160,7 +172,7 @@ class QuoteController extends Controller
 
         // Preparar los recursos de la cotización actual
         $quote = QuoteResource::make(Quote::with(['catalogProducts', 'rawMaterials', 'prospect'])->findOrFail($quote->id));
-
+        
         if ($quote->is_spanish_template) {
             return inertia('Quote/SpanishTemplate', [
                 'quote' => $quote,
@@ -203,6 +215,13 @@ class QuoteController extends Controller
             'prospect_id' => 'nullable|numeric|min:1',
             'products' => 'array|min:1',
             'show_breakdown' => 'boolean',
+            'early_payment_discount' => 'boolean',
+            'discount' => [
+                $request->earlyPaymentDiscount ? 'required' : 'nullable',
+                'numeric',
+                'min:1',
+                'max:100',
+            ],
         ]);
 
         $quote->update($request->except('products'));
@@ -277,12 +296,36 @@ class QuoteController extends Controller
         }
 
         foreach ($quote->catalogProducts as $product) {
+            $company_id = $clone->companyBranch->company_id;
+            $catalog_product_company = CatalogProductCompany::where('company_id', $company_id)
+                ->where('catalog_product_id', $product->id)
+                ->first();
+
             $pivot = [
                 'quantity' => $product->pivot->quantity,
-                'price' => $product->pivot->price,
+                // obtiene el precio mayor entre el precio de la cotización y el nuevo precio del producto catalogado
+                'price' => $catalog_product_company ? max($product->pivot->price, $catalog_product_company->new_price) : $product->pivot->price,
                 'notes' => $product->pivot->notes,
                 'show_image' => $product->pivot->show_image,
             ];
+            
+            // revisar si new_date tiene mas de 1 año a la fecha actual. De ser asi, actualizamos new_price a +7.9%
+             if ($catalog_product_company && $catalog_product_company->new_date->diffInDays(now()) >= 365) {
+                $pivot['price'] = $product->pivot->price * 1.079;
+                $catalog_product_company->update([
+                    'oldest_date' => $catalog_product_company->old_date,
+                    'oldest_price' => $catalog_product_company->old_price,
+                    'oldest_currency' => $catalog_product_company->old_currency,
+                    'old_date' => $catalog_product_company->new_date,
+                    'old_price' => $catalog_product_company->new_price,
+                    'old_currency' => $catalog_product_company->new_currency,
+                    'oldest_updated_by' => $catalog_product_company->old_updated_by,
+                    'old_updated_by' => $catalog_product_company->new_updated_by,                    
+                    'new_price' => $pivot['price'],
+                    'new_date' => today(),
+                    'new_updated_by' => 'Automáticamente por el sistema',
+                ]);
+            }
 
             $clone->catalogProducts()->attach($product->pivot->catalog_product_id, $pivot);
         }
@@ -593,6 +636,9 @@ class QuoteController extends Controller
                 'authorized_at' => $quote->authorized_at,
                 'created_at' => $quote->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
                 'profit' => $quote->getProfit(),
+                'early_payment_discount' => $quote->early_payment_discount, // Añadir el descuento por pronto pago
+                'early_paid_at' => $quote->early_paid_at, // Añadir el descuento por pronto pago
+                'discount' => $quote->discount, // Añadir el descuento
             ];
         });
 
@@ -609,8 +655,10 @@ class QuoteController extends Controller
         ->first(['id', 'business_name']);
 
         $catalog_products_company = $company ? $company->catalogProducts : [];
+
+        $catalog_products_company->load('rawMaterials.storages');
     
-        return response()->json(['items' => $catalog_products_company]);
+        return response()->json(['items' => $catalog_products_company, 'companyId' => $company->id]);
     }
 
     public function scheduleUpdateProductPrice(Request $request)
@@ -660,6 +708,15 @@ class QuoteController extends Controller
         $quote->load([
             'companyBranch', // Carga la relación company dentro de companyBranch
             'catalogProducts'
+        ]);
+
+        return response()->json(['quote' => $quote]);
+    }
+
+    public function markEarlyPayment(Quote $quote) 
+    {
+        $quote->update([
+            'early_paid_at' => now(),
         ]);
 
         return response()->json(['quote' => $quote]);

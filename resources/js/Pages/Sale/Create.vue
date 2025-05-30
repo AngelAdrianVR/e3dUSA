@@ -9,10 +9,11 @@
                     </div>
                 </div>
             </template>
+            
             <form @submit.prevent="handleStoreSale" class="relative overflow-x-hidden dark:text-white h-screen">
                 <!-- company branch important notes -->
                 <div class="absolute top-5 -right-1">
-                    <div v-if="importantNotes" class="text-sm border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-[550px]">
+                    <div v-if="importantNotes && catalogProductsCompanyBranchSelected?.length" class="text-sm border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-[550px]">
                         <div class="absolute bg-primary top-1 -left-3 h-2 w-10 transform -rotate-45"></div>
                         <div class="absolute bg-primary top-1 -right-3 h-2 w-10 transform rotate-45"></div>
                         <h3 class="flex items-center justify-center mb-2">
@@ -44,10 +45,22 @@
                 <!-- company branch productos -->
                 <div class="absolute top-5 -right-1 mt-36">
                     <div v-if="catalogProductsCompanyBranchSelected?.length"
-                        class="text-sm border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-[550px]">
+                        class="text-sm border border-[#9A9A9A] rounded-[5px] py-2 px-3 w-[550px] relative">
                         <h3 class="flex items-center justify-center mb-2 text-base font-bold">
                             Productos de este cliente
                         </h3>
+                        
+                        <!-- Boton para crear nuevo producto al cliente -->
+                        <button @click="openCompanyEdit" type="button" title="Agregar nuevo producto al cliente" class="absolute top-3 right-7 border border-primary rounded-full size-6 flex items-center justify-center text-primary">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+
+                        <!-- Refrescar productos del cliente -->
+                        <button @click="fetchCatalogProductsCompanyBanch" type="button" title="Refrescar productos" class="absolute top-3 left-7 border border-primary rounded-full size-6 flex items-center justify-center text-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                        </button>
 
                         <div v-if="loadingCompanyBranchProducts" class="flex items-center justify-center mt-10">
                             <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
@@ -125,12 +138,12 @@
                         </section>
 
                         <el-dialog v-model="dialogVisible">
-                            <img class="mx-auto" w-full :src="dialogImageUrl" alt="Preview Image" />
+                            <img class="mx-auto w-full object-contain" :src="dialogImageUrl" alt="Preview Image" />
                         </el-dialog>
                     </div>
                 </div>
                 
-                <div class="md:w-full lg:w-1/2 mx-7 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg px-9 py-5 shadow-md"
+                <div ref="formContainer" class="md:w-full lg:w-1/2 mx-7 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg px-9 py-5 shadow-md"
                     :class="{
                         'md:left-auto md:ml-32': catalogProductsCompanyBranchSelected?.length,
                         'md:mx-auto': !catalogProductsCompanyBranchSelected?.length
@@ -145,7 +158,7 @@
                     <div class="grid grid-cols-2 gap-3 mt-4">
                         <div v-if="form.is_sale_production" class="col-span-full">
                             <InputLabel value="Selecciona la cotización relacionada a la OV en caso de tenerla (sólo cot autorizadas)" />
-                            <el-select @change="fetchQuoteInfo" v-model="form.quote_id"
+                            <el-select @change="handleRelatedQuote()" v-model="form.quote_id"
                                 filterable placeholder="Selecciona una cotización">
                                 <el-option v-for="item in quotes" :key="item.id" :label="'C-' + item.id + ' - ' + item.company_branch?.name"
                                     :value="item.id" />
@@ -198,7 +211,7 @@
                                                 no-data-text="No hay productos registrados a este cliente"
                                                 placeholder="Selecciona un producto *">
                                                 <el-option
-                                                    v-for="item in company_branches.find(cb => cb.id == form.company_branch_id)?.catalog_products"
+                                                    v-for="item in catalogProductsCompanyBranchSelected"
                                                     :key="item.pivot.id" :label="item.name" :value="item.pivot.id" />
                                             </el-select>
                                         </div>
@@ -367,10 +380,7 @@
                                     <li class="flex justify-between items-center border-[#999999] py-1">
                                         <p class="text-[13px]">
                                             <span class="text-primary">{{ index + 1 }}.</span>
-                                            {{ company_branches.find(cb => cb.id ==
-                                                form.company_branch_id)?.catalog_products?.find(prd => prd.pivot.id ===
-                                                    item.catalog_product_company_id)?.name
-                                            }}
+                                            {{ catalogProductsCompanyBranchSelected?.find(cp => cp.pivot.id == item.catalog_product_company_id)?.name                                    }}
                                             ({{ item.quantity?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
                                             unidades)
                                         </p>
@@ -402,7 +412,7 @@
                                     </li>
                                 </template>
                             </ol>
-                            <div v-if="loading"
+                            <div v-if="loadingQuoteProducts"
                                 class="text-primary text-center p-4 min-h-24">
                                 <i class="fa-solid fa-circle-notch fa-spin mr-2 text-xl"></i>
                                 Cargando productos de cotización...
@@ -466,7 +476,7 @@
                                 <h2 v-if="form.shipping_option != 'Entrega única'" class="mt-3 col-span-full font-bold">
                                     Parcialidad {{ (index + 1) }}
                                 </h2>
-                                <div>
+                                <div class="mt-3">
                                     <InputLabel>
                                         <div class="flex items-center">
                                             <span>Fecha de embarque esperado</span>
@@ -489,7 +499,7 @@
                                         value-format="YYYY-MM-DD" :disabled-date="disabledDate" class="!w-full" />
                                     <InputError :message="form.errors.promise_date" />
                                 </div>
-                                <div>
+                                <div class="mt-3">
                                     <InputLabel value="Proveedor de paquetería*" />
                                     <el-select v-model="partiality.shipping_company" placeholder="Paquetería">
                                         <el-option v-for="shippingCompany in shippingCompanies" :key="shippingCompany"
@@ -501,6 +511,13 @@
                                     <InputLabel value="Guía" />
                                     <el-input v-model="partiality.tracking_guide" placeholder="Ingresa la guía" />
                                     <InputError :message="form.errors.tracking_guide" />
+                                </div>
+                                <div>
+                                    <InputLabel value="Acuse" />
+                                    <FileUploader @files-selected="this.form.acuse = $event" :multiple="false" />
+                                    <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
+                                        PDF, PNG, JPG,(MAX 50MB)
+                                    </p>
                                 </div>
                                 <br>
                                 <InputLabel v-if="form.shipping_option != 'Entrega única'"
@@ -521,18 +538,15 @@
                                             :disabled="!partiality.productsSelected[index2]?.selected" />
                                     </div>
                                 </div>
-
-                                <div class="flex space-x-2 bg-yellow-200 pl-3">
+                                <div class="flex space-x-2 bg-yellow-200 pl-3 col-span-full">
                                     <p class="text-[#999999] w-48">Cantidad de cajas:</p>
                                     <p class="text-gray-700">{{ totalBoxes[index] ?? '- Sin información -' }}</p>
                                 </div>
-
-                                <div class="flex space-x-2 bg-yellow-200 pl-3">
+                                <div class="flex space-x-2 bg-yellow-200 pl-3 col-span-full">
                                     <p class="text-[#999999] w-48">Costo total de envío:</p>
                                     <p class="text-gray-700">${{ totalCost[index] ?? '- Sin información -' }}</p>
                                 </div>
-
-                                <h2 v-if="form.products.length" class="ml-2 mt-6 font-bold">
+                                <h2 v-if="form.products.length" class="ml-2 mt-6 font-bold col-span-full">
                                     Detalles sobre las cajas
                                 </h2>
                                 <ShippingCard class="col-span-full"
@@ -588,10 +602,17 @@
                                 <InputError :message="form.errors.oce_name" />
                             </div>
                             <div>
-                                <InputLabel value="Archivo" />
-                                <FileUploader @files-selected="this.form.media = $event" :multiple="false" />
+                                <InputLabel value="Archivo(s)" />
+                                <FileUploader @files-selected="this.form.media = $event" :multiple="true" />
                                 <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
-                                    PDF, PNG, JPG,(MAX 4 GB)
+                                    PDF, PNG, JPG,(MAX 50 MB)
+                                </p>
+                            </div>
+                            <div>
+                                <InputLabel value="Otros" />
+                                <FileUploader @files-selected="this.form.anotherFiles = $event" :multiple="true" />
+                                <p class="mt-1 text-xs text-right text-gray-500" id="file_input_help">
+                                    PDF, PNG, JPG,(MAX 50 MB)
                                 </p>
                             </div>
                         </div>
@@ -663,7 +684,7 @@
                         </div>
                         <div>
                             <InputLabel value="Precio nuevo en moneda*" />
-                            <el-input v-model="priceForm.new_price" type="text" disabled
+                            <el-input @input="calculateNewPercentage()" v-model="priceForm.new_price" type="text"
                                 :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 30.90">
                                 <template #prepend>
@@ -683,6 +704,15 @@
                                 </el-option>
                             </el-select>
                             <InputError :message="priceForm.errors.new_currency" />
+                        </div>
+                        <div>
+                            <InputLabel value="Fecha de cambio*" />
+                            <el-date-picker
+                                v-model="priceForm.new_date"
+                                type="date"
+                                placeholder="Selecciona una fecha"
+                            />
+                            <InputError :message="priceForm.errors.new_date" />
                         </div>
                         <p v-if="priceForm.new_price && (priceForm.new_price - itemToUpdatePrice.pivot.new_price) < (itemToUpdatePrice.pivot.new_price * 0.04)"
                             class="text-xs text-red-600 col-span-full">El incremento de precio no debe ser menor al 4%
@@ -745,6 +775,98 @@
                 </section>
             </Modal>
 
+            <!-- modal para agregar nuevo producto al cliente -->
+            <Modal :show="showCreateNewCatalogProductCompanyModal" @close="showCreateNewCatalogProductCompanyModal = false">
+                <section class="mx-7 my-4 space-y-4">
+                    <div>
+                        <p class="text-secondary text-center text-lg font-bold">
+                            Agregar nuevo producto al catálogo del cliente
+                        </p>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-5 pb-1">
+                        <CancelButton @click="showCreateNewCatalogProductCompanyModal = false">Cancelar</CancelButton>
+                        <PrimaryButton @click="storeCatalogProductCompany">Agregar producto</PrimaryButton>
+                    </div>
+                </section>
+            </Modal>
+
+            <!-- modal de producto de cotizacion no encontrado en productos del cliente -->
+            <Modal :show="showProductNotFoundModal" @close="handleModalClose">
+                <section class="mx-7 my-4 space-y-4">
+                    <div>
+                        <p class="text-amber-700 text-center mt-10 font-bold flex items-center justify-center space-x-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                            </svg>
+
+                            <span>Producto no encontrado en el catálogo del cliente</span>
+                        </p>
+                        <p class="text-center text-gray-500">
+                            El siguiente producto no está registrado en el catálogo del cliente. ¿Deseas agregarlo?
+                        </p>
+                    </div>
+                    <section class="bg-gray-100 dark:bg-gray-600 p-4 rounded-md shadow-md dark:shadow-gray-600 text-sm grid grid-cols-2 gap-3 h-48">
+                        <div class="space-y-1">
+                            <p><strong>Nombre:</strong> {{ missingProduct?.name }}</p>
+                            <p><strong>Número de parte:</strong> {{ missingProduct?.part_number }}</p>
+                            <p><strong>Descripción:</strong> {{ missingProduct?.description || 'Sin descripción' }}</p>
+                        </div>
+                        
+                        <div v-if="loading"
+                            class="rounded-[10px] border border-[#999999] text-xs text-gray-500 dark:text-gray-300 text-center p-4 min-h-24">
+                            <i class="fa-solid fa-circle-notch fa-spin mr-2"></i>
+                            cargando imagen...
+                        </div>
+
+                        <figure v-else class="rounded-xl flex items-center justify-center h-40">
+                            <img v-if="missingProduct?.media?.length"
+                                class="h-full object-contain rounded-lg" :src="missingProduct?.media[0].original_url" :alt="missingProduct?.name">
+
+                            <div v-else class="flex flex-col items-center text-gray-300">
+                                <i class="fa-solid fa-image text-4xl"></i>
+                                <small class="font-bold text-lg">Sin imagen</small>
+                            </div>
+                        </figure>
+                    </section>
+
+                    <section class="grid grid-cols-3 gap-3">
+                        <div>
+                            <InputLabel value="Precio del producto*" />
+                            <el-input v-model="priceForm.new_price" type="text"
+                                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="(value) => value.replace(/[^\d.]/g, '')" placeholder="Ej. 30.90">
+                                <template #prepend>
+                                    $
+                                </template>
+                            </el-input>
+                            <InputError :message="priceForm.errors.new_price" />
+                        </div>
+                        <div>
+                            <InputLabel value="Moneda*" />
+                            <el-select v-model="priceForm.new_currency" placeholder="Seleccionar"
+                                :fit-input-width="true">
+                                <el-option v-for="item in newPriceCurrencies" :key="item.value" :label="item.label"
+                                    :value="item.value" />
+                            </el-select>
+                            <InputError :message="priceForm.errors.new_currency" />
+                        </div>
+                        <div>
+                            <InputLabel value="Fecha de cambio*" />
+                            <el-date-picker
+                                v-model="priceForm.new_date"
+                                type="date"
+                                placeholder="Selecciona una fecha"
+                            />
+                            <InputError :message="priceForm.errors.new_date" />
+                        </div>
+                    </section>
+                    <div class="flex justify-end space-x-3 pt-5 pb-1">
+                        <SecondaryButton @click="skipProduct()">Omitir</SecondaryButton>
+                        <PrimaryButton @click="addProductToCustomer()">Agregar producto</PrimaryButton>
+                    </div>
+                </section>
+            </Modal>
+
             <!-- Modal para crear tarea en calendario -->
             <DialogModal :show="showCalendarTaskModal" @close="showCalendarTaskModal = false">
                 <template #title>
@@ -798,7 +920,9 @@ export default {
             notes: null,
             is_high_priority: false,
             products: [],
-            media: null,
+            acuse: null, //archivo de acuse en sección de logística
+            media: null, //archivo OCE
+            anotherFiles: null, //otros archivos 
             partialities: [],
             is_sale_production: 0, //seleccionado stock porque se necesita cotizacion para crear venta
             create_calendar_task: false, //bandera para crear o no recordatorio en calendario
@@ -809,7 +933,10 @@ export default {
         const priceForm = useForm({
             new_price: null,
             new_currency: null,
+            new_date: new Date().toISOString().split('T')[0], // Fecha actual en formato YYYY-MM-DD,
             product_company_id: null,
+            catalog_product_id: null, //para agregar un nuevo prudcto de catalogo al cliente
+            company_branch_id: null, //para agregar un nuevo prudcto de catalogo al cliente
         });
 
         const scheduleForm = useForm({
@@ -822,22 +949,28 @@ export default {
             form,
             priceForm,
             scheduleForm,
+            showProductNotFoundModal: false, //modal de producto de catalogo no encontrado en productos del cliente
+            missingProduct: null, // producto de cotizacion no encontrado en catalogo de productos del cliente.
             quote: null, // informacion de la cotizacion seleccionada relacionada a la ov.
             loadingCompanyBranchProducts: false,
             loading: false,
+            loadingQuoteProducts: false, //cargando productos de la cotizacion
             importantNotes: null,
             showImportantNotesModal: false,
             showCalendarTaskModal: false,
             importantNotesToStore: null,
             isEditImportantNotes: false,
             showCreateProjectModal: false,
+            showCreateNewCatalogProductCompanyModal: false, //Modal para agregar nuevo producto al cliente
             availableStock: null,
             new_price_percentage: 5, //porcentaje de aumento de precio
             showUpdatePriceModal: false, //modal para actualizar precio
             showScheduleUpdatingPrice: false, //modal para agendar actualización de precio
             itemToUpdatePrice: null, //producto seleccionado para cambiar precio
+            dialogImageUrl: null,
             dialogVisible: false, //imagen element-plus
             catalogProductsCompanyBranchSelected: null, //productos de cliente seleccionado
+            company_id : null, //id de la empresa seleccionada
             product: {
                 design_authorization_id: null, //formato de autorización seleccionado
                 catalogProduct: null,
@@ -856,6 +989,10 @@ export default {
             selectedCatalogProductHasSale: null, //valida si Producto seleccionado tiene al menos una venta. (bool)
             design_authorizations: null, //formatos de autorizaión de diseño del cliente
             selectedCompanyId: null, //guarda el id de la matriz que contiene la sucursal seleccionada
+            newPriceCurrencies: [
+                { value: "$MXN", label: "MXN" },
+                { value: "$USD", label: "USD" },
+            ],
             shippingCompanies: [
                 'PAQUETEXPRESS',
                 'LOCAL',
@@ -914,15 +1051,62 @@ export default {
         },
     },
     methods: {
+        addProductToCustomer() {
+            this.priceForm.post(route('companies.attach-catalog-product'), {
+                 onSuccess: async () => {
+                    this.$notify({
+                        title: "Éxito",
+                        message: "Producto agregado al catálogo del cliente",
+                        type: "success",
+                    });
+                    this.showProductNotFoundModal = false;
+                    await this.fetchCatalogProductsCompanyBanch();
+
+                     // Buscar el producto recién agregado en el catálogo actualizado
+                    const updatedProduct = this.company_branches
+                        .find(cb => cb.id == this.form.company_branch_id)
+                        ?.catalog_products.find(p => p.name === this.missingProduct.name);
+
+                    // Busca el producto en la cotizacion para obtener la cantidad y las notas.
+                    const quoteProduct = this.quote.catalog_products.find(p => p.id === this.missingProduct.id);
+
+                    // Si se encuentra el producto, asigna los valores necesarios
+                    if (updatedProduct) {
+                        this.product = {
+                            catalog_product_company_id: updatedProduct.pivot.id,
+                            catalogProduct: null,
+                            quantity: quoteProduct.pivot.quantity,
+                            notes: quoteProduct.pivot.notes,
+                            part_number: quoteProduct.part_number,
+                            is_new_design: false,
+                            confusion_alert: false,
+                            requires_medallion: quoteProduct.pivot.requires_med,
+                        };
+
+                        await this.fetchCatalogProductData(); // Obtener detalles del producto
+                        this.addProduct(); // Agregar a la cotización y orden de venta
+                    }
+
+                    this.modalResponseCallback(); // Resuelve la promesa para continuar el flujo
+                },
+            });
+        },
+        async handleRelatedQuote() {
+            await this.fetchQuoteInfo();
+        },
         async fetchQuoteInfo() {
+            this.loadingQuoteProducts = true;
             try {
                 const response = await axios.get(route('quotes.fetch-data', this.form.quote_id));
                 if (response.status === 200) {
                     this.quote = response.data.quote;
 
                     if (this.quote) {
-                        this.form.company_branch_id = this.quote.company_branch.id;
+                        this.form.company_branch_id = this.quote.company_branch.id; //guarda el id del cliente
+                        this.priceForm.company_branch_id = this.quote.company_branch.id; //guarda el id del cliente
                         this.handleCompanyBranchIdChange();
+                        await this.fetchCatalogProductsCompanyBanch();
+                        console.log(this.catalogProductsCompanyBranchSelected);
 
                         // Obtener los productos de la sucursal
                         const companyProducts = this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.catalog_products || [];
@@ -943,8 +1127,13 @@ export default {
                                     confusion_alert: false,
                                     requires_medallion: product.pivot.requires_med,
                                 };
-                                await this.fetchCatalogProductData(); // Ahora sí esperará a que se ejecute
+                                await this.fetchCatalogProductData(); // Ahora sí esperará a que se ejecute, ya que el for si acepta funciones asíncronas
                                 this.addProduct();
+                            } else {
+                                this.missingProduct = product;
+                                this.priceForm.catalog_product_id = product.id; //guarda el id del producto de catalogo
+                                this.fetchCatalogProductData(product.id);
+                                await this.waitForUserResponse(); // Espera la respuesta del usuario antes de continuar
                             }
                         }
 
@@ -953,12 +1142,29 @@ export default {
                         this.form.notes = this.quote.notes;
                         this.form.freight_cost = this.quote.freight_cost;
                         this.resetProductForm();
-                        this.store();
+                        // this.store(); // ejecuta el metodo para resaltar las validaciones en los campos obligatorios
                     }
                 }
             } catch (error) {
                 console.error("Error al obtener la cotización:", error);
+            } finally {
+                this.loadingQuoteProducts = false;
             }
+        },
+        waitForUserResponse() {
+            return new Promise(resolve => {
+                this.showProductNotFoundModal = true;
+                this.modalResponseCallback = resolve; // Guarda la referencia de la función que resolverá la promesa
+            });
+        },
+        skipProduct() {
+            this.showProductNotFoundModal = false;
+            this.modalResponseCallback(); // Resuelve la promesa aunque se omita el producto
+        },
+
+        handleModalClose() {
+            this.showProductNotFoundModal = false;
+            this.modalResponseCallback(); // Asegura que el flujo continúa si el modal se cierra
         },
         handleStoreSale() {
             if (this.form.partialities.some(item => item.promise_date !== null) && this.form.partialities.length > 1) {
@@ -979,6 +1185,19 @@ export default {
             const factor = 1 + this.new_price_percentage * .01;
             // guarda el precio calculado con el porcentaje seleccionado
             this.priceForm.new_price = (factor * this.itemToUpdatePrice.pivot.new_price).toFixed(2);
+        },
+        calculateNewPercentage() {
+            if (!this.priceForm.new_price || !this.itemToUpdatePrice.pivot.new_price) {
+                this.new_price_percentage = 0;
+                return;
+            }
+
+            // Convierte los valores a número
+            const oldPrice = parseFloat(this.itemToUpdatePrice.pivot.new_price);
+            const newPrice = parseFloat(this.priceForm.new_price);
+
+            // Calcula el porcentaje de aumento
+            this.new_price_percentage = (((newPrice / oldPrice) - 1) * 100).toFixed(2);
         },
         handlePictureCardPreview(file) {
             this.dialogImageUrl = file.original_url;
@@ -1100,7 +1319,6 @@ export default {
             const numberOfShippings = this.shippingOptions?.findIndex(i => i === this.form.shipping_option) + 1;
             for (let index = 0; index < numberOfShippings; index++) {
                 this.addPartial(numberOfShippings == 1);
-                console.log(numberOfShippings);
             }
         },
         openDesignAuthorization() {
@@ -1153,6 +1371,10 @@ export default {
                     });
                     this.showCalendarTaskModal = false;
                     this.showCreateProjectModal = true;
+                },
+                onError: () => {
+                    // Hacer scroll al principio de la página si hay errores
+                    this.$refs.formContainer.scrollIntoView({ behavior: 'smooth' });
                 }
             });
         },
@@ -1175,7 +1397,7 @@ export default {
             this.importantNotesToStore = this.importantNotes;
         },
         validateQuantity() {
-            const catalogProducts = this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.catalog_products;
+            const catalogProducts = this.catalogProductsCompanyBranchSelected;
             const components = catalogProducts.find(item => this.product.catalog_product_company_id == item.pivot.id)?.raw_materials;
 
             let maxQuantity = null;
@@ -1293,28 +1515,53 @@ export default {
                 this.form.is_sale_production = 1;
             }
         },
-        async fetchCatalogProductData() {
-            this.alertMaxQuantity = 0;
-            try {
-                this.loading = true;
-                const catalogProductId =
-                    this.company_branches.find(cb => cb.id == this.form.company_branch_id)?.catalog_products?.find(cp => cp.pivot.id == this.product.catalog_product_company_id)?.id;
-                const response = await axios.get(route('catalog-products.get-data', catalogProductId));
+        openCompanyEdit() {
+            const url = route('companies.edit', this.company_id);
+            window.open(url, '_blank');
+        },
+        async fetchCatalogProductData(productId = null) {
+            if (productId) {
+                try {
+                    this.loading = true;
+                    const response = await axios.get(route('catalog-products.get-info', productId));
 
-                if (response.status === 200) {
-                    this.commitedUnits = response.data.commited_units;
-                    this.selectedCatalogProduct = response.data.item;
-                    this.product.part_number = this.selectedCatalogProduct.part_number;
-                    this.availableStock = response.data.stock;
-                    this.loading = false;
+                    if (response.status === 200) {
+                        this.missingProduct = response.data.item;
+                        this.loading = false;
+                    }
+                } catch (error) {
+                    console.log(error);
+                    this.$notify({
+                        title: 'Problemas con el servidor',
+                        message: 'No se pudo obtener la imagen del producto seleccionado debido a inconvenientes con el servidor. Inteéntalo más tarde',
+                        type: 'error'
+                    });
                 }
-            } catch (error) {
-                console.log(error);
-                this.$notify({
-                    title: 'Problemas con el servidor',
-                    message: 'No se pudo obtener la imagen del producto seleccionado debido a inconvenientes con el servidor. Inteéntalo más tarde',
-                    type: 'error'
-                });
+            } else {
+                this.alertMaxQuantity = 0;
+                try {
+                    this.loading = true;
+                    const catalogProduct =
+                        this.catalogProductsCompanyBranchSelected.find(item => item.pivot.id == this.product.catalog_product_company_id);
+                    const catalogProductId = catalogProduct?.pivot.catalog_product_id;
+                    
+                    const response = await axios.get(route('catalog-products.get-data', catalogProductId));
+
+                    if (response.status === 200) {
+                        this.commitedUnits = response.data.commited_units;
+                        this.selectedCatalogProduct = response.data.item;
+                        this.product.part_number = this.selectedCatalogProduct.part_number;
+                        this.availableStock = response.data.stock;
+                        this.loading = false;
+                    }
+                } catch (error) {
+                    console.log(error);
+                    this.$notify({
+                        title: 'Problemas con el servidor',
+                        message: 'No se pudo obtener la imagen del producto seleccionado debido a inconvenientes con el servidor. Inteéntalo más tarde',
+                        type: 'error'
+                    });
+                }
             }
         },
         //Check if catalog product company has sales. if dont, ask for design authorization.
@@ -1382,6 +1629,7 @@ export default {
 
                 if (response.status === 200) {
                     this.catalogProductsCompanyBranchSelected = response.data.items;
+                    this.company_id = response.data.companyId;
                 }
             } catch (error) {
                 console.log(error);

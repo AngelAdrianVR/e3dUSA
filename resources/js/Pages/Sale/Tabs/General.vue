@@ -10,11 +10,10 @@
                     <span class="text-gray-500">Guía</span>
                     <span>{{ item.tracking_guide }}</span>
                     <span class="text-gray-500">Cobro de envío</span>
-                    <span>{{ sale.freight_cost ? '$' + sale.freight_cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,
+                    <span>{{ sale.freight_cost ? '$' + sale.freight_cost?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,
                         ",") : 'No especificado' }}</span>
                     <span class="text-gray-500">Costo real de envío</span>
-                    <span>{{ item.shipping_cost ? '$' + item.shipping_cost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,
-                        ",") : 'No especificado' }}</span>
+                    <span>{{ item.shipping_cost ? '$' + item.shipping_cost : 'No especificado' }}</span>
                     <span v-if="item.promise_date" class="text-gray-500">Fecha promesa de envio</span>
                     <span v-if="item.promise_date" class="text-red-600 bg-red-200 px-2 py-1">
                         {{ dateFormat(item.promise_date) }}</span>
@@ -53,20 +52,50 @@
                 " class="rounded-full border text-center">{{ sale.raw_status }}</span>
             <span class="text-gray-500 my-1">Notas</span>
             <span>{{ sale.notes ?? '-' }}</span>
+            
+            <p class="text-primary col-span-2 mb-2 mt-5 font-bold">Archivos adjuntos</p>
 
-            <p class="text-secondary col-span-2 mb-2 mt-5">Archivos adjuntos (OCE)</p>
-
-            <div v-if="sale?.media?.length">
-                <li v-for="file in sale?.media" :key="file" class="flex items-center justify-between col-span-full">
-                    <a :href="file.original_url" target="_blank" class="flex items-center">
-                        <i :class="getFileTypeIcon(file.file_name)"></i>
-                        <span class="ml-2">{{ file.file_name }}</span>
-                    </a>
-                </li>
-            </div>
-            <p class="text-sm text-gray-400" v-else><i class="fa-regular fa-file-excel mr-3"></i>No hay archivos
-                adjuntos</p>
-
+            <section class="grid grid-cols-2 gap-3 col-span-full">
+                <div>
+                    <p class="text-secondary col-span-full">OCE</p>
+                    <div v-if="sale?.oce_media?.length">
+                        <li v-for="file in sale?.oce_media" :key="file" class="flex items-center justify-between col-span-full">
+                            <a :href="file.original_url" target="_blank" class="flex items-center">
+                                <i :class="getFileTypeIcon(file.file_name)"></i>
+                                <span class="ml-2">{{ file.file_name }}</span>
+                            </a>
+                        </li>
+                    </div>
+                    <p class="text-sm text-gray-400" v-else><i class="fa-regular fa-file-excel mr-3"></i>No hay archivos
+                        adjuntos</p>
+                </div>
+                <div>
+                    <p class="text-secondary col-span-2 mb-2">Acuse</p>
+                    <div v-if="sale?.acuse?.length">
+                        <li v-for="file in sale?.acuse" :key="file" class="flex items-center justify-between col-span-full">
+                            <a :href="file.original_url" target="_blank" class="flex items-center">
+                                <i :class="getFileTypeIcon(file.file_name)"></i>
+                                <span class="ml-2">{{ file.file_name }}</span>
+                            </a>
+                        </li>
+                    </div>
+                    <p class="text-sm text-gray-400" v-else><i class="fa-regular fa-file-excel mr-3"></i>No hay archivos
+                        adjuntos</p>
+                </div>
+                <div>
+                    <p class="text-secondary col-span-2 mb-2">Otros</p>
+                    <div v-if="sale?.another_files?.length">
+                        <li v-for="file in sale?.another_files" :key="file" class="flex items-center justify-between col-span-full">
+                            <a :href="file.original_url" target="_blank" class="flex items-center">
+                                <i :class="getFileTypeIcon(file.file_name)"></i>
+                                <span class="ml-2">{{ file.file_name }}</span>
+                            </a>
+                        </li>
+                    </div>
+                    <p class="text-sm text-gray-400" v-else><i class="fa-regular fa-file-excel mr-3"></i>No hay archivos
+                        adjuntos</p>
+                </div>
+            </section>
         </div>
         <div class="grid grid-cols-2 text-left p-4 md:ml-10 items-center self-start">
             <p class="text-secondary col-span-2 mb-2">Datos del cliente</p>
