@@ -36,7 +36,7 @@
                 Guadalajara, Jalisco {{ quote.data.created_at }}
                 <i v-show="showAdditionalElements" @click="authorize"
                     :title="quote.data.authorized_at ? 'Cotización autorizada' : 'Autorizar cotización'"
-                    v-if="$page.props.auth.user?.permissions.includes('Autorizar cotizaciones')"
+                    v-if="$page.props.auth.user?.permissions?.includes('Autorizar cotizaciones')"
                     class="fa-solid fa-check ml-3"
                     :class="quote.data.authorized_at ? 'text-green-500' : 'hover:text-green-500 cursor-pointer'">
                 </i>
