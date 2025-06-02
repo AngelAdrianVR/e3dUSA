@@ -75,8 +75,9 @@
                                                 <span v-if="priceChangePercentage(catalog_product.pivot) !== null"
                                                     :class="priceChangeClass(catalog_product.pivot)">
                                                     <template v-if="priceChangePercentage(catalog_product.pivot) !== 0">
-                                                        (<i :class="priceChangeIcon(catalog_product.pivot)" class="text-[10px]"></i>{{
-                                                            priceChangePercentage(catalog_product.pivot) }}%)
+                                                        (<i :class="priceChangeIcon(catalog_product.pivot)"
+                                                            class="text-[10px]"></i>{{
+                                                                priceChangePercentage(catalog_product.pivot) }}%)
                                                     </template>
                                                 </span>
                                             </span>
@@ -88,11 +89,14 @@
 
                                     <figure
                                         class="rounded-md m-2 h-32 cursor-zoom-in bg-[#d9d9d9] dark:bg-[#202020] flex items-center justify-center">
-                                        <img v-if="catalog_product.media?.length" class="object-contain h-full" @click="handlePictureCardPreview(catalog_product.media[0])" :src="catalog_product.media[0].original_url" alt="">
+                                        <img v-if="catalog_product.media?.length" class="object-contain h-full"
+                                            @click="handlePictureCardPreview(catalog_product.media[0])"
+                                            :src="catalog_product.media[0].original_url" alt="">
                                         <i v-else class="fa-regular fa-image text-4xl text-gray-400"></i>
                                     </figure>
                                 </body>
-                                <p :class="[formattedLastUpdate(catalog_product.pivot).bgClass, 'text-gray-500 dark:text-gray-800 mt-2 inline-block pr-2']">
+                                <p
+                                    :class="[formattedLastUpdate(catalog_product.pivot).bgClass, 'text-gray-500 dark:text-gray-800 mt-2 inline-block pr-2']">
                                     Último cambio de precio:
                                     <span class="font-bold text-black ml-2">
                                         {{ formattedLastUpdate(catalog_product.pivot).text }}
@@ -138,7 +142,7 @@
                     }">
                     <div class="md:grid gap-3 gap-y-2 mb-6 grid-cols-2">
                         <div class="col-span-2 flex justify-between mb-7">
-                            <el-radio-group v-model="form.is_spanish_template" size="small">
+                            <el-radio-group v-model="form.is_spanish_template" @change="handleLanguageChange" size="small">
                                 <el-radio :label="1">Plantilla en español</el-radio>
                                 <el-radio :label="0">Plantilla en inglés</el-radio>
                             </el-radio-group>
@@ -229,12 +233,18 @@
                             <InputError :message="form.errors.receiver" />
                         </div>
                         <div>
-                            <InputLabel value="Departamento o puesto*" />
+                            <InputLabel>
+                                <span>Departamento o puesto*</span>
+                                <span class="text-amber-600" v-if="!form.is_spanish_template"> (En inglés)</span>
+                            </InputLabel>
                             <el-input v-model="form.department" placeholder="Ej. Gerente de mercadotecnia" />
                             <InputError :message="form.errors.department" />
                         </div>
                         <div>
-                            <InputLabel value="Costo de herramental*" />
+                            <InputLabel>
+                                <span>Costo de herramental*</span>
+                                <span class="text-amber-600" v-if="!form.is_spanish_template"> (En inglés)</span>
+                            </InputLabel>
                             <el-input v-model="form.tooling_cost" placeholder="Ej. 800" />
                             <InputError :message="form.errors.tooling_cost" />
                         </div>
@@ -277,12 +287,13 @@
                             <div class="flex items-center space-x-2">
                                 <InputLabel v-if="form.freight_option == 'Cargo del flete prorrateado en producto'"
                                     value="Costo de flete cargado a precio de producto*" />
+                                <InputLabel v-else-if="['Cargo flete normal de costo al cliente'].includes(form.freight_option)">
+                                    <span>Costo de flete*</span>
+                                    <span class="text-amber-600" v-if="!form.is_spanish_template"> (En inglés)</span>
+                                </InputLabel>
                                 <InputLabel
-                                    v-else-if="['Cargo flete normal de costo al cliente'].includes(form.freight_option)"
-                                    value="Costo de flete*" />
-                                <InputLabel
-                                v-else-if="['Emblems3d absorbe el costo del flete'].includes(form.freight_option)"
-                                value="Costo de flete que absorbe Emblems3d*" />
+                                    v-else-if="['Emblems3d absorbe el costo del flete'].includes(form.freight_option)"
+                                    value="Costo de flete que absorbe Emblems3d*" />
                                 <el-tooltip v-if="form.freight_option == 'Cargo del flete prorrateado en producto'"
                                     placement="top">
                                     <template #content>
@@ -299,7 +310,8 @@
                                 </el-tooltip>
                             </div>
                             <el-input v-model="form.freight_cost"
-                                v-if="form.freight_option == 'Cargo del flete prorrateado en producto' || form.freight_option == 'Cargo flete normal de costo al cliente' || form.freight_option == 'Emblems3d absorbe el costo del flete'" placeholder="Ej. 550" />
+                                v-if="form.freight_option == 'Cargo del flete prorrateado en producto' || form.freight_option == 'Cargo flete normal de costo al cliente' || form.freight_option == 'Emblems3d absorbe el costo del flete'"
+                                placeholder="Ej. 550" />
                             <InputError :message="form.errors.freight_cost" />
                         </div>
                         <div class="flex items-center space-x-2 col-span-full">
@@ -316,13 +328,17 @@
                         <div>
                             <InputLabel value="Dias para primera producción*" />
                             <el-select v-model="form.first_production_days" placeholder="Selecciona">
-                                <el-option v-for="(item, index) in form.is_spanish_template ? firstProductionDaysList : firstProductionDaysListEnglish" :key="item" :label="item"
-                                    :value="item" />
+                                <el-option
+                                    v-for="(item, index) in form.is_spanish_template ? firstProductionDaysList : firstProductionDaysListEnglish"
+                                    :key="item" :label="item" :value="item" />
                             </el-select>
                             <InputError :message="form.errors.first_production_days" />
                         </div>
                         <div class="col-span-full">
-                            <InputLabel value="Notas" />
+                            <InputLabel>
+                                <span>Notas</span>
+                                <span class="text-amber-600" v-if="!form.is_spanish_template"> (En inglés)</span>
+                            </InputLabel>
                             <el-input v-model="form.notes" :rows="3" maxlength="800" placeholder="..." show-word-limit
                                 type="textarea" />
                             <InputError :message="form.errors.notes" />
@@ -400,7 +416,10 @@
                             </label>
                         </div>
                         <div class="col-span-full">
-                            <InputLabel value="Notas" />
+                            <InputLabel>
+                                <span>Notas</span>
+                                <span class="text-amber-600" v-if="!form.is_spanish_template"> (En inglés)</span>
+                            </InputLabel>
                             <el-input v-model="product.notes" :rows="3" maxlength="800" placeholder="..."
                                 show-word-limit type="textarea" />
                         </div>
@@ -420,14 +439,14 @@
                                     <!-- Si es producto de catalogo lo busca en esos productos -->
                                     <p v-if="item.isCatalogProduct" class="text-xs">
                                         <span class="text-primary">{{ index + 1 }}.</span>
-                                        {{ catalog_products.find(prd => prd.id === item.id)?.name }}
+                                        {{catalog_products.find(prd => prd.id === item.id)?.name}}
                                         (x{{ item.quantity }} unidades) <span class="text-gray1">-> Producto de
                                             catálogo</span>
                                     </p>
                                     <!-- Si es materia prima lo busca en materias primas -->
                                     <p v-else class="text-sm">
                                         <span class="text-primary">{{ index + 1 }}.</span>
-                                        {{ raw_materials.find(prd => prd.id === item.id)?.name }}
+                                        {{raw_materials.find(prd => prd.id === item.id)?.name}}
                                         (x{{ item.quantity }} unidades) <span class="text-gray1">-> Materia prima
                                         </span>
                                     </p>
@@ -461,15 +480,17 @@
                             </template>
                         </ol>
                     </div>
-                    <el-divider />
 
                     <el-divider content-position="left" class="col-span-full">Promociones</el-divider>
 
                     <div class="grid grid-cols-2 gap-3">
                         <label class="inline-flex items-center text-gray-600 dark:text-gray-500">
-                            <input :disabled="quote.early_paid_at" type="checkbox" @change="handleEarlyPaymentDiscount" v-model="form.early_payment_discount"
+                            <input :disabled="quote.early_paid_at" type="checkbox" @change="handleEarlyPaymentDiscount"
+                                v-model="form.early_payment_discount"
                                 class="rounded border-gray-400 text-[#D90537] shadow-sm focus:ring-[#D90537] bg-transparent disabled:cursor-not-allowed disabled:opacity-65" />
-                            <span :class="{'opacity-50' : quote.early_paid_at}" class="ml-2 text-sm dark:text-white">Descuento pago por adelantado</span>
+                            <span :class="{ 'opacity-50': quote.early_paid_at }"
+                                class="ml-2 text-sm dark:text-white">Descuento pago por
+                                adelantado</span>
                             <el-tooltip placement="top">
                                 <template #content>
                                     <p>
@@ -487,20 +508,15 @@
 
                         <div v-if="form.early_payment_discount">
                             <InputLabel value="Porcentaje de descuento*" />
-                            <el-input
-                                v-model.number="form.discount"
-                                placeholder="Ej. 10"
-                                :min="1"
-                                :max="100"
-                                type="number"
-                                prefix-icon="el-icon-percent"
-                                :disabled="quote.early_paid_at"
-                            >
+                            <el-input v-model.number="form.discount" placeholder="Ej. 10" :min="1" :max="100"
+                                type="number" prefix-icon="el-icon-percent" :disabled="quote.early_paid_at">
                                 <template #prefix>%</template>
                             </el-input>
                             <InputError :message="form.errors.discount" />
                         </div>
-                        <p v-if="quote.early_paid_at" class="col-span-full text-sm text-red-500">No puedes editar el descuento de pago anticipado porque ya se realizó</p>
+                        <p v-if="quote.early_paid_at" class="col-span-full text-sm text-red-500">No puedes editar el
+                            descuento de pago
+                            anticipado porque ya se realizó</p>
                     </div>
                     <!-- buttons -->
                     <div class="md:text-right mt-5">
@@ -556,13 +572,10 @@
                     <section class="grid grid-cols-3 gap-3 mt-3">
                         <div>
                             <InputLabel value="Precio nuevo en porcentaje*" />
-                            <el-input
-                                @change="calculateNewPrice()"
-                                v-model="new_price_percentage" type="number" :max="100" :min="5" step="0.1"
-                                placeholder="Ej. 5.8%"
+                            <el-input @change="calculateNewPrice()" v-model="new_price_percentage" type="number"
+                                :max="100" :min="5" step="0.1" placeholder="Ej. 5.8%"
                                 :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                                :parser="(value) => value.replace(/[^\d.]/g, '')"
-                                >
+                                :parser="(value) => value.replace(/[^\d.]/g, '')">
                                 <template #prepend>
                                     %
                                 </template>
@@ -594,11 +607,8 @@
                         </div>
                         <div>
                             <InputLabel value="Fecha de cambio*" />
-                            <el-date-picker
-                                v-model="priceForm.new_date"
-                                type="date"
-                                placeholder="Selecciona una fecha"
-                            />
+                            <el-date-picker v-model="priceForm.new_date" type="date"
+                                placeholder="Selecciona una fecha" />
                             <InputError :message="priceForm.errors.new_date" />
                         </div>
                         <p v-if="priceForm.new_price && (priceForm.new_price - itemToUpdatePrice.pivot.new_price) < (itemToUpdatePrice.pivot.new_price * 0.04)"
@@ -623,7 +633,7 @@
                 <template #title>
                     {{ editIMportantNotes ? 'Editar' : 'Agregar' }}
                     notas importantes para
-                    {{ company_branches.find(item => item.id == form.company_branch_id).name }}
+                    {{company_branches.find(item => item.id == form.company_branch_id).name}}
                 </template>
                 <template #content>
                     <div>
@@ -751,7 +761,7 @@ export default {
             is_customer: this.quote.company_branch_id ? 1 : 0,
             prospect_id: this.quote.prospect_id,
             products: [],
-            early_payment_discount: !! this.quote.early_payment_discount, // bandera para mostrar descuento por pronto pago en portal de clientes
+            early_payment_discount: !!this.quote.early_payment_discount, // bandera para mostrar descuento por pronto pago en portal de clientes
             discount: this.quote.discount, // porcentaje de descuento por pronto pago
         });
 
@@ -888,7 +898,20 @@ export default {
         prospects: Array,
     },
     methods: {
-        handleEarlyPaymentDiscount()  {
+        handleLanguageChange() {
+            if (this.form.first_production_days) {
+                if (this.form.is_spanish_template) {
+                    // cambiar de inglés a español
+                    const index = this.firstProductionDaysListEnglish.indexOf(this.form.first_production_days);
+                    this.form.first_production_days = this.firstProductionDaysList[index];
+                } else {
+                    // cambiar de español a inglés
+                    const index = this.firstProductionDaysList.indexOf(this.form.first_production_days);
+                    this.form.first_production_days = this.firstProductionDaysListEnglish[index];
+                }
+            }
+        },
+        handleEarlyPaymentDiscount() {
             if (!this.form.early_payment_discount) {
                 this.form.discount = null;
             }
