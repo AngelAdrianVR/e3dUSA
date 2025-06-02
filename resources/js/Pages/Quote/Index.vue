@@ -133,7 +133,7 @@
                             <SaleProfit :profit="scope.row.profit" />
                         </template>
                     </el-table-column>
-                    <el-table-column width="160" prop="user.name" label="Creado por">
+                    <el-table-column prop="user.name" label="Creado por">
                         <template #default="scope">
                             <div v-if="scope.row.created_by_customer" class="flex items-center space-x-2">
                                 <el-tooltip v-if="scope.row.user?.name" placement="top">

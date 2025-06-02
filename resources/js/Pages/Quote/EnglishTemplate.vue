@@ -37,7 +37,7 @@
                 San Antonio TX {{ quote.data.created_at }}
                 <i v-show="showAdditionalElements" @click="authorize"
                     :title="quote.data.authorized_at ? 'Cotización autorizada' : 'Autorizar cotización'"
-                    v-if="$page.props.auth.user.permissions.includes('Autorizar cotizaciones')"
+                    v-if="$page.props.auth.user.permissions?.includes('Autorizar cotizaciones')"
                     class="fa-solid fa-check ml-3"
                     :class="quote.data.authorized_at ? 'text-green-500' : 'hover:text-green-500 cursor-pointer'">
                 </i>
@@ -207,7 +207,7 @@
 
             <!-- signature -->
             <div class="mr-7 flex space-x-4 w-96 relative mt-20 md:mt-0">
-                <p class="text-gray-500 dark:text-white">Firma de autorización: </p>
+                <p class="text-gray-500 dark:text-white">Authorization signature: </p>
                 <figure class="w-32 absolute md:right-24 lg:right-16 -top-[55px] bg-gray-100 rounded-lg">
                     <img :src="procesarUrlImagen(quote.data.signature_media[0]?.original_url)" alt="">
                 </figure>
