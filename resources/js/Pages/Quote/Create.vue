@@ -290,7 +290,7 @@
                                 <InputLabel v-if="form.freight_option == 'Cargo del flete prorrateado en producto'"
                                     value="Costo de flete cargado a precio de producto*" />
                                 <InputLabel
-                                    v-else-if="['Cargo flete normal de costo al cliente'].includes(form.freight_option)">
+                                    v-else-if="['Por cuenta del cliente'].includes(form.freight_option)">
                                     <span>Costo de flete*</span>
                                     <span class="text-amber-600" v-if="!form.is_spanish_template"> (En inglés)</span>
                                 </InputLabel>
@@ -313,7 +313,7 @@
                                 </el-tooltip>
                             </div>
                             <el-input v-model="form.freight_cost"
-                                v-if="form.freight_option == 'Cargo del flete prorrateado en producto' || form.freight_option == 'Cargo flete normal de costo al cliente' || form.freight_option == 'Emblems3d absorbe el costo del flete'"
+                                v-if="form.freight_option == 'Cargo del flete prorrateado en producto' || form.freight_option == 'Por cuenta del cliente' || form.freight_option == 'Emblems3d absorbe el costo del flete'"
                                 placeholder="Ej. 550" />
                             <InputError :message="form.errors.freight_cost" />
                         </div>
@@ -484,10 +484,8 @@
                             </template>
                         </ol>
                     </div>
-
-                    <el-divider content-position="left" class="col-span-full">Promociones</el-divider>
-
-                    <div class="grid grid-cols-2 gap-3">
+                    <el-divider v-if="$page.props.auth.user.permissions.includes('Descuentos cotizaciones')" content-position="left" class="col-span-full">Promociones</el-divider>
+                    <div class="grid grid-cols-2 gap-3" v-if="$page.props.auth.user.permissions.includes('Descuentos cotizaciones')">
                         <label class="inline-flex items-center text-gray-600 dark:text-gray-500">
                             <input type="checkbox" @change="handleEarlyPaymentDiscount"
                                 v-model="form.early_payment_discount"
@@ -518,8 +516,6 @@
                         </div>
 
                     </div>
-
-
                     <!-- buttons -->
                     <div class="md:text-right mt-5">
                         <PrimaryButton :disabled="form.processing">
@@ -750,7 +746,7 @@ export default {
             tooling_cost_stroked: false,
             freight_cost_stroked: false,
             freight_cost: null,
-            freight_option: 'Cargo flete normal de costo al cliente',
+            freight_option: 'Por cuenta del cliente',
             freight_cost_charged_in_product: false,
             first_production_days: null,
             notes: null,
@@ -830,6 +826,9 @@ export default {
                 '3 a 4 semanas',
                 '4 a 5 semanas',
                 '5 a 6 semanas',
+                '6 a 7 semanas',
+                '7 a 8 semanas',
+                '8 a 9 semanas',
             ],
             firstProductionDaysListEnglish: [
                 'Immediate',
@@ -843,6 +842,9 @@ export default {
                 '3 to 4 weeks',
                 '4 to 5 weeks',
                 '5 to 6 weeks',
+                '6 to 7 weeks',
+                '7 to 8 weeks',
+                '8 to 9 weeks',
             ],
             currencies: [
                 {
@@ -855,7 +857,7 @@ export default {
                 }
             ],
             freightOptions: [
-                'Cargo flete normal de costo al cliente',
+                'Por cuenta del cliente',
                 'Cargo del flete prorrateado en producto',
                 'Emblems3d absorbe el costo del flete',
                 'El cliente envía la guía',
