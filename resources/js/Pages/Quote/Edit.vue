@@ -480,10 +480,8 @@
                             </template>
                         </ol>
                     </div>
-
-                    <el-divider content-position="left" class="col-span-full">Promociones</el-divider>
-
-                    <div class="grid grid-cols-2 gap-3">
+                    <el-divider v-if="$page.props.auth.user.permissions.includes('Descuentos cotizaciones')" content-position="left" class="col-span-full">Promociones</el-divider>
+                    <div class="grid grid-cols-2 gap-3" v-if="$page.props.auth.user.permissions.includes('Descuentos cotizaciones')">
                         <label class="inline-flex items-center text-gray-600 dark:text-gray-500">
                             <input :disabled="quote.early_paid_at" type="checkbox" @change="handleEarlyPaymentDiscount"
                                 v-model="form.early_payment_discount"

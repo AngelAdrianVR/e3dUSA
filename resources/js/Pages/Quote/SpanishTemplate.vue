@@ -7,29 +7,31 @@
 
     <!-- content -->
     <div class="text-xs dark:bg-slate-800">
-        <!-- boton de descuento de pago anticipado -->
-        <figure v-if="quote.data.early_payment_discount && !quote.data.early_paid_at" class="ml-3 md:ml-16 my-2 w-[370px] relative">
-            <svg class="absolute top-3 left-3" width="16" height="19" viewBox="0 0 16 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M7.15527 0C9.57271 0.953908 11.3524 2.23003 12.2705 7.08301C12.6323 7.25786 13.0912 6.56184 13.9756 5.11523C18.2995 13.5451 15.0251 18.2319 10.4346 18.3633H5.97461C2.30572 18.3633 -0.842483 14.5589 0.203125 8.52539C1.11282 9.8512 1.48847 9.99154 2.04004 9.70605C0.85957 5.11534 8.598 4.06604 7.15527 0ZM10.5732 6.05664C10.3949 5.99143 10.1997 6.06337 10.1035 6.21875L10.0684 6.29102C9.30024 8.39053 8.70097 10.0296 8.10156 11.668L6.13379 17.0459C6.05912 17.25 6.16407 17.4761 6.36816 17.5508C6.54675 17.616 6.74192 17.5436 6.83789 17.3877L6.87305 17.3164C7.64129 15.2165 8.24131 13.5771 8.84082 11.9385L10.8076 6.56055C10.8817 6.35675 10.7769 6.13129 10.5732 6.05664ZM10.7002 12.0654C9.68635 12.0656 8.86447 12.8885 8.86426 13.9023C8.86438 14.9163 9.6863 15.7381 10.7002 15.7383C11.7141 15.7381 12.537 14.9163 12.5371 13.9023C12.5369 12.8885 11.714 12.0656 10.7002 12.0654ZM10.7002 12.8525C11.2794 12.8528 11.7498 13.3231 11.75 13.9023C11.7499 14.4816 11.2795 14.951 10.7002 14.9512C10.1209 14.951 9.65149 14.4816 9.65137 13.9023C9.65158 13.3231 10.121 12.8528 10.7002 12.8525ZM6.50293 7.60645C5.48915 7.60667 4.6673 8.42863 4.66699 9.44238C4.66699 10.4564 5.48897 11.2791 6.50293 11.2793C7.5169 11.2791 8.33984 10.4564 8.33984 9.44238C8.33954 8.42862 7.51671 7.60666 6.50293 7.60645ZM6.50293 8.39355C7.08207 8.39377 7.55243 8.86326 7.55273 9.44238C7.55273 10.0218 7.08226 10.492 6.50293 10.4922C5.9236 10.492 5.4541 10.0218 5.4541 9.44238C5.45441 8.86326 5.92379 8.39378 6.50293 8.39355Z" fill="#BC0B0B"/>
-            </svg>
-            <button class="flex items-center justify-center absolute top-[8px] right-3 bg-[#F2F2F2] rounded-full size-7 cursor-default">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3 text-black">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25" />
+        <section v-if="$page.props.auth.user.permissions.includes('Descuentos cotizaciones')">
+            <!-- boton de descuento de pago anticipado -->
+            <figure v-if="quote.data.early_payment_discount && !quote.data.early_paid_at" class="ml-3 md:ml-16 my-2 w-[370px] relative">
+                <svg class="absolute top-3 left-3" width="16" height="19" viewBox="0 0 16 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7.15527 0C9.57271 0.953908 11.3524 2.23003 12.2705 7.08301C12.6323 7.25786 13.0912 6.56184 13.9756 5.11523C18.2995 13.5451 15.0251 18.2319 10.4346 18.3633H5.97461C2.30572 18.3633 -0.842483 14.5589 0.203125 8.52539C1.11282 9.8512 1.48847 9.99154 2.04004 9.70605C0.85957 5.11534 8.598 4.06604 7.15527 0ZM10.5732 6.05664C10.3949 5.99143 10.1997 6.06337 10.1035 6.21875L10.0684 6.29102C9.30024 8.39053 8.70097 10.0296 8.10156 11.668L6.13379 17.0459C6.05912 17.25 6.16407 17.4761 6.36816 17.5508C6.54675 17.616 6.74192 17.5436 6.83789 17.3877L6.87305 17.3164C7.64129 15.2165 8.24131 13.5771 8.84082 11.9385L10.8076 6.56055C10.8817 6.35675 10.7769 6.13129 10.5732 6.05664ZM10.7002 12.0654C9.68635 12.0656 8.86447 12.8885 8.86426 13.9023C8.86438 14.9163 9.6863 15.7381 10.7002 15.7383C11.7141 15.7381 12.537 14.9163 12.5371 13.9023C12.5369 12.8885 11.714 12.0656 10.7002 12.0654ZM10.7002 12.8525C11.2794 12.8528 11.7498 13.3231 11.75 13.9023C11.7499 14.4816 11.2795 14.951 10.7002 14.9512C10.1209 14.951 9.65149 14.4816 9.65137 13.9023C9.65158 13.3231 10.121 12.8528 10.7002 12.8525ZM6.50293 7.60645C5.48915 7.60667 4.6673 8.42863 4.66699 9.44238C4.66699 10.4564 5.48897 11.2791 6.50293 11.2793C7.5169 11.2791 8.33984 10.4564 8.33984 9.44238C8.33954 8.42862 7.51671 7.60666 6.50293 7.60645ZM6.50293 8.39355C7.08207 8.39377 7.55243 8.86326 7.55273 9.44238C7.55273 10.0218 7.08226 10.492 6.50293 10.4922C5.9236 10.492 5.4541 10.0218 5.4541 9.44238C5.45441 8.86326 5.92379 8.39378 6.50293 8.39355Z" fill="#BC0B0B"/>
                 </svg>
-            </button>
-            <p class="text-[#005660] absolute left-12 top-2 text-xs text-center">PAGA ESTA COTIZACIÓN POR ADELANTADO <br> Y RECIBE UN {{ quote.data.discount }}% DE DESCUENTO EXCLUSIVO</p>
-            <img draggable="false" class="w-[370px] h-12" src="@/../../public/images/earlyPaymentButton.webp" alt="">
-        </figure>
-        
-        <!-- descuento por pago anticipado aplicado -->
-        <div v-else-if="quote.data.early_payment_discount && showAdditionalElements" class="my-2 flex items-center gap-3 p-4 rounded-xl bg-green-100 border border-green-300 text-green-800 shadow-md max-w-lg mx-auto mt-6">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 flex-shrink-0 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <p class="text-sm font-semibold">
-                ¡Descuento por pago anticipado del {{ quote.data.discount }}% aplicado correctamente!
-            </p>
-        </div>
+                <button class="flex items-center justify-center absolute top-[8px] right-3 bg-[#F2F2F2] rounded-full size-7 cursor-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3 text-black">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25" />
+                    </svg>
+                </button>
+                <p class="text-[#005660] absolute left-12 top-2 text-xs text-center">PAGA ESTA COTIZACIÓN POR ADELANTADO <br> Y RECIBE UN {{ quote.data.discount }}% DE DESCUENTO EXCLUSIVO</p>
+                <img draggable="false" class="w-[370px] h-12" src="@/../../public/images/earlyPaymentButton.webp" alt="">
+            </figure>
+            
+            <!-- descuento por pago anticipado aplicado -->
+            <div v-else-if="quote.data.early_payment_discount && showAdditionalElements" class="my-2 flex items-center gap-3 p-4 rounded-xl bg-green-100 border border-green-300 text-green-800 shadow-md max-w-lg mx-auto mt-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 flex-shrink-0 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <p class="text-sm font-semibold">
+                    ¡Descuento por pago anticipado del {{ quote.data.discount }}% aplicado correctamente!
+                </p>
+            </div>
+        </section>
         <!-- header -->
         <div>
             <p class="flex items-center justify-end ml-auto font-bold mr-6 text-xs text-gray-700 dark:text-white">
