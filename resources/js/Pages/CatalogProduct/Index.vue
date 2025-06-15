@@ -1,5 +1,34 @@
 <template>
     <div>
+        <div
+            v-if="loadingExport"
+            class="fixed inset-0 bg-gray-900 bg-opacity-80 z-50 flex items-center justify-center"
+            >
+            <div class="text-center">
+                <svg
+                class="animate-spin size-14 text-blue-600 mx-auto"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                >
+                <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                ></circle>
+                <path
+                    class="opacity-100"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+                ></path>
+                </svg>
+                <p class="mt-4 text-gray-100">Generando archivo, por favor espera...</p>
+            </div>
+        </div>
+
         <AppLayout title="Catalogo de productos">
             <template #header>
                 <div class="flex justify-between">
@@ -24,7 +53,15 @@
                     </div>
                     <!-- buttons -->
                     <div class="flex items-center space-x-2">
-                        <PrimaryButton @click="openReport">Reporte de precios</PrimaryButton>
+                        <!-- <PrimaryButton @click="openReport">Reporte de precios</PrimaryButton> -->
+                        <el-dropdown split-button type="primary" @click="openReport">
+                            Reporte de precios
+                            <template #dropdown>
+                                <el-dropdown-menu>
+                                    <el-dropdown-item @click="exportToExcel">Exportar lista de productos en Excel</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
                         <div v-if="$page.props.auth.user.permissions.includes('Eliminar catalogo de productos')">
                             <el-popconfirm confirm-button-text="Si" cancel-button-text="No" icon-color="#0355B5"
                                 title="¿Continuar?" @confirm="deleteSelections">
@@ -110,6 +147,7 @@ import axios from 'axios';
 export default {
     data() {
         return {
+            loadingExport: false,
             disableMassiveActions: true,
             inputSearch: '',
             search: '',
@@ -133,6 +171,27 @@ export default {
     methods: {
         openReport() {
             window.open(route('catalog-products.prices-report'), '_blank');
+        },
+        exportToExcel() {
+            this.loadingExport = true;
+
+            axios({
+                url: '/export-catalog-products',
+                method: 'GET',
+                responseType: 'blob',
+            }).then(response => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'catalogo_precios.xlsx');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }).catch(error => {
+                console.error('Error al exportar:', error);
+            }).finally(() => {
+                this.loadingExport = false;
+            });
         },
         handleSearch(search) {
             this.search = search;

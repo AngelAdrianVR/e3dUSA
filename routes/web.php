@@ -206,6 +206,7 @@ Route::get('catalog-products-fetch-shipping-rates/{catalog_product}', [CatalogPr
 Route::get('catalog-products-prices-report', [CatalogProductController::class, 'pricesReport'])->name('catalog-products.prices-report');
 Route::post('catalog-products-get-by-ids', [CatalogProductController::class, 'getByIds'])->name('catalog-products.get-by-ids');
 Route::get('catalog-products/{catalog_product}/get-info', [CatalogProductController::class, 'getInfo'])->name('catalog-products.get-info');
+Route::get('export-catalog-products', [CatalogProductController::class, 'exportExcel']);
 
 
 // ------- Ventas(Clients Routes)  ---------
