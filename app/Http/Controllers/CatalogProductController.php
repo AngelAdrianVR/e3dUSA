@@ -298,7 +298,9 @@ class CatalogProductController extends Controller
     
     public function pricesReport()
     {
-        $catalog_products = CatalogProduct::with(['companies', 'media'])->get(['id', 'part_number', 'name', 'cost']);
+        $catalog_products = CatalogProduct::with(['companies', 'media'])
+            ->orderBy('name')
+            ->get(['id', 'part_number', 'name', 'cost']);
 
         return inertia('CatalogProduct/PricesReport', compact('catalog_products'));
     }
@@ -322,6 +324,7 @@ class CatalogProductController extends Controller
     public function exportExcel()
     {
         $fileName = 'catalogo_precios.xlsx';
+        
         return Excel::download(new CatalogProductPricesExport, $fileName);
     }
 }
