@@ -66,27 +66,45 @@ class CompanyBranchController extends Controller
 
     public function updateProductPrice(CatalogProductCompany $product_company, Request $request)
     {
-        $request->validate([
-            'new_price' => 'required|numeric|min:0',
-            'new_currency' => 'required|string|max:255',
-            'new_date' => 'required|date',
-        ]);
+        // // Validación básica para ambos casos
+        // $request->validate([
+        //     'new_currency' => 'required|string|max:255',
+        //     'new_date' => 'required|date',
+        // ]);
+        // Si viene el booleano only_currency y es true, solo actualiza la moneda
+        if ($request->boolean('only_currency')) {
+            $product_company->update([
+                'oldest_currency' => $product_company->old_currency,
+                'old_currency' => $product_company->new_currency,
+                'oldest_updated_by' => $product_company->old_updated_by,
+                'old_updated_by' => $product_company->new_updated_by,
+                'new_updated_by' => auth()->user()->name,
+                'new_date' => $request->new_date,
+                'new_currency' => $request->new_currency,
+            ]);
+        } else {
+            // Validación adicional cuando se actualiza el precio también
+            $request->validate([
+                'new_price' => 'required|numeric|min:0',
+            ]);
 
-        $product_company->update([
-            'oldest_date' => $product_company->old_date,
-            'oldest_price' => $product_company->old_price,
-            'oldest_currency' => $product_company->old_currency,
-            'old_date' => $product_company->new_date,
-            'old_price' => $product_company->new_price,
-            'old_currency' => $product_company->new_currency,
-            'oldest_updated_by' => $product_company->old_updated_by,
-            'old_updated_by' => $product_company->new_updated_by,
-            'new_updated_by' => auth()->user()->name,
-            'new_date' => $request->new_date,
-            'new_price' => $request->new_price,
-            'new_currency' => $request->new_currency,
-        ]);
+            $product_company->update([
+                'oldest_date' => $product_company->old_date,
+                'oldest_price' => $product_company->old_price,
+                'oldest_currency' => $product_company->old_currency,
+                'old_date' => $product_company->new_date,
+                'old_price' => $product_company->new_price,
+                'old_currency' => $product_company->new_currency,
+                'oldest_updated_by' => $product_company->old_updated_by,
+                'old_updated_by' => $product_company->new_updated_by,
+                'new_updated_by' => auth()->user()->name,
+                'new_date' => $request->new_date,
+                'new_price' => $request->new_price,
+                'new_currency' => $request->new_currency,
+            ]);
+        }
     }
+
 
     public function fetchDesignInfo(CompanyBranch $company_branch)
     {   

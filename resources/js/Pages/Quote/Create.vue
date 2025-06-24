@@ -591,9 +591,12 @@
                             </el-input>
                             <InputError :message="priceForm.errors.new_price" />
                         </div>
-                        <div>
+                        <div class="mx-auto pt-5" v-if="updatingCurrency">
+                            <i class="fa-solid fa-circle-notch fa-spin text-primary text-lg"></i>
+                        </div>
+                        <div v-else>
                             <InputLabel value="Moneda*" />
-                            <el-select v-model="priceForm.new_currency" placeholder="Seleccionar"
+                            <el-select @change="updateCurrency" v-model="priceForm.new_currency" placeholder="Seleccionar"
                                 :fit-input-width="true">
                                 <el-option v-for="item in newPriceCurrencies" :key="item.value" :label="item.label"
                                     :value="item.value">
@@ -777,6 +780,7 @@ export default {
             new_currency: null,
             new_date: new Date().toISOString().split('T')[0], // Fecha actual en formato YYYY-MM-DD,
             product_company_id: null,
+            only_currency: false, //booleano para actualizar solamente la moneda
         });
 
         const scheduleForm = useForm({
@@ -798,6 +802,7 @@ export default {
             showUpdatePriceModal: false, //modal para actualizar precio
             showScheduleUpdatingPrice: false, //modal para agendar actualización de precio
             loading: false,
+            updatingCurrency: false, //estado de carga para cambio de moneda
             importantNotesToStore: null,
             itemToUpdatePrice: null, //producto seleccionado para cambiar precio
             isEditImportantNotes: false,
@@ -1074,6 +1079,29 @@ export default {
                     this.fetchCatalogProductsCompanyBanch();
                 },
             });
+        },
+        updateCurrency() {
+            this.updatingCurrency = true;
+            this.priceForm.only_currency = true; // 👈 Se envía el booleano al backend para actualizar solamente la moneda
+        
+            this.priceForm.put(
+                route('company-branches.update-product-price', this.priceForm.product_company_id),
+                {
+                    onSuccess: () => {
+                        this.$notify({
+                            title: "Éxito",
+                            message: "Se cambió la moneda correctamente",
+                            type: "success",
+                        });
+                        this.updatingCurrency = false;
+                        this.priceForm.only_currency = true;
+                        this.fetchCatalogProductsCompanyBanch();
+                    },
+                    onError: () => {
+                        this.updatingCurrency = false;
+                    }
+                }
+            );
         },
         scheduleUpdatePrice() {
             this.scheduleForm.post(route('quotes.schedule-update-product-price'), {

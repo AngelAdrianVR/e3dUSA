@@ -16,7 +16,7 @@ class CatalogProductPricesExport implements FromCollection, WithHeadings, WithCo
 {
     public function collection()
     {
-        $products = CatalogProduct::with(['companies'])->get();
+        $products = CatalogProduct::with(['companies'])->orderBy('name')->get();
 
         $data = [];
 
