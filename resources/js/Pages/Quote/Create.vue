@@ -384,7 +384,9 @@
                             <figure
                                 class="flex justify-center border border-[#9a9a9a] rounded-md min-h-20 max-h-44 w-full">
                                 <img v-if="product.id"
-                                    :src="catalog_products.find(p => p.id == product.id).media[0].original_url"
+                                    :src="productType === 'Producto de catálogo' 
+                                    ? catalog_products.find(p => p.id == product.id).media[0].original_url 
+                                    : raw_materials.find(p => p.id == product.id).media[0].original_url"
                                     class="object-contain min-h-20 max-h-44 rounded-md">
                                 <p v-else
                                     class="flex items-center space-x-2 justify-center text-sm text-[#373737] dark:text-gray-500 mt-3">
