@@ -61,4 +61,9 @@ class CompanyBranch extends Model
     {
         return $this->hasMany(DesignAuthorization::class);
     }
+
+    public function invoices():HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
 }

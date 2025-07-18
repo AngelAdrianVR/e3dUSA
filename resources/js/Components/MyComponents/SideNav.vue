@@ -98,7 +98,7 @@ export default {
                         || route().current('sales.*') || route().current('oportunities.*') || route().current('oportunity-tasks.*')
                         || route().current('client-monitors.*') || route().current('meeting-monitors.*') || route().current('payment-monitors.*')
                         || route().current('sale-analitics.*') || route().current('sale-analitics.*')
-                        || route().current('prospects.*') || route().current('prospects.*'),
+                        || route().current('prospects.*') || route().current('prospects.*') || route().current('invoices.*'),
                     notifications: this.$page.props.auth.user?.notifications?.some(notification => {
                         return ['quote', 'sales', 'opportunities', 'companies', 'prospects'].includes(notification.data.module);
                     }),
@@ -155,13 +155,20 @@ export default {
                                 return notification.data.module === 'sales';
                             }),
                         },
+                        {
+                            label: 'Facturación',
+                            route: 'invoices.index',
+                            show: this.$page.props.auth.user.permissions.includes('Ver facturas'),
+                            notifications: false
+                        },
                     ],
                     dropdown: true,
                     show: this.$page.props.auth.user.permissions.includes('Ver cotizaciones') ||
                         this.$page.props.auth.user.permissions.includes('Ver clientes') ||
                         this.$page.props.auth.user.permissions.includes('Ver ordenes de venta') ||
                         this.$page.props.auth.user.permissions.includes('Ver oportunidades') ||
-                        this.$page.props.auth.user.permissions.includes('Ver seguimiento integral')
+                        this.$page.props.auth.user.permissions.includes('Ver seguimiento integral') ||
+                        this.$page.props.auth.user.permissions.includes('Ver facturas') 
                 },
                 {
                     label: 'Compras',

@@ -10,7 +10,6 @@
 .app-scroll-thin::-webkit-scrollbar:hover {
     background: var(--secondary-bg-color);
 }
-
 .messenger {
     background: var(--primary-bg-color);
 }

@@ -87,6 +87,11 @@ class Sale extends Model implements HasMedia
         return $this->hasManyThrough(Production::class, CatalogProductCompanySale::class, 'sale_id', 'catalog_product_company_sale_id');
     }
 
+    public function invoices():HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
     // methods
     public function getTotalSoldAmount()
     {
