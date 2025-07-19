@@ -604,6 +604,8 @@ Route::get('sale-analitics-get-estatistics-data/{date}', [SaleAnaliticController
 
 //------------------ invoices routes ----------------
 Route::resource('invoices', InvoiceController::class)->middleware('auth');
+Route::post('invoices-change-status/{invoice}', [InvoiceController::class, 'changeStatus'])->name('invoices.change-status')->middleware('auth');
+
 
 
 //------------------ Kiosk routes ----------------

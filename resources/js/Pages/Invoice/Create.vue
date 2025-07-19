@@ -28,7 +28,6 @@
             <div>
                 <InputLabel value="Monto total de la OV" />
                 <el-input
-                    :value="form.total_amount_sale"
                     placeholder="Ingresa el monto total con IVA"
                     v-model="form.total_amount_sale"
                     :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -83,7 +82,6 @@
                  <div>
                     <InputLabel value="Monto de esta factura" />
                     <el-input
-                        :value="form.invoice_amount"
                         placeholder="Ingresa el monto total con IVA de esta factura"
                         v-model="form.invoice_amount"
                         :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -226,7 +224,6 @@
                         <div>
                             <InputLabel value="Monto" />
                             <el-input
-                                :value="form.extra_invoices[index].invoice_amount"
                                 placeholder="Ingresa el monto total con IVA de esta factura"
                                 v-model="form.invoice_amount"
                                 :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -288,7 +285,7 @@
                         <div>
                             <InputLabel value="Folio del complemento*" />
                             <el-input v-model="form.complements[index].folio" placeholder="Selecciona una orden de venta" />
-                            <!-- <InputError :message="form.errors.folio" /> -->
+                            <InputError :message="form.errors[`complements.${index}.folio`]" />
                         </div>
                         <div>
                             <InputLabel value="Fecha de pago" />
@@ -298,12 +295,11 @@
                                 placeholder="Selecciona la fecha de pago"
                                 class="!w-full"
                             />
-                            <!-- <InputError :message="form.errors.issue_date" /> -->
+                            <InputError :message="form.errors[`complements.${index}.payment_date`]" />
                         </div>
                         <div>
                             <InputLabel value="Monto" />
                             <el-input
-                                :value="form.complements[index].amount"
                                 placeholder="Ingresa el monto del complemento"
                                 v-model="form.complements[index].amount"
                                 :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -312,7 +308,7 @@
                                 $
                                 </template>
                             </el-input>
-                            <!-- <InputError :message="form.errors.invoice_amount" /> -->
+                            <InputError :message="form.errors[`complements.${index}.amount`]" />
                         </div>
                         <div>
                             <InputLabel value="Método de pago" />
@@ -328,24 +324,23 @@
                                     :value="item"
                                 />
                             </el-select>
+                            <InputError :message="form.errors[`complements.${index}.payment_method`]" />
                         </div>
                         <div class="ml-2 mt-2 col-span-full">
                             <InputLabel value="Adjuntar archivo" />
-                            <FileUploader :multiple="false" @files-selected="form.complements[index].media = $event" />
+                            <FileUploader :multiple="false" @files-selected="form.complements[index].complementMedia = $event" />
                         </div>
                         <div class="col-span-full">
                             <InputLabel value="Notas" />
                             <el-input v-model="form.complements[index].notes" :autosize="{ minRows: 2, maxRows: 6 }" type="textarea"
                                 placeholder="Escribe notas adicionales" :maxlength="800" show-word-limit
                                 clearable />
-                            <!-- <InputError :message="form.errors.notes" /> -->
                         </div>
                     </div>
                 </article>
                 <el-divider content-position="left" class="col-span-full"></el-divider>
                 <button @click="addComplement" type="button" class="underline text-sm text-secondary">+ Agregar complemento de pago</button>
             </section>
-
             <div class="mt-9 mx-3 md:text-right col-span-full">
                 <PrimaryButton :disabled="form.processing">
                 <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
@@ -416,7 +411,7 @@ data() {
             },
             {
                 label: 'Parcialmente pagada',
-                icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-indigo-500"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" /></svg>'
+                icon: '<svg width="24" height="24" viewBox="0 0 24 24" class="text-[#C4620C]" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.30078 19.5173C2.8856 19.5168 3.47013 19.5249 4.05421 19.5415M19.5508 19.5173V20.5223C19.5508 21.2763 18.8248 21.8163 18.0978 21.6183C14.7336 20.7044 11.2996 20.0859 7.83503 19.7682M3.80078 5.2673V6.0173C3.80078 6.21621 3.72176 6.40698 3.58111 6.54763C3.44046 6.68828 3.24969 6.7673 3.05078 6.7673H2.30078M2.30078 6.7673V6.3923C2.30078 5.7713 2.80478 5.2673 3.42578 5.2673C8.74133 5.2673 9.35662 5.2673 14.6722 5.2673M2.30078 6.7673V15.7673M20.3008 5.2673V6.0173C20.3008 6.4313 20.6368 6.7673 21.0508 6.7673H21.8008M20.3008 5.2673H20.6758C21.2968 5.2673 21.8008 5.7713 21.8008 6.3923V16.1423C21.8008 16.7633 21.2968 17.2673 20.6758 17.2673H20.3008M20.3008 5.2673C19.6254 5.2673 19.5241 5.2673 18.8487 5.2673M2.30078 15.7673V16.1423C2.30078 16.4407 2.41931 16.7268 2.63029 16.9378C2.84126 17.1488 3.12741 17.2673 3.42578 17.2673H3.80078M2.30078 15.7673H3.05078C3.24969 15.7673 3.44046 15.8463 3.58111 15.987C3.72176 16.1276 3.80078 16.3184 3.80078 16.5173V17.2673M20.3008 17.2673V16.5173C20.3008 16.3184 20.3798 16.1276 20.5205 15.987C20.6611 15.8463 20.8519 15.7673 21.0508 15.7673H21.8008M20.3008 17.2673C20.3008 17.2673 14.9222 17.2673 9.92946 17.2673M3.80078 17.2673C3.80078 17.2673 4.41681 17.2673 5.69804 17.2673M12.0508 14.2673C12.8464 14.2673 13.6095 13.9512 14.1721 13.3886C14.7347 12.826 15.0508 12.0629 15.0508 11.2673C15.0508 11.0133 15.0186 10.7626 14.9564 10.5207M12.0508 8.2673C11.2551 8.2673 10.4921 8.58337 9.92946 9.14598C9.36685 9.70859 9.05078 10.4716 9.05078 11.2673C9.05078 11.694 9.14168 12.1113 9.31274 12.4933M19.0679 2.41113L4.43777 21.6183M18.0508 11.2673H18.0588V11.2753H18.0508V11.2673ZM6.05078 11.2673H6.05878V11.2753H6.05078V11.2673Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
             },
             {
                 label: 'Pagada',
@@ -470,7 +465,7 @@ methods: {
             payment_date: null,
             payment_method: null,
             amount: null,
-            media: null,
+            complementMedia: null,
             notes: null,
         });
     },
@@ -536,7 +531,7 @@ methods: {
         } else if ( status == 'Pendiente de pago' ) {
             return '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-[#B8B30E]"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>'
         } else if ( status == 'Parcialmente pagada' ) {
-            return '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-indigo-500"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" /></svg>'
+            return '<svg width="24" height="24" viewBox="0 0 24 24" class="text-[#C4620C]" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.30078 19.5173C2.8856 19.5168 3.47013 19.5249 4.05421 19.5415M19.5508 19.5173V20.5223C19.5508 21.2763 18.8248 21.8163 18.0978 21.6183C14.7336 20.7044 11.2996 20.0859 7.83503 19.7682M3.80078 5.2673V6.0173C3.80078 6.21621 3.72176 6.40698 3.58111 6.54763C3.44046 6.68828 3.24969 6.7673 3.05078 6.7673H2.30078M2.30078 6.7673V6.3923C2.30078 5.7713 2.80478 5.2673 3.42578 5.2673C8.74133 5.2673 9.35662 5.2673 14.6722 5.2673M2.30078 6.7673V15.7673M20.3008 5.2673V6.0173C20.3008 6.4313 20.6368 6.7673 21.0508 6.7673H21.8008M20.3008 5.2673H20.6758C21.2968 5.2673 21.8008 5.7713 21.8008 6.3923V16.1423C21.8008 16.7633 21.2968 17.2673 20.6758 17.2673H20.3008M20.3008 5.2673C19.6254 5.2673 19.5241 5.2673 18.8487 5.2673M2.30078 15.7673V16.1423C2.30078 16.4407 2.41931 16.7268 2.63029 16.9378C2.84126 17.1488 3.12741 17.2673 3.42578 17.2673H3.80078M2.30078 15.7673H3.05078C3.24969 15.7673 3.44046 15.8463 3.58111 15.987C3.72176 16.1276 3.80078 16.3184 3.80078 16.5173V17.2673M20.3008 17.2673V16.5173C20.3008 16.3184 20.3798 16.1276 20.5205 15.987C20.6611 15.8463 20.8519 15.7673 21.0508 15.7673H21.8008M20.3008 17.2673C20.3008 17.2673 14.9222 17.2673 9.92946 17.2673M3.80078 17.2673C3.80078 17.2673 4.41681 17.2673 5.69804 17.2673M12.0508 14.2673C12.8464 14.2673 13.6095 13.9512 14.1721 13.3886C14.7347 12.826 15.0508 12.0629 15.0508 11.2673C15.0508 11.0133 15.0186 10.7626 14.9564 10.5207M12.0508 8.2673C11.2551 8.2673 10.4921 8.58337 9.92946 9.14598C9.36685 9.70859 9.05078 10.4716 9.05078 11.2673C9.05078 11.694 9.14168 12.1113 9.31274 12.4933M19.0679 2.41113L4.43777 21.6183M18.0508 11.2673H18.0588V11.2753H18.0508V11.2673ZM6.05078 11.2673H6.05878V11.2753H6.05078V11.2673Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
         } else if ( status == 'Pagada' ) {
             return '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-green-500"><path stroke-linecap="round" stroke-linejoin="round" d="M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 0 1 9 9v.375M10.125 2.25A3.375 3.375 0 0 1 13.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 0 1 3.375 3.375M9 15l2.25 2.25L15 12" /></svg>'
         } else if ( status == 'Cancelada' ) {
