@@ -14,7 +14,7 @@
             class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md md:grid grid-cols-2 gap-4">
             <div>
                 <InputLabel value="Orden de venta relacionada*" />
-                <el-select :disabled="sale_id" v-model="form.sale_id" @change="handleSelectedSale"
+                <el-select v-model="form.sale_id" @change="handleSelectedSale"
                     placeholder="Seleccionar" :fit-input-width="true">
                     <el-option v-for="item in sales" :key="item" :label="'OV-' + item.id" :value="item.id" />
                 </el-select>
@@ -28,7 +28,6 @@
             <div>
                 <InputLabel value="Monto total de la OV" />
                 <el-input
-                    :disabled="sale_id"
                     placeholder="Ingresa el monto total con IVA"
                     v-model="form.total_amount_sale"
                     :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -50,7 +49,7 @@
                         </template>
                     </el-tooltip>
                 </div>
-                <el-select :disabled="!form.total_amount_sale || sale_id" @change="handleinvoiceQuantity" v-model="form.invoice_quantity" placeholder="Seleccionar" :fit-input-width="true">
+                <el-select :disabled="!form.total_amount_sale" @change="handleinvoiceQuantity" v-model="form.invoice_quantity" placeholder="Seleccionar" :fit-input-width="true">
                     <el-option
                         v-for="item in 8"
                         :key="item"
@@ -184,7 +183,7 @@
                 </div>
             </section>
 
-            <section class="col-span-full md:grid grid-cols-2 gap-4" v-if="form.invoice_quantity > 1 && !sale_id">
+            <section class="col-span-full md:grid grid-cols-2 gap-4" v-if="form.invoice_quantity > 1">
                 <el-divider content-position="left" class="col-span-full">Programación de facturas</el-divider>
                 <p class="text-sm col-span-full">Programa las fechas y montos de las facturas que emitirás. Recibirás un recordatorio cuando sea momento de capturarlas. 
                     Puedes consultar esta programación en el módulo de Facturas, en la pestaña “Programación de facturas”</p>
@@ -328,8 +327,8 @@
                             <InputError :message="form.errors[`complements.${index}.payment_method`]" />
                         </div>
                         <div class="ml-2 mt-2 col-span-full">
-                            <InputLabel value="Adjuntar archivos" />
-                            <FileUploader :multiple="true" @files-selected="form.complements[index].complementMedia = $event" />
+                            <InputLabel value="Adjuntar archivo" />
+                            <FileUploader :multiple="false" @files-selected="form.complements[index].complementMedia = $event" />
                         </div>
                         <div class="col-span-full">
                             <InputLabel value="Notas" />
@@ -368,22 +367,22 @@ import axios from "axios";
 export default {
 data() {
     const form = useForm({
-        issue_date: format(new Date(), "yyyy-MM-dd"), // Establece la fecha de hoy por defecto,
-        folio: null,
-        total_amount_sale: null,
-        invoice_amount: null,
-        currency: 'MXN',
-        payment_option: 'PUE',
-        payment_method: 'Transferencia electrónica de fondos',
-        status: 'Emitida',
-        notes: null,
-        company_branch_id: null,
-        sale_id: null,
-        media: null,
-        invoice_quantity: 1,
-        complements: [], // complementos de la factura
-        extra_invoices: [], // facturas extra a la misma venta (solo información de programación)
-    });
+            issue_date: format(new Date(), "yyyy-MM-dd"), // Establece la fecha de hoy por defecto,
+            folio: null,
+            total_amount_sale: null,
+            invoice_amount: null,
+            currency: 'MXN',
+            payment_option: 'PUE',
+            payment_method: 'Transferencia electrónica de fondos',
+            status: 'Emitida',
+            notes: null,
+            company_branch_id: null,
+            sale_id: null,
+            media: null,
+            invoice_quantity: 1,
+            complements: [], // complementos de la factura
+            extra_invoices: [], //facturas extra a la misma venta (solo información de programación)
+        });
 
     return {
         form,
@@ -437,10 +436,7 @@ components: {
     Link,
 },
 props: {
-    sales: Array,
-    sale_id: [Number, null],
-    total_amount_sale: [Number, null],
-    invoice_quantity: [Number, null],
+    sales: Array
 },
 methods: {
     store() {
@@ -477,7 +473,7 @@ methods: {
         this.form.complements.splice(index, 1);
     },
     handleSelectedSale() {
-        this.form.company_branch_id = this.sales.find(sale => sale.id === this.form.sale_id)?.company_branch?.id;
+        this.form.company_branch_id = this.sales.find(sale => sale.id === this.form.sale_id).company_branch.id;
         this.clientName = this.sales.find(sale => sale.id === this.form.sale_id).company_branch.name;
     },
     handleinvoiceQuantity() {
@@ -542,15 +538,6 @@ methods: {
             return '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-red-500"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>'
         }
     }
-},
-created() {
-    if (this.sale_id) {
-        this.form.sale_id = Number(this.sale_id);
-        this.handleSelectedSale();
-        this.form.total_amount_sale = Number(this.total_amount_sale);
-        this.form.invoice_quantity = Number(this.invoice_quantity);
-        this.form.invoice_amount = this.form.total_amount_sale / Number(this.invoice_quantity);
-    }
-},
+}
 }
 </script>
