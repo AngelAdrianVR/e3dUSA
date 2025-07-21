@@ -20,6 +20,7 @@ class Invoice extends Model implements HasMedia
         'payment_method',
         'payment_option',
         'invoice_quantity',
+        'number_of_invoice',
         'status',
         'complements',
         'extra_invoices',

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('payment_method')->nullable(); // Método de pago (efectivo, transferencia, etc)
             $table->string('payment_option')->nullable(); // Método de pago (PUE - Pago en una sola exhibición, PPD - Pago en parcialidades o diferido)
             $table->unsignedTinyInteger('invoice_quantity')->nullable(); // Número de facturas relacionadas con esa ov
+            $table->unsignedTinyInteger('number_of_invoice')->nullable(); // señala el numero de posicion de todas las facturas relacionadas a la misma venta. Ej. 2 de 3
             $table->string('status')->default('Emitida')->nullable(); // Estatus (Emitida, pendiente de pago, Parcialmente pagada, cancelada)
             $table->json('complements')->nullable(); // complementos de esa factura
             $table->json('extra_invoices')->nullable();// informacion de facturas extra a esa venta

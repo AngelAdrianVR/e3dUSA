@@ -50,7 +50,7 @@ components: {
     Link
 },
 props: {
-invoices: Array
+invoices: Object
 },
 methods: {
     handleClickInTab(tab) {
