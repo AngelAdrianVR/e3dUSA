@@ -28,7 +28,7 @@
             <div>
                 <InputLabel value="Monto total de la OV" />
                 <el-input
-                    :disabled="sale_id"
+                    :disabled="total_amount_sale"
                     placeholder="Ingresa el monto total con IVA"
                     v-model="form.total_amount_sale"
                     :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -50,7 +50,7 @@
                         </template>
                     </el-tooltip>
                 </div>
-                <el-select :disabled="!form.total_amount_sale || sale_id" @change="handleinvoiceQuantity" v-model="form.invoice_quantity" placeholder="Seleccionar" :fit-input-width="true">
+                <el-select :disabled="!form.total_amount_sale || invoice_quantity" @change="handleinvoiceQuantity" v-model="form.invoice_quantity" placeholder="Seleccionar" :fit-input-width="true">
                     <el-option
                         v-for="item in 8"
                         :key="item"
@@ -375,7 +375,7 @@ data() {
         currency: 'MXN',
         payment_option: 'PUE',
         payment_method: 'Transferencia electrónica de fondos',
-        status: 'Emitida',
+        status: 'Pendiente de pago',
         notes: null,
         company_branch_id: null,
         sale_id: null,
@@ -402,10 +402,10 @@ data() {
             },
         ],
         statuses: [
-            {
-                label: 'Emitida',
-                icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-[#08688B]"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>'
-            },
+            // {
+            //     label: 'Emitida',
+            //     icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-[#08688B]"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>'
+            // },
             {
                 label: 'Pendiente de pago',
                 icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-[#B8B30E]"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>'
@@ -544,13 +544,24 @@ methods: {
     }
 },
 created() {
-    if (this.sale_id) {
-        this.form.sale_id = Number(this.sale_id);
-        this.handleSelectedSale();
-        this.form.total_amount_sale = Number(this.total_amount_sale);
-        this.form.invoice_quantity = Number(this.invoice_quantity);
-        this.form.invoice_amount = this.form.total_amount_sale / Number(this.invoice_quantity);
+  if (this.sale_id) {
+    this.form.sale_id = Number(this.sale_id);
+    this.handleSelectedSale();
+
+    // Validar total_amount_sale
+    const totalAmount = Number(this.total_amount_sale);
+    const invoiceQty = Number(this.invoice_quantity);
+
+    this.form.total_amount_sale = isNaN(totalAmount) ? null : totalAmount;
+    this.form.invoice_quantity = isNaN(invoiceQty) ? null : invoiceQty;
+
+    // Calcular invoice_amount solo si ambos son válidos
+    if (!isNaN(totalAmount) && !isNaN(invoiceQty) && invoiceQty > 0) {
+      this.form.invoice_amount = totalAmount / invoiceQty;
+    } else {
+      this.form.invoice_amount = null;
     }
-},
+  }
+}
 }
 </script>

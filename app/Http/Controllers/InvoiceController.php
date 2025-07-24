@@ -151,12 +151,99 @@ class InvoiceController extends Controller
 
     public function edit(Invoice $invoice)
     {
-        //
+        $invoice->load('media');
+
+        // Query base
+        $sales = Sale::with('companyBranch:id,name')
+            ->latest()
+            // ->doesntHave('invoices')
+            ->take(300)
+            ->select(['id', 'company_branch_id'])
+            ->get();
+
+        return inertia('Invoice/Edit', [
+            'sales' => $sales,
+            'invoice' => $invoice,
+        ]);
     }
 
     public function update(Request $request, Invoice $invoice)
     {
-        //
+        $request->validate([
+            'folio' => 'required|string',
+            'issue_date' => 'required|date',
+            'total_amount_sale' => 'nullable',
+            'invoice_amount' => 'required|numeric|max:999999',
+            'currency' => 'nullable|string',
+            'payment_option' => 'nullable',
+            'payment_method' => 'nullable',
+            'status' => 'nullable',
+            'notes' => 'nullable|string|max:800',
+            'company_branch_id' => 'required',
+            'sale_id' => 'required',
+            'invoice_quantity' => 'required',
+
+            'complements' => 'nullable|array',
+            'complements.*.folio' => 'required|string',
+            'complements.*.payment_date' => 'required|date',
+            'complements.*.amount' => 'required|numeric',
+            'complements.*.payment_method' => 'required|string',
+            'complements.*.notes' => 'nullable|string|max:800',
+
+            'extra_invoices' => 'nullable|array',
+        ]);
+
+        $invoice->update($request->all());
+
+        // Agrega el archivo adjunto a una coleccion llamafa factura
+        if ($request->hasFile('media')) {
+            foreach ($request->file('media') as $file) {
+                $invoice
+                    ->addMedia($file)
+                    ->toMediaCollection('factura');
+            }
+        }
+
+        //Agrega los archivos de los complementos iterandolos 1 x 1
+        foreach ($request->complements ?? [] as $complementIndex => $complementData) {
+            if (isset($complementData['complementMedia']) && is_array($complementData['complementMedia'])) {
+                foreach ($complementData['complementMedia'] as $file) {
+                    if ($file instanceof \Illuminate\Http\UploadedFile) {
+                        $invoice
+                            ->addMedia($file)
+                            ->usingName('Complemento ' . ($complementIndex + 1))
+                            ->toMediaCollection('complementos');
+                    }
+                }
+            }
+        }
+
+        // crea recordatorios de facturas programadas en caso de que haya
+        if ($request->extra_invoices) {
+            $user = auth()->user();
+
+            foreach ($request->extra_invoices as $key => $reminderData) {
+                // Omitir el primer registro (índice 0) porque es la factura ya creada. las otras son las programadas
+                if ($key === 0) {
+                    continue;
+                }
+
+                $reminder = Calendar::create([
+                    'type' => 'Tarea',
+                    'title' => 'Factura programada para OV-' . $request->sale_id . '. Para fecha ' . $reminderData['reminder_date'] . ' a las ' . $reminderData['reminder_time'],
+                    'repeater' => 'No se repite',
+                    'description' => 'Se programó una factura relacionada a la OV-' . $request->sale_id,
+                    'status' => 'Pendiente',
+                    'start_date' => $reminderData['reminder_date'],
+                    'start_time' => $reminderData['reminder_time'],
+                    'user_id' => $user->id,
+                ]);
+
+                $user->notify(new ScheduleCreateInvoiceReminder($reminder));
+            }
+        }
+
+        return to_route('invoices.show', $invoice);
     }
 
     public function destroy(Invoice $invoice)
@@ -221,16 +308,93 @@ class InvoiceController extends Controller
             'complements.*.notes' => 'nullable|string',
         ]);
 
-         // Obtener los complementos actuales si existen
+        // Cambia la forma de pago a pdd si se crea un complemento
+        if ( $invoice->payment_option === 'PUE' ) {
+            $invoice->payment_option = 'PDD';
+            $invoice->save();
+        }
+
+        // Obtener los complementos actuales para guardar el complemento que se ha creado
         $existingComplements = $invoice->complements ?? [];
-
-        // Unir los existentes con los nuevos
         $mergedComplements = array_merge($existingComplements, $validated['complements']);
-
-        // Guardar
         $invoice->complements = $mergedComplements;
-        $invoice->save();;
+        $invoice->save();
+
+        // Agregar el archivo al complemento creado ------------------------------------------------------
+        // Contar complementos actuales para numerar correctamente el archivo
+        $existingCount = is_array($invoice->complements) ? count($invoice->complements) : 0;
+
+        // Como solo se agrega 1 complemento por request, tomamos el primero
+        $complementData = $request->complements[0] ?? null;
+
+        if ($complementData && isset($complementData['complementMedia']) && is_array($complementData['complementMedia'])) {
+            foreach ($complementData['complementMedia'] as $file) {
+                if ($file instanceof \Illuminate\Http\UploadedFile) {
+                    // El número de este nuevo complemento es el siguiente
+                    $complementNumber = $existingCount;
+
+                    $invoice
+                        ->addMedia($file)
+                        ->usingName('Complemento ' . $complementNumber)
+                        ->toMediaCollection('complementos');
+                }
+            }
+        }
+
+        // Evaluar si es una sola factura
+        if ($invoice->invoice_quantity == 1) {
+            $totalPaid = collect($invoice->complements)->sum('amount');
+            $invoice->status = $totalPaid >= $invoice->total_amount_sale ? 'Pagada' : 'Parcialmente pagada';
+            $invoice->save();
+            return;
+        }
+
+        // Si tiene varias facturas:
+        $saleId = $invoice->sale_id;
+        $allInvoices = Invoice::where('sale_id', $saleId)
+            ->orderBy('number_of_invoice')
+            ->get();
+
+        foreach ($allInvoices as $index => $factura) {
+            $hasComplements = is_array($factura->complements) && count($factura->complements) > 0;
+            $complementSum = $hasComplements
+                ? collect($factura->complements)->sum('amount')
+                : 0;
+
+            if ($hasComplements) {
+                $factura->status = $complementSum >= $factura->invoice_amount
+                    ? 'Pagada'
+                    : 'Parcialmente pagada';
+            }
+
+            $factura->save();
+        }
+        
+        return;
     }
+
+    // public function storeComplement(Request $request, Invoice $invoice)
+    // {
+    //     // Validar estructura básica del complemento
+    //     $validated = $request->validate([
+    //         'complements' => 'required|array',
+    //         'complements.*.folio' => 'required|string',
+    //         'complements.*.payment_date' => 'required|date',
+    //         'complements.*.amount' => 'required|numeric',
+    //         'complements.*.payment_method' => 'nullable|string',
+    //         'complements.*.notes' => 'nullable|string',
+    //     ]);
+
+    //      // Obtener los complementos actuales si existen
+    //     $existingComplements = $invoice->complements ?? [];
+
+    //     // Unir los existentes con los nuevos
+    //     $mergedComplements = array_merge($existingComplements, $validated['complements']);
+
+    //     // Guardar
+    //     $invoice->complements = $mergedComplements;
+    //     $invoice->save();;
+    // }
 
 
 }

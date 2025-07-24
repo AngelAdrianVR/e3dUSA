@@ -4,18 +4,12 @@
             <p class="text-secondary mb-2 col-span-full">Datos de la factura</p>
             <span class="text-gray-500">Folio de factura</span>
             <span>{{ invoice.folio }}</span>
-            <span class="text-gray-500">OV relacionada</span>
-            <span @click="$inertia.visit(route('sales.show', invoice.sale_id))" class="underline text-secondary cursor-pointer">{{ invoice.sale_id }}</span>
             <span class="text-gray-500">Fecha de emisión</span>
             <span>{{ dateFormat(invoice.issue_date) }}</span>
-            <span class="text-gray-500">Cantidad de facturas</span>
-            <span>{{ invoice.invoice_quantity }}</span>
-            <span class="text-gray-500">Monto total</span>
-            <span>${{ invoice.total_amount_sale?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
             <span class="text-gray-500">Monto de esta factura</span>
             <span>${{ invoice.invoice_amount?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
             <span class="text-gray-500">Pendiente de pago</span>
-            <span>${{ pendingAmount.replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
+            <span>${{ remainingInvoiceAmount }}</span>
             <span class="text-gray-500">Forma de pago</span>
             <span>{{ invoice.payment_option === 'PUE' ? invoice.payment_option + ' - Pago en una sola exhibición' : invoice.payment_option + ' - Pago en parcialidades o diferido' }}</span>
             <span class="text-gray-500">Método de pago</span>
@@ -81,52 +75,7 @@
             </section>
             <p v-else class="text-[#9A9A9A]">Sin complementos de pago aún</p>
 
-            <!-- Facturas relacionadas -->
-            <el-divider class="col-span-full" />
-            <p class="text-secondary mb-4 col-span-full">Facturas relacionadas a la orden</p>
-            <div class="col-span-full" v-if="invoice.invoice_quantity > 1">
-                <div
-                    class="grid grid-cols-2 gap-y-2"
-                    v-for="index in invoice.invoice_quantity"
-                    :key="index"
-                >
-                    <span class="text-gray-500">Factura {{ index }} </span>
-
-                    <!-- Mostrar "Es esta factura" si coincide con el número actual -->
-                    <div v-if="invoice.number_of_invoice === index" class="flex items-center space-x-2">
-                        <p class="text-green-600">Es esta factura</p>
-                    </div>
-
-                    <!-- Si ya existe otra factura con ese número -->
-                    <Link
-                        v-else-if="extra_invoices.find(i => i.number_of_invoice === index)"
-                        :href="route('invoices.show', extra_invoices.find(i => i.number_of_invoice === index)?.id)"
-                    >
-                        <span class="text-secondary underline cursor-pointer">
-                            {{ extra_invoices.find(i => i.number_of_invoice === index)?.folio }}
-                        </span>
-                    </Link>
-
-                    <!-- Si no existe ninguna -->
-                    <div v-else class="flex items-center space-x-2">
-                        <p>Sin registro aún</p>
-                        <SecondaryButton
-                            @click="$inertia.visit(route('invoices.create', { 
-                                sale_id: invoice.sale_id, 
-                                total_amount_sale: invoice.total_amount_sale, 
-                                invoice_quantity: invoice.invoice_quantity 
-                            }))"
-                            class="!py-0"
-                            >
-                            Crear factura
-                        </SecondaryButton>
-                    </div>
-                </div>
-            </div>
-
-            <p class="text-sm text-[#9A9A9A] col-span-full" v-else>
-                No hay más facturas relacionadas a la orden de venta
-            </p>
+            
         </section>
 
         <!-- Lado derecho de la información -->
@@ -150,6 +99,66 @@
                 <span class="text-gray-500">Teléfono</span>
                 <span>{{ contact.phone }}</span>
             </div>
+
+            <!-- Informaciond e la ov -->
+            <p class="text-secondary mb-2 col-span-full">Datos de la OV</p>
+            <span class="text-gray-500">OV relacionada</span>
+            <span @click="$inertia.visit(route('sales.show', invoice.sale_id))" class="underline text-secondary cursor-pointer">{{ invoice.sale_id }}</span>
+            <span class="text-gray-500">Cantidad de facturas</span>
+            <span>{{ invoice.invoice_quantity }}</span>
+            <span class="text-gray-500">Monto total</span>
+            <span>${{ invoice.total_amount_sale?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
+            <span class="text-gray-500">Pendiente de pago</span>
+            <span>${{ pendingSaleAmount.replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
+
+            <!-- Facturas relacionadas -->
+            <p class="text-black mb-2 mt-5 col-span-full font-semibold">Facturas relacionadas a la orden</p>
+            <div class="col-span-full" v-if="invoice.invoice_quantity > 1">
+            <div
+                class="grid grid-cols-2 gap-y-2"
+                v-for="index in invoice.invoice_quantity"
+                :key="index"
+            >
+                <span class="text-gray-500">Factura {{ index }} </span>
+
+                <!-- Mostrar "Es esta factura" si coincide con el número actual -->
+                <div v-if="invoice.number_of_invoice === index" class="flex items-center space-x-2">
+                    <p class="text-green-600">Es esta factura</p>
+                </div>
+
+                <!-- Si ya existe otra factura con ese número -->
+                <Link
+                    v-else-if="extra_invoices.find(i => i.number_of_invoice === index)"
+                    :href="route('invoices.show', extra_invoices.find(i => i.number_of_invoice === index)?.id)"
+                >
+                    <p>
+                        <span class="text-secondary underline cursor-pointer">
+                            {{ extra_invoices.find(i => i.number_of_invoice === index)?.folio }}
+                        </span>
+                        <span class="text-gray-500">- {{ extra_invoices.find(i => i.number_of_invoice === index)?.status }}</span>
+                    </p>
+                </Link>
+
+                <!-- Si no existe ninguna -->
+                <div v-else class="flex items-center space-x-2">
+                    <p>Sin registro aún</p>
+                    <SecondaryButton
+                        @click="$inertia.visit(route('invoices.create', { 
+                            sale_id: invoice.sale_id, 
+                            total_amount_sale: invoice.total_amount_sale, 
+                            invoice_quantity: invoice.invoice_quantity 
+                        }))"
+                        class="!py-0"
+                        >
+                        Crear factura
+                    </SecondaryButton>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-sm text-[#9A9A9A] col-span-full" v-else>
+            No hay más facturas relacionadas a la orden de venta
+        </p>
         </section>
     </main>
 </template>
@@ -175,24 +184,55 @@ props:{
     extra_invoices: Array
 },
 computed: {
-  pendingAmount() {
-    const invoice = this.invoice;
+    pendingSaleAmount() {
+        const invoice = this.invoice;
+        const total = invoice.total_amount_sale || 0;
 
-    const total = invoice.total_amount_sale || 0;
-    const principalPaid = invoice.invoice_amount || 0;
+        // Calcular lo pagado del invoice principal según su estado
+        let principalPaid = 0;
+        
+        if (invoice.status === "Pagada") {
+            principalPaid = invoice.invoice_amount || 0;
+        } else if (invoice.status === "Parcialmente pagada") {
+            const complements = Array.isArray(invoice.complements) ? invoice.complements : [];
+            principalPaid = complements.reduce((sum, c) => sum + (Number(c.amount) || 0), 0);
+        }
 
-    // Si extra_invoices es null o no es un array, asumimos que no hay pagos extra
-    const extras = Array.isArray(this.extra_invoices) ? this.extra_invoices : [];
+        // Verificar extras
+        const extras = Array.isArray(this.extra_invoices) ? this.extra_invoices : [];
 
-    // Suma los invoice_amount de cada extra
-    const extraPaid = extras.reduce((sum, extra) => {
-      return sum + (extra.invoice_amount || 0);
-    }, 0);
+        const extraPaid = extras.reduce((sum, extra) => {
+            if (extra.status === "Pagada") {
+            return sum + (extra.invoice_amount || 0);
+            }
 
-    const pending = total - principalPaid - extraPaid;
+            if (extra.status === "Parcialmente pagada") {
+            const complements = Array.isArray(extra.complements) ? extra.complements : [];
+            const complementSum = complements.reduce((cSum, c) => cSum + (Number(c.amount) || 0), 0);
+            return sum + complementSum;
+            }
 
-    return Math.max(pending, 0).toFixed(2);
-  }
+            return sum; // Pendiente de pago u otro estado
+        }, 0);
+
+        const pending = total - principalPaid - extraPaid;
+
+        return Math.max(pending, 0).toFixed(2);
+    },
+    remainingInvoiceAmount() {
+        const invoiceAmount = this.invoice.invoice_amount || 0;
+
+        const complements = Array.isArray(this.invoice.complements)
+            ? this.invoice.complements.reduce((sum, comp) => {
+                return sum + (parseFloat(comp.amount) || 0);
+            }, 0)
+            : 0;
+
+        const remaining = Math.max(invoiceAmount - complements, 0);
+
+        // Formatea con comas (ej: 12,345.67)
+        return remaining.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
 },
 methods:{
     dateFormat(date) {

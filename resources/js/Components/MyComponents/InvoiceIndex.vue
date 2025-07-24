@@ -8,7 +8,7 @@
     </div>
     <main>
         <div class="flex space-x-6 items-center justify-center text-[13px] mt-2">
-            <p class="flex flex-col items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-[#08688B]"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>Emitida</p>
+            <!-- <p class="flex flex-col items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-[#08688B]"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>Emitida</p> -->
             <p class="flex flex-col items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-[#B8B30E]"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>Pendiente de pago</p>
             <p class="flex flex-col items-center justify-center"><svg width="21" height="21" viewBox="0 0 24 24" class="text-[#C4620C]" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.30078 19.5173C2.8856 19.5168 3.47013 19.5249 4.05421 19.5415M19.5508 19.5173V20.5223C19.5508 21.2763 18.8248 21.8163 18.0978 21.6183C14.7336 20.7044 11.2996 20.0859 7.83503 19.7682M3.80078 5.2673V6.0173C3.80078 6.21621 3.72176 6.40698 3.58111 6.54763C3.44046 6.68828 3.24969 6.7673 3.05078 6.7673H2.30078M2.30078 6.7673V6.3923C2.30078 5.7713 2.80478 5.2673 3.42578 5.2673C8.74133 5.2673 9.35662 5.2673 14.6722 5.2673M2.30078 6.7673V15.7673M20.3008 5.2673V6.0173C20.3008 6.4313 20.6368 6.7673 21.0508 6.7673H21.8008M20.3008 5.2673H20.6758C21.2968 5.2673 21.8008 5.7713 21.8008 6.3923V16.1423C21.8008 16.7633 21.2968 17.2673 20.6758 17.2673H20.3008M20.3008 5.2673C19.6254 5.2673 19.5241 5.2673 18.8487 5.2673M2.30078 15.7673V16.1423C2.30078 16.4407 2.41931 16.7268 2.63029 16.9378C2.84126 17.1488 3.12741 17.2673 3.42578 17.2673H3.80078M2.30078 15.7673H3.05078C3.24969 15.7673 3.44046 15.8463 3.58111 15.987C3.72176 16.1276 3.80078 16.3184 3.80078 16.5173V17.2673M20.3008 17.2673V16.5173C20.3008 16.3184 20.3798 16.1276 20.5205 15.987C20.6611 15.8463 20.8519 15.7673 21.0508 15.7673H21.8008M20.3008 17.2673C20.3008 17.2673 14.9222 17.2673 9.92946 17.2673M3.80078 17.2673C3.80078 17.2673 4.41681 17.2673 5.69804 17.2673M12.0508 14.2673C12.8464 14.2673 13.6095 13.9512 14.1721 13.3886C14.7347 12.826 15.0508 12.0629 15.0508 11.2673C15.0508 11.0133 15.0186 10.7626 14.9564 10.5207M12.0508 8.2673C11.2551 8.2673 10.4921 8.58337 9.92946 9.14598C9.36685 9.70859 9.05078 10.4716 9.05078 11.2673C9.05078 11.694 9.14168 12.1113 9.31274 12.4933M19.0679 2.41113L4.43777 21.6183M18.0508 11.2673H18.0588V11.2753H18.0508V11.2673ZM6.05078 11.2673H6.05878V11.2753H6.05078V11.2673Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Parcialmente pagada</p>
             <p class="flex flex-col items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-green-500"><path stroke-linecap="round" stroke-linejoin="round" d="M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 0 1 9 9v.375M10.125 2.25A3.375 3.375 0 0 1 13.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 0 1 3.375 3.375M9 15l2.25 2.25L15 12" /></svg>Pagada</p>
@@ -50,22 +50,26 @@
                     @selection-change="handleSelectionChange" ref="multipleTableRef"
                     :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="30" />
-                    <el-table-column label="folio" width="100">
+                    <el-table-column
+                        label="Folio"
+                        prop="folio"
+                        sortable
+                        :sort-method="sortByFolio"
+                        width="160"
+                        >
                         <template #default="scope">
                             <div class="flex">
-                                <p class="mr-2">
-                                    <el-tooltip :content="scope.row.status"
-                                        placement="top">
-                                        <span v-html="statusIcon(scope.row.status)"></span>
-                                    </el-tooltip>
-                                </p>
-                                <p class="flex-0 w-[80%]">{{ scope.row.folio }}</p>
-                                <!-- <p class="flex-0 w-[80%]">{{ String(scope.row.id).padStart(4, '0') }}</p> -->
+                            <p class="mr-2">
+                                <el-tooltip :content="scope.row.status" placement="top">
+                                <span v-html="statusIcon(scope.row.status)"></span>
+                                </el-tooltip>
+                            </p>
+                            <p class="flex-0 w-[80%]">{{ scope.row.folio }}</p>
                             </div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="created_by" label="Creado por" />
-                    <el-table-column prop="created_at" label="Creado el">
+                    <el-table-column prop="created_at" label="Creado el" width="140" sortable>
                         <template #default="scope">
                             <p>{{ formatDateTime(scope.row.created_at) }}</p>
                         </template>
@@ -75,7 +79,7 @@
                             <p>{{ scope.row.number_of_invoice }} de {{ scope.row.invoice_quantity }}</p>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="sale_id" label="Orden de venta">
+                    <el-table-column prop="sale_id" label="Orden de venta" width="150" sortable>
                         <template #default="scope">
                             <p @click.stop="$inertia.visit(route('sales.show', scope.row.sale_id))" class="text-blue-500 underline">{{ scope.row.sale_id }}</p>
                         </template>
@@ -113,13 +117,13 @@
                                             Editar</el-dropdown-item>
                                             <div v-if="scope.row.status !== 'Cancelada' && scope.row.status !== 'Pagada'">
                                                 <p class="text-gray-400 text-xs text-center px-3 my-1">Cambiar estatus</p>
-                                                <el-dropdown-item
+                                                <!-- <el-dropdown-item
                                                     :command="'changeStatus|' + scope.row.id + '|Emitida'">
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-[14px] mr-2">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                                                     </svg>
                                                     <span class="text-xs">Emitida</span>
-                                                </el-dropdown-item>
+                                                </el-dropdown-item> -->
                                                 <el-dropdown-item
                                                     :command="'changeStatus|' + scope.row.id + '|Pendiente de pago'">
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-[14px] mr-2">
@@ -195,6 +199,11 @@ methods:{
     formatDateTime(dateTimeString) {
         if (!dateTimeString) return '';
         return format(parseISO(dateTimeString), 'dd MMM yyy, hh:mm a', { locale: es });
+    },
+    sortByFolio(a, b) {
+        const folioA = a.folio?.toString().toLowerCase() || '';
+        const folioB = b.folio?.toString().toLowerCase() || '';
+        return folioA.localeCompare(folioB, 'es', { numeric: true });
     },
     handleRowClick(row) {
         this.$inertia.get(route('invoices.show', row.id));
@@ -312,7 +321,6 @@ methods:{
 
                 if (response.status === 200) {
                     this.filteredInvoices = response.data.items;
-                    console.log(this.filteredInvoices);
                     // this.pagination = response.data.items; //se cambia la paginacion a los encontrados
                 }
             }

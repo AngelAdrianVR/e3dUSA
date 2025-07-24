@@ -34,6 +34,7 @@ class Sale extends Model implements HasMedia
         'sent_at',
         'sent_by',
         'shipping_type',
+        'total_amount', // costo total de la venta
         'user_id',
         'company_branch_id',
         'contact_id',

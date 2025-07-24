@@ -34,6 +34,7 @@ return new class extends Migration
             $table->string('shipping_type')->nullable(); //unica o parcialidades
             $table->string('shipping_option')->nullable();
             $table->string('freight_option')->nullable(); //costo normal cargado al cliente, Cargo del flete en precio del producto,Emblems3d absorbe el costo del flete...
+            $table->float('total_amount')->unsigned()->nullable(); // Costo total de la venta con iva
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('company_branch_id')->constrained()->cascadeOnDelete();
             $table->foreignId('oportunity_id')->nullable()->constrained()->cascadeOnDelete();

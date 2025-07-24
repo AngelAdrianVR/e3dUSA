@@ -69,6 +69,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 // Route::get('register-keychains', function () {
 //     // editar productos de proveedor con id 9
@@ -314,9 +315,11 @@ Route::get('sales/print/{sale}', [SaleController::class, 'print'])->name('sales.
 Route::post('sales/update-with-media/{sale}', [SaleController::class, 'updateWithMedia'])->name('sales.update-with-media')->middleware('auth');
 Route::get('sales-get-unauthorized', [SaleController::class, 'getUnauthorized'])->name('sales.get-unauthorized');
 Route::get('sales-get-matches/{query}', [SaleController::class, 'getMatches'])->name('sales.get-matches');
+Route::get('sales-get-matches-no-invoices/{query}', [SaleController::class, 'getMatchesNoInvoives'])->name('sales.get-matches-no-invoices');
 Route::get('sales-quality-certificate/{sale_id}', [SaleController::class, 'QualityCertificate'])->name('sales.quality-certificate');
 Route::get('sales-fetch-filtered/{filter}', [SaleController::class, 'fetchFiltered'])->name('sales.fetch-filtered');
 Route::get('sales-check-if-has-sale/{catalog_prroduct_company_id}', [SaleController::class, 'checkIfHasSale'])->name('sales.check-if-has-sale');
+Route::get('sales-fetch-no-invoices', [SaleController::class, 'fetchSalesNoInvoices'])->name('sales.get-no-invoices');
 
 
 // ------- CRM(Companybranches sucursales Routes)  ---------
@@ -604,7 +607,7 @@ Route::get('sale-analitics-get-estatistics-data/{date}', [SaleAnaliticController
 
 //------------------ invoices routes ----------------
 Route::resource('invoices', InvoiceController::class)->middleware('auth');
-Route::post('invoices-change-status/{invoice}', [InvoiceController::class, 'changeStatus'])->name('invoicess.change-status')->middleware('auth');
+Route::post('invoices-change-status/{invoice}', [InvoiceController::class, 'changeStatus'])->name('invoices.change-status')->middleware('auth');
 Route::post('invoices-get-matches', [InvoiceController::class, 'getMatches'])->name('invoices.get-matches');
 Route::post('invoices/massive-delete', [InvoiceController::class, 'massiveDelete'])->name('invoices.massive-delete');
 Route::post('invoices-store-complement/{invoice}', [InvoiceController::class, 'storeComplement'])->name('invoices.store-complement');
@@ -618,6 +621,18 @@ Route::post('/upload-image', [FileUploadController::class, 'upload'])->name('upl
 
 //contact routes ----------------------------------------------------------------
 Route::put('contacts-update/{contact}', [ContactController::class, 'update'])->name('contacts.update')->middleware('auth');
+
+
+// eliminacion de archivo desde componente FileView
+Route::delete('/media/{media}', function (Media $media) {
+    try {
+        $media->delete(); // Elimina el archivo y su registro
+
+        return response()->json(['message' => 'Archivo eliminado correctamente.'], 200);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Error al eliminar el archivo.'], 500);
+    }
+})->name('media.delete-file');
 
 
 //artisan commands -------------------
