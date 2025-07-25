@@ -20,7 +20,7 @@
                     <SalesNoInvoiceIndex />
                 </el-tab-pane>
                 <el-tab-pane label="Facturas programadas" name="3">
-                    Facturas programadas
+                    <ProgrammedInvoicesIndex />
                 </el-tab-pane>
             </el-tabs>
 
@@ -34,6 +34,7 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PaginationWithNoMeta from "@/Components/MyComponents/PaginationWithNoMeta.vue";
 import InvoiceIndex from "@/Components/MyComponents/InvoiceIndex.vue";
 import SalesNoInvoiceIndex from "@/Components/MyComponents/SalesNoInvoiceIndex.vue";
+import ProgrammedInvoicesIndex from "@/Components/MyComponents/ProgrammedInvoicesIndex.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 
@@ -44,6 +45,7 @@ data() {
     }
 },
 components: {
+    ProgrammedInvoicesIndex,
     PaginationWithNoMeta,
     SalesNoInvoiceIndex,
     SecondaryButton,

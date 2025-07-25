@@ -58,6 +58,11 @@ class Sale extends Model implements HasMedia
         return $this->belongsTo(Contact::class);
     }
 
+    public function programedInvoices(): HasMany
+    {
+        return $this->hasMany(ProgramedInvoice::class);
+    }
+
     public function quote(): BelongsTo
     {
         return $this->belongsTo(Quote::class);

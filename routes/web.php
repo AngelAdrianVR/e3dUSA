@@ -39,6 +39,7 @@ use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\ProductionCostController;
 use App\Http\Controllers\ProductionProgressController;
+use App\Http\Controllers\ProgramedInvoiceController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectGroupController;
 use App\Http\Controllers\ProspectController;
@@ -611,6 +612,11 @@ Route::post('invoices-change-status/{invoice}', [InvoiceController::class, 'chan
 Route::post('invoices-get-matches', [InvoiceController::class, 'getMatches'])->name('invoices.get-matches');
 Route::post('invoices/massive-delete', [InvoiceController::class, 'massiveDelete'])->name('invoices.massive-delete');
 Route::post('invoices-store-complement/{invoice}', [InvoiceController::class, 'storeComplement'])->name('invoices.store-complement');
+
+
+//------------------ programmed invoices routes ----------------
+Route::get('programmed-invoices-get-all', [ProgramedInvoiceController::class, 'getAll'])->name('programmed-invoices.get-all')->middleware('auth');
+Route::post('programmed-invoices-get-matches', [ProgramedInvoiceController::class, 'getMatches'])->name('programmed-invoices.get-matches');
 
 
 //------------------ Kiosk routes ----------------

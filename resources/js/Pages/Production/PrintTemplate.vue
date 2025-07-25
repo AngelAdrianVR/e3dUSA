@@ -3,7 +3,7 @@
     <Head title="Orden de producción" />
     <div v-for="(product, index) in ordered_products" :key="index"
         class="mx-10 grid grid-cols-4 gap-3 mb-7 border-b-2 ">
-        <div class="grid grid-cols-2 gap-4" v-if="product.catalog_product_company.catalog_product.media?.length > 1">
+        <!-- <div class="grid grid-cols-2 gap-4" v-if="product.catalog_product_company.catalog_product.media?.length > 1">
             <figure v-for="image in product.catalog_product_company.catalog_product.media" :key="image"
                 class="rounded-[10px]">
                 <img class="object-cover rounded-md size-48" :src="image.original_url" alt="">
@@ -12,7 +12,55 @@
         <figure v-else class="rounded-[10px]">
             <img class="object-contain rounded-md"
                 :src="product.catalog_product_company.catalog_product.media[0]?.original_url" alt="">
+        </figure> -->
+        <div
+            class="grid grid-cols-2 gap-4"
+            v-if="product.catalog_product_company.catalog_product.media?.length > 1"
+            >
+            <figure
+                v-for="image in product.catalog_product_company.catalog_product.media"
+                :key="image.original_url"
+                class="rounded-[10px] flex justify-center items-center w-48 h-48 overflow-hidden"
+            >
+                <img
+                class="rounded-md max-w-full max-h-full transition-transform duration-300"
+                :class="{
+                    'rotate-90': imageOrientations[image.original_url] === 'rotate',
+                    'object-contain': imageOrientations[image.original_url] === 'normal',
+                }"
+                :src="image.original_url"
+                @load="handleImageLoad(image.original_url, $event)"
+                alt=""
+                />
+            </figure>
+        </div>
+
+        <figure
+            v-else
+            class="rounded-[10px] flex justify-center items-center w-full h-full overflow-hidden"
+            >
+            <img
+                class="rounded-md max-w-full max-h-full transition-transform duration-300"
+                :class="{
+                    'rotate-90':
+                        imageOrientations[
+                        product.catalog_product_company.catalog_product.media[0]?.original_url
+                        ] === 'rotate',
+                    'object-contain':
+                        imageOrientations[
+                        product.catalog_product_company.catalog_product.media[0]?.original_url
+                        ] === 'normal',
+                }"
+                :src="product.catalog_product_company.catalog_product.media[0]?.original_url"
+                @load="
+                handleImageLoad(
+                    product.catalog_product_company.catalog_product.media[0]?.original_url,
+                    $event
+                )"
+                alt=""
+            />
         </figure>
+
         <div class="col-span-3">
             <div class="flex justify-between font-bold uppercase text-sm">
                 <div class="flex items-center space-x-2">
@@ -93,6 +141,9 @@
                     </span>
                 </p>
             </div>
+
+            <!-- Area operativa -->
+            <el-divider content-position="center">Área operativa</el-divider>
             <div class="mt-2 text-xs flex">
                 <p class="text-primary w-1/2">Fecha y hora de inicio:</p>
                 <p class="text-primary w-1/2">Fecha y hora de término:</p>
@@ -122,6 +173,11 @@ import { es } from 'date-fns/locale';
 import { Head } from '@inertiajs/vue3';
 
 export default {
+    data() {
+        return {
+            imageOrientations: {}, // { [image.original_url]: 'rotate' | 'normal' }
+        }
+    },
     components: {
         Head,
     },
@@ -130,6 +186,17 @@ export default {
         folio: Array,
     },
     methods: {
+        procesarUrlImagenLocal(originalUrl) {
+            // Reemplaza la parte inicial de la URL
+            // const nuevaUrl = originalUrl.replace('https://https://intranetemblems3d.dtw.com.mx/', 'http://www.intranetemblems3d.dtw.com.mx');
+            const nuevaUrl = originalUrl?.replace('http://localhost:8000', 'https://intranetemblems3d.dtw.com.mx/');  // para hacer pruebas en local
+            return nuevaUrl;
+        },
+        handleImageLoad(imageUrl, event) {
+            const img = event.target;
+            const isLandscape = img.naturalWidth > img.naturalHeight;
+            this.imageOrientations[imageUrl] = isLandscape ? 'rotate' : 'normal';
+        },
         formattedLastUpdate(productData) {
             const { new_date, old_date, new_updated_by } = productData;
             const lastDate = new_date || old_date

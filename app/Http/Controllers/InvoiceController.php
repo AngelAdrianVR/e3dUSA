@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\RecordDeleted;
 use App\Models\Calendar;
 use App\Models\Invoice;
+use App\Models\ProgramedInvoice;
 use App\Models\Sale;
 use App\Notifications\ScheduleCreateInvoiceReminder;
 use Illuminate\Http\Request;
@@ -115,6 +116,16 @@ class InvoiceController extends Controller
                 if ($key === 0) {
                     continue;
                 }
+
+                ProgramedInvoice::create([
+                    'programed_by' => $user->name,
+                    'reminder_date' => $reminderData['reminder_date'],
+                    'reminder_time' => $reminderData['reminder_time'],
+                    'amount' => $reminderData['invoice_amount'],
+                    'number_of_invoice' => $key + 1,
+                    'sale_id' => $invoice->sale_id,
+                    'company_branch_id' => $invoice->company_branch_id,
+                ]);
 
                 $reminder = Calendar::create([
                     'type' => 'Tarea',
