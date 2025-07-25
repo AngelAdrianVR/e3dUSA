@@ -14,7 +14,7 @@
             class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md md:grid grid-cols-2 gap-4">
             <div>
                 <InputLabel value="Orden de venta relacionada*" />
-                <el-select :disabled="sale_id" v-model="form.sale_id" @change="handleSelectedSale"
+                <el-select :disabled="sale_id != null" v-model="form.sale_id" @change="handleSelectedSale"
                     placeholder="Seleccionar" :fit-input-width="true">
                     <el-option v-for="item in sales" :key="item" :label="'OV-' + item.id" :value="item.id" />
                 </el-select>
@@ -37,6 +37,7 @@
                     $
                     </template>
                 </el-input>
+                <InputError :message="form.errors.total_amount_sale" />
             </div>
             <div>
                 <div class="flex space-x-2 items-center">
@@ -84,6 +85,7 @@
                     <InputLabel value="Monto de esta factura" />
                     <el-input
                         placeholder="Ingresa el monto total con IVA de esta factura"
+                        :disabled="invoice_amount != null"
                         v-model="form.invoice_amount"
                         :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                         :parser="(value) => value.replace(/\$\s?|(,*)/g, '')">
@@ -184,7 +186,7 @@
                 </div>
             </section>
 
-            <section class="col-span-full md:grid grid-cols-2 gap-4" v-if="form.invoice_quantity > 1 && !sale_id">
+            <section class="col-span-full md:grid grid-cols-2 gap-4" v-if="form.invoice_quantity > 1 && !invoice_quantity">
                 <el-divider content-position="left" class="col-span-full">Programación de facturas</el-divider>
                 <p class="text-sm col-span-full">Programa las fechas y montos de las facturas que emitirás. Recibirás un recordatorio cuando sea momento de capturarlas. 
                     Puedes consultar esta programación en el módulo de Facturas, en la pestaña “Programación de facturas”</p>
@@ -240,6 +242,7 @@
                                 v-model="form.extra_invoices[index].reminder_date"
                                 type="date"
                                 placeholder="Selecciona la fecha de recordatorio"
+                                :disabled-date="disabledPastDates"
                                 class="!w-full"
                             />
                         </div>
@@ -247,9 +250,9 @@
                             <InputLabel value="Hora" />
                             <el-time-select
                                 v-model="form.extra_invoices[index].reminder_time"
-                                start="00:00"
+                                start="06:00"
                                 step="00:30"
-                                end="23:59"
+                                end="24:00"
                                 placeholder="Selecciona la hora de recordatorio"
                                 format="hh:mm A"
                                 class="!w-full"
@@ -303,12 +306,16 @@
                             <el-input
                                 placeholder="Ingresa el monto del complemento"
                                 v-model="form.complements[index].amount"
+                                @blur="showMaxComplementValidation = false; showMaxAmountComplement = false"
+                                @input="index > 0 ? handleAmountInput(index) : complementValidation(index)"
                                 :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :parser="(value) => value.replace(/\$\s?|(,*)/g, '')">
                                 <template #prepend>
                                 $
                                 </template>
                             </el-input>
+                            <p v-if="showMaxComplementValidation" class="text-xs text-primary">el monto debe ser menor que el monto de esta factura </p>
+                            <p v-if="showMaxAmountComplement" class="text-xs text-primary">el monto restante es de {{ remainingAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</p>
                             <InputError :message="form.errors[`complements.${index}.amount`]" />
                         </div>
                         <div>
@@ -387,6 +394,8 @@ data() {
 
     return {
         form,
+        showMaxAmountComplement: false, // valida cuando hay mas de un complemento
+        showMaxComplementValidation: false, // valida el primer complemento para que sea menor al monto de la factura
         clientName: null,
         periodicityExtraInvoices: null, // periodicidad para asignacion rapida de fecha a las facturas extra
         currencies: ['MXN', 'USD'],
@@ -441,6 +450,22 @@ props: {
     sale_id: [Number, null],
     total_amount_sale: [Number, null],
     invoice_quantity: [Number, null],
+    invoice_amount: [Number, null],
+},
+computed:{
+    remainingAmount() {
+        const invoiceAmount = this.form.invoice_amount || 0;
+
+        // Sumamos todos los montos de los complementos (excepto el que se está editando si quieres prevenir doble conteo)
+        const complements = Array.isArray(this.form.complements)
+            ? this.form.complements.reduce((sum, comp) => {
+                return sum + (parseFloat(comp.amount) || 0);
+            }, 0)
+            : 0;
+
+        // Retornamos el restante (evitamos negativos)
+        return Math.max(invoiceAmount - complements, 0);
+    }
 },
 methods: {
     store() {
@@ -462,6 +487,28 @@ methods: {
                 });
             },
         });
+    },
+    disabledPastDates(date) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // quitar hora para comparar solo fechas
+        return date < today;
+    },
+    complementValidation(index) {
+        let val = parseFloat(this.form.complements[index].amount || 0);
+
+        if ( val >= this.form.invoice_amount ) {
+            this.showMaxComplementValidation = true;
+            this.form.complements[index].amount = null;
+        }
+    },
+    handleAmountInput(index) {
+        let val = parseFloat(this.form.complements[index].amount || 0);
+        const remaining = this.remainingAmount;
+
+        if (val > remaining) {
+            // this.form.complements[index].amount = remaining;
+            this.showMaxAmountComplement = true;
+        }
     },
     addComplement() {
         this.form.complements.push({
@@ -544,24 +591,26 @@ methods: {
     }
 },
 created() {
-  if (this.sale_id) {
-    this.form.sale_id = Number(this.sale_id);
-    this.handleSelectedSale();
+    if (this.sale_id) {
+        this.form.sale_id = Number(this.sale_id);
+        this.handleSelectedSale();
 
-    // Validar total_amount_sale
-    const totalAmount = Number(this.total_amount_sale);
-    const invoiceQty = Number(this.invoice_quantity);
+        const totalAmount = this.total_amount_sale;
+        const invoiceQty = this.invoice_quantity;
+        const invoiceAmount = this.invoice_amount;
 
-    this.form.total_amount_sale = isNaN(totalAmount) ? null : totalAmount;
-    this.form.invoice_quantity = isNaN(invoiceQty) ? null : invoiceQty;
+        this.form.total_amount_sale = totalAmount ? Number(totalAmount) : null;
+        this.form.invoice_quantity = invoiceQty ? Number(invoiceQty) : null;
 
-    // Calcular invoice_amount solo si ambos son válidos
-    if (!isNaN(totalAmount) && !isNaN(invoiceQty) && invoiceQty > 0) {
-      this.form.invoice_amount = totalAmount / invoiceQty;
-    } else {
-      this.form.invoice_amount = null;
+        // Calcular invoice_amount solo si ambos son válidos y mayores a 0
+        if (this.form.total_amount_sale && this.form.invoice_quantity && !invoiceAmount) {
+            this.form.invoice_amount = this.form.total_amount_sale / this.form.invoice_quantity;
+        } else if (invoiceAmount) {
+            this.form.invoice_amount = Number(invoiceAmount) || null;
+        } else {
+            this.form.invoice_amount = null;
+        }
     }
-  }
 }
 }
 </script>

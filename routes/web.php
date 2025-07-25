@@ -615,8 +615,10 @@ Route::post('invoices-store-complement/{invoice}', [InvoiceController::class, 's
 
 
 //------------------ programmed invoices routes ----------------
+Route::resource('programmed-invoices', ProgramedInvoiceController::class)->middleware('auth');
 Route::get('programmed-invoices-get-all', [ProgramedInvoiceController::class, 'getAll'])->name('programmed-invoices.get-all')->middleware('auth');
-Route::post('programmed-invoices-get-matches', [ProgramedInvoiceController::class, 'getMatches'])->name('programmed-invoices.get-matches');
+Route::get('programmed-invoices-get-matches', [ProgramedInvoiceController::class, 'getMatches'])->name('programmed-invoices.get-matches');
+Route::post('programmed-invoices/massive-delete', [ProgramedInvoiceController::class, 'massiveDelete'])->name('programmed-invoices.massive-delete');
 
 
 //------------------ Kiosk routes ----------------

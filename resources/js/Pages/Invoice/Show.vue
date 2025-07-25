@@ -167,11 +167,25 @@
               </form>
           </div>
         </Modal>
+
+        <!-- Confirmacion para eliminar la factura -->
+        <ConfirmationModal :show="showConfirmModal" @close="showConfirmModal = false">
+          <template #title> Eliminar factura </template>
+          <template #content> ¿Continuar con la eliminación? </template>
+          <template #footer>
+            <div>
+              <CancelButton @click="showConfirmModal = false" class="mr-2">Cancelar</CancelButton>
+              <PrimaryButton @click="deleteItem">Eliminar</PrimaryButton>
+            </div>
+          </template>
+        </ConfirmationModal>
     </AppLayoutNoHeader>
 </template>
 
 <script>
 import AppLayoutNoHeader from "@/Layouts/AppLayoutNoHeader.vue";
+import CancelButton from "@/Components/MyComponents/CancelButton.vue";
+import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
@@ -183,7 +197,7 @@ import FileUploader from "@/Components/MyComponents/FileUploader.vue";
 import { differenceInMonths, differenceInDays, format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Link, useForm } from "@inertiajs/vue3";
-import { Axios } from 'axios';
+import axios from 'axios';
 
 export default {
 data() {
@@ -202,6 +216,7 @@ data() {
 
     return {
       form,
+      showConfirmModal: false, // modal para confirmar eliminación de factura
       selectedInvoice: this.invoice.id,
       complementModal: false,
       showMaxAmountComplement: false, // muestra el monto maximo para un complemento
@@ -234,9 +249,11 @@ data() {
 },
 components:{
     AppLayoutNoHeader,
+    ConfirmationModal,
     PrimaryButton,
     FileUploader,
     DropdownLink,
+    CancelButton,
     InputLabel,
     InputError,
     Dropdown,
@@ -274,7 +291,7 @@ methods:{
     },
     async updateStatus() {
       try {
-        const response = await axios.post(route('invoicess.change-status', this.invoice.id), { status: this.status });
+        const response = await axios.post(route('invoices.change-status', this.invoice.id), { status: this.status });
         if ( response.status === 200 ) {
           this.invoice.status = response.data.invoice.status;
           this.$notify({
@@ -320,7 +337,7 @@ methods:{
     },
     async deleteItem() {
       try {
-        const response = await Axios.delete(
+        const response = await axios.delete(
           route("invoices.destroy", this.invoice.id)
         );
 

@@ -234,5 +234,7 @@ return [
         'complements.*.payment_date' => 'fecha de pago de complemento',
         'complements.*.amount' => 'monto de complemento',
         'complements.*.payment_method' => 'metodo de pago de complemento',
+        'invoice_quantity' => 'cantidad de facturas',
+        'total_amount_sale' => 'monto total de OV',
     ],
 ];

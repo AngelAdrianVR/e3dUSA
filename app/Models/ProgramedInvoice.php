@@ -16,10 +16,12 @@ class ProgramedInvoice extends Model
         'reminder_time',
         'amount',
         'number_of_invoice',
+        'total_amount_sale',
         'invoice_quantity', //numero total de facturas relacionadas con la misma ov
-        'status', // Pendiente, Generado
+        'status', // Pendiente, Creada
         'sale_id',
         'company_branch_id',
+        'user_id',
     ];
 
     protected $casts = [

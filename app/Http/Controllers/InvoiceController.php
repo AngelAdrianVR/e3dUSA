@@ -28,6 +28,7 @@ class InvoiceController extends Controller
         $sale_id = $request->input('sale_id');
         $total_amount_sale = $request->input('total_amount_sale');
         $invoice_quantity = $request->input('invoice_quantity');
+        $invoice_amount = $request->input('invoice_amount');
 
         // Query base
         $salesQuery = Sale::with('companyBranch:id,name')
@@ -48,6 +49,7 @@ class InvoiceController extends Controller
             'sale_id' => $sale_id,
             'total_amount_sale' => $total_amount_sale,
             'invoice_quantity' => $invoice_quantity,
+            'invoice_amount' => $invoice_amount,
         ]);
     }
 
@@ -56,7 +58,7 @@ class InvoiceController extends Controller
         $request->validate([
             'folio' => 'required|string',
             'issue_date' => 'required|date',
-            'total_amount_sale' => 'nullable',
+            'total_amount_sale' => 'required',
             'invoice_amount' => 'required|numeric|max:999999',
             'currency' => 'nullable|string',
             'payment_option' => 'nullable',
@@ -78,11 +80,20 @@ class InvoiceController extends Controller
         ]);
 
         $same_ov_invoices_quantity = Invoice::where('sale_id', $request->sale_id)->count();
+        $user = auth()->user();
+
 
         $invoice = Invoice::create($request->all() + [
             'created_by' => auth()->user()->name,
             'number_of_invoice' => $same_ov_invoices_quantity + 1, // posicion de factura (en caso de tener mas facturas la misma ov se indica el numero de factura o posición)
         ]);
+
+        // revisar si se agregaron complementos para cambiar estatus
+        if ($invoice->complements) {
+            $totalPaid = $invoice->complements->sum('amount');
+            $invoice->status = $totalPaid >= $invoice->total_amount_sale ? 'Pagada' : 'Parcialmente pagada';
+            $invoice->save();
+        }
 
         // Agrega el archivo adjunto a una coleccion llamafa factura
         if ($request->hasFile('media')) {
@@ -109,7 +120,7 @@ class InvoiceController extends Controller
 
         // crea recordatorios de facturas programadas en caso de que haya
         if ($request->extra_invoices) {
-            $user = auth()->user();
+            // $user = auth()->user();
 
             foreach ($request->extra_invoices as $key => $reminderData) {
                 // Omitir el primer registro (índice 0) porque es la factura ya creada. las otras son las programadas
@@ -122,9 +133,12 @@ class InvoiceController extends Controller
                     'reminder_date' => $reminderData['reminder_date'],
                     'reminder_time' => $reminderData['reminder_time'],
                     'amount' => $reminderData['invoice_amount'],
+                    'total_amount_sale' => $invoice->total_amount_sale,
+                    'invoice_quantity' => $invoice->invoice_quantity,
                     'number_of_invoice' => $key + 1,
                     'sale_id' => $invoice->sale_id,
                     'company_branch_id' => $invoice->company_branch_id,
+                    'user_id' => $user->id,
                 ]);
 
                 $reminder = Calendar::create([
@@ -140,6 +154,40 @@ class InvoiceController extends Controller
 
                 $user->notify(new ScheduleCreateInvoiceReminder($reminder));
             }
+        }
+
+        // Revisa si se creó una factura que estaba programada para marcarla como Creada y no aparezca el recordatorio
+        $programmed_invoice = ProgramedInvoice::where('sale_id', $invoice->sale_id)->where('number_of_invoice', $invoice->number_of_invoice)->first();
+        if ( $programmed_invoice ) {
+            $programmed_invoice->update(['status' => 'Creada']);
+        }
+
+
+        // Revisa si hay un recordatorio de esa factura en calendario y la marca como terminada
+        $invoice_calendar = Calendar::where('user_id', $programmed_invoice->user_id)
+            ->where('title', 'like', 'Factura programada para OV-' . $programmed_invoice->sale_id . '%')
+            ->first();
+
+        // Edita el estatus del recordatorio en el calendario si es que existe
+        if ( $invoice_calendar ) {
+            $invoice_calendar->update([
+                'status' => 'Terminada'
+            ]);
+        }
+            
+
+        // Revisa si ya no hay facturas pendientes por hacer para quitar el recordatorio invasivo de pantalla
+        $today = now()->startOfDay();
+
+        $reminder = ProgramedInvoice::where('status', 'Pendiente')
+            ->where('user_id', $user->id)
+            ->whereDate('reminder_date', $today)
+            ->first();
+        
+        if ( !$reminder ) {
+            $user->update(['programmed_invoice_reminder' => false]);
+        } else {
+            $user->update(['programmed_invoice_reminder' => true]);
         }
 
         return to_route('invoices.show', $invoice);
@@ -183,7 +231,7 @@ class InvoiceController extends Controller
         $request->validate([
             'folio' => 'required|string',
             'issue_date' => 'required|date',
-            'total_amount_sale' => 'nullable',
+            'total_amount_sale' => 'required',
             'invoice_amount' => 'required|numeric|max:999999',
             'currency' => 'nullable|string',
             'payment_option' => 'nullable',
@@ -271,7 +319,7 @@ class InvoiceController extends Controller
             event(new RecordDeleted($invoice));
         }
 
-        return response()->json(['message' => 'Cotización(es) eliminada(s)']);
+        return response()->json(['message' => 'factura(s) eliminada(s)']);
     }
 
     public function getMatches(Request $request)
