@@ -1,20 +1,24 @@
 <template>
-    <AppLayout title="Crear factura">
+    <AppLayout title="Editar factura">
         <template #header>
             <div class="flex justify-between">
                 <Back />
                 <div class="flex items-center space-x-2">
-                    <h2 class="font-semibold text-xl leading-tight">crear nueva factura</h2>
+                    <h2 class="font-semibold text-xl leading-tight">Editar factura</h2>
                 </div>
             </div>
         </template>
 
         <!-- Form -->
-        <form ref="formTop" @submit.prevent="store"
+        <form ref="formTop" @submit.prevent="update"
             class="md:w-1/2 md:mx-auto mx-3 my-5 bg-[#D9D9D9] dark:bg-[#202020] dark:text-white rounded-lg p-9 shadow-md md:grid grid-cols-2 gap-4">
+            <div class="col-span-full rounded-lg border border-blue-600 dark:border-gray-600 bg-blue-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 p-4 text-sm">
+                <p class="font-medium">Nota:</p>
+                <p>Para modificar cantidad de facturas y programarlas en calendario es necesario que sea la factura 1 de la venta en caso de tener varias facturas.</p>
+            </div>
             <div>
                 <InputLabel value="Orden de venta relacionada*" />
-                <el-select v-model="form.sale_id" @change="handleSelectedSale"
+                <el-select disabled v-model="form.sale_id" @change="handleSelectedSale"
                     placeholder="Seleccionar" :fit-input-width="true">
                     <el-option v-for="item in sales" :key="item" :label="'OV-' + item.id" :value="item.id" />
                 </el-select>
@@ -49,7 +53,7 @@
                         </template>
                     </el-tooltip>
                 </div>
-                <el-select :disabled="!form.total_amount_sale" @change="handleinvoiceQuantity" v-model="form.invoice_quantity" placeholder="Seleccionar" :fit-input-width="true">
+                <el-select :disabled="!form.total_amount_sale || invoice.number_of_invoice != 1" @change="handleinvoiceQuantity" v-model="form.invoice_quantity" placeholder="Seleccionar" :fit-input-width="true">
                     <el-option
                         v-for="item in 8"
                         :key="item"
@@ -170,6 +174,13 @@
                         </el-option>
                     </el-select>
                 </div>
+                <div v-if="invoice.media?.filter(f => f.collection_name === 'factura')?.length" class="mt-4 col-span-full">
+                    <InputLabel value="Archivos adjuntos" />
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                        <FileView v-for="file in invoice.media.filter(f => f.collection_name === 'factura')" :key="file" :file="file" :deletable="true"
+                            @delete-file="deleteFile($event)" />
+                    </div>
+                </div>
                 <div class="ml-2 mt-2 col-span-full">
                     <InputLabel value="Adjuntar factura" />
                     <FileUploader :multiple="false" @files-selected="form.media = $event" />
@@ -183,7 +194,7 @@
                 </div>
             </section>
 
-            <section class="col-span-full md:grid grid-cols-2 gap-4" v-if="form.invoice_quantity > 1">
+            <section class="col-span-full md:grid grid-cols-2 gap-4" v-if="form.invoice_quantity > 1 && invoice.number_of_invoice == 1">
                 <el-divider content-position="left" class="col-span-full">Programación de facturas</el-divider>
                 <p class="text-sm col-span-full">Programa las fechas y montos de las facturas que emitirás. Recibirás un recordatorio cuando sea momento de capturarlas. 
                     Puedes consultar esta programación en el módulo de Facturas, en la pestaña “Programación de facturas”</p>
@@ -326,9 +337,16 @@
                             </el-select>
                             <InputError :message="form.errors[`complements.${index}.payment_method`]" />
                         </div>
+                        <div v-if="invoice.media?.filter(f => f.name === `Complemento ${index + 1}`)?.length" class="mt-4 col-span-full">
+                            <InputLabel value="Archivos adjuntos" />
+                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                                <FileView v-for="file in invoice.media.filter(f => f.name === `Complemento ${index + 1}`)" :key="file" :file="file" :deletable="true"
+                                    @delete-file="deleteFile($event)" />
+                            </div>
+                        </div>
                         <div class="ml-2 mt-2 col-span-full">
-                            <InputLabel value="Adjuntar archivo" />
-                            <FileUploader :multiple="false" @files-selected="form.complements[index].complementMedia = $event" />
+                            <InputLabel value="Adjuntar archivos" />
+                            <FileUploader :multiple="true" @files-selected="form.complements[index].complementMedia = $event" />
                         </div>
                         <div class="col-span-full">
                             <InputLabel value="Notas" />
@@ -344,7 +362,7 @@
             <div class="mt-9 mx-3 md:text-right col-span-full">
                 <PrimaryButton :disabled="form.processing">
                 <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
-                 Crear factura
+                 Guardar cambios
                 </PrimaryButton>
             </div>
         </form>
@@ -359,6 +377,7 @@ import Back from "@/Components/MyComponents/Back.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import FileUploader from "@/Components/MyComponents/FileUploader.vue";
+import FileView from "@/Components/MyComponents/FileView.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import { differenceInMonths, differenceInDays, format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -367,22 +386,22 @@ import axios from "axios";
 export default {
 data() {
     const form = useForm({
-            issue_date: format(new Date(), "yyyy-MM-dd"), // Establece la fecha de hoy por defecto,
-            folio: null,
-            total_amount_sale: null,
-            invoice_amount: null,
-            currency: 'MXN',
-            payment_option: 'PUE',
-            payment_method: 'Transferencia electrónica de fondos',
-            status: 'Emitida',
-            notes: null,
-            company_branch_id: null,
-            sale_id: null,
-            media: null,
-            invoice_quantity: 1,
-            complements: [], // complementos de la factura
-            extra_invoices: [], //facturas extra a la misma venta (solo información de programación)
-        });
+        issue_date: this.invoice.issue_date,
+        folio: this.invoice.folio,
+        total_amount_sale: this.invoice.total_amount_sale,
+        invoice_amount: this.invoice.invoice_amount,
+        currency: this.invoice.currency,
+        payment_option: this.invoice.payment_option,
+        payment_method: this.invoice.payment_method,
+        status: this.invoice.status,
+        notes: this.invoice.notes,
+        company_branch_id: this.invoice.company_branch_id,
+        sale_id: this.invoice.sale_id,
+        media: null,
+        invoice_quantity: this.invoice.invoice_quantity,
+        complements: this.invoice.complements, // complementos de la factura
+        extra_invoices: this.invoice.extra_invoices, // facturas extra a la misma venta (solo información de programación)
+    });
 
     return {
         form,
@@ -401,10 +420,10 @@ data() {
             },
         ],
         statuses: [
-            {
-                label: 'Emitida',
-                icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-[#08688B]"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>'
-            },
+            // {
+            //     label: 'Emitida',
+            //     icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-[#08688B]"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>'
+            // },
             {
                 label: 'Pendiente de pago',
                 icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-[#B8B30E]"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>'
@@ -432,15 +451,17 @@ components: {
     InputError,
     AppLayout,
     IconInput,
+    FileView,
     Back,
     Link,
 },
 props: {
-    sales: Array
+    invoice: Object,
+    sales: Array,
 },
 methods: {
-    store() {
-        this.form.post(route("invoices.store"), {
+    update() {
+        this.form.post(route("invoices.update", this.invoice-id), {
             onSuccess: () => {
                 this.$notify({
                     title: "Correcto",
@@ -473,7 +494,7 @@ methods: {
         this.form.complements.splice(index, 1);
     },
     handleSelectedSale() {
-        this.form.company_branch_id = this.sales.find(sale => sale.id === this.form.sale_id).company_branch.id;
+        this.form.company_branch_id = this.sales.find(sale => sale.id === this.form.sale_id)?.company_branch?.id;
         this.clientName = this.sales.find(sale => sale.id === this.form.sale_id).company_branch.name;
     },
     handleinvoiceQuantity() {
@@ -491,6 +512,9 @@ methods: {
                 });
             }
         }
+    },
+    deleteFile(fileId) {
+        this.invoice.media = this.invoice.media.filter(m => m.id !== fileId);
     },
     handleSelectedPeriodicity() {
         // if (!this.form.periodicityExtraInvoices || !this.form.extra_invoices.length) return;
@@ -538,6 +562,10 @@ methods: {
             return '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-red-500"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>'
         }
     }
+},
+mounted() {
+    this.handleSelectedSale();
+    this.handleinvoiceQuantity();
 }
 }
 </script>

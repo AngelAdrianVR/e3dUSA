@@ -37,6 +37,11 @@ class CompanyBranch extends Model
         return $this->morphMany(Contact::class, 'contactable');
     }
 
+    public function programedInvoices(): HasMany
+    {
+        return $this->hasMany(ProgramedInvoice::class);
+    }
+
     public function company():BelongsTo
     {
         return $this->belongsTo(Company::class);

@@ -54,6 +54,7 @@
                     @selection-change="handleSelectionChange" ref="multipleTableRef"
                     :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="30" />
+                    <el-table-column prop="storageable.name" label="Imagen" />
                     <el-table-column prop="storageable.name" label="Nombre" />
                     <el-table-column prop="storageable.part_number" label="N° parte" />
                     <el-table-column prop="location" label="Ubicación" />

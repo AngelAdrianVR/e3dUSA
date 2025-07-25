@@ -14,13 +14,13 @@
 
             <el-tabs v-model="activeTab" class="mx-5 mt-3" @tab-click="handleClickInTab">
                 <el-tab-pane label="Facturas" name="1">
-                <InvoiceIndex :invoices="invoices" />
+                    <InvoiceIndex :invoices="invoices" />
                 </el-tab-pane>
                 <el-tab-pane label="OV terminadas S/Factura" name="2">
-                    OV terminadas S/Factura
+                    <SalesNoInvoiceIndex />
                 </el-tab-pane>
                 <el-tab-pane label="Facturas programadas" name="3">
-                    Facturas programadas
+                    <ProgrammedInvoicesIndex />
                 </el-tab-pane>
             </el-tabs>
 
@@ -33,6 +33,8 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PaginationWithNoMeta from "@/Components/MyComponents/PaginationWithNoMeta.vue";
 import InvoiceIndex from "@/Components/MyComponents/InvoiceIndex.vue";
+import SalesNoInvoiceIndex from "@/Components/MyComponents/SalesNoInvoiceIndex.vue";
+import ProgrammedInvoicesIndex from "@/Components/MyComponents/ProgrammedInvoicesIndex.vue";
 import { Link } from "@inertiajs/vue3";
 import axios from 'axios';
 
@@ -43,7 +45,9 @@ data() {
     }
 },
 components: {
+    ProgrammedInvoicesIndex,
     PaginationWithNoMeta,
+    SalesNoInvoiceIndex,
     SecondaryButton,
     InvoiceIndex,
     AppLayout,
