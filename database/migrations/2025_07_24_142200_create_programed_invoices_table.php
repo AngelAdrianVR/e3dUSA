@@ -19,10 +19,11 @@ return new class extends Migration
             $table->float('amount')->unsigned()->nullable(); // monto de la factura programada
             $table->unsignedTinyInteger('number_of_invoice')->nullable(); // Numero de factura (orden. Ej. 2 de 4)
             $table->unsignedTinyInteger('invoice_quantity')->nullable(); // Número de facturas relacionadas con esa ov
-            $table->string('status')->default('Pendiente')->nullable(); // estatus del recordatorio (Pendiente, Generado)
+            $table->string('status')->default('Pendiente')->nullable(); // estatus del recordatorio (Pendiente, Creada)
             $table->float('total_amount_sale')->unsigned()->nullable(); // Monto total de la venta
             $table->foreignId('sale_id')->constrained()->cascadeOnDelete();
             $table->foreignId('company_branch_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete(); // usuario que lo programó
             $table->timestamps();
         });
     }

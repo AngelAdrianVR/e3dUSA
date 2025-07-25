@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('email');
             $table->string('email_password')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->boolean('has_important_reminder')->default(false);
+            $table->boolean('has_important_reminder')->default(false); // Recordatorio de cambio de precio a un producto
+            $table->boolean('programmed_invoice_reminder')->default(false); // Recordatorio de factura programada
             $table->json('employee_properties')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

@@ -53,7 +53,16 @@
                     <el-table-column prop="programed_by" label="Programado por" width="140" />
                     <el-table-column prop="reminder_date" label="Fecha programada" sortable>
                         <template #default="scope">
-                            <p>{{ formatDate(scope.row.reminder_date) }}</p>
+                            <div class="flex items-center space-x-2">
+                                <el-tooltip v-if="checkScheduleDay(scope.row.reminder_date)" content="Programado para hoy" placement="top">
+                                    <svg width="10" height="13" viewBox="0 0 10 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M1.00835 7.56628C0.526638 7.44575 0.288067 7.47782 0.212745 7.80737L0.0198702 8.6512C-0.0683525 9.03705 0.140878 9.2066 0.574384 9.32626L8.53045 11.5202C8.89209 11.6199 9.3019 11.5839 9.37428 11.3273L9.63948 10.3871C9.76003 9.95968 9.49483 9.75715 9.13319 9.66379L1.22534 7.6223L1.00835 7.56628Z" fill="#F2A12F"/>
+                                        <path d="M2.09315 3.94963C1.61632 5.30633 1.44933 6.12655 1.27344 7.66246L8.9643 9.61532C9.40276 8.11965 9.59296 7.28665 9.88046 5.80605C10.2409 3.94963 9.8418 2.85271 7.85528 1.73158C8.57856 -0.317471 6.38461 -0.703314 6.16762 1.41816C4.31987 1.28001 2.74563 2.09318 2.09315 3.94963Z" fill="#F3D21B"/>
+                                        <path d="M5.61311 11.1583L3.34684 10.5315V11.2789C3.34684 12.3879 4.6339 12.7495 5.22736 11.7852L5.61311 11.1583Z" fill="#F3D21B"/>
+                                    </svg>
+                                </el-tooltip>
+                                <p>{{ formatDate(scope.row.reminder_date) }}</p>
+                            </div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="reminder_time" label="Hora de recordatorio" />
@@ -247,6 +256,19 @@ methods:{
         } else {
             this.disableMassiveActions = false;
         }
+    },
+    checkScheduleDay(date) {
+        if (!date) return false;
+
+        const today = new Date();
+        const targetDate = new Date(date);
+
+        // Comparar solo el año, mes y día
+        return (
+        today.getFullYear() === targetDate.getFullYear() &&
+        today.getMonth() === targetDate.getMonth() &&
+        today.getDate() === targetDate.getDate()
+        );
     },
     tableRowClassName({ row, rowIndex }) {
         return 'cursor-default text-xs';

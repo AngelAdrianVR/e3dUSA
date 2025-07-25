@@ -195,7 +195,7 @@
                 </div>
             </section>
 
-            <section class="col-span-full md:grid grid-cols-2 gap-4" v-if="form.invoice_quantity > 1 && invoice.number_of_invoice == 1">
+            <!-- <section class="col-span-full md:grid grid-cols-2 gap-4" v-if="form.invoice_quantity > 1 && invoice.number_of_invoice == 1">
                 <el-divider content-position="left" class="col-span-full">Programación de facturas</el-divider>
                 <p class="text-sm col-span-full">Programa las fechas y montos de las facturas que emitirás. Recibirás un recordatorio cuando sea momento de capturarlas. 
                     Puedes consultar esta programación en el módulo de Facturas, en la pestaña “Programación de facturas”</p>
@@ -270,7 +270,7 @@
                     </div>
                 </section>
                 <el-divider content-position="left" class="col-span-full"></el-divider>
-            </section>
+            </section> -->
             
             <!-- Complementos de pago -->
             <section class="col-span-full">

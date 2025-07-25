@@ -814,6 +814,23 @@ onMounted(() => {
             </div>
           </div>
 
+          <!-- aviso de alarma de recordatorio de facturas programadas -->
+          <div v-if="$page.props.auth.user.programmed_invoice_reminder"
+              ref="draggableAlert"
+              class="border border-[#D7A00E] rounded-md bg-[#FFF7C7] flex justify-between items-center space-x-2 absolute md:right-1/2 py-2 px-4 !cursor-move z-30 w-full md:w-[400px]">
+              <figure class="w-14">
+                <img src="@/../../public/images/coin.png" alt="">
+              </figure>
+              <p class="text-sm">
+                Tienes un recordatorio para capturar una
+                factura. <strong>Complétala o reprograma la fecha.</strong>
+              </p>
+              <div @click="$inertia.get(route('invoices.index'), { currentTab: 3 })" class="text-red-600 flex items-center space-x-3 pl-2 !cursor-pointer">
+                <span>Ir</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </div>
+          </div>
+
           <slot />
         </div>
       </main>

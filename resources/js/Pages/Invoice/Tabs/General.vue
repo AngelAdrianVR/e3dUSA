@@ -9,7 +9,7 @@
             <span class="text-gray-500">Monto de esta factura</span>
             <span>${{ invoice.invoice_amount?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
             <span class="text-gray-500">Pendiente de pago</span>
-            <span>${{ remainingInvoiceAmount }}</span>
+            <span>${{ invoice.status == 'Pagada' ? '0.00' :  remainingInvoiceAmount }}</span>
             <span class="text-gray-500">Forma de pago</span>
             <span>{{ invoice.payment_option === 'PUE' ? invoice.payment_option + ' - Pago en una sola exhibición' : invoice.payment_option + ' - Pago en parcialidades o diferido' }}</span>
             <span class="text-gray-500">Método de pago</span>
