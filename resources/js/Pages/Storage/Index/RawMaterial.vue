@@ -54,7 +54,13 @@
                     @selection-change="handleSelectionChange" ref="multipleTableRef"
                     :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="30" />
-                    <el-table-column prop="storageable.name" label="Imagen" />
+                    <el-table-column prop="storageable.name" label="Imagen" width="100">
+                        <template #default="scope">
+                            <figure class="border rounded-md size-20 flex items-center justify-center">
+                                <img class="object-contain w-full rounded-md" :src="scope.row.storageable.media[0]?.original_url" alt="">
+                            </figure>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="storageable.name" label="Nombre" />
                     <el-table-column prop="storageable.part_number" label="N° parte" />
                     <el-table-column prop="location" label="Ubicación" />
@@ -283,7 +289,13 @@ export default {
         },
         edit(index, raw_material) {
             this.$inertia.get(route('raw-materials.edit', raw_material.storageable));
-        }
+        },
+        procesarUrlImagenLocal(originalUrl) {
+            // Reemplaza la parte inicial de la URL
+            // const nuevaUrl = originalUrl.replace('https://https://intranetemblems3d.dtw.com.mx/', 'http://www.intranetemblems3d.dtw.com.mx');
+            const nuevaUrl = originalUrl?.replace('http://localhost:8000', 'https://intranetemblems3d.dtw.com.mx/');  // para hacer pruebas en local
+            return nuevaUrl;
+        },
     },
     computed: {
         filteredTableData() {

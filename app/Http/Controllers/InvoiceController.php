@@ -28,6 +28,7 @@ class InvoiceController extends Controller
         $sale_id = $request->input('sale_id');
         $total_amount_sale = $request->input('total_amount_sale');
         $invoice_quantity = $request->input('invoice_quantity');
+        $invoice_amount = $request->input('invoice_amount');
 
         // Query base
         $salesQuery = Sale::with('companyBranch:id,name')
@@ -48,6 +49,7 @@ class InvoiceController extends Controller
             'sale_id' => $sale_id,
             'total_amount_sale' => $total_amount_sale,
             'invoice_quantity' => $invoice_quantity,
+            'invoice_amount' => $invoice_amount,
         ]);
     }
 
@@ -56,7 +58,7 @@ class InvoiceController extends Controller
         $request->validate([
             'folio' => 'required|string',
             'issue_date' => 'required|date',
-            'total_amount_sale' => 'nullable',
+            'total_amount_sale' => 'required',
             'invoice_amount' => 'required|numeric|max:999999',
             'currency' => 'nullable|string',
             'payment_option' => 'nullable',
@@ -83,6 +85,11 @@ class InvoiceController extends Controller
             'created_by' => auth()->user()->name,
             'number_of_invoice' => $same_ov_invoices_quantity + 1, // posicion de factura (en caso de tener mas facturas la misma ov se indica el numero de factura o posición)
         ]);
+
+        // revisar si se agregaron complementos para cambiar estatus
+        $totalPaid = collect($invoice->complements)->sum('amount');
+        $invoice->status = $totalPaid >= $invoice->total_amount_sale ? 'Pagada' : 'Parcialmente pagada';
+        $invoice->save();
 
         // Agrega el archivo adjunto a una coleccion llamafa factura
         if ($request->hasFile('media')) {
@@ -122,6 +129,8 @@ class InvoiceController extends Controller
                     'reminder_date' => $reminderData['reminder_date'],
                     'reminder_time' => $reminderData['reminder_time'],
                     'amount' => $reminderData['invoice_amount'],
+                    'total_amount_sale' => $invoice->total_amount_sale,
+                    'invoice_quantity' => $invoice->invoice_quantity,
                     'number_of_invoice' => $key + 1,
                     'sale_id' => $invoice->sale_id,
                     'company_branch_id' => $invoice->company_branch_id,
@@ -183,7 +192,7 @@ class InvoiceController extends Controller
         $request->validate([
             'folio' => 'required|string',
             'issue_date' => 'required|date',
-            'total_amount_sale' => 'nullable',
+            'total_amount_sale' => 'required',
             'invoice_amount' => 'required|numeric|max:999999',
             'currency' => 'nullable|string',
             'payment_option' => 'nullable',
@@ -271,7 +280,7 @@ class InvoiceController extends Controller
             event(new RecordDeleted($invoice));
         }
 
-        return response()->json(['message' => 'Cotización(es) eliminada(s)']);
+        return response()->json(['message' => 'factura(s) eliminada(s)']);
     }
 
     public function getMatches(Request $request)

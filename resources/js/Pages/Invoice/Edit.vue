@@ -40,6 +40,7 @@
                     $
                     </template>
                 </el-input>
+                <InputError :message="form.errors.total_amount_sale" />
             </div>
             <div>
                 <div class="flex space-x-2 items-center">
@@ -250,6 +251,7 @@
                                 v-model="form.extra_invoices[index].reminder_date"
                                 type="date"
                                 placeholder="Selecciona la fecha de recordatorio"
+                                :disabled-date="disabledPastDates"
                                 class="!w-full"
                             />
                         </div>
@@ -479,6 +481,11 @@ methods: {
                 });
             },
         });
+    },
+    disabledPastDates(date) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // quitar hora para comparar solo fechas
+        return date < today;
     },
     addComplement() {
         this.form.complements.push({

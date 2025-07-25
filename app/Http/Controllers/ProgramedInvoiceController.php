@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordDeleted;
 use App\Models\ProgramedInvoice;
 use Illuminate\Http\Request;
 
@@ -22,24 +23,36 @@ class ProgramedInvoiceController extends Controller
         //
     }
 
-    public function show(ProgramedInvoice $programedInvoice)
+    public function show(ProgramedInvoice $programmed_invoice)
     {
         //
     }
 
-    public function edit(ProgramedInvoice $programedInvoice)
+    public function edit(ProgramedInvoice $programmed_invoice)
     {
         //
     }
 
-    public function update(Request $request, ProgramedInvoice $programedInvoice)
+    public function update(Request $request, ProgramedInvoice $programmed_invoice)
+    {
+        $programmed_invoice->update($request->all());
+    }
+
+    public function destroy(ProgramedInvoice $programmed_invoice)
     {
         //
     }
 
-    public function destroy(ProgramedInvoice $programedInvoice)
+    public function massiveDelete(Request $request)
     {
-        //
+        foreach ($request->programmedInvoices as $invoice) {
+            $invoice = ProgramedInvoice::find($invoice['id']);
+            $invoice?->delete();
+
+            event(new RecordDeleted($invoice));
+        }
+
+        return response()->json(['message' => 'recordatorio(s) eliminada(s)']);
     }
 
     public function getAll()
@@ -61,6 +74,7 @@ class ProgramedInvoiceController extends Controller
             ->where('id', 'like', "%{$query}%")
             ->orWhere('status', 'like', "%{$query}%")
             ->orWhere('sale_id', 'like', "%{$query}%")
+            ->where('status', 'Pendiente')
             ->get();
 
         return response()->json(['items' => $programmed_invoices], 200);

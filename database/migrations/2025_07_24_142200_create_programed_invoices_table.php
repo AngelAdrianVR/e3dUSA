@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('number_of_invoice')->nullable(); // Numero de factura (orden. Ej. 2 de 4)
             $table->unsignedTinyInteger('invoice_quantity')->nullable(); // Número de facturas relacionadas con esa ov
             $table->string('status')->default('Pendiente')->nullable(); // estatus del recordatorio (Pendiente, Generado)
+            $table->float('total_amount_sale')->unsigned()->nullable(); // Monto total de la venta
             $table->foreignId('sale_id')->constrained()->cascadeOnDelete();
             $table->foreignId('company_branch_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
