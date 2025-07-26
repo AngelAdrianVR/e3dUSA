@@ -84,7 +84,7 @@
                             <p @click.stop="$inertia.visit(route('sales.show', scope.row.sale_id))" class="text-blue-500 underline">{{ scope.row.sale_id }}</p>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="company_branch.name" label="Sucursal" />
+                    <el-table-column prop="company_branch.name" label="Cliente/Sucursal" />
                     <el-table-column prop="complements.length" label="Complementos">
                         <template #default="scope">
                             <p>{{ scope.row.complements?.length ?? '0' }}</p>

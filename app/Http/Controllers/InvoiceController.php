@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\RecordDeleted;
 use App\Models\Calendar;
+use App\Models\CompanyBranch;
 use App\Models\Invoice;
 use App\Models\ProgramedInvoice;
 use App\Models\Sale;
@@ -18,9 +19,11 @@ class InvoiceController extends Controller
             ->select(['id', 'folio', 'created_at', 'created_by', 'invoice_quantity', 'company_branch_id', 'invoice_amount', 'complements', 'sale_id', 'status', 'number_of_invoice'])
             ->latest()
             ->paginate(30);
+        
+        $company_branches = CompanyBranch::latest()->get(['id', 'name']);
 
             // return $invoices;
-        return inertia('Invoice/Index', compact('invoices'));
+        return inertia('Invoice/Index', compact('invoices', 'company_branches'));
     }
 
     public function create(Request $request)
@@ -432,28 +435,97 @@ class InvoiceController extends Controller
         return;
     }
 
-    // public function storeComplement(Request $request, Invoice $invoice)
-    // {
-    //     // Validar estructura básica del complemento
-    //     $validated = $request->validate([
-    //         'complements' => 'required|array',
-    //         'complements.*.folio' => 'required|string',
-    //         'complements.*.payment_date' => 'required|date',
-    //         'complements.*.amount' => 'required|numeric',
-    //         'complements.*.payment_method' => 'nullable|string',
-    //         'complements.*.notes' => 'nullable|string',
-    //     ]);
+    // la funcion agrupa los tipos de facturas solicitados por sucursal
+    public function report(Request $request)
+    {
+        $selections = $request->input('types', []);
+        $company_branches_ids = $request->input('company_branches_ids');
 
-    //      // Obtener los complementos actuales si existen
-    //     $existingComplements = $invoice->complements ?? [];
+        // Obtener las sucursales (clientes)
+        $branches = \App\Models\CompanyBranch::whereIn('id', $company_branches_ids)->get();
 
-    //     // Unir los existentes con los nuevos
-    //     $mergedComplements = array_merge($existingComplements, $validated['complements']);
+        $grouped = [];
 
-    //     // Guardar
-    //     $invoice->complements = $mergedComplements;
-    //     $invoice->save();;
-    // }
+        // Inicializa la estructura usando el nombre como clave
+        foreach ($branches as $branch) {
+            $grouped[$branch->name] = [
+                'invoices' => collect(),
+                'ovs_no_invoices' => collect(),
+                'programed_invoices' => collect(),
+            ];
+        }
 
+        foreach ($selections as $selection) {
+            $main = $selection[0];
+            $sub = $selection[1] ?? null;
+
+            foreach ($branches as $branch) {
+                $name = $branch->name;
+                $id = $branch->id;
+
+                switch ($main) {
+                    case 'Todas':
+                        $grouped[$name]['invoices'] = $grouped[$name]['invoices']->merge(
+                            Invoice::where('company_branch_id', $id)->latest()->get()
+                        );
+
+                        $grouped[$name]['ovs_no_invoices'] = $grouped[$name]['ovs_no_invoices']->merge(
+                            Sale::latest()
+                                ->doesntHave('invoices')
+                                ->where('company_branch_id', $id)
+                                ->get()
+                        );
+
+                        $grouped[$name]['programed_invoices'] = $grouped[$name]['programed_invoices']->merge(
+                            ProgramedInvoice::latest()
+                                ->where('status', 'Pendiente')
+                                ->where('company_branch_id', $id)
+                                ->get()
+                        );
+                        break;
+
+                    case 'Facturas registradas':
+                        $query = Invoice::where('company_branch_id', $id)->latest();
+
+                        if ($sub) {
+                            $query->where('status', $sub);
+                        }
+
+                        $grouped[$name]['invoices'] = $grouped[$name]['invoices']->merge($query->get());
+                        break;
+
+                    case 'Facturas programadas':
+                        $grouped[$name]['programed_invoices'] = $grouped[$name]['programed_invoices']->merge(
+                            ProgramedInvoice::latest()
+                                ->where('status', 'Pendiente')
+                                ->where('company_branch_id', $id)
+                                ->get()
+                        );
+                        break;
+
+                    case 'OV terminadas sin facturas':
+                        $grouped[$name]['ovs_no_invoices'] = $grouped[$name]['ovs_no_invoices']->merge(
+                            Sale::latest()
+                                ->doesntHave('invoices')
+                                ->where('status', 'Producción terminada')
+                                ->where('company_branch_id', $id)
+                                ->get()
+                        );
+                        break;
+                }
+            }
+        }
+
+        // Eliminar duplicados y resetear índices
+        foreach ($grouped as $name => $data) {
+            $grouped[$name]['invoices'] = $data['invoices']->unique('id')->values();
+            $grouped[$name]['ovs_no_invoices'] = $data['ovs_no_invoices']->unique('id')->values();
+            $grouped[$name]['programed_invoices'] = $data['programed_invoices']->unique('id')->values();
+        }
+
+        return inertia('Invoice/Report', [
+            'grouped_data' => $grouped,
+        ]);
+    }
 
 }

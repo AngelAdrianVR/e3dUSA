@@ -66,7 +66,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="reminder_time" label="Hora de recordatorio" />
-                    <el-table-column prop="company_branch.name" label="Cliente" />
+                    <el-table-column prop="company_branch.name" label="Cliente/Sucursal" sortable/>
                     <el-table-column prop="number_of_invoice" label="No° de factura">
                         <template #default="scope">
                             <p>{{ scope.row.number_of_invoice }} de {{ scope.row.invoice_quantity }}</p>
@@ -113,7 +113,7 @@
         <div class="p-5 relative">
             <h2 class="font-bold mb-5">Reprogramar factura {{ 'P-' + programmedInvoiceIdSelected }}</h2>
             <i @click="showReprogramModal = false"
-            class="fa-solid fa-xmark cursor-pointer size-5 rounded-full border border-black flex items-center justify-center absolute right-3 top-3"></i>
+            class="fa-solid fa-xmark cursor-pointer size-5 rounded-full flex items-center justify-center absolute right-3 top-3"></i>
             <form @submit.prevent="reprogramInvoice" class="md:grid grid-cols-2 gap-4">
 
                 <div>

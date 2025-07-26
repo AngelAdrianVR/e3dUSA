@@ -612,6 +612,7 @@ Route::post('invoices-change-status/{invoice}', [InvoiceController::class, 'chan
 Route::post('invoices-get-matches', [InvoiceController::class, 'getMatches'])->name('invoices.get-matches');
 Route::post('invoices/massive-delete', [InvoiceController::class, 'massiveDelete'])->name('invoices.massive-delete');
 Route::post('invoices-store-complement/{invoice}', [InvoiceController::class, 'storeComplement'])->name('invoices.store-complement');
+Route::post('invoices-store-report', [InvoiceController::class, 'report'])->name('invoices.report');
 
 
 //------------------ programmed invoices routes ----------------
