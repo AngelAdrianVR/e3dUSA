@@ -18,8 +18,12 @@ class CatalogProductController extends Controller
 {
     public function index()
     {
-        $catalog_products = CatalogProduct::latest()->get(['id', 'part_number', 'name', 'cost', 'description']);
+        $catalog_products = CatalogProduct::with('media')
+            ->latest()
+            ->select(['id', 'part_number', 'name', 'cost', 'description'])
+            ->paginate(30);
 
+        // return $catalog_products;
         return inertia('CatalogProduct/Index', compact('catalog_products'));
     }
 
@@ -274,6 +278,22 @@ class CatalogProductController extends Controller
         $companies = $catalog_product->companies;
 
         return response()->json(['item' => $catalog_product]);
+    }
+
+    public function getMatches(Request $request)
+    {
+        $query = $request->input('query');
+
+        // Realiza la búsqueda
+        $catalog_products = CatalogProduct::with('media')
+            ->latest()
+            ->select(['id', 'part_number', 'name', 'cost', 'description'])
+            ->where('id', 'like', "%{$query}%")
+            ->orWhere('part_number', 'like', "%{$query}%")
+            ->orWhere('name', 'like', "%{$query}%")
+            ->get(['id', 'folio', 'created_at', 'created_by', 'invoice_quantity', 'company_branch_id', 'invoice_amount', 'complements', 'sale_id', 'status', 'number_of_invoice']);
+
+        return response()->json(['items' => $catalog_products], 200);
     }
 
     public function getCatalogProductData(Request $request, CatalogProduct $catalog_product)

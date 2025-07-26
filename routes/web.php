@@ -210,6 +210,7 @@ Route::get('catalog-products-prices-report', [CatalogProductController::class, '
 Route::post('catalog-products-get-by-ids', [CatalogProductController::class, 'getByIds'])->name('catalog-products.get-by-ids');
 Route::get('catalog-products/{catalog_product}/get-info', [CatalogProductController::class, 'getInfo'])->name('catalog-products.get-info');
 Route::get('export-catalog-products', [CatalogProductController::class, 'exportExcel']);
+Route::post('catalog-products-get-matches', [CatalogProductController::class, 'getMatches'])->name('catalog-products.get-matches');
 
 
 // ------- Ventas(Clients Routes)  ---------
