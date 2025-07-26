@@ -111,6 +111,7 @@
                 <div>
                     <InputLabel value="Forma de pago" />
                     <el-select
+                        @change="handleOptionPayment"
                         v-model="form.payment_option"
                         placeholder="Seleccionar"
                         :fit-input-width="true"
@@ -481,6 +482,11 @@ methods: {
                 });
             },
         });
+    },
+    handleOptionPayment() {
+        if ( this.form.payment_option == 'PUE' ) {
+            this.form.complements = [];
+        }
     },
     disabledPastDates(date) {
         const today = new Date();

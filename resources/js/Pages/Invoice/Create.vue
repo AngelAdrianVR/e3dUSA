@@ -110,6 +110,7 @@
                     <InputLabel value="Forma de pago" />
                     <el-select
                         v-model="form.payment_option"
+                        @change="handleOptionPayment"
                         placeholder="Seleccionar"
                         :fit-input-width="true"
                         >
@@ -186,85 +187,8 @@
                 </div>
             </section>
 
-            <section class="col-span-full md:grid grid-cols-2 gap-4" v-if="form.invoice_quantity > 1 && !invoice_quantity">
-                <el-divider content-position="left" class="col-span-full">Programación de facturas</el-divider>
-                <p class="text-sm col-span-full">Programa las fechas y montos de las facturas que emitirás. Recibirás un recordatorio cuando sea momento de capturarlas. 
-                    Puedes consultar esta programación en el módulo de Facturas, en la pestaña “Programación de facturas”</p>
-
-                <div class="col-span-full">
-                    <div class="flex items-center space-x-2">
-                        <InputLabel value="Periodicidad" />
-                        <el-tooltip placement="top">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-primary">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
-                            </svg>
-                            <template #content>
-                                <span>Las fechas se asignarán de acuerdo <br> con la temporalidad que elijas.</span>
-                            </template>
-                        </el-tooltip>
-                    </div>
-                    <el-select
-                        @change="handleSelectedPeriodicity"
-                        class="!w-full md:!w-1/2"
-                        v-model="periodicityExtraInvoices"
-                        placeholder="Seleccionar"
-                        :fit-input-width="true"
-                        >
-                        <el-option
-                            v-for="item in periodicities"
-                            :key="item"
-                            :label="item"
-                            :value="item"
-                        />
-                    </el-select>
-                </div>
-
-                <section class="col-span-full" v-for="(invoice, index) in form.invoice_quantity"
-                        :key="index">
-                    <div class="grid grid-cols-3 gap-4" v-if="index !== 0"
-                        >
-                        <p class="text-lg font-bold col-span-full">Factura {{ index + 1 }}</p>
-                        <div>
-                            <InputLabel value="Monto" />
-                            <el-input
-                                placeholder="Ingresa el monto total con IVA de esta factura"
-                                v-model="form.invoice_amount"
-                                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                                :parser="(value) => value.replace(/\$\s?|(,*)/g, '')">
-                                <template #prepend>
-                                $
-                                </template>
-                            </el-input>
-                        </div>
-                        <div>
-                            <InputLabel value="Fecha" />
-                            <el-date-picker
-                                v-model="form.extra_invoices[index].reminder_date"
-                                type="date"
-                                placeholder="Selecciona la fecha de recordatorio"
-                                :disabled-date="disabledPastDates"
-                                class="!w-full"
-                            />
-                        </div>
-                        <div>
-                            <InputLabel value="Hora" />
-                            <el-time-select
-                                v-model="form.extra_invoices[index].reminder_time"
-                                start="06:00"
-                                step="00:30"
-                                end="24:00"
-                                placeholder="Selecciona la hora de recordatorio"
-                                format="hh:mm A"
-                                class="!w-full"
-                            />
-                        </div>
-                    </div>
-                </section>
-                <el-divider content-position="left" class="col-span-full"></el-divider>
-            </section>
-            
             <!-- Complementos de pago -->
-            <section class="col-span-full">
+            <section v-if="form.payment_option == 'PDD'" class="col-span-full">
                 <el-divider content-position="left" class="col-span-full">Complementos de pago</el-divider>
                 <p v-if="!form.complements.length" class="text-sm dark:text-gray-400 text-[#373737]">Click al botón de “+” para empezar a agregar complementos de pago</p>
 
@@ -349,10 +273,89 @@
                 <el-divider content-position="left" class="col-span-full"></el-divider>
                 <button @click="addComplement" type="button" class="underline text-sm text-secondary">+ Agregar complemento de pago</button>
             </section>
+
+            <section class="col-span-full md:grid grid-cols-2 gap-4" v-if="form.invoice_quantity > 1 && !invoice_quantity">
+                <el-divider content-position="left" class="col-span-full">Programación de facturas</el-divider>
+                <p class="text-sm col-span-full">Programa las fechas y montos de las facturas que emitirás. Recibirás un recordatorio cuando sea momento de capturarlas. 
+                    Puedes consultar esta programación en el módulo de Facturas, en la pestaña “Programación de facturas”</p>
+
+                <div class="col-span-full">
+                    <div class="flex items-center space-x-2">
+                        <InputLabel value="Periodicidad" />
+                        <el-tooltip placement="top">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-primary">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                            </svg>
+                            <template #content>
+                                <span>Las fechas se asignarán de acuerdo <br> con la temporalidad que elijas.</span>
+                            </template>
+                        </el-tooltip>
+                    </div>
+                    <el-select
+                        @change="handleSelectedPeriodicity"
+                        class="!w-full md:!w-1/2"
+                        v-model="periodicityExtraInvoices"
+                        placeholder="Seleccionar"
+                        :fit-input-width="true"
+                        >
+                        <el-option
+                            v-for="item in periodicities"
+                            :key="item"
+                            :label="item"
+                            :value="item"
+                        />
+                    </el-select>
+                </div>
+
+                <section class="col-span-full" v-for="(invoice, index) in form.invoice_quantity"
+                        :key="index">
+                    <div class="grid grid-cols-3 gap-4" v-if="index !== 0"
+                        >
+                        <p class="text-lg font-bold col-span-full">Factura {{ index + 1 }}</p>
+                        <div>
+                            <InputLabel value="Monto" />
+                            <el-input
+                                placeholder="Ingresa el monto total con IVA de esta factura"
+                                v-model="form.invoice_amount"
+                                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="(value) => value.replace(/\$\s?|(,*)/g, '')">
+                                <template #prepend>
+                                $
+                                </template>
+                            </el-input>
+                        </div>
+                        <div>
+                            <InputLabel value="Fecha" />
+                            <el-date-picker
+                                v-model="form.extra_invoices[index].reminder_date"
+                                type="date"
+                                placeholder="Selecciona la fecha de recordatorio"
+                                :disabled-date="disabledPastDates"
+                                class="!w-full"
+                            />
+                        </div>
+                        <div>
+                            <InputLabel value="Hora" />
+                            <el-time-select
+                                v-model="form.extra_invoices[index].reminder_time"
+                                start="06:00"
+                                step="00:30"
+                                end="24:00"
+                                placeholder="Selecciona la hora de recordatorio"
+                                format="hh:mm A"
+                                class="!w-full"
+                            />
+                        </div>
+                    </div>
+                </section>
+                <el-divider content-position="left" class="col-span-full"></el-divider>
+            </section>
+            
             <div class="mt-9 mx-3 md:text-right col-span-full">
-                <PrimaryButton :disabled="form.processing">
-                <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
-                 Crear factura
+                <PrimaryButton
+                    :disabled="form.processing || (form.extra_invoices.length > 0 && form.extra_invoices.every(item => item.reminder_date))">
+                    <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
+                    Crear factura
                 </PrimaryButton>
             </div>
         </form>
@@ -487,6 +490,11 @@ methods: {
                 });
             },
         });
+    },
+    handleOptionPayment() {
+        if ( this.form.payment_option == 'PUE' ) {
+            this.form.complements = [];
+        }
     },
     disabledPastDates(date) {
         const today = new Date();

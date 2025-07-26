@@ -1,5 +1,14 @@
 <template>
     <div>
+        <!-- Estado de carga -->
+        <div v-if="loading"
+            class="absolute z-30 left-0 top-0 inset-0 bg-black opacity-50 flex items-center justify-center">
+        </div>
+        <div v-if="loading"
+            class="absolute z-40 top-1/2 left-[35%] lg:left-1/2 w-32 h-32 rounded-lg bg-white flex items-center justify-center">
+            <i class="fa-solid fa-spinner fa-spin text-5xl text-primary"></i>
+        </div>
+
         <div
             v-if="loadingExport"
             class="fixed inset-0 bg-gray-900 bg-opacity-80 z-50 flex items-center justify-center"
@@ -47,10 +56,13 @@
             <div class="w-[95%] lg:w-5/6 mx-auto mt-6">
                 <div class="lg:flex justify-between mb-2">
                     <!-- pagination -->
-                    <div>
+                        <div v-if="!search" class="overflow-auto mb-2">
+                            <PaginationWithNoMeta :pagination="pagination" class="py-2" />
+                        </div>
+                    <!-- <div>
                         <el-pagination @current-change="handlePagination" layout="prev, pager, next"
                             :total="catalog_products.length" />
-                    </div>
+                    </div> -->
                     <!-- buttons -->
                     <div class="flex items-center space-x-2">
                         <!-- <PrimaryButton @click="openReport">Reporte de precios</PrimaryButton> -->
@@ -79,6 +91,21 @@
                     @selection-change="handleSelectionChange" ref="multipleTableRef"
                     :row-class-name="tableRowClassName">
                     <el-table-column type="selection" width="30" />
+                    <el-table-column label="Imagen" width="100">
+                        <template #default="scope">
+                            <figure class="border rounded-md size-20 flex items-center justify-center">
+                                <el-image
+                                    @click.stop=""
+                                    style="width: 100%; height: 100%; border-radius: 6px"
+                                    :src="scope.row.media[0]?.original_url"
+                                    :preview-src-list="[scope.row.media[0]?.original_url]"
+                                    fit="contain"
+                                    preview-teleported
+                                    :hide-on-click-modal="true"
+                                />
+                            </figure>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="part_number" label="Num de parte" width="200" />
                     <el-table-column prop="name" label="Nombre" width="250" />
                     <el-table-column prop="cost.number_format" label="Costo $" width="150">
@@ -137,6 +164,7 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
+import PaginationWithNoMeta from "@/Components/MyComponents/PaginationWithNoMeta.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from '@/Components/TextInput.vue';
@@ -147,23 +175,27 @@ import axios from 'axios';
 export default {
     data() {
         return {
+            loading: false,
             loadingExport: false,
             disableMassiveActions: true,
             inputSearch: '',
             search: '',
+            filteredTableData: [...this.catalog_products.data],
             // pagination
-            itemsPerPage: 10,
-            start: 0,
-            end: 10,
+            pagination: this.catalog_products,
+            // itemsPerPage: 10,
+            // start: 0,
+            // end: 10,
         };
     },
     components: {
-        AppLayout,
-        PrimaryButton,
+        PaginationWithNoMeta,
         SecondaryButton,
-        Link,
-        TextInput,
         IndexSearchBar,
+        PrimaryButton,
+        AppLayout,
+        TextInput,
+        Link,
     },
     props: {
         catalog_products: Object
@@ -193,9 +225,35 @@ export default {
                 this.loadingExport = false;
             });
         },
-        handleSearch(search) {
-            this.search = search;
+        procesarUrlImagenLocal(originalUrl) {
+            // Reemplaza la parte inicial de la URL
+            // const nuevaUrl = originalUrl.replace('https://https://intranetemblems3d.dtw.com.mx/', 'http://www.intranetemblems3d.dtw.com.mx');
+            const nuevaUrl = originalUrl?.replace('http://localhost:8000', 'https://intranetemblems3d.dtw.com.mx/');  // para hacer pruebas en local
+            return nuevaUrl;
         },
+        async handleSearch(search) {
+            this.search = search;
+            this.loading = true;
+            try {
+                if (!this.search) {
+                    this.filteredTableData = this.catalog_products.data;
+                    this.pagination = this.catalog_products; //cuando se busca con texto vacio s emuestran todas las porduccoines y la paginacion es de todas las producciones
+                } else {
+                    const response = await axios.post(route('catalog-products.get-matches', { query: this.search }));
+
+                    if (response.status === 200) {
+                        this.filteredTableData = response.data.items;
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                this.loading = false;
+            }
+        },
+        // handleSearch(search) {
+        //     this.search = search;
+        // },
         handleSelectionChange(val) {
             this.$refs.multipleTableRef.value = val;
 
@@ -205,10 +263,10 @@ export default {
                 this.disableMassiveActions = false;
             }
         },
-        handlePagination(val) {
-            this.start = (val - 1) * this.itemsPerPage;
-            this.end = val * this.itemsPerPage;
-        },
+        // handlePagination(val) {
+        //     this.start = (val - 1) * this.itemsPerPage;
+        //     this.end = val * this.itemsPerPage;
+        // },
         async clone(catalog_product_id) {
             try {
                 const response = await axios.post(route('catalog-products.clone', {
@@ -307,19 +365,19 @@ export default {
         },
 
     },
-    computed: {
-        filteredTableData() {
-            if (!this.search) {
-                return this.catalog_products.filter((item, index) => index >= this.start && index < this.end);
-            } else {
-                return this.catalog_products.filter(
-                    (catalog_product) =>
-                        catalog_product.name.toLowerCase().includes(this.search.toLowerCase()) ||
-                        catalog_product.part_number.toLowerCase().includes(this.search.toLowerCase())
-                )
-            }
-        }
-    },
+    // computed: {
+    //     filteredTableData() {
+    //         if (!this.search) {
+    //             return this.catalog_products.filter((item, index) => index >= this.start && index < this.end);
+    //         } else {
+    //             return this.catalog_products.filter(
+    //                 (catalog_product) =>
+    //                     catalog_product.name.toLowerCase().includes(this.search.toLowerCase()) ||
+    //                     catalog_product.part_number.toLowerCase().includes(this.search.toLowerCase())
+    //             )
+    //         }
+    //     }
+    // },
     mounted() {
     }
 };
