@@ -34,6 +34,7 @@ class Sale extends Model implements HasMedia
         'sent_at',
         'sent_by',
         'shipping_type',
+        'total_amount', // costo total de la venta
         'user_id',
         'company_branch_id',
         'contact_id',
@@ -55,6 +56,11 @@ class Sale extends Model implements HasMedia
     public function contact(): BelongsTo
     {
         return $this->belongsTo(Contact::class);
+    }
+
+    public function programedInvoices(): HasMany
+    {
+        return $this->hasMany(ProgramedInvoice::class);
     }
 
     public function quote(): BelongsTo
@@ -85,6 +91,11 @@ class Sale extends Model implements HasMedia
     public function productions()
     {
         return $this->hasManyThrough(Production::class, CatalogProductCompanySale::class, 'sale_id', 'catalog_product_company_sale_id');
+    }
+
+    public function invoices():HasMany
+    {
+        return $this->hasMany(Invoice::class);
     }
 
     // methods

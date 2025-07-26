@@ -532,11 +532,11 @@
                                 </el-select>
                                 <InputError :message="form.errors.order_via" />
                             </div>
-                            <div>
+                            <!-- <div>
                                 <InputLabel value="Factura" />
                                 <el-input v-model="form.invoice" placeholder="Ingresa folio de factura" />
                                 <InputError :message="form.errors.invoice" />
-                            </div>
+                            </div> -->
                             <div class="flex items-center space-x-2 col-span-full">
                                 <label class="flex items-center">
                                     <Checkbox v-model:checked="form.is_high_priority" class="bg-transparent" />

@@ -222,7 +222,7 @@
             <h2 class="text-center font-extrabold">IMPORTANT <i class="fas fa-exclamation-circle text-amber-500"></i>
             </h2>
             <ol class="list-decimal mx-2 mb-2">
-                <li v-if="quote.data.notes !== '--'" class="font-bold text-blue-500">{{ quote.data.notes }}</li>
+                <li v-if="quote.data.notes !== '--'" class="font-bold text-blue-500 whitespace-pre-line">{{ quote.data.notes }}</li>
                 <li>PRICES WITHOUT TAXES</li>
                 <li>TOOLING COSTS: <span class="font-bold text-blue-500"
                         :class="quote.data.tooling_cost_stroked ? 'line-through' : ''">{{ quote.data.tooling_cost }} {{

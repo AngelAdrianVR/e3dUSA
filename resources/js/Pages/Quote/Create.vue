@@ -384,7 +384,9 @@
                             <figure
                                 class="flex justify-center border border-[#9a9a9a] rounded-md min-h-20 max-h-44 w-full">
                                 <img v-if="product.id"
-                                    :src="catalog_products.find(p => p.id == product.id).media[0].original_url"
+                                    :src="productType === 'Producto de catálogo' 
+                                    ? catalog_products.find(p => p.id == product.id).media[0].original_url 
+                                    : raw_materials.find(p => p.id == product.id).media[0].original_url"
                                     class="object-contain min-h-20 max-h-44 rounded-md">
                                 <p v-else
                                     class="flex items-center space-x-2 justify-center text-sm text-[#373737] dark:text-gray-500 mt-3">
@@ -591,9 +593,12 @@
                             </el-input>
                             <InputError :message="priceForm.errors.new_price" />
                         </div>
-                        <div>
+                        <div class="mx-auto pt-5" v-if="updatingCurrency">
+                            <i class="fa-solid fa-circle-notch fa-spin text-primary text-lg"></i>
+                        </div>
+                        <div v-else>
                             <InputLabel value="Moneda*" />
-                            <el-select v-model="priceForm.new_currency" placeholder="Seleccionar"
+                            <el-select @change="updateCurrency" v-model="priceForm.new_currency" placeholder="Seleccionar"
                                 :fit-input-width="true">
                                 <el-option v-for="item in newPriceCurrencies" :key="item.value" :label="item.label"
                                     :value="item.value">
@@ -777,6 +782,7 @@ export default {
             new_currency: null,
             new_date: new Date().toISOString().split('T')[0], // Fecha actual en formato YYYY-MM-DD,
             product_company_id: null,
+            only_currency: false, //booleano para actualizar solamente la moneda
         });
 
         const scheduleForm = useForm({
@@ -798,6 +804,7 @@ export default {
             showUpdatePriceModal: false, //modal para actualizar precio
             showScheduleUpdatingPrice: false, //modal para agendar actualización de precio
             loading: false,
+            updatingCurrency: false, //estado de carga para cambio de moneda
             importantNotesToStore: null,
             itemToUpdatePrice: null, //producto seleccionado para cambiar precio
             isEditImportantNotes: false,
@@ -829,6 +836,15 @@ export default {
                 '6 a 7 semanas',
                 '7 a 8 semanas',
                 '8 a 9 semanas',
+                '9 a 10 semanas',
+                '10 a 11 semanas',
+                '11 a 12 semanas',
+                '12 a 13 semanas',
+                '13 a 14 semanas',
+                '14 a 15 semanas',
+                '15 a 16 semanas',
+                '16 a 17 semanas',
+                '17 a 18 semanas',
             ],
             firstProductionDaysListEnglish: [
                 'Immediate',
@@ -845,6 +861,15 @@ export default {
                 '6 to 7 weeks',
                 '7 to 8 weeks',
                 '8 to 9 weeks',
+                '9 to 10 weeks',
+                '10 to 11 weeks',
+                '11 to 12 weeks',
+                '12 to 13 weeks',
+                '13 to 14 weeks',
+                '14 to 15 weeks',
+                '15 to 16 weeks',
+                '16 to 17 weeks',
+                '17 to 18 weeks',
             ],
             currencies: [
                 {
@@ -1074,6 +1099,29 @@ export default {
                     this.fetchCatalogProductsCompanyBanch();
                 },
             });
+        },
+        updateCurrency() {
+            this.updatingCurrency = true;
+            this.priceForm.only_currency = true; // 👈 Se envía el booleano al backend para actualizar solamente la moneda
+        
+            this.priceForm.put(
+                route('company-branches.update-product-price', this.priceForm.product_company_id),
+                {
+                    onSuccess: () => {
+                        this.$notify({
+                            title: "Éxito",
+                            message: "Se cambió la moneda correctamente",
+                            type: "success",
+                        });
+                        this.updatingCurrency = false;
+                        this.priceForm.only_currency = true;
+                        this.fetchCatalogProductsCompanyBanch();
+                    },
+                    onError: () => {
+                        this.updatingCurrency = false;
+                    }
+                }
+            );
         },
         scheduleUpdatePrice() {
             this.scheduleForm.post(route('quotes.schedule-update-product-price'), {

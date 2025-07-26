@@ -24,7 +24,7 @@ class SaleController extends Controller
 {
     public function index()
     {
-        $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])
+        $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name', 'invoices'])
             ->where('user_id', auth()->id())
             ->latest()
             ->paginate(20));
@@ -204,7 +204,7 @@ class SaleController extends Controller
     public function show($sale_id)
     {
         // $sale = Sale::find($sale_id, ['id', 'is_sale_production', 'authorized_at', 'user_id']);
-        $sale = SaleResource::make(Sale::with(['user:id,name', 'contact', 'media', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator:id,name', 'comments.user'], 'productions' => ['user:id,name', 'operator:id,name']])->find($sale_id));
+        $sale = SaleResource::make(Sale::with(['invoices', 'user:id,name', 'contact', 'media', 'companyBranch.company', 'catalogProductCompanySales' => ['catalogProductCompany.catalogProduct.media', 'productions.operator:id,name', 'comments.user'], 'productions' => ['user:id,name', 'operator:id,name']])->find($sale_id));
         $sales = Sale::latest()->get(['id']);
 
         // return $sale;
@@ -574,14 +574,27 @@ class SaleController extends Controller
 
     public function fetchFiltered($filter)
     {
+        $withRelations = ['companyBranch:id,name', 'user:id,name', 'invoices'];
+
         if ($filter == 'Mis órdenes') {
-            $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->where('user_id', auth()->id())->latest()->paginate(20));
+            $sales = SaleResource::collection(
+                Sale::with($withRelations)
+                    ->where('user_id', auth()->id())
+                    ->latest()
+                    ->paginate(20)
+            );
             return inertia('Sale/Index', compact('sales'));
         } else {
-            $sales = SaleResource::collection(Sale::with(['companyBranch:id,name', 'user:id,name'])->latest()->paginate(20));
+            $sales = SaleResource::collection(
+                Sale::with($withRelations)
+                    ->latest()
+                    ->paginate(20)
+            );
+            // return $sales;
             return inertia('Sale/IndexAll', compact('sales'));
         }
     }
+
 
 
     public function checkIfHasSale($catalog_product_company_id)
@@ -595,5 +608,38 @@ class SaleController extends Controller
         }
 
         return response()->json(compact('has_sale'));
+    }
+
+    public function fetchSalesNoInvoices()
+    {
+        $sales = Sale::latest()
+            ->doesntHave('invoices')
+            ->where('status', 'Producción terminada')
+            ->with(['user:id,name', 'companyBranch:id,name'])
+            ->select(['id', 'company_branch_id', 'user_id', 'authorized_at', 'authorized_user_name', 'is_sale_production'])
+            ->paginate(30);
+
+        return response()->json(compact('sales'));
+    }
+
+    public function getMatchesNoInvoives($query)
+    {
+        if ($query != 'nullable') {
+            $sales = Sale::with(['companyBranch:id,name', 'user:id,name'])
+                ->latest()
+                ->doesntHave('invoices')
+                ->where('id', 'LIKE', "%$query%")
+                ->orWhere('promise_date', 'LIKE', "%$query%")
+                ->orWhereHas('user', function ($user) use ($query) {
+                    $user->where('name', 'LIKE', "%$query%");
+                })
+                ->orWhereHas('companyBranch', function ($user) use ($query) {
+                    $user->where('name', 'LIKE', "%$query%");
+                })
+                ->select(['id', 'company_branch_id', 'user_id', 'authorized_at', 'authorized_user_name', 'is_sale_production'])
+                ->get();
+        }
+
+        return response()->json(compact('sales'));
     }
 }

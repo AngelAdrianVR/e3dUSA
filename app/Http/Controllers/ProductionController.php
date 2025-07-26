@@ -43,7 +43,7 @@ class ProductionController extends Controller
             ->whereHas('productions', function ($query) {
                 $query->where('productions.operator_id', auth()->id());
             })->latest()
-            ->paginate(10, ['id', 'user_id', 'created_at', 'status', 'is_high_priority', 'company_branch_id', 'is_sale_production', 'authorized_at']);
+            ->paginate(70, ['id', 'user_id', 'created_at', 'status', 'is_high_priority', 'company_branch_id', 'is_sale_production', 'authorized_at']);
 
         // return $pre_productions;
         $productions = $this->processDataIndex($pre_productions);
@@ -65,91 +65,82 @@ class ProductionController extends Controller
         ])
             ->whereHas('productions')
             ->latest()
-            ->paginate(10, 
-                ['id', 'promise_date', 'is_sale_production', 'is_high_priority', 'authorized_at', 'user_id', 'company_branch_id', 'contact_id', 'status', 'created_at']); // Paginar 10 por página
+            ->paginate(50, 
+                [
+                    'id',
+                    'promise_date', 
+                    'is_sale_production', 
+                    'is_high_priority', 
+                    'authorized_at', 
+                    'user_id', 
+                    'company_branch_id', 
+                    'contact_id', 
+                    'status', 
+                    'created_at'
+                ]); // Paginar 10 por página
 
+                // return $pre_productions;
             $productions = $this->processDataIndex($pre_productions);
-
         return inertia('Production/Admin', compact('productions'));
     }
 
     public function processDataIndex($pre_productions)
     {
-        $productions = $pre_productions->through(function ($production) {
-            $hasStarted = $production->productions?->whereNotNull('started_at')->count();
-            $hasNotFinished = $production->productions?->whereNull('finished_at')->count();
+        return $pre_productions->through(function ($sale) {
+            $productions = $sale->productions ?? collect();
 
-            if ($production->authorized_at == null) {
-                $status = [
-                    'label' => 'Esperando autorización',
-                    'text-color' => 'text-amber-500',
-                ];
-            } elseif ($production->productions) {
-                if (!$hasStarted) {
-                    $status = [
-                        'label' => 'Producción sin iniciar',
-                        'text-color' => 'text-gray-500',
-                    ];
-                } elseif ($hasStarted && $hasNotFinished) {
-                    $status = [
-                        'label' => 'Producción en proceso',
-                        'text-color' => 'text-blue-500',
-                    ];
-                } else {
-                    $status = [
-                        'label' => 'Producción terminada',
-                        'text-color' => 'text-green-500',
-                    ];
-                }
+            $startedCount = $productions->whereNotNull('started_at')->count();
+            $notFinishedCount = $productions->whereNull('finished_at')->count();
+            $totalProductions = $productions->count();
+            $finishedCount = $totalProductions - $notFinishedCount;
+
+            // Determinar estatus de producción
+            if (is_null($sale->authorized_at)) {
+                $status = ['label' => 'Esperando autorización', 'text-color' => 'text-amber-500'];
+            } elseif ($totalProductions === 0) {
+                $status = ['label' => 'Autorizado sin orden de producción', 'text-color' => 'text-amber-500'];
+            } elseif ($startedCount === 0) {
+                $status = ['label' => 'Producción sin iniciar', 'text-color' => 'text-gray-500'];
+            } elseif ($notFinishedCount > 0) {
+                $status = ['label' => 'Producción en proceso', 'text-color' => 'text-blue-500'];
             } else {
-                $status = [
-                    'label' => 'Autorizado sin orden de producción',
-                    'text-color' => 'text-amber-500',
-                ];
-            }
-            //Guarda en un array "productionNames" los nombres de los operadores de esa orden de produccion
-            $productionNames = [];
-            $productNames = [];
-            foreach ($production->productions as $productionItem) {
-                $productionNames[] = $productionItem['operator']['name'];
-
-                //Guarda en un array "productNames" los nombres de los productos de la orden
-                if (isset($productionItem->catalogProductCompanySale?->catalogProductCompany?->catalogProduct)) {
-                    $productName = $productionItem->catalogProductCompanySale?->catalogProductCompany?->catalogProduct->name;
-                    $productNames[] = $productName;
-                }
-            }
-            $uniqueProductionNames = array_unique($productionNames);
-            $operators = implode(', ', $uniqueProductionNames);
-
-            $uniqueProductNames = array_unique($productNames);
-            $products = implode(', ', $uniqueProductNames);
-
-            //Calulo del porcentage de avance de producción.
-            // Contador para llevar el registro de cuántas producciones tienen fecha en "finished_at"
-            $finishedCount = 0;
-            foreach ($production->productions as $productionItem) {
-                if ($productionItem->finished_at != null) {
-                    $finishedCount++;
-                }
+                $status = ['label' => 'Producción terminada', 'text-color' => 'text-green-500'];
             }
 
-            // Calcular el porcentaje --------------------------------------------------------
-            //-------------------------------------------------------------------------------
-            $percentage = $finishedCount > 0 ? (100 / count($production->productions)) * $finishedCount : 0;
+            // Obtener nombres únicos de operadores
+            $operators = $productions
+                ->pluck('operator.name')
+                ->filter()
+                ->unique()
+                ->values()
+                ->implode(', ');
 
-            // Estatus de fecha de entrega --------------------------------------------------------
-            //-------------------------------------------------------------------------------------
-            $delivery_status = '--'; //inicializo el estatus en caso de no haber fecha
-            $threeDaysBefore = now()->addDays(3); // Verificar si la fecha está a 3 días o más de distancia 
+            // Obtener nombres únicos de productos
+            $products = $productions
+                ->map(function ($item) {
+                    return optional($item->catalogProductCompanySale?->catalogProductCompany?->catalogProduct)->name;
+                })
+                ->filter()
+                ->unique()
+                ->values()
+                ->implode(', ');
+
+            // Porcentaje de avance
+            $percentage = $totalProductions > 0
+                ? round(($finishedCount * 100) / $totalProductions, 1)
+                : 0;
+
+            // Estado de entrega
+            $delivery_status = '--';
+            $threeDaysBefore = now()->addDays(3);
+            $promiseDate = $sale->promise_date;
 
             if ($status['label'] !== 'Producción terminada') {
-
-                if ($production->promise_date?->greaterThanOrEqualTo($threeDaysBefore)) {
+                if ($promiseDate?->greaterThanOrEqualTo($threeDaysBefore)) {
                     $delivery_status = 'Fecha cercana';
-                } else if ($production->promise_date > now()) {
+                } elseif ($promiseDate > now()) {
                     $delivery_status = 'A tiempo';
-                } else if ($production->promise_date < now()) {
+                } elseif ($promiseDate < now()) {
                     $delivery_status = 'Fuera de tiempo';
                 }
             } else {
@@ -157,33 +148,31 @@ class ProductionController extends Controller
             }
 
             return [
-                'id' => $production->id,
-                'folio' => 'OP-' . str_pad($production->id, 4, "0", STR_PAD_LEFT),
+                'id' => $sale->id,
+                'folio' => 'OP-' . str_pad($sale->id, 4, "0", STR_PAD_LEFT),
                 'user' => [
-                    'id' => $production->user->id,
-                    'name' => $production->user->name
+                    'id' => $sale->user->id,
+                    'name' => $sale->user->name
                 ],
-                'status' => $status, //clculado
-                'sale_status' => $production->status, //estatus de la venta
-                'operators' => $operators, //nombres de operadores asignados
+                'status' => $status,
+                'sale_status' => $sale->status,
+                'operators' => $operators,
                 'company_branch' => [
-                    'id' => $production->companyBranch->id,
-                    'name' => $production->companyBranch->name
+                    'id' => $sale->companyBranch->id,
+                    'name' => $sale->companyBranch->name
                 ],
-                'products' => $products, //no me arroja ningun nombre
+                'products' => $products,
                 'production' => [
                     'percentage' => $percentage . '%',
-                    'productions_quantity' => count($production->productions)
+                    'productions_quantity' => $totalProductions
                 ],
-                'promise_date' => $production->promise_date?->isoFormat('DD MMMM YYYY') ?? '--',
-                // 'delivery_status' => $delivery_status,
-                'created_at' => $production->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
-                'authorized_at' => $production->authorized_at?->isoFormat('DD MMM, YYYY h:mm A'),
-                'is_sale_production' => $production->is_sale_production,
+                'promise_date' => $promiseDate?->isoFormat('DD MMMM YYYY') ?? '--',
+                // 'delivery_status' => $delivery_status, // Descomentar si lo usas en frontend
+                'created_at' => $sale->created_at?->isoFormat('DD MMM, YYYY h:mm A'),
+                'authorized_at' => $sale->authorized_at?->isoFormat('DD MMM, YYYY h:mm A'),
+                'is_sale_production' => $sale->is_sale_production,
             ];
         });
-
-        return $productions;
     }
 
     public function create()
