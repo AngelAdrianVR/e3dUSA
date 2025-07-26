@@ -37,6 +37,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:get-contact-birthday-list')->daily();
         $schedule->command('app:sample-devolution-check')->daily();
         $schedule->command('app:notify-close-partialities-reminders')->daily();
+        $schedule->command('check:invoice-reminders')->dailyAt('06:00');
     }
 
     /**

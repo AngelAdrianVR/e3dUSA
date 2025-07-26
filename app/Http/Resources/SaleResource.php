@@ -34,6 +34,7 @@ class SaleResource extends JsonResource
             'authorized_at' => $this->authorized_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'recieved_at' => $this->recieved_at?->isoFormat('DD MMM, YYYY h:mm A'),
             'user' => $this->whenLoaded('user'),
+            'invoices' => $this->whenLoaded('invoices'),
             'company_branch' => $this->whenLoaded('companyBranch'),
             'productions' => $this->whenLoaded('productions'),
             'catalogProductCompanySales' => $this->whenLoaded('catalogProductCompanySales'),

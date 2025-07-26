@@ -44,7 +44,13 @@
             <span class="text-gray-500 my-1">OCE</span>
             <span>{{ sale.oce_name ?? '-' }}</span>
             <span class="text-gray-500 my-1">Factura</span>
-            <span>{{ sale.invoice ?? '-' }}</span>
+            <span @click="sale.invoices?.length ? handleShowInvoice(sale.invoices[0]?.id) : ''" 
+                :class="sale.invoices?.length ? 'hover:underline text-secondary cursor-pointer' : ''">
+                {{ sale.invoices[0]?.folio ?? 'sin factura' }} 
+                <span @click="this.$inertia.visit(route('invoices.create', { sale_id: sale.id }));"
+                    v-if="!sale.invoices?.length && $page.props.auth.user.permissions.includes('Crear facturas')"
+                    class="pl-3 text-secondary hover:underline cursor-pointer">Crear factura</span>
+            </span>
             <span class="text-gray-500 my-1">Estatus</span>
             <span :class="sale.status['text-color'] +
                 ' ' +
@@ -144,6 +150,10 @@ export default {
         dateTimeFormat(dateTime) {
             const formattedDate = format(new Date(dateTime), 'dd MMMM yyyy • h:mm a', { locale: es });
             return formattedDate;
+        },
+        handleShowInvoice(invoiceId) {
+            const url = this.route('invoices.show', invoiceId);
+            window.open(url, '_blank');
         },
         getFileTypeIcon(fileName) {
             // Asocia extensiones de archivo a iconos

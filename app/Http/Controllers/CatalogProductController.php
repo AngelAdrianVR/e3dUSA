@@ -11,6 +11,8 @@ use App\Models\CatalogProduct;
 use App\Models\ProductionCost;
 use App\Models\RawMaterial;
 use Illuminate\Http\Request;
+use App\Exports\CatalogProductPricesExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CatalogProductController extends Controller
 {
@@ -296,7 +298,9 @@ class CatalogProductController extends Controller
     
     public function pricesReport()
     {
-        $catalog_products = CatalogProduct::with(['companies'])->get();
+        $catalog_products = CatalogProduct::with(['companies', 'media'])
+            ->orderBy('name')
+            ->get(['id', 'part_number', 'name', 'cost']);
 
         return inertia('CatalogProduct/PricesReport', compact('catalog_products'));
     }
@@ -315,5 +319,12 @@ class CatalogProductController extends Controller
         $catalog_product = $catalog_product->load(['media']);
 
         return response()->json(['item' => $catalog_product]);
+    }
+
+    public function exportExcel()
+    {
+        $fileName = 'catalogo_precios.xlsx';
+        
+        return Excel::download(new CatalogProductPricesExport, $fileName);
     }
 }

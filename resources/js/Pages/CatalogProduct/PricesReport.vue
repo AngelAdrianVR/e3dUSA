@@ -10,12 +10,33 @@
         <table class="styled-table">
             <thead>
                 <tr>
-                    <th class="w-1/3 text-start">Producto</th>
-                    <th class="w-2/3 text-start">Precios actuales registrados</th>
+                    <th class="w-1/5 text-start">Imagen</th>
+                    <th class="w-1/4 text-start">Producto</th>
+                    <th class="w-2/4 text-start">Precios actuales registrados</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(item, index) in catalog_products" :key="index">
+                    <td class=" flex items-center justify-center">
+                        <a
+                            :href="item.media[0]?.original_url"
+                            target="_blank"
+                            rel="noopener"
+                            class="group relative size-56"
+                        >
+                            <img
+                                class="object-contain h-full transition duration-200 ease-in-out group-hover:scale-105 group-hover:brightness-90 cursor-zoom-in"
+                                :src="item.media[0]?.original_url"
+                                :alt="item.name"
+                            />
+                            <!-- Ícono de lupa o texto flotante (opcional) -->
+                            <div
+                                class="absolute bottom-1 right-1 text-xs bg-black bg-opacity-60 text-white px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition"
+                            >
+                                Ver grande
+                            </div>
+                        </a>
+                    </td>
                     <td>{{ item.name }}</td>
                     <td>
                         <ul>
@@ -160,6 +181,12 @@ export default {
         catalog_products: Array,
     },
     methods: {
+        procesarUrlImagenLocal(originalUrl) {
+            // Reemplaza la parte inicial de la URL
+            // const nuevaUrl = originalUrl.replace('https://https://intranetemblems3d.dtw.com.mx/', 'http://www.intranetemblems3d.dtw.com.mx');
+            const nuevaUrl = originalUrl?.replace('http://localhost:8000', 'https://intranetemblems3d.dtw.com.mx/');  // para hacer pruebas en local
+            return nuevaUrl;
+        },
         getCurrentDate() {
             return new Date().toLocaleDateString('es-ES');
         },
@@ -223,9 +250,10 @@ body {
 .styled-table {
     border-collapse: collapse;
     margin: 25px 0;
-    font-size: 0.7em;
+    font-size: 0.8em;
     font-family: sans-serif;
-    width: 100%;
+    width: 95%;
+    margin: 13px auto;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 }
 

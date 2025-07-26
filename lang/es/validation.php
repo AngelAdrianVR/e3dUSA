@@ -228,5 +228,13 @@ return [
         'new_price' => 'precio nuevo',
         'new_currency' => 'moneda',
         'brand' => 'marca',
+        'sale_id' => 'orden de venta',
+        'invoice_amount' => 'monto de factura',
+        'complements.*.folio' => 'folio de complemento',
+        'complements.*.payment_date' => 'fecha de pago de complemento',
+        'complements.*.amount' => 'monto de complemento',
+        'complements.*.payment_method' => 'metodo de pago de complemento',
+        'invoice_quantity' => 'cantidad de facturas',
+        'total_amount_sale' => 'monto total de OV',
     ],
 ];

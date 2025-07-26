@@ -24,6 +24,7 @@ use App\Http\Controllers\ExclusiveDesignController;
 use App\Http\Controllers\ExtraTimeRequestController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\HolidayController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\KioskDeviceController;
 use App\Http\Controllers\MachineController;
 use App\Http\Controllers\MaintenanceController;
@@ -38,6 +39,7 @@ use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\ProductionCostController;
 use App\Http\Controllers\ProductionProgressController;
+use App\Http\Controllers\ProgramedInvoiceController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectGroupController;
 use App\Http\Controllers\ProspectController;
@@ -68,6 +70,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 // Route::get('register-keychains', function () {
 //     // editar productos de proveedor con id 9
@@ -206,6 +209,7 @@ Route::get('catalog-products-fetch-shipping-rates/{catalog_product}', [CatalogPr
 Route::get('catalog-products-prices-report', [CatalogProductController::class, 'pricesReport'])->name('catalog-products.prices-report');
 Route::post('catalog-products-get-by-ids', [CatalogProductController::class, 'getByIds'])->name('catalog-products.get-by-ids');
 Route::get('catalog-products/{catalog_product}/get-info', [CatalogProductController::class, 'getInfo'])->name('catalog-products.get-info');
+Route::get('export-catalog-products', [CatalogProductController::class, 'exportExcel']);
 
 
 // ------- Ventas(Clients Routes)  ---------
@@ -312,9 +316,11 @@ Route::get('sales/print/{sale}', [SaleController::class, 'print'])->name('sales.
 Route::post('sales/update-with-media/{sale}', [SaleController::class, 'updateWithMedia'])->name('sales.update-with-media')->middleware('auth');
 Route::get('sales-get-unauthorized', [SaleController::class, 'getUnauthorized'])->name('sales.get-unauthorized');
 Route::get('sales-get-matches/{query}', [SaleController::class, 'getMatches'])->name('sales.get-matches');
+Route::get('sales-get-matches-no-invoices/{query}', [SaleController::class, 'getMatchesNoInvoives'])->name('sales.get-matches-no-invoices');
 Route::get('sales-quality-certificate/{sale_id}', [SaleController::class, 'QualityCertificate'])->name('sales.quality-certificate');
 Route::get('sales-fetch-filtered/{filter}', [SaleController::class, 'fetchFiltered'])->name('sales.fetch-filtered');
 Route::get('sales-check-if-has-sale/{catalog_prroduct_company_id}', [SaleController::class, 'checkIfHasSale'])->name('sales.check-if-has-sale');
+Route::get('sales-fetch-no-invoices', [SaleController::class, 'fetchSalesNoInvoices'])->name('sales.get-no-invoices');
 
 
 // ------- CRM(Companybranches sucursales Routes)  ---------
@@ -599,6 +605,23 @@ Route::get('sale-analitics-fetch-raw-material-info/{part_number}', [SaleAnalitic
 Route::get('sale-analitics-fetch-catalog-product-sales/{part_number}/{range}', [SaleAnaliticController::class, 'fetchCatalogProductSales'])->name('sale-analitics.fetch-catalog-product-sales')->middleware('auth');
 Route::get('sale-analitics-get-estatistics-data/{date}', [SaleAnaliticController::class, 'getEstatisticsData'])->name('sale-analitics.get-estatistics-data')->middleware('auth');
 
+
+//------------------ invoices routes ----------------
+Route::resource('invoices', InvoiceController::class)->middleware('auth');
+Route::post('invoices-change-status/{invoice}', [InvoiceController::class, 'changeStatus'])->name('invoices.change-status')->middleware('auth');
+Route::post('invoices-get-matches', [InvoiceController::class, 'getMatches'])->name('invoices.get-matches');
+Route::post('invoices/massive-delete', [InvoiceController::class, 'massiveDelete'])->name('invoices.massive-delete');
+Route::post('invoices-store-complement/{invoice}', [InvoiceController::class, 'storeComplement'])->name('invoices.store-complement');
+Route::post('invoices-store-report', [InvoiceController::class, 'report'])->name('invoices.report');
+
+
+//------------------ programmed invoices routes ----------------
+Route::resource('programmed-invoices', ProgramedInvoiceController::class)->middleware('auth');
+Route::get('programmed-invoices-get-all', [ProgramedInvoiceController::class, 'getAll'])->name('programmed-invoices.get-all')->middleware('auth');
+Route::get('programmed-invoices-get-matches', [ProgramedInvoiceController::class, 'getMatches'])->name('programmed-invoices.get-matches');
+Route::post('programmed-invoices/massive-delete', [ProgramedInvoiceController::class, 'massiveDelete'])->name('programmed-invoices.massive-delete');
+
+
 //------------------ Kiosk routes ----------------
 Route::post('kiosk', [KioskDeviceController::class, 'store'])->name('kiosk.store');
 
@@ -607,6 +630,18 @@ Route::post('/upload-image', [FileUploadController::class, 'upload'])->name('upl
 
 //contact routes ----------------------------------------------------------------
 Route::put('contacts-update/{contact}', [ContactController::class, 'update'])->name('contacts.update')->middleware('auth');
+
+
+// eliminacion de archivo desde componente FileView
+Route::delete('/media/{media}', function (Media $media) {
+    try {
+        $media->delete(); // Elimina el archivo y su registro
+
+        return response()->json(['message' => 'Archivo eliminado correctamente.'], 200);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Error al eliminar el archivo.'], 500);
+    }
+})->name('media.delete-file');
 
 
 //artisan commands -------------------
