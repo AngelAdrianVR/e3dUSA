@@ -98,7 +98,7 @@ class InvoiceController extends Controller
             $invoice->save();
         }
 
-        // Agrega el archivo adjunto a una coleccion llamafa factura
+        // Agrega el archivo adjunto a una coleccion llamada factura
         if ($request->hasFile('media')) {
             foreach ($request->file('media') as $file) {
                 $invoice
@@ -165,17 +165,19 @@ class InvoiceController extends Controller
             $programmed_invoice->update(['status' => 'Creada']);
         }
 
-
+        
         // Revisa si hay un recordatorio de esa factura en calendario y la marca como terminada
-        $invoice_calendar = Calendar::where('user_id', $programmed_invoice->user_id)
+        if ( $programmed_invoice ) {
+            $invoice_calendar = Calendar::where('user_id', $programmed_invoice->user_id)
             ->where('title', 'like', 'Factura programada para OV-' . $programmed_invoice->sale_id . '%')
             ->first();
-
-        // Edita el estatus del recordatorio en el calendario si es que existe
-        if ( $invoice_calendar ) {
-            $invoice_calendar->update([
-                'status' => 'Terminada'
-            ]);
+            
+            // Edita el estatus del recordatorio en el calendario si es que existe
+            if ( $invoice_calendar ) {
+                $invoice_calendar->update([
+                    'status' => 'Terminada'
+                ]);
+            }
         }
             
 
