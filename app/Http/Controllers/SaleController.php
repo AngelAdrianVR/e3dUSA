@@ -617,7 +617,7 @@ class SaleController extends Controller
             ->where('status', 'Producción terminada')
             ->with(['user:id,name', 'companyBranch:id,name'])
             ->select(['id', 'company_branch_id', 'user_id', 'authorized_at', 'authorized_user_name', 'is_sale_production'])
-            ->paginate(30);
+            ->paginate(50);
 
         return response()->json(compact('sales'));
     }

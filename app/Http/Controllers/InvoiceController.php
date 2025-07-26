@@ -18,7 +18,7 @@ class InvoiceController extends Controller
         $invoices = Invoice::with('companyBranch:id,name')
             ->select(['id', 'folio', 'created_at', 'created_by', 'invoice_quantity', 'company_branch_id', 'invoice_amount', 'complements', 'sale_id', 'status', 'number_of_invoice'])
             ->latest()
-            ->paginate(30);
+            ->paginate(50);
         
         $company_branches = CompanyBranch::latest()->get(['id', 'name']);
 
