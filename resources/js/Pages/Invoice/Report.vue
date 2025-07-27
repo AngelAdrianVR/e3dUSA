@@ -17,7 +17,7 @@
             <div class="space-y-10">
                 <div v-for="(data, clientName) in grouped_data" :key="clientName" class=" p-4 rounded-md">
                     <h2 class="text-xl font-bold mb-3">{{ clientName }}</h2>
-
+                    <p v-if="!data.invoices.length && !data.ovs_no_invoices.length && !data.programed_invoices.length" class="text-center text-gray-500">Sin información</p>
                     <!-- Facturas registradas -->
                     <div v-if="data.invoices.length">
                         <h3 class="text-lg font-semibold mb-2 text-secondary">Facturas registradas</h3>
