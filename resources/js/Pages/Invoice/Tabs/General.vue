@@ -40,40 +40,42 @@
             </p>
 
             <!-- Complementos de pago -->
-            <el-divider class="col-span-full" />
-            <p class="text-secondary mb-4 col-span-full">Complementos de pago</p>
-            <section class="col-span-full" v-if="invoice.complements?.length">
-                <div class="grid grid-cols-2 gap-2 space-y-0 mb-7" v-for="(item, index) in invoice.complements" :key="item">
-                    <p class="col-span-full font-semibold">Complemento {{ index + 1 }}</p>
-                    <span class="text-gray-500">Folio de complemento</span>
-                    <span>{{ item.folio }}</span>
-                    <span class="text-gray-500">Fecha de pago</span>
-                    <span>{{ dateFormat(item.payment_date) }}</span>
-                    <span class="text-gray-500">Monto pagado</span>
-                    <span>${{ Number(item.amount)?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
-                    <span class="text-gray-500">Notas</span>
-                    <span>{{ item.notes ?? '-' }}</span>
-                    <span class="text-gray-500">Archivos adjuntos</span>
-                    <div v-if="invoice.media.filter(f => f.collection_name === 'complementos') 
-                        && invoice.media.filter(f => f.name === `Complemento ${index + 1}`)" class="col-span-full">
-                        <li
-                            v-for="file in invoice.media.filter(f => f.collection_name === 'complementos' && f.name === `Complemento ${index + 1}`)"
-                            :key="file.id"
-                            class="flex justify-between"
-                        >
-                            <a :href="file.original_url" target="_blank" class="flex space-x-2">
-                                <i :class="getFileTypeIcon(file.file_name)" class="mt-1"></i>
-                                <span>{{ file.file_name }}</span>
-                            </a>
-                        </li>
+            <section v-if="invoice.payment_option == 'PDD'" class="col-span-full grid grid-cols-2 gap-2">
+                <el-divider class="col-span-full" />
+                <p class="text-secondary mb-4 col-span-full">Complementos de pago</p>
+                <section class="col-span-full" v-if="invoice.complements?.length">
+                    <div class="grid grid-cols-2 gap-2 space-y-0 mb-7" v-for="(item, index) in invoice.complements" :key="item">
+                        <p class="col-span-full font-semibold">Complemento {{ index + 1 }}</p>
+                        <span class="text-gray-500">Folio de complemento</span>
+                        <span>{{ item.folio }}</span>
+                        <span class="text-gray-500">Fecha de pago</span>
+                        <span>{{ dateFormat(item.payment_date) }}</span>
+                        <span class="text-gray-500">Monto pagado</span>
+                        <span>${{ Number(item.amount)?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
+                        <span class="text-gray-500">Notas</span>
+                        <span>{{ item.notes ?? '-' }}</span>
+                        <span class="text-gray-500">Archivos adjuntos</span>
+                        <div v-if="invoice.media.filter(f => f.collection_name === 'complementos') 
+                            && invoice.media.filter(f => f.name === `Complemento ${index + 1}`)" class="col-span-full">
+                            <li
+                                v-for="file in invoice.media.filter(f => f.collection_name === 'complementos' && f.name === `Complemento ${index + 1}`)"
+                                :key="file.id"
+                                class="flex justify-between"
+                            >
+                                <a :href="file.original_url" target="_blank" class="flex space-x-2">
+                                    <i :class="getFileTypeIcon(file.file_name)" class="mt-1"></i>
+                                    <span>{{ file.file_name }}</span>
+                                </a>
+                            </li>
+                        </div>
+                        <p class="text-sm text-gray-400" v-else>
+                            <i class="fa-regular fa-file-excel mr-3"></i>
+                            No hay archivos adjuntos
+                        </p>
                     </div>
-                    <p class="text-sm text-gray-400" v-else>
-                        <i class="fa-regular fa-file-excel mr-3"></i>
-                        No hay archivos adjuntos
-                    </p>
-                </div>
+                </section>
+                <p v-else class="text-[#9A9A9A]">Sin complementos de pago aún</p>
             </section>
-            <p v-else class="text-[#9A9A9A]">Sin complementos de pago aún</p>
 
             
         </section>
@@ -112,7 +114,7 @@
             <span>${{ pendingSaleAmount.replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</span>
 
             <!-- Facturas relacionadas -->
-            <p class="text-black mb-2 mt-5 col-span-full font-semibold">Facturas relacionadas a la orden</p>
+            <p class="text-black dark:text-white mb-2 mt-5 col-span-full font-semibold">Facturas relacionadas a la orden</p>
             <div class="col-span-full" v-if="invoice.invoice_quantity > 1">
             <div
                 class="grid grid-cols-2 gap-y-2"
