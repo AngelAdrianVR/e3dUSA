@@ -21,7 +21,7 @@
                     <el-tooltip v-if="$page.props.auth.user.permissions.includes('Editar facturas')" content="Editar"
                     placement="top">
                         <Link :href="route('invoices.edit', selectedInvoice)">
-                            <button v-if="!handleDisable" class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
+                            <button v-if="invoice.status != 'Cancelada' && invoice.status != 'Pagada'" class="size-9 flex items-center justify-center rounded-[10px] bg-[#D9D9D9] dark:bg-[#202020] dark:text-white">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                 </svg>
@@ -29,7 +29,7 @@
                         </Link>
                     </el-tooltip>
 
-                    <PrimaryButton :disabled="handleDisable()" @click="complementModal = true" class="rounded-md">Agregar complemento</PrimaryButton>
+                    <PrimaryButton v-if="invoice.payment_option == 'PDD'" :disabled="handleDisable()" @click="complementModal = true" class="rounded-md">Agregar complemento</PrimaryButton>
 
                     <Dropdown align="right" width="48"
                         v-if="$page.props.auth.user.permissions.includes('Crear facturas') && $page.props.auth.user.permissions.includes('Eliminar facturas')">
@@ -60,25 +60,21 @@
             <div v-if="invoice.status != 'Pagada' && invoice.status != 'Cancelada'" class="w-72 flex space-x-2 items-center ml-4">
               <p class="text-gray-700">Estatus:</p>
               <el-select @change="updateStatus"
-                  v-model="status"
-                  placeholder="Seleccionar"
-                  :fit-input-width="true"
-                  >
-                  <el-option
-                      v-for="item in statuses"
-                      :key="item"
-                      :label="item.label"
-                      :value="item.label"
-                  >
-                      <span style="float: left">{{ item.label }}</span>
-                      <span v-html="item.icon" class="pt-1"
-                          style="
-                          float: right;
-                          "
-                      >
-                      </span>
-                  </el-option>
+                        v-model="status"
+                        placeholder="Seleccionar"
+                        :fit-input-width="true"
+              >
+                <el-option
+                  v-for="item in filteredStatuses"
+                  :key="item.label"
+                  :label="item.label"
+                  :value="item.label"
+                >
+                  <span style="float: left">{{ item.label }}</span>
+                  <span v-html="item.icon" class="pt-1" style="float: right;"></span>
+                </el-option>
               </el-select>
+
             </div>
 
             <el-tabs v-model="activeTab" class="mx-5 mt-3" @tab-click="handleClick">
@@ -240,10 +236,10 @@ data() {
               label: 'Pagada',
               icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-green-500"><path stroke-linecap="round" stroke-linejoin="round" d="M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 0 1 9 9v.375M10.125 2.25A3.375 3.375 0 0 1 13.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 0 1 3.375 3.375M9 15l2.25 2.25L15 12" /></svg>'
           },
-          {
-              label: 'Cancelada',
-              icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-red-500"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>'
-          },
+          // {
+          //     label: 'Cancelada',
+          //     icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-red-500"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>'
+          // },
       ],
     }
 },
@@ -279,6 +275,14 @@ computed: {
 
     // Retornamos el restante (evitamos negativos)
     return Math.max(invoiceAmount - complements, 0);
+  },
+  filteredStatuses() {
+    return this.statuses.filter(item => {
+      if (item.label === 'Parcialmente pagada') {
+        return this.invoice.payment_option === 'PDD';
+      }
+      return true;
+    });
   }
 },
 methods:{
@@ -328,7 +332,8 @@ methods:{
                     message: "",
                     type: "success",
                 });
-              this.form.reset;
+              this.form.reset();
+              this.status = this.invoice.status; // Reset status to current invoice status
               this.showMaxAmountComplement = false;
               this.complementModal = false;
             },
