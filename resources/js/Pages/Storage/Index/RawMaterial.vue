@@ -56,8 +56,16 @@
                     <el-table-column type="selection" width="30" />
                     <el-table-column prop="storageable.name" label="Imagen" width="100">
                         <template #default="scope">
-                            <figure class="border rounded-md size-20 flex items-center justify-center">
-                                <img class="object-contain w-full rounded-md" :src="scope.row.storageable.media[0]?.original_url" alt="">
+                            <figure class="border rounded-md size-20 flex items-center justify-center cursor-pointer">
+                            <el-image
+                                @click.stop=""
+                                style="width: 100%; height: 100%; border-radius: 6px"
+                                :src="scope.row.storageable.media[0]?.original_url"
+                                :preview-src-list="[scope.row.storageable.media[0]?.original_url]"
+                                fit="contain"
+                                preview-teleported
+                                :hide-on-click-modal="true"
+                            />
                             </figure>
                         </template>
                     </el-table-column>

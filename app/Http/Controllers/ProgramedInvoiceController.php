@@ -44,11 +44,13 @@ class ProgramedInvoiceController extends Controller
             ->where('title', 'like', 'Factura programada para OV-' . $programmed_invoice->sale_id . '%')
             ->first();
 
-        // Edita la fecha y la hora del recordatorio en el calendario
-        $invoice_calendar->update([
-            'start_date' => $programmed_invoice->reminder_date,
-            'start_time' => $programmed_invoice->reminder_time,
-        ]);
+        // Edita la fecha y la hora del recordatorio en el calendario si es que existe
+        if ( $invoice_calendar ) {
+            $invoice_calendar->update([
+                'start_date' => $programmed_invoice->reminder_date,
+                'start_time' => $programmed_invoice->reminder_time,
+            ]);
+        }
 
         // Revisa si ya no hay facturas pendientes por hacer para quitar el recordatorio invasivo de pantalla
         $today = now()->startOfDay();
