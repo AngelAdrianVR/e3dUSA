@@ -322,6 +322,7 @@ Route::get('sales-quality-certificate/{sale_id}', [SaleController::class, 'Quali
 Route::get('sales-fetch-filtered/{filter}', [SaleController::class, 'fetchFiltered'])->name('sales.fetch-filtered');
 Route::get('sales-check-if-has-sale/{catalog_prroduct_company_id}', [SaleController::class, 'checkIfHasSale'])->name('sales.check-if-has-sale');
 Route::get('sales-fetch-no-invoices', [SaleController::class, 'fetchSalesNoInvoices'])->name('sales.get-no-invoices');
+Route::get('sales-paginate-no-invoices', [SaleController::class, 'paginateNoInvoices'])->name('sales.paginate-no-invoices');
 
 
 // ------- CRM(Companybranches sucursales Routes)  ---------

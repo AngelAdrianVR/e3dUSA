@@ -353,7 +353,7 @@
             
             <div class="mt-9 mx-3 md:text-right col-span-full">
                 <PrimaryButton
-                    :disabled="form.processing || (form.extra_invoices.length > 0 && form.extra_invoices.every(item => item.reminder_date))">
+                    :disabled="form.processing || !(form.extra_invoices.length > 0 && form.extra_invoices.every(item => item.reminder_date))">
                     <i v-if="form.processing" class="fa-sharp fa-solid fa-circle-notch fa-spin mr-2 text-white"></i>
                     Crear factura
                 </PrimaryButton>
