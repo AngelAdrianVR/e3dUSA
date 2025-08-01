@@ -68,7 +68,7 @@
             
             <!-- factura info -->
             <section class="col-span-full md:grid grid-cols-2 my-1 gap-4">
-                <p class="font-bold text-lg col-span-full mb-1">Factura 1</p>
+                <p class="font-bold text-lg col-span-full mb-1">Info. de Factura</p>
                 <div>
                     <InputLabel value="Folio de factura (como aparece en el CFDI)*" />
                     <el-input v-model="form.folio" placeholder="Selecciona una orden de venta" />
@@ -274,7 +274,7 @@
             </section> -->
             
             <!-- Complementos de pago -->
-            <section class="col-span-full">
+            <section v-if="form.payment_option == 'PDD'" class="col-span-full">
                 <el-divider content-position="left" class="col-span-full">Complementos de pago</el-divider>
                 <p v-if="!form.complements.length" class="text-sm dark:text-gray-400 text-[#373737]">Click al botón de “+” para empezar a agregar complementos de pago</p>
 

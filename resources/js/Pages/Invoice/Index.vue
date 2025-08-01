@@ -66,7 +66,7 @@
                         </el-select>
                     </div>
                     <div class="mt-5 mx-3 md:text-right col-span-full">
-                        <PrimaryButton @click="generateReport">
+                        <PrimaryButton @click="generateReport" :disabled="types.length === 0 || company_branches_ids.length === 0">
                             Generar reporte
                         </PrimaryButton>
                     </div>
