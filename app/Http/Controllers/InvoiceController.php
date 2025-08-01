@@ -18,7 +18,7 @@ class InvoiceController extends Controller
         $invoices = Invoice::with('companyBranch:id,name')
             ->select(['id', 'folio', 'created_at', 'created_by', 'invoice_quantity', 'company_branch_id', 'invoice_amount', 'complements', 'sale_id', 'status', 'number_of_invoice'])
             ->latest()
-            ->paginate(50);
+            ->paginate(100);
         
         $company_branches = CompanyBranch::latest()->get(['id', 'name']);
 
@@ -93,10 +93,11 @@ class InvoiceController extends Controller
 
         // revisar si se agregaron complementos para cambiar estatus
         if ($invoice->complements) {
-            $totalPaid = $invoice->complements->sum('amount');
+            $totalPaid = collect($invoice->complements)->sum('amount');
             $invoice->status = $totalPaid >= $invoice->total_amount_sale ? 'Pagada' : 'Parcialmente pagada';
             $invoice->save();
         }
+
 
         // Agrega el archivo adjunto a una coleccion llamada factura
         if ($request->hasFile('media')) {
