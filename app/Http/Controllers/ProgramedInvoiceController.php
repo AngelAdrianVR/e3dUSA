@@ -89,7 +89,7 @@ class ProgramedInvoiceController extends Controller
         $programmed_invoices = ProgramedInvoice::latest()
             ->with('companyBranch:id,name')
             ->where('status', 'Pendiente')
-            ->paginate(30);
+            ->paginate(150);
 
         return response()->json(compact('programmed_invoices'));
     }

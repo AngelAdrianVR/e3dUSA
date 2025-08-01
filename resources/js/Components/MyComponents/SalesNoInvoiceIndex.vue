@@ -21,9 +21,9 @@
             <div class="lg:w-[90%] mx-auto mt-6">
                 <div class="flex justify-between">
                     <!-- pagination -->
-                    <div v-if="!search" class="overflow-auto mb-2">
+                    <!-- <div v-if="!search" class="overflow-auto mb-2">
                         <PaginationWithNoMeta :pagination="pagination" class="py-2" />
-                    </div>
+                    </div> -->
 
                     <!-- buttons -->
                     <!-- <div>
@@ -108,6 +108,10 @@
                         </template>
                     </el-table-column>
                 </el-table>
+                <div v-if="loadingPage" class="flex items-center justify-center mt-2">
+                    <div class="size-5 border-2 border-t-transparent border-gray-500 rounded-full animate-spin"></div>
+                </div>
+                <p @click="paginateSalesWithNoInvoices" v-if="!loadingPage && currentPage * 100 < total_sales" class="text-center text-blue-400 hover:underline mt-2 cursor-pointer">Cargar más elementos</p>
             </div>
         </div>
     </main>
@@ -130,9 +134,12 @@ data() {
         inputSearch: '',
         search: '',
         loading: false,
+        loadingPage: false, // estado de carga para paginación (cargar más elementos).
         sales: [],
         pagination: null,
         filteredSales: [],
+        currentPage: 1, // página actual para la paginación
+        total_sales: 0 // total de ventas para mostrar en la paginación
     }
 },
 components:{
@@ -205,6 +212,7 @@ methods:{
 
             if ( response.status === 200 ) {
                 this.sales = response.data.sales;
+                this.total_sales = response.data.total_sales;
                 this.pagination = this.sales;
                 this.filteredSales = this.sales.data;
             }
@@ -214,7 +222,27 @@ methods:{
         } finally {
             this.loading = false;
         }
+    },
+    async paginateSalesWithNoInvoices() {
+        this.loadingPage = true;
+        try {
+            const response = await axios.get(route('sales.paginate-no-invoices'), {
+                params: { page: this.currentPage + 1 }
+            });
+
+            if (response.status === 200) {
+                // Concatenar nuevos resultados al arreglo existente
+                this.filteredSales = [...this.filteredSales, ...response.data.sales.data];
+                this.currentPage = response.data.sales.current_page; // actualizar página real
+            }
+
+        } catch (error) {
+            console.log(error);
+        } finally {
+            this.loadingPage = false;
+        }
     }
+
 },
 mounted() {
     this.fetchSalesWithNoInvoices();

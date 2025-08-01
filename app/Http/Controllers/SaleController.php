@@ -613,14 +613,44 @@ class SaleController extends Controller
     public function fetchSalesNoInvoices()
     {
         $sales = Sale::latest()
-            ->doesntHave('invoices')
             ->where('status', 'Producción terminada')
+            ->whereDoesntHave('invoices', fn($q) => $q->where('status', '!=', 'cancelada'))
             ->with(['user:id,name', 'companyBranch:id,name'])
-            ->select(['id', 'company_branch_id', 'user_id', 'authorized_at', 'authorized_user_name', 'is_sale_production'])
-            ->paginate(50);
+            ->select([
+                'id',
+                'company_branch_id',
+                'user_id',
+                'authorized_at',
+                'authorized_user_name',
+                'is_sale_production',
+            ])
+            ->paginate(100);
 
-        return response()->json(compact('sales'));
+        return response()->json([
+            'sales' => $sales,
+            'total_sales' => $sales->total(), // total general (no solo la página actual)
+        ]);
     }
+
+    public function paginateNoInvoices(Request $request)
+    {
+        $sales = Sale::latest()
+            ->where('status', 'Producción terminada')
+            ->whereDoesntHave('invoices', fn($q) => $q->where('status', '!=', 'cancelada'))
+            ->with(['user:id,name', 'companyBranch:id,name'])
+            ->select([
+                'id',
+                'company_branch_id',
+                'user_id',
+                'authorized_at',
+                'authorized_user_name',
+                'is_sale_production',
+            ])
+            ->paginate(100); // Laravel automáticamente detecta el ?page=
+
+        return response()->json(['sales' => $sales]);
+    }
+
 
     public function getMatchesNoInvoives($query)
     {
