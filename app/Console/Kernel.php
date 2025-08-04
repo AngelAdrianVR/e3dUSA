@@ -37,7 +37,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:get-contact-birthday-list')->daily();
         $schedule->command('app:sample-devolution-check')->daily();
         $schedule->command('app:notify-close-partialities-reminders')->daily();
-        $schedule->command('check:invoice-reminders')->dailyAt('06:00');
+        $schedule->command('check:invoice-reminders')->dailyAt('06:00'); // revisar recordatorios de facturas diariamente a las 06:00
+        $schedule->command('quotes:check-pending-alerts')->daily(); // revisar cotizaciones pendientes diariamente que tengan 3 o 5 dias de creados con status "No enviada"
     }
 
     /**

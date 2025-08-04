@@ -13,3 +13,5 @@ Route::post('quotes/get-matches', [QuoteController::class, 'getMatches'])->name(
 Route::get('quotes/fetch-catalog-products-company-branch/{company_branch_id}', [QuoteController::class, 'fetchCatalogProductsCompanyBranch'])->name('quotes.fetch-catalog-products-company-branch');
 Route::post('quotes/schedule-update-product-price', [QuoteController::class, 'scheduleUpdateProductPrice'])->name('quotes.schedule-update-product-price');
 Route::get('quotes/fetch-data/{quote}', [QuoteController::class, 'fetchQuoteData'])->name('quotes.fetch-data');
+Route::post('quotes-change-status/{quote}', [QuoteController::class, 'changeStatus'])->name('quotes.change-status');
+Route::get('quotes-pending-alert', [QuoteController::class, 'pendingAlert'])->name('quotes.pending-alert');
