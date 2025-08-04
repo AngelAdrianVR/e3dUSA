@@ -26,6 +26,8 @@ class Quote extends Model implements HasMedia
         'freight_option',
         'first_production_days',
         'notes',
+        'quote_acepted',
+        'rejected_razon',
         'currency',
         'authorized_user_name',
         'authorized_at',
@@ -36,6 +38,7 @@ class Quote extends Model implements HasMedia
         'user_id',
         'sale_id',
         'show_breakdown',
+        'status', // estatus de la cotizacion (No enviada, Recibida por el cliente, Aceptada, Rechazada)
         'approved_products',
         'created_by_customer',
         'early_payment_discount',

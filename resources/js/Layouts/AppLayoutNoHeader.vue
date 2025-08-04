@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import { Head, Link, router, useForm } from "@inertiajs/vue3";
+import { Head, Link, router, useForm, usePage } from "@inertiajs/vue3";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
 import Banner from "@/Components/Banner.vue";
 import Dropdown from "@/Components/Dropdown.vue";
@@ -48,6 +48,8 @@ const loadingSearch = ref(false); //buscador general
 const isDarkMode = ref(localStorage.getItem('darkMode') === 'true');// Obtener el estado del modo nocturno desde el localStorage
 const darkModeSwitch = ref(localStorage.getItem('darkMode') === 'true');// Obtener el estado del modo nocturno desde el localStorage
 const draggableAlert = ref(null); // Asigna el ref a una variable reactiva
+const pendingQuotes = ref([]) // Almacena las cotizaciones pendientes de seguimiento
+const page = usePage()
 
 const form = useForm({
   barCode: null,
@@ -387,7 +389,19 @@ const searching = () => {
     });
 }; 
 
+async function checkPendingQuotes() {
+  if ( page.props.auth.user.pendent_quotes_alert ) {
+    try {
+      const response = await axios.get(route('quotes.pending-alert'))
+      pendingQuotes.value = response.data
+    } catch (error) {
+      console.error('Error obteniendo cotizaciones pendientes:', error)
+    }
+  }
+}
+
 onMounted(() => {
+  checkPendingQuotes();
   getAttendanceTextButton();
   getPauseStatus();
   getUnseenMessages();
@@ -830,6 +844,27 @@ onMounted(() => {
                 <i class="fa-solid fa-arrow-right"></i>
               </div>
           </div>
+
+          <!-- aviso de cotizaciones pendientes de seguimiento (3 y 5 días despues de creadas sin seguimiento) -->
+          <section ref="draggableAlert" v-if="$page.props.auth.user.pendent_quotes_alert" class="w-full md:w-[400px] border border-blue-500 py-2 px-4 rounded-md bg-blue-50 absolute md:right-1/2 !cursor-move z-30">
+            <div
+                class="flex justify-between items-center space-x-2">
+                <figure class="w-14">
+                  <img src="@/../../public/images/invoice_icon.png" alt="">
+                </figure>
+                <p class="text-sm w-[90%]">
+                  Tienes cotizaciones pendientes de seguimiento. <strong>Haz clic en "Ir" para verlas.</strong> <br>
+                  <span class="text-xs italic">(Para ocultar el aviso da seguimiento a tus cotizaciones pendientes).</span>
+                </p>
+                <div @click="$inertia.get(route('quotes.index'))" class="text-blue-600 flex items-center space-x-3 pl-2 !cursor-pointer">
+                  <span>Ir</span>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </div>
+            </div>
+            <ul class="text-xs mt-1 list-disc ml-10 text-blue-800 cursor-default">
+              <li v-for="q in pendingQuotes" :key="q.id">COT-{{ q.id }} - {{ q.status }}</li>
+            </ul>
+          </section>
 
           <slot />
         </div>

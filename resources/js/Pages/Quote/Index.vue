@@ -80,14 +80,54 @@
                     <el-table-column prop="folio" label="Folio" width="135">
                         <template #default="scope">
                             <div class="flex items-center space-x-1">
+                            <el-tooltip v-if="statusMap[scope.row.status]" placement="top">
+                                <template #content>
+                                    <p v-html="statusMap[scope.row.status].tooltip(scope.row)"></p>
+                                </template>
+                                    <span v-html="statusMap[scope.row.status].icon" class="text-base mr-1"></span>
+                            </el-tooltip>
+                            <el-tooltip
+                                v-if="scope.row.early_payment_discount && $page.props.auth.user.permissions.includes('Descuentos cotizaciones')"
+                                placement="top">
+                                <template #content>
+                                    <p v-if="scope.row.early_paid_at">
+                                        Descuento de pago por anticipado aplicado: %{{ scope.row.discount }} <br>
+                                        <span>Pagado el: <strong class="text-blue-400">{{
+                                                formatDate(scope.row.early_paid_at) }}</strong></span>
+                                    </p>
+                                    <p v-else>
+                                        Descuento de pago por anticipado: %{{ scope.row.discount }}
+                                    </p>
+                                </template>
+                                <svg v-if="scope.row.early_paid_at" class="mr-1" width="16" height="19"
+                                    viewBox="0 0 16 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M7.15527 0C9.57271 0.953908 11.3524 2.23003 12.2705 7.08301C12.6323 7.25786 13.0912 6.56184 13.9756 5.11523C18.2995 13.5451 15.0251 18.2319 10.4346 18.3633H5.97461C2.30572 18.3633 -0.842483 14.5589 0.203125 8.52539C1.11282 9.8512 1.48847 9.99154 2.04004 9.70605C0.85957 5.11534 8.598 4.06604 7.15527 0ZM10.5732 6.05664C10.3949 5.99143 10.1997 6.06337 10.1035 6.21875L10.0684 6.29102C9.30024 8.39053 8.70097 10.0296 8.10156 11.668L6.13379 17.0459C6.05912 17.25 6.16407 17.4761 6.36816 17.5508C6.54675 17.616 6.74192 17.5436 6.83789 17.3877L6.87305 17.3164C7.64129 15.2165 8.24131 13.5771 8.84082 11.9385L10.8076 6.56055C10.8817 6.35675 10.7769 6.13129 10.5732 6.05664ZM10.7002 12.0654C9.68635 12.0656 8.86447 12.8885 8.86426 13.9023C8.86438 14.9163 9.6863 15.7381 10.7002 15.7383C11.7141 15.7381 12.537 14.9163 12.5371 13.9023C12.5369 12.8885 11.714 12.0656 10.7002 12.0654ZM10.7002 12.8525C11.2794 12.8528 11.7498 13.3231 11.75 13.9023C11.7499 14.4816 11.2795 14.951 10.7002 14.9512C10.1209 14.951 9.65149 14.4816 9.65137 13.9023C9.65158 13.3231 10.121 12.8528 10.7002 12.8525ZM6.50293 7.60645C5.48915 7.60667 4.6673 8.42863 4.66699 9.44238C4.66699 10.4564 5.48897 11.2791 6.50293 11.2793C7.5169 11.2791 8.33984 10.4564 8.33984 9.44238C8.33954 8.42862 7.51671 7.60666 6.50293 7.60645ZM6.50293 8.39355C7.08207 8.39377 7.55243 8.86326 7.55273 9.44238C7.55273 10.0218 7.08226 10.492 6.50293 10.4922C5.9236 10.492 5.4541 10.0218 5.4541 9.44238C5.45441 8.86326 5.92379 8.39378 6.50293 8.39355Z"
+                                        fill="#22c55e" />
+                                </svg>
+                                <svg v-else class="mr-1" width="16" height="19" viewBox="0 0 16 19" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M7.15527 0C9.57271 0.953908 11.3524 2.23003 12.2705 7.08301C12.6323 7.25786 13.0912 6.56184 13.9756 5.11523C18.2995 13.5451 15.0251 18.2319 10.4346 18.3633H5.97461C2.30572 18.3633 -0.842483 14.5589 0.203125 8.52539C1.11282 9.8512 1.48847 9.99154 2.04004 9.70605C0.85957 5.11534 8.598 4.06604 7.15527 0ZM10.5732 6.05664C10.3949 5.99143 10.1997 6.06337 10.1035 6.21875L10.0684 6.29102C9.30024 8.39053 8.70097 10.0296 8.10156 11.668L6.13379 17.0459C6.05912 17.25 6.16407 17.4761 6.36816 17.5508C6.54675 17.616 6.74192 17.5436 6.83789 17.3877L6.87305 17.3164C7.64129 15.2165 8.24131 13.5771 8.84082 11.9385L10.8076 6.56055C10.8817 6.35675 10.7769 6.13129 10.5732 6.05664ZM10.7002 12.0654C9.68635 12.0656 8.86447 12.8885 8.86426 13.9023C8.86438 14.9163 9.6863 15.7381 10.7002 15.7383C11.7141 15.7381 12.537 14.9163 12.5371 13.9023C12.5369 12.8885 11.714 12.0656 10.7002 12.0654ZM10.7002 12.8525C11.2794 12.8528 11.7498 13.3231 11.75 13.9023C11.7499 14.4816 11.2795 14.951 10.7002 14.9512C10.1209 14.951 9.65149 14.4816 9.65137 13.9023C9.65158 13.3231 10.121 12.8528 10.7002 12.8525ZM6.50293 7.60645C5.48915 7.60667 4.6673 8.42863 4.66699 9.44238C4.66699 10.4564 5.48897 11.2791 6.50293 11.2793C7.5169 11.2791 8.33984 10.4564 8.33984 9.44238C8.33954 8.42862 7.51671 7.60666 6.50293 7.60645ZM6.50293 8.39355C7.08207 8.39377 7.55243 8.86326 7.55273 9.44238C7.55273 10.0218 7.08226 10.492 6.50293 10.4922C5.9236 10.492 5.4541 10.0218 5.4541 9.44238C5.45441 8.86326 5.92379 8.39378 6.50293 8.39355Z"
+                                        fill="#BC0B0B" />
+                                </svg>
+                            </el-tooltip>
+                            <span>{{ scope.row.folio }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+
+                    <!-- <el-table-column prop="folio" label="Folio" width="135">
+                        <template #default="scope">
+                            <div class="flex items-center space-x-1">
                                 <el-tooltip v-if="scope.row.quote_acepted" placement="top">
                                     <template #content>
                                         <p>
-                                            El cliente firmó la cotización <br>
+                                            Cotización aceptada por el cliente <br>
                                             el {{ formatDate(scope.row.responded_at) }}
                                         </p>
                                     </template>
-                                    <i class="fa-solid fa-check text-base text-green-700 mr-1"></i>
+                                    <i class="fa-solid fa-check text-base text-green-500 mr-1"></i>
                                 </el-tooltip>
                                 <el-tooltip v-else-if="scope.row.rejected_razon" placement="top">
                                     <template #content>
@@ -97,7 +137,7 @@
                                             Motivo: <b>{{ scope.row.rejected_razon }}</b>
                                         </p>
                                     </template>
-                                    <i class="fa-solid fa-xmark text-xs text-red-700 mr-1"></i>
+                                    <i class="fa-solid fa-xmark text-base text-red-500 mr-1"></i>
                                 </el-tooltip>
                                 <el-tooltip
                                     v-if="scope.row.early_payment_discount && $page.props.auth.user.permissions.includes('Descuentos cotizaciones')"
@@ -128,7 +168,7 @@
                                 <span>{{ scope.row.folio }}</span>
                             </div>
                         </template>
-                    </el-table-column>
+                    </el-table-column> -->
                     <el-table-column label="Orden de venta" width="100">
                         <template #default="scope">
                             <div>
@@ -238,7 +278,23 @@
                                             </svg>
                                             Clonar</el-dropdown-item>
                                         <el-dropdown-item
-                                            v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta') && !scope.row.sale_id"
+                                            v-if="scope.row.status !== 'Recibida por el cliente' && scope.row.status !== 'Rechazada' && scope.row.status !== 'Aceptada' && scope.row.authorized_at"
+                                            :disabled="!scope.row.user?.name" :command="'changeStatus-' + scope.row.id + '-Recibida por el cliente'">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 mr-2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                            </svg>
+                                            Recibida por el cliente
+                                        </el-dropdown-item>
+                                        <el-dropdown-item
+                                            v-if="scope.row.status !== 'Rechazada' && scope.row.status !== 'Aceptada' && scope.row.authorized_at"
+                                            :disabled="!scope.row.user?.name" :command="'changeStatus-' + scope.row.id + '-Aceptada'">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 mr-2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                            </svg>
+                                            Marcar como aceptada
+                                        </el-dropdown-item>
+                                        <el-dropdown-item
+                                            v-if="$page.props.auth.user.permissions.includes('Crear ordenes de venta') && scope.row.status === 'Aceptada' && !scope.row.sale_id"
                                             :command="'make_so-' + scope.row.id" :disabled="!scope.row.authorized_at">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                 stroke-width="1.5" stroke="currentColor" class="size-4 mr-2">
@@ -266,6 +322,14 @@
                                                     d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
                                             </svg>
                                             Marcar pago anticipado
+                                        </el-dropdown-item>
+                                        <el-dropdown-item
+                                            v-if="scope.row.status !== 'Rechazada' && scope.row.status !== 'Aceptada' && scope.row.authorized_at"
+                                            :disabled="!scope.row.user?.name" :command="'changeStatus-' + scope.row.id + '-Rechazada'">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 mr-2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                            </svg>
+                                            Marcar como rechazada
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
@@ -304,6 +368,29 @@
                 </div>
             </template>
         </ConfirmationModal>
+
+        <!-- -------------- rejected Modal starts----------------------- -->
+        <Modal :show="showRejectedModal" @close="showRejectedModal = false">
+            <div class="p-5 relative">
+                <h2 class="font-bold mb-1">Cotización rechazada</h2>
+                <i @click="showRejectedModal = false"
+                    class="fa-solid fa-xmark cursor-pointer size-5 rounded-full flex items-center justify-center absolute right-3 top-3"></i>
+
+                <section class="mt-5">
+                    <div>
+                        <InputLabel value="Razón del rechazo" />
+                        <el-input v-model="rejectedRazon" :rows="3" maxlength="800" placeholder="Escribe la razón del rechazo"
+                            show-word-limit type="textarea" />
+                    </div>
+
+                    <div class="mt-5 mx-3 md:text-right col-span-full">
+                        <PrimaryButton @click="changeStatus(selectedQuoteId, 'Rechazada', rejectedRazon)">
+                            Confirmar
+                        </PrimaryButton>
+                    </div>
+                </section>   
+            </div>
+        </Modal>
     </AppLayout>
 </template>
 <script>
@@ -315,27 +402,31 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import NotificationCenter from "@/Components/MyComponents/NotificationCenter.vue";
 import SaleProfit from "@/Components/MyComponents/SaleProfit.vue";
 import IndexSearchBar from "@/Components/MyComponents/IndexSearchBar.vue";
-import { Link } from "@inertiajs/vue3";
-import axios from 'axios';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import CancelButton from '@/Components/MyComponents/CancelButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import InputLabel from "@/Components/InputLabel.vue";
+import Modal from "@/Components/Modal.vue";
+import { Link } from "@inertiajs/vue3";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import axios from 'axios';
 
 export default {
     components: {
         PaginationWithNoMeta,
         NotificationCenter,
+        ConfirmationModal,
         SecondaryButton,
+        IndexSearchBar,
         PrimaryButton,
         CancelButton,
-        IndexSearchBar,
         LoadingLogo,
+        InputLabel,
         SaleProfit,
         AppLayout,
+        Modal,
         Link,
-        ConfirmationModal,
     },
     data() {
         return {
@@ -343,11 +434,31 @@ export default {
             inputSearch: '',
             search: '',
             loading: false,
+            showRejectedModal: false,
             pagination: null,
             filteredQuotes: this.quotes.data,
             showConversionConfirm: false,
             converting: false,
             selectedQuoteId: null,
+            rejectedRazon: null,
+            statusMap: {
+                'Aceptada': {
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-green-500"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>',
+                    tooltip: (row) => `Cotización aceptada por el cliente <br> el ${this.formatDate(row.responded_at)}`
+                },
+                'Rechazada': {
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-red-500"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>',
+                    tooltip: (row) => `El cliente rechazó la cotización <br> el ${this.formatDate(row.responded_at)}<br>Motivo: <b>${row.rejected_razon || 'Sin especificar'}</b>`
+                },
+                'Recibida por el cliente': {
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-blue-500"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>',
+                    tooltip: (row) => `Cotización recibida por el cliente. <br> Esperando respuesta`
+                },
+                'No enviada': {
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-amber-500"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" /></svg>',
+                    tooltip: () => `Cotización aún no enviada al cliente`
+                }
+            }
         };
     },
     props: {
@@ -577,6 +688,7 @@ export default {
         handleCommand(command) {
             const commandName = command.split('-')[0];
             const rowId = command.split('-')[1];
+            const newStatus = command.split('-')[2];
 
             if (commandName == 'clone') {
                 this.clone(rowId);
@@ -587,10 +699,53 @@ export default {
                 this.authorize(rowId);
             } else if (commandName == 'earlyPayment') {
                 this.markEarlyPayment(rowId);
+            } else if ( commandName == 'changeStatus' ) {
+                if (newStatus === 'Rechazada') {
+                    this.selectedQuoteId = rowId;
+                    this.showRejectedModal = true;
+                    return;
+                }
+                this.changeStatus(rowId, newStatus);
             } else {
                 this.$inertia.get(route('quotes.' + commandName, rowId));
             }
         },
+        async changeStatus(quoteId, newStatus, rejectedRazon = null) {
+            try {
+                const response = await axios.post(route('quotes.change-status', quoteId), {
+                    new_status: newStatus,
+                    rejected_razon: rejectedRazon
+                });
+
+                if (response.status == 200) {
+                    const index = this.quotes.data.findIndex(item => item.id == quoteId);
+                    this.quotes.data[index].status = response.data.quote.status;
+                    this.quotes.data[index].responded_at = response.data.quote.responded_at;
+                    this.quotes.data[index].rejected_razon = response.data.quote.rejected_razon;
+                    this.$notify({
+                        title: 'Éxito',
+                        message: response.data.message,
+                        type: 'success'
+                    });
+                } else {
+                    this.$notify({
+                        title: 'Algo salió mal',
+                        message: response.data.message,
+                        type: 'error'
+                    });
+                }
+            } catch (err) {
+                this.$notify({
+                    title: 'Algo salió mal',
+                    message: err.message,
+                    type: 'error'
+                });
+                console.log(err);
+            } finally {
+                this.showRejectedModal = false;
+                this.rejectedRazon = null;
+            }
+        }
     },
 }
 </script>

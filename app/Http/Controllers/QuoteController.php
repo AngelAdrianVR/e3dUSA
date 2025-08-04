@@ -32,7 +32,7 @@ class QuoteController extends Controller
     {
         $pre_quotes = Quote::with(['catalogProducts:id,name', 'user:id,name', 'media'])
             ->latest()
-            ->paginate(20); // Pagina primero
+            ->paginate(30); // Pagina primero
 
         $quotes = $pre_quotes->through(function ($quote) {
             return [
@@ -42,6 +42,7 @@ class QuoteController extends Controller
                 'responded_at' => $quote->responded_at,
                 'rejected_razon' => $quote->rejected_razon,
                 'sale_id' => $quote->sale_id,
+                'status' => $quote->status,
                 'media' => $quote->media,
                 'user' => [
                     'id' => $quote->user?->id,
@@ -726,5 +727,64 @@ class QuoteController extends Controller
 
         return response()->json(['quote' => $quote]);
     }
+
+    public function changeStatus(Quote $quote, Request $request)
+    {
+        $status = $request->input('new_status');
+        $data = ['status' => $status];
+        $rejected_razon = $request->input('rejected_razon');
+
+        // Si es rechazada, guardar el motivo
+        if ($status === 'Rechazada') {
+            $data['rejected_razon'] = $rejected_razon;
+            $data['quote_acepted'] = false;
+            $data['responded_at'] = now();
+        }
+
+        // Si es aceptada, guardar también quién la autorizó
+        if ($status === 'Aceptada') {
+            $data['responded_at'] = now();
+            $data['quote_acepted'] = true;
+        }
+
+        $quote->update($data);
+
+        // Verificar si el usuario aún tiene cotizaciones pendientes entre 3 y 5 días atrás
+        $from = now()->subDays(5)->startOfDay();
+        $to = now()->subDays(3)->endOfDay();
+
+        $hasPendingQuotes = Quote::where('user_id', $quote->user_id)
+            ->whereIn('status', ['No enviada', 'Recibida por el cliente'])
+            ->whereBetween('created_at', [$from, $to])
+            ->exists();
+
+        // Actualizar la propiedad pendent_quotes_alert del usuario
+        $quote->user->update([
+            'pendent_quotes_alert' => $hasPendingQuotes
+        ]);
+
+        return response()->json([
+            'message' => 'Estatus de la cotización actualizado correctamente.',
+            'quote' => $quote
+        ]);
+    }
+
+    // Recupera las cotizaciones pendientes de seguimiento (de 3 a 5 días de creadas)
+    public function pendingAlert()
+    {
+        $userId = auth()->id();
+
+        $from = now()->subDays(5)->startOfDay(); // hace 5 días
+        $to = now()->subDays(3)->endOfDay();     // hace 3 días
+
+        $quotes = Quote::where('user_id', $userId)
+            ->whereIn('status', ['No enviada', 'Recibida por el cliente'])
+            ->whereBetween('created_at', [$from, $to])
+            ->get(['id', 'status', 'created_at']);
+
+        return response()->json($quotes);
+    }
+
+
 
 }
