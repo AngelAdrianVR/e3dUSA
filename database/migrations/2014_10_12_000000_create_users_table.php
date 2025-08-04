@@ -22,6 +22,7 @@ return new class extends Migration
             $table->json('employee_properties')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->boolean('pendent_quotes_alert')->default(false); // Alerta de cotizaciones pendientes
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();

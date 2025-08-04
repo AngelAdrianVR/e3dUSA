@@ -37,6 +37,7 @@ return new class extends Migration
             $table->boolean('early_payment_discount')->default(0)->nullable(); // descuento por pago anticipado
             $table->timestamp('early_paid_at')->nullable(); // fecha de pago anticipado
             $table->float('discount')->unsigned(); // cantidad de descuento por pago anticipado
+            $table->string('status')->default('No enviada'); // estatus de la cotizacion (No enviada, Recibida por el cliente, Aceptada, Rechazada)
             $table->foreignId('company_branch_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('prospect_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
