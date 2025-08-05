@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('nickname')->nullable();
+            $table->string('nickname')->nullable(); // nombre con el que se le conoce al proveedor
             $table->string('address')->nullable();
             $table->string('post_code')->nullable();
             $table->foreignId('contact_id')->nullable()->constrained()->onDelete('cascade');
-            $table->json('banks')->nullable();
+            $table->json('banks')->nullable(); // cuentas bancarias a las que se paga el material comprado
             $table->string('phone');
-            $table->json('raw_materials_id')->nullable();
+            $table->json('raw_materials_id')->nullable(); // materia prima relacionada con el proveedor
             $table->timestamps();
         });
     }

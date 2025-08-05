@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedTinyInteger('status')->default(0); //0:pendiente 1:Despachado 2:finalizado 3:recibido
             $table->text('notes')->nullable();
-            $table->string('authorized_user_name')->nullable();
+            $table->string('authorized_user_name')->nullable(); // nombre de quien autoriza. 
             $table->timestamp('authorized_at')->nullable();
             $table->date('expected_delivery_date')->nullable();
             $table->timestamp('emited_at')->nullable();

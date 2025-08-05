@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('sat_type');
             $table->string('sat_way');
             $table->text('important_notes')->nullable();
-            $table->unsignedSmallInteger('days_to_reactivate')->default(0);
+            $table->unsignedSmallInteger('days_to_reactivate')->default(0); // si pasa el tiempo sin ventas llega una notificacion al vendedor.
             $table->foreignId('company_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });

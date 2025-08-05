@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('status')->default('Nueva');
             $table->string('priority');
             $table->text('description')->nullable();
-            $table->text('lost_oportunity_razon')->nullable();
+            $table->text('lost_oportunity_razon')->nullable(); // razon de perdida de oportunidad
             $table->unsignedTinyInteger('probability')->nullable(); // 1 al 100
             $table->timestamp('finished_at')->nullable();
             $table->timestamp('start_date')->nullable();

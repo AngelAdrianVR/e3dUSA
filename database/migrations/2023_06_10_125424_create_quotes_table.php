@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('tooling_currency');
             $table->boolean('freight_cost_charged_in_product')->default(false);
             $table->string('freight_cost')->nullable();
-            $table->string('freight_option')->default('Cargo flete normal de costo al cliente');
+            $table->string('freight_option')->default('Por cuenta del cliente');
             $table->boolean('tooling_cost_stroked')->default(0);
             $table->boolean('freight_cost_stroked')->default(0);
             $table->string('first_production_days');
@@ -42,7 +42,7 @@ return new class extends Migration
             $table->foreignId('prospect_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('sale_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('quote_id')->nullable()->constrained()->cascadeOnDelete(); // cotización relacionada a la ov
+            // $table->foreignId('quote_id')->nullable()->constrained()->cascadeOnDelete(); // cotización relacionada a la ov
             $table->timestamps();
         });
     }

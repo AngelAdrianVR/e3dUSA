@@ -13,13 +13,11 @@ return new class extends Migration
     {
         Schema::create('stock_movement_histories', function (Blueprint $table) {
             $table->id();
-
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('storage_id')->constrained()->cascadeOnDelete();
             $table->string('type');
             $table->unsignedFloat('quantity');
             $table->text('notes')->nullable();
-
             $table->timestamps();
         });
     }

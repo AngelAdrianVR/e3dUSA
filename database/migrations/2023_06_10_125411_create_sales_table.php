@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('oce_name')->nullable();
             $table->string('order_via')->nullable();
             $table->string('is_sale_production')->default(1);
-            $table->string('invoice')->nullable();
+            // $table->string('invoice')->nullable();
             $table->text('notes')->nullable();
             $table->boolean('is_high_priority')->default(false);
             $table->string('authorized_user_name')->nullable();

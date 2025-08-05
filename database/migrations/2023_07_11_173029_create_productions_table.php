@@ -22,10 +22,10 @@ return new class extends Migration
             $table->unsignedTinyInteger('estimated_time_minutes')->default(0);
             $table->timestamp('started_at')->nullable();
             $table->timestamp('finished_at')->nullable();
-            $table->unsignedMediumInteger('scrap')->default(0);
-            $table->text('scrap_reason')->nullable();
-            $table->boolean('supervision')->default(false);
-            $table->unsignedMediumInteger('good_units')->nullable();
+            $table->unsignedMediumInteger('scrap')->default(0); // cantidad de desperdicio de esa produccion
+            $table->text('scrap_reason')->nullable(); // razon del desperdicio
+            $table->boolean('supervision')->default(false); // bandera que indica si se supervisó la produccion
+            $table->unsignedMediumInteger('good_units')->nullable(); //cantidad de unidades buenas producidas
             $table->json('packages')->nullable();
             $table->boolean('has_low_stock')->default(0);
             $table->boolean('is_paused')->default(0);
